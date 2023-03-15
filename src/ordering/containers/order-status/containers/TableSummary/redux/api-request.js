@@ -1,7 +1,4 @@
-import { get, post } from '../../../../utils/api/api-fetch';
-
-// fetch order submission status
-export const fetchOrderSubmissionStatus = ({ receiptNumber }) => get(`/api/v3/transactions/${receiptNumber}/status`);
+import { post } from '../../../../../../utils/api/api-fetch';
 
 // If total === 0, it will lock order at table summary page
 export const submitOrder = (receiptNumber, data) => post(`/api/v3/transactions/${receiptNumber}/submission`, data);

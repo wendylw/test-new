@@ -1,6 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import Constants from '../../../../utils/constants';
+import Constants from '../../../../../../utils/constants';
 import {
   getBusinessInfo,
   getCashbackRate,
@@ -8,43 +8,51 @@ import {
   getMerchantCountry,
   getShippingType,
   getIsTNGMiniProgram,
-} from '../../../redux/modules/app';
+} from '../../../../../redux/modules/app';
+import {
+  getPayLaterOrderInfoData as getOrder,
+  getPayLaterSubmitOrderRequest as getSubmitOrderRequest,
+} from '../../../redux/selector';
 
 const { ORDER_STATUS, API_REQUEST_STATUS } = Constants;
 
-export const getOrderReceiptNumber = state => state.tableSummary.order.receiptNumber;
+export const getOrderReceiptNumber = createSelector(getOrder, order => order.receiptNumber);
 
-export const getOrderPickUpCode = state => state.tableSummary.order.pickUpCode;
+export const getOrderPickUpCode = createSelector(getOrder, order => order.pickUpCode);
 
-export const getOrderModifiedTime = state => state.tableSummary.order.modifiedTime;
+export const getOrderTax = createSelector(getOrder, order => order.tax);
 
-export const getTableNumber = state => state.tableSummary.order.tableId;
+export const getOrderServiceCharge = createSelector(getOrder, order => order.serviceCharge);
 
-export const getOrderTax = state => state.tableSummary.order.tax;
+export const getIsStorePayByCashOnly = createSelector(getOrder, order => order.isStorePayByCashOnly);
 
-export const getOrderServiceCharge = state => state.tableSummary.order.serviceCharge;
+export const getOrderServiceChargeRate = createSelector(getOrder, order =>
+  _get(order.serviceChargeInfo, 'serviceChargeRate', 0)
+);
 
-export const getIsStorePayByCashOnly = state => state.tableSummary.order.isStorePayByCashOnly;
+export const getOrderTotal = createSelector(getOrder, order => order.total);
 
-export const getOrderServiceChargeRate = state =>
-  _get(state.tableSummary.order.serviceChargeInfo, 'serviceChargeRate', 0);
+export const getOrderSubtotal = createSelector(getOrder, order => order.subtotal);
 
-export const getOrderTotal = state => state.tableSummary.order.total;
+export const getOrderCashback = createSelector(
+  getOrder,
+  order => Number(order.loyaltyDiscounts.map(item => item.displayDiscount)) || 0
+);
 
-export const getOrderSubtotal = state => state.tableSummary.order.subtotal;
+export const getOrderShippingFee = createSelector(getOrder, order => order.shippingFee);
 
-export const getOrderCashback = state =>
-  Number(state.tableSummary.order.loyaltyDiscounts.map(item => item.displayDiscount)) || 0;
+export const getOrderStatus = createSelector(getOrder, order => order.orderStatus);
 
-export const getOrderShippingFee = state => state.tableSummary.order.shippingFee;
+export const getIsOrderPlaced = createSelector(getOrderStatus, orderStatus => orderStatus === ORDER_STATUS.CREATED);
 
-export const getIsOrderPlaced = state => state.tableSummary.order.orderStatus === ORDER_STATUS.CREATED;
+export const getIsOrderPendingPayment = createSelector(
+  getOrderStatus,
+  orderStatus => orderStatus === ORDER_STATUS.PENDING_PAYMENT
+);
 
-export const getIsOrderPendingPayment = state => state.tableSummary.order.orderStatus === ORDER_STATUS.PENDING_PAYMENT;
+export const getSubOrders = createSelector(getOrder, order => order.subOrders);
 
-export const getSubOrders = state => state.tableSummary.order.subOrders;
-
-export const getOrderItems = state => state.tableSummary.order.items;
+export const getOrderItems = createSelector(getOrder, order => order.items);
 
 export const getSubOrdersMapping = createSelector([getSubOrders, getOrderItems], (subOrders, items) => {
   const subOrdersMapping = {};
@@ -67,10 +75,12 @@ export const getSubOrdersMapping = createSelector([getSubOrders, getOrderItems],
   return subOrdersMapping;
 });
 
-export const getOrderSubmissionRequestingStatus = state =>
-  state.tableSummary.requestStatus.submitOrders === API_REQUEST_STATUS.PENDING;
+export const getOrderSubmissionRequestingStatus = createSelector(
+  getSubmitOrderRequest,
+  request => request.status === API_REQUEST_STATUS.PENDING
+);
 
-export const getOrderCompletedStatus = state =>
+export const getOrderCompletedStatus = createSelector(getOrderStatus, orderStatus =>
   [
     ORDER_STATUS.PAID,
     ORDER_STATUS.READY_FOR_DELIVERY,
@@ -81,25 +91,48 @@ export const getOrderCompletedStatus = state =>
     ORDER_STATUS.CONFIRMED,
     ORDER_STATUS.DELIVERED,
     ORDER_STATUS.PICKED_UP,
-  ].includes(state.tableSummary.order.orderStatus);
+  ].includes(orderStatus)
+);
 
-export const getThankYouPageUrl = state => state.tableSummary.submission.thankYouPageUrl;
+export const getThankYouPageUrl = createSelector(getOrder, order => order.redirectUrl);
 
-export const getOrderBillingPromoIfExist = state => state.tableSummary.order.displayPromotions?.length || '';
+export const getOrderDisplayPromotions = createSelector(getOrder, order => order.displayPromotions);
 
-export const getOrderPromoDiscountType = state => state.tableSummary.order.displayPromotions[0]?.discountType;
+export const getOrderBillingPromoIfExist = createSelector(
+  getOrderDisplayPromotions,
+  displayPromotions => displayPromotions?.length || ''
+);
 
-export const getOrderPromoDiscount = state => state.tableSummary.order.displayPromotions[0]?.discount;
+export const getOrderPromoDiscountType = createSelector(
+  getOrderDisplayPromotions,
+  displayPromotions => displayPromotions[0]?.discountType
+);
 
-export const getOrderPromotionCode = state => state.tableSummary.order.displayPromotions[0]?.promotionCode;
+export const getOrderPromoDiscount = createSelector(
+  getOrderDisplayPromotions,
+  displayPromotions => displayPromotions[0]?.discount
+);
 
-export const getOrderPromotionId = state => state.tableSummary.order.displayPromotions[0]?.promotionId;
+export const getOrderPromotionCode = createSelector(
+  getOrderDisplayPromotions,
+  displayPromotions => displayPromotions[0]?.promotionCode
+);
 
-export const getVoucherBillingIfExist = state => state.tableSummary.order.appliedVoucher?.voucherId || '';
+export const getOrderPromotionId = createSelector(
+  getOrderDisplayPromotions,
+  displayPromotions => displayPromotions[0]?.promotionId
+);
 
-export const getOrderVoucherCode = state => state.tableSummary.order.appliedVoucher?.voucherCode;
+export const getVoucherBilling = createSelector(getOrder, order => order.appliedVoucher);
 
-export const getOrderVoucherDiscount = state => state.tableSummary.order.appliedVoucher?.value;
+export const getVoucherBillingIfExist = createSelector(
+  getVoucherBilling,
+  appliedVoucher => appliedVoucher?.voucherId || ''
+);
+
+export const getOrderVoucherCode = createSelector(getVoucherBilling, appliedVoucher => appliedVoucher?.voucherCode);
+
+export const getOrderVoucherDiscount = createSelector(getVoucherBilling, appliedVoucher => appliedVoucher?.value);
 
 export const getProductsManualDiscount = state => _get(state.tableSummary.order, 'productsManualDiscount', 0);
 
@@ -108,13 +141,12 @@ export const getPromoOrVoucherExist = createSelector(
   getVoucherBillingIfExist,
   (orderBillingPromoIfExist, voucherBillingIfExist) => !!(orderBillingPromoIfExist || voucherBillingIfExist)
 );
-export const getVoucherBilling = state => state.tableSummary.order.appliedVoucher;
 
-export const getOrderApplyCashback = state => state.tableSummary.order.applyCashback;
+export const getOrderApplyCashback = createSelector(getOrder, order => order.applyCashback);
 
-export const getShouldShowRedirectLoader = state => state.tableSummary.redirectLoaderVisible;
+export const getShouldShowRedirectLoader = state => state.orderStatus.tableSummary.redirectLoaderVisible;
 
-export const getShouldShowProcessingLoader = state => state.tableSummary.processingLoaderVisible;
+export const getShouldShowProcessingLoader = state => state.orderStatus.tableSummary.processingLoaderVisible;
 
 export const getShouldShowPayNowButton = createSelector(
   getIsTNGMiniProgram,
@@ -128,7 +160,7 @@ export const getShouldShowSwitchButton = createSelector(
   (cashback, isOrderPendingPayment) => !isOrderPendingPayment && cashback > 0
 );
 
-export const getReloadBillingByCashbackRequest = state => state.tableSummary.reloadBillingByCashbackRequest;
+export const getReloadBillingByCashbackRequest = state => state.orderStatus.tableSummary.reloadBillingByCashbackRequest;
 
 export const getIsReloadBillingByCashbackRequestPending = createSelector(
   getReloadBillingByCashbackRequest,
@@ -140,7 +172,7 @@ export const getIsReloadBillingByCashbackRequestRejected = createSelector(
   request => request.status === API_REQUEST_STATUS.REJECTED
 );
 
-export const getPayByCouponsRequest = state => state.tableSummary.payByCouponsRequest;
+export const getPayByCouponsRequest = state => state.orderStatus.tableSummary.payByCouponsRequest;
 
 export const getIsPayByCouponsRequestPending = createSelector(
   getPayByCouponsRequest,

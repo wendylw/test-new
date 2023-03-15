@@ -1,7 +1,8 @@
 import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
+import _isEqual from 'lodash/isEqual';
 import { createSelector } from 'reselect';
-import { getUserProfile } from '../../../redux/modules/app';
+import { getUserProfile, getTableId } from '../../../redux/modules/app';
 import Constants from '../../../../utils/constants';
 
 const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS, API_REQUEST_STATUS } = Constants;
@@ -91,6 +92,56 @@ export const getLiveChatUserProfile = createSelector(getUserProfile, profile => 
   name: profile.name || '',
   email: profile.email || '',
 }));
+
+// Pay Later Order
+export const getPayLaterOrderInfo = state => state.orderStatus.common.payLaterOrderInfo;
+
+export const getPayLaterOrderInfoData = createSelector(
+  getPayLaterOrderInfo,
+  payLaterOrderInfo => payLaterOrderInfo.data
+);
+
+export const getPayLaterOrderStatusInfo = state => state.orderStatus.common.payLaterOrderStatusInfo;
+
+export const getPayLaterOrderStatusInfoData = createSelector(
+  getPayLaterOrderStatusInfo,
+  payLaterOrderStatusInfo => payLaterOrderStatusInfo.data
+);
+
+export const getPayLaterOrderModifiedTime = createSelector(
+  getPayLaterOrderInfoData,
+  payLaterOrderInfoData => payLaterOrderInfoData.modifiedTime
+);
+
+export const getPayLaterSubmitOrderRequest = createSelector(
+  getPayLaterOrderInfo,
+  payLaterOrderInfo => payLaterOrderInfo.submitOrderRequest
+);
+
+export const getPayLaterOrderTableId = createSelector(
+  getPayLaterOrderInfoData,
+  payLaterOrderInfoData => payLaterOrderInfoData.tableId
+);
+
+export const getPayLaterOrderStatusTableId = createSelector(
+  getPayLaterOrderStatusInfoData,
+  payLaterOrderStatusInfoData => payLaterOrderStatusInfoData.tableId
+);
+
+export const getHasPayLaterOrderTableIdChanged = createSelector(
+  getTableId,
+  getPayLaterOrderStatusTableId,
+  (prevTableId, currTableId) => {
+    const shouldSkipDiffCheck = !prevTableId || !currTableId;
+
+    return !(shouldSkipDiffCheck || _isEqual(prevTableId, currTableId));
+  }
+);
+
+export const getPayLaterStoreHash = createSelector(
+  getPayLaterOrderStatusInfoData,
+  payLaterOrderStatusInfoData => payLaterOrderStatusInfoData.storeHash
+);
 
 // Store Review
 export const getStoreReviewInfo = state => state.orderStatus.common.storeReviewInfo;

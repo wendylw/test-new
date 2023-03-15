@@ -1,134 +1,72 @@
-/* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import dayjs from 'dayjs';
-import _trim from 'lodash/trim';
-import { API_REQUEST_STATUS } from '../../../../utils/constants';
-import Utils from '../../../../utils/utils';
-import { checkBirthdayIsValid } from '../utils';
-import { saveProfileInfo } from './thunk';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import { profileUpdated, nameUpdated, emailUpdated, birthdaySelected, birthdayUpdated } from './thunk';
 
+// if name, email or birthday is updated will inset state
 const initialState = {
-  name: {
-    data: '',
-    isValid: false,
-    isComplete: false,
-  },
-  email: {
-    data: '',
-    isValid: false,
-    isComplete: false,
-  },
-  birthday: {
-    data: '',
-    isValid: false,
-    isComplete: false,
-  },
-  updateProfileResult: {
-    status: null,
-    error: null,
-  },
+  name: '',
+  email: '',
+  birthday: '',
+  profileUpdatedStatus: null,
+  nameErrorType: null,
+  emailErrorType: null,
+  birthdayErrorType: null,
+  isNameInputFilled: false,
+  isEmailInputFilledStatus: false,
+  isBirthdayInputFilledStatus: false,
 };
 
 export const { actions, reducer } = createSlice({
   name: 'ordering/profile',
   initialState,
   reducers: {
-    init(state, action) {
-      const { name, email, birthday } = action.payload;
-      const birthdayDayjs = dayjs(birthday);
-
-      const trimedEmail = _trim(email);
-      if (trimedEmail.length > 0) {
-        state.email = {
-          data: trimedEmail,
-          isValid: Utils.checkEmailIsValid(trimedEmail),
-          isComplete: true,
-        };
-      } else {
-        state.email = {
-          ...initialState.email,
-        };
-      }
-
-      state.name = {
-        ...initialState.name,
-        data: name,
-      };
-
-      const tirmedBirthday = _trim(birthday);
-      if (tirmedBirthday.length > 0) {
-        state.birthday = {
-          data: birthdayDayjs.isValid() ? birthdayDayjs.format('DD/MM') : '',
-          isValid: checkBirthdayIsValid(birthdayDayjs.format('DD/MM')),
-          isComplete: true,
-        };
-      } else {
-        state.birthday = {
-          ...initialState.birthday,
-        };
-      }
+    nameInputFilledStatusUpdated: (state, { payload }) => {
+      state.isNameInputFilled = payload;
     },
-    updateName(state, action) {
-      state.name.data = action.payload;
+    emailInputFilledStatusUpdated: (state, { payload }) => {
+      state.isEmailInputFilledStatus = payload;
     },
-    updateEmail(state, action) {
-      state.email.data = _trim(action.payload);
-      state.email.isComplete = false;
+    birthdayInputFilledStatusUpdated: (state, { payload }) => {
+      state.isBirthdayInputFilledStatus = payload;
     },
-    startEditName(state) {
-      state.name.isComplete = false;
-    },
-    startEditEmail(state) {
-      state.email.isComplete = false;
-    },
-    startEditBirthday(state) {
-      state.birthday.isComplete = false;
-    },
-    updateBirthday(state, action) {
-      state.birthday.data = _trim(action.payload);
-    },
-    completeName(state) {
-      state.name.data = _trim(state.name.data);
-      state.email.isComplete = true;
-    },
-    completeEmail(state) {
-      state.email.isValid = Utils.checkEmailIsValid(state.email.data);
-      state.email.isComplete = true;
-    },
-    completeBirthday(state) {
-      state.birthday.isValid = checkBirthdayIsValid(state.birthday.data);
-      state.birthday.isComplete = true;
-    },
-    resetUpdateProfileResult(state) {
-      return {
-        ...state,
-        updateProfileResult: {
-          ...initialState.updateProfileResult,
-        },
-      };
-    },
-    doNotAskAgain(state) {
-      state.updateProfileResult = {
-        ...state.updateProfileResult,
-        ...initialState.updateProfileResult,
-      };
+    resetProfilePageData: state => {
+      state.name = '';
+      state.email = '';
+      state.birthday = '';
+      state.profileUpdatedStatus = null;
+      state.nameErrorType = null;
+      state.emailErrorType = null;
+      state.birthdayErrorType = null;
+      state.isNameInputFilled = false;
+      state.isEmailInputFilledStatus = false;
+      state.isBirthdayInputFilledStatus = false;
     },
   },
-
   extraReducers: {
-    [saveProfileInfo.pending.type]: state => {
-      state.updateProfileResult.status = API_REQUEST_STATUS.PENDING;
+    [profileUpdated.pending.type]: state => {
+      state.profileUpdatedStatus = API_REQUEST_STATUS.PENDING;
     },
-
-    [saveProfileInfo.fulfilled.type]: (state, action) => {
-      state.updateProfileResult.data = action.payload;
-      state.updateProfileResult.status = API_REQUEST_STATUS.FULFILLED;
-      state.updateProfileResult.error = null;
+    [profileUpdated.fulfilled.type]: state => {
+      state.profileUpdatedStatus = API_REQUEST_STATUS.FULFILLED;
     },
-
-    [saveProfileInfo.rejected.type]: (state, action) => {
-      state.updateProfileResult.status = API_REQUEST_STATUS.REJECTED;
-      state.updateProfileResult.error = action.error;
+    [profileUpdated.rejected.type]: state => {
+      state.profileUpdatedStatus = API_REQUEST_STATUS.REJECTED;
+    },
+    [nameUpdated.fulfilled.type]: (state, { payload }) => {
+      state.name = payload.name;
+      state.nameErrorType = payload.errorType;
+    },
+    [emailUpdated.fulfilled.type]: (state, { payload }) => {
+      state.email = payload.email;
+      state.emailErrorType = payload.errorType;
+    },
+    [birthdaySelected.fulfilled.type]: (state, { payload }) => {
+      state.birthday = payload.birthday;
+      state.birthdayErrorType = payload.errorType;
+    },
+    [birthdayUpdated.fulfilled.type]: (state, { payload }) => {
+      state.birthday = payload.birthday;
+      state.birthdayErrorType = payload.errorType;
     },
   },
 });

@@ -177,8 +177,8 @@
   "CreditAndDebitCard": "Credit/Debit Card",
   "SelectStore": "Select a Store",
   "DeliveryHelpText": "Please key in your address to add items to your cart",
-  "CompleteYourProfile": "Complete Your Profile",
-  "CompleteProfileTip": "Complete your profile to get updated on relevant offers & promotions by our partner merchants!",
+  "CompleteProfile": "Complete Profile",
+  "CompleteProfileTip": "Share your details with us and stand a chance to enjoy future promotions!",
   "AddNewAddress": "Add New Address",
   "SavedAddress": "Saved Address",
   "OutOfRange": "Out of Range",
@@ -311,5 +311,7 @@
   "AlcoholNo": "NO, I'M NOT",
   "AlcoholYes": "YES, I AM",
   "AlcoholDenied": "Access Denied",
-  "AlcoholNotAllowed": "Aww, sorry... This store sells alcoholic beverages. If it is not suitable, you can check out the other stores instead. \uD83D\uDE42"
+  "AlcoholNotAllowed": "Aww, sorry... This store sells alcoholic beverages. If it is not suitable, you can check out the other stores instead. \uD83D\uDE42",
+  "TableNumberUpdatedTitle": "Your table number has been successfully updated!",
+  "TableNumberUpdatedDescription": "You may proceed with your order at the new table where you are currently seated."
 }

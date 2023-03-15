@@ -1,4 +1,5 @@
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
+import { getCookieVariable } from '../../../../../common/utils';
 
 export function formatCompletePhoneNumber(phone) {
   try {
@@ -26,3 +27,5 @@ export function getPaidToCurrentEventDurationMinutes(paidTime) {
     return '';
   }
 }
+
+export const getIsProfileMissingSkippedExpired = () => getCookieVariable('do_not_ask') !== '1';

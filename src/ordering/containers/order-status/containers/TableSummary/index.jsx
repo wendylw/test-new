@@ -6,9 +6,9 @@ import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { Info } from 'phosphor-react';
-import Utils from '../../../utils/utils';
-import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
-import Constants from '../../../utils/constants';
+import Utils from '../../../../../utils/utils';
+import { getLocaleTimeTo24hour } from '../../../../../utils/time-lib';
+import Constants from '../../../../../utils/constants';
 import {
   actions as appActions,
   getUserIsLogin,
@@ -19,13 +19,11 @@ import {
   getIsTNGMiniProgram,
   getHasLoginGuardPassed,
   getEnableCashback,
-} from '../../redux/modules/app';
-import logger from '../../../utils/monitoring/logger';
-import prefetch from '../../../common/utils/prefetch-assets';
-import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
-import { actions as tableSummaryActionCreators } from './redux';
+} from '../../../../redux/modules/app';
+import logger from '../../../../../utils/monitoring/logger';
+import prefetch from '../../../../../common/utils/prefetch-assets';
+import { actions as resetCartSubmissionActions } from '../../../../redux/cart/index';
 import {
-  loadOrders as loadOrdersThunk,
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
   gotoPayment as gotoPaymentThunk,
@@ -33,13 +31,14 @@ import {
   showProcessingLoader as showProcessingLoaderThunk,
   hideProcessingLoader as hideProcessingLoaderThunk,
 } from './redux/thunks';
+import { actions as commonActionCreators } from '../../redux/common';
+import { loadPayLaterOrder as loadOrdersThunk } from '../../redux/thunks';
 import {
   removePromo as removePromoThunk,
   removeVoucherPayLater as removeVoucherPayLaterThunk,
-} from '../Promotion/redux/common/thunks';
+} from '../../../Promotion/redux/common/thunks';
 import {
   getOrderPickUpCode,
-  getTableNumber,
   getOrderTax,
   getOrderServiceCharge,
   getOrderSubtotal,
@@ -70,15 +69,21 @@ import {
   getIsReloadBillingByCashbackRequestRejected,
   getCleverTapAttributes,
 } from './redux/selectors';
-import CleverTap from '../../../utils/clevertap';
-import HybridHeader from '../../../components/HybridHeader';
-import CurrencyNumber from '../../components/CurrencyNumber';
-import Image from '../../../components/Image';
-import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
-import Billing from '../../components/Billing';
-import RedirectPageLoader from '../../components/RedirectPageLoader';
-import PageProcessingLoader from '../../components/PageProcessingLoader';
-import { toast, alert } from '../../../common/utils/feedback';
+import {
+  getPayLaterOrderTableId as getTableNumber,
+  getPayLaterStoreHash as getStoreHash,
+  getPayLaterOrderStatusTableId as getOrderTableId,
+  getHasPayLaterOrderTableIdChanged as getHasTableIdChanged,
+} from '../../redux/selector';
+import CleverTap from '../../../../../utils/clevertap';
+import HybridHeader from '../../../../../components/HybridHeader';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import Image from '../../../../../components/Image';
+import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
+import Billing from '../../../../components/Billing';
+import RedirectPageLoader from '../../../../components/RedirectPageLoader';
+import PageProcessingLoader from '../../../../components/PageProcessingLoader';
+import { toast, alert } from '../../../../../common/utils/feedback';
 import './TableSummary.scss';
 
 const { DELIVERY_METHOD } = Constants;
@@ -127,11 +132,36 @@ export class TableSummary extends React.Component {
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
 
-    const { thankYouPageUrl, shippingType, cleverTapAttributes } = this.props;
+    const { hasTableIdChanged: prevHasTableIdChanged, cleverTapAttributes: prevCleverTapAttributes } = prevProps;
+    const {
+      hasTableIdChanged: currHasTableIdChanged,
+      cleverTapAttributes: currCleverTapAttributes,
+      thankYouPageUrl,
+      shippingType,
+      t,
+      storeHash,
+      orderTableId,
+      showProcessingLoader,
+    } = this.props;
 
     // Can record CT only after coreBusiness Loaded. I use one attribute country to trace that.
-    if (prevProps.cleverTapAttributes.country !== cleverTapAttributes.country) {
-      CleverTap.pushEvent('Table Summary - View Page', cleverTapAttributes);
+    if (prevCleverTapAttributes.country !== currCleverTapAttributes.country) {
+      CleverTap.pushEvent('Table Summary - View Page', currCleverTapAttributes);
+    }
+
+    if (!prevHasTableIdChanged && currHasTableIdChanged) {
+      alert(t('TableNumberUpdatedDescription'), {
+        id: 'TableNumberUpdatedAlert',
+        title: t('TableNumberUpdatedTitle'),
+        closeButtonContent: t('GotIt'),
+        onClose: async () => {
+          await showProcessingLoader();
+          window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+            Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY
+          }${Utils.getFilteredQueryString(['h', 'table'])}&h=${storeHash}&table=${orderTableId}`;
+        },
+      });
+      return;
     }
 
     if (thankYouPageUrl) {
@@ -217,9 +247,13 @@ export class TableSummary extends React.Component {
   };
 
   handleHeaderNavFunc = () => {
-    const { isOrderPlaced, cleverTapAttributes } = this.props;
+    const { isOrderPlaced, cleverTapAttributes, hasTableIdChanged } = this.props;
 
     CleverTap.pushEvent('Table Summary - Back', cleverTapAttributes);
+
+    if (hasTableIdChanged) {
+      return;
+    }
 
     if (isOrderPlaced) {
       this.goToMenuPage();
@@ -810,6 +844,9 @@ TableSummary.propTypes = {
   shouldShowSwitchButton: PropTypes.bool,
   shouldDisablePayButton: PropTypes.bool,
   hasUpdateCashbackApplyStatusFailed: PropTypes.bool,
+  hasTableIdChanged: PropTypes.bool,
+  storeHash: PropTypes.string,
+  orderTableId: PropTypes.string,
 };
 
 TableSummary.defaultProps = {
@@ -865,6 +902,9 @@ TableSummary.defaultProps = {
   shouldShowSwitchButton: false,
   shouldDisablePayButton: false,
   hasUpdateCashbackApplyStatusFailed: false,
+  hasTableIdChanged: false,
+  storeHash: null,
+  orderTableId: null,
 };
 
 export default compose(
@@ -910,6 +950,9 @@ export default compose(
       shouldDisablePayButton: getShouldDisablePayButton(state),
       shouldShowLoadingText: getIsReloadBillingByCashbackRequestPending(state),
       hasUpdateCashbackApplyStatusFailed: getIsReloadBillingByCashbackRequestRejected(state),
+      hasTableIdChanged: getHasTableIdChanged(state),
+      storeHash: getStoreHash(state),
+      orderTableId: getOrderTableId(state),
     }),
 
     {
@@ -923,7 +966,7 @@ export default compose(
       loginByBeepApp: appActions.loginByBeepApp,
       loginByTngMiniProgram: appActions.loginByTngMiniProgram,
       reloadBillingByCashback: reloadBillingByCashbackThunk,
-      updateCashbackApplyStatus: tableSummaryActionCreators.updateCashbackApplyStatus,
+      updateCashbackApplyStatus: commonActionCreators.updateCashbackApplyStatus,
       showProcessingLoader: showProcessingLoaderThunk,
       hideProcessingLoader: hideProcessingLoaderThunk,
     }

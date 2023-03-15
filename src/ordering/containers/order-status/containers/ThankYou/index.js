@@ -59,7 +59,7 @@ import {
   getStoreRating,
 } from '../../redux/selector';
 import {
-  getshowProfileVisibility,
+  getShowProfileVisibility,
   getFoodCourtId,
   getFoodCourtHashCode,
   getFoodCourtMerchantName,
@@ -72,6 +72,8 @@ import {
   cancelOrder,
   loadCashbackInfo,
   loadFoodCourtIdHashCode,
+  initProfilePage,
+  hideProfileModal,
 } from './redux/thunks';
 import {
   getCashback,
@@ -91,7 +93,7 @@ import OrderCancellationReasonsAside from './components/OrderCancellationReasons
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
-import CompleteProfileModal from '../../../../containers/Profile/index';
+import Profile from '../../../../containers/Profile';
 import { ICON_RES } from '../../../../../components/NativeHeader';
 import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
@@ -125,33 +127,8 @@ export class ThankYou extends PureComponent {
 
   pollOrderStatusTimer = null;
 
-  showCompleteProfileIfNeeded = async () => {
-    const { hasOrderPaid } = this.props;
-    //Explain: The profile page is not displayed before the order is paid
-    if (this.state.from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && !hasOrderPaid) {
-      return;
-    }
-
-    const isDoNotAsk = Utils.getCookieVariable('do_not_ask');
-    const delay = this.state.from === REFERRER_SOURCE_TYPES.LOGIN ? 1000 : 3000;
-
-    if (isDoNotAsk === '1') {
-      return;
-    }
-
-    const { name, email, birthday, status } = this.props.user.profile || {};
-
-    if (status === 'fulfilled' && REFERRERS_REQUIRING_PROFILE.includes(this.state.from)) {
-      if (!name || !email || !birthday) {
-        this.timer = setTimeout(() => {
-          this.props.setShowProfileVisibility(true);
-        }, delay);
-      }
-    }
-  };
-
   componentDidMount = async () => {
-    const { user, loadCashbackInfo, loadOrderStoreReview } = this.props;
+    const { user, loadCashbackInfo, loadOrderStoreReview, initProfilePage } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
     loadCashbackInfo(receiptNumber);
@@ -161,7 +138,18 @@ export class ThankYou extends PureComponent {
 
     const from = Utils.getCookieVariable('__ty_source');
 
-    this.setState({ from }, () => this.showCompleteProfileIfNeeded());
+    this.setState({ from }, () => {
+      const { from, hasOrderPaid } = this.state;
+
+      // WB-4979: If payment method is not pay at counter, will display profile page immediately
+      // Pay at counter logic is in componentDidUpdate
+      if (
+        hasOrderPaid ||
+        (from !== REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && REFERRERS_REQUIRING_PROFILE.includes(from))
+      ) {
+        initProfilePage({ from });
+      }
+    });
 
     // immidiately remove __ty_source cookie after setting in the state.
     Utils.removeCookieVariable('__ty_source');
@@ -389,12 +377,13 @@ export class ThankYou extends PureComponent {
       loadOrderStoreReview,
       hasOrderPaid: currHasOrderPaid,
     } = this.props;
-
-    if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
-      this.showCompleteProfileIfNeeded();
-    }
-
+    const { from } = this.state;
     const { storeId } = order || {};
+
+    // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
+    if (from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && currHasOrderPaid && !prevHasOrderPaid) {
+      initProfilePage({ from });
+    }
 
     if (storeId && prevStoreId !== storeId) {
       shippingType === DELIVERY_METHOD.DINE_IN
@@ -907,6 +896,7 @@ export class ThankYou extends PureComponent {
       isPayLater,
       foodCourtId,
       isFromBeepSiteOrderHistory,
+      hideProfileModal,
     } = this.props;
     const isWebview = Utils.isWebview();
 
@@ -914,7 +904,7 @@ export class ThankYou extends PureComponent {
     const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
     if (profileModalVisibility) {
-      this.props.setShowProfileVisibility(false);
+      hideProfileModal();
       return;
     }
 
@@ -985,12 +975,15 @@ export class ThankYou extends PureComponent {
       history,
       match,
       order,
+      orderStatus,
       storeRating,
       businessUTCOffset,
       onlineStoreInfo,
       shouldShowCashbackCard,
       shouldShowStoreReviewCard,
       shouldShowCashbackBanner,
+      profileModalVisibility,
+      hideProfileModal,
     } = this.props;
     const date = new Date();
     const { total } = order || {};
@@ -1002,12 +995,7 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
-        {order && (
-          <CompleteProfileModal
-            closeModal={this.handleCompleteProfileModalClose}
-            showProfileVisibility={this.props.profileModalVisibility}
-          />
-        )}
+        {orderStatus && <Profile onClose={hideProfileModal} show={profileModalVisibility} />}
         <>
           <HybridHeader
             headerRef={ref => (this.headerEl = ref)}
@@ -1116,7 +1104,7 @@ export default compose(
       isCashbackAvailable: getIsCashbackAvailable(state),
       shouldShowCashbackCard: getShouldShowCashbackCard(state),
       shouldShowCashbackBanner: getShouldShowCashbackBanner(state),
-      profileModalVisibility: getshowProfileVisibility(state),
+      profileModalVisibility: getShowProfileVisibility(state),
       hasOrderPaid: getHasOrderPaid(state),
       isPayLater: getIsPayLater(state),
       foodCourtId: getFoodCourtId(state),
@@ -1136,7 +1124,6 @@ export default compose(
         thankYouActionCreators.updateCancellationReasonVisibleState,
         dispatch
       ),
-      setShowProfileVisibility: bindActionCreators(thankYouActionCreators.setShowProfileVisibility, dispatch),
       loadStoreIdHashCode: bindActionCreators(loadStoreIdHashCode, dispatch),
       loadStoreIdTableIdHashCode: bindActionCreators(loadStoreIdTableIdHashCode, dispatch),
       cancelOrder: bindActionCreators(cancelOrder, dispatch),
@@ -1145,6 +1132,8 @@ export default compose(
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
       loadOrderStoreReview: bindActionCreators(loadOrderStoreReviewThunk, dispatch),
       loadFoodCourtIdHashCode: bindActionCreators(loadFoodCourtIdHashCode, dispatch),
+      initProfilePage: bindActionCreators(initProfilePage, dispatch),
+      hideProfileModal: bindActionCreators(hideProfileModal, dispatch),
     })
   )
 )(ThankYou);

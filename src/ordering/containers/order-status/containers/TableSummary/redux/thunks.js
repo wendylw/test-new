@@ -1,65 +1,33 @@
 /* eslint-disable import/no-cycle */
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import dayjs from 'dayjs';
 import { push } from 'connected-react-router';
-import { fetchOrderSubmissionStatus, submitOrder, applyCashback, unapplyCashback } from './api-request';
-import { fetchOrder } from '../../../../utils/api-request';
-import logger from '../../../../utils/monitoring/logger';
+import { applyCashback, unapplyCashback } from './api-request';
+import logger from '../../../../../../utils/monitoring/logger';
 import {
-  getOrderModifiedTime,
   getOrderReceiptNumber,
   getOrderCashback,
   getOrderTotal,
   getOrderPromotionId,
   getOrderVoucherCode,
 } from './selectors';
-import { getUserConsumerId, getLocationSearch, getIsTNGMiniProgram } from '../../../redux/modules/app';
-import { gotoPayment as initPayment, loadBilling } from '../../payments/redux/common/thunks';
-import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
+import { getUserConsumerId, getLocationSearch, getIsTNGMiniProgram } from '../../../../../redux/modules/app';
+import {
+  loadPayLaterOrderStatus as loadOrderStatus,
+  loadPayLaterOrder as loadOrder,
+  submitPayLaterOrder as submitOrder,
+} from '../../../redux/thunks';
+import { getPayLaterOrderModifiedTime as getOrderModifiedTime } from '../../../redux/selector';
+import { gotoPayment as initPayment, loadBilling } from '../../../../payments/redux/common/thunks';
+import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
-
-export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', async receiptNumber => {
-  try {
-    const result = await fetchOrder(receiptNumber);
-
-    return result;
-  } catch (error) {
-    console.error(error);
-
-    throw error;
-  }
-});
-
-export const loadOrdersStatus = createAsyncThunk(
-  'ordering/tableSummary/loadOrdersStatus',
-  async (receiptNumber, { dispatch, getState }) => {
-    try {
-      const state = getState();
-      const prevModifiedTime = getOrderModifiedTime(state);
-      const result = await fetchOrderSubmissionStatus({ receiptNumber });
-      const prevModifiedTimeDate = dayjs(prevModifiedTime);
-      const modifiedTimeDate = dayjs(result.modifiedTime);
-
-      if (dayjs(modifiedTimeDate).isAfter(prevModifiedTimeDate, 'second')) {
-        await dispatch(loadOrders(receiptNumber));
-      }
-
-      return result;
-    } catch (error) {
-      console.error(error);
-
-      throw error;
-    }
-  }
-);
 
 export const queryOrdersAndStatus = receiptNumber => async (dispatch, getState) => {
   logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'start', id: receiptNumber });
   try {
     const queryOrderStatus = () => {
       queryOrdersAndStatus.timer = setTimeout(async () => {
-        await dispatch(loadOrdersStatus(receiptNumber));
+        await dispatch(loadOrderStatus(receiptNumber));
         // Loop has been stopped
         if (!queryOrdersAndStatus.timer) {
           logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'quit-silently', id: receiptNumber });
@@ -70,7 +38,7 @@ export const queryOrdersAndStatus = receiptNumber => async (dispatch, getState) 
       }, ORDER_STATUS_INTERVAL);
     };
 
-    await dispatch(loadOrders(receiptNumber));
+    await dispatch(loadOrder(receiptNumber));
     queryOrderStatus();
   } catch (error) {
     console.error(error);
@@ -79,17 +47,25 @@ export const queryOrdersAndStatus = receiptNumber => async (dispatch, getState) 
   }
 };
 
-export const lockOrder = createAsyncThunk('ordering/tableSummary/lockOrder', async ({ receiptNumber, data }) =>
-  submitOrder(receiptNumber, data)
+export const showRedirectLoader = createAsyncThunk(
+  'ordering/orderStatus/tableSummary/showRedirectLoader',
+  async () => {}
 );
 
-export const showRedirectLoader = createAsyncThunk('ordering/tableSummary/showRedirectLoader', async () => {});
+export const hideRedirectLoader = createAsyncThunk(
+  'ordering/orderStatus/tableSummary/hideRedirectLoader',
+  async () => {}
+);
 
-export const hideRedirectLoader = createAsyncThunk('ordering/tableSummary/hideRedirectLoader', async () => {});
+export const showProcessingLoader = createAsyncThunk(
+  'ordering/orderStatus/tableSummary/showProcessingLoader',
+  async () => {}
+);
 
-export const showProcessingLoader = createAsyncThunk('ordering/tableSummary/showProcessingLoader', async () => {});
-
-export const hideProcessingLoader = createAsyncThunk('ordering/tableSummary/hideProcessingLoader', async () => {});
+export const hideProcessingLoader = createAsyncThunk(
+  'ordering/orderStatus/tableSummary/hideProcessingLoader',
+  async () => {}
+);
 
 export const clearQueryOrdersAndStatus = () => () => {
   clearTimeout(queryOrdersAndStatus.timer);
@@ -98,7 +74,7 @@ export const clearQueryOrdersAndStatus = () => () => {
 };
 
 export const payByCoupons = createAsyncThunk(
-  'ordering/tableSummary/payByCoupons',
+  'ordering/orderStatus/tableSummary/payByCoupons',
   async (_, { dispatch, getState }) => {
     const state = getState();
     const receiptNumber = getOrderReceiptNumber(state);
@@ -117,7 +93,7 @@ export const payByCoupons = createAsyncThunk(
 
     try {
       await dispatch(showProcessingLoader());
-      await dispatch(lockOrder({ receiptNumber, data })).unwrap();
+      await dispatch(submitOrder({ receiptNumber, data })).unwrap();
     } catch (error) {
       await dispatch(hideProcessingLoader());
       throw error;
@@ -126,7 +102,7 @@ export const payByCoupons = createAsyncThunk(
 );
 
 export const payByTnGMiniProgram = createAsyncThunk(
-  'ordering/tableSummary/payByTnGMiniProgram',
+  'ordering/orderStatus/tableSummary/payByTnGMiniProgram',
   async (_, { dispatch, getState }) => {
     const state = getState();
     const total = getOrderTotal(state);
@@ -151,40 +127,43 @@ export const payByTnGMiniProgram = createAsyncThunk(
   }
 );
 
-export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment', async (_, { dispatch, getState }) => {
-  const state = getState();
-  const total = getOrderTotal(state);
-  const receiptNumber = getOrderReceiptNumber(state);
+export const gotoPayment = createAsyncThunk(
+  'ordering/orderStatus/tableSummary/gotoPayment',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const total = getOrderTotal(state);
+    const receiptNumber = getOrderReceiptNumber(state);
 
-  try {
-    // Special case for free charge
-    if (total === 0) {
-      await dispatch(payByCoupons()).unwrap();
-      return;
+    try {
+      // Special case for free charge
+      if (total === 0) {
+        await dispatch(payByCoupons()).unwrap();
+        return;
+      }
+
+      // If it comes from TnG mini program, we need to directly init payment
+      const isTNGMiniProgram = getIsTNGMiniProgram(state);
+
+      if (isTNGMiniProgram) {
+        await dispatch(payByTnGMiniProgram()).unwrap();
+        return;
+      }
+
+      // By default, redirect to payment page
+      const search = getLocationSearch(state);
+      dispatch(push(`${PATH_NAME_MAPPING.ORDERING_PAYMENT}${search}`));
+    } catch (error) {
+      logger.error('Ordering_TableSummary_GoToPaymentFailed', {
+        message: error?.message,
+        id: receiptNumber,
+      });
+      throw error;
     }
-
-    // If it comes from TnG mini program, we need to directly init payment
-    const isTNGMiniProgram = getIsTNGMiniProgram(state);
-
-    if (isTNGMiniProgram) {
-      await dispatch(payByTnGMiniProgram()).unwrap();
-      return;
-    }
-
-    // By default, redirect to payment page
-    const search = getLocationSearch(state);
-    dispatch(push(`${PATH_NAME_MAPPING.ORDERING_PAYMENT}${search}`));
-  } catch (error) {
-    logger.error('Ordering_TableSummary_GoToPaymentFailed', {
-      message: error?.message,
-      id: receiptNumber,
-    });
-    throw error;
   }
-});
+);
 
 export const reloadBillingByCashback = createAsyncThunk(
-  'ordering/tableSummary/reloadBillingByCashback',
+  'ordering/orderStatus/tableSummary/reloadBillingByCashback',
   async (applyStatus, { dispatch, getState }) => {
     try {
       await dispatch(showProcessingLoader());
@@ -193,7 +172,7 @@ export const reloadBillingByCashback = createAsyncThunk(
 
       applyStatus ? await applyCashback(receiptNumber) : await unapplyCashback(receiptNumber);
 
-      await dispatch(loadOrders(receiptNumber)).unwrap();
+      await dispatch(loadOrder(receiptNumber)).unwrap();
       await dispatch(hideProcessingLoader());
     } catch (e) {
       logger.error('Ordering_TableSummary_ReloadBillingByCashbackFailed', { message: e?.message });
