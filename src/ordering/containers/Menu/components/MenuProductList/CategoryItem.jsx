@@ -135,7 +135,7 @@ const CategoryProductList = ({ products, categoryId }) => {
                 <div
                   className={`${styles.menuProductItemImageContainer} tw-ml-16 sm:tw-ml-16px tw-flex-shrink-0 tw-w-3/10`}
                 >
-                  <ObjectFitImage className="tw-rounded" src={product.image} />
+                  <ObjectFitImage className="tw-rounded" src={product.image} loading="lazy" />
                 </div>
               )}
             </div>
