@@ -55,7 +55,7 @@ import {
   getOrderPromoDiscount,
   getOrderPromotionCode,
   getVoucherBillingIfExist,
-  getAdhocDiscount,
+  getProductsManualDiscount,
   getOrderVoucherCode,
   getOrderApplyCashback,
   getOrderVoucherDiscount,
@@ -416,9 +416,9 @@ export class TableSummary extends React.Component {
   }
 
   renderDiscount() {
-    const { t, adhocDiscount } = this.props;
+    const { t, productsManualDiscount } = this.props;
 
-    if (adhocDiscount <= 0) {
+    if (productsManualDiscount <= 0) {
       return null;
     }
 
@@ -428,7 +428,7 @@ export class TableSummary extends React.Component {
           {t('Discount')}
         </label>
         <span>
-          - <CurrencyNumber className="text-size-big" money={adhocDiscount} />
+          - <CurrencyNumber className="text-size-big" money={productsManualDiscount} />
         </span>
       </li>
     );
@@ -782,7 +782,7 @@ TableSummary.propTypes = {
   removePromo: PropTypes.func,
   oderPromoDiscount: PropTypes.number,
   orderPromotionCode: PropTypes.string,
-  adhocDiscount: PropTypes.number,
+  productsManualDiscount: PropTypes.number,
   removeVoucherPayLater: PropTypes.func,
   voucherBilling: PropTypes.string,
   orderVoucherCode: PropTypes.string,
@@ -838,7 +838,7 @@ TableSummary.defaultProps = {
   removePromo: () => {},
   oderPromoDiscount: 0,
   orderPromotionCode: '',
-  adhocDiscount: 0,
+  productsManualDiscount: 0,
   removeVoucherPayLater: () => {},
   voucherBilling: '',
   orderVoucherCode: '',
@@ -891,7 +891,7 @@ export default compose(
       orderBillingPromo: getOrderBillingPromoIfExist(state),
       oderPromoDiscount: getOrderPromoDiscount(state),
       orderPromotionCode: getOrderPromotionCode(state),
-      adhocDiscount: getAdhocDiscount(state),
+      productsManualDiscount: getProductsManualDiscount(state),
       voucherBilling: getVoucherBillingIfExist(state),
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),

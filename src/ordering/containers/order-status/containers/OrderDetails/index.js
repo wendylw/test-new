@@ -22,7 +22,7 @@ import {
   getPromotion,
   getReceiptNumber,
   getServiceCharge,
-  getAdhocDiscount,
+  getProductsManualDiscount,
   getOrderShippingType,
   getIsPayLater,
 } from '../../redux/selector';
@@ -239,16 +239,16 @@ export class OrderDetails extends Component {
   }
 
   renderDiscount() {
-    const { t, adhocDiscount } = this.props;
+    const { t, productsManualDiscount } = this.props;
 
-    if (adhocDiscount <= 0) {
+    if (productsManualDiscount <= 0) {
       return null;
     }
 
     return (
       <li className="flex flex-space-between flex-middle">
         <span className="padding-top-bottom-small text-opacity">{t('Discount')}</span>
-        <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-adhocDiscount} />
+        <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-productsManualDiscount} />
       </li>
     );
   }
@@ -481,7 +481,7 @@ export default compose(
       shippingType: getOrderShippingType(state),
       promotion: getPromotion(state),
       serviceCharge: getServiceCharge(state),
-      adhocDiscount: getAdhocDiscount(state),
+      productsManualDiscount: getProductsManualDiscount(state),
       orderStatus: getOrderStatus(state),
       receiptNumber: getReceiptNumber(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
