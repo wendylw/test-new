@@ -45,7 +45,7 @@ const BestSellerCategoryProductList = ({ products, categoryId }) => {
               }`}
             >
               <div className={styles.menuProductItemImageContainer}>
-                <ObjectFitImage className="tw-rounded" src={product.image} />
+                <ObjectFitImage className="tw-rounded" src={product.image} dimension="500x500" />
               </div>
               <h4
                 className={`${styles.menuProductItemTitle} tw-px-2 sm:tw-px-2px tw-mt-8 sm:tw-mt-8px tw-font-bold tw-leading-relaxed`}

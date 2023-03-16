@@ -7,6 +7,8 @@ import {
   cancelOrder,
   updateOrderShippingType,
   loadFoodCourtIdHashCode,
+  showProfileModal,
+  hideProfileModal,
 } from './thunks';
 
 const initialState = {
@@ -98,6 +100,12 @@ const { reducer, actions } = createSlice({
     },
     [loadFoodCourtIdHashCode.fulfilled.type]: (state, { payload }) => {
       state.foodCourtInfo.hashCode = payload.hex;
+    },
+    [showProfileModal.fulfilled.type]: state => {
+      state.profileModalVisibility = true;
+    },
+    [hideProfileModal.fulfilled.type]: state => {
+      state.profileModalVisibility = false;
     },
   },
 });

@@ -1363,6 +1363,11 @@ export const getIsUserProfileStatusFulfilled = createSelector(
   status => status === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsUserProfileStatusPending = createSelector(
+  getUserProfileStatus,
+  status => status === API_REQUEST_STATUS.PENDING
+);
+
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
 
