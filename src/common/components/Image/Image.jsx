@@ -80,7 +80,7 @@ function getImageURL(dimension, imageURL) {
   return Object.values(imageObject).join('/');
 }
 
-const Image = ({ className, style, src, alt, dimension, noCompression, onLoad, onError }) => {
+const Image = ({ className, style, src, alt, dimension, noCompression, onLoad, onError, loading }) => {
   if (!src) {
     return null;
   }
@@ -93,6 +93,7 @@ const Image = ({ className, style, src, alt, dimension, noCompression, onLoad, o
       onLoad={onLoad}
       onError={onError}
       style={style}
+      loading={loading}
     />
   );
 };
@@ -109,6 +110,7 @@ Image.propTypes = {
   noCompression: PropTypes.bool,
   onLoad: PropTypes.func,
   onError: PropTypes.func,
+  loading: PropTypes.string,
 };
 Image.defaultProps = {
   className: '',
@@ -119,6 +121,7 @@ Image.defaultProps = {
   noCompression: false,
   onLoad: () => {},
   onError: () => {},
+  loading: 'eager',
 };
 
 export default Image;
