@@ -11,7 +11,6 @@ class Banners extends Component {
     this.state = { width: window.innerWidth };
   }
   updateWidth = () => {
-    console.log('updateWidth', window.innerWidth);
     this.setState({ width: window.innerWidth });
   };
   componentDidMount() {
