@@ -196,6 +196,21 @@ const isCleverTapIssues = (event, hint) => {
   }
 };
 
+const isOppoBrowserIssues = (event, hint) => {
+  // These issues are raised by HeyTap browser, These issues are raised by the HeyTap browser - the default browser for Oppo devices.
+  try {
+    // BEEP-1337: The errors thrown directly from HeyTap browser should be ignored.
+    // Reasons: Nothing can be done on our side and it also won't block users to make orders.
+    // Refer to: https://stackoverflow.com/questions/64175183/what-does-these-error-means-getreadmodeconfig-getreadmoderender-getreadmodeext
+    const message = getErrorMessageFromHint(hint);
+    const heyTapRegex = /(getReadModeConfig)|(getReadModeRender)|(getReadModeExtract)/;
+
+    return heyTapRegex.test(message);
+  } catch {
+    return false;
+  }
+};
+
 const isVivoAdblockProblem = (event, hint) => {
   // BEEP-1622: This problem only occurs on Vivo browser. Seems to be a problem with Vivo's adblock service.
   try {
@@ -250,6 +265,7 @@ const shouldFilter = (event, hint) => {
       isReCAPTCHAIssues(event, hint) ||
       isGoogleMapsIssues(event, hint) ||
       isCleverTapIssues(event, hint) ||
+      isOppoBrowserIssues(event, hint) ||
       isVivoAdblockProblem(event, hint) ||
       isDuplicateAlert(hint)
     );
