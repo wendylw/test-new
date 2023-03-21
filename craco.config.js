@@ -19,4 +19,13 @@ module.exports = {
       },
     },
   ],
+  jest: {
+    configure: jestConfig => {
+      // console.log(jestConfig);
+      jestConfig.transformIgnorePatterns[0] = '[/\\\\]node_modules[/\\\\](?!ky)[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$';
+      jestConfig.resetMocks = false;
+
+      return jestConfig;
+    },
+  },
 };

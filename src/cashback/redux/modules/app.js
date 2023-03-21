@@ -32,6 +32,7 @@ const {
   OTP_ERROR_POPUP_I18N_KEYS,
 } = Constants;
 
+// TODO: Update user state lack isFetching
 export const initialState = {
   user: {
     isWebview: Utils.isWebview(),

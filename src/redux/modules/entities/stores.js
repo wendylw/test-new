@@ -23,6 +23,8 @@ const reducer = (state = initialState, action) => {
       const newStores = {};
 
       stores.forEach(s => {
+        console.log(s);
+
         if (s.id) {
           Object.assign(s.qrOrderingSettings, {
             useStorehubLogistics: _get(s, 'qrOrderingSettings.useStorehubLogistics', businessUseStorehubLogistics),
@@ -31,6 +33,7 @@ const reducer = (state = initialState, action) => {
           newStores[s.id] = transferStoreName(s);
         }
       });
+
       return { ...state, ...newStores };
     }
   }
@@ -43,5 +46,7 @@ export default reducer;
 // selectors
 
 export const getAllStores = state => state.entities.stores;
+
 export const getStoreById = (state, storeId) => getAllStores(state)[storeId];
+
 export const getCoreStoreList = state => Object.values(state.entities.stores);

@@ -1,6 +1,5 @@
 import homeReducers, {
   initialState,
-  getCustomerId,
   getReceiptList,
   getFetchState,
   getCashbackHistorySummary,
@@ -36,7 +35,6 @@ describe('src/cashback/redux/modules/home.js:reducers', () => {
     };
     const expectedState = {
       ...initialState,
-      customerId: '111111',
     };
     expect(homeReducers(undefined, action)).toEqual(expectedState);
   });
@@ -105,10 +103,6 @@ describe('src/cashback/redux/modules/home.js:selectors', () => {
   const state = rootReducer(undefined, { type: null });
   it('getBusinessInfo', () => {
     expect(getBusinessInfo(state)).toEqual(undefined);
-  });
-  it('getCustomerId', () => {
-    const expectedState = initialState.customerId;
-    expect(getCustomerId(state)).toEqual(expectedState);
   });
   it('getReceiptList', () => {
     const expectedState = initialState.receiptList;

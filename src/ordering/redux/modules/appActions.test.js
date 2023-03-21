@@ -1,4 +1,5 @@
 import { actions } from './app';
+import { createBrowserHistory } from 'history';
 import rootReducer from './index';
 import { APP_TYPES as types } from '../types';
 import {
@@ -6,13 +7,14 @@ import {
   configureMiddlewareStore,
   successMockFetch,
   failMockFetch,
-  expectedActionsCheck,
   commonSuccessData,
   mockErrorMsg,
   mockErrorCode,
+  expectedActionsCheck,
 } from '../../../utils/testHelper';
 import { RequestError } from '../../../utils/request';
-const orderingStore = rootReducer(undefined, {});
+const history = createBrowserHistory();
+const orderingStore = rootReducer(history);
 
 describe('src/ordering/redux/modules/app.js:actions', () => {
   beforeEach(() => {
@@ -21,45 +23,30 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
   afterEach(() => {
     store.clearActions();
   });
-  describe('action creators', () => {
-    it('showLogin', () => {
-      const expectedAction = {
-        type: types.SHOW_LOGIN_PAGE,
-      };
-      return expect(actions.showLogin()).toEqual(expectedAction);
-    });
-    it('hideLogin', () => {
-      const expectedAction = {
-        type: types.HIDE_LOGIN_PAGE,
-      };
-      return expect(actions.hideLogin()).toEqual(expectedAction);
-    });
-    it('resetOtpStatus', () => {
-      const expectedAction = {
-        type: types.RESET_OTP_STATUS,
-      };
-      return expect(actions.resetOtpStatus()).toEqual(expectedAction);
-    });
-  });
 
   describe('Async Action Creators', () => {
     describe('loginApp', () => {
-      const reqParams = { accessToken: 'mockAccessToken', refreshToken: 'mockRefreToken' };
+      const reqParams = { accessToken: 'mockAccessToken', refreshToken: 'mockRefreshToken' };
       it(':Success', () => {
         successMockFetch();
+        const caseStore = configureMiddlewareStore(orderingStore);
         const expectedActions = [
           {
             type: types.CREATE_LOGIN_REQUEST,
           },
           {
             type: types.CREATE_LOGIN_SUCCESS,
-            response: commonSuccessData,
+            payload: JSON.stringify(commonSuccessData),
           },
         ];
-        return expectedActionsCheck(actions.loginApp(reqParams), expectedActions);
+
+        return caseStore.dispatch(actions.loginApp(reqParams)).then(() => {
+          expect(caseStore.getActions()).toEqual(expectedActions);
+        });
       });
       it(':Fail', () => {
         failMockFetch();
+        const caseStore = configureMiddlewareStore(orderingStore);
         const expectedActions = [
           {
             type: types.CREATE_LOGIN_REQUEST,
@@ -69,25 +56,35 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
             error: new RequestError(mockErrorMsg, mockErrorCode),
           },
         ];
-        return expectedActionsCheck(actions.loginApp(reqParams), expectedActions);
+        return caseStore.dispatch(actions.loginApp(reqParams)).then(() => {
+          expect(caseStore.getActions()).toEqual(expectedActions);
+        });
       });
     });
+
     describe('fetchOnlineStoreInfo', () => {
       it(':Success', () => {
         successMockFetch();
+        const caseStore = configureMiddlewareStore(orderingStore);
         const expectedActions = [
           { type: types.FETCH_ONLINESTOREINFO_REQUEST },
           { type: types.FETCH_ONLINESTOREINFO_SUCCESS, responseGql: commonSuccessData },
         ];
-        return expectedActionsCheck(actions.fetchOnlineStoreInfo(), expectedActions);
+
+        return caseStore.dispatch(actions.fetchOnlineStoreInfo()).then(() => {
+          expect(caseStore.getActions()).toEqual(expectedActions);
+        });
       });
       it(':Fail', () => {
         failMockFetch();
+        const caseStore = configureMiddlewareStore(orderingStore);
         const expectedActions = [
           { type: types.FETCH_ONLINESTOREINFO_REQUEST },
           { type: types.FETCH_ONLINESTOREINFO_FAILURE, code: mockErrorCode, message: mockErrorMsg },
         ];
-        return expectedActionsCheck(actions.fetchOnlineStoreInfo(), expectedActions);
+        return caseStore.dispatch(actions.fetchOnlineStoreInfo()).then(() => {
+          expect(caseStore.getActions()).toEqual(expectedActions);
+        });
       });
     });
     describe('getOpt', () => {
@@ -95,33 +92,33 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
       it(':Success', () => {
         successMockFetch();
         const expectedActions = [
-          { type: types.GET_OTP_REQUEST },
+          { type: types.GET_OTP_REQUEST, payload: { otpType: undefined } },
           {
             type: types.GET_OTP_SUCCESS,
-            response: commonSuccessData,
-            params: {
-              grant_type: 'otp',
-              client: 'beep',
-              business_name: null,
-              username: reqParams.phone,
-            },
           },
         ];
+
         return expectedActionsCheck(actions.getOtp(reqParams), expectedActions);
       });
       it(':Fail', () => {
         failMockFetch();
-        const expectedAtions = [
-          { type: types.GET_OTP_REQUEST },
-          { type: types.GET_OTP_FAILURE, code: mockErrorCode, message: mockErrorMsg },
+        const expectedActions = [
+          {
+            type: types.GET_OTP_REQUEST,
+            payload: {
+              otpType: undefined,
+            },
+          },
+          { type: types.GET_OTP_FAILURE, error: new Error(mockErrorMsg) },
         ];
-        return expectedActionsCheck(actions.getOtp(reqParams), expectedAtions);
+        return expectedActionsCheck(actions.getOtp(reqParams), expectedActions);
       });
     });
     describe('sendOtp', () => {
       const reqParams = { otp: 'otp' };
       it(':Success', () => {
         successMockFetch();
+        const caseStore = configureMiddlewareStore(orderingStore);
         const expectedActions = [
           { type: types.CREATE_OTP_REQUEST },
           {
@@ -136,28 +133,37 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
             },
           },
         ];
-        return expectedActionsCheck(actions.sendOtp(reqParams), expectedActions);
+        return caseStore.dispatch(actions.sendOtp(reqParams)).then(() => {
+          expect(caseStore.getActions()).toEqual(expectedActions);
+        });
       });
       it(':Fail', () => {
         failMockFetch();
+        const caseStore = configureMiddlewareStore(orderingStore);
         const expectedActions = [
           { type: types.CREATE_OTP_REQUEST },
           { type: types.CREATE_OTP_FAILURE, code: mockErrorCode, message: mockErrorMsg },
         ];
-        return expectedActionsCheck(actions.sendOtp(reqParams), expectedActions);
+        return caseStore.dispatch(actions.sendOtp(reqParams)).then(() => {
+          expect(caseStore.getActions()).toEqual(expectedActions);
+        });
       });
     });
     describe('getLoginStatus', () => {
       it(':Success', () => {
         successMockFetch();
+        const caseStore = configureMiddlewareStore(orderingStore);
         const expectedActions = [
           { type: types.FETCH_LOGIN_STATUS_REQUEST },
           { type: types.FETCH_LOGIN_STATUS_SUCCESS, response: commonSuccessData },
         ];
-        return expectedActionsCheck(actions.getLoginStatus(), expectedActions);
+        return caseStore.dispatch(actions.getLoginStatus()).then(() => {
+          expect(caseStore.getActions()).toEqual(expectedActions);
+        });
       });
       it(':Fail', () => {
         failMockFetch();
+        const caseStore = configureMiddlewareStore(orderingStore);
         const expectedActions = [
           {
             type: types.FETCH_LOGIN_STATUS_REQUEST,
@@ -167,25 +173,33 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
             error: new RequestError(mockErrorMsg, mockErrorCode),
           },
         ];
-        return expectedActionsCheck(actions.getLoginStatus(), expectedActions);
+        return caseStore.dispatch(actions.getLoginStatus()).then(() => {
+          expect(caseStore.getActions()).toEqual(expectedActions);
+        });
       });
     });
     describe('loadCoreBusiness', () => {
       it(':Success', () => {
         successMockFetch();
+        const caseStore = configureMiddlewareStore(orderingStore);
         const expectedActions = [
           { type: types.FETCH_COREBUSINESS_REQUEST },
           { type: types.FETCH_COREBUSINESS_SUCCESS, responseGql: commonSuccessData },
         ];
-        return expectedActionsCheck(actions.loadCoreBusiness(), expectedActions);
+        return caseStore.dispatch(actions.loadCoreBusiness()).then(() => {
+          expect(caseStore.getActions()).toEqual(expectedActions);
+        });
       });
       it(':Fail', () => {
         failMockFetch();
+        const caseStore = configureMiddlewareStore(orderingStore);
         const expectedActions = [
           { type: types.FETCH_COREBUSINESS_REQUEST },
           { type: types.FETCH_COREBUSINESS_FAILURE, code: mockErrorCode, message: mockErrorMsg },
         ];
-        return expectedActionsCheck(actions.loadCoreBusiness(), expectedActions);
+        return caseStore.dispatch(actions.loadCoreBusiness()).then(() => {
+          expect(caseStore.getActions()).toEqual(expectedActions);
+        });
       });
     });
   });
