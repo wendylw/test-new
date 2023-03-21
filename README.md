@@ -80,6 +80,7 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 ```sh
 (sudo) vim /etc/hosts (on Mac)
 127.0.0.1 {business}.local.beep.shub.us
+127.0.0.1 scan.local.beep.shub.us
 ```
 
 <a name="start-ordering-loyalty"></a>
