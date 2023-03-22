@@ -34,7 +34,7 @@ class Banners extends Component {
           loop
           autoplay
           autoplayTime={2000}
-          slideContainerStyle={{ width: this.state.width < 770 ? 'calc(252vw + 36px)' : '1086px' }}
+          slideContainerStyle={{ width: this.state.width < 770 ? 'calc(252% + 36px)' : '1086px' }}
         >
           {/* WB-4662: The reason why we triple collections when replacing swiper: We show 3 slides in a page, we must make total slides a multiple of 3. Or the calculation of keen-slider will encounter division and residual of non-integer, that suffers JS precision issue. This will lead the autoplay to a wrong direction at a certain moment. */}
           {([...collections, ...collections, ...collections] || []).map((collection, index) => {

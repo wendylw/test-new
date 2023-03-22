@@ -1,15 +1,15 @@
 @import "../../../Variables";
 
 .banner-container {
-  transform: translateX(calc(-76vw - 24px));
+  transform: translateX(calc(-76% - 24px));
 }
 
 .banners-item {
-  width: calc(84vw + 12px);
+  width: 100%;
   height: 27vw;
 
   img {
-    width: 84vw;
+    width: calc(100% - 12px);
     height: 27vw;
     border-radius: $border-radius-large;
     margin-left: 12px;
