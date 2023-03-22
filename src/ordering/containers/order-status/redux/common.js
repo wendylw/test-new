@@ -84,6 +84,8 @@ const initialState = {
       items: [],
       applyCashback: false,
       redirectUrl: null,
+      // Discount added from POS. It's a product items discount, meaning it's calculated only with respect to subtotal. --Jiwang said
+      productsManualDiscount: 0,
     },
     loadOrderRequest: {
       status: null,

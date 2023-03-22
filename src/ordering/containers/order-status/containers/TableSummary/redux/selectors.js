@@ -134,6 +134,8 @@ export const getOrderVoucherCode = createSelector(getVoucherBilling, appliedVouc
 
 export const getOrderVoucherDiscount = createSelector(getVoucherBilling, appliedVoucher => appliedVoucher?.value);
 
+export const getProductsManualDiscount = createSelector(getOrder, order => _get(order, 'productsManualDiscount', 0));
+
 export const getPromoOrVoucherExist = createSelector(
   getOrderBillingPromoIfExist,
   getVoucherBillingIfExist,

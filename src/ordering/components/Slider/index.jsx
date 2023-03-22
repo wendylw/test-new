@@ -69,7 +69,7 @@ Slider.propTypes = {
   // Sets the animation that is applied after a drag ends.
   mode: propTypes.oneOf(['snap', 'free', 'free-snap']),
   // Determines what size the slides should be in relation to the viewport/container.
-  perView: propTypes.number || 'auto',
+  perView: propTypes.oneOfType([propTypes.number, propTypes.string]),
   // Defines the spacing between slides in pixel.
   spacing: propTypes.number,
   // eslint-disable-next-line react/forbid-prop-types
