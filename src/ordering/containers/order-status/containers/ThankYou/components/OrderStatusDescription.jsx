@@ -15,6 +15,7 @@ import {
   getHasOrderTableIdChanged,
 } from '../../../redux/selector';
 import { getDeliverySwitchedToSelfPickupState, getOrderStoreName, getOrderPaymentMethod } from '../redux/selector';
+import orderStatusCreated from '../../../../../../images/order-success-1.svg';
 import orderStatusAccepted from '../../../../../../images/order-status-accepted.gif';
 import orderStatusConfirmed from '../../../../../../images/order-status-confirmed.gif';
 import orderStatusDelivered from '../../../../../../images/order-status-delivered.gif';
@@ -41,6 +42,7 @@ const DELIVERY_STATUS_IMAGES_MAPPING = {
   [ORDER_STATUS.CANCELLED]: orderStatusCancelled,
 };
 const NOT_DELIVERY_STATUS_IMAGES_MAPPING = {
+  [ORDER_STATUS.CREATED]: orderStatusCreated,
   [ORDER_STATUS.PENDING_PAYMENT]: orderStatusPendingPayment,
   [ORDER_STATUS.PAID]: orderSuccessImage,
   [ORDER_STATUS.ACCEPTED]: orderSuccessImage,
