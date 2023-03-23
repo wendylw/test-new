@@ -127,7 +127,7 @@ Slider.propTypes = {
   // Enables or disables carousel/loop functionality of the slider.
   loop: propTypes.bool,
   // Determines what size the slides should be in relation to the viewport/container.
-  perView: propTypes.number || 'auto',
+  perView: propTypes.oneOfType([propTypes.number, propTypes.string]),
   // Defines the spacing between slides in pixel.
   spacing: propTypes.number,
   // Sets the origin of the slides.

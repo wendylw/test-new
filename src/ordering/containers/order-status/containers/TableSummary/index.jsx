@@ -54,6 +54,7 @@ import {
   getOrderPromoDiscount,
   getOrderPromotionCode,
   getVoucherBillingIfExist,
+  getProductsManualDiscount,
   getOrderVoucherCode,
   getOrderApplyCashback,
   getOrderVoucherDiscount,
@@ -448,6 +449,25 @@ export class TableSummary extends React.Component {
     return '';
   }
 
+  renderDiscount() {
+    const { t, productsManualDiscount } = this.props;
+
+    if (productsManualDiscount <= 0) {
+      return null;
+    }
+
+    return (
+      <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
+        <label className="margin-top-bottom-smaller text-size-big" htmlFor="discount">
+          {t('Discount')}
+        </label>
+        <span>
+          - <CurrencyNumber className="text-size-big" money={productsManualDiscount} />
+        </span>
+      </li>
+    );
+  }
+
   renderCashbackItem() {
     const {
       t,
@@ -720,6 +740,7 @@ export class TableSummary extends React.Component {
             businessInfo={businessInfo}
             isDeliveryType={shippingType === DELIVERY_METHOD.DELIVERY}
           >
+            {this.renderDiscount()}
             {this.renderCashbackItem()}
             {this.renderPromotionItem()}
           </Billing>
@@ -795,6 +816,7 @@ TableSummary.propTypes = {
   removePromo: PropTypes.func,
   oderPromoDiscount: PropTypes.number,
   orderPromotionCode: PropTypes.string,
+  productsManualDiscount: PropTypes.number,
   removeVoucherPayLater: PropTypes.func,
   voucherBilling: PropTypes.string,
   orderVoucherCode: PropTypes.string,
@@ -853,6 +875,7 @@ TableSummary.defaultProps = {
   removePromo: () => {},
   oderPromoDiscount: 0,
   orderPromotionCode: '',
+  productsManualDiscount: 0,
   removeVoucherPayLater: () => {},
   voucherBilling: '',
   orderVoucherCode: '',
@@ -908,6 +931,7 @@ export default compose(
       orderBillingPromo: getOrderBillingPromoIfExist(state),
       oderPromoDiscount: getOrderPromoDiscount(state),
       orderPromotionCode: getOrderPromotionCode(state),
+      productsManualDiscount: getProductsManualDiscount(state),
       voucherBilling: getVoucherBillingIfExist(state),
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),
