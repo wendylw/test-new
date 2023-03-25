@@ -106,7 +106,7 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       });
     });
 
-    describe('getOpt', () => {
+    describe('getOtp', () => {
       const reqParams = { phone: '18766668888' };
       it(':Success', () => {
         successMockFetch();

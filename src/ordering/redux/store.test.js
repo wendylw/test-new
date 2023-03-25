@@ -327,6 +327,7 @@ it('src/ordering/redux/store.js', () => {
         payLaterOrderInfo: {
           data: {
             orderStatus: null,
+            productsManualDiscount: 0,
             receiptNumber: null,
             tableId: null,
             isStorePayByCashOnly: false,

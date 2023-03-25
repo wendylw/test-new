@@ -1,12 +1,16 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import { routerMiddleware } from 'connected-react-router';
+import history from '../ordering/orderingHistory';
 import api from '../redux/middlewares/api';
 import apiGql from '../redux/middlewares/apiGql';
 import { RequestError } from './request';
 import requestPromise from '../redux/middlewares/requestPromise';
 
 const middlewares = [thunk, apiGql, api, requestPromise];
+const orderingMiddleWares = [routerMiddleware(history), thunk, apiGql, api, requestPromise];
 const configureMiddlewareStore = configureMockStore(middlewares);
+const configureOrderingMiddlewareStore = configureMockStore(orderingMiddleWares);
 const store = configureMiddlewareStore({});
 
 const mockErrorMsg = 'fake error message';
@@ -43,4 +47,5 @@ export {
   commonSuccessData,
   commonFailResponse,
   configureMiddlewareStore,
+  configureOrderingMiddlewareStore,
 };

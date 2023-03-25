@@ -1,19 +1,58 @@
-import appReducers, {
-  initialState,
-  getUser,
-  getBusiness,
-  getError,
-  getOnlineStoreInfo,
-  getRequestInfo,
-  getMessageModal,
-} from './app';
+import appReducers, { initialState, getUser, getBusiness, getError, getOnlineStoreInfo, getRequestInfo } from './app';
 import rootReducer from './index';
 import { APP_TYPES as types } from '../types';
 import { getReducerNewState } from '../../../utils/testHelper';
+import history from '../../../ordering/orderingHistory';
 
 describe('src/ordering/redux/modules/app.js:reducers', () => {
   it('should return the initial state', () => {
-    expect(appReducers(undefined, {})).toEqual(initialState);
+    expect(appReducers(undefined, {})).toEqual({
+      ...initialState,
+      cart: {
+        cashback: 0,
+        comments: null,
+        count: 0,
+        discount: 0,
+        error: {
+          clearCart: null,
+          loadCart: null,
+          loadCartStatus: null,
+          removeCartItemsById: null,
+          updateCartItems: null,
+        },
+        id: null,
+        items: [],
+        promotions: [],
+        receiptNumber: null,
+        requestStatus: {
+          clearCart: 'fulfilled',
+          loadCart: 'fulfilled',
+          loadCartStatus: 'fulfilled',
+          removeCartItemsById: 'fulfilled',
+          updateCartItems: 'fulfilled',
+        },
+        serviceCharge: 0,
+        shippingFee: 0,
+        shippingType: '',
+        source: 'BeepStore',
+        status: null,
+        submission: {
+          receiptNumber: null,
+          requestStatus: {
+            loadCartSubmissionStatus: 'fulfilled',
+            submitCart: 'fulfilled',
+          },
+          status: null,
+          submissionId: null,
+        },
+        subtotal: 0,
+        tax: 0,
+        total: 0,
+        unavailableItems: [],
+        version: 0,
+        voucher: null,
+      },
+    });
   });
   describe('user', () => {
     const nameField = 'user';
@@ -32,30 +71,51 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
     };
     it('SHOW_LOGIN_PAGE', () => {
       const action = { type: types.SHOW_LOGIN_PAGE };
-      const expectedState = { ...initialState.user, showLoginPage: true };
+      const expectedState = { ...initialState.user, prompt: undefined };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
     });
 
     it('HIDE_LOGIN_PAGE', () => {
-      const expectedState = { ...initialState.user, showLoginPage: false };
+      const expectedState = { ...initialState.user, prompt: undefined };
       expect(getReducerNewState(appReducers, { type: types.HIDE_LOGIN_PAGE }, nameField)).toEqual(expectedState);
     });
 
     it('isFetching should be true', () => {
-      const expectedState = { ...initialState.user, isFetching: true };
-      expect(getReducerNewState(appReducers, { type: types.FETCH_LOGIN_STATUS_REQUEST }, nameField)).toEqual(
-        expectedState
-      );
-      expect(getReducerNewState(appReducers, { type: types.GET_OTP_REQUEST }, nameField)).toEqual(expectedState);
-      expect(getReducerNewState(appReducers, { type: types.CREATE_OTP_REQUEST }, nameField)).toEqual(expectedState);
+      expect(getReducerNewState(appReducers, { type: types.FETCH_LOGIN_STATUS_REQUEST }, nameField)).toEqual({
+        ...initialState.user,
+        isFetching: true,
+      });
+      expect(getReducerNewState(appReducers, { type: types.GET_OTP_REQUEST }, nameField)).toEqual({
+        ...initialState.user,
+        otpRequest: {
+          data: {
+            type: null,
+          },
+          error: null,
+          status: 'pending',
+        },
+      });
     });
     it('isFetching should be false', () => {
-      const expectedState = { ...initialState.user, isFetching: false };
-      expect(getReducerNewState(appReducers, { type: types.FETCH_LOGIN_STATUS_FAILURE }, nameField)).toEqual(
-        expectedState
-      );
-      expect(getReducerNewState(appReducers, { type: types.GET_OTP_FAILURE }, nameField)).toEqual(expectedState);
-      expect(getReducerNewState(appReducers, { type: types.CREATE_OTP_FAILURE }, nameField)).toEqual(expectedState);
+      expect(getReducerNewState(appReducers, { type: types.FETCH_LOGIN_STATUS_FAILURE }, nameField)).toEqual({
+        ...initialState.user,
+        isFetching: false,
+      });
+      expect(getReducerNewState(appReducers, { type: types.GET_OTP_FAILURE }, nameField)).toEqual({
+        ...initialState.user,
+        otpRequest: {
+          data: {
+            type: 'otp',
+          },
+          error: undefined,
+          status: 'rejected',
+        },
+      });
+      expect(getReducerNewState(appReducers, { type: types.CREATE_OTP_FAILURE }, nameField)).toEqual({
+        ...initialState.user,
+        isError: true,
+        isFetching: false,
+      });
     });
     it('RESET_OTP_STATUS', () => {});
     it('CREATE_OTP_SUCCESS', () => {
@@ -73,10 +133,17 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
       };
       const expectedState = {
         ...initialState.user,
-        consumerId: '123456',
+        consumerId: '',
         isFetching: false,
         isLogin: true,
-        hasOtp: false,
+        loginRequestStatus: 'fulfilled',
+        profile: {
+          birthday: undefined,
+          email: undefined,
+          name: undefined,
+          phone: undefined,
+          status: 'fulfilled',
+        },
       };
       const newState = appReducers({ ...initialState.user, accessToken, refreshToken }, action)[nameField];
       expect(newState).toEqual(expectedState);
@@ -106,8 +173,8 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
         };
         const expectedState = {
           ...initialState.user,
-          isExpired: true,
           isFetching: false,
+          loginRequestStatus: 'rejected',
         };
         expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
       });
@@ -119,6 +186,7 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
         const expectedState = {
           ...initialState.user,
           isFetching: false,
+          loginRequestStatus: 'rejected',
         };
         expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
       });
@@ -154,11 +222,7 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
         ...errorActionInfo,
         code: 400,
       };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual({
-        ...initialState.error,
-        code: 400,
-        message: 'Your One Time Passcode is invalid.',
-      });
+      expect(getReducerNewState(appReducers, action, nameField)).toEqual(null);
     });
   });
   describe('business', () => {
@@ -178,14 +242,6 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
         },
       },
     };
-    it('no responseGql in action,should return initial onlineStoreInfo state', () => {
-      const action = {
-        type: types.FETCH_ONLINESTOREINFO_SUCCESS,
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual({
-        ...initialState.onlineStoreInfo,
-      });
-    });
     it('FETCH_ONLINESTOREINFO_REQUEST', () => {
       const action = {
         type: types.FETCH_ONLINESTOREINFO_REQUEST,
@@ -193,7 +249,7 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
       };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual({
         ...initialState.onlineStoreInfo,
-        isFetching: true,
+        status: 'pending',
       });
     });
     it('FETCH_ONLINESTOREINFO_SUCCESS', () => {
@@ -203,8 +259,8 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
       };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual({
         ...initialState.onlineStoreInfo,
-        isFetching: false,
         id: '123456',
+        status: 'fulfilled',
       });
     });
     it('FETCH_ONLINESTOREINFO_FAILURE', () => {
@@ -214,7 +270,7 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
       };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual({
         ...initialState.onlineStoreInfo,
-        isFetching: false,
+        status: 'rejected',
       });
     });
     it('default', () => {
@@ -232,7 +288,7 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
 });
 
 describe('src/ordering/redux/modules/app.js:selectors', () => {
-  const state = rootReducer(undefined, { type: null });
+  const state = rootReducer(history)(undefined, { type: null });
   it('getUser', () => {
     const expectedState = initialState.user;
     expect(getUser(state)).toEqual(expectedState);
@@ -251,10 +307,5 @@ describe('src/ordering/redux/modules/app.js:selectors', () => {
   it('getRequestInfo', () => {
     const expectedState = initialState.requestInfo;
     expect(getRequestInfo(state)).toEqual(expectedState);
-  });
-
-  it('getMessageModal', () => {
-    const expectedState = initialState.messageModal;
-    expect(getMessageModal(state)).toEqual(expectedState);
   });
 });
