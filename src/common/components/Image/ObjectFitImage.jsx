@@ -20,7 +20,19 @@ const computeDimensionStyle = (width, height, aspectRatio) => {
 };
 
 const ObjectFitImage = props => {
-  const { className, style, alt, src, dimension, showLoader, noCompression, width, height, aspectRatio } = props;
+  const {
+    className,
+    style,
+    alt,
+    src,
+    dimension,
+    showLoader,
+    noCompression,
+    width,
+    height,
+    aspectRatio,
+    loading,
+  } = props;
   const [imageLoaded, setImageLoaded] = useState(LOADED_IMAGE_SET.has(src));
   const onImageLoad = useCallback(() => {
     setImageLoaded(true);
@@ -45,6 +57,7 @@ const ObjectFitImage = props => {
         dimension={dimension}
         noCompression={noCompression}
         onLoad={onImageLoad}
+        loading={loading}
       />
 
       {!imageLoaded && showLoader && <Loader className={styles.imageFigureLoader} weight="bold" />}
@@ -67,6 +80,7 @@ ObjectFitImage.propTypes = {
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   aspectRatio: PropTypes.number,
+  loading: PropTypes.string,
 };
 ObjectFitImage.defaultProps = {
   className: '',
@@ -79,5 +93,6 @@ ObjectFitImage.defaultProps = {
   width: '100%',
   height: undefined,
   aspectRatio: 1,
+  loading: 'eager',
 };
 export default ObjectFitImage;

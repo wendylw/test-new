@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import SwiperCore, { Autoplay } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import Image from '../../../../components/Image';
+import Slider from '../../../../common/components/Slider';
 import CleverTap from '../../../../utils/clevertap';
-import 'swiper/swiper.scss';
 import './index.scss';
-
-SwiperCore.use([Autoplay]);
 
 class Banners extends Component {
   render() {
@@ -18,23 +14,21 @@ class Banners extends Component {
     }
 
     return (
-      <div>
-        <Swiper
-          className="sm:tw-my-16px tw-my-16"
-          slidesPerView={'auto'}
-          spaceBetween={12}
-          loop={true}
-          centeredSlides={true}
-          autoplay={{
-            delay: 2000,
-            disableOnInteraction: false,
-          }}
+      <div className="banner-container">
+        <Slider
+          mode="free-snap"
+          perView={3}
+          loop
+          autoplay
+          autoplayTime={2000}
+          slideContainerStyle={{ width: 'calc(252% + 36px)' }}
         >
-          {(collections || []).map((collection, index) => {
+          {/* WB-4662: The reason why we triple collections when replacing swiper: We show 3 slides in a page, we must make total slides a multiple of 3. Or the calculation of keen-slider will encounter division and residual of non-integer, that suffers JS precision issue. This will lead the autoplay to a wrong direction at a certain moment. */}
+          {([...collections, ...collections, ...collections] || []).map((collection, index) => {
             const { image, beepCollectionId, urlPath, name } = collection;
             return (
-              <SwiperSlide
-                key={beepCollectionId}
+              <div
+                key={beepCollectionId + index}
                 onClick={() => {
                   CleverTap.pushEvent('Homepage - Click Collection Banner', {
                     'collection name': name,
@@ -49,10 +43,10 @@ class Banners extends Component {
                 className="banners-item tw-cursor-pointer"
               >
                 <Image src={image} alt={name} scalingRatioIndex={2} />
-              </SwiperSlide>
+              </div>
             );
           })}
-        </Swiper>
+        </Slider>
       </div>
     );
   }

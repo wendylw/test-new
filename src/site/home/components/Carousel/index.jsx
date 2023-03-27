@@ -1,20 +1,16 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import SwiperCore, { Autoplay } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import { withRouter } from 'react-router-dom';
 import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import Banner from './components/Banner';
 import StoreCard from './components/StoreCard';
-import 'swiper/swiper.scss';
+import Slider from '../../../../common/components/Slider';
 import './index.scss';
 import { submitStoreMenu } from '../../utils';
 import CleverTap from '../../../../utils/clevertap';
 import { getAddressInfo } from '../../../../redux/modules/address/selectors';
-
-SwiperCore.use([Autoplay]);
 
 class Carousel extends Component {
   handleStoreClicked = async (index, store, collectionInfo) => {
@@ -58,16 +54,20 @@ class Carousel extends Component {
 
   renderCarouselStores(stores, collectionInfo) {
     return (
-      <Swiper className="sm:tw-px-16px tw-px-16 sm:tw--mx-6px tw--mx-6" slidesPerView={'auto'}>
+      <Slider
+        perView="auto"
+        slideContainerClassName="sm:tw-px-16px tw-px-16 sm:tw--mx-6px tw--mx-6"
+        slideStyle={{ flex: '0 0 auto', width: 'auto' }}
+      >
         {(stores || []).map((store, index) => {
           const { id } = store || {};
           return (
-            <SwiperSlide key={id} className="carousel__item tw-flex tw-justify-center">
+            <div key={id} className="carousel__item tw-flex tw-justify-center">
               <StoreCard store={store} onClick={this.handleStoreClicked.bind(this, index, store, collectionInfo)} />
-            </SwiperSlide>
+            </div>
           );
         })}
-      </Swiper>
+      </Slider>
     );
   }
 
