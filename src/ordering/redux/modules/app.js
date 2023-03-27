@@ -506,22 +506,16 @@ export const actions = {
       return;
     }
 
-    const deliveryDetails = getDeliveryDetails(state);
-    const deliveryToLocation = _get(deliveryDetails, 'deliveryToLocation', null);
     const isAddressRequestStatusFulfilled = getIsAddressRequestStatusFulfilled(state);
 
     let deliveryCoords = null;
 
-    if (!deliveryToLocation) {
-      if (isAddressRequestStatusFulfilled) {
-        deliveryCoords = getAddressCoords(state);
-      } else {
-        // The only cost is to send redundant requests to get the address, but it will promise to get the address finally
-        await dispatch(getAddressInfo());
-        deliveryCoords = getAddressCoords(getState());
-      }
+    if (isAddressRequestStatusFulfilled) {
+      deliveryCoords = getAddressCoords(state);
     } else {
-      deliveryCoords = { lat: deliveryToLocation.latitude, lng: deliveryToLocation.longitude };
+      // The only cost is to send redundant requests to get the address, but it will promise to get the address finally
+      await dispatch(getAddressInfo());
+      deliveryCoords = getAddressCoords(getState());
     }
 
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
