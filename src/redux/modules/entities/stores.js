@@ -23,8 +23,6 @@ const reducer = (state = initialState, action) => {
       const newStores = {};
 
       stores.forEach(s => {
-        console.log(s);
-
         if (s.id) {
           Object.assign(s.qrOrderingSettings, {
             useStorehubLogistics: _get(s, 'qrOrderingSettings.useStorehubLogistics', businessUseStorehubLogistics),
