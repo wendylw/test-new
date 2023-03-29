@@ -18,7 +18,7 @@ module.exports = {
         },
         // craco-esbuild depends on esbuild-jest, but esbuild-jest will not be maintained after 2021.
         // esbuild-jest in yarn test:coverage, there will be some issues, such as React is not define, etc.
-        // So setting skipEsbuildJest to true to use babel for jest tests.
+        // So setting skipEsbuildJest to true to use babel for jest tests. refer: https://github.com/aelbore/esbuild-jest/issues/61
         skipEsbuildJest: true, // Set to true if you want to use babel for jest tests
       },
     },
