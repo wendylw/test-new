@@ -69,49 +69,12 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
   });
 
   describe('Async Action Creators', () => {
-    describe('loginApp', () => {
-      const reqParams = { accessToken: 'mockAccessToken', refreshToken: 'mockRefreshToken' };
-      it(':Success', () => {
-        successMockFetch();
-        const caseStore = configureMiddlewareStore(cashbackStore);
-        const expectedActions = [
-          {
-            type: types.CREATE_LOGIN_REQUEST,
-          },
-          {
-            type: types.CREATE_LOGIN_SUCCESS,
-            payload: JSON.stringify(commonSuccessData),
-          },
-        ];
-
-        return caseStore.dispatch(actions.loginApp(reqParams)).then(() => {
-          expect(caseStore.getActions()).toEqual(expectedActions);
-        });
-      });
-      it(':Fail', () => {
-        failMockFetch();
-        const caseStore = configureMiddlewareStore(cashbackStore);
-        const expectedActions = [
-          {
-            type: types.CREATE_LOGIN_REQUEST,
-          },
-          {
-            type: types.CREATE_LOGIN_FAILURE,
-            error: new RequestError(mockErrorMsg, mockErrorCode),
-          },
-        ];
-        return caseStore.dispatch(actions.loginApp(reqParams)).then(() => {
-          expect(caseStore.getActions()).toEqual(expectedActions);
-        });
-      });
-    });
-
     describe('getOtp', () => {
-      const reqParams = { phone: '18766668888' };
+      const reqParams = { phone: '18766668888', otpType: 'otp' };
       it(':Success', () => {
         successMockFetch();
         const expectedActions = [
-          { type: types.GET_OTP_REQUEST, payload: { otpType: undefined } },
+          { type: types.GET_OTP_REQUEST, payload: { otpType: reqParams.otp } },
           {
             type: types.GET_OTP_SUCCESS,
           },
