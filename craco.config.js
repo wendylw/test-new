@@ -30,7 +30,7 @@ module.exports = {
       // Ignore ky UT issues: https://github.com/sindresorhus/ky/issues/170
       jestConfig.transformIgnorePatterns[0] = '[/\\\\]node_modules[/\\\\](?!ky)[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$';
       // resetMocks is true by default, which will cause the mock function to be cleared after each test.
-      // Equivalent to calling jest.resetAllMocks() before each test. This will lead to any mocks having their fake implementations removed but does not restore their initial implementation.
+      // Equivalent to calling jest.resetAllMocks() before each test. This will lead to any mocks having their fake implementations removed but does not restore their initial implementation. refer: https://stackoverflow.com/a/65558672
       jestConfig.resetMocks = false;
 
       return jestConfig;

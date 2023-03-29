@@ -86,9 +86,7 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
         const expectedActions = [
           {
             type: types.GET_OTP_REQUEST,
-            payload: {
-              otpType: undefined,
-            },
+            payload: { otpType: reqParams.otp },
           },
           { type: types.GET_OTP_FAILURE, error: new Error(mockErrorMsg) },
         ];
