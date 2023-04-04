@@ -85,7 +85,6 @@ class SearchPage extends React.Component {
 
   state = {
     drawerInfo: { category: null },
-    filterBarSwiperRef: null,
   };
 
   componentDidMount = async () => {
@@ -143,10 +142,6 @@ class SearchPage extends React.Component {
     }
 
     if (hasSelectedOptionListChanged) {
-      const { filterBarSwiperRef } = this.state;
-      // NOTE: Once the sort & filter selected options are changed, the swiper should be re-rendered. Otherwise, the offsets of slides will be wrong.
-      // API Doc: https://swiperjs.com/swiper-api#method-swiper-update
-      filterBarSwiperRef?.update();
       this.props.backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
     }
   };
@@ -459,10 +454,6 @@ class SearchPage extends React.Component {
     );
   };
 
-  handleFilterBarSwiper = swiper => {
-    this.setState({ filterBarSwiperRef: swiper });
-  };
-
   render() {
     const { searchKeyword, shouldShowFilterBar, categoryFilterList, shouldShowResetButton } = this.props;
     return (
@@ -490,7 +481,6 @@ class SearchPage extends React.Component {
             <FilterBar
               className={styles.SearchPageFilterBarWrapper}
               categories={categoryFilterList}
-              onSwiper={this.handleFilterBarSwiper}
               shouldShowResetButton={shouldShowResetButton}
               onResetButtonClick={this.handleClickResetAllCategoryButton}
               onCategoryButtonClick={this.handleClickCategoryButton}

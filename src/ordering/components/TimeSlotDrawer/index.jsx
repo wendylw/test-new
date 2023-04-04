@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { X } from 'phosphor-react';
-import Slider from '../Slider';
+import Slider from '../../../common/components/Slider';
 import { DateIcon, TimeIcon } from '../../../common/components/Icons';
 import Button from '../../../common/components/Button';
 import Drawer from '../../../common/components/Drawer';

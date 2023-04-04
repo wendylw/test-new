@@ -137,5 +137,7 @@
   "UnsupportedErrorTitle": "Oops, review for this order is not supported",
   "UnsupportedErrorDescription": "Make an order today and keep your review fresh!",
   "Loading": "Loading...",
-  "Retry": "Retry"
+  "Retry": "Retry",
+  "TableNumberUpdatedTitle":"Table Updated",
+  "TableNumberUpdatedDescription":"Your table number has been changed. Kindly check your new table number before paying."
 }

@@ -6,15 +6,23 @@ import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
+import logger from '../../../../../utils/monitoring/logger';
 
 class Sorry extends Component {
   async componentDidMount() {
     const { t } = this.props;
     const queryParams = Utils.getQueryString();
+    const { errorCode, paymentProvider } = queryParams || {};
     const isPayLater = queryParams.isPayLater === 'true';
     const errorDescription = isPayLater ? this.getDescriptionOfPayLater() : this.getDescription();
 
     alert(errorDescription, { title: t('PaymentFailed') });
+
+    logger.error('Ordering_Sorry_CompletePaymentFailed', {
+      name: paymentProvider,
+      code: errorCode,
+      type: isPayLater ? 'Pay Later' : 'Pay First',
+    });
 
     // for pay later order, the page will redirect to Table Summary
     if (isPayLater) {

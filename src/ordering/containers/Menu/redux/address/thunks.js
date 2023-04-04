@@ -238,6 +238,9 @@ export const locationSelected = createAsyncThunk(
 
       await dispatch(appActionCreators.loadDeliveryAddressDetailsIfNeeded());
 
+      // WB-4492: we should proactively load the shopping cart if the address has been changed. Otherwise, the shipping fee cannot be updated.
+      await dispatch(appActionCreators.loadShoppingCart());
+
       if (_isEqual(currentStoreId, storeId)) {
         await dispatch(hideLocationDrawer());
         return;
