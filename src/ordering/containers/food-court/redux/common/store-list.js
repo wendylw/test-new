@@ -270,7 +270,7 @@ export const AllFoodCourtStoreList = {
     id: '6407ff9a85a8cd000847051b',
     imageNoCompression: ClassicBowlImage,
     title: 'Classic Bowl',
-    tags: ['Rice Bowls'],
+    tags: ['Rice Bowls', 'Asian'],
     businessHours: {
       validTimeFrom: '10:00',
       validTimeTo: '22:00',
