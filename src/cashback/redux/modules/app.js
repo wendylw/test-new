@@ -16,6 +16,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { get } from '../../../utils/request';
 import { post } from '../../../utils/api/api-fetch';
+import { getProfileInfo } from './api-request';
 import { createSelector } from 'reselect';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -161,27 +162,32 @@ export const actions = {
 
   getLoginStatus: () => ({
     types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
-    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
-      if (resp) {
-        if (resp.consumerId) {
-          if (resp.login) {
-            get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
-              const userInfo = {
-                Name: resp.user?.firstName,
-                Phone: resp.user?.phone,
-                Identity: resp.consumerId,
-                ...(resp.user?.email ? { Email: resp.user?.email } : {}),
-              };
+    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(async resp => {
+      const { consumerId, login } = resp || {};
 
-              if (profile.birthday) {
-                userInfo.DOB = new Date(profile.birthday);
-              }
-
-              CleverTap.onUserLogin(userInfo);
-            });
-          }
-        }
+      if (!consumerId || !login) {
+        return resp;
       }
+
+      const profile = await getProfileInfo(consumerId);
+      const { firstName, phone, email, birthday } = profile || {};
+
+      const userInfo = {
+        Name: firstName,
+        Phone: phone,
+        Identity: consumerId,
+      };
+
+      if (email) {
+        userInfo.Email = email;
+      }
+
+      if (birthday) {
+        userInfo.DOB = new Date(birthday);
+      }
+
+      CleverTap.onUserLogin(userInfo);
+
       return resp;
     }),
   }),
