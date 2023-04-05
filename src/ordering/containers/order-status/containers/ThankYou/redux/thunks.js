@@ -1,6 +1,4 @@
 import _get from 'lodash/get';
-import _isEmpty from 'lodash/isEmpty';
-import _isUndefined from 'lodash/isUndefined';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
@@ -20,6 +18,7 @@ import {
   getUserProfile,
   getIsWebview,
 } from '../../../../../redux/modules/app';
+import { loadProfileInfo } from '../../../../../redux/modules/profile/thunks';
 import { getOrder } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
 import logger from '../../../../../../utils/monitoring/logger';
@@ -177,7 +176,7 @@ export const initProfilePage = createAsyncThunk(
 
       // First must to confirm profile info is loaded
       if (userIsLogin && !isUserProfileStatusFulfilled) {
-        await dispatch(appActions.getProfileInfo(consumerId));
+        await dispatch(loadProfileInfo(consumerId));
       }
 
       if (isWebview) {

@@ -31,6 +31,7 @@ import {
   getDeliveryDetails,
   getIsTNGMiniProgram,
 } from '../../../../redux/modules/app';
+import { loadProfileInfo as loadProfileInfoThunk } from '../../../../redux/modules/profile';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
 import { actions as customerInfoActionCreators } from './redux';
 import { getCustomerError, getShouldGoToAddNewAddressPage } from './redux/selectors';
@@ -51,9 +52,9 @@ class CustomerInfo extends Component {
   };
 
   async componentDidMount() {
-    const { user, deliveryDetails, appActions } = this.props;
+    const { user, deliveryDetails, appActions, loadProfileInfo } = this.props;
     const { consumerId } = user || {};
-    consumerId && (await appActions.getProfileInfo(consumerId));
+    consumerId && (await loadProfileInfo(consumerId));
 
     // Get the latest profile directly from the props
     const { userProfile } = this.props;
@@ -547,6 +548,7 @@ export default compose(
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       customerInfoActions: bindActionCreators(customerInfoActionCreators, dispatch),
+      loadProfileInfo: bindActionCreators(loadProfileInfoThunk, dispatch),
     })
   )
 )(CustomerInfo);

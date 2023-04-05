@@ -43,6 +43,7 @@ import {
   getUserIsLogin,
   getIsFreeOrder,
 } from '../../../../redux/modules/app';
+import { loadProfileInfo as loadProfileInfoThunk } from '../../../../redux/modules/profile/thunks';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import {
   loadStockStatus as loadStockStatusThunk,
@@ -431,6 +432,7 @@ class PayFirst extends Component {
       isUserProfileStatusFulfilled,
       isTNGMiniProgram,
       isFreeOrder,
+      loadProfileInfo,
     } = this.props;
     const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
     this.setState({ pendingBeforeCreateOrder: true });
@@ -446,7 +448,7 @@ class PayFirst extends Component {
     // Resolve bugs of BEEP-1561 && BEEP-1554
     if (consumerId && (!deliveryDetails.username || !deliveryDetails.phone)) {
       if (!isUserProfileStatusFulfilled) {
-        await appActions.getProfileInfo(consumerId);
+        await loadProfileInfo(consumerId);
       }
       const { userProfile } = this.props;
 
@@ -868,11 +870,11 @@ PayFirst.propTypes = {
     clearAll: PropTypes.func,
     addOrUpdateShoppingCartItem: PropTypes.func,
     removeShoppingCartItem: PropTypes.func,
-    getProfileInfo: PropTypes.func,
     updateDeliveryDetails: PropTypes.func,
     loginByBeepApp: PropTypes.func,
     updateCashbackApplyStatus: PropTypes.func,
   }),
+  loadProfileInfo: PropTypes.func,
   promotionActions: PropTypes.shape({
     dismissPromotion: PropTypes.func,
   }),
@@ -919,11 +921,11 @@ PayFirst.defaultProps = {
     clearAll: () => {},
     addOrUpdateShoppingCartItem: () => {},
     removeShoppingCartItem: () => {},
-    getProfileInfo: () => {},
     updateDeliveryDetails: () => {},
     loginByBeepApp: () => {},
     updateCashbackApplyStatus: () => {},
   },
+  loadProfileInfo: () => {},
   promotionActions: {
     dismissPromotion: () => {},
   },
@@ -994,6 +996,7 @@ export default compose(
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),
       reloadBillingByCashback: bindActionCreators(reloadBillingByCashbackThunk, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
+      loadProfileInfo: bindActionCreators(loadProfileInfoThunk, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
     })
   )

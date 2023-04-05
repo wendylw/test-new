@@ -30,6 +30,7 @@ import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
 import { loadOrder } from '../../redux/thunks';
 import { getReceiptNumber } from '../../redux/selector';
 import { actions as appActionCreators, getUserEmail, getUserConsumerId, getUser } from '../../../../redux/modules/app';
+import { loadProfileInfo as loadProfileInfoThunk } from '../../../../redux/modules/profile';
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
@@ -84,9 +85,9 @@ class ReportDriver extends Component {
   };
 
   preFillEmail = async () => {
-    const { userConsumerId, getProfileInfo, initialEmail } = this.props;
+    const { userConsumerId, loadProfileInfo, initialEmail } = this.props;
 
-    userConsumerId && (await getProfileInfo(userConsumerId));
+    userConsumerId && (await loadProfileInfo(userConsumerId));
 
     initialEmail(this.props.userEmail);
   };
@@ -496,7 +497,7 @@ export default compose(
       updateInputEmail: reportDriverActionCreators.updateInputEmail,
       inputEmailCompleted: reportDriverActionCreators.inputEmailCompleted,
       initialEmail: reportDriverActionCreators.initialEmail,
-      getProfileInfo: appActionCreators.getProfileInfo,
+      loadProfileInfo: loadProfileInfoThunk,
       loginApp: appActionCreators.loginApp,
       loginByTngMiniProgram: appActionCreators.loginByTngMiniProgram,
     }
