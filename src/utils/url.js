@@ -165,10 +165,6 @@ const API_URLS = {
       method: 'get',
     };
   },
-  GET_CONSUMER_PROFILE: consumerId => ({
-    url: `/api/consumers/${consumerId}/profile`,
-    method: 'get',
-  }),
   GET_ORDER_STATUS: ({ orderId }) => ({
     url: `/api/transactions/${orderId}/status`,
     method: 'get',
