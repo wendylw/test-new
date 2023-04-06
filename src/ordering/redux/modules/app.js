@@ -407,7 +407,7 @@ export const actions = {
     }
   },
 
-  getLoginStatus: () => dispatch => {
+  getLoginStatus: () => (dispatch, getState) => {
     return dispatch({
       types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
       requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(async resp => {
@@ -417,7 +417,9 @@ export const actions = {
           return resp;
         }
 
-        const profile = await dispatch(loadProfileInfo(consumerId));
+        await dispatch(loadProfileInfo(consumerId));
+
+        const profile = getUserProfile(getState());
 
         const userInfo = {
           Name: profile.firstName,
