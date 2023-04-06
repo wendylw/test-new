@@ -31,7 +31,7 @@ import {
   getDeliveryDetails,
   getIsTNGMiniProgram,
 } from '../../../../redux/modules/app';
-import { loadProfileInfo as loadProfileInfoThunk } from '../../../../redux/modules/profile';
+import { loadProfileInfo as loadProfileInfoThunk } from '../../../../redux/modules/profile/thunks';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
 import { actions as customerInfoActionCreators } from './redux';
 import { getCustomerError, getShouldGoToAddNewAddressPage } from './redux/selectors';
