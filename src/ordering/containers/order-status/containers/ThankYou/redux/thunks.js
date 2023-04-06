@@ -179,16 +179,16 @@ export const initProfilePage = createAsyncThunk(
         await dispatch(loadProfileInfo(consumerId));
       }
 
-      if (isWebview) {
-        dispatch(callNativeProfile());
-
-        return;
-      }
-
       const profile = getUserProfile(getState());
       const { name, email, birthday } = profile || {};
       const isProfileInfoComplete = !name || !email || !birthday;
       const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoComplete && userIsLogin && !isWebview;
+
+      if (isProfileModalShown && isWebview) {
+        dispatch(callNativeProfile());
+
+        return;
+      }
 
       if (isProfileModalShown) {
         setTimeout(() => {
