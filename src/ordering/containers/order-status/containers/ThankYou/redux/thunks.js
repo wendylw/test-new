@@ -181,7 +181,8 @@ export const initProfilePage = createAsyncThunk(
       const profile = getUserProfile(getState());
       const { name, email, birthday } = profile || {};
       const isProfileInfoIncomplete = !name || !email || !birthday;
-      const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoIncomplete && userIsLogin;
+      const isProfileModalShown =
+        isProfileMissingSkippedExpired && isProfileInfoIncomplete && getUserIsLogin(getState());
 
       console.log('isProfileModalShown', isProfileMissingSkippedExpired, isProfileInfoIncomplete, userIsLogin);
 
