@@ -33,8 +33,7 @@ import {
 } from '../../../redux/modules/address/selectors';
 import cartReducer from '../cart';
 import { getCartItems as getNewCartItems } from '../cart/selectors';
-import profile from './profile';
-import { loadProfileInfo } from './profile/thunks';
+import { getProfileInfo } from './api-request';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
@@ -118,6 +117,18 @@ export const initialState = {
     noWhatsAppAccount: true,
     loginRequestStatus: null,
     loginByBeepAppStatus: null,
+    profile: {
+      id: '',
+      phone: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      gender: '',
+      birthday: '',
+      birthdayModifiedTime: '',
+      notificationSettings: '',
+      birthdayChangeAllowed: false,
+    },
   },
   error: null, // network error
   apiError: {
@@ -417,7 +428,7 @@ export const actions = {
           return resp;
         }
 
-        await dispatch(loadProfileInfo(consumerId));
+        await dispatch(actions.loadProfileInfo(consumerId));
 
         const profile = getUserProfile(getState());
 
@@ -811,6 +822,26 @@ export const actions = {
     type: types.UPDATE_SHOPPINGCART_APPLYCASHBACK,
     payload: newStatus,
   }),
+
+  loadProfileInfo: consumerId => async dispatch => {
+    try {
+      dispatch({ type: 'ordering/profile/loadProfileInfo/pending' });
+
+      const result = await getProfileInfo(consumerId);
+
+      dispatch({
+        type: 'ordering/profile/loadProfileInfo/fulfilled',
+        payload: result,
+      });
+    } catch (error) {
+      logger.error('Ordering_LoadProfileInfoFailed', { message: error?.message });
+
+      dispatch({
+        type: 'ordering/profile/loadProfileInfo/rejected',
+        error,
+      });
+    }
+  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -878,6 +909,7 @@ const user = (state = initialState.user, action) => {
         ...state,
         consumerId,
         profile: {
+          ...state.profile,
           phone: user.phone,
           name: user.firstName,
           email: user.email,
@@ -936,6 +968,26 @@ const user = (state = initialState.user, action) => {
       return { ...state, noWhatsAppAccount: true };
     case types.GET_WHATSAPPSUPPORT_SUCCESS:
       return { ...state, noWhatsAppAccount: !supportWhatsApp };
+    case 'ordering/profile/loadProfileInfo/pending':
+      return { ...state, profile: { ...state.profile, loadProfileInfoStatus: API_REQUEST_STATUS.PENDING } };
+    case 'ordering/profile/loadProfileInfo/fulfilled':
+      const { payload } = action || {};
+
+      return {
+        ...state,
+        profile: {
+          id: payload.id,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          name: payload.firstName,
+          email: payload.email,
+          birthday: payload.birthday,
+          gender: payload.gender,
+          loadProfileInfoStatus: API_REQUEST_STATUS.FULFILLED,
+        },
+      };
+    case 'ordering/profile/loadProfileInfo/rejected':
+      return { ...state, profile: { ...state.profile, loadProfileInfoStatus: API_REQUEST_STATUS.REJECTED } };
     case types.GET_WHATSAPPSUPPORT_FAILURE:
       // Write down here just for the sake of completeness, we won't handle this failure case for now.
       return state;
@@ -1230,10 +1282,7 @@ const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
 };
 
 export default combineReducers({
-  user: {
-    ...user,
-    profile,
-  },
+  user,
   error,
   business,
   onlineStoreInfo,

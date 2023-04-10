@@ -30,7 +30,6 @@ import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
 import { loadOrder } from '../../redux/thunks';
 import { getReceiptNumber } from '../../redux/selector';
 import { actions as appActionCreators, getUserEmail, getUserConsumerId, getUser } from '../../../../redux/modules/app';
-import { loadProfileInfo as loadProfileInfoThunk } from '../../../../redux/modules/profile/thunks';
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
@@ -497,7 +496,7 @@ export default compose(
       updateInputEmail: reportDriverActionCreators.updateInputEmail,
       inputEmailCompleted: reportDriverActionCreators.inputEmailCompleted,
       initialEmail: reportDriverActionCreators.initialEmail,
-      loadProfileInfo: loadProfileInfoThunk,
+      loadProfileInfo: appActionCreators.loadProfileInfo,
       loginApp: appActionCreators.loginApp,
       loginByTngMiniProgram: appActionCreators.loginByTngMiniProgram,
     }

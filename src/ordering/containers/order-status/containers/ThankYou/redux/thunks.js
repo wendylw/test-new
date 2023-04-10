@@ -18,7 +18,6 @@ import {
   getUserProfile,
   getIsWebview,
 } from '../../../../../redux/modules/app';
-import { loadProfileInfo } from '../../../../../redux/modules/profile/thunks';
 import { getOrder } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
 import logger from '../../../../../../utils/monitoring/logger';
@@ -176,7 +175,7 @@ export const initProfilePage = createAsyncThunk(
 
       // First must to confirm profile info is loaded
       if (userIsLogin && !isUserProfileStatusFulfilled) {
-        await dispatch(loadProfileInfo(consumerId));
+        await dispatch(appActions.loadProfileInfo(consumerId));
       }
 
       const profile = getUserProfile(getState());

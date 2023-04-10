@@ -12,6 +12,7 @@ import { callTradePay } from '../../../../../../utils/tng-utils';
 import { gotoHome } from '../../../../../../utils/native-methods';
 import { getCartItems, getDeliveryDetails, getShippingType } from '../../../../../redux/modules/app';
 import {
+  actions as appActions,
   getBusiness,
   getOnlineStoreInfo,
   getRequestInfo,
@@ -23,7 +24,6 @@ import {
   getIsTNGMiniProgram,
   getIsWebview,
 } from '../../../../../redux/modules/app';
-import { loadProfileInfo } from '../../../../../redux/modules/profile/thunks';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
 import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
 
@@ -161,7 +161,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
   // If there is no contact info, we need to refetch the profile API in order to get the contact info
   if (_isEmpty(contactPhone) || _isEmpty(contactName)) {
     const consumerId = getUserConsumerId(getState());
-    consumerId && (await dispatch(loadProfileInfo(consumerId)));
+    consumerId && (await dispatch(appActions.loadProfileInfo(consumerId)));
 
     contactPhone = getUserPhone(getState());
     contactName = getUserName(getState());

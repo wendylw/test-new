@@ -1,8 +1,7 @@
 import _trim from 'lodash/trim';
 import dayjs from 'dayjs';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getUserConsumerId, getUserProfile } from '../../../redux/modules/app';
-import { loadProfileInfo } from '../../../redux/modules/profile/thunks';
+import { actions as appActions, getUserConsumerId, getUserProfile } from '../../../redux/modules/app';
 import { putProfileInfo } from './api-request';
 import Utils from '../../../../utils/utils';
 import { setCookieVariable } from '../../../../common/utils';
@@ -24,7 +23,7 @@ export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated'
     });
 
     // If profile info updated, should get new profile info for app level
-    dispatch(loadProfileInfo(consumerId));
+    dispatch(appActions.loadProfileInfo(consumerId));
 
     return result;
   } catch (error) {
