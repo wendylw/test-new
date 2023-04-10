@@ -42,6 +42,7 @@ import DrinkImage from '../../../../../images/food-court-temp/merchant-Drink.jpe
 import NurulImage from '../../../../../images/food-court-temp/food-Nurul-logo.jpg';
 import NurulAsamImage from '../../../../../images/food-court-temp/merchant-Nurul-Asam.png';
 import JomTarikImage from '../../../../../images/food-court-temp/merchant-Jom-Tarik.jpg';
+import ClassicBowlImage from '../../../../../images/food-court-temp/merchant-Classic-Bowl.png';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -263,6 +264,16 @@ export const AllFoodCourtStoreList = {
     businessHours: {
       validTimeFrom: '10:00',
       validTimeTo: '21:00',
+    },
+  },
+  '6407ff9a85a8cd000847051b': {
+    id: '6407ff9a85a8cd000847051b',
+    imageNoCompression: ClassicBowlImage,
+    title: 'Classic Bowl',
+    tags: ['Rice Bowls', 'Asian'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '22:00',
     },
   },
   '61b93058cef3c900060ca990': {
