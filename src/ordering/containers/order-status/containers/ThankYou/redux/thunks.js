@@ -180,19 +180,15 @@ export const initProfilePage = createAsyncThunk(
 
       const profile = getUserProfile(getState());
       const { name, email, birthday } = profile || {};
-      const isProfileInfoComplete = !name || !email || !birthday;
-      const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoComplete && userIsLogin && !isWebview;
-
-      if (isProfileModalShown && isWebview) {
-        dispatch(callNativeProfile());
-
-        return;
-      }
+      const isProfileInfoIncomplete = !name || !email || !birthday;
+      const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoIncomplete && userIsLogin;
 
       if (isProfileModalShown) {
-        setTimeout(() => {
-          dispatch(showProfileModal());
-        }, delay);
+        isWebview
+          ? dispatch(callNativeProfile())
+          : setTimeout(() => {
+              dispatch(showProfileModal());
+            }, delay);
       }
     } catch (error) {
       logger.error('Ordering_OrderStatus_InitProfileFailed', { message: error?.message });
