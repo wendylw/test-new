@@ -391,7 +391,6 @@ export class ThankYou extends PureComponent {
       isCoreBusinessAPICompleted,
       loadOrderStoreReview,
       hasOrderPaid: currHasOrderPaid,
-      profileModalVisibility,
       initProfilePage,
     } = this.props;
     const { from } = this.state;
