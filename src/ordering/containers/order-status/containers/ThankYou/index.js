@@ -398,10 +398,10 @@ export class ThankYou extends PureComponent {
     const { storeId } = order || {};
     const isInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, currHasOrderPaid);
 
-    console.log('initProfilePage', isInitProfilePageEnabled, !profileModalVisibility);
-
     // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
     if (isInitProfilePageEnabled && !profileModalVisibility) {
+      console.log('initProfilePage', isInitProfilePageEnabled, !profileModalVisibility);
+
       initProfilePage({ from });
     }
 
@@ -1009,9 +1009,6 @@ export class ThankYou extends PureComponent {
     const { total } = order || {};
 
     const orderId = _get(order, 'orderId', '');
-
-    console.log('orderStatus', orderStatus);
-    console.log('profileModalVisibility', profileModalVisibility);
 
     return (
       <section
