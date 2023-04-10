@@ -183,6 +183,8 @@ export const initProfilePage = createAsyncThunk(
       const isProfileInfoIncomplete = !name || !email || !birthday;
       const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoIncomplete && userIsLogin;
 
+      console.log('isProfileModalShown', isProfileMissingSkippedExpired, isProfileInfoIncomplete, userIsLogin);
+
       if (isProfileModalShown && !isWebview) {
         setTimeout(() => {
           dispatch(showProfileModal());
