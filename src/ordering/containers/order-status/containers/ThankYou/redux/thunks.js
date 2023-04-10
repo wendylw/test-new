@@ -183,6 +183,11 @@ export const initProfilePage = createAsyncThunk(
       const isProfileInfoComplete = !name || !email || !birthday;
       const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoComplete && userIsLogin && !isWebview;
 
+      console.log('isProfileMissingSkippedExpired', isProfileMissingSkippedExpired);
+      console.log('isProfileInfoComplete', isProfileInfoComplete);
+      console.log('userIsLogin', userIsLogin);
+      console.log('isWebview', isWebview);
+
       if (isProfileModalShown && isWebview) {
         dispatch(callNativeProfile());
 

@@ -895,8 +895,10 @@ const user = (state = initialState.user, action) => {
         refreshToken: refresh_token,
       };
     case types.CREATE_LOGIN_SUCCESS: {
+      const { payload } = action || {};
       const consumerId = _get(payload, 'consumerId', '');
       const user = _get(payload, 'user', {});
+
       if (state.accessToken) {
         delete state.accessToken;
       }
