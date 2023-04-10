@@ -112,6 +112,8 @@ const otherText = 'Download the Beep app to track your Order History!';
 const otherLink = 'https://dl.beepit.com/kVmT';
 
 const getIsInitProfilePageEnabled = (isLogin, from, hasOrderPaid) => {
+  console.log('getIsInitProfilePageEnabled', isLogin, from, hasOrderPaid);
+
   if (!isLogin) {
     return false;
   }
