@@ -429,25 +429,29 @@ export const actions = {
           return resp;
         }
 
-        await dispatch(actions.loadProfileInfo(consumerId));
+        try {
+          await dispatch(actions.loadProfileInfo(consumerId));
 
-        const profile = getUserProfile(getState());
-        const { firstName, phone, email, birthday } = profile || {};
+          const profile = getUserProfile(getState());
+          const { firstName, phone, email, birthday } = profile || {};
 
-        const userInfo = {
-          Name: firstName,
-          Phone: phone,
-          Email: email,
-          Identity: consumerId,
-        };
+          const userInfo = {
+            Name: firstName,
+            Phone: phone,
+            Email: email,
+            Identity: consumerId,
+          };
 
-        if (birthday) {
-          userInfo.DOB = new Date(birthday);
+          if (birthday) {
+            userInfo.DOB = new Date(birthday);
+          }
+
+          CleverTap.onUserLogin(userInfo);
+
+          return resp;
+        } catch (error) {
+          logger.error('Ordering_App_getLoginStatus', { message: error?.message });
         }
-
-        CleverTap.onUserLogin(userInfo);
-
-        return resp;
       }),
     });
   },
@@ -925,6 +929,7 @@ const user = (state = initialState.user, action) => {
           name: user.firstName,
           email: user.email,
           birthday: user.birthday,
+          status: API_REQUEST_STATUS.FULFILLED,
         },
         isLogin: true,
         isExpired: false,

@@ -183,28 +183,32 @@ export const actions = {
         return resp;
       }
 
-      await dispatch(actions.loadProfileInfo(consumerId));
+      try {
+        await dispatch(actions.loadProfileInfo(consumerId));
 
-      const profile = getUserProfile(getState());
-      const { firstName, phone, email, birthday } = profile || {};
+        const profile = getUserProfile(getState());
+        const { firstName, phone, email, birthday } = profile || {};
 
-      const userInfo = {
-        Name: firstName,
-        Phone: phone,
-        Identity: consumerId,
-      };
+        const userInfo = {
+          Name: firstName,
+          Phone: phone,
+          Identity: consumerId,
+        };
 
-      if (email) {
-        userInfo.Email = email;
+        if (email) {
+          userInfo.Email = email;
+        }
+
+        if (birthday) {
+          userInfo.DOB = new Date(birthday);
+        }
+
+        CleverTap.onUserLogin(userInfo);
+
+        return resp;
+      } catch (error) {
+        logger.error('Cashback_App_getLoginStatus', { message: error?.message });
       }
-
-      if (birthday) {
-        userInfo.DOB = new Date(birthday);
-      }
-
-      CleverTap.onUserLogin(userInfo);
-
-      return resp;
     }),
   }),
 
