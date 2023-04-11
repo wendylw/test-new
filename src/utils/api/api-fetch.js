@@ -167,18 +167,18 @@ function convertOptions(options) {
     },
   };
 
-  if (type === 'json' && payload && typeof payload !== 'object') {
-    logger.error('Tool_ApiFetch_convertOptionsTypePayloadNotMatch', {
-      message: `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`,
-    });
-
-    console.error('Common ApiFetch http payload & type not match');
-  }
-
   if (type === 'json' && (!payload || (payload && typeof payload === 'object'))) {
     currentOptions.json = payload;
   } else {
     currentOptions.body = payload;
+
+    if (type === 'json' && payload && typeof payload !== 'object') {
+      logger.error('Tool_ApiFetch_convertOptionsTypePayloadNotMatch', {
+        message: `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`,
+      });
+
+      console.error('Common ApiFetch http payload & type not match');
+    }
   }
 
   if (queryParams) {
