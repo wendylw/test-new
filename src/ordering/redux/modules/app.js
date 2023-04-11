@@ -128,6 +128,7 @@ export const initialState = {
       birthdayModifiedTime: '',
       notificationSettings: '',
       birthdayChangeAllowed: false,
+      loadProfileInfoStatus: null,
     },
   },
   error: null, // network error
@@ -431,16 +432,17 @@ export const actions = {
         await dispatch(actions.loadProfileInfo(consumerId));
 
         const profile = getUserProfile(getState());
+        const { firstName, phone, email, birthday } = profile || {};
 
         const userInfo = {
-          Name: profile.firstName,
-          Phone: profile.phone,
-          Email: profile.email,
-          Identity: resp.consumerId,
+          Name: firstName,
+          Phone: phone,
+          Email: email,
+          Identity: consumerId,
         };
 
-        if (profile.birthday) {
-          userInfo.DOB = new Date(profile.birthday);
+        if (birthday) {
+          userInfo.DOB = new Date(birthday);
         }
 
         CleverTap.onUserLogin(userInfo);
@@ -970,6 +972,9 @@ const user = (state = initialState.user, action) => {
       return { ...state, noWhatsAppAccount: true };
     case types.GET_WHATSAPPSUPPORT_SUCCESS:
       return { ...state, noWhatsAppAccount: !supportWhatsApp };
+    case types.GET_WHATSAPPSUPPORT_FAILURE:
+      // Write down here just for the sake of completeness, we won't handle this failure case for now.
+      return state;
     case 'ordering/profile/loadProfileInfo/pending':
       return { ...state, profile: { ...state.profile, loadProfileInfoStatus: API_REQUEST_STATUS.PENDING } };
     case 'ordering/profile/loadProfileInfo/fulfilled':
@@ -982,17 +987,18 @@ const user = (state = initialState.user, action) => {
           firstName: payload.firstName,
           lastName: payload.lastName,
           name: payload.firstName,
+          phone: payload.phone,
+          birthdayModifiedTime: payload.birthdayModifiedTime,
+          notificationSettings: payload.notificationSettings,
           email: payload.email,
           birthday: payload.birthday,
           gender: payload.gender,
+          birthdayChangeAllowed: true,
           loadProfileInfoStatus: API_REQUEST_STATUS.FULFILLED,
         },
       };
     case 'ordering/profile/loadProfileInfo/rejected':
       return { ...state, profile: { ...state.profile, loadProfileInfoStatus: API_REQUEST_STATUS.REJECTED } };
-    case types.GET_WHATSAPPSUPPORT_FAILURE:
-      // Write down here just for the sake of completeness, we won't handle this failure case for now.
-      return state;
     default:
       return state;
   }
@@ -1337,7 +1343,7 @@ export const getUserLoginRequestStatus = state => state.app.user.loginRequestSta
 
 export const getUserLoginByBeepAppStatus = state => state.app.user.loginByBeepAppStatus;
 
-export const getUserProfileStatus = state => state.app.user.profile.status;
+export const getUserProfileStatus = state => state.app.user.profile.loadProfileInfoStatus;
 
 export const getUserProfile = state => state.app.user.profile;
 

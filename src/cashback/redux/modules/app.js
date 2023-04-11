@@ -9,6 +9,7 @@ import config from '../../../config';
 import Url from '../../../utils/url';
 import * as TngUtils from '../../../utils/tng-utils';
 import * as ApiRequest from '../../../utils/api-request';
+import logger from '../../../utils/monitoring/logger';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -53,6 +54,19 @@ export const initialState = {
     phone: localePhoneNumber,
     prompt: 'Do you have a Beep account? Login with your mobile phone number.',
     noWhatsAppAccount: true,
+    profile: {
+      id: '',
+      phone: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      gender: '',
+      birthday: '',
+      birthdayModifiedTime: '',
+      notificationSettings: '',
+      birthdayChangeAllowed: false,
+      loadProfileInfoStatus: null,
+    },
   },
   error: null, // network error
   messageInfo: {
@@ -160,7 +174,7 @@ export const actions = {
     },
   }),
 
-  getLoginStatus: () => ({
+  getLoginStatus: () => (dispatch, getState) => ({
     types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
     requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(async resp => {
       const { consumerId, login } = resp || {};
@@ -169,7 +183,9 @@ export const actions = {
         return resp;
       }
 
-      const profile = await getProfileInfo(consumerId);
+      await dispatch(actions.loadProfileInfo(consumerId));
+
+      const profile = getUserProfile(getState());
       const { firstName, phone, email, birthday } = profile || {};
 
       const userInfo = {
@@ -191,6 +207,26 @@ export const actions = {
       return resp;
     }),
   }),
+
+  loadProfileInfo: consumerId => async dispatch => {
+    try {
+      dispatch({ type: 'cashback/profile/loadProfileInfo/pending' });
+
+      const result = await getProfileInfo(consumerId);
+
+      dispatch({
+        type: 'cashback/profile/loadProfileInfo/fulfilled',
+        payload: result,
+      });
+    } catch (error) {
+      logger.error('Cash_LoadProfileInfoFailed', { message: error?.message });
+
+      dispatch({
+        type: 'cashback/profile/loadProfileInfo/rejected',
+        error,
+      });
+    }
+  },
 
   updateUser: (user = {}) => ({
     type: types.UPDATE_USER,
@@ -418,6 +454,30 @@ const user = (state = initialState.user, action) => {
     case types.GET_WHATSAPPSUPPORT_FAILURE:
       // Write down here just for the sake of completeness, we won't handle this failure case for now.
       return state;
+    case 'ordering/profile/loadProfileInfo/pending':
+      return { ...state, profile: { ...state.profile, loadProfileInfoStatus: API_REQUEST_STATUS.PENDING } };
+    case 'ordering/profile/loadProfileInfo/fulfilled':
+      const { payload } = action || {};
+
+      return {
+        ...state,
+        profile: {
+          id: payload.id,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          name: payload.firstName,
+          phone: payload.phone,
+          birthdayModifiedTime: payload.birthdayModifiedTime,
+          notificationSettings: payload.notificationSettings,
+          email: payload.email,
+          birthday: payload.birthday,
+          gender: payload.gender,
+          birthdayChangeAllowed: true,
+          loadProfileInfoStatus: API_REQUEST_STATUS.FULFILLED,
+        },
+      };
+    case 'ordering/profile/loadProfileInfo/rejected':
+      return { ...state, profile: { ...state.profile, loadProfileInfoStatus: API_REQUEST_STATUS.REJECTED } };
     default:
       return state;
   }
@@ -513,6 +573,7 @@ export default combineReducers({
 // selectors
 export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
+export const getUserProfile = state => state.app.user.profile;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => {
   return getBusinessByName(state, state.app.business);
