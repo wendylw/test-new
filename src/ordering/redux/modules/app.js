@@ -827,27 +827,27 @@ export const actions = {
 
   loadProfileInfo: consumerId => async dispatch => {
     try {
-      dispatch({ type: 'ordering/profile/loadProfileInfo/pending' });
+      dispatch({ type: types.LOAD_CONSUMER_PROFILE_PENDING });
 
       const result = await getProfileInfo(consumerId);
 
       dispatch({
-        type: 'ordering/profile/loadProfileInfo/fulfilled',
+        type: types.LOAD_CONSUMER_PROFILE_FULFILLED,
         payload: result,
       });
     } catch (error) {
       logger.error('Ordering_LoadProfileInfoFailed', { message: error?.message });
 
       dispatch({
-        type: 'ordering/profile/loadProfileInfo/rejected',
+        type: types.LOAD_CONSUMER_PROFILE_REJECTED,
         error,
       });
     }
   },
 
-  profileUpdated: payload => async dispatch => {
+  updateProfile: payload => async dispatch => {
     dispatch({
-      type: 'ordering/profile/profileUpdated',
+      type: types.UPDATE_CONSUMER_PROFILE,
       payload,
     });
   },
@@ -982,9 +982,9 @@ const user = (state = initialState.user, action) => {
     case types.GET_WHATSAPPSUPPORT_FAILURE:
       // Write down here just for the sake of completeness, we won't handle this failure case for now.
       return state;
-    case 'ordering/profile/loadProfileInfo/pending':
+    case types.LOAD_CONSUMER_PROFILE_PENDING:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.PENDING } };
-    case 'ordering/profile/loadProfileInfo/fulfilled':
+    case types.LOAD_CONSUMER_PROFILE_FULFILLED:
       const { payload } = action || {};
 
       return {
@@ -1004,9 +1004,9 @@ const user = (state = initialState.user, action) => {
           status: API_REQUEST_STATUS.FULFILLED,
         },
       };
-    case 'ordering/profile/loadProfileInfo/rejected':
+    case types.LOAD_CONSUMER_PROFILE_REJECTED:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.REJECTED } };
-    case 'ordering/profile/profileUpdated':
+    case types.UPDATE_CONSUMER_PROFILE:
       return {
         ...state,
         profile: { ...state.profile, ...payload },
@@ -1355,9 +1355,9 @@ export const getUserLoginRequestStatus = state => state.app.user.loginRequestSta
 
 export const getUserLoginByBeepAppStatus = state => state.app.user.loginByBeepAppStatus;
 
-export const getUserProfileStatus = state => state.app.user.profile.status;
-
 export const getUserProfile = state => state.app.user.profile;
+
+export const getUserProfileStatus = state => state.app.user.profile.status;
 
 export const getIsUserLoginRequestStatusInPending = createSelector(
   getUserLoginRequestStatus,

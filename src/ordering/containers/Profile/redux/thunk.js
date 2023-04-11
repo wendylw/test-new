@@ -24,7 +24,7 @@ export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated'
     const result = await putProfileInfo(consumerId, payload);
 
     // If profile info updated, should get new profile info for app level
-    dispatch(appActions.profileUpdated(payload));
+    dispatch(appActions.updateProfile(payload));
 
     return result;
   } catch (error) {

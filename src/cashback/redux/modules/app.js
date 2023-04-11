@@ -210,19 +210,19 @@ export const actions = {
 
   loadProfileInfo: consumerId => async dispatch => {
     try {
-      dispatch({ type: 'cashback/profile/loadProfileInfo/pending' });
+      dispatch({ type: types.LOAD_CONSUMER_PROFILE_PENDING });
 
       const result = await getProfileInfo(consumerId);
 
       dispatch({
-        type: 'cashback/profile/loadProfileInfo/fulfilled',
+        type: types.LOAD_CONSUMER_PROFILE_FULFILLED,
         payload: result,
       });
     } catch (error) {
       logger.error('Cash_LoadProfileInfoFailed', { message: error?.message });
 
       dispatch({
-        type: 'cashback/profile/loadProfileInfo/rejected',
+        type: types.types.LOAD_CONSUMER_PROFILE_REJECTED,
         error,
       });
     }
@@ -454,9 +454,9 @@ const user = (state = initialState.user, action) => {
     case types.GET_WHATSAPPSUPPORT_FAILURE:
       // Write down here just for the sake of completeness, we won't handle this failure case for now.
       return state;
-    case 'ordering/profile/loadProfileInfo/pending':
+    case types.LOAD_CONSUMER_PROFILE_PENDING:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.PENDING } };
-    case 'ordering/profile/loadProfileInfo/fulfilled':
+    case types.LOAD_CONSUMER_PROFILE_FULFILLED:
       const { payload } = action || {};
 
       return {
@@ -476,7 +476,7 @@ const user = (state = initialState.user, action) => {
           status: API_REQUEST_STATUS.FULFILLED,
         },
       };
-    case 'ordering/profile/loadProfileInfo/rejected':
+    case types.LOAD_CONSUMER_PROFILE_REJECTED:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.REJECTED } };
     default:
       return state;

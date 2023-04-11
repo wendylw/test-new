@@ -26,6 +26,13 @@ export const APP_TYPES = {
 
   UPDATE_USER: 'ORDERING/UPDATE_USER',
 
+  // Profile
+  LOAD_CONSUMER_PROFILE_PENDING: 'ordering/profile/loadProfileInfo/pending',
+  LOAD_CONSUMER_PROFILE_FULFILLED: 'ordering/profile/loadProfileInfo/fulfilled',
+  LOAD_CONSUMER_PROFILE_REJECTED: 'ordering/profile/loadProfileInfo/rejected',
+
+  UPDATE_CONSUMER_PROFILE: 'ordering/profile/updateProfile',
+
   // get OTP
   RESET_GET_OTP_REQUEST: 'ORDERING/APP/RESET_GET_OTP_REQUEST',
   GET_OTP_REQUEST: 'ORDERING/APP/GET_OTP_REQUEST',
