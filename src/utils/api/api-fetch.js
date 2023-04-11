@@ -2,6 +2,7 @@ import originalKy from 'ky';
 import qs from 'qs';
 import { getClient } from '../../common/utils';
 import APIError from './api-error';
+import logger from '../monitoring/logger';
 
 export const ky = originalKy.create({
   hooks: {
@@ -31,48 +32,6 @@ async function parseResponse(resp) {
   }
 
   return body;
-}
-
-function convertOptions(options) {
-  // include is general credential value. if api fetching need Cross-domain without cookie that the value needs set `omit` in others.
-  const { type = 'json', payload, headers, queryParams, ...others } = options;
-  const currentOptions = {
-    ...others,
-  };
-
-  if (type === 'json') {
-    if (payload && typeof payload !== 'object') {
-      console.warn(
-        `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`
-      );
-      currentOptions.body = payload;
-    } else {
-      currentOptions.json = payload;
-    }
-  } else {
-    currentOptions.body = payload;
-  }
-
-  if (queryParams) {
-    currentOptions.searchParams = queryParams;
-  }
-
-  currentOptions.hooks = currentOptions.hooks || {};
-  currentOptions.hooks.beforeRequest = currentOptions.hooks.beforeRequest || [];
-
-  if (headers) {
-    if (typeof headers !== 'object') {
-      throw new Error('headers should be an object');
-    }
-    // adding headers should be at the front of the hooks, so that other hooks have chance to modify the headers.
-    currentOptions.hooks.beforeRequest.unshift(req => {
-      Object.keys(headers).forEach(key => {
-        req.headers.set(key, headers[key]);
-      });
-    });
-  }
-
-  return currentOptions;
 }
 
 /* For the new version of the response data structure, and compatible with the old interface data return */
@@ -173,6 +132,69 @@ export function get(url, options = {}) {
       method: 'get',
     })
   );
+}
+
+/**
+ *
+ * @param {object} options : {type = 'json', payload, headers, queryParams, ...othersOptions}
+ * @returns {{
+ *  body | json: any | json string,
+ *  searchParams: string,
+ *  hooks: {
+ *    beforeRequest: Function[]
+ *  },
+ *  headers: object
+ * }}
+ */
+function convertOptions(options) {
+  // include is general credential value. if api fetching need Cross-domain without cookie that the value needs set `omit` in others.
+  const { type = 'json', payload, headers, queryParams, hooks, ...others } = options;
+
+  if (headers && typeof headers !== 'object') {
+    logger.error('Tool_ApiFetch_convertOptionsHeaderTypeError', {
+      message: 'headers should be an object',
+    });
+
+    throw new APIError('headers should be an object', { status: 400, code: 80002, extra: 'requestHeadersNotObject' });
+  }
+
+  const currentHooks = hooks || {};
+  const currentOptions = {
+    ...others,
+    hooks: {
+      ...currentHooks,
+      beforeRequest: currentHooks.beforeRequest || [],
+    },
+  };
+
+  if (type === 'json' && payload && typeof payload !== 'object') {
+    logger.error('Tool_ApiFetch_convertOptionsTypePayloadNotMatch', {
+      message: `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`,
+    });
+
+    console.error('Common ApiFetch http payload & type not match');
+  }
+
+  if (type === 'json' && (!payload || (payload && typeof payload === 'object'))) {
+    currentOptions.json = payload;
+  } else {
+    currentOptions.body = payload;
+  }
+
+  if (queryParams) {
+    currentOptions.searchParams = queryParams;
+  }
+
+  if (headers) {
+    // adding headers should be at the front of the hooks, so that other hooks have chance to modify the headers.
+    currentOptions.hooks.beforeRequest.unshift(req => {
+      Object.keys(headers).forEach(key => {
+        req.headers.set(key, headers[key]);
+      });
+    });
+  }
+
+  return currentOptions;
 }
 
 /**
