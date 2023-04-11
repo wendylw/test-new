@@ -424,7 +424,7 @@ export const actions = {
       requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(async resp => {
         const { consumerId, login } = resp || {};
 
-        if (!consumerId || !login) {
+        if (!login) {
           return resp;
         }
 
