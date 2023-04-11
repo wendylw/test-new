@@ -3,7 +3,6 @@ import _get from 'lodash/get';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
-import Cookies from 'js-cookie';
 import * as UtilsV2 from '../common/utils';
 import { SOURCE_TYPE } from '../common/utils/constants';
 
@@ -528,8 +527,8 @@ Utils.getFulfillDate = (businessUTCOffset = 480) => {
     const fulfillDayjs = timeLib.setDateTime(expectedFromTime, expectedDayjs);
 
     return fulfillDayjs.toISOString();
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error('Common Utils getFulfillDate:', error?.message);
     return null;
   }
 };

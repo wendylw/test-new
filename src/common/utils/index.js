@@ -161,7 +161,8 @@ export const isFromBeepSite = () => {
 
     return isSiteApp(hostname);
   } catch (error) {
-    console.error(error);
+    console.error('Common Utils isFromBeepSite:', error?.message || '');
+
     return false;
   }
 };
@@ -177,7 +178,8 @@ export const isFromBeepSiteOrderHistory = () => {
 
     return pathname === PATH_NAME_MAPPING.ORDER_HISTORY;
   } catch (error) {
-    console.error(error);
+    console.error('Common Utils isFromBeepSiteOrderHistory:', error?.message || '');
+
     return false;
   }
 };
@@ -194,7 +196,8 @@ export const isFromFoodCourt = () => {
 
     return pathname === `${ORDERING_BASE}${FOOD_COURT}`;
   } catch (error) {
-    console.error(error);
+    console.error('Common Utils isFromFoodCourt:', error?.message || '');
+
     return false;
   }
 };

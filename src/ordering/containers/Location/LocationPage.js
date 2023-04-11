@@ -17,9 +17,9 @@ import { loadAddressList } from '../../redux/modules/addressList/thunks';
 import { setAddressInfo } from '../../../redux/modules/address/thunks';
 import { connect } from 'react-redux';
 import CleverTap from '../../../utils/clevertap';
+import logger from '../../../utils/monitoring/logger';
 
 import './OrderingLocation.scss';
-import logger from '../../../utils/monitoring/logger';
 
 class LocationPage extends Component {
   state = {
@@ -103,11 +103,8 @@ class LocationPage extends Component {
         throw new Error('Delivery radius or store coordinates is not correct.');
       }
       this.setState({ storeInfo });
-    } catch (e) {
-      console.error('fail to load storeInfo', e);
-      // this.setState({
-      //   initError: t('FailToLoadStoreInfo'),
-      // });
+    } catch (error) {
+      logger.error('Ordering Location loadStoreInfo:', { message: error?.message || '' });
     } finally {
       this.setState({ initializing: false });
     }

@@ -44,7 +44,7 @@ export const uploadReportDriverPhoto = async file => {
 
     return postToS3(policyData.endPoint, fd);
   } catch (e) {
-    console.error(e);
+    console.error('Common AWS-S3 uploadReportDriverPhoto:', e);
     throw e;
   }
 };

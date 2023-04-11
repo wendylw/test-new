@@ -209,7 +209,7 @@ export class ThankYou extends PureComponent {
       // we add the [promptEnableAppNotification] function on version 1.10.0
       // so before 1.10.0 call this function will throw NativeApiError with METHOD_NOT_EXIST of code
       if (error?.code !== NativeMethods.NATIVE_API_ERROR_CODES.METHOD_NOT_EXIST) {
-        console.error(error);
+        console.error('Ordering ThankYou promptUserEnableAppNotification: ', error?.message || '');
       }
     }
   }
@@ -272,7 +272,7 @@ export class ThankYou extends PureComponent {
         this.closeMap();
       }
     } catch (error) {
-      console.error(error);
+      console.error('Ordering ThankYou updateAppLocationAndStatus: ', error?.message || '');
     }
   };
 

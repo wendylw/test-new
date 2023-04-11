@@ -279,8 +279,8 @@ export const actions = {
         type: LOCATION_AND_DATE.TIME_SLOT_SOLD_DATA_LOADED,
         payload: payload,
       });
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error('Ordering LocationAndDate loadTimeSlotSoldData:', error?.message);
 
       dispatch({
         type: LOCATION_AND_DATE.TIME_SLOT_SOLD_DATA_LOADED,

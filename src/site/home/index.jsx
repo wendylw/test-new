@@ -128,8 +128,8 @@ class Home extends React.Component {
     try {
       const placeInfo = await getPlaceInfoByDeviceByAskPermission();
       if (placeInfo) await this.updateAddressInfo(placeInfo);
-    } catch (e) {
-      console.error('[Home] [didMount] error=%s', e);
+    } catch (error) {
+      console.error('[Home] [didMount] error=%s', error);
     }
   };
 

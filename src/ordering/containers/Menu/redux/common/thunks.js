@@ -216,7 +216,7 @@ export const updateExpectedDeliveryDate = createAsyncThunk(
 
       return expectedDateDayJsObj.toISOString();
     } catch (error) {
-      console.error(error);
+      console.error('Ordering Menu updateExpectedDeliveryDate', error?.message || '');
 
       throw error;
     }
@@ -315,7 +315,7 @@ export const initExpectedDeliveryDate = createAsyncThunk(
         })
       );
     } catch (error) {
-      console.error(error);
+      console.error('Ordering Menu initExpectedDeliveryDate', error?.message || '');
       throw error;
     }
   }
@@ -668,7 +668,7 @@ export const toggleUserSaveStoreStatus = createAsyncThunk(
     const updatedSaveResult = !getHasUserSaveStore(state);
 
     saveStoreFavStatus({ consumerId, storeId, isFavorite: updatedSaveResult }).catch(error =>
-      console.error(`Failed to ${updatedSaveResult ? 'save' : 'unsave'} store: ${error.message}`)
+      console.error(`Ordering Menu Failed to ${updatedSaveResult ? 'save' : 'unsave'} store: ${error.message}`)
     );
 
     return updatedSaveResult;

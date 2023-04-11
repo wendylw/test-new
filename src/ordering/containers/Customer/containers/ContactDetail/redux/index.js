@@ -44,7 +44,7 @@ export const updateContactDetail = createAsyncThunk(
 
       addressListActions.updateAddress(updatedAddress);
     } catch (error) {
-      console.error(`Fail to update contact detail: ${error.message}`);
+      console.error(`Ordering Customer updateContactDetail: ${error.message}`);
 
       throw error;
     }

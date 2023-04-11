@@ -49,10 +49,10 @@ export const applyVoucherPayLater = createAsyncThunk(
       const result = await applyVoucher({ receiptNumber, voucherCode });
 
       return result;
-    } catch (e) {
-      console.error(`Fail to apply voucher for pay later: ${e}`);
+    } catch (error) {
+      console.error(`Fail to apply voucher for pay later: ${error.message}`);
 
-      throw formatErrorOfApplyPromoOrVoucher(e);
+      throw formatErrorOfApplyPromoOrVoucher(error);
     }
   }
 );

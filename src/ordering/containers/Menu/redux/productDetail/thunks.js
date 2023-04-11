@@ -117,8 +117,7 @@ const getDefaultSelectedOptions = product => {
 
     return selectedOptionsByVariationId;
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('getDefaultSelectedOptions occur error: ', error.message);
+    console.error('Ordering Menu getDefaultSelectedOptions occur error: ', error.message);
     return {};
   }
 };
@@ -176,7 +175,8 @@ export const showProductDetailDrawer = createAsyncThunk(
             },
           }
         );
-        console.error(error);
+
+        console.error('Ordering Menu showProductDetailDrawer: ', error?.message || '');
         throw error;
       }
     }

@@ -64,7 +64,11 @@ class App extends Component {
     try {
       return NativeMethods.getLoginStatus();
     } catch (error) {
-      console.error(`Fail to get login status: ${error.message}`);
+      const message = error?.message || '';
+
+      logger.error('Cashback_App_GetLoginStatusFailed', { message });
+
+      console.error('Cashback Failed to get login status', message);
 
       return false;
     }

@@ -5,6 +5,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import config from '../../../config';
+import logger from '../../../utils/monitoring/logger';
 
 /* CONSTANTS variable */
 // --BEGIN-- different from marketplace
@@ -64,7 +65,7 @@ function getImageURL(dimension, imageURL) {
     if (process.env.NODE_ENV === 'development') {
       throw new Error(`Image dimension (${dimension}) is not supported`);
     } else {
-      console.error('Image dimension is not supported');
+      logger.error('Common_Image_DimensionIsNotSupported');
     }
     effectiveDimension = '500x500';
   }
