@@ -5,6 +5,7 @@ import { alert } from '../../../../common/feedback';
 import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
 import CleverTap from '../../../../utils/clevertap';
 import logger from '../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../utils/monitoring/constants';
 
 const MY_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '';
 const SG_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '';
@@ -16,27 +17,38 @@ const getStripePromise = country => {
 
   return loadStripe(country === 'SG' ? SG_STRIPE_KEY : MY_STRIPE_KEY)
     .then(stripe => {
-      window.newrelic?.addPageAction('common.stripe-load-success', {
+      window.newrelic?.addPageAction('third-party-lib.load-script-succeeded', {
+        scriptName: 'stripe',
         country,
       });
       return stripe;
     })
     .catch(err => {
-      window.newrelic?.addPageAction('common.stripe-load-failure', {
+      window.newrelic?.addPageAction('third-party-lib.load-script-failed', {
+        scriptName: 'stripe',
         error: err?.message,
         country,
       });
 
-      logger.error('Common_StripeLoadFailed', {
-        error: err?.message,
-        country,
-      });
+      logger.error(
+        'Ordering_StripeCreditCard_InitializeFailed',
+        {
+          message: `Failed to load stripe.js in ${country}`,
+          country,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
+          },
+        }
+      );
 
       alert(i18next.t('GotoPaymentFailedDescription'), {
         onClose: () => {
           window.location.href = `${window.location.origin}${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_CART}${window.location.search}`;
         },
-        containerClassName: 'tw-z-300',
+        style: { zIndex: '300' },
       });
     });
 };

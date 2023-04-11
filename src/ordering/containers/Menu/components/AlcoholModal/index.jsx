@@ -20,7 +20,7 @@ import Clevertap from '../../../../../utils/clevertap';
 
 const AlcoholModal = ({ history }) => {
   const dispatch = useDispatch();
-  const { t } = useTranslation('OrderingHome');
+  const { t } = useTranslation();
   const shouldModal = useSelector(getShouldShowAlcoholModal);
   const shouldShowAlcoholModal = useSelector(getAlcoholModalVisibility);
   const legalForAlcohol = useSelector(isLegalForAlcohol);
@@ -73,12 +73,15 @@ const AlcoholModal = ({ history }) => {
           </div>
           <h2 className={styles.AlcoholDesTitle}>{t('CheckIfDrinkingAge')}</h2>
           <p className={styles.AlcoholDes}>
-            {country === 'MY' && t('AlcoholLimitationsMY')}
-            {country === 'PH' && t('AlcoholLimitationsPH')}
+            <span>
+              {country === 'MY' && t('AlcoholLimitationsMY')}
+              {country === 'PH' && t('AlcoholLimitationsPH')}
+            </span>
           </p>
 
           <div className={styles.AlcoholButton}>
             <Button
+              block
               type="secondary"
               className={styles.AlcoholCloseButton}
               data-testid="noIamNot"
@@ -88,6 +91,7 @@ const AlcoholModal = ({ history }) => {
               {t('AlcoholNo')}
             </Button>
             <Button
+              block
               type="primary"
               className={styles.AlcoholOkButton}
               data-testid="yesIam"
@@ -110,6 +114,7 @@ const AlcoholModal = ({ history }) => {
           <p className={styles.AlcoholDesDenied}>{t('AlcoholNotAllowed')}</p>
           <div className={styles.AlcoholButton}>
             <Button
+              block
               type="primary"
               className={styles.AlcoholDeniedButton}
               data-heap-name="ordering.home.confirm.got"

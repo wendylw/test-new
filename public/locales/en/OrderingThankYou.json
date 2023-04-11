@@ -42,7 +42,7 @@
   "ThankYouForAlreadyPickUp": "Thank you for ordering with us! We hope you enjoy your food",
   "ThankYouForUpdatedToPickingUpForUS": "You've switched to self-pickup. The pickup details are below, we hope you enjoy your food!",
   "EarnedCashBackTitle": "You’ve earned cash back",
-  "EarnedCashBackDescription": "This will automatically be used when you buy from us again!",
+  "EarnedCashBackDescription": "This can be used when you buy from us again!",
   "GotCashBackTitle": "You’ve got {{currency}} cashback",
   "GotCashBackDescription": "Login or sign up below to claim your cashback now!",
   "WantCashBackTitle": "I want cashback",
@@ -66,6 +66,7 @@
   "GoGet": "GoGet",
   "LaLaMove": "Lalamove",
   "MrSpeedy": "MrSpeedy",
+  "Borzo": "Borzo",
   "BeepFleet": "Beep Fleet",
   "PanDaGo": "Pandago",
   "DeliveryBy": "Delivered by {{name}}",
@@ -136,5 +137,7 @@
   "UnsupportedErrorTitle": "Oops, review for this order is not supported",
   "UnsupportedErrorDescription": "Make an order today and keep your review fresh!",
   "Loading": "Loading...",
-  "Retry": "Retry"
+  "Retry": "Retry",
+  "TableNumberUpdatedTitle":"Table Updated",
+  "TableNumberUpdatedDescription":"Your table number has been changed. Kindly check your new table number before paying."
 }

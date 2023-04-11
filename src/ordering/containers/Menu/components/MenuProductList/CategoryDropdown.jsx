@@ -9,6 +9,7 @@ import Drawer from '../../../../../common/components/Drawer';
 import DrawerHeader from '../../../../../common/components/Drawer/DrawerHeader';
 import { getCategories, getIsProductListReady, getHighlightedCategory } from '../../redux/common/selectors';
 import styles from './CategoryDropdown.module.scss';
+import MenuFilled from '../../../../../images/menu-filled.svg';
 
 const categoriesPropTypes = PropTypes.arrayOf(
   PropTypes.shape({
@@ -66,13 +67,11 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
   // trigger onCategoryItemClick after the history.back finished.
   const [showDrawer, setShowDrawer] = useState(false);
   const [stagedCategoryId, setStagedCategoryId] = useState(null);
-  const onHistoryBackCompleted = useCallback(() => {
+  const onHiddenCategoryDrawer = useCallback(() => {
     setStagedCategoryId(null);
     // Must add this setTimeout, otherwise scrollIntoView won't work. I suspect that the history.back
     // will restore the position in an async way.
-    setTimeout(() => {
-      onCategoryItemClick(stagedCategoryId);
-    }, 0);
+    onCategoryItemClick(stagedCategoryId);
   }, [stagedCategoryId, onCategoryItemClick]);
   const onCategorySelected = useCallback(id => {
     setStagedCategoryId(id);
@@ -82,32 +81,37 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
   return (
     <div className="tw-flex-1 beep-line-clamp-flex-container">
       <Button
-        type="secondary"
+        block
+        type="text"
+        theme="ghost"
         className={styles.menuProductCategoryButton}
+        contentClassName={styles.menuProductCategoryContentButton}
         onClick={() => {
           if (isProductListReady) {
             setShowDrawer(true);
           }
         }}
       >
-        <BookOpen className="tw-flex-shrink-0 tw-text-2xl tw-text-gray-600" />
+        <img className="tw-flex-shrink-0 tw-text-2xl" src={MenuFilled} alt="Selected Category" />
         <span className={styles.menuProductHighlightedCategory}>
           {highlightedCategory ? highlightedCategory.name : null}
         </span>
-        <CaretDown className="tw-flex-shrink-0 tw-text-xl tw-my-4 sm:tw-my-4px tw-text-gray-600" weight="light" />
+        <CaretDown className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px tw-text-gray-600" size={16} />
       </Button>
       <Drawer
         className={styles.menuProductCategoryDrawer}
         show={showDrawer}
         onClose={() => setShowDrawer(false)}
-        onHistoryBackCompleted={onHistoryBackCompleted}
+        onHidden={onHiddenCategoryDrawer}
         header={
           <DrawerHeader
             left={
               <Button
                 type="text"
+                theme="ghost"
                 onClick={() => setShowDrawer(false)}
-                className={`${styles.menuProductCategoryDrawerHeaderCloseButton} beep-text-reset`}
+                className={styles.menuProductCategoryDrawerHeaderCloseButton}
+                contentClassName={styles.menuProductCategoryDrawerHeaderCloseButtonContent}
               >
                 <X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />
               </Button>

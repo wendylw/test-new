@@ -52,8 +52,7 @@ const Result = props => {
   useEffect(() => {
     if (show && contentContainerRef.current) {
       const text = contentContainerRef.current.innerText;
-      logger.log('Common_Feedback_ShowResult', { text });
-      window.newrelic?.addPageAction('feedback.result.show', { text });
+      logger.log('Common_Feedback_ShowResult', { message: text });
     }
   }, [children, show]);
 
@@ -61,16 +60,16 @@ const Result = props => {
     <>
       {header}
       <div className={`${styles.resultContent} ${className}`}>
-        {children}
+        <div ref={contentContainerRef}>{children}</div>
         <div className={styles.resultFooter}>
           <Button
             type="primary"
+            size="small"
             className={`${styles.closeButtonClassName} tw-uppercase${
               closeButtonClassName ? ` ${closeButtonClassName}` : ''
             }`}
             onClick={onClose}
             style={closeButtonStyle}
-            size="small"
           >
             {closeButtonContent || t('Okay')}
           </Button>
@@ -113,7 +112,6 @@ Result.propTypes = {
 
 Result.defaultProps = {
   header: null,
-  container: null,
   children: null,
   isFullScreen: false,
   show: false,

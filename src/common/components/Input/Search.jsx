@@ -1,6 +1,5 @@
 import _isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useRef, useState } from 'react';
-import { useMount } from 'react-use';
 import PropTypes from 'prop-types';
 import { MagnifyingGlass, XCircle } from 'phosphor-react';
 import Button from '../Button';
@@ -21,9 +20,7 @@ const Search = React.forwardRef(
     },
     searchRef
   ) => {
-    const classNameList = [
-      'tw-flex tw-flex-1 tw-items-center tw-border tw-border-solid tw-border-gray-400 tw-rounded-2xl',
-    ];
+    const classNameList = [styles.SearchContainer, allowClear ? '' : 'not-allow-clear'];
     // Search input value use state of component, because Chinese typing
     const [inputValue, setInputValue] = useState(defaultSearchKeyword);
     const currentRef = useRef(null);
@@ -33,10 +30,6 @@ const Search = React.forwardRef(
 
       await onClearInput();
 
-      searchInputRef.current?.focus();
-    });
-
-    useMount(() => {
       searchInputRef.current?.focus();
     });
 
@@ -56,7 +49,7 @@ const Search = React.forwardRef(
             searchInputRef.current = ref;
           }}
           placeholder={placeholder}
-          className="tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-500"
+          className="tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-600 tw-border-gray-200 tw-bg-gray-200"
           type="text"
           value={inputValue}
           onChange={e => {
@@ -77,11 +70,13 @@ const Search = React.forwardRef(
             {allowClear ? (
               <Button
                 type="text"
-                className={_isEmpty(inputValue) ? styles.SearchHideClearButton : styles.SearchClearButton}
+                theme="ghost"
+                className={_isEmpty(inputValue) ? 'tw-opacity-0' : 'tw-flex-shrink-0'}
+                contentClassName={styles.SearchClearButtonContent}
                 disabled={_isEmpty(inputValue)}
                 onClick={onHandleClearSearchKeyword}
               >
-                <XCircle className="tw-text-2xl tw-text-gray-500" weight="fill" />
+                <XCircle className="tw-text-2xl tw-text-gray-600" weight="fill" />
               </Button>
             ) : null}
           </>

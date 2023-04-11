@@ -1,3 +1,5 @@
+import qs from 'qs';
+import i18next from 'i18next';
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import _get from 'lodash/get';
@@ -5,6 +7,7 @@ import _uniq from 'lodash/uniq';
 import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
 import _lowerCase from 'lodash/lowerCase';
+import _cloneDeep from 'lodash/cloneDeep';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
@@ -12,13 +15,12 @@ import config from '../../../config';
 import Url from '../../../utils/url';
 import * as ApiRequest from '../../../utils/api-request';
 import CleverTap from '../../../utils/clevertap';
-import qs from 'qs';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { get, post } from '../../../utils/request';
-import i18next from 'i18next';
+import { get } from '../../../utils/request';
+import { post } from '../../../utils/api/api-fetch';
 import url from '../../../utils/url';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
@@ -40,10 +42,11 @@ import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import logger from '../../../utils/monitoring/logger';
 import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt } from '../../../common/utils';
 import { replace } from 'connected-react-router';
+import { toast } from '../../../common/utils/feedback';
+import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 
 const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 export const types = APP_TYPES;
 
@@ -89,16 +92,15 @@ const CartModel = {
       validFrom: null,
       promoType: '',
     },
+    applyCashback: false,
   },
 };
 
 export const initialState = {
   user: {
-    showLoginPage: false,
     isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
-    hasOtp: false,
     consumerId: config.consumerId,
     customerId: '',
     storeCreditsBalance: 0,
@@ -110,9 +112,14 @@ export const initialState = {
       status: '',
     },
     isError: false,
-    otpType: OTP_REQUEST_TYPES.OTP,
-    isOtpError: false,
-    country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
+    otpRequest: {
+      data: {
+        type: OTP_REQUEST_TYPES.OTP,
+      },
+      status: null,
+      error: null,
+    },
+    country: Utils.getCountry(localePhoneNumber, navigator.language, AVAILABLE_COUNTRIES, 'MY'),
     phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
     loginRequestStatus: null,
@@ -141,6 +148,9 @@ export const initialState = {
     shippingType: Utils.getOrderTypeFromUrl(),
   },
   shoppingCart: CartModel,
+  addOrUpdateShoppingCartItemRequest: {
+    status: null,
+  },
   storeHashCode: {
     data: null,
     status: null,
@@ -149,6 +159,9 @@ export const initialState = {
     status: null,
   },
   coreStores: {
+    status: null,
+  },
+  productDetail: {
     status: null,
   },
   deliveryDetails: {
@@ -268,14 +281,6 @@ const fetchProductDetail = variables => {
 
 //action creators
 export const actions = {
-  showLogin: () => ({
-    type: types.SHOW_LOGIN_PAGE,
-  }),
-
-  hideLogin: () => ({
-    type: types.HIDE_LOGIN_PAGE,
-  }),
-
   loginApp: ({ accessToken, refreshToken, source = null, shippingType = null }) => async (dispatch, getState) => {
     try {
       const businessUTCOffset = getBusinessUTCOffset(getState());
@@ -305,32 +310,52 @@ export const actions = {
     }
   },
 
-  resetOtpStatus: () => ({
-    type: types.RESET_OTP_STATUS,
+  getPhoneWhatsAppSupport: phone => async dispatch => {
+    try {
+      dispatch({ type: types.GET_WHATSAPPSUPPORT_REQUEST });
+
+      const { supportWhatsApp } = await post(Url.API_URLS.GET_WHATSAPP_SUPPORT.url, {
+        phone,
+      });
+
+      dispatch({ type: types.GET_WHATSAPPSUPPORT_SUCCESS, response: { supportWhatsApp } });
+    } catch (error) {
+      dispatch({
+        type: types.GET_WHATSAPPSUPPORT_FAILURE,
+        error,
+      });
+    }
+  },
+
+  resetGetOtpRequest: () => ({
+    type: types.RESET_GET_OTP_REQUEST,
   }),
 
   getOtp: payload => async dispatch => {
     try {
-      dispatch({ type: types.GET_OTP_REQUEST });
+      const { type: otpType } = payload;
 
-      const { isSent, errorCode } = await post(Url.API_URLS.GET_OTP.url, {
+      logger.log('Ordering_App_StartToGetOTP');
+
+      dispatch({ type: types.GET_OTP_REQUEST, payload: { otpType } });
+
+      await post(Url.API_URLS.GET_OTP.url, {
         ...payload,
         platform: OTP_REQUEST_PLATFORM,
       });
 
-      if (isSent) {
-        dispatch({ type: types.GET_OTP_SUCCESS });
-      } else {
-        dispatch({ type: types.GET_OTP_FAILURE, error: errorCode });
-      }
+      dispatch({ type: types.GET_OTP_SUCCESS });
     } catch (error) {
-      // For sake of completeness: this won't be called because of the the response code will always be 200
       dispatch({
         type: types.GET_OTP_FAILURE,
-        error: error,
+        error,
       });
     }
   },
+
+  resetSendOtpRequest: () => ({
+    type: types.RESET_CREATE_OTP_REQUEST,
+  }),
 
   sendOtp: ({ otp }) => ({
     [API_REQUEST]: {
@@ -382,12 +407,7 @@ export const actions = {
       }
     } catch (error) {
       logger.error('Ordering_App_SyncLoginFromNativeFailed', {
-        error: error?.message,
-        code: error?.code,
-      });
-
-      window.newrelic?.addPageAction('ordering.syncLoginFromNative.error', {
-        error: error?.message,
+        message: error?.message,
         code: error?.code,
       });
     }
@@ -438,10 +458,6 @@ export const actions = {
     fields,
   }),
 
-  updateOtpStatus: () => ({
-    type: types.UPDATE_OTP_STATUS,
-  }),
-
   getProfileInfo: consumerId => ({
     [API_REQUEST]: {
       types: [types.FETCH_PROFILE_REQUEST, types.FETCH_PROFILE_SUCCESS, types.FETCH_PROFILE_FAILURE],
@@ -490,22 +506,16 @@ export const actions = {
       return;
     }
 
-    const deliveryDetails = getDeliveryDetails(state);
-    const deliveryToLocation = _get(deliveryDetails, 'deliveryToLocation', null);
     const isAddressRequestStatusFulfilled = getIsAddressRequestStatusFulfilled(state);
 
     let deliveryCoords = null;
 
-    if (!deliveryToLocation) {
-      if (isAddressRequestStatusFulfilled) {
-        deliveryCoords = getAddressCoords(state);
-      } else {
-        // The only cost is to send redundant requests to get the address, but it will promise to get the address finally
-        await dispatch(getAddressInfo());
-        deliveryCoords = getAddressCoords(getState());
-      }
+    if (isAddressRequestStatusFulfilled) {
+      deliveryCoords = getAddressCoords(state);
     } else {
-      deliveryCoords = { lat: deliveryToLocation.latitude, lng: deliveryToLocation.longitude };
+      // The only cost is to send redundant requests to get the address, but it will promise to get the address finally
+      await dispatch(getAddressInfo());
+      deliveryCoords = getAddressCoords(getState());
     }
 
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
@@ -701,10 +711,19 @@ export const actions = {
       if (isTokenExpired) {
         const tokens = await NativeMethods.tokenExpiredAsync();
         const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
         await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
       }
     } catch (e) {
+      if (e?.code === 'B0001') {
+        toast(i18next.t('ApiError:B0001Description'));
+      } else {
+        toast(i18next.t('Common:UnknownError'));
+      }
+
       console.error('Failed to get tokens from native: ', e.message);
+
+      logger.error('Common_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
     }
   },
 
@@ -741,6 +760,8 @@ export const actions = {
         type: types.CREATE_LOGIN_FAILURE,
         error,
       });
+
+      logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
 
       return false;
     }
@@ -802,22 +823,27 @@ export const actions = {
       payload: newStoreId,
     });
   },
+
+  updateCashbackApplyStatus: newStatus => ({
+    type: types.UPDATE_SHOPPINGCART_APPLYCASHBACK,
+    payload: newStatus,
+  }),
 };
 
 const user = (state = initialState.user, action) => {
   const { type, response, prompt, error, fields, responseGql, payload } = action;
-  const { consumerId, login, noWhatsAppAccount } = response || {};
+  const { consumerId, login, supportWhatsApp } = response || {};
   const source = _get(payload, 'source', null);
+  const otpType = _get(payload, 'otpType', null);
   const isFromBeepApp = source === REGISTRATION_SOURCE.BEEP_APP;
 
   switch (type) {
-    case types.SHOW_LOGIN_PAGE:
-      return { ...state, showLoginPage: true };
-    case types.HIDE_LOGIN_PAGE:
-      return { ...state, showLoginPage: false };
+    case types.RESET_CREATE_OTP_REQUEST:
+      return { ...state, isFetching: false, isError: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
-    case types.CREATE_OTP_REQUEST:
       return { ...state, isFetching: true };
+    case types.CREATE_OTP_REQUEST:
+      return { ...state, isFetching: true, isError: false };
     case types.CREATE_LOGIN_REQUEST:
       return {
         ...state,
@@ -826,25 +852,25 @@ const user = (state = initialState.user, action) => {
         loginByBeepAppStatus: isFromBeepApp ? API_REQUEST_STATUS.PENDING : null,
       };
     case types.FETCH_LOGIN_STATUS_FAILURE:
+      return { ...state, isFetching: false };
     case types.GET_OTP_FAILURE:
-      // We won't handle the error code separately for now, because we don't want users to see the error details in the phase 1.
-      return { ...state, isFetching: false, isResending: false, isOtpError: true };
+      return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
     case types.CREATE_OTP_FAILURE:
-      return { ...state, isFetching: false, isResending: false, isError: true };
+      return { ...state, isFetching: false, isError: true };
+    case types.RESET_GET_OTP_REQUEST:
+      return { ...state, otpRequest: _cloneDeep(initialState.user.otpRequest) };
     case types.GET_OTP_REQUEST:
       return {
         ...state,
-        isFetching: true,
-        isResending: true,
-        isOtpError: false,
-        otpType: OTP_REQUEST_TYPES.RE_SEND_OTP,
+        otpRequest: {
+          ...state.otpRequest,
+          data: { ...state.otpRequest.data, type: otpType },
+          status: API_REQUEST_STATUS.PENDING,
+          error: null,
+        },
       };
-    case types.RESET_OTP_STATUS:
-      return { ...state, isFetching: false, hasOtp: false };
-    case types.UPDATE_OTP_STATUS:
-      return { ...state, isFetching: false, isError: false };
     case types.GET_OTP_SUCCESS:
-      return { ...state, isFetching: false, isResending: false, hasOtp: true, noWhatsAppAccount };
+      return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.FULFILLED } };
     case types.CREATE_OTP_SUCCESS:
       const { access_token, refresh_token } = response;
 
@@ -876,7 +902,6 @@ const user = (state = initialState.user, action) => {
           status: API_REQUEST_STATUS.FULFILLED,
         },
         isLogin: true,
-        hasOtp: false,
         isExpired: false,
         isFetching: false,
         loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
@@ -967,6 +992,13 @@ const user = (state = initialState.user, action) => {
         return state;
       }
 
+    case types.GET_WHATSAPPSUPPORT_REQUEST:
+      return { ...state, noWhatsAppAccount: true };
+    case types.GET_WHATSAPPSUPPORT_SUCCESS:
+      return { ...state, noWhatsAppAccount: !supportWhatsApp };
+    case types.GET_WHATSAPPSUPPORT_FAILURE:
+      // Write down here just for the sake of completeness, we won't handle this failure case for now.
+      return state;
     default:
       return state;
   }
@@ -979,14 +1011,6 @@ const error = (state = initialState.error, action) => {
     return null;
   } else if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
     let errorMessage = message;
-
-    return {
-      ...state,
-      code,
-      message: errorMessage,
-    };
-  } else if (code && code !== 401 && type === types.CREATE_OTP_FAILURE) {
-    let errorMessage = Constants.LOGIN_PROMPT[code];
 
     return {
       ...state,
@@ -1058,6 +1082,19 @@ const coreStores = (state = initialState.coreStores, action) => {
     case types.FETCH_CORESTORES_SUCCESS:
       return { ...state, status: API_REQUEST_STATUS.FULFILLED };
     case types.FETCH_CORESTORES_FAILURE:
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
+};
+
+const productDetail = (state = initialState.productDetail, action) => {
+  switch (action.type) {
+    case types.FETCH_PRODUCTDETAIL_REQUEST:
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
+    case types.FETCH_PRODUCTDETAIL_SUCCESS:
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
+    case types.FETCH_PRODUCTDETAIL_FAILURE:
       return { ...state, status: API_REQUEST_STATUS.REJECTED };
     default:
       return state;
@@ -1151,9 +1188,24 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
     return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED };
+  } else if (action.type === types.UPDATE_SHOPPINGCART_APPLYCASHBACK) {
+    return { ...state, billing: { ...state.billing, applyCashback: action.payload } };
   }
 
   return state;
+};
+
+const addOrUpdateShoppingCartItemRequest = (state = initialState.addOrUpdateShoppingCartItemRequest, action) => {
+  switch (action.type) {
+    case types.ADDORUPDATE_SHOPPINGCARTITEM_REQUEST:
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
+    case types.ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS:
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
+    case types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE:
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
 };
 
 const deliveryDetails = (state = initialState.deliveryDetails, action) => {
@@ -1245,21 +1297,29 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
+  addOrUpdateShoppingCartItemRequest,
   cart: cartReducer,
   deliveryDetails,
   storeHashCode: storeHashCodeReducer,
   coreBusiness,
   onlineCategory,
   coreStores,
+  productDetail,
 });
 
 // selectors
 export const getUser = state => state.app.user;
-export const getOtpType = state => state.app.user.otpType;
-export const getIsOtpError = state => state.app.user.isOtpError;
+export const getOtpRequest = state => state.app.user.otpRequest;
 export const getUserIsExpired = state => state.app.user.isExpired;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
+
+export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+
+export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
+
+export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
+
 export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];
 };
@@ -1270,11 +1330,14 @@ export const getCoreStoresStatus = state => state.app.coreStores.status;
 
 export const getOnlineCategoryStatus = state => state.app.onlineCategory.status;
 
+export const getIsOnlineCategoryRequestRejected = createSelector(
+  getOnlineCategoryStatus,
+  onlineCategoryStatus => onlineCategoryStatus === API_REQUEST_STATUS.REJECTED
+);
+
 export const getRequestInfo = state => state.app.requestInfo;
 
 export const getApiError = state => state.app.apiError;
-
-export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
 export const getUserLoginRequestStatus = state => state.app.user.loginRequestStatus;
 
@@ -1292,6 +1355,11 @@ export const getIsUserLoginRequestStatusInPending = createSelector(
 export const getIsUserProfileStatusFulfilled = createSelector(
   getUserProfileStatus,
   status => status === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsUserProfileStatusPending = createSelector(
+  getUserProfileStatus,
+  status => status === API_REQUEST_STATUS.PENDING
 );
 
 export const getBusinessInfo = state => {
@@ -1325,8 +1393,20 @@ export const getIsCoreBusinessAPIFulfilled = createSelector(
   status => status === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsCoreBusinessRequestRejected = createSelector(
+  getCoreBusinessAPIStatus,
+  status => status === API_REQUEST_STATUS.REJECTED
+);
+
 export const getIsCoreBusinessAPICompleted = createSelector(getCoreBusinessAPIStatus, status =>
   [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(status)
+);
+
+export const getProductDetailStatus = state => state.app.productDetail.status;
+
+export const getIsProductDetailRequestRejected = createSelector(
+  getProductDetailStatus,
+  productDetailStatus => productDetailStatus === API_REQUEST_STATUS.REJECTED
 );
 
 // TODO: Utils.getOrderTypeFromUrl() will replace be selector
@@ -1395,6 +1475,11 @@ export const getCartUnavailableItems = state => state.app.shoppingCart.unavailab
 
 export const getCartStatus = state => state.app.shoppingCart.status;
 
+export const getIsGetCartFailed = createSelector(
+  getCartStatus,
+  cartStatus => cartStatus === API_REQUEST_STATUS.REJECTED
+);
+
 export const getShippingFee = createSelector(getCartBilling, billing => billing.shippingFee);
 
 export const getDeliveryDetails = state => state.app.deliveryDetails;
@@ -1409,10 +1494,15 @@ export const getHasFetchDeliveryDetailsRequestCompleted = createSelector(getDeli
 
 export const getCartTotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'total', null));
 export const getCartSubtotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'subtotal', null));
+export const getCartCashback = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'cashback', null));
 export const getCartTotalCashback = createSelector(getCartBilling, cartBilling =>
   _get(cartBilling, 'totalCashback', null)
 );
 export const getCartCount = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'count', 0));
+
+export const getCartApplyCashback = createSelector(getCartBilling, cartBilling =>
+  _get(cartBilling, 'applyCashback', false)
+);
 
 export const getServiceChargeRate = createSelector(getCartBilling, cartBilling =>
   _get(cartBilling, 'serviceChargeInfo.serviceChargeRate', 0)
@@ -1474,6 +1564,8 @@ export const getStoreInfoForCleverTap = state => {
 
   return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartSummary });
 };
+
+export const getIsCartStatusRejected = createSelector(getCartStatus, status => status === API_REQUEST_STATUS.REJECTED);
 
 export const getUserEmail = createSelector(getUser, user => _get(user, 'profile.email', ''));
 
@@ -1676,14 +1768,15 @@ export const getHasLoginGuardPassed = createSelector(
   (isUserLogin, isLoginFree) => isUserLogin || isLoginFree
 );
 
+export const getIsFreeOrder = createSelector(getCartBilling, cartBilling => {
+  const billingTotal = _get(cartBilling, 'total', 0);
+  return billingTotal === 0;
+});
+
 export const getIsValidCreateOrder = createSelector(
-  getCartBilling,
+  getIsFreeOrder,
   getIsTNGMiniProgram,
-  (cartBilling, isTNGMiniProgram) => {
-    const { total } = cartBilling || {};
-    const isFree = !total;
-    return isTNGMiniProgram || isFree;
-  }
+  (isFreeOrder, isTNGMiniProgram) => isTNGMiniProgram || isFreeOrder
 );
 
 export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCart => {
@@ -1761,6 +1854,11 @@ export const getIsCoreStoresLoaded = createSelector(
   coreStoresStatus => coreStoresStatus === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsCoreStoresRequestRejected = createSelector(
+  getCoreStoresStatus,
+  coreStoresStatus => coreStoresStatus === API_REQUEST_STATUS.REJECTED
+);
+
 export const getDeliveryRadius = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'qrOrderingSettings.deliveryRadius', null)
 );
@@ -1778,3 +1876,11 @@ export const getURLQueryObject = createSelector(getLocationSearch, locationSearc
 export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'stores[0].reviewInfo.rating', null)
 );
+
+export const getAddOrUpdateShoppingCartItemStatus = state => state.app.addOrUpdateShoppingCartItemRequest.status;
+
+export const getIsAddOrUpdateShoppingCartItemRejected = createSelector(
+  getAddOrUpdateShoppingCartItemStatus,
+  addOrUpdateShoppingCartItemStatus => addOrUpdateShoppingCartItemStatus === API_REQUEST_STATUS.REJECTED
+);
+export const getShouldShowCashbackSwitchButton = createSelector(getCartCashback, cashback => cashback > 0);

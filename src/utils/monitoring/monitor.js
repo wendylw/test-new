@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/react';
 import { CaptureConsole } from '@sentry/integrations';
+import { onFCP, onCLS, onFID, onLCP, onTTFB } from 'web-vitals';
 import tids from './tracing-id';
 import shouldFilter, { getErrorMessageFromHint } from './filter-sentry-events';
 import './navigation-detector';
@@ -87,7 +88,7 @@ class SentryCapturedError extends Error {
 const trackError = (event, hint) => {
   try {
     const errorMessage = getErrorMessageFromHint(hint);
-    logger.error('Common_SentryCapturedError', { message: errorMessage, sentryId: event?.event_id });
+    logger.error('Common_SentryCapturedError', { message: errorMessage, id: event?.event_id });
 
     window.newrelic?.addPageAction('common.error', {
       message: errorMessage,
@@ -107,7 +108,25 @@ const logUrlChange = type => {
 
 const logClientInfo = () => {
   logger.log('Common_ClientInfo', {
-    userAgent: navigator.userAgent,
+    name: navigator.userAgent,
+  });
+};
+
+const logWebVitalInfo = metric => {
+  /**
+   * According to type specification, we only need to record following values:
+   * 1. name: the name of the metric
+   * 2. value: the current value of the metric
+   * 3. rating: the rating as to whether the metric value is within the "good", "needs improvement", or "poor" thresholds of the metric
+   * 4. navigationType: the type of navigation
+   */
+  const { name, value, rating, navigationType } = metric || {};
+
+  logger.log('Common_WebVitalInfo', {
+    name,
+    value,
+    rating,
+    navigationType,
   });
 };
 
@@ -213,3 +232,20 @@ if (!initiallyLogged) {
   logUrlChange('pageloaded');
   logClientInfo();
 }
+
+const trackWebVitals = () => {
+  try {
+    onTTFB(logWebVitalInfo);
+    onFCP(logWebVitalInfo);
+    onLCP(logWebVitalInfo);
+    onCLS(logWebVitalInfo);
+    onFID(logWebVitalInfo);
+  } catch (e) {
+    // Note: always be careful! the script could throw errors for unknown reasons
+    // Refer to: https://github.com/GoogleChrome/web-vitals/issues/274
+    logger.error('Common_TrackWebVitalsFailed', { message: e?.message });
+  }
+};
+
+// WB-4701: support reporting web vitals to log server
+trackWebVitals();

@@ -1,13 +1,19 @@
 {
-    "EmailAddress": "Email Address",
-    "DateOfBirth": "Date of Birth",
-    "CompleteYourProfile": "Complete Your Profile",
-    "NotValidEmail": "Please try again or enter a valid email address",
-    "NotValidBirthday": "Please enter a valid date of birth(dd/mm)",
-    "SkipForNow": "Skip for now",
-    "DuplicatedEmailAlertTitle": "OOPS! THIS IS AWKWARD…",
-    "DuplicatedEmailAlertEmial": "Looks like you’ve entered this email before. Please use a different email address.",
-    "DuplicatedEmailAlertDoNotAskAgain": "DON’T ASK AGAIN",
-    "DuplicatedEmailAlertBackToEdit": "BACK TO EDIT"
-  }
-  
+  "Email": "Email",
+  "DateOfBirth": "Date of Birth",
+  "CompleteProfile": "Complete Profile",
+  "GetRewarded": "Get Rewarded",
+  "NameIsRequired": "Please enter your name",
+  "EmailIsRequired": "Please enter your email",
+  "BirthdayIsRequired": "Please select your birthday",
+  "NotValidEmail": "Please enter a valid email address",
+  "NotValidBirthday": "Please select a valid date of birth (DD/MM/YYYY)",
+  "BirthdayCanNotLaterThanToday": "Date cannot be later than today",
+  "DuplicatedEmail": "Please enter another valid email",
+  "SkipForNow": "Skip for now",
+  "DuplicatedEmailAlertTitle": "Oops! this is awkward…",
+  "DuplicatedEmailAlertEmail": "Looks like you’ve entered this email before. Please use a different email.",
+  "DuplicatedEmailAlertDoNotAskAgain": "Don’t ask again",
+  "DuplicatedEmailAlertBackToEdit": "Back to edit",
+  "SaveSuccess": "Save Success"
+}

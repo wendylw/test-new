@@ -7,10 +7,12 @@ const Button = props => {
   const {
     children,
     className = '',
+    contentClassName = '',
     style = {},
     type = 'primary',
-    size,
-    danger = false,
+    size = 'normal',
+    theme = 'default',
+    block = false,
     icon = null,
     loading = false,
     onClick = () => {},
@@ -28,7 +30,9 @@ const Button = props => {
   return (
     <button
       onClick={onButtonClick}
-      className={`${styles.button} type-${type}${danger ? '-danger' : ''}${size ? ` size-${size}` : ''} ${className}`}
+      className={`${styles.button} type-${type}${theme ? `-${theme}` : ''}${size ? ` size-${size}` : ''}${
+        block ? ' tw-w-full' : ''
+      } ${className}`}
       style={style}
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...rest}
@@ -43,7 +47,7 @@ const Button = props => {
           </span>
         </span>
       ) : null}
-      {children}
+      <div className={`${styles.buttonContent}${contentClassName ? ` ${contentClassName}` : ''}`}>{children}</div>
     </button>
   );
 };
@@ -51,25 +55,30 @@ const Button = props => {
 Button.propTypes = {
   children: propTypes.node,
   className: propTypes.string,
+  contentClassName: propTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   style: propTypes.object,
   icon: propTypes.element,
   loading: propTypes.bool,
   type: propTypes.oneOf(['primary', 'secondary', 'text']),
   size: propTypes.oneOf(['small', 'normal']),
-  danger: propTypes.bool,
+  theme: propTypes.oneOf(['default', 'danger', 'info', 'ghost']),
+  // The size and placement of buttons can change as parent containers, such as cards, adapt for larger screens.
+  block: propTypes.bool,
   onClick: propTypes.func,
 };
 
 Button.defaultProps = {
   children: null,
   className: '',
+  contentClassName: '',
   icon: null,
   loading: false,
   style: {},
   type: 'primary',
   size: 'normal',
-  danger: false,
+  theme: 'default',
+  block: false,
   onClick: () => {},
 };
 

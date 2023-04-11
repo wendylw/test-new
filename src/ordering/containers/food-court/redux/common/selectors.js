@@ -10,8 +10,11 @@ export const getFoodCourtStores = state => state.foodCourt.common.foodCourtStore
 export const getFoodCourtStoreList = createSelector(getFoodCourtStores, foodCourtStoreListData =>
   foodCourtStoreListData.map(store => {
     const staticData = AllFoodCourtStoreList[store.id];
+    const { isClosed } = store || {};
+    const { unable } = staticData || {};
 
     return {
+      unavailable: unable || isClosed,
       ...staticData,
       ...store,
     };

@@ -3,6 +3,7 @@ import qs from 'qs';
 import Constants from '../../../../utils/constants';
 import config from '../../../../config';
 import Utils from '../../../../utils/utils';
+import logger from '../../../../utils/monitoring/logger';
 import paymentMasterImage from '../../../../images/payment-mastercard.svg';
 import paymentVisaImage from '../../../../images/payment-visa.svg';
 
@@ -25,6 +26,9 @@ const PAYMENT_NAME_COUNTRY_MAP = {
   PH: {
     [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'BeepPHCreditCard',
     [PAYMENT_METHOD_LABELS.GCASH_PAY]: 'BeepPHCCPPGcash',
+  },
+  SG: {
+    [PAYMENT_METHOD_LABELS.GETZ_PAY]: 'GetzPay',
   },
 };
 
@@ -188,7 +192,7 @@ export const getCreditCardFormPathname = (paymentProvider, saveCard = false) => 
       return ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT;
 
     default:
-      console.error(`Wrong paymentProvider(${paymentProvider}) for CreditCard, will back to Payment page`);
+      logger.error('Ordering_Payment_NavigatePageByPaymentProviderFailed', { name: paymentProvider });
       return ROUTER_PATHS.ORDERING_PAYMENT;
   }
 };

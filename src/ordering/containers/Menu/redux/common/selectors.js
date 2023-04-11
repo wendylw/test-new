@@ -221,18 +221,9 @@ export const getHighlightedCategory = createSelector(
   getFirstCategoryInView,
   (activeCategoryId, categories, firstCategoryInView) => {
     const activeCategory = activeCategoryId ? categories.find(category => category.id === activeCategoryId) : null;
+
     return activeCategory || firstCategoryInView;
   }
-);
-
-export const getEnableDeliveryRevamp = state => state.menu.common.enabledDeliveryRevamp;
-
-export const getIsMenuRevamp = createSelector(
-  getIsQrOrderingShippingType,
-  getIsDeliveryOrder,
-  getEnableDeliveryRevamp,
-  (isQrOrderingShippingType, isDeliveryOrder, enabledDeliveryRevamp) =>
-    isQrOrderingShippingType || (isDeliveryOrder && enabledDeliveryRevamp)
 );
 
 export const getIsSearchingBannerVisible = state => state.menu.common.searchingBannerVisible;

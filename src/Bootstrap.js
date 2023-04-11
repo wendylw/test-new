@@ -14,17 +14,17 @@ import logger from './utils/monitoring/logger';
 import { initDevTools } from './utils/dev-tools';
 import { isRequiredDevTools } from './utils/tng-utils';
 
-const AsyncStoresApp = lazy(() => Utils.attemptLoad(() => import('./stores')));
+const AsyncStoresApp = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "STO" */ './stores')));
 
-const AsyncOrdering = lazy(() => Utils.attemptLoad(() => import('./ordering')));
+const AsyncOrdering = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD" */ './ordering')));
 
-const AsyncCashbackApp = lazy(() => Utils.attemptLoad(() => import('./cashback')));
+const AsyncCashbackApp = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB" */ './cashback')));
 
-const AsyncQRScanner = lazy(() => Utils.attemptLoad(() => import('./qrscan')));
+const AsyncQRScanner = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "QRSCN" */ './qrscan')));
 
-const AsyncSite = lazy(() => Utils.attemptLoad(() => import('./site')));
+const AsyncSite = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "SITE" */ './site')));
 
-const AsyncVoucher = lazy(() => Utils.attemptLoad(() => import('./voucher')));
+const AsyncVoucher = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "VOU" */ './voucher')));
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -44,8 +44,8 @@ class Bootstrap extends Component {
       href: document.location.href,
     });
     logger.error('Common_RenderError', {
-      sentryId: eventId,
-      errorMessage: error?.message,
+      id: eventId,
+      message: error?.message,
     });
   };
 

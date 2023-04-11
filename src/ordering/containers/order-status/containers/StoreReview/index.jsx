@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
 import TextareaAutosize from 'react-textarea-autosize';
+import usePrefetch from '../../../../../common/utils/hooks/usePrefetch';
 import Button from '../../../../../common/components/Button';
 import PageFooter from '../../../../../common/components/PageFooter';
 import PageHeader from '../../../../../common/components/PageHeader';
@@ -22,9 +23,11 @@ import {
   getStoreFullDisplayName,
   getStoreRating,
   getStoreShippingType,
+  getOffline,
   getHasStoreReviewed,
   getIsMerchantContactAllowable,
 } from '../../redux/selector';
+import { getOrderCreatedDate, getShouldShowBackButton } from './redux/selectors';
 import { backButtonClicked, submitButtonClicked } from './redux/thunks';
 import { STORE_REVIEW_SHIPPING_TYPES, STORE_REVIEW_COMMENT_CHAR_MAX } from './constants';
 
@@ -34,6 +37,8 @@ const StoreReview = () => {
   const selectedRating = _get(locationState, 'rating', 0);
 
   const { t } = useTranslation('OrderingThankYou');
+
+  const offline = useSelector(getOffline);
 
   const storeHasReviewed = useSelector(getHasStoreReviewed);
 
@@ -46,6 +51,10 @@ const StoreReview = () => {
   const allowContact = useSelector(getIsMerchantContactAllowable);
 
   const storeComment = useSelector(getStoreComment);
+
+  const orderCreatedDate = useSelector(getOrderCreatedDate);
+
+  const shouldShowBackButton = useSelector(getShouldShowBackButton);
 
   const [rating, setRating] = useState(selectedRating || storeRating);
 
@@ -95,9 +104,15 @@ const StoreReview = () => {
     setIsContactAllowable(allowContact);
   }, [allowContact]);
 
+  usePrefetch(['ORD_MNU', 'ORD_TY'], ['OrderingDelivery', 'OrderingThankYou']);
+
   return (
     <section>
-      <PageHeader title={t('StoreReview')} onBackArrowClick={handleClickBackButton} />
+      <PageHeader
+        title={t('StoreReview')}
+        onBackArrowClick={handleClickBackButton}
+        isShowBackButton={shouldShowBackButton}
+      />
       <div className="tw-flex tw-flex-col tw-justify-center tw-items-center">
         <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
         <div className="tw-flex tw-justify-center tw-leading-normal">
@@ -107,11 +122,15 @@ const StoreReview = () => {
           {storeName}
         </div>
         <div className="tw-flex tw-justify-center">
-          <Tag className="tw-leading-loose" color="pink" radiusSize="xs">
-            <span className="tw-text-orange tw-text-xs tw-font-bold">
-              {t(STORE_REVIEW_SHIPPING_TYPES[shippingType.toLowerCase()])}
-            </span>
-          </Tag>
+          {offline ? (
+            <span className="tw-text-sm tw-text-gray-700">{orderCreatedDate}</span>
+          ) : (
+            <Tag className="tw-leading-loose" color="pink" radiusSize="xs">
+              <span className="tw-text-orange tw-text-xs tw-font-bold">
+                {t(STORE_REVIEW_SHIPPING_TYPES[shippingType.toLowerCase()])}
+              </span>
+            </Tag>
+          )}
         </div>
       </div>
 
@@ -200,9 +219,11 @@ const StoreReview = () => {
         <PageFooter className="tw-shadow-xl">
           <div className={styles.StoreReviewFooter}>
             <Button
+              block
+              type="primary"
               disabled={shouldDisableSubmitButton}
               onClick={handleClickSubmitButton}
-              className="tw-w-full tw-uppercase"
+              className="tw-uppercase"
             >
               {t('Submit')}
             </Button>

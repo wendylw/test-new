@@ -10,3 +10,5 @@ export const getContactNumberInvalidErrorVisibility = createSelector(
   getContactNumberIsComplete,
   (isValid, isComplete) => !isValid && isComplete
 );
+
+export const getContactNumber = state => state.customer.addressDetail.contactNumber;

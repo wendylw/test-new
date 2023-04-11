@@ -26,8 +26,7 @@ const Alert = props => {
   useEffect(() => {
     if (show && contentContainerRef.current) {
       const text = contentContainerRef.current.innerText;
-      logger.log('Common_Feedback_ShowAlert', { text });
-      window.newrelic?.addPageAction('feedback.alert.show', { text });
+      logger.log('Common_Feedback_ShowAlert', { message: text });
     }
   }, [children, show]);
 
@@ -46,12 +45,13 @@ const Alert = props => {
       <div ref={contentContainerRef}>{children}</div>
       <div className={styles.alertFooter}>
         <Button
+          block
           type="primary"
-          className={`tw-w-full tw-uppercase${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
+          className={`${styles.alertFooterButton}${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
           onClick={onClose}
           style={closeButtonStyle}
         >
-          {closeButtonContent || t('OK')}
+          {closeButtonContent || t('OKay')}
         </Button>
       </div>
     </Modal>

@@ -3,6 +3,9 @@ import { ObjectFitImage } from '../../../../../common/components/Image';
 import FoodCourtLogo from '../../../../../images/food-court-temp/food-court-logo.jpeg';
 import FoodDistrictLogo from '../../../../../images/food-court-temp/food-district-logo.png';
 import FoodSyopzLogo from '../../../../../images/food-court-temp/food-Syopz-logo.png';
+import HamiltonWalkLogo from '../../../../../images/food-court-temp/hamilton-walk-logo.jpg';
+import FoodStararkLogo from '../../../../../images/food-court-temp/food-Starark-logo.jpeg';
+import FoodNurulLogo from '../../../../../images/food-court-temp/food-Nurul-logo.jpg';
 import styles from './FoodCourtInfo.module.scss';
 
 const OWNERS_MAPPING = {
@@ -20,6 +23,21 @@ const OWNERS_MAPPING = {
     name: 'Syopz Mall',
     logo: FoodSyopzLogo,
     location: "Taylor's University Subang Jaya",
+  },
+  hamiltonwalk: {
+    name: 'Hamilton Walk',
+    logo: HamiltonWalkLogo,
+    location: 'by Rain Garden',
+  },
+  stararkkitchen: {
+    name: 'Starark Planet',
+    logo: FoodStararkLogo,
+    location: 'Penang',
+  },
+  nurulsate: {
+    name: 'Nurul Sate Batang Pinang',
+    logo: FoodNurulLogo,
+    location: 'Nurul Sate Batang Pinang & Asam Pedas Johor',
   },
 };
 

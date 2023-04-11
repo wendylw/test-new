@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import _get from 'lodash/get';
 import Constants from '../../../utils/constants';
+import prefetch from '../../../common/utils/prefetch-assets';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -106,6 +107,7 @@ class StoreList extends Component {
     );
 
     this.getStoreList();
+    prefetch(['ORD_LAD'], ['OrderingDelivery']);
   }
 
   getStoreList = () => {

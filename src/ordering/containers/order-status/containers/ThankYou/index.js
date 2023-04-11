@@ -17,6 +17,7 @@ import OrderSummary from './components/OrderSummary';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
 
 import config from '../../../../../config';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import IconCelebration from '../../../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
@@ -58,7 +59,7 @@ import {
   getStoreRating,
 } from '../../redux/selector';
 import {
-  getshowProfileVisibility,
+  getShowProfileVisibility,
   getFoodCourtId,
   getFoodCourtHashCode,
   getFoodCourtMerchantName,
@@ -71,6 +72,8 @@ import {
   cancelOrder,
   loadCashbackInfo,
   loadFoodCourtIdHashCode,
+  initProfilePage,
+  hideProfileModal,
 } from './redux/thunks';
 import {
   getCashback,
@@ -81,14 +84,19 @@ import {
   getShouldShowCashbackBanner,
   getHasOrderPaid,
   getShouldShowStoreReviewCard,
+  getIsCancelOrderRequestRejected,
+  getCancelOrderRequestErrorMessage,
+  getIsUpdateShippingTypeRequestRejected,
+  getUpdateShippingTypeRequestErrorMessage,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
-import CompleteProfileModal from '../../../../containers/Profile/index';
+import Profile from '../../../../containers/Profile';
 import { ICON_RES } from '../../../../../components/NativeHeader';
-import { SOURCE_TYPE } from '../../../../../common/utils/constants';
+import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
 const {
   AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
@@ -119,33 +127,8 @@ export class ThankYou extends PureComponent {
 
   pollOrderStatusTimer = null;
 
-  showCompleteProfileIfNeeded = async () => {
-    const { hasOrderPaid } = this.props;
-    //Explain: The profile page is not displayed before the order is paid
-    if (this.state.from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && !hasOrderPaid) {
-      return;
-    }
-
-    const isDoNotAsk = Utils.getCookieVariable('do_not_ask');
-    const delay = this.state.from === REFERRER_SOURCE_TYPES.LOGIN ? 1000 : 3000;
-
-    if (isDoNotAsk === '1') {
-      return;
-    }
-
-    const { name, email, birthday, status } = this.props.user.profile || {};
-
-    if (status === 'fulfilled' && REFERRERS_REQUIRING_PROFILE.includes(this.state.from)) {
-      if (!name || !email || !birthday) {
-        this.timer = setTimeout(() => {
-          this.props.setShowProfileVisibility(true);
-        }, delay);
-      }
-    }
-  };
-
   componentDidMount = async () => {
-    const { user, loadCashbackInfo, loadOrderStoreReview } = this.props;
+    const { user, loadCashbackInfo, loadOrderStoreReview, initProfilePage } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
     loadCashbackInfo(receiptNumber);
@@ -155,7 +138,18 @@ export class ThankYou extends PureComponent {
 
     const from = Utils.getCookieVariable('__ty_source');
 
-    this.setState({ from }, () => this.showCompleteProfileIfNeeded());
+    this.setState({ from }, () => {
+      const { from, hasOrderPaid } = this.state;
+
+      // WB-4979: If payment method is not pay at counter, will display profile page immediately
+      // Pay at counter logic is in componentDidUpdate
+      if (
+        hasOrderPaid ||
+        (from !== REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && REFERRERS_REQUIRING_PROFILE.includes(from))
+      ) {
+        initProfilePage({ from });
+      }
+    });
 
     // immidiately remove __ty_source cookie after setting in the state.
     Utils.removeCookieVariable('__ty_source');
@@ -163,7 +157,6 @@ export class ThankYou extends PureComponent {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
-    window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
     const {
       loadStoreIdHashCode,
       loadStoreIdTableIdHashCode,
@@ -199,6 +192,8 @@ export class ThankYou extends PureComponent {
     if ((shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) && Utils.isWebview()) {
       this.promptUserEnableAppNotification();
     }
+
+    prefetch(['ORD_MNU', 'ORD_OD', 'ORD_SR'], ['OrderingDelivery', 'OrderingThankYou']);
   };
 
   promptUserEnableAppNotification() {
@@ -382,12 +377,13 @@ export class ThankYou extends PureComponent {
       loadOrderStoreReview,
       hasOrderPaid: currHasOrderPaid,
     } = this.props;
-
-    if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
-      this.showCompleteProfileIfNeeded();
-    }
-
+    const { from } = this.state;
     const { storeId } = order || {};
+
+    // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
+    if (from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && currHasOrderPaid && !prevHasOrderPaid) {
+      initProfilePage({ from });
+    }
 
     if (storeId && prevStoreId !== storeId) {
       shippingType === DELIVERY_METHOD.DINE_IN
@@ -509,7 +505,7 @@ export class ThankYou extends PureComponent {
   };
 
   handleChangeToSelfPickup = () => {
-    const { order, businessInfo } = this.props;
+    const { order, businessInfo, isUpdateShippingTypeRequestFailed, updateShippingTypRequestErrorMessage } = this.props;
 
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
@@ -518,6 +514,24 @@ export class ThankYou extends PureComponent {
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
+
+    // Currently there is only one thunk to update shipping type.
+    // In fact, no matter where the modification is triggered,
+    // it should be logged. It is recommended to put it in thunk in the future.
+    if (isUpdateShippingTypeRequestFailed) {
+      logger.error(
+        'Ordering_OrderStatus_SwitchOrderShippingTypeFailed',
+        {
+          message: updateShippingTypRequestErrorMessage,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.REFUND,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
+          },
+        }
+      );
+    }
   };
 
   getLogsInfoByStatus = (statusUpdateLogs, statusType) => {
@@ -681,21 +695,43 @@ export class ThankYou extends PureComponent {
   handleOrderCancellation = async ({ reason, detail }) => {
     const { t, receiptNumber, cancelOrder, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
 
-    if (!isOrderCancellable) {
-      alert(t('OrderCannotBeCancelledAsARiderFound'), {
-        title: t('YourFoodIsOnTheWay'),
-        closeButtonContent: t('GotIt'),
+    try {
+      if (!isOrderCancellable) {
+        alert(t('OrderCannotBeCancelledAsARiderFound'), {
+          title: t('YourFoodIsOnTheWay'),
+          closeButtonContent: t('GotIt'),
+        });
+
+        throw new Error('Rider has picked order');
+      }
+
+      await cancelOrder({
+        orderId: receiptNumber,
+        reason,
+        detail,
       });
-      return;
+
+      updateCancellationReasonVisibleState(false);
+
+      const { isCancelOrderRequestFailed, cancelOrderRequestErrorMessage } = this.props;
+
+      if (isCancelOrderRequestFailed) {
+        throw new Error(cancelOrderRequestErrorMessage);
+      }
+    } catch (e) {
+      logger.error(
+        'Ordering_OrderStatus_CancelOrderFailed',
+        {
+          message: e?.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.REFUND,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
+          },
+        }
+      );
     }
-
-    await cancelOrder({
-      orderId: receiptNumber,
-      reason,
-      detail,
-    });
-
-    updateCancellationReasonVisibleState(false);
   };
 
   handleHideOrderCancellationReasonAside = () => {
@@ -860,6 +896,7 @@ export class ThankYou extends PureComponent {
       isPayLater,
       foodCourtId,
       isFromBeepSiteOrderHistory,
+      hideProfileModal,
     } = this.props;
     const isWebview = Utils.isWebview();
 
@@ -867,7 +904,7 @@ export class ThankYou extends PureComponent {
     const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
     if (profileModalVisibility) {
-      this.props.setShowProfileVisibility(false);
+      hideProfileModal();
       return;
     }
 
@@ -923,7 +960,7 @@ export class ThankYou extends PureComponent {
       'shipping type': _get(order, 'shippingType', ''),
     });
 
-    Utils.setSessionVariable('BeepOrderingSource', SOURCE_TYPE.THANK_YOU);
+    Utils.setSessionVariable('__sr_source', REFERRER_SOURCE_TYPES.THANK_YOU);
 
     history.push({
       pathname: ROUTER_PATHS.STORE_REVIEW,
@@ -938,12 +975,15 @@ export class ThankYou extends PureComponent {
       history,
       match,
       order,
+      orderStatus,
       storeRating,
       businessUTCOffset,
       onlineStoreInfo,
       shouldShowCashbackCard,
       shouldShowStoreReviewCard,
       shouldShowCashbackBanner,
+      profileModalVisibility,
+      hideProfileModal,
     } = this.props;
     const date = new Date();
     const { total } = order || {};
@@ -955,12 +995,7 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
-        {order && (
-          <CompleteProfileModal
-            closeModal={this.handleCompleteProfileModalClose}
-            showProfileVisibility={this.props.profileModalVisibility}
-          />
-        )}
+        {orderStatus && <Profile onClose={hideProfileModal} show={profileModalVisibility} />}
         <>
           <HybridHeader
             headerRef={ref => (this.headerEl = ref)}
@@ -1069,7 +1104,7 @@ export default compose(
       isCashbackAvailable: getIsCashbackAvailable(state),
       shouldShowCashbackCard: getShouldShowCashbackCard(state),
       shouldShowCashbackBanner: getShouldShowCashbackBanner(state),
-      profileModalVisibility: getshowProfileVisibility(state),
+      profileModalVisibility: getShowProfileVisibility(state),
       hasOrderPaid: getHasOrderPaid(state),
       isPayLater: getIsPayLater(state),
       foodCourtId: getFoodCourtId(state),
@@ -1079,13 +1114,16 @@ export default compose(
       isCoreBusinessAPICompleted: getIsCoreBusinessAPICompleted(state),
       isFromBeepSiteOrderHistory: getIsFromBeepSiteOrderHistory(state),
       shouldShowStoreReviewCard: getShouldShowStoreReviewCard(state),
+      isCancelOrderRequestFailed: getIsCancelOrderRequestRejected(state),
+      cancelOrderRequestErrorMessage: getCancelOrderRequestErrorMessage(state),
+      isUpdateShippingTypeRequestFailed: getIsUpdateShippingTypeRequestRejected(state),
+      updateShippingTypRequestErrorMessage: getUpdateShippingTypeRequestErrorMessage(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
         thankYouActionCreators.updateCancellationReasonVisibleState,
         dispatch
       ),
-      setShowProfileVisibility: bindActionCreators(thankYouActionCreators.setShowProfileVisibility, dispatch),
       loadStoreIdHashCode: bindActionCreators(loadStoreIdHashCode, dispatch),
       loadStoreIdTableIdHashCode: bindActionCreators(loadStoreIdTableIdHashCode, dispatch),
       cancelOrder: bindActionCreators(cancelOrder, dispatch),
@@ -1094,6 +1132,8 @@ export default compose(
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
       loadOrderStoreReview: bindActionCreators(loadOrderStoreReviewThunk, dispatch),
       loadFoodCourtIdHashCode: bindActionCreators(loadFoodCourtIdHashCode, dispatch),
+      initProfilePage: bindActionCreators(initProfilePage, dispatch),
+      hideProfileModal: bindActionCreators(hideProfileModal, dispatch),
     })
   )
 )(ThankYou);

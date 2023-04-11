@@ -3,6 +3,9 @@ import Utils from '../../../../utils/utils';
 import { createSlice } from '@reduxjs/toolkit';
 import {
   loadOrder,
+  loadPayLaterOrder,
+  submitPayLaterOrder,
+  loadPayLaterOrderStatus,
   loadOrderStoreReview,
   saveOrderStoreReview,
   showStoreReviewThankYouModal,
@@ -13,6 +16,31 @@ import {
   hideStoreReviewLoadingIndicator,
 } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+
+const PromotionItemModel = {
+  promotionId: null,
+  tax: 0,
+  taxCode: null,
+  code: null,
+  promotionCode: null,
+  promotionName: null,
+  status: null,
+  discount: 0,
+  discountType: null,
+};
+
+const appliedVoucherModel = {
+  voucherId: null,
+  voucherCode: null,
+  value: 0,
+  cost: 0,
+  purchaseChannel: null,
+};
+
+const loyaltyDiscountsModel = {
+  displayDiscount: 0,
+  spentValue: 0,
+};
 
 const initialState = {
   receiptNumber: Utils.getQueryString('receiptNumber'),
@@ -35,12 +63,57 @@ const initialState = {
     warningModalVisible: false,
     loadingIndicatorVisible: false,
   },
+  payLaterOrderInfo: {
+    data: {
+      orderStatus: null,
+      receiptNumber: null,
+      tableId: null,
+      isStorePayByCashOnly: false,
+      tax: 0,
+      cashback: 0,
+      displayPromotions: [],
+      loyaltyDiscounts: [],
+      appliedVoucher: null,
+      total: 0,
+      subtotal: 0,
+      modifiedTime: null,
+      serviceCharge: 0,
+      serviceChargeInfo: {},
+      shippingFee: 0,
+      subOrders: [],
+      items: [],
+      applyCashback: false,
+      redirectUrl: null,
+      // Discount added from POS. It's a product items discount, meaning it's calculated only with respect to subtotal. --Jiwang said
+      productsManualDiscount: 0,
+    },
+    loadOrderRequest: {
+      status: null,
+      error: null,
+    },
+    submitOrderRequest: {
+      status: null,
+      error: null,
+    },
+  },
+  payLaterOrderStatusInfo: {
+    data: {
+      tableId: null,
+      storeHash: null,
+    },
+    status: null,
+    error: null,
+  },
 };
 
 const { reducer, actions } = createSlice({
   name: 'ordering/orderStatus/common',
   initialState,
-  reducers: {},
+  reducers: {
+    updateCashbackApplyStatus(state, action) {
+      state.payLaterOrderInfo.data.applyCashback = action.payload;
+    },
+  },
   extraReducers: {
     [loadOrder.pending.type]: state => {
       state.updateOrderStatus = API_REQUEST_STATUS.PENDING;
@@ -52,6 +125,70 @@ const { reducer, actions } = createSlice({
     [loadOrder.rejected.type]: (state, { error }) => {
       state.error = error;
       state.updateOrderStatus = API_REQUEST_STATUS.REJECTED;
+    },
+    [loadPayLaterOrder.pending.type]: state => {
+      state.payLaterOrderInfo.loadOrderRequest.status = API_REQUEST_STATUS.PENDING;
+      state.payLaterOrderInfo.loadOrderRequest.error = null;
+    },
+    [loadPayLaterOrder.fulfilled.type]: (state, { payload }) => {
+      const { displayPromotions = [], loyaltyDiscounts = [], appliedVoucher, status: orderStatus, ...others } = {
+        ...state.payLaterOrderInfo.data,
+        ...payload,
+      };
+
+      state.payLaterOrderInfo.data = {
+        ...others,
+        orderStatus,
+        loyaltyDiscounts: (loyaltyDiscounts || []).map(item => ({ ...loyaltyDiscountsModel, ...item })),
+        displayPromotions: (displayPromotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
+        appliedVoucher: { ...appliedVoucherModel, ...appliedVoucher },
+      };
+      state.payLaterOrderInfo.loadOrderRequest.status = API_REQUEST_STATUS.FULFILLED;
+    },
+    [loadPayLaterOrder.rejected.type]: (state, { error }) => {
+      state.payLaterOrderInfo.loadOrderRequest.error = error;
+      state.payLaterOrderInfo.loadOrderRequest.status = API_REQUEST_STATUS.REJECTED;
+    },
+    [loadPayLaterOrderStatus.pending.type]: state => {
+      state.payLaterOrderStatusInfo.status = API_REQUEST_STATUS.PENDING;
+      state.payLaterOrderStatusInfo.error = null;
+    },
+    [loadPayLaterOrderStatus.fulfilled.type]: (state, { payload }) => {
+      const { status, tableId, hash } = payload;
+
+      // TODO: Migrate and update this data to payLaterOrderStatusInfo
+      state.payLaterOrderInfo.data.orderStatus = status;
+      state.payLaterOrderStatusInfo.data.tableId = tableId;
+
+      // WB-4939: BE will only generate new h when the table id is changed for performance sake.
+      // Therefore, we should only update the hash when needed.
+      if (!!hash) {
+        state.payLaterOrderStatusInfo.data.storeHash = hash;
+      }
+
+      // TODO: Migrate and update this data to payLaterOrderStatusInfo
+      if (payload.redirectUrl) {
+        state.payLaterOrderInfo.data.redirectUrl = payload.redirectUrl;
+      }
+      state.payLaterOrderStatusInfo.status = API_REQUEST_STATUS.FULFILLED;
+    },
+    [loadPayLaterOrderStatus.rejected.type]: (state, { error }) => {
+      state.payLaterOrderStatusInfo.error = error;
+      state.payLaterOrderStatusInfo.status = API_REQUEST_STATUS.REJECTED;
+    },
+    [submitPayLaterOrder.pending.type]: state => {
+      state.payLaterOrderInfo.submitOrderRequest.status = API_REQUEST_STATUS.PENDING;
+      state.payLaterOrderInfo.submitOrderRequest.error = null;
+    },
+    [submitPayLaterOrder.fulfilled.type]: (state, { payload }) => {
+      if (payload.redirectUrl) {
+        state.payLaterOrderInfo.data.redirectUrl = payload.redirectUrl;
+      }
+      state.payLaterOrderInfo.submitOrderRequest.status = API_REQUEST_STATUS.FULFILLED;
+    },
+    [submitPayLaterOrder.rejected.type]: (state, { error }) => {
+      state.payLaterOrderInfo.submitOrderRequest.error = error;
+      state.payLaterOrderInfo.submitOrderRequest.status = API_REQUEST_STATUS.REJECTED;
     },
     [loadOrderStoreReview.pending.type]: state => {
       state.storeReviewInfo.loadDataRequest.status = API_REQUEST_STATUS.PENDING;
@@ -74,6 +211,7 @@ const { reducer, actions } = createSlice({
       state.storeReviewInfo.data.tableId = _get(transaction, 'tableId', null);
       state.storeReviewInfo.data.isExpired = _get(review, 'isExpired', false);
       state.storeReviewInfo.data.isSupportable = _get(review, 'supportable', false);
+      state.storeReviewInfo.data.createdTime = _get(transaction, 'createdTime', '');
 
       state.storeReviewInfo.loadDataRequest.status = API_REQUEST_STATUS.FULFILLED;
     },

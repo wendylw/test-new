@@ -1,19 +1,18 @@
 @import "../../../../../common/styles/variables.scss";
 
-.menuProductCategoryButton {
-  &:global(.type-secondary) {
-    @apply tw-flex tw-flex-grow tw-items-center tw-justify-between tw-py-6 sm:tw-py-6px  tw-w-full tw-border-gray-400 tw-rounded-2xl
-    hover:tw-border-gray-400
-    focus:tw-border-gray-400 focus:hover:tw-border-gray-400 focus:active:tw-border-gray-400
-    active:tw-border-gray-400;
+.menuProductCategoryButton:global(.type-text-ghost) {
+  @apply tw-px-16 sm:tw-px-16px tw-py-4 sm:tw-py-4px tw-border tw-border-solid tw-border-gray-200  tw-bg-gray-200 tw-rounded-2xl;
 
-    height: 40px;
-    border-radius: 24px;
-  }
+  height: 40px;
+  border-radius: 24px;
+}
+
+.menuProductCategoryContentButton {
+  @apply tw-flex tw-flex-grow tw-items-center tw-justify-between;
 }
 
 .menuProductHighlightedCategory {
-  @apply tw-flex-1 tw-text-left tw-px-6 sm:tw-px-6px tw-text-gray-800;
+  @apply tw-flex-1 tw-text-left tw-px-6 sm:tw-px-6px tw-text-gray-800 tw-font-bold;
   @include text-line-clamp(1);
 }
 
@@ -21,8 +20,12 @@
   @apply tw-p-0;
 }
 
-.menuProductCategoryDrawerHeaderCloseButton:global(.type-text) {
-  @apply tw-flex-shrink-0 tw-p-0;
+.menuProductCategoryDrawerHeaderCloseButton:global(.type-text-ghost) {
+  @apply tw-flex-shrink-0 tw--mx-12 sm:tw--mx-12px;
+}
+
+.menuProductCategoryDrawerHeaderCloseButtonContent {
+  font-size: 0;
 }
 
 .menuProductCategoryItem {
@@ -39,12 +42,6 @@
 }
 
 @media (min-width: 420px) {
-  .menuProductCategory {
-    &__button:global(.type-secondary) {
-      @apply tw-py-6px;
-    }
-  }
-
   .menuProductCategoryDrawerHeader::after {
     @apply tw-p-16px;
   }

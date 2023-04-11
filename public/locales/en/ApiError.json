@@ -93,7 +93,19 @@
   "57013Description": "The selected shipping method is not supported. Please select another shipping method and try again",
   "41027Title": "Online payment is not supported",
   "41027Description": "Online payment via Beep is not supported at this store.",
+  "B0001Description": "An error occurred. Exit app and try again",
+  "41001ShortDescription": "Please enter a valid phone number",
+  "394761ShortDescription": "Please enter a valid phone number",
+  "395011ShortDescription": "Please enter a valid phone number",
+  "394755Title": "Reached Daily Limit",
+  "394755ShortDescription": "You have exceeded your daily SMS limit",
+  "394755Description": "Your OTP request has reached a daily limit, please try again with another phone number",
+  "394756Title": "OTP Verification Failed",
+  "394756Description": "We have detected unusual traffic from your network, please try again later",
+  "394757ShortDescription": "You are being rate limited",
+  "395012ShortDescription": "Sending SMS to this number is not supported",
   "UnableToPlaceOrder": "Unable to place order",
   "HasBeenPlacedContentDescription": "Someone from your table is in the process of checking out, please <bold>complete payment</bold> before placing a new order",
-  "ViewOrder": "View order"
+  "ViewOrder": "View order",
+  "NoInternetConnection": "No internet connection"
 }

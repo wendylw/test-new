@@ -4,9 +4,11 @@ import _isArray from 'lodash/isArray';
 import _isString from 'lodash/isString';
 import _isPlainObject from 'lodash/isPlainObject';
 import _once from 'lodash/once';
+import _get from 'lodash/get';
+import Bowser from 'bowser';
 import tids from './tracing-id';
 import debug from '../debug';
-import { isWebview, isSiteApp, getBeepAppVersion, getUUID } from '../../common/utils';
+import { isWebview, isSiteApp, getBeepAppVersion, getUUID, getQueryString } from '../../common/utils';
 import { getAppPlatform, getIsDebugMode } from './utils';
 import { getBusinessName } from '../../config';
 
@@ -20,7 +22,7 @@ const EVENT_LEVEL_TYPES = {
   ERROR: 'error',
 };
 
-const PROJECT_PREFIX_NAME = 'BeepV1Web';
+const PROJECT_NAME = 'BeepV1Web';
 
 const getDeviceId = _once(() => {
   try {
@@ -47,6 +49,17 @@ export const getMerchantID = () => {
 
   return getBusinessName();
 };
+
+export const getClientInfo = _once(() => {
+  const browserInfo = Bowser.parse(window.navigator.userAgent);
+
+  return {
+    browserName: _get(browserInfo, 'browser.name', ''),
+    browserVersion: _get(browserInfo, 'browser.version', ''),
+    osName: _get(browserInfo, 'os.name', ''),
+    osVersion: _get(browserInfo, 'os.version', ''),
+  };
+});
 
 export const getFormattedTags = tags => {
   const getCustomTags = () => {
@@ -90,8 +103,6 @@ export const getFormattedActionName = name => {
   return name;
 };
 
-export const getFormattedPrivateDateKeyName = actionName => [PROJECT_PREFIX_NAME, actionName].join('_');
-
 export const getStringifiedJSON = data =>
   JSON.stringify(data, (_, value) => (value instanceof Error ? serializeError(value) : value));
 
@@ -129,10 +140,10 @@ const track = async (name, data, options = {}) => {
       throw new Error('data should be plain object');
     }
 
-    const { level, tags, publicData } = options;
+    const { level, tags, publicData, bizFlow } = options;
     const { sess_tid: sessTid, perm_tid: permTid } = tids;
+    const shippingType = getQueryString('type');
     const action = getFormattedActionName(name);
-    const privateDataKeyName = getFormattedPrivateDateKeyName(action);
 
     if (!(_isEmpty(publicData) || _isPlainObject(publicData))) {
       throw new Error('public data should be plain object');
@@ -143,7 +154,7 @@ const track = async (name, data, options = {}) => {
       uuid: getUUID(),
       level,
       platform: 'Web',
-      project: 'BeepV1Web',
+      project: PROJECT_NAME,
       ts: new Date().valueOf(),
       action,
       tags: getFormattedTags(tags),
@@ -156,9 +167,14 @@ const track = async (name, data, options = {}) => {
         path: window.location.pathname,
         appPlatform: getAppPlatform(),
         appVersion: getBeepAppVersion(),
+        beepData: {
+          bizFlow,
+          shippingType,
+        },
+        clientInfo: getClientInfo(),
       },
       privateData: {
-        [privateDataKeyName]: data,
+        [PROJECT_NAME]: data,
       },
     };
 

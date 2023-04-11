@@ -2,7 +2,6 @@ import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { goBack as historyGoBack } from 'connected-react-router';
 import { useTranslation } from 'react-i18next';
 import { CaretLeft } from 'phosphor-react';
 import _truncate from 'lodash/truncate';
@@ -25,7 +24,6 @@ import {
   isWebview,
   isTakeAwayType,
   isDeliveryOrder,
-  isFromBeepSite,
   isQROrder,
   getSourceUrlFromSessionStorage,
 } from '../../../../../common/utils';

@@ -1,3 +1,5 @@
+import _get from 'lodash/get';
+
 export const getErrorMessageFromHint = ({ originalException, syntheticException }) => {
   if (typeof originalException === 'string') {
     return originalException;
@@ -138,6 +140,77 @@ const isTikTokIssues = (event, hint) => {
   }
 };
 
+const isReCAPTCHAIssues = (event, hint) => {
+  // These issues cause by reCAPTCHA script.
+  try {
+    // WB-4596: The errors thrown directly from reCAPTCHA script should be ignored.
+    // Reasons: They are not harmful to Beep and also cannot be fixed by our side.
+    // Refer to: https://kibana.pro.mymyhub.com/_plugin/kibana/goto/f9dc1773113db0e1e8882dd0e7322588?security_tenant=global
+    const recaptchaRegex = /https:\/\/www.gstatic.com\/recaptcha/;
+    const isScriptIssue = getErrorStacktraceFrames(event).some(({ filename }) => recaptchaRegex.test(filename));
+
+    // BEEP-2657: The errors thrown indirectly from reCAPTCHA script should be ignored.
+    // Reasons: They are not harmful to Beep and also cannot be fixed by our side.
+    // Refer to: https://github.com/getsentry/sentry-javascript/issues/2514#issuecomment-603971338
+    const message = getErrorMessageFromHint(hint);
+    const type = _get(event, 'exception.values[0].type', null);
+    const isTimeoutIssue = message.includes('Timeout') && type === 'UnhandledRejection';
+
+    return isScriptIssue || isTimeoutIssue;
+  } catch {
+    return false;
+  }
+};
+
+const isGoogleMapsIssues = (event, hint) => {
+  // These issues cause by Google Maps script.
+  try {
+    // WB-4239 & WB-4931: The errors thrown directly from Google Map script should be ignored.
+    // Reasons: They are mostly network errors and also cannot be fixed by our side.
+    // Refer to: https://developers.google.com/maps/documentation/javascript/place-id#refresh-id
+    const googleMapsRegex = /https:\/\/maps.googleapis.com/;
+    const isScriptIssue = getErrorStacktraceFrames(event).some(({ filename }) => googleMapsRegex.test(filename));
+
+    // BEEP-1710 & BEEP-1947: The errors thrown indirectly from Google Map script should be ignored.
+    // Reasons: This problem is duplicated since it only occurs when Google Maps API is undefined. However, we have already logged the Google Maps API load failure case.
+    const isNullPropertyIssue = isReadGoogleMapsPropertiesFromNullIssues(event, hint);
+
+    return isScriptIssue || isNullPropertyIssue;
+  } catch {
+    return false;
+  }
+};
+
+const isCleverTapIssues = (event, hint) => {
+  // These issues are raised by CleverTap script.
+  try {
+    // WB-5086 & WB-5087: The errors thrown directly from CleverTap script should be ignored.
+    // Reasons: They are mostly raised intentionally by CleverTap to avoid further security risks. Nothing can be done on our side.
+    // Refer to: https://github.com/CleverTap/clevertap-web-sdk/blob/5cf459521e5b83213e9a2d0e59b7e5000a5cbcbb/clevertap.js#L1347
+    const cleverTapRegex = /\/js\/clevertap.min.js/;
+    const isScriptIssue = getErrorStacktraceFrames(event).some(({ filename }) => cleverTapRegex.test(filename));
+
+    return isScriptIssue;
+  } catch {
+    return false;
+  }
+};
+
+const isOppoBrowserIssues = (event, hint) => {
+  // These issues are raised by HeyTap browser, These issues are raised by the HeyTap browser - the default browser for Oppo devices.
+  try {
+    // BEEP-1337: The errors thrown directly from HeyTap browser should be ignored.
+    // Reasons: Nothing can be done on our side and it also won't block users to make orders.
+    // Refer to: https://stackoverflow.com/questions/64175183/what-does-these-error-means-getreadmodeconfig-getreadmoderender-getreadmodeext
+    const message = getErrorMessageFromHint(hint);
+    const heyTapRegex = /(getReadModeConfig)|(getReadModeRender)|(getReadModeExtract)/;
+
+    return heyTapRegex.test(message);
+  } catch {
+    return false;
+  }
+};
+
 const isVivoAdblockProblem = (event, hint) => {
   // BEEP-1622: This problem only occurs on Vivo browser. Seems to be a problem with Vivo's adblock service.
   try {
@@ -149,7 +222,6 @@ const isVivoAdblockProblem = (event, hint) => {
 };
 
 const isReadGoogleMapsPropertiesFromNullIssues = (event, hint) => {
-  // BEEP-1710 & BEEP-1947: This problem is duplicated since it only occurs when Google Maps API is undefined. However, we have already logged the Google Maps API load failure case.
   try {
     const message = getErrorMessageFromHint(hint);
     const readGoogleMapsPropertiesFromNullIssues = [
@@ -161,6 +233,27 @@ const isReadGoogleMapsPropertiesFromNullIssues = (event, hint) => {
       /null is not an object \(evaluating 'new \w\.places'\)/,
     ];
     return readGoogleMapsPropertiesFromNullIssues.some(issue => issue.test(message));
+  } catch {
+    return false;
+  }
+};
+
+const isDuplicateAlert = hint => {
+  // alert duplicate is expectation issue
+  // so we can ignore it.
+  try {
+    const message = getErrorMessageFromHint(hint);
+    return message.includes('Failed to create alert: id existed');
+  } catch {
+    return false;
+  }
+};
+
+// resizeObserver loop limit exceeded will not block page. refer: https://stackoverflow.com/a/50387233
+const isResizeObserverLoopLimitExceeded = hint => {
+  try {
+    const message = getErrorMessageFromHint(hint);
+    return message.includes('ResizeObserver loop limit exceeded');
   } catch {
     return false;
   }
@@ -179,8 +272,13 @@ const shouldFilter = (event, hint) => {
       isGoogleAnalytics(event) ||
       isIgnoreObjectNotFoundMatchingId(event, hint) ||
       isTikTokIssues(event, hint) ||
+      isReCAPTCHAIssues(event, hint) ||
+      isGoogleMapsIssues(event, hint) ||
+      isCleverTapIssues(event, hint) ||
+      isOppoBrowserIssues(event, hint) ||
       isVivoAdblockProblem(event, hint) ||
-      isReadGoogleMapsPropertiesFromNullIssues(event, hint)
+      isDuplicateAlert(hint) ||
+      isResizeObserverLoopLimitExceeded(hint)
     );
   } catch {
     return false;

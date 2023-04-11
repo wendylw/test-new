@@ -23,6 +23,7 @@ import {
   fetchCartStatus,
 } from './api-request';
 import logger from '../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 
 const TIMEOUT_CART_SUBMISSION_TIME = 30 * 1000;
 const CART_SUBMISSION_INTERVAL = 2 * 1000;
@@ -46,7 +47,7 @@ export const loadCart = createAsyncThunk('ordering/app/cart/loadCart', async (_,
 
     return result;
   } catch (error) {
-    console.error(`Failed to load cart for pay later: ${error.message}`);
+    logger.error('Ordering_Cart_LoadCartFailed', { message: error?.message });
 
     throw error;
   }
@@ -71,13 +72,15 @@ export const loadCartStatus = createAsyncThunk(
 
       dispatch(cartActionCreators.updateCart(result));
 
-      if (result.version > prevCartVersion) {
+      if (result.version !== prevCartVersion) {
+        // WB-5038: The cart version is not always self-increment.
+        // To prevent users from placing outdated shopping cart, we should load cart as long as version is changed.
         await dispatch(loadCart());
       }
 
       return result;
     } catch (error) {
-      console.error(`Failed to load cart status for pay later: ${error.message}`);
+      logger.error('Ordering_Cart_LoadCartStatusFailed', { message: error?.message });
 
       throw error;
     }
@@ -104,7 +107,7 @@ export const queryCartAndStatus = () => async dispatch => {
     await dispatch(loadCart());
     queryCartStatus();
   } catch (error) {
-    console.error(`Failed to load and query cart status for pay later: ${error.message}`);
+    logger.error('Ordering_Cart_QueryCartAndStatusFailed', { message: error?.message });
 
     throw error;
   }
@@ -139,7 +142,7 @@ export const updateCartItems = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(`Failed to update cart items for pay later: ${error.message}`);
+      logger.error('Ordering_Cart_UpdateCartItemFailed', { message: error?.message });
 
       throw error;
     }
@@ -166,7 +169,7 @@ export const removeCartItemsById = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(`Failed to remove cart by id for pay later: ${error.message}`);
+      logger.error('Ordering_Cart_removeCartItemByIdFailed', { message: error?.message });
 
       throw error;
     }
@@ -187,7 +190,7 @@ export const clearCart = createAsyncThunk('ordering/app/cart/clearCart', async (
   try {
     await deleteCart(options);
   } catch (error) {
-    console.error(`Failed to empty cart for pay later: ${error.message}`);
+    logger.error('Ordering_Cart_ClearCartFailed', { message: error?.message });
 
     throw error;
   }
@@ -263,7 +266,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(`Failed to load cart submission status for pay later: ${error.message}`);
+      logger.error('Ordering_Cart_LoadCartSubmissionStatusFailed', { message: error?.message });
 
       throw error;
     }
@@ -271,7 +274,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
 );
 
 export const queryCartSubmissionStatus = submissionId => (dispatch, getState) => {
-  logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'start', submissionId });
+  logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'start', id: submissionId });
   const targetTimestamp = Date.parse(new Date()) + TIMEOUT_CART_SUBMISSION_TIME;
 
   try {
@@ -279,7 +282,11 @@ export const queryCartSubmissionStatus = submissionId => (dispatch, getState) =>
       queryCartSubmissionStatus.timer = setTimeout(async () => {
         if (targetTimestamp - Date.parse(new Date()) <= 0) {
           clearTimeout(queryCartSubmissionStatus.timer);
-          logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'stop', reason: 'timeout', submissionId });
+          logger.log('Ordering_Cart_PollCartSubmissionStatus', {
+            action: 'stop',
+            message: 'timeout',
+            id: submissionId,
+          });
           dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
 
           return;
@@ -291,7 +298,11 @@ export const queryCartSubmissionStatus = submissionId => (dispatch, getState) =>
 
         if (isCartSubmissionStatusQueryPollingStoppable) {
           clearTimeout(queryCartSubmissionStatus.timer);
-          logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'stop', reason: 'finished', submissionId });
+          logger.log('Ordering_Cart_PollCartSubmissionStatus', {
+            action: 'stop',
+            message: 'finished',
+            id: submissionId,
+          });
           return;
         }
 
@@ -301,7 +312,16 @@ export const queryCartSubmissionStatus = submissionId => (dispatch, getState) =>
 
     pollingCartSubmissionStatus();
   } catch (error) {
-    console.error(`Failed to query cart submission status for pay later: ${error.message}`);
+    logger.error(
+      'Ordering_Cart_ViewOrderFailed',
+      { message: error?.message },
+      {
+        bizFlow: {
+          flow: KEY_EVENTS_FLOWS.PAYMENT,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].VIEW_ORDER,
+        },
+      }
+    );
 
     throw error;
   }
@@ -310,6 +330,6 @@ export const queryCartSubmissionStatus = submissionId => (dispatch, getState) =>
 export const clearQueryCartSubmissionStatus = () => () => {
   if (queryCartSubmissionStatus.timer) {
     clearTimeout(queryCartSubmissionStatus.timer);
-    logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'stop', reason: 'unmount' });
+    logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'stop', message: 'unmount' });
   }
 };

@@ -4,14 +4,14 @@ import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-pho
 import Utils from '../../../../../utils/utils';
 import HybridHeader from '../../../../../components/HybridHeader';
 import constants from '../../../../../utils/constants';
+import { COUNTRY_PHONE_CODES } from '../../../../../common/utils/phone-number-constants';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { actions as appActionCreators, getUser, getDeliveryDetails } from '../../../../redux/modules/app';
+import { getUser, getDeliveryDetails } from '../../../../redux/modules/app';
 import { actions as ContactDetailActions } from './redux';
 import 'react-phone-number-input/style.css';
 import './ContactDetail.scss';
 import { updateContactDetail, getUsername, getPhone } from './redux';
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class ContactDetail extends Component {
   componentDidMount() {
@@ -74,13 +74,12 @@ class ContactDetail extends Component {
                   placeholder={t('EnterPhoneNumber')}
                   value={formatPhoneNumberIntl(phone)}
                   country={country}
-                  metadata={metadataMobile}
                   onChange={phone => {
                     const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
 
                     updatePhone(
-                      metadataMobile.countries[selectedCountry] &&
-                        Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0])
+                      COUNTRY_PHONE_CODES[selectedCountry] &&
+                        Utils.getFormatPhoneNumber(phone || '', COUNTRY_PHONE_CODES[selectedCountry])
                     );
                   }}
                 />
@@ -90,16 +89,16 @@ class ContactDetail extends Component {
         </section>
         <footer className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed">
           <button
-            className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
+            className="contact-details__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
             onClick={this.handleClickBack.bind(this)}
-            data-heap-name="ordering.cart.back-btn"
+            data-heap-name="ordering.contact-detail.back-btn"
           >
             {t('Back')}
           </button>
           <button
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
-            data-heap-name="ordering.cart.pay-btn"
+            data-heap-name="ordering.contact-detail.pay-btn"
             disabled={!username || !username.length || !isValidPhoneNumber(phone || '')}
             onClick={this.handleClickContinue}
           >

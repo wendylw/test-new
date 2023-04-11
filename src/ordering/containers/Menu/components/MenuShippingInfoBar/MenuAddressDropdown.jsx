@@ -11,7 +11,7 @@ import { LocationAndAddressIcon } from '../../../../../common/components/Icons';
 import { ObjectFitImage } from '../../../../../common/components/Image';
 import AddressLocationDrawer from '../../../../components/AddressLocationDrawer';
 import AddressLocationContent from '../../../../components/AddressLocationDrawer/AddressLocationContent';
-import { confirm } from '../../../../../common/utils/feedback';
+import { confirm, toast } from '../../../../../common/utils/feedback';
 import { CONFIRM_BUTTON_ALIGNMENT } from '../../../../../common/utils/feedback/utils';
 import {
   getSelectedLocationDisplayName,
@@ -48,6 +48,7 @@ import {
 import styles from './MenuAddressDropdown.module.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import { getStoreInfoForCleverTap } from '../../../../redux/modules/app';
+import logger from '../../../../../utils/monitoring/logger';
 
 const LOCATION_TITLE_KEYS = {
   pickup: 'StoreLocation',
@@ -170,7 +171,7 @@ const MenuAddressDropdown = () => {
             )}
           </div>
         </div>
-        {isPickUpType ? null : <CaretDown className="tw-text-gray-600" />}
+        {isPickUpType ? null : <CaretDown className="tw-text-gray-600" size={16} />}
       </button>
       <AddressLocationDrawer
         isLocationDrawerVisible={isLocationDrawerVisible}
@@ -225,22 +226,27 @@ const MenuAddressDropdown = () => {
             dispatch(locationSelected({ addressOrLocationInfo: selectedLocationInfo, type: 'location' }));
           }}
           onSelectSearchLocation={async (searchResult, index) => {
-            if (searchResult) {
-              const formatPositionInfo = await loadPlaceInfo(searchResult);
-              const {
-                addressComponents: { street1, street2, postCode: postcode, city, state },
-              } = formatPositionInfo;
+            try {
+              if (searchResult) {
+                const formatPositionInfo = await loadPlaceInfo(searchResult);
+                const {
+                  addressComponents: { street1, street2, postCode: postcode, city, state },
+                } = formatPositionInfo;
 
-              CleverTap.pushEvent('Location Page - Click location results', {
-                rank: index + 1,
-                'street name': street1 || street2,
-                postcode,
-                city,
-                state,
-              });
+                CleverTap.pushEvent('Location Page - Click location results', {
+                  rank: index + 1,
+                  'street name': street1 || street2,
+                  postcode,
+                  city,
+                  state,
+                });
 
-              dispatch(updateSearchLocationList(formatPositionInfo));
-              dispatch(locationSelected({ addressOrLocationInfo: formatPositionInfo, type: 'location' }));
+                dispatch(updateSearchLocationList(formatPositionInfo));
+                dispatch(locationSelected({ addressOrLocationInfo: formatPositionInfo, type: 'location' }));
+              }
+            } catch (e) {
+              toast(t('FailToGetPlaceInfo'));
+              logger.error('Ordering_Menu_SelectSearchLocationFailed', { message: e?.message });
             }
           }}
         />

@@ -22,27 +22,13 @@ const AddressLocationContent = ({
   onSelectSearchLocation,
 }) => {
   const { t } = useTranslation();
-  // const onHandleSelectAddress = useCallback(
-  //   selectedAddressInfo => {
-  //     onSelectAddress(selectedAddressInfo);
-  //   },
-  //   [onSelectAddress]
-  // );
-  // const onHandleSelectHistoryLocation = useCallback(
-  //   selectedHistoryLocationInfo => {
-  //     onSelectLocation(selectedHistoryLocationInfo);
-  //   },
-  //   [onSelectLocation]
-  // );
-  // const onHandleSelectSearchLocation = useCallback(
-  //   (selectedSearchLocationInfo, index) => {
-  //     onSelectSearchLocation(selectedSearchLocationInfo, index);
-  //   },
-  //   [onSelectSearchLocation]
-  // );
 
   return (
-    <div className="tw-flex-1 tw-px-16 sm:tw-px-16px tw-py-16 sm:tw-py-16px tw-overflow-x-auto">
+    <div
+      className={`${isInitializing ? styles.addressLocationContentInitializing : styles.addressLocationContent}${
+        isEmptyList ? ` ${styles.addressLocationContentEmpty}` : ''
+      }`}
+    >
       {isInitializing ? (
         <Loader className={styles.loader} weight="bold" />
       ) : (

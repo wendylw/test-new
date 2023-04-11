@@ -38,6 +38,7 @@
     <meta property="al:web:should_fallback" content="true" />
     <meta property="fb:app_id" content="1808145769328485" />
 
+    <script id="PRELOAD_LINKS_PLACEHOLDER"></script>
     <script>
       var userAgent = navigator.userAgent || "";
       var isInTngMiniProgram = userAgent.indexOf('TNGKit') > -1 && userAgent.indexOf('MiniProgram') > -1;
@@ -112,9 +113,9 @@
         s.parentNode.insertBefore(wzrk, s);
       })();
     </script>
-    
-    <!-- Following script tag will be filled in build-i18n-files.js -->
+
     <script id="I18N_FOLDER_PATH_SCRIPT"></script>
+    <script id="ASSETS_MANIFEST_PLACEHOLDER"></script>
   </head>
 
   <body>
@@ -156,7 +157,7 @@
       }
       var logScriptLoadError = function (scriptName) {
         if (window.newrelic && window.newrelic.addPageAction) {
-          window.newrelic.addPageAction('common.script-load-error', {
+          window.newrelic.addPageAction('third-party-lib.load-script-failed', {
             scriptName: scriptName
           })
         }

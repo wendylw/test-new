@@ -73,6 +73,7 @@ import { SHIPPING_TYPES } from '../../common/utils/constants';
 import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
+import prefetch from '../../common/utils/prefetch-assets';
 import styles from './SearchPage.module.scss';
 
 const { COLLECTIONS_TYPE } = constants;
@@ -84,7 +85,6 @@ class SearchPage extends React.Component {
 
   state = {
     drawerInfo: { category: null },
-    filterBarSwiperRef: null,
   };
 
   componentDidMount = async () => {
@@ -111,6 +111,8 @@ class SearchPage extends React.Component {
       // Silently fetch address Info without blocking current process
       fetchAddressInfo();
     }
+
+    prefetch(['SITE_HM', 'ORD_MNU'], ['SiteHome', 'OrderingDelivery']);
   };
 
   componentDidUpdate = async prevProps => {
@@ -140,10 +142,6 @@ class SearchPage extends React.Component {
     }
 
     if (hasSelectedOptionListChanged) {
-      const { filterBarSwiperRef } = this.state;
-      // NOTE: Once the sort & filter selected options are changed, the swiper should be re-rendered. Otherwise, the offsets of slides will be wrong.
-      // API Doc: https://swiperjs.com/swiper-api#method-swiper-update
-      filterBarSwiperRef?.update();
       this.props.backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
     }
   };
@@ -430,10 +428,12 @@ class SearchPage extends React.Component {
             left={
               <Button
                 type="text"
+                theme="ghost"
                 onClick={this.handleCloseDrawer}
-                className={`${styles.SearchPageCategoryDrawerHeaderButton} beep-text-reset`}
+                className={styles.SearchPageCategoryDrawerHeaderButton}
+                contentClassName={styles.SearchPageCategoryDrawerHeaderButtonContent}
               >
-                <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
+                <X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />
               </Button>
             }
           >
@@ -452,10 +452,6 @@ class SearchPage extends React.Component {
         ) : null}
       </Drawer>
     );
-  };
-
-  handleFilterBarSwiper = swiper => {
-    this.setState({ filterBarSwiperRef: swiper });
   };
 
   render() {
@@ -485,7 +481,6 @@ class SearchPage extends React.Component {
             <FilterBar
               className={styles.SearchPageFilterBarWrapper}
               categories={categoryFilterList}
-              onSwiper={this.handleFilterBarSwiper}
               shouldShowResetButton={shouldShowResetButton}
               onResetButtonClick={this.handleClickResetAllCategoryButton}
               onCategoryButtonClick={this.handleClickCategoryButton}

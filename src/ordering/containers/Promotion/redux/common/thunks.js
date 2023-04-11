@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { applyPromotion, removePromotion, applyVoucher, removeVoucher } from './api-request';
-import { getPromoId, getPromoCodePayLater } from './selector';
+import { getSelectedPromoId, getSelectedPromoCode } from '../../../../redux/modules/promotion';
 import Utils from '../../../../../utils/utils';
 
 const formatErrorOfApplyPromoOrVoucher = e => ({ name: JSON.stringify(e.extra), code: e.code, message: e.message });
@@ -10,7 +10,7 @@ const formatErrorOfApplyPromoOrVoucher = e => ({ name: JSON.stringify(e.extra), 
  */
 export const applyPromo = createAsyncThunk('ordering/promotion/common/applyPromo', async (_, { getState }) => {
   const state = getState();
-  const promotionId = getPromoId(state);
+  const promotionId = getSelectedPromoId(state);
   const receiptNumber = Utils.getQueryString('receiptNumber');
   try {
     const result = await applyPromotion({ receiptNumber, promotionId });
@@ -43,7 +43,7 @@ export const applyVoucherPayLater = createAsyncThunk(
   'ordering/promotion/common/applyVoucherPayLater',
   async (_, { getState }) => {
     const state = getState();
-    const voucherCode = getPromoCodePayLater(state);
+    const voucherCode = getSelectedPromoCode(state);
     const receiptNumber = Utils.getQueryString('receiptNumber');
     try {
       const result = await applyVoucher({ receiptNumber, voucherCode });

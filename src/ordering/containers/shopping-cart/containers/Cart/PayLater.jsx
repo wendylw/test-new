@@ -29,10 +29,12 @@ import { getUserIsLogin, getHasLoginGuardPassed } from '../../../../redux/module
 import { IconClose, IconError } from '../../../../../components/Icons';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
 import Utils from '../../../../../utils/utils';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CartEmptyResult from '../../components/CartEmptyResult';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { alert } from '../../../../../common/feedback';
 
 class PayLater extends Component {
@@ -59,6 +61,7 @@ class PayLater extends Component {
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
+    prefetch(['ORD_CSS', 'ORD_TS'], ['OrderingTableSummary']);
   };
 
   componentDidUpdate(prevProps, prevStates) {
@@ -119,6 +122,19 @@ class PayLater extends Component {
             }),
         });
       }
+
+      logger.error(
+        'Ordering_Cart_PlaceOrderFailed',
+        {
+          message: e?.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
     }
   };
 

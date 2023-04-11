@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import _debounce from 'lodash/debounce';
@@ -79,6 +79,13 @@ const MenuProductList = () => {
   const menuProductListRef = useRef(null);
   const menuProductCategorySearchRef = useRef(null);
   const searchInputRef = useRef(null);
+  const handleOnIntersectionChange = useCallback(
+    ({ inView, categoryId }) => {
+      if (blockIntersectionObserver.current) return;
+      dispatch(commonActions.setCategoriesInView({ categoryId, inView }));
+    },
+    [dispatch]
+  );
 
   // is product list data ready, if not UI can display a loading
   if (!isProductListReady) {
@@ -92,9 +99,8 @@ const MenuProductList = () => {
           <CategoryDropdown
             onCategoryItemClick={categoryId => {
               const categoryElement = document.getElementById(generateScrollHandleId(categoryId));
+
               if (categoryElement) {
-                // stop intersection observer temporarily, otherwise the active category will be cleared
-                // because of the setCategoriesInView action
                 blockIntersectionObserver.current = true;
                 categoryElement.scrollIntoView({ behavior: 'smooth' });
                 dispatch(selectCategory(categoryId));
@@ -128,10 +134,7 @@ const MenuProductList = () => {
               key={category.id}
               category={category}
               products={category.products}
-              onIntersectionChange={inView => {
-                if (blockIntersectionObserver.current) return;
-                dispatch(commonActions.setCategoriesInView({ categoryId: category.id, inView }));
-              }}
+              onIntersectionChange={handleOnIntersectionChange}
             />
           ))}
         </div>

@@ -42,9 +42,8 @@ const Alert = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (show && contentContainerRef.current) {
-      const text = contentContainerRef.current.innerHTML;
-      logger.log('Common_Feedback_ShowAlert', { text });
-      window.newrelic?.addPageAction('feedback.alert.show', { text });
+      const text = contentContainerRef.current.innerText;
+      logger.log('Common_Feedback_ShowAlert', { message: text });
     }
   }, [content, show]);
 

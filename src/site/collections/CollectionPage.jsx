@@ -52,6 +52,7 @@ import {
 } from '../redux/modules/filter/thunks';
 import { TYPES, IDS, FILTER_DRAWER_SUPPORT_TYPES, FILTER_BACKUP_STORAGE_KEYS } from '../redux/modules/filter/constants';
 import { SHIPPING_TYPES } from '../../common/utils/constants';
+import prefetch from '../../common/utils/prefetch-assets';
 import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import CleverTap from '../../utils/clevertap';
 import FilterBar from '../components/FilterBar';
@@ -72,7 +73,6 @@ class CollectionPage extends React.Component {
 
   state = {
     drawerInfo: { category: null },
-    filterBarSwiperRef: null,
   };
 
   componentDidMount = async () => {
@@ -105,6 +105,7 @@ class CollectionPage extends React.Component {
       'collection name': name,
       'collection id': beepCollectionId,
     });
+    prefetch(['SITE_HM', 'ORD_MNU'], ['SiteHome', 'OrderingDelivery']);
   };
 
   componentDidUpdate = async prevProps => {
@@ -132,10 +133,6 @@ class CollectionPage extends React.Component {
     }
 
     if (hasSelectedOptionListChanged) {
-      const { filterBarSwiperRef } = this.state;
-      // NOTE: Once the sort & filter selected options are changed, the swiper should be re-rendered. Otherwise, the offsets of slides will be wrong.
-      // API Doc: https://swiperjs.com/swiper-api#method-swiper-update
-      filterBarSwiperRef?.update();
       this.props.backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
     }
   };
@@ -387,10 +384,12 @@ class CollectionPage extends React.Component {
             left={
               <Button
                 type="text"
+                theme="ghost"
+                className={styles.CollectionPageCategoryDrawerHeaderButton}
+                contentClassName={styles.CollectionPageCategoryDrawerHeaderButtonContent}
                 onClick={this.handleCloseDrawer}
-                className={`${styles.CollectionPageCategoryDrawerHeaderButton} beep-text-reset`}
               >
-                <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
+                <X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />
               </Button>
             }
           >
@@ -409,10 +408,6 @@ class CollectionPage extends React.Component {
         ) : null}
       </Drawer>
     );
-  };
-
-  handleFilterBarSwiper = swiper => {
-    this.setState({ filterBarSwiperRef: swiper });
   };
 
   render() {
@@ -443,7 +438,6 @@ class CollectionPage extends React.Component {
           <FilterBar
             className={styles.CollectionPageFilterBarWrapper}
             categories={categoryFilterList}
-            onSwiper={this.handleFilterBarSwiper}
             shouldShowResetButton={shouldShowResetButton}
             onResetButtonClick={this.handleClickResetAllCategoryButton}
             onCategoryButtonClick={this.handleClickCategoryButton}

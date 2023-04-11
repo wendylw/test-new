@@ -22,6 +22,7 @@ const WarningModal = () => {
       <p className={styles.WarningModalDescription}>{t('LeaveWithoutSavingDescription')}</p>
       <div className={styles.WarningModalButtonWrapper}>
         <Button
+          block
           type="secondary"
           className={styles.WarningModalButton}
           data-testid="refuseButton"
@@ -31,6 +32,7 @@ const WarningModal = () => {
           {t('Leave')}
         </Button>
         <Button
+          block
           type="primary"
           className={styles.WarningModalButton}
           data-testid="acceptButton"

@@ -6,7 +6,7 @@ import { useTimeout } from 'react-use';
 import Drawer from '../../../../../common/components/Drawer';
 import Loader from '../../../../../common/components/Loader';
 import QuantityAdjuster from '../../../../../common/components/QuantityAdjuster';
-import ImageSwiper from './ImageSwiper';
+import ImageSwiper from '../ImageSwiper';
 import SingleChoiceVariation from './SingleChoiceVariation';
 import SimpleMultipleChoiceVariation from './SimpleMultipleChoiceVariation';
 import QuantityMultipleChoiceVariation from './QuantityMultipleChoiceVariation';
@@ -131,7 +131,10 @@ const ProductDetailDrawer = () => {
           onClose();
         }}
       >
-        <button
+        <Button
+          block
+          type="text"
+          theme="ghost"
           className={styles.topArrowBtn}
           onClick={onTopArrowClick}
           style={{
@@ -139,8 +142,8 @@ const ProductDetailDrawer = () => {
             pointerEvents: showTopArrow ? 'auto' : 'none',
           }}
         >
-          <CaretUp className="tw-align-middle" size={20} weight="thin" />
-        </button>
+          <CaretUp className="tw-align-middle" size={16} />
+        </Button>
 
         <div className={styles.productDetailWrapper}>
           <div className={styles.productDetailContent} ref={contentRef} onScroll={onContentScroll}>
@@ -214,16 +217,18 @@ const ProductDetailDrawer = () => {
           <div className={styles.productDetailFooter}>
             {isAbleAddCart ? (
               <Button
+                block
+                type="primary"
                 loading={isAddToCartLoading}
                 onClick={() => {
                   dispatch(addToCart());
                 }}
-                className="tw-w-full tw-uppercase"
+                className="tw-uppercase"
               >
                 {t('AddToCart', { price: formattedTotalPrice })}
               </Button>
             ) : (
-              <Button className="tw-w-full tw-uppercase" disabled>
+              <Button block type="primary" className="tw-uppercase" disabled>
                 {t(UNABLE_ADD_TO_CART_REASON_KEY_MAP[unableAddToCartReason])}
               </Button>
             )}

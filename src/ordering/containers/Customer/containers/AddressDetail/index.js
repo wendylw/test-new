@@ -14,17 +14,20 @@ import {
 } from '../../../../redux/modules/app';
 import { actions as customerActionCreators } from './redux';
 import { getAddressInfo, getContactNumberInvalidErrorVisibility } from './redux/selectors';
-import { init } from './redux/thunk';
+import { init, completePhoneNumber } from './redux/thunk';
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
 import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import _trim from 'lodash/trim';
-import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
+import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import './AddressDetail.scss';
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
+import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
+import { COUNTRY_PHONE_CODES } from '../../../../../common/utils/phone-number-constants';
 const actions = {
   EDIT: 'edit',
   ADD: 'add',
@@ -39,6 +42,8 @@ class AddressDetail extends Component {
     const { init, location } = this.props;
     const { type: actionType, selectedAddress } = location.state || {};
     await init({ actionType, selectedAddress });
+
+    prefetch(['ORD_AL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
   };
 
   handleClickBack = () => {
@@ -74,8 +79,8 @@ class AddressDetail extends Component {
   phoneInputChange = phone => {
     const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
     const phoneInput =
-      (metadataMobile.countries[selectedCountry] &&
-        Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0])) ||
+      (COUNTRY_PHONE_CODES[selectedCountry] &&
+        Utils.getFormatPhoneNumber(phone || '', COUNTRY_PHONE_CODES[selectedCountry])) ||
       '';
     this.props.customerActions.updatePhoneNumber(phoneInput);
     this.setState({
@@ -147,53 +152,68 @@ class AddressDetail extends Component {
     } = addressInfo;
     const { consumerId } = user || {};
 
-    const data = {
-      contactName: _trim(contactName),
-      contactNumber: contactNumber,
-      addressName: _trim(name),
-      deliveryTo: _trim(address),
-      addressDetails: _trim(details),
-      comments: _trim(comments),
-      location: coords,
-      city,
-      countryCode,
-      postCode,
-    };
+    try {
+      const data = {
+        contactName: _trim(contactName),
+        contactNumber: contactNumber,
+        addressName: _trim(name),
+        deliveryTo: _trim(address),
+        addressDetails: _trim(details),
+        comments: _trim(comments),
+        location: coords,
+        city,
+        countryCode,
+        postCode,
+      };
 
-    let requestUrl;
-    let response;
-    if (actionType === actions.ADD) {
-      requestUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
-      response = await post(requestUrl.url, data);
-    }
-    if (actionType === actions.EDIT) {
-      requestUrl = url.API_URLS.UPDATE_ADDRESS(consumerId, id);
-      response = await put(requestUrl.url, data);
-    }
+      let requestUrl;
+      let response;
+      if (actionType === actions.ADD) {
+        requestUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
+        response = await post(requestUrl.url, data);
+      }
+      if (actionType === actions.EDIT) {
+        requestUrl = url.API_URLS.UPDATE_ADDRESS(consumerId, id);
+        response = await put(requestUrl.url, data);
+      }
 
-    const savedAddressName = _get(response, 'addressName', name);
+      const savedAddressName = _get(response, 'addressName', name);
 
-    appActions.updateDeliveryDetails({
-      addressId: _get(response, '_id', ''),
-      addressName: savedAddressName,
-      addressDetails: _get(response, 'addressDetails', details),
-      deliveryComments: _get(response, 'comments', comments),
-      deliveryToAddress: _get(response, 'deliveryTo', address),
-      deliveryToLocation: _get(response, 'location', coords),
-      deliveryToCity: _get(response, 'city', city),
-      postCode: _get(response, 'postCode', postCode),
-      countryCode: _get(response, 'countryCode', countryCode),
-      username: _get(response, 'contactName', contactName),
-      phone: _get(response, 'contactNumber', contactNumber),
-    });
-
-    customerActions.removeAddressInfo();
-
-    if (response) {
-      history.push({
-        pathname: '/customer',
-        search: Utils.getFilteredQueryString('callbackUrl'),
+      appActions.updateDeliveryDetails({
+        addressId: _get(response, '_id', ''),
+        addressName: savedAddressName,
+        addressDetails: _get(response, 'addressDetails', details),
+        deliveryComments: _get(response, 'comments', comments),
+        deliveryToAddress: _get(response, 'deliveryTo', address),
+        deliveryToLocation: _get(response, 'location', coords),
+        deliveryToCity: _get(response, 'city', city),
+        postCode: _get(response, 'postCode', postCode),
+        countryCode: _get(response, 'countryCode', countryCode),
+        username: _get(response, 'contactName', contactName),
+        phone: _get(response, 'contactNumber', contactNumber),
       });
+
+      customerActions.removeAddressInfo();
+
+      if (response) {
+        history.push({
+          pathname: '/customer',
+          search: Utils.getFilteredQueryString('callbackUrl'),
+        });
+      }
+    } catch (error) {
+      logger.error(
+        'Ordering_AddAddress_SaveAddressFailed',
+        {
+          message: error?.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].CHANGE_ADDRESS,
+          },
+        }
+      );
     }
   };
 
@@ -201,8 +221,11 @@ class AddressDetail extends Component {
     this.props.customerActions.startEditPhoneNumber();
   };
 
-  handleNameInputBlur = () => {
-    this.props.customerActions.completePhoneNumber();
+  handlePhoneNumberInputBlur = async event => {
+    const { completePhoneNumber } = this.props;
+    const isValid = isValidPhoneNumber(event.target.value);
+
+    completePhoneNumber(isValid);
   };
 
   render() {
@@ -272,10 +295,9 @@ class AddressDetail extends Component {
                     placeholder={t('EnterPhoneNumber')}
                     value={formatPhoneNumberIntl(contactNumber)}
                     country={country}
-                    metadata={metadataMobile}
                     onChange={this.phoneInputChange}
                     onFocus={this.handlePhoneNumberFocus}
-                    onBlur={this.handleNameInputBlur}
+                    onBlur={this.handlePhoneNumberInputBlur}
                   />
                 </div>
               </div>
@@ -400,6 +422,7 @@ export default compose(
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       init: bindActionCreators(init, dispatch),
+      completePhoneNumber: bindActionCreators(completePhoneNumber, dispatch),
     })
   )
 )(AddressDetail);

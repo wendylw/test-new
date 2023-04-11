@@ -26,9 +26,14 @@ const loadGoogleMapsAPI = async () => {
 
   return loader
     .load()
-    .then(google => google.maps)
+    .then(google => {
+      // WB-4699: we only report load google map API success events to Kibana first.
+      // If the cost is affordable, we will send success events to New relic in phase 2.
+      logger.log('Common_LoadGoogleMapAPISucceeded');
+      return google.maps;
+    })
     .catch(() => {
-      window.newrelic?.addPageAction?.('common.script-load-error', {
+      window.newrelic?.addPageAction?.('third-party-lib.load-script-failed', {
         scriptName: 'google-map-api',
       });
       logger.error('Common_LoadGoogleMapAPIFailed');
@@ -103,18 +108,12 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
         },
         (results, status) => {
           if (status === googleMapsAPI.places.PlacesServiceStatus.OK) {
-            window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-success');
+            logger.log('Utils_GeoUtils_GetGoogleMapsAPIPlacePredictionsSucceeded');
             resolve(results);
           } else {
-            window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-failure', {
-              error: status,
-            });
-            logger.error('Utils_GeoUtils_GetPlacePredictionsFromGoogleMapsAPIFailed', {
-              error: status,
-              input: text,
-              location: locationCoords,
-              origin: originCoords,
-              radius: radiusNumber,
+            logger.error('Utils_GeoUtils_GetGoogleMapsAPIPlacePredictionsFailed', {
+              code: status,
+              query: text,
               country,
             });
             resolve([]);
@@ -236,15 +235,10 @@ export const getPlacesFromCoordinates = async coords => {
     return await new Promise((resolve, reject) => {
       geocoder.geocode({ location }, (result, status) => {
         if (status === googleMapsAPI.GeocoderStatus.OK && result.length) {
-          window.newrelic?.addPageAction('google-maps-api.geocode-success');
           resolve(result);
         } else {
-          window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
-            error: status,
-          });
           logger.error('Utils_GeoUtils_GetGeocodeFromGoogleMapsAPIFailed', {
-            error: status,
-            location,
+            code: status,
           });
           reject(new Error(`Failed to get location from coordinates: ${status}`));
         }
@@ -270,7 +264,7 @@ export const getHistoricalDeliveryAddresses = async () => {
     const results = await get('/api/storage/location-history');
     return results;
   } catch (e) {
-    console.error('failed to get historical delivery addresses', e);
+    logger.error('Utils_GeoUtils_FailedToGetHistoricalDeliveryAddresses', { message: e?.message });
     return [];
   }
 };
@@ -282,7 +276,7 @@ export const setHistoricalDeliveryAddresses = async positionInfo => {
     delete clonedPositionInfo.distance;
     await post('/api/storage/location-history', clonedPositionInfo);
   } catch (e) {
-    console.error('failed to set historical delivery addresses', e);
+    logger.error('Utils_GeoUtils_FailedToSetHistoricalDeliveryAddresses', { message: e?.message });
   }
 };
 
@@ -317,15 +311,11 @@ export const getPlaceInfoFromPlaceId = async (placeId, options = {}) => {
             addressComponents: standardizeGeoAddress(place.address_components),
             placeId: place.place_id,
           };
-          window.newrelic?.addPageAction('google-maps-api.geocode-success');
           resolve(result);
         } else {
-          window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
-            error: status,
-          });
           logger.error('Utils_GeoUtils_GetGeocodeFromGoogleMapsAPIFailed', {
-            error: status,
-            placeId,
+            code: status,
+            id: placeId,
           });
           reject(`Failed to get location from coordinates: ${status}`);
         }
@@ -354,18 +344,14 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
       },
       (result, status) => {
         if (status === googleMapsAPI.places.PlacesServiceStatus.OK) {
-          window.newrelic?.addPageAction('google-maps-api.placesGetDetails-success');
+          logger.log('Utils_GeoUtils_GetGoogleMapsAPIPlaceDetailsSucceeded');
           resolve(result);
         } else {
-          window.newrelic?.addPageAction('google-maps-api.placesGetDetails-failure', {
-            error: status,
+          logger.error('Utils_GeoUtils_GetGoogleMapsAPIPlaceDetailsFailed', {
+            code: status,
+            query: fields,
+            id: placeId,
           });
-          logger.error('Utils_GeoUtils_GetPlaceDetailsFromGoogleMapsAPIFailed', {
-            error: status,
-            fields,
-            placeId,
-          });
-          console.error('Fail to get place detail:', status, placeId);
           reject(new Error('Fail to get place detail'));
         }
       }
@@ -389,15 +375,11 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
 export const fetchGeolocationByIp = () => {
   return fetch('https://pro.ip-api.com/json?key=5I9whkNNfV2ObFJ')
     .then(data => {
-      window.newrelic?.addPageAction('ip-api.fetchGeolocationByIp-success');
       return data.json();
     })
     .catch(err => {
-      window.newrelic?.addPageAction('ip-api.fetchGeolocationByIp-failure', {
-        error: err?.message,
-      });
       logger.error('Utils_GeoUtils_FetchGeolocationByIPFailed', {
-        error: err?.message,
+        message: err?.message,
       });
       throw err;
     });

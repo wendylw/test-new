@@ -22,10 +22,12 @@ import {
   getPromotion,
   getReceiptNumber,
   getServiceCharge,
+  getProductsManualDiscount,
   getOrderShippingType,
   getIsPayLater,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
 import { ICON_RES } from '../../../../../components/NativeHeader';
@@ -44,6 +46,7 @@ export class OrderDetails extends Component {
     const { loadOrder } = this.props;
 
     loadOrder(this.getReceiptNumber());
+    prefetch(['ORD_MI', 'ORD_RD', 'ORD_MNU'], ['OrderingDelivery', 'ReportDriver']);
   }
 
   getReceiptNumber = () => {
@@ -235,6 +238,21 @@ export class OrderDetails extends Component {
     );
   }
 
+  renderDiscount() {
+    const { t, productsManualDiscount } = this.props;
+
+    if (productsManualDiscount <= 0) {
+      return null;
+    }
+
+    return (
+      <li className="flex flex-space-between flex-middle">
+        <span className="padding-top-bottom-small text-opacity">{t('Discount')}</span>
+        <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-productsManualDiscount} />
+      </li>
+    );
+  }
+
   renderPromotion() {
     const { promotion, t } = this.props;
 
@@ -385,7 +403,7 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('Tax')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={tax || 0} />
               </li>
-              {isTakeAwayType && takeawayCharges && (
+              {isTakeAwayType && takeawayCharges > 0 && (
                 <li className="flex flex-space-between flex-middle">
                   <span className="padding-top-bottom-small text-opacity">{t('TakeawayCharge')}</span>
                   <CurrencyNumber className="padding-top-bottom-small text-opacity" money={takeawayCharges || 0} />
@@ -399,6 +417,7 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('ServiceCharge')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={serviceCharge || 0} />
               </li>
+              {this.renderDiscount()}
               <li className="flex flex-space-between flex-middle">
                 <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
@@ -462,6 +481,7 @@ export default compose(
       shippingType: getOrderShippingType(state),
       promotion: getPromotion(state),
       serviceCharge: getServiceCharge(state),
+      productsManualDiscount: getProductsManualDiscount(state),
       orderStatus: getOrderStatus(state),
       receiptNumber: getReceiptNumber(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),

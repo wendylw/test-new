@@ -752,9 +752,7 @@ Utils.getCookieVariable = UtilsV2.getCookieVariable;
 Utils.setCookieVariable = UtilsV2.setCookieVariable;
 
 // IMPORTANT! When deleting a cookie and you're not relying on the default attributes, you must pass the exact same path and domain attributes that were used to set the cookie
-Utils.removeCookieVariable = (name, attributes) => {
-  return Cookies.remove(name, attributes);
-};
+Utils.removeCookieVariable = UtilsV2.removeCookieVariable;
 
 Utils.isTNGMiniProgram = UtilsV2.isTNGMiniProgram;
 

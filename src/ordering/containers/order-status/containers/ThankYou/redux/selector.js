@@ -23,7 +23,7 @@ import {
   getAllowAnonymousQROrdering,
 } from '../../../../../redux/modules/app';
 
-const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
+const { ORDER_STATUS, DELIVERY_METHOD, API_REQUEST_STATUS } = Constants;
 
 export const getStoreHashCode = state => state.orderStatus.thankYou.storeHashCode;
 
@@ -71,10 +71,37 @@ export const getOrderPaymentMethod = createSelector(getOrder, order => _get(orde
 
 export const getCancelOrderStatus = state => state.orderStatus.thankYou.cancelOrderStatus;
 
-export const getshowProfileVisibility = state => state.orderStatus.thankYou.profileModalVisibility;
+export const getCancelOrderError = state => state.orderStatus.thankYou.cancelOrderError;
 
-export const getUpdateShippingTypePendingStatus = state =>
-  state.orderStatus.thankYou.updateShippingTypeStatus === 'pending';
+export const getIsCancelOrderRequestRejected = createSelector(
+  getCancelOrderStatus,
+  cancelOrderStatus => cancelOrderStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getCancelOrderRequestErrorMessage = createSelector(getCancelOrderError, cancelOrderError =>
+  _get(cancelOrderError, 'message', '')
+);
+
+export const getShowProfileVisibility = state => state.orderStatus.thankYou.profileModalVisibility;
+
+export const getUpdateShippingTypeStatus = state => state.orderStatus.thankYou.updateShippingTypeStatus;
+
+export const getUpdateShippingTypeError = state => state.orderStatus.thankYou.updateShippingTypeError;
+
+export const getUpdateShippingTypePendingStatus = createSelector(
+  getUpdateShippingTypeStatus,
+  updateShippingTypeStatus => updateShippingTypeStatus === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsUpdateShippingTypeRequestRejected = createSelector(
+  getUpdateShippingTypeStatus,
+  updateShippingTypeStatus => updateShippingTypeStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getUpdateShippingTypeRequestErrorMessage = createSelector(
+  getUpdateShippingTypeError,
+  updateShippingTypeError => _get(updateShippingTypeError, 'message', '')
+);
 
 export const getOrderDeliveryInfo = createSelector(getOrder, order => {
   if (!order) {

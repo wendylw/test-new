@@ -69,6 +69,7 @@ const ThankYouModal = () => {
       <div className={styles.ThankYouModalButtonWrapper}>
         {shouldShowOkayButtonOnly ? (
           <Button
+            block
             type="primary"
             className={styles.ThankYouModalButton}
             data-testid="OkayButton"
@@ -80,6 +81,7 @@ const ThankYouModal = () => {
         ) : (
           <>
             <Button
+              block
               type="secondary"
               className={styles.ThankYouModalButton}
               data-testid="refuseButton"
@@ -89,6 +91,7 @@ const ThankYouModal = () => {
               {t('NoThanks')}
             </Button>
             <Button
+              block
               type="primary"
               className={styles.ThankYouModalButton}
               data-testid="acceptButton"

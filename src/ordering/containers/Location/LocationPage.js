@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import _get from 'lodash/get';
+import prefetch from '../../../common/utils/prefetch-assets';
 import HybridHeader from '../../../components/HybridHeader';
 import { post } from '../../../utils/request';
 import config from '../../../config';
@@ -62,6 +63,8 @@ class LocationPage extends Component {
     if (hasUserLoggedIn) {
       await loadAddressList();
     }
+
+    prefetch(['ORD_LAD']);
   }
 
   async componentDidUpdate(prevProps) {
@@ -136,7 +139,7 @@ class LocationPage extends Component {
         return;
       }
     } catch (e) {
-      logger.error('Ordering_LocationPage_LoadCoreStoresFailed', e);
+      logger.error('Ordering_LocationPage_LoadCoreStoresFailed', { message: e?.message });
 
       throw e;
     }

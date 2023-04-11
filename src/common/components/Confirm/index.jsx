@@ -49,8 +49,9 @@ const ConfirmFooter = props => {
     <div className={`${styles.confirmFooter} ${buttonAlignment}`}>
       {buttonAlignment === CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL ? (
         <Button
+          block
           type="secondary"
-          className={`tw-flex-1 tw-uppercase${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
+          className={`${styles.confirmFooterButton}${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
           onClick={() => {
             onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
           }}
@@ -60,8 +61,9 @@ const ConfirmFooter = props => {
         </Button>
       ) : null}
       <Button
+        block
         type="primary"
-        className={`tw-flex-1 tw-uppercase${confirmButtonClassName ? ` ${confirmButtonClassName}` : ''}`}
+        className={`${styles.confirmFooterButton}${confirmButtonClassName ? ` ${confirmButtonClassName}` : ''}`}
         onClick={() => {
           onSelection(CONFIRM_TRIGGER_TARGET.CONFIRM);
         }}
@@ -71,10 +73,10 @@ const ConfirmFooter = props => {
       </Button>
       {buttonAlignment === CONFIRM_BUTTON_ALIGNMENT.VERTICAL ? (
         <Button
+          block
           type="text"
-          className={`${styles.confirmVerticalCloseButton} tw-flex-1${
-            cancelButtonClassName ? ` ${cancelButtonClassName}` : ''
-          }`}
+          theme="ghost"
+          className={`${styles.confirmVerticalCloseButton}${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
           onClick={() => {
             onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
           }}
@@ -116,8 +118,7 @@ const Confirm = props => {
   useEffect(() => {
     if (show && contentContainerRef.current) {
       const text = contentContainerRef.current.innerText;
-      logger.log('Common_Feedback_ShowConfirm', { text });
-      window.newrelic?.addPageAction('feedback.confirm.show', { text });
+      logger.log('Common_Feedback_ShowConfirm', { message: text });
     }
   }, [children, show]);
 

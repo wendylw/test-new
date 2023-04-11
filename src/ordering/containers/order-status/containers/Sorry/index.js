@@ -2,31 +2,27 @@ import React, { Component } from 'react';
 import qs from 'qs';
 import _pick from 'lodash/pick';
 import { withTranslation } from 'react-i18next';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
-
-const PROVIDER_TO_METHOD = {
-  StripeFPX: 'onlineBanking',
-  CCPPMYCreditCard: 'creditCard',
-  GrabPay: 'onlineBanking',
-  TnGOnline: 'onlineBanking',
-  Boost: 'onlineBanking',
-  BeepTHOnlineBanking: 'onlineBanking',
-  BeepTHCreditCard: 'creditCard',
-  BeepTHLinePay: 'onlineBanking',
-  BeepPHCreditCard: 'creditCard',
-  BeepPHCCPPGcash: 'onlineBanking',
-};
+import logger from '../../../../../utils/monitoring/logger';
 
 class Sorry extends Component {
   async componentDidMount() {
     const { t } = this.props;
     const queryParams = Utils.getQueryString();
+    const { errorCode, paymentProvider } = queryParams || {};
     const isPayLater = queryParams.isPayLater === 'true';
     const errorDescription = isPayLater ? this.getDescriptionOfPayLater() : this.getDescription();
 
     alert(errorDescription, { title: t('PaymentFailed') });
+
+    logger.error('Ordering_Sorry_CompletePaymentFailed', {
+      name: paymentProvider,
+      code: errorCode,
+      type: isPayLater ? 'Pay Later' : 'Pay First',
+    });
 
     // for pay later order, the page will redirect to Table Summary
     if (isPayLater) {
@@ -48,39 +44,25 @@ class Sorry extends Component {
         }),
       });
     }
+
+    prefetch(['ORD_MNU', 'ORD_SC'], ['OrderingDelivery', 'OrderingCart']);
   }
 
   getDescription = () => {
     const params = Utils.getQueryString();
-    const { errorCode, paymentProvider } = params || {};
+    const { errorCode } = params || {};
     const { t } = this.props;
 
-    const methods = {
-      onlineBanking: t('OnlineBanking'),
-      creditCard: t('CreditAndDebitCard'),
-    };
-    const provideMethod = PROVIDER_TO_METHOD[paymentProvider];
-
-    return errorCode && paymentProvider
-      ? t('Description', { paymentMethod: methods[provideMethod], error: t(errorCode) })
-      : t('PaymentFailedDescription');
+    return errorCode ? t('Description', { error: t(errorCode) }) : t('PaymentFailedDescription');
   };
 
   getDescriptionOfPayLater = () => {
     const params = Utils.getQueryString();
-    const { errorCode, paymentProvider } = params || {};
+    const { errorCode } = params || {};
     const { t } = this.props;
 
-    if (errorCode && paymentProvider) {
-      const methods = {
-        onlineBanking: t('OnlineBanking'),
-        creditCard: t('CreditAndDebitCard'),
-      };
-
-      const provideMethod = PROVIDER_TO_METHOD[paymentProvider];
-
+    if (errorCode) {
       return t('SpecificPaymentFailedDescriptionOfPayLater', {
-        paymentMethod: methods[provideMethod],
         error: t(errorCode),
       });
     }

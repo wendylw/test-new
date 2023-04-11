@@ -1,35 +1,44 @@
 import React from 'react';
+import _get from 'lodash/get';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
-import Alert from '../../../common/feedback/alert/Alert';
 import Constants from '../../../utils/constants';
 import HybridHeader from '../../../components/HybridHeader';
 import PageLoader from '../../../components/PageLoader';
 import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
+import { actions as appActionCreators, getUser, getIsLoginRequestFailed } from '../../redux/modules/app';
 import {
-  actions as appActionCreators,
-  getUser,
-  getOtpType,
-  getIsOtpError,
-  getDeliveryDetails,
-} from '../../redux/modules/app';
+  getShouldShowLoader,
+  getOtpErrorTextI18nKey,
+  getShouldShowErrorPopUp,
+  getOtpErrorPopUpI18nKeys,
+  getIsOtpErrorFieldVisible,
+  getIsOtpInitialRequestFailed,
+  getIsOtpRequestStatusPending,
+  getIsOtpRequestStatusRejected,
+} from './redux/selectors';
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import config from '../../../config';
+import prefetch from '../../../common/utils/prefetch-assets';
 import logger from '../../../utils/monitoring/logger';
 import Utils from '../../../utils/utils';
+import { alert } from '../../../common/utils/feedback';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
+
+const { ROUTER_PATHS, OTP_REQUEST_TYPES, RESEND_OTP_TIME } = Constants;
 
 class PageLogin extends React.Component {
   state = {
     sendOtp: false,
-    shouldShowAlert: false,
+    shouldShowModal: false,
+    isPhoneNumberValid: false,
   };
 
   captchaRef = React.createRef();
@@ -38,6 +47,8 @@ class PageLogin extends React.Component {
     if (Utils.isTNGMiniProgram()) {
       this.loginInTngMiniProgram();
     }
+
+    prefetch(['ORD_MNU'], ['OrderingDelivery']);
   }
 
   componentDidUpdate(prevProps) {
@@ -69,18 +80,32 @@ class PageLogin extends React.Component {
   handleCloseOtpModal() {
     const { appActions } = this.props;
 
-    appActions.resetOtpStatus();
+    this.setState({ shouldShowModal: false }, () => appActions.resetSendOtpRequest());
+  }
+
+  handleChangeOtpCode() {
+    const { isLoginRequestFailed, appActions } = this.props;
+
+    if (!isLoginRequestFailed) return;
+
+    // Only update create otp status when needed
+    appActions.resetSendOtpRequest();
   }
 
   handleUpdateUser(user) {
-    const { appActions } = this.props;
+    const { appActions, isOtpRequestFailed } = this.props;
 
     appActions.updateUser(user);
+
+    // Only reset otp status when needed
+    if (!isOtpRequestFailed) return;
+
+    appActions.resetGetOtpRequest();
   }
 
-  handleCloseAlert() {
-    this.setState({ shouldShowAlert: false });
-  }
+  handleUpdatePhoneNumberValidation = isValid => {
+    this.setState({ isPhoneNumberValid: isValid });
+  };
 
   async handleCompleteReCAPTCHA() {
     try {
@@ -103,33 +128,83 @@ class PageLogin extends React.Component {
 
       return token;
     } catch (e) {
+      const { t } = this.props;
+
+      alert(t('NetworkErrorDescription'), {
+        title: t('NetworkErrorTitle'),
+      });
+
       // We will set the attribute 'message' even if it is always empty
-      logger.error('Ordering_PageLogin_CompleteCaptchaFailed', { message: e?.message });
+      logger.error(
+        'Ordering_PageLogin_CompleteCaptchaFailed',
+        { message: e?.message },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
+          },
+        }
+      );
       throw e;
     }
   }
 
   async handleGetOtpCode(payload) {
-    // BEEP-2685: New Relic needs to know the OTP first send time.
-    window.newrelic?.addPageAction('ordering.login.get-otp-start');
-
     await this.props.appActions.getOtp(payload);
 
-    if (this.props.isOtpError) {
-      window.newrelic?.addPageAction('ordering.login.get-otp-failed');
-      throw new Error('OTP verification failed');
+    const { t, isOtpRequestFailed, shouldShowErrorPopUp, errorPopUpI18nKeys } = this.props;
+
+    if (!isOtpRequestFailed) return;
+
+    if (shouldShowErrorPopUp) {
+      const { title: titleKey, description: descriptionKey } = errorPopUpI18nKeys;
+
+      alert(t(descriptionKey), { title: t(titleKey), closeButtonClassName: 'button__block text-uppercase' });
     }
 
-    window.newrelic?.addPageAction('ordering.login.get-otp-success');
+    throw new Error('Failed to get OTP code');
   }
 
-  async handleSubmitPhoneNumber(phone, type) {
+  async handleClickContinueButton(phone, type) {
     const payload = { phone, type };
     this.setState({ sendOtp: false });
-    logger.log('Ordering_PageLogin_SubmitPhoneNumber');
+    logger.log('Ordering_PageLogin_ClickContinueButton');
 
     try {
-      const isWhatsAppType = type === Constants.OTP_REQUEST_TYPES.WHATSAPP;
+      const shouldSkipReCAPTCHACheck = !config.recaptchaEnabled;
+
+      if (!shouldSkipReCAPTCHACheck) {
+        payload.captchaToken = await this.handleCompleteReCAPTCHA();
+        payload.siteKey = config.googleRecaptchaSiteKey;
+      }
+
+      // We don't need to wait this API's response, it won't block us from fetching OTP API.
+      this.props.appActions.getPhoneWhatsAppSupport(phone);
+
+      await this.handleGetOtpCode(payload);
+
+      this.setState({ sendOtp: true, shouldShowModal: true });
+    } catch (e) {
+      logger.error(
+        'Ordering_PageLogin_SubmitPhoneNumberFailed',
+        { message: e?.message },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
+          },
+        }
+      );
+    }
+  }
+
+  async handleClickResendButton(phone, type) {
+    const payload = { phone, type };
+    this.setState({ sendOtp: false });
+    logger.log('Ordering_PageLogin_ClickResendButton', { type });
+
+    try {
+      const isWhatsAppType = type === OTP_REQUEST_TYPES.WHATSAPP;
       const shouldSkipReCAPTCHACheck = !config.recaptchaEnabled || isWhatsAppType;
 
       if (!shouldSkipReCAPTCHACheck) {
@@ -141,23 +216,37 @@ class PageLogin extends React.Component {
 
       this.setState({ sendOtp: true });
     } catch (e) {
-      this.setState({ shouldShowAlert: true });
+      logger.error(
+        'Ordering_PageLogin_RefetchOTPFailed',
+        {
+          type,
+          message: e?.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
+          },
+        }
+      );
     }
   }
 
   handleCaptchaLoad() {
+    const { t } = this.props;
+
     const hasLoadSuccess = !!window.grecaptcha;
     const scriptName = 'google-recaptcha';
 
-    window.newrelic?.addPageAction(`ordering.otp-login.script-load-${hasLoadSuccess ? 'success' : 'error'}`, {
+    window.newrelic?.addPageAction(`third-party-lib.load-script-${hasLoadSuccess ? 'succeeded' : 'failed'}`, {
       scriptName: scriptName,
     });
 
-    this.setState({ shouldShowAlert: !hasLoadSuccess });
-  }
-
-  updateOtpStatus() {
-    this.props.appActions.updateOtpStatus();
+    if (!hasLoadSuccess) {
+      alert(t('NetworkErrorDescription'), {
+        title: t('NetworkErrorTitle'),
+      });
+    }
   }
 
   async handleWebLogin(otp) {
@@ -165,19 +254,47 @@ class PageLogin extends React.Component {
     const loginOptions = location.state?.loginOptions || {};
     const { shippingType } = loginOptions;
 
-    window.newrelic?.addPageAction('ordering.login.verify-otp-start');
-    await appActions.sendOtp({ otp });
+    try {
+      await appActions.sendOtp({ otp });
 
-    const { user } = this.props;
-    const { accessToken, refreshToken } = user;
+      const { isLoginRequestFailed } = this.props;
 
-    if (accessToken && refreshToken) {
-      window.newrelic?.addPageAction('ordering.login.verify-otp-done');
-      appActions.loginApp({
-        accessToken,
-        refreshToken,
-        shippingType,
-      });
+      if (isLoginRequestFailed) {
+        throw new Error('Failed to verify OTP');
+      }
+
+      const { user } = this.props;
+      const { accessToken, refreshToken } = user;
+
+      if (accessToken && refreshToken) {
+        await appActions.loginApp({
+          accessToken,
+          refreshToken,
+          shippingType,
+        });
+
+        const hasLoggedIn = _get(this.props.user, 'isLogin', false);
+
+        if (!hasLoggedIn) {
+          throw new Error('Failed to login');
+        }
+      } else {
+        throw new Error(`Missing ${!accessToken ? 'accessToken' : 'refreshToken'}`);
+      }
+    } catch (error) {
+      // NOTE: No need to throw an error, the error is used to log an event only.
+      logger.error(
+        'Ordering_PageLogin_LoginFailed',
+        {
+          message: error?.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SUBMIT_OTP,
+          },
+        }
+      );
     }
   }
 
@@ -192,7 +309,7 @@ class PageLogin extends React.Component {
 
     // Default route
     history.replace({
-      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      pathname: ROUTER_PATHS.ORDERING_HOME,
       search: window.location.search,
     });
   };
@@ -210,29 +327,25 @@ class PageLogin extends React.Component {
   };
 
   renderOtpModal() {
-    const { t, user } = this.props;
-    const { sendOtp } = this.state;
-    const { isFetching, isResending, isLogin, hasOtp, isError, phone, noWhatsAppAccount, country } = user || {};
-    const { RESEND_OTP_TIME } = Constants;
+    const { user, shouldShowLoader, isOtpRequestPending, isLoginRequestFailed } = this.props;
+    const { sendOtp, shouldShowModal } = this.state;
+    const { phone, noWhatsAppAccount, country } = user || {};
 
-    if (!hasOtp || isLogin) {
-      return null;
-    }
+    if (!shouldShowModal) return null;
 
     return (
       <OtpModal
-        buttonText={t('OK')}
-        ResendOtpTime={RESEND_OTP_TIME}
+        resendOtpTime={RESEND_OTP_TIME}
         phone={phone}
         country={country}
         showWhatsAppResendBtn={!noWhatsAppAccount && country === 'MY'}
         onClose={this.handleCloseOtpModal.bind(this)}
-        getOtp={this.handleSubmitPhoneNumber.bind(this)}
+        onChange={this.handleChangeOtpCode.bind(this)}
+        getOtp={this.handleClickResendButton.bind(this)}
         sendOtp={this.handleWebLogin.bind(this)}
-        updateOtpStatus={this.updateOtpStatus.bind(this)}
-        isLoading={isFetching || isLogin}
-        isResending={isResending}
-        isError={isError}
+        isLoading={shouldShowLoader}
+        isResending={isOtpRequestPending}
+        showError={isLoginRequestFailed}
         shouldCountdown={sendOtp}
       />
     );
@@ -255,9 +368,17 @@ class PageLogin extends React.Component {
   }
 
   render() {
-    const { shouldShowAlert } = this.state;
-    const { t, user, className } = this.props;
-    const { isLogin, showLoginPage, hasOtp, isFetching, phone, country } = user || {};
+    const {
+      t,
+      user,
+      className,
+      errorTextI18nKey,
+      isRequestSucceed,
+      isOtpRequestPending,
+      isOtpErrorFieldVisible,
+    } = this.props;
+    const { isPhoneNumberValid } = this.state;
+    const { isLogin, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
 
     if (Utils.isTNGMiniProgram()) {
@@ -272,7 +393,7 @@ class PageLogin extends React.Component {
       classList.push(className);
     }
 
-    if (hasOtp || showLoginPage) {
+    if (isRequestSucceed) {
       classList.push('active');
     }
 
@@ -292,12 +413,12 @@ class PageLogin extends React.Component {
               <img
                 src={beepLoginActive}
                 alt="otp active"
-                className={`${isValidPhoneNumber(phone || '') ? '' : 'page-login__icon--hide'}`}
+                className={`${isPhoneNumberValid ? '' : 'page-login__icon--hide'}`}
               />
               <img
                 src={beepLoginDisabled}
                 alt="otp disabled"
-                className={`${isValidPhoneNumber(phone || '') ? 'page-login__icon--hide' : 'page-login__disabled'}`}
+                className={`${isPhoneNumberValid ? 'page-login__icon--hide' : 'page-login__disabled'}`}
               />
             </figure>
             <PhoneViewContainer
@@ -305,12 +426,15 @@ class PageLogin extends React.Component {
               phone={phone}
               content={t('LoginTip')}
               country={country}
-              buttonText={t('Continue')}
+              buttonText={isOtpRequestPending ? t('Processing') : t('Continue')}
               show={true}
-              isLoading={isFetching}
+              isProcessing={isOtpRequestPending}
+              showError={isOtpErrorFieldVisible}
+              errorText={t(errorTextI18nKey)}
               updatePhoneNumber={this.handleUpdateUser.bind(this)}
               updateCountry={this.handleUpdateUser.bind(this)}
-              onSubmit={this.handleSubmitPhoneNumber.bind(this)}
+              onValidate={this.handleUpdatePhoneNumberValidation}
+              onSubmit={this.handleClickContinueButton.bind(this)}
             >
               <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
                 <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
@@ -320,21 +444,6 @@ class PageLogin extends React.Component {
         </section>
         {this.renderOtpModal()}
         {this.renderReCAPTCHA()}
-        <Alert
-          show={shouldShowAlert}
-          onClose={this.handleCloseAlert.bind(this)}
-          closeButtonContent={t('Dismiss')}
-          content={
-            <>
-              <h4 className="alert__title padding-small text-size-biggest text-weight-bolder">
-                {t('NetworkErrorTitle')}
-              </h4>
-              <div className="alert__description padding-small text-line-height-base">
-                {t('NetworkErrorDescription')}
-              </div>
-            </>
-          }
-        />
       </React.Fragment>
     );
   }
@@ -355,9 +464,15 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
-      deliveryDetails: getDeliveryDetails(state),
-      otpType: getOtpType(state),
-      isOtpError: getIsOtpError(state),
+      shouldShowLoader: getShouldShowLoader(state),
+      errorTextI18nKey: getOtpErrorTextI18nKey(state),
+      errorPopUpI18nKeys: getOtpErrorPopUpI18nKeys(state),
+      shouldShowErrorPopUp: getShouldShowErrorPopUp(state),
+      isLoginRequestFailed: getIsLoginRequestFailed(state),
+      isOtpRequestPending: getIsOtpRequestStatusPending(state),
+      isOtpRequestFailed: getIsOtpRequestStatusRejected(state),
+      isOtpErrorFieldVisible: getIsOtpErrorFieldVisible(state),
+      isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

@@ -7,6 +7,8 @@ import {
   cancelOrder,
   updateOrderShippingType,
   loadFoodCourtIdHashCode,
+  showProfileModal,
+  hideProfileModal,
 } from './thunks';
 
 const initialState = {
@@ -23,6 +25,7 @@ const initialState = {
   updateShippingTypeStatus: null, // pending || fulfilled || rejected
   updateShippingTypeError: null,
   cancelOrderStatus: null, // pending || fulfilled || rejected
+  cancelOrderError: null,
   profileModalVisibility: false,
   foodCourtInfo: {
     hashCode: null,
@@ -75,16 +78,18 @@ const { reducer, actions } = createSlice({
     },
     [cancelOrder.pending.type]: state => {
       state.cancelOrderStatus = 'pending';
+      state.cancelOrderError = null;
     },
     [cancelOrder.fulfilled.type]: state => {
       state.cancelOrderStatus = 'fulfilled';
     },
     [cancelOrder.rejected.type]: (state, { error }) => {
-      state.error = error;
+      state.cancelOrderError = error;
       state.cancelOrderStatus = 'rejected';
     },
     [updateOrderShippingType.pending.type]: state => {
       state.updateShippingTypeStatus = 'pending';
+      state.updateShippingTypeError = null;
     },
     [updateOrderShippingType.fulfilled.type]: state => {
       state.updateShippingTypeStatus = 'fulfilled';
@@ -95,6 +100,12 @@ const { reducer, actions } = createSlice({
     },
     [loadFoodCourtIdHashCode.fulfilled.type]: (state, { payload }) => {
       state.foodCourtInfo.hashCode = payload.hex;
+    },
+    [showProfileModal.fulfilled.type]: state => {
+      state.profileModalVisibility = true;
+    },
+    [hideProfileModal.fulfilled.type]: state => {
+      state.profileModalVisibility = false;
     },
   },
 });

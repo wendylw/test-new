@@ -1,8 +1,35 @@
+import _isNaN from 'lodash/isNaN';
 import iNoBounce from 'inobounce';
 
 iNoBounce.disable();
 
 const { body, documentElement: html } = document;
+
+/**
+ *
+ * @returns {number}
+ */
+// get iOS version from stackoverflow: <https://stackoverflow.com/a/14223920>
+const getiOSVersion = () => {
+  if (/iP(hone|od|ad)/.test(navigator.platform)) {
+    // supports iOS 2.0 and later
+    // versionArray format: [main_version, sub_version, sub_version, sub_version]
+    // Only the first two digits of the version number are returned
+    const versionArray = navigator.userAgent.match(/OS (\d+)_(\d+)_?(\d+)?/);
+
+    // The length of the version is not checked, it is the regex to ensure that it must be an array of > 2 elements
+    const version = versionArray
+      ? versionArray
+          .map(versionItem => parseInt(versionItem || 0, 10))
+          .filter(number => !_isNaN(number))
+          .slice(0, 2)
+      : [0, 0];
+
+    return parseFloat(version.join('.')).toFixed(1);
+  }
+
+  return 0;
+};
 
 // [START: Safari Document Scroll Blocker]
 // This is to prevent the html from scrolling when there's fixed, fullscreen content on the front.
@@ -14,6 +41,15 @@ const shouldEnableDocumentScrollBlocker = (() => {
   const ua = navigator.userAgent.toLowerCase();
   const isSafari = ua.indexOf('safari') > -1 && ua.indexOf('chrome') < 0 && /ipad|iphone|ipod/.test(ua);
   if (!isSafari) return false;
+
+  // [Reason]: To solve category does not work on the menu page: https://storehub.atlassian.net/browse/WB-4316
+  // Only for the iOS version did the solution distinction
+  // [Solution]: On iOS 15.5 and above, we will not be compatible with expanded/collapsed of Safari's address bar.
+  // Compatibility processing will cause confusion in scroll monitoring in versions above 15.5,
+  // resulting in unknown errors
+  const iOSVersion = getiOSVersion();
+  if (iOSVersion >= 15.5) return false;
+
   // this following code is to avoid enable the plugin on chrome's ios simulator
   // refer to: https://github.com/lazd/iNoBounce/blob/master/inobounce.js#L106
   const testDiv = document.createElement('div');
@@ -100,6 +136,8 @@ const blockBodyScroll = () => {
   const scrollBarWidth = window.innerWidth - html.clientWidth;
   const bodyPaddingRight = parseInt(window.getComputedStyle(body).getPropertyValue('padding-right'), 10) || 0;
   const offset = bodyPaddingRight + scrollBarWidth;
+
+  // body-scroll-block-fix is used to set drawer position correctly at computer full screen mode
   updateBodyScrollBlockerStyle(`
     body { position: relative; overflow: hidden; padding-right: ${offset}px;}
     .body-scroll-block-fix {

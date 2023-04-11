@@ -1,29 +1,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import PhoneInput, {
+  formatPhoneNumberIntl,
+  isValidPhoneNumber,
+  parsePhoneNumber,
+} from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 import './PhoneViewContainer.scss';
 
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
-
 class PhoneViewContainer extends React.Component {
   handleUpdatePhoneNumber(phone) {
-    const { updatePhoneNumber } = this.props;
-    const { number } = (phone && parsePhoneNumberFromString(phone)) || {};
+    const { updatePhoneNumber, onValidate } = this.props;
+    const { number } = (phone && parsePhoneNumber(phone)) || {};
 
     updatePhoneNumber({ phone: number || '' });
+
+    onValidate(isValidPhoneNumber(number || ''));
   }
 
   handleUpdateCountry(country) {
-    const { updateCountry } = this.props;
+    const { updateCountry, phone, onValidate } = this.props;
 
     if (country) {
-      updateCountry({ country: country });
+      updateCountry({ country });
     }
+
+    onValidate(isValidPhoneNumber(phone || ''));
   }
 
   handleSubmitPhoneNumber() {
@@ -39,13 +44,20 @@ class PhoneViewContainer extends React.Component {
   }
 
   render() {
-    const { t, children, title, className, country, buttonText, content, phone, isLoading } = this.props;
+    const {
+      t,
+      children,
+      title,
+      className,
+      country,
+      buttonText,
+      content,
+      phone,
+      showError,
+      errorText,
+      isProcessing,
+    } = this.props;
     const classList = ['phone-view'];
-    let buttonContent = buttonText;
-
-    if (isLoading) {
-      buttonContent = t('Processing');
-    }
 
     if (className) {
       classList.push(className);
@@ -64,21 +76,22 @@ class PhoneViewContainer extends React.Component {
           international // If input want to show country code when phone number is empty, pls add international on props
           smartCaret={false}
           placeholder={t('EnterPhoneNumber')}
+          className={showError ? 'phone-view__input-error' : ''}
           data-heap-name="common.phone-view-container.phone-number-input"
           value={formatPhoneNumberIntl(phone)}
           defaultCountry={country}
           country={country}
-          metadata={metadataMobile}
           onChange={newPhone => this.handleUpdatePhoneNumber(newPhone)}
           onCountryChange={newCountry => this.handleUpdateCountry(newCountry)}
         />
+        {showError && <p className="phone-view__error-message">{errorText}</p>}
         <button
           className="button button__fill button__block margin-top-bottom-small text-weight-bolder text-uppercase"
           data-heap-name="common.phone-view-container.submit-btn"
           onClick={this.handleSubmitPhoneNumber.bind(this)}
-          disabled={!phone || isLoading || !isValidPhoneNumber(phone || '')}
+          disabled={!phone || isProcessing || !isValidPhoneNumber(phone || '')}
         >
-          {buttonContent}
+          {buttonText}
         </button>
         {children}
       </section>
@@ -92,17 +105,23 @@ PhoneViewContainer.propTypes = {
   title: PropTypes.string,
   country: PropTypes.string,
   buttonText: PropTypes.string,
-  isLoading: PropTypes.bool,
+  isProcessing: PropTypes.bool,
+  errorText: PropTypes.string,
+  showError: PropTypes.bool,
   updatePhoneNumber: PropTypes.func,
   updateCountry: PropTypes.func,
   onSubmit: PropTypes.func,
+  onValidate: PropTypes.func,
 };
 
 PhoneViewContainer.defaultProps = {
-  isLoading: false,
+  isProcessing: false,
+  errorText: '',
+  showError: false,
   updatePhoneNumber: () => {},
   updateCountry: () => {},
   onSubmit: () => {},
+  onValidate: () => {},
 };
 PhoneViewContainer.displayName = 'PhoneViewContainer';
 

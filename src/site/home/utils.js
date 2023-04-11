@@ -54,7 +54,7 @@ export const getPlaceInfo = async ({ fromDevice = true, fromIp = true } = {}) =>
 
 export const submitStoreMenu = async ({ deliveryAddress, store, source, shippingType = 'delivery' }) => {
   logger.log('Site_Utils_ClickStore', {
-    targetBusiness: store.business,
+    name: store.business,
     source,
   });
 

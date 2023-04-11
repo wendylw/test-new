@@ -16,6 +16,7 @@ import logisticsGrab from '../../../../../../images/beep-logistics-grab.jpg';
 import logisticsLalamove from '../../../../../../images/beep-logistics-lalamove.jpg';
 import logisticBeepOnFleet from '../../../../../../images/beep-logistics-on-fleet.jpg';
 import logisticsMrspeedy from '../../../../../../images/beep-logistics-rspeedy.jpg';
+import logisticsBorzo from '../../../../../../images/beep-logistics-borzo.svg';
 import logisticsPandago from '../../../../../../images/beep-logistics-pamdago.jpg';
 import './RiderInfo.scss';
 
@@ -24,7 +25,10 @@ const LOGISTICS_LOGOS_MAPPING = {
   grab: logisticsGrab,
   goget: logisticsGoget,
   lalamove: logisticsLalamove,
+  // WB-4715: mrspeedy & borzo are same logistics provider
+  // new orders use borzo, old orders keep mrspeddy
   mrspeedy: logisticsMrspeedy,
+  borzo: logisticsBorzo,
   onfleet: logisticBeepOnFleet,
   pandago: logisticsPandago,
 };
@@ -143,8 +147,12 @@ function RiderInfo({
         return t('GoGet');
       case LOGISTICS_RIDER_TYPE.LA_LA_MOVE:
         return t('LaLaMove');
+      // WB-4715: mrspeedy & borzo are same logistics provider
+      // new orders use borzo, old orders keep mrspeddy
       case LOGISTICS_RIDER_TYPE.MR_SPEEDY:
         return t('MrSpeedy');
+      case LOGISTICS_RIDER_TYPE.BORZO:
+        return t('Borzo');
       case LOGISTICS_RIDER_TYPE.ON_FLEET:
         return 'BeepFleet';
       case LOGISTICS_RIDER_TYPE.PAN_DAGO:

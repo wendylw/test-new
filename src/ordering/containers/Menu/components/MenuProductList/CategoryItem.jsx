@@ -45,7 +45,7 @@ const BestSellerCategoryProductList = ({ products, categoryId }) => {
               }`}
             >
               <div className={styles.menuProductItemImageContainer}>
-                <ObjectFitImage className="tw-rounded" src={product.image} />
+                <ObjectFitImage className="tw-rounded" src={product.image} dimension="500x500" />
               </div>
               <h4
                 className={`${styles.menuProductItemTitle} tw-px-2 sm:tw-px-2px tw-mt-8 sm:tw-mt-8px tw-font-bold tw-leading-relaxed`}
@@ -135,7 +135,7 @@ const CategoryProductList = ({ products, categoryId }) => {
                 <div
                   className={`${styles.menuProductItemImageContainer} tw-ml-16 sm:tw-ml-16px tw-flex-shrink-0 tw-w-3/10`}
                 >
-                  <ObjectFitImage className="tw-rounded" src={product.image} />
+                  <ObjectFitImage className="tw-rounded" src={product.image} loading="lazy" />
                 </div>
               )}
             </div>
@@ -165,9 +165,9 @@ const CategoryItem = ({ category, onIntersectionChange, products }) => {
   });
   useEffect(() => {
     if (onIntersectionChange) {
-      onIntersectionChange(isVisible);
+      onIntersectionChange({ inView: isVisible, categoryId: category.id });
     }
-  }, [onIntersectionChange, isVisible]);
+  }, [onIntersectionChange, isVisible, category.id]);
 
   return (
     <div className="tw-pb-16 sm:tw-pb-16px tw-relative" ref={ref}>
