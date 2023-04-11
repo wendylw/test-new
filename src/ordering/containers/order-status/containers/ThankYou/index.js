@@ -159,8 +159,6 @@ export class ThankYou extends PureComponent {
       const { from, hasOrderPaid } = this.state;
       const isInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, hasOrderPaid);
 
-      // WB-4979: If payment method is not pay at counter, will display profile page immediately
-      // Pay at counter logic is in componentDidUpdate
       if (isInitProfilePageEnabled) {
         initProfilePage({ from });
       }

@@ -128,7 +128,7 @@ export const initialState = {
       birthdayModifiedTime: '',
       notificationSettings: '',
       birthdayChangeAllowed: false,
-      loadProfileInfoStatus: null,
+      status: null,
     },
   },
   error: null, // network error
@@ -844,6 +844,13 @@ export const actions = {
       });
     }
   },
+
+  profileUpdated: payload => async dispatch => {
+    dispatch({
+      type: 'ordering/profile/profileUpdated',
+      payload,
+    });
+  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -976,7 +983,7 @@ const user = (state = initialState.user, action) => {
       // Write down here just for the sake of completeness, we won't handle this failure case for now.
       return state;
     case 'ordering/profile/loadProfileInfo/pending':
-      return { ...state, profile: { ...state.profile, loadProfileInfoStatus: API_REQUEST_STATUS.PENDING } };
+      return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.PENDING } };
     case 'ordering/profile/loadProfileInfo/fulfilled':
       const { payload } = action || {};
 
@@ -994,11 +1001,16 @@ const user = (state = initialState.user, action) => {
           birthday: payload.birthday,
           gender: payload.gender,
           birthdayChangeAllowed: true,
-          loadProfileInfoStatus: API_REQUEST_STATUS.FULFILLED,
+          status: API_REQUEST_STATUS.FULFILLED,
         },
       };
     case 'ordering/profile/loadProfileInfo/rejected':
-      return { ...state, profile: { ...state.profile, loadProfileInfoStatus: API_REQUEST_STATUS.REJECTED } };
+      return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.REJECTED } };
+    case 'ordering/profile/profileUpdated':
+      return {
+        ...state,
+        profile: { ...state.profile, ...payload },
+      };
     default:
       return state;
   }
@@ -1343,7 +1355,7 @@ export const getUserLoginRequestStatus = state => state.app.user.loginRequestSta
 
 export const getUserLoginByBeepAppStatus = state => state.app.user.loginByBeepAppStatus;
 
-export const getUserProfileStatus = state => state.app.user.profile.loadProfileInfoStatus;
+export const getUserProfileStatus = state => state.app.user.profile.status;
 
 export const getUserProfile = state => state.app.user.profile;
 
