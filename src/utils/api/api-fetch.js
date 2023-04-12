@@ -4,7 +4,7 @@ import { getClient } from '../../common/utils';
 import APIError from './api-error';
 import logger from '../monitoring/logger';
 
-export const ky = originalKy.create({
+const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
     beforeRequest: [req => req.headers.set('client', getClient())],
@@ -15,28 +15,36 @@ export const ky = originalKy.create({
   credentials: 'include',
 });
 
-async function parseResponse(resp) {
-  const rawContentType = resp.headers.get('content-type');
-  let body = resp;
+/**
+ *
+ * @param {string} url
+ * @param {object} response : {headers: '', json: () => {}, text: () => {}}
+ * @returns {{data: {}} | dataObject}
+ */
+async function parseResponse(url, response) {
+  const rawContentType = response.headers.get('content-type');
+  let body = response;
 
   if (!rawContentType) {
     return body;
   }
 
   if (rawContentType.includes('application/json')) {
-    body = await resp.json();
+    body = await response.json();
   } else if (['text/plain', 'text/html'].some(type => rawContentType.includes(type))) {
-    body = await resp.text();
+    body = await response.text();
   } else {
-    console.warn(`Unexpected content type: ${rawContentType}, will respond with raw Response object.`);
+    logger.error('Tool_ApiFetch_parseResponseError', {
+      message: `Unexpected content type: ${rawContentType}, will respond with raw Response object.`,
+    });
+
+    console.error('Common ApiFetch parse response rawContentType is unavailable');
+
+    throw new APIError('Unexpected content type', { status: 400, code: 80003, extra: 'requestUnexpectedContentType' });
   }
 
-  return body;
-}
-
-/* For the new version of the response data structure, and compatible with the old interface data return */
-function formatResponseData(url, result) {
-  return url.startsWith('/api/v3/') && result.data ? result.data : result;
+  /* For the new version of the response data structure, and compatible with the old interface data return */
+  return url.startsWith('/api/v3/') && body.data ? body.data : body;
 }
 
 /**
@@ -51,7 +59,7 @@ async function _fetch(url, opts) {
   const requestStart = new Date().valueOf();
   const requestUrl = queryStr.length === 0 ? url : `${url}${queryStr}`;
   try {
-    const resp = await ky(url, opts);
+    const response = await ky(url, opts);
 
     // Send log to Log service
     window.dispatchEvent(
@@ -60,12 +68,12 @@ async function _fetch(url, opts) {
           type: opts.method,
           request: requestUrl,
           requestStart,
-          status: resp.status,
+          status: response.status,
         },
       })
     );
 
-    return formatResponseData(url, await parseResponse(resp));
+    return await parseResponse(url, response);
   } catch (e) {
     let error = e;
 
