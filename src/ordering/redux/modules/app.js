@@ -923,6 +923,8 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         consumerId,
+        // WB-5109: If login status refactor, please to remove profile data,
+        // BE has any update profile field should update this reducer for api/login
         profile: {
           ...state.profile,
           phone: user.phone,
@@ -1005,7 +1007,7 @@ const user = (state = initialState.user, action) => {
           email: payload.email,
           birthday: payload.birthday,
           gender: payload.gender,
-          birthdayChangeAllowed: true,
+          birthdayChangeAllowed: payload.birthdayChangeAllowed,
           status: API_REQUEST_STATUS.FULFILLED,
         },
       };

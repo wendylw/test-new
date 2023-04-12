@@ -476,7 +476,7 @@ const user = (state = initialState.user, action) => {
           email: payload.email,
           birthday: payload.birthday,
           gender: payload.gender,
-          birthdayChangeAllowed: true,
+          birthdayChangeAllowed: payload.birthdayChangeAllowed,
           status: API_REQUEST_STATUS.FULFILLED,
         },
       };
