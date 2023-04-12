@@ -124,16 +124,6 @@ async function _fetch(url, opts) {
   }
 }
 
-export function get(url, options = {}) {
-  return _fetch(
-    url,
-    convertOptions({
-      ...options,
-      method: 'get',
-    })
-  );
-}
-
 /**
  *
  * @param {object} options : {type = 'json', payload, headers, queryParams, ...othersOptions}
@@ -195,6 +185,16 @@ function convertOptions(options) {
   }
 
   return currentOptions;
+}
+
+export function get(url, options = {}) {
+  return _fetch(
+    url,
+    convertOptions({
+      ...options,
+      method: 'get',
+    })
+  );
 }
 
 /**
