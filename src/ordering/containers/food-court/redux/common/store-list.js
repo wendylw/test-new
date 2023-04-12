@@ -29,7 +29,6 @@ import SeoulImage from '../../../../../images/food-court-temp/merchant-Seoul.png
 import SubwayImage from '../../../../../images/food-court-temp/merchant-Subway.png';
 import BobaTeaHouseImage from '../../../../../images/food-court-temp/merchant-Boba-Tea-House.jpg';
 import SaladAtelierImage from '../../../../../images/food-court-temp/merchant-Salad-Atelier.jpg';
-import XOXOImage from '../../../../../images/food-court-temp/merchant-XOXO.jpg';
 import HopeCoffeeImage from '../../../../../images/food-court-temp/merchant-Hope-Coffee.png';
 import IronBarImage from '../../../../../images/food-court-temp/merchant-Iron-Bar.png';
 import YuByRainGardenImage from '../../../../../images/food-court-temp/merchant-Yu-by-Rain-Garden.png';
@@ -215,17 +214,6 @@ export const AllFoodCourtStoreList = {
       validTimeFrom: '0:00',
       validTimeTo: '24:00',
     },
-  },
-  '63523c45da13950007f71dd9': {
-    id: '63523c45da13950007f71dd9',
-    title: 'XOXO Cafe',
-    imageNoCompression: XOXOImage,
-    tags: ['Cafe', 'Coffee', 'Comfort Food'],
-    businessHours: {
-      validTimeFrom: '10:00',
-      validTimeTo: '20:00',
-    },
-    unable: true,
   },
   '63747d2aa07b6a0008108c24': {
     id: '63747d2aa07b6a0008108c24',
