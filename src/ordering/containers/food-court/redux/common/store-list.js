@@ -43,6 +43,7 @@ import NurulImage from '../../../../../images/food-court-temp/food-Nurul-logo.jp
 import NurulAsamImage from '../../../../../images/food-court-temp/merchant-Nurul-Asam.png';
 import JomTarikImage from '../../../../../images/food-court-temp/merchant-Jom-Tarik.jpg';
 import ClassicBowlImage from '../../../../../images/food-court-temp/merchant-Classic-Bowl.png';
+import XOXOCoffeeImage from '../../../../../images/food-court-temp/merchant-XOXO-Coffee.png';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -271,6 +272,16 @@ export const AllFoodCourtStoreList = {
     imageNoCompression: ClassicBowlImage,
     title: 'Classic Bowl',
     tags: ['Rice Bowls', 'Asian'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '22:00',
+    },
+  },
+  '642e864d6530b60008775fcc': {
+    id: '642e864d6530b60008775fcc',
+    imageNoCompression: XOXOCoffeeImage,
+    title: 'XOXO Coffee',
+    tags: ['Fusion Food', 'Coffee', 'Cakes', 'Pastries'],
     businessHours: {
       validTimeFrom: '10:00',
       validTimeTo: '22:00',
