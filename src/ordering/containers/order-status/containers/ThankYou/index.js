@@ -396,11 +396,11 @@ export class ThankYou extends PureComponent {
     const { from } = this.state;
     const { isLogin } = user || {};
     const { storeId } = order || {};
-    const isInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, currHasOrderPaid);
+    const currIsInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, currHasOrderPaid);
     const prevIsInitProfilePageDisabled = !prevHasOrderPaid || !prevProps.user.isLogin;
 
     // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
-    if (isInitProfilePageEnabled && prevIsInitProfilePageDisabled) {
+    if (currIsInitProfilePageEnabled && prevIsInitProfilePageDisabled) {
       initProfilePage({ from });
     }
 
