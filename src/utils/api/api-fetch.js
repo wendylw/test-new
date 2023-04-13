@@ -159,16 +159,16 @@ function convertOptions(options) {
   };
 
   if (type === 'json') {
-    if (!payload || (payload && typeof payload === 'object')) {
-      currentOptions.json = payload;
-    } else {
-      currentOptions.body = payload;
-
+    if (payload && typeof payload !== 'object') {
       logger.error('Tool_ApiFetch_convertOptionsTypePayloadNotMatch', {
         message: `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`,
       });
 
       console.error('Common ApiFetch http payload & type not match');
+
+      currentOptions.body = payload;
+    } else {
+      currentOptions.json = payload;
     }
   } else {
     currentOptions.body = payload;
