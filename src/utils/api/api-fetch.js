@@ -48,6 +48,27 @@ async function parseResponse(url, response) {
 }
 
 /**
+ *
+ * @param {string} eventName
+ * @param {string} url
+ * @param {object} opts : {searchParams: string; method: string}
+ * @param {object} extraDetail
+ */
+function windowDispatchEvent(eventName, url, opts, extraDetail) {
+  const queryStr = qs.stringify(opts.searchParams, { addQueryPrefix: true });
+  const requestStart = new Date().valueOf();
+  const requestUrl = queryStr.length === 0 ? url : `${url}${queryStr}`;
+  const detail = {
+    type: opts.method,
+    request: requestUrl,
+    requestStart,
+    ...extraDetail,
+  };
+
+  window.dispatchEvent(new CustomEvent(eventName, { detail }));
+}
+
+/**
  * @param {string} url url for the request
  * @param {object} opts : {type: '', payload: {}, headers: {}, queryParams, ...others: {credentials: ''}}
  * @param {any} options.payload data in request
@@ -55,77 +76,45 @@ async function parseResponse(url, response) {
  * @param {object} options.headers headers in request
  */
 async function _fetch(url, opts) {
-  const queryStr = qs.stringify(opts.searchParams, { addQueryPrefix: true });
-  const requestStart = new Date().valueOf();
-  const requestUrl = queryStr.length === 0 ? url : `${url}${queryStr}`;
   try {
+    // Response will throw HTTPError, if response status is not in the range of 200...299: https://github.com/sindresorhus/ky#kyinput-options
     const response = await ky(url, opts);
+    const successResult = await parseResponse(url, response);
 
     // Send log to Log service
-    window.dispatchEvent(
-      new CustomEvent('sh-api-success', {
-        detail: {
-          type: opts.method,
-          request: requestUrl,
-          requestStart,
-          status: response.status,
-        },
-      })
-    );
+    windowDispatchEvent('sh-api-success', url, opts, { status: response.status });
 
-    return await parseResponse(url, response);
+    return successResult;
   } catch (e) {
     let error = e;
-
+    // HTTPError format: test
     if (e.response) {
-      const body = await parseResponse(e.response);
+      const body = await parseResponse(url, e.response);
 
       if (typeof body === 'object' && body.code) {
         error = body;
         // Send log to Log service
-        window.dispatchEvent(
-          new CustomEvent('sh-api-failure', {
-            detail: {
-              type: opts.method,
-              request: requestUrl,
-              code: body.code.toString(),
-              error: body.message,
-              requestStart,
-              status: e.response.status,
-            },
-          })
-        );
+        windowDispatchEvent('sh-api-failure', url, opts, {
+          code: body.code.toString(),
+          error: body.message,
+          status: e.response.status,
+        });
       } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
         error = new APIError(typeof body === 'string' ? body : JSON.stringify(body), {
           code: '50000',
           status: e.status,
         });
+
         // Send log to Log service
-        window.dispatchEvent(
-          new CustomEvent('sh-api-failure', {
-            detail: {
-              type: opts.method,
-              request: requestUrl,
-              code: '99999',
-              error: error.message,
-              requestStart,
-              status: e.response.status,
-            },
-          })
-        );
+        windowDispatchEvent('sh-api-failure', url, opts, {
+          code: '99999',
+          error: body.message,
+          status: e.response.status,
+        });
       }
     } else {
       // Send log to Log service
-      window.dispatchEvent(
-        new CustomEvent('sh-fetch-error', {
-          detail: {
-            type: opts.method,
-            request: requestUrl,
-            error: e.message,
-            requestStart,
-          },
-        })
-      );
+      windowDispatchEvent('sh-fetch-error', url, opts, { error: e.message });
     }
 
     throw error;
