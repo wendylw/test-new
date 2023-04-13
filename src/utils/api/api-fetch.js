@@ -1,6 +1,8 @@
 import originalKy from 'ky';
 import qs from 'qs';
 import Utils from '../utils';
+import RequestError from '../request-error';
+import { ERROR_TYPES } from './constants';
 
 export const ky = originalKy.create({
   hooks: {
@@ -144,7 +146,7 @@ function convertOptions(options) {
       message: 'headers should be an object',
     });
 
-    throw new APIError('headers should be an object', { status: 400, code: 80002, extra: 'requestHeadersNotObject' });
+    throw new RequestError('requestHeadersNotObject', { type: ERROR_TYPES.PARAMETER_ERROR });
   }
 
   const currentHooks = hooks || {};
