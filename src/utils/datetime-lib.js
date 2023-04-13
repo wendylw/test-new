@@ -121,7 +121,8 @@ export const toLocaleString = (date, countryCode, options) => {
   try {
     formatter = getDateTimeFormatter(countryCode, options);
   } catch (error) {
-    console.error('Fail to create instance of Intl.DateTimeFormat', error);
+    console.error('Fail to create instance of Intl.DateTimeFormat', error?.message || '');
+
     return toLocaleStringFallback(date, countryCode, options);
   }
   if (formatter.format) {
