@@ -185,6 +185,7 @@ export const initProfilePage = createAsyncThunk(
 
       if (isProfileModalShown) {
         if (isWebview) {
+          console.log('callNativeProfile');
           dispatch(callNativeProfile());
 
           return;
