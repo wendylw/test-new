@@ -221,7 +221,7 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
 
     return result;
   } catch (error) {
-    console.error(`Failed to submit cart for pay later: ${error.message}`);
+    console.error(`Failed to submit cart for pay later: ${error?.message || ''}`);
 
     // new stock status error code maps to old code
     const NEW_ERROR_CODE_MAPPING = {

@@ -42,7 +42,7 @@ class LocationPicker extends Component {
       const historicalAddresses = await getHistoricalDeliveryAddresses();
       this.setState({ historicalAddresses });
     } catch (error) {
-      logger.error('Cashback_App_GetLoginStatusFailed', { message: error?.message });
+      logger.error('Cashback_App_GetLoginStatusFailed', { message: error?.message || '' });
     }
   }
 

@@ -44,7 +44,7 @@ export const getShareLinkUrl = () => {
 
     return storeUrl.toString();
   } catch (error) {
-    logger.error('Ordering_Menu_getShareLinkUrlFailed', { message: error.message });
+    logger.error('Ordering_Menu_getShareLinkUrlFailed', { message: error?.message || '' });
 
     return window.location.href;
   }

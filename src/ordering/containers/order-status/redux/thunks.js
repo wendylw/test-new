@@ -51,7 +51,7 @@ export const loadPayLaterOrder = createAsyncThunk(
 
       return result;
     } catch (error) {
-      logger.error('Ordering_OrderStatus_loadPayLaterOrderFailed', { message: error?.message });
+      logger.error('Ordering_OrderStatus_loadPayLaterOrderFailed', { message: error?.message || '' });
 
       throw error;
     }
@@ -74,7 +74,7 @@ export const loadPayLaterOrderStatus = createAsyncThunk(
 
       return result;
     } catch (error) {
-      logger.error('Ordering_OrderStatus_loadPayLaterOrderStatusFailed', { message: error?.message });
+      logger.error('Ordering_OrderStatus_loadPayLaterOrderStatusFailed', { message: error?.message || '' });
 
       throw error;
     }

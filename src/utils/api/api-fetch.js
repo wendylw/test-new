@@ -1,13 +1,13 @@
 import originalKy from 'ky';
 import qs from 'qs';
-import { getClient } from '../../common/utils';
-import APIError from './api-error';
-import logger from '../monitoring/logger';
+import Utils from '../utils';
+import RequestError from '../request-error';
+import { ERROR_TYPES } from './constants';
 
 const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
-    beforeRequest: [req => req.headers.set('client', getClient())],
+    beforeRequest: [req => req.headers.set('client', Utils.getClient())],
   },
   // TODO: There is a RETRY strategy in ky, but it might not work well with our use case.
   // Need to monitor it and decide whether to use it.
@@ -96,10 +96,11 @@ async function _fetch(url, opts) {
           })
         );
       } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
-        error = new APIError(typeof body === 'string' ? body : JSON.stringify(body), {
+        error = {
           code: '50000',
           status: e.status,
-        });
+          message: typeof body === 'string' ? body : JSON.stringify(body),
+        };
         // Send log to Log service
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
@@ -153,7 +154,7 @@ function convertOptions(options) {
       message: 'headers should be an object',
     });
 
-    throw new APIError('headers should be an object', { status: 400, code: 80002, extra: 'requestHeadersNotObject' });
+    throw new RequestError('requestHeadersNotObject', { type: ERROR_TYPES.PARAMETER_ERROR });
   }
 
   const currentHooks = hooks || {};
@@ -165,18 +166,20 @@ function convertOptions(options) {
     },
   };
 
-  if (type === 'json' && (!payload || (payload && typeof payload === 'object'))) {
-    currentOptions.json = payload;
-  } else {
-    currentOptions.body = payload;
-
-    if (type === 'json' && payload && typeof payload !== 'object') {
+  if (type === 'json') {
+    if (payload && typeof payload !== 'object') {
       logger.error('Tool_ApiFetch_convertOptionsTypePayloadNotMatch', {
         message: `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`,
       });
 
       console.error('Common ApiFetch http payload & type not match');
+
+      currentOptions.body = payload;
+    } else {
+      currentOptions.json = payload;
     }
+  } else {
+    currentOptions.body = payload;
   }
 
   if (queryParams) {

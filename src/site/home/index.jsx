@@ -129,7 +129,7 @@ class Home extends React.Component {
       const placeInfo = await getPlaceInfoByDeviceByAskPermission();
       if (placeInfo) await this.updateAddressInfo(placeInfo);
     } catch (error) {
-      console.error('[Home] [didMount] error=%s', error);
+      console.error('[Home] [didMount] error=%s', error.message);
     }
   };
 

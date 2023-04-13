@@ -77,7 +77,7 @@ class App extends Component {
         if (ifAddressInfoExists) return;
       }
     } catch (error) {
-      console.error(`Ordering App initAddressInfo: ${error.message}`);
+      console.error(`Ordering App initAddressInfo: ${error?.message || ''}`);
     }
 
     try {
