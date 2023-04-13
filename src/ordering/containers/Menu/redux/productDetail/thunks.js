@@ -117,7 +117,7 @@ const getDefaultSelectedOptions = product => {
 
     return selectedOptionsByVariationId;
   } catch (error) {
-    console.error('Ordering Menu getDefaultSelectedOptions occur error: ', error.message);
+    console.error('Ordering Menu getDefaultSelectedOptions occur error:', error?.message || '');
     return {};
   }
 };

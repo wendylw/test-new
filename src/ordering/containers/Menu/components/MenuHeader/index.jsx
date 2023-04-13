@@ -123,7 +123,7 @@ const MenuHeader = ({ webHeaderVisibility }) => {
         },
       };
     } catch (error) {
-      logger.error('Ordering_Menu_getShareLinkConfigFailed', { message: error.message });
+      logger.error('Ordering_Menu_getShareLinkConfigFailed', { message: error?.message || '' });
 
       return null;
     }

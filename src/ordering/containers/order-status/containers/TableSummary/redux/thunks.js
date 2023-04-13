@@ -41,7 +41,7 @@ export const queryOrdersAndStatus = receiptNumber => async dispatch => {
     await dispatch(loadOrder(receiptNumber));
     queryOrderStatus();
   } catch (error) {
-    logger.error('Ordering_OrderStatus_QueryOrdersAndStatusFailed', { message: error?.message });
+    logger.error('Ordering_OrderStatus_QueryOrdersAndStatusFailed', { message: error?.message || '' });
 
     throw error;
   }

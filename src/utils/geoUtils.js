@@ -397,7 +397,7 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
       return JSON.parse(cachedDevicePositionInfo);
     } catch (error) {
       captureException(error);
-      console.error('Common Utils getPositionInfoBySource:', error?.message);
+      console.error('Common Utils getPositionInfoBySource:', error?.message || '');
     }
   }
 

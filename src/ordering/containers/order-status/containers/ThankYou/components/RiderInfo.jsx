@@ -45,7 +45,7 @@ function getDeliveredTimeRange(bestLastMileETA, worstLastMileETA) {
 
     return `${bestLastMileTime} - ${worstLastMileTime}`;
   } catch (error) {
-    logger.error('Ordering_ThankYou_BestLastMileTimeOrWorstLastMileTimeIsInvalid', { message: error?.message });
+    logger.error('Ordering_ThankYou_BestLastMileTimeOrWorstLastMileTimeIsInvalid', { message: error?.message || '' });
 
     return null;
   }
@@ -59,7 +59,7 @@ function getDeliveredTime(deliveredTime) {
   try {
     return dayjs(deliveredTime).format('hh:mm A');
   } catch (error) {
-    logger.error('Ordering_ThankYou_GetDeliveredTimeFailed', { message: error?.message });
+    logger.error('Ordering_ThankYou_GetDeliveredTimeFailed', { message: error?.message || '' });
 
     return null;
   }

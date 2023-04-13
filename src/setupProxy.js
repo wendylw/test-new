@@ -142,7 +142,7 @@ const setCookie = async (req, res, next) => {
     res.setHeader('Set-Cookie', updatedCookies);
     debug(`${original} Set Cookie done`);
   } catch (error) {
-    console.error('Set %s Cookie Error: %o', original, error?.message);
+    console.error('Set %s Cookie Error: %o', original, error?.message || '');
   } finally {
     next();
   }
