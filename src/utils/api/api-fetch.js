@@ -1,13 +1,11 @@
 import originalKy from 'ky';
 import qs from 'qs';
-import { getClient } from '../../common/utils';
-import APIError from './api-error';
-import logger from '../monitoring/logger';
+import Utils from '../utils';
 
 export const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
-    beforeRequest: [req => req.headers.set('client', getClient())],
+    beforeRequest: [req => req.headers.set('client', Utils.getClient())],
   },
   // TODO: There is a RETRY strategy in ky, but it might not work well with our use case.
   // Need to monitor it and decide whether to use it.
@@ -88,10 +86,11 @@ async function _fetch(url, opts) {
           })
         );
       } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
-        error = new APIError(typeof body === 'string' ? body : JSON.stringify(body), {
+        error = {
           code: '50000',
           status: e.status,
-        });
+          message: typeof body === 'string' ? body : JSON.stringify(body),
+        };
         // Send log to Log service
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
@@ -128,63 +127,63 @@ async function _fetch(url, opts) {
  *
  * @param {object} options : {type = 'json', payload, headers, queryParams, ...othersOptions}
  * @returns {{
- *  body | json: any | json string,
- *  searchParams: string,
- *  hooks: {
- *    beforeRequest: Function[]
- *  },
- *  headers: object
- * }}
- */
+*  body | json: any | json string,
+*  searchParams: string,
+*  hooks: {
+*    beforeRequest: Function[]
+*  },
+*  headers: object
+* }}
+*/
 function convertOptions(options) {
-  // include is general credential value. if api fetching need Cross-domain without cookie that the value needs set `omit` in others.
-  const { type = 'json', payload, headers, queryParams, hooks, ...others } = options;
+ // include is general credential value. if api fetching need Cross-domain without cookie that the value needs set `omit` in others.
+ const { type = 'json', payload, headers, queryParams, hooks, ...others } = options;
 
-  if (headers && typeof headers !== 'object') {
-    logger.error('Tool_ApiFetch_convertOptionsHeaderTypeError', {
-      message: 'headers should be an object',
-    });
+ if (headers && typeof headers !== 'object') {
+   logger.error('Tool_ApiFetch_convertOptionsHeaderTypeError', {
+     message: 'headers should be an object',
+   });
 
-    throw new APIError('headers should be an object', { status: 400, code: 80002, extra: 'requestHeadersNotObject' });
-  }
+   throw new APIError('headers should be an object', { status: 400, code: 80002, extra: 'requestHeadersNotObject' });
+ }
 
-  const currentHooks = hooks || {};
-  const currentOptions = {
-    ...others,
-    hooks: {
-      ...currentHooks,
-      beforeRequest: currentHooks.beforeRequest || [],
-    },
-  };
+ const currentHooks = hooks || {};
+ const currentOptions = {
+   ...others,
+   hooks: {
+     ...currentHooks,
+     beforeRequest: currentHooks.beforeRequest || [],
+   },
+ };
 
-  if (type === 'json' && (!payload || (payload && typeof payload === 'object'))) {
-    currentOptions.json = payload;
-  } else {
-    currentOptions.body = payload;
+ if (type === 'json' && (!payload || (payload && typeof payload === 'object'))) {
+   currentOptions.json = payload;
+ } else {
+   currentOptions.body = payload;
 
-    if (type === 'json' && payload && typeof payload !== 'object') {
-      logger.error('Tool_ApiFetch_convertOptionsTypePayloadNotMatch', {
-        message: `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`,
-      });
+   if (type === 'json' && payload && typeof payload !== 'object') {
+     logger.error('Tool_ApiFetch_convertOptionsTypePayloadNotMatch', {
+       message: `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`,
+     });
 
-      console.error('Common ApiFetch http payload & type not match');
-    }
-  }
+     console.error('Common ApiFetch http payload & type not match');
+   }
+ }
 
-  if (queryParams) {
-    currentOptions.searchParams = queryParams;
-  }
+ if (queryParams) {
+   currentOptions.searchParams = queryParams;
+ }
 
-  if (headers) {
-    // adding headers should be at the front of the hooks, so that other hooks have chance to modify the headers.
-    currentOptions.hooks.beforeRequest.unshift(req => {
-      Object.keys(headers).forEach(key => {
-        req.headers.set(key, headers[key]);
-      });
-    });
-  }
+ if (headers) {
+   // adding headers should be at the front of the hooks, so that other hooks have chance to modify the headers.
+   currentOptions.hooks.beforeRequest.unshift(req => {
+     Object.keys(headers).forEach(key => {
+       req.headers.set(key, headers[key]);
+     });
+   });
+ }
 
-  return currentOptions;
+ return currentOptions;
 }
 
 export function get(url, options = {}) {
