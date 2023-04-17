@@ -41,6 +41,14 @@ async function parseResponse(response) {
     throw new RequestError('requestUnexpectedContentType', { type: ERROR_TYPES.PARAMETER_ERROR });
   }
 
+  const { status, code, extra } = body || {};
+
+  if (status >= 400 && status < 499) {
+    throw new RequestError('requestClientError', { type: ERROR_TYPES.BAD_REQUEST_ERROR, code, status, extra });
+  } else if (status >= 500 && status < 599) {
+    throw new RequestError('requestServerError', { type: ERROR_TYPES.SERVER_ERROR, code, status, extra });
+  }
+
   return body;
 }
 
