@@ -402,7 +402,7 @@ export class ThankYou extends PureComponent {
 
     // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
     if (currIsInitProfilePageEnabled && prevIsInitProfilePageDisabled && !profileModalVisibility) {
-      initProfilePage({ from });
+      await initProfilePage({ from });
     }
 
     if (storeId && prevStoreId !== storeId) {
