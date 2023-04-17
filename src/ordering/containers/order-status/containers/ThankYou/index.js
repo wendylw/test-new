@@ -156,13 +156,13 @@ export class ThankYou extends PureComponent {
 
     const from = Utils.getCookieVariable('__ty_source');
 
-    this.setState({ from }, () => {
+    this.setState({ from }, async () => {
       const { hasOrderPaid } = this.props;
       const { from } = this.state;
       const isInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, hasOrderPaid);
 
       if (isInitProfilePageEnabled) {
-        initProfilePage({ from });
+        await initProfilePage({ from });
       }
     });
 
