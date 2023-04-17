@@ -22,7 +22,7 @@ const ky = originalKy.create({
  * @param {object} response : {headers: '', json: () => {}, text: () => {}}
  * @returns {{data: {}} | dataObject}
  */
-async function parseResponse(url, response) {
+async function parseResponse(response) {
   const rawContentType = response.headers.get('content-type');
   let body = response;
 
@@ -42,8 +42,7 @@ async function parseResponse(url, response) {
     throw new RequestError('requestUnexpectedContentType', { type: ERROR_TYPES.PARAMETER_ERROR });
   }
 
-  /* For the new version of the response data structure, and compatible with the old interface data return */
-  return url.startsWith('/api/v3/') && body.data ? body.data : body;
+  return body;
 }
 
 /**
@@ -59,6 +58,9 @@ async function _fetch(url, opts) {
   const requestUrl = queryStr.length === 0 ? url : `${url}${queryStr}`;
   try {
     const response = await ky(url, opts);
+    const parsedResponseData = await parseResponse(response);
+    // Not v3 api will return {data: {}} as response data, so no need to extract the data
+    const result = url.startsWith('/api/v3/') && parsedResponseData.data ? parsedResponseData.data : parsedResponseData;
 
     // Send log to Log service
     window.dispatchEvent(
@@ -72,7 +74,7 @@ async function _fetch(url, opts) {
       })
     );
 
-    return await parseResponse(url, response);
+    return result;
   } catch (e) {
     let error = e;
 
