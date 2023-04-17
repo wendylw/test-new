@@ -1,7 +1,7 @@
 import originalKy from 'ky';
 import qs from 'qs';
 import Utils from '../utils';
-import RequestError from '../request-error';
+import RequestError from './request-error';
 import { ERROR_TYPES } from './constants';
 import logger from '../monitoring/logger';
 
