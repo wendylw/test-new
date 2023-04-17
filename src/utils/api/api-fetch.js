@@ -3,6 +3,7 @@ import qs from 'qs';
 import Utils from '../utils';
 import RequestError from '../request-error';
 import { ERROR_TYPES } from './constants';
+import logger from '../monitoring/logger';
 
 const ky = originalKy.create({
   hooks: {
@@ -38,9 +39,7 @@ async function parseResponse(url, response) {
       message: `Unexpected content type: ${rawContentType}, will respond with raw Response object.`,
     });
 
-    console.error('Common ApiFetch parse response rawContentType is unavailable');
-
-    throw new APIError('Unexpected content type', { status: 400, code: 80003, extra: 'requestUnexpectedContentType' });
+    throw new RequestError('requestUnexpectedContentType', { type: ERROR_TYPES.PARAMETER_ERROR });
   }
 
   /* For the new version of the response data structure, and compatible with the old interface data return */
@@ -171,8 +170,6 @@ function convertOptions(options) {
       logger.error('Tool_ApiFetch_convertOptionsTypePayloadNotMatch', {
         message: `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`,
       });
-
-      console.error('Common ApiFetch http payload & type not match');
 
       currentOptions.body = payload;
     } else {
