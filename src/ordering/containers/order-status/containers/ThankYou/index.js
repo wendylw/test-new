@@ -88,7 +88,6 @@ import {
   getCancelOrderRequestErrorMessage,
   getIsUpdateShippingTypeRequestRejected,
   getUpdateShippingTypeRequestErrorMessage,
-  getCurrentIsInitProfilePageEnabled,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -392,7 +391,6 @@ export class ThankYou extends PureComponent {
       loadOrderStoreReview,
       hasOrderPaid: currHasOrderPaid,
       initProfilePage,
-      profileModalVisibility,
     } = this.props;
     const { from } = this.state;
     const { isLogin } = user || {};
@@ -401,7 +399,7 @@ export class ThankYou extends PureComponent {
     const prevIsInitProfilePageDisabled = !prevHasOrderPaid || !prevProps.user.isLogin;
 
     // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
-    if (currIsInitProfilePageEnabled && prevIsInitProfilePageDisabled && !profileModalVisibility) {
+    if (currIsInitProfilePageEnabled && prevIsInitProfilePageDisabled) {
       await initProfilePage({ from });
     }
 
