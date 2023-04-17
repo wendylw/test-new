@@ -18,7 +18,6 @@ const ky = originalKy.create({
 
 /**
  *
- * @param {string} url
  * @param {object} response : {headers: '', json: () => {}, text: () => {}}
  * @returns {{data: {}} | dataObject}
  */
