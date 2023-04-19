@@ -1,8 +1,11 @@
 import originalKy from 'ky';
 import qs from 'qs';
 import Utils from '../utils';
+import RequestError from './request-error';
+import { ERROR_TYPES } from './constants';
+import logger from '../monitoring/logger';
 
-export const ky = originalKy.create({
+const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
     beforeRequest: [req => req.headers.set('client', Utils.getClient())],
@@ -13,70 +16,40 @@ export const ky = originalKy.create({
   credentials: 'include',
 });
 
-async function parseResponse(resp) {
-  const rawContentType = resp.headers.get('content-type');
-  let body = resp;
+/**
+ *
+ * @param {object} response : {headers: '', json: () => {}, text: () => {}}
+ * @returns {{data: {}} | dataObject}
+ */
+async function parseResponse(response) {
+  const rawContentType = response.headers.get('content-type');
+  let body = response;
 
   if (!rawContentType) {
     return body;
   }
 
   if (rawContentType.includes('application/json')) {
-    body = await resp.json();
+    body = await response.json();
   } else if (['text/plain', 'text/html'].some(type => rawContentType.includes(type))) {
-    body = await resp.text();
+    body = await response.text();
   } else {
-    console.warn(`Unexpected content type: ${rawContentType}, will respond with raw Response object.`);
+    logger.error('Tool_ApiFetch_parseResponseError', {
+      message: `Unexpected content type: ${rawContentType}, will respond with raw Response object.`,
+    });
+
+    throw new RequestError('requestUnexpectedContentType', { type: ERROR_TYPES.PARAMETER_ERROR });
+  }
+
+  const { status, code, extra } = body || {};
+
+  if (status >= 400 && status < 499) {
+    throw new RequestError('requestClientError', { type: ERROR_TYPES.BAD_REQUEST_ERROR, code, status, extra });
+  } else if (status >= 500 && status < 599) {
+    throw new RequestError('requestServerError', { type: ERROR_TYPES.SERVER_ERROR, code, status, extra });
   }
 
   return body;
-}
-
-function convertOptions(options) {
-  // include is general credential value. if api fetching need Cross-domain without cookie that the value needs set `omit` in others.
-  const { type = 'json', payload, headers, queryParams, ...others } = options;
-  const currentOptions = {
-    ...others,
-  };
-
-  if (type === 'json') {
-    if (payload && typeof payload !== 'object') {
-      console.warn(
-        `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`
-      );
-      currentOptions.body = payload;
-    } else {
-      currentOptions.json = payload;
-    }
-  } else {
-    currentOptions.body = payload;
-  }
-
-  if (queryParams) {
-    currentOptions.searchParams = queryParams;
-  }
-
-  currentOptions.hooks = currentOptions.hooks || {};
-  currentOptions.hooks.beforeRequest = currentOptions.hooks.beforeRequest || [];
-
-  if (headers) {
-    if (typeof headers !== 'object') {
-      throw new Error('headers should be an object');
-    }
-    // adding headers should be at the front of the hooks, so that other hooks have chance to modify the headers.
-    currentOptions.hooks.beforeRequest.unshift(req => {
-      Object.keys(headers).forEach(key => {
-        req.headers.set(key, headers[key]);
-      });
-    });
-  }
-
-  return currentOptions;
-}
-
-/* For the new version of the response data structure, and compatible with the old interface data return */
-function formatResponseData(url, result) {
-  return url.startsWith('/api/v3/') && result.data ? result.data : result;
 }
 
 /**
@@ -91,7 +64,10 @@ async function _fetch(url, opts) {
   const requestStart = new Date().valueOf();
   const requestUrl = queryStr.length === 0 ? url : `${url}${queryStr}`;
   try {
-    const resp = await ky(url, opts);
+    const response = await ky(url, opts);
+    const parsedResponseData = await parseResponse(response);
+    // Not v3 api will return {data: {}} as response data, so no need to extract the data
+    const result = url.startsWith('/api/v3/') && parsedResponseData.data ? parsedResponseData.data : parsedResponseData;
 
     // Send log to Log service
     window.dispatchEvent(
@@ -100,12 +76,12 @@ async function _fetch(url, opts) {
           type: opts.method,
           request: requestUrl,
           requestStart,
-          status: resp.status,
+          status: response.status,
         },
       })
     );
 
-    return formatResponseData(url, await parseResponse(resp));
+    return result;
   } catch (e) {
     let error = e;
 
@@ -163,6 +139,69 @@ async function _fetch(url, opts) {
 
     throw error;
   }
+}
+
+/**
+ *
+ * @param {object} options : {type = 'json', payload, headers, queryParams, ...othersOptions}
+ * @returns {{
+ *  body | json: any | json string,
+ *  searchParams: string,
+ *  hooks: {
+ *    beforeRequest: Function[]
+ *  },
+ *  headers: object
+ * }}
+ */
+function convertOptions(options) {
+  // include is general credential value. if api fetching need Cross-domain without cookie that the value needs set `omit` in others.
+  const { type = 'json', payload, headers, queryParams, hooks, ...others } = options;
+
+  if (headers && typeof headers !== 'object') {
+    logger.error('Tool_ApiFetch_convertOptionsHeaderTypeError', {
+      message: 'headers should be an object',
+    });
+
+    throw new RequestError('requestHeadersNotObject', { type: ERROR_TYPES.PARAMETER_ERROR });
+  }
+
+  const currentHooks = hooks || {};
+  const currentOptions = {
+    ...others,
+    hooks: {
+      ...currentHooks,
+      beforeRequest: currentHooks.beforeRequest || [],
+    },
+  };
+
+  if (type === 'json') {
+    if (payload && typeof payload !== 'object') {
+      logger.error('Tool_ApiFetch_convertOptionsTypePayloadNotMatch', {
+        message: `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`,
+      });
+
+      currentOptions.body = payload;
+    } else {
+      currentOptions.json = payload;
+    }
+  } else {
+    currentOptions.body = payload;
+  }
+
+  if (queryParams) {
+    currentOptions.searchParams = queryParams;
+  }
+
+  if (headers) {
+    // adding headers should be at the front of the hooks, so that other hooks have chance to modify the headers.
+    currentOptions.hooks.beforeRequest.unshift(req => {
+      Object.keys(headers).forEach(key => {
+        req.headers.set(key, headers[key]);
+      });
+    });
+  }
+
+  return currentOptions;
 }
 
 export function get(url, options = {}) {
