@@ -153,7 +153,9 @@ export const hideProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/
 
 export const callNativeProfile = createAsyncThunk('ordering/profile/callNativeProfile', async () => {
   try {
-    await NativeMethods.showCompleteProfilePageAsync();
+    NativeMethods.showCompleteProfilePageAsync();
+
+    return true;
   } catch (error) {
     logger.error('Ordering_OrderStatus_CallNativeProfileFailed', { message: error?.message });
 
@@ -186,13 +188,15 @@ export const initProfilePage = createAsyncThunk(
       const profileNativeModalVisibility = getShowProfileNativeModalVisibility(getState());
       const profileModalVisibility = getShowProfileVisibility(getState());
 
-      console.log('isProfileModalShown', isProfileModalShown);
-      console.log('isWebview', isWebview);
-      console.log('profileNativeModalVisibility', profileNativeModalVisibility);
+      // console.log('isProfileModalShown', isProfileModalShown);
+      // console.log('isWebview', isWebview);
+      // console.log('profileNativeModalVisibility', profileNativeModalVisibility);
 
       if (isProfileModalShown) {
         if (isWebview) {
-          !profileNativeModalVisibility && (await dispatch(callNativeProfile()));
+          if (!profileNativeModalVisibility) {
+            await dispatch(callNativeProfile());
+          }
 
           return;
         }

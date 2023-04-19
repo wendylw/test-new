@@ -963,10 +963,6 @@ export class ThankYou extends PureComponent {
     return;
   };
 
-  handleCompleteProfileModalClose = () => {
-    this.props.setShowProfileVisibility(false);
-  };
-
   handleChangeStoreRating = rating => {
     const { order, history } = this.props;
     const { ROUTER_PATHS } = Constants;
