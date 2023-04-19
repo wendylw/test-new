@@ -161,6 +161,7 @@ export class ThankYou extends PureComponent {
       const isInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, hasOrderPaid);
 
       if (isInitProfilePageEnabled) {
+        console.log('initProfilePageMount');
         await initProfilePage({ from });
       }
     });
@@ -400,6 +401,7 @@ export class ThankYou extends PureComponent {
 
     // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
     if (currIsInitProfilePageEnabled && prevIsInitProfilePageDisabled) {
+      console.log('initProfilePageUpdated');
       await initProfilePage({ from });
     }
 
