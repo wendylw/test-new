@@ -1,7 +1,7 @@
 import originalKy from 'ky';
 import qs from 'qs';
 import Utils from '../utils';
-import RequestError from './request-error';
+import ApiFetchError from './api-fetch-error';
 import { ERROR_TYPES } from './constants';
 import logger from '../monitoring/logger';
 
@@ -25,10 +25,6 @@ async function parseResponse(response) {
   const rawContentType = response.headers.get('content-type');
   let body = response;
 
-  if (!rawContentType) {
-    return body;
-  }
-
   if (rawContentType.includes('application/json')) {
     body = await response.json();
   } else if (['text/plain', 'text/html'].some(type => rawContentType.includes(type))) {
@@ -37,16 +33,6 @@ async function parseResponse(response) {
     logger.error('Tool_ApiFetch_parseResponseError', {
       message: `Unexpected content type: ${rawContentType}, will respond with raw Response object.`,
     });
-
-    throw new RequestError('requestUnexpectedContentType', { type: ERROR_TYPES.PARAMETER_ERROR });
-  }
-
-  const { status, code, extra } = body || {};
-
-  if (status >= 400 && status < 499) {
-    throw new RequestError('requestClientError', { type: ERROR_TYPES.BAD_REQUEST_ERROR, code, status, extra });
-  } else if (status >= 500 && status < 599) {
-    throw new RequestError('requestServerError', { type: ERROR_TYPES.SERVER_ERROR, code, status, extra });
   }
 
   return body;
@@ -92,39 +78,48 @@ async function _fetch(url, opts) {
     windowDispatchEvent('sh-api-success', url, opts, { status: response.status });
 
     return result;
-  } catch (e) {
-    let error = e;
-    // HTTPError format: test
-    if (e.response) {
-      const body = await parseResponse(url, e.response);
-
-      if (typeof body === 'object' && body.code) {
-        error = body;
-        // Send log to Log service
-        windowDispatchEvent('sh-api-failure', url, opts, {
-          code: body.code.toString(),
-          error: body.message,
-          status: e.response.status,
-        });
-      } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
-        error = {
-          code: '50000',
-          status: e.status,
-          message: typeof body === 'string' ? body : JSON.stringify(body),
-        };
-        // Send log to Log service
-        windowDispatchEvent('sh-api-failure', url, opts, {
-          code: '99999',
-          error: body.message,
-          status: e.response.status,
-        });
-      }
-    } else {
+  } catch (error) {
+    if (!error.response) {
       // Send log to Log service
-      windowDispatchEvent('sh-fetch-error', url, opts, { error: e.message });
+      windowDispatchEvent('sh-fetch-error', url, opts, { error: error?.message || '' });
+
+      throw error;
     }
 
-    throw error;
+    const { response } = error;
+    const { status } = response;
+    const errorBody = await parseResponse(response);
+    const { message, code, extra } = errorBody || {};
+    const errorOptions = {
+      type: ERROR_TYPES.UNKNOWN_ERROR,
+      code: code || '50000',
+      status,
+      extra,
+    };
+
+    if (status >= 400 && status < 499) {
+      errorOptions.type = ERROR_TYPES.BAD_REQUEST_ERROR;
+    } else if (status >= 500 && status < 599) {
+      errorOptions.type = ERROR_TYPES.SERVER_ERROR;
+    }
+
+    if (typeof errorBody === 'object' && code) {
+      // Send log to Log service
+      windowDispatchEvent('sh-api-failure', url, opts, {
+        code: code.toString(),
+        error: message,
+        status: status,
+      });
+    } else {
+      // Send log to Log service
+      windowDispatchEvent('sh-api-failure', url, opts, {
+        code: '99999',
+        error: message,
+        status: status,
+      });
+    }
+
+    throw new ApiFetchError(message, errorOptions);
   }
 }
 
@@ -149,7 +144,7 @@ function convertOptions(options) {
       message: 'headers should be an object',
     });
 
-    throw new RequestError('requestHeadersNotObject', { type: ERROR_TYPES.PARAMETER_ERROR });
+    throw new ApiFetchError('requestHeadersNotObject', { type: ERROR_TYPES.PARAMETER_ERROR });
   }
 
   const currentHooks = hooks || {};

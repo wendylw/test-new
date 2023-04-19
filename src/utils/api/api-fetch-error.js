@@ -1,4 +1,4 @@
-class RequestError extends Error {
+class ApiFetchError extends Error {
   constructor(message, { type, code, status, extra }) {
     super(message || '');
 
@@ -15,4 +15,4 @@ class RequestError extends Error {
   }
 }
 
-export default RequestError;
+export default ApiFetchError;
