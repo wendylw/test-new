@@ -65,7 +65,7 @@ function getImageURL(dimension, imageURL) {
     if (process.env.NODE_ENV === 'development') {
       throw new Error(`Image dimension (${dimension}) is not supported`);
     } else {
-      logger.error(`Common_Image_DimensionIsNotSupported: ${dimension}`);
+      logger.error('Common_Image_DimensionIsNotSupported', { dimension });
     }
     effectiveDimension = '500x500';
   }
