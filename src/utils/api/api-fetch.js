@@ -89,6 +89,7 @@ async function _fetch(url, opts) {
     const { response } = error;
     const { status } = response;
     const errorBody = await parseResponse(response);
+    // TODO: errorBody is string??
     const { message, code, extra } = errorBody || {};
     const errorOptions = {
       type: ERROR_TYPES.UNKNOWN_ERROR,
