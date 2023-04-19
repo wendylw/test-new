@@ -2,7 +2,8 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { applyPromotion, removePromotion, applyVoucher, removeVoucher } from './api-request';
 import { getSelectedPromoId, getSelectedPromoCode } from '../../../../redux/modules/promotion';
 import Utils from '../../../../../utils/utils';
-import logger from '../../../../../utils/monitoring/logger';
+
+const formatErrorOfApplyPromoOrVoucher = e => ({ name: JSON.stringify(e.extra), code: e.code, message: e.message });
 
 const removePromoOrVoucher = async removeMethods => {
   const receiptNumber = Utils.getQueryString('receiptNumber');
@@ -11,7 +12,7 @@ const removePromoOrVoucher = async removeMethods => {
 
     return result;
   } catch (e) {
-    logger.error('Ordering_Promotion_removePromoOrVoucherFailed', { message: e?.message || '' });
+    console.error(e);
 
     throw e;
   }
@@ -29,9 +30,9 @@ export const applyPromo = createAsyncThunk('ordering/promotion/common/applyPromo
 
     return result;
   } catch (e) {
-    logger.error('Ordering_Promotion_applyPromoFailed', { message: e?.message || '' });
+    console.error(formatErrorOfApplyPromoOrVoucher(e));
 
-    throw e;
+    throw formatErrorOfApplyPromoOrVoucher(e);
   }
 });
 
@@ -53,9 +54,9 @@ export const applyVoucherPayLater = createAsyncThunk(
 
       return result;
     } catch (e) {
-      logger.error('Ordering_Promotion_applyVoucherPayLater', { message: e?.message || '' });
+      console.error(formatErrorOfApplyPromoOrVoucher(e));
 
-      throw e;
+      throw formatErrorOfApplyPromoOrVoucher(e);
     }
   }
 );
