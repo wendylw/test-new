@@ -10,7 +10,7 @@ import { IconBookmarks } from './Icons';
 import ErrorToast from './ErrorToast';
 import './LocationPicker.scss';
 import { captureException } from '@sentry/react';
-import { logger } from '../utils/monitoring/logger';
+import logger from '../utils/monitoring/logger';
 
 class LocationPicker extends Component {
   static propTypes = {
@@ -42,7 +42,7 @@ class LocationPicker extends Component {
       const historicalAddresses = await getHistoricalDeliveryAddresses();
       this.setState({ historicalAddresses });
     } catch (error) {
-      logger.error('Cashback_App_GetLoginStatusFailed', { message: error?.message });
+      logger.error('Cashback_App_GetLoginStatusFailed', { message: error?.message || '' });
     }
   }
 

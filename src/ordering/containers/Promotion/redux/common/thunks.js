@@ -2,8 +2,20 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { applyPromotion, removePromotion, applyVoucher, removeVoucher } from './api-request';
 import { getSelectedPromoId, getSelectedPromoCode } from '../../../../redux/modules/promotion';
 import Utils from '../../../../../utils/utils';
+import logger from '../../../../../utils/monitoring/logger';
 
-const formatErrorOfApplyPromoOrVoucher = e => ({ name: JSON.stringify(e.extra), code: e.code, message: e.message });
+const removePromoOrVoucher = async removeMethods => {
+  const receiptNumber = Utils.getQueryString('receiptNumber');
+  try {
+    const result = await removeMethods({ receiptNumber });
+
+    return result;
+  } catch (e) {
+    logger.error('Ordering_Promotion_removePromoOrVoucherFailed', { message: e?.message || '' });
+
+    throw e;
+  }
+};
 
 /**
  * Promotion part
@@ -17,24 +29,15 @@ export const applyPromo = createAsyncThunk('ordering/promotion/common/applyPromo
 
     return result;
   } catch (e) {
-    console.error(`Fail to apply promo: ${e.message}`);
-
-    throw formatErrorOfApplyPromoOrVoucher(e);
-  }
-});
-
-export const removePromo = createAsyncThunk('ordering/promotion/common/removePromotion', async () => {
-  const receiptNumber = Utils.getQueryString('receiptNumber');
-  try {
-    const result = await removePromotion({ receiptNumber });
-
-    return result;
-  } catch (e) {
-    console.error(`Fail to remove promo: ${e.message}`);
+    logger.error('Ordering_Promotion_applyPromoFailed', { message: e?.message || '' });
 
     throw e;
   }
 });
+
+export const removePromo = createAsyncThunk('ordering/promotion/common/removePromotion', () =>
+  removePromoOrVoucher(removePromotion)
+);
 
 /**
  * Voucher part
@@ -49,23 +52,14 @@ export const applyVoucherPayLater = createAsyncThunk(
       const result = await applyVoucher({ receiptNumber, voucherCode });
 
       return result;
-    } catch (error) {
-      console.error(`Fail to apply voucher for pay later: ${error.message}`);
+    } catch (e) {
+      logger.error('Ordering_Promotion_applyVoucherPayLater', { message: e?.message || '' });
 
-      throw formatErrorOfApplyPromoOrVoucher(error);
+      throw e;
     }
   }
 );
 
-export const removeVoucherPayLater = createAsyncThunk('ordering/promotion/common/removeVoucherPayLater', async () => {
-  const receiptNumber = Utils.getQueryString('receiptNumber');
-  try {
-    const result = await removeVoucher({ receiptNumber });
-
-    return result;
-  } catch (e) {
-    console.error(`Fail to remove voucher for pay later: ${e.message}`);
-
-    throw e;
-  }
-});
+export const removeVoucherPayLater = createAsyncThunk('ordering/promotion/common/removeVoucherPayLater', () =>
+  removePromoOrVoucher(removeVoucher)
+);

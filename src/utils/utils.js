@@ -528,7 +528,7 @@ Utils.getFulfillDate = (businessUTCOffset = 480) => {
 
     return fulfillDayjs.toISOString();
   } catch (error) {
-    console.error('Common Utils getFulfillDate:', error?.message);
+    console.error('Common Utils getFulfillDate:', error?.message || '');
     return null;
   }
 };

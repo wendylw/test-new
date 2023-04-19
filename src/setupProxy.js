@@ -142,7 +142,8 @@ const setCookie = async (req, res, next) => {
     res.setHeader('Set-Cookie', updatedCookies);
     debug(`${original} Set Cookie done`);
   } catch (error) {
-    console.error('Set %s Cookie Error: %o', original, error?.message);
+    // error.message can not use error?.message because it's not supported by node 12
+    console.error('Set %s Cookie Error: %o', original, error.message || '');
   } finally {
     next();
   }
