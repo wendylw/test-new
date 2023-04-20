@@ -180,11 +180,11 @@ export const initProfilePage = createAsyncThunk(
         await dispatch(appActions.getProfileInfo(consumerId));
       }
 
-      if (isWebview) {
-        dispatch(callNativeProfile());
+      // if (isWebview) {
+      //   dispatch(callNativeProfile());
 
-        return;
-      }
+      //   return;
+      // }
 
       const profile = getUserProfile(getState());
       const { name, email, birthday } = profile || {};
