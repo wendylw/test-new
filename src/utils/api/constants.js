@@ -5,4 +5,5 @@ export const ERROR_TYPES = {
   NETWORK_ERROR: 'networkError', // requested but no response, e.g., Failed to fetch
   ABORT_ERROR: 'abortError', // customer cancelled this requesting
   TIMEOUT_ERROR: 'timeoutError', // request timeout Error
+  UNKNOWN_ERROR: 'unknownError', // other error
 };
