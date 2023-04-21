@@ -188,10 +188,6 @@ export const initProfilePage = createAsyncThunk(
       const profileNativeModalVisibility = getShowProfileNativeModalVisibility(getState());
       const profileModalVisibility = getShowProfileVisibility(getState());
 
-      // console.log('isProfileModalShown', isProfileModalShown);
-      // console.log('isWebview', isWebview);
-      // console.log('profileNativeModalVisibility', profileNativeModalVisibility);
-
       if (isProfileModalShown) {
         if (isWebview) {
           if (!profileNativeModalVisibility) {
