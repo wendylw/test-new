@@ -284,7 +284,7 @@ const shouldFilter = (event, hint) => {
       isOppoBrowserIssues(event, hint) ||
       isVivoAdblockProblem(event, hint) ||
       isDuplicateAlert(hint) ||
-      isResizeObserverLoopLimitExceeded(hint)
+      isResizeObserverLoopLimitExceeded(event)
     );
   } catch {
     return false;
