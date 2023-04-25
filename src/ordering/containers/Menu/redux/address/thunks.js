@@ -118,8 +118,8 @@ export const locationDrawerShown = createAsyncThunk(
         { message: e?.message },
         {
           bizFLow: {
-            flow: KEY_EVENTS_FLOWS.CHECKOUT,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_ADDRESS,
+            flow: KEY_EVENTS_FLOWS.SELECTION,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].SELECT_ADDRESS,
           },
         }
       );
@@ -254,8 +254,8 @@ export const locationSelected = createAsyncThunk(
         { message: e?.message },
         {
           bizFLow: {
-            flow: KEY_EVENTS_FLOWS.CHECKOUT,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_ADDRESS,
+            flow: KEY_EVENTS_FLOWS.SELECTION,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].SELECT_ADDRESS,
           },
         }
       );

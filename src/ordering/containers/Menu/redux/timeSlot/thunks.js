@@ -112,8 +112,8 @@ export const timeSlotDrawerShown = createAsyncThunk('ordering/menu/timeSlot/time
       { message: error?.message },
       {
         bizFLow: {
-          flow: KEY_EVENTS_FLOWS.CHECKOUT,
-          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_TIME_SLOT,
+          flow: KEY_EVENTS_FLOWS.SELECTION,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].SELECT_TIME_SLOT,
         },
       }
     );
@@ -262,8 +262,8 @@ export const timeSlotSelected = createAsyncThunk(
         { message: error?.message },
         {
           bizFLow: {
-            flow: KEY_EVENTS_FLOWS.CHECKOUT,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_TIME_SLOT,
+            flow: KEY_EVENTS_FLOWS.SELECTION,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].SELECT_TIME_SLOT,
           },
         }
       );
