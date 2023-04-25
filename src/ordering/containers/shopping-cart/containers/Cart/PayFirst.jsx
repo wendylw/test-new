@@ -446,7 +446,7 @@ class PayFirst extends Component {
     // Resolve bugs of BEEP-1561 && BEEP-1554
     if (consumerId && (!deliveryDetails.username || !deliveryDetails.phone)) {
       if (!isUserProfileStatusFulfilled) {
-        await appActions.getProfileInfo(consumerId);
+        await appActions.loadProfileInfo(consumerId);
       }
       const { userProfile } = this.props;
 
@@ -868,10 +868,10 @@ PayFirst.propTypes = {
     clearAll: PropTypes.func,
     addOrUpdateShoppingCartItem: PropTypes.func,
     removeShoppingCartItem: PropTypes.func,
-    getProfileInfo: PropTypes.func,
     updateDeliveryDetails: PropTypes.func,
     loginByBeepApp: PropTypes.func,
     updateCashbackApplyStatus: PropTypes.func,
+    loadProfileInfo: PropTypes.func,
   }),
   promotionActions: PropTypes.shape({
     dismissPromotion: PropTypes.func,
@@ -919,10 +919,10 @@ PayFirst.defaultProps = {
     clearAll: () => {},
     addOrUpdateShoppingCartItem: () => {},
     removeShoppingCartItem: () => {},
-    getProfileInfo: () => {},
     updateDeliveryDetails: () => {},
     loginByBeepApp: () => {},
     updateCashbackApplyStatus: () => {},
+    loadProfileInfo: () => {},
   },
   promotionActions: {
     dismissPromotion: () => {},

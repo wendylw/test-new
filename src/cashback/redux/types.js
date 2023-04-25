@@ -59,6 +59,11 @@ export const APP_TYPES = {
 
   // Update user
   UPDATE_USER: 'LOYALTY/APP/UPDATE_USER',
+
+  // Profile
+  LOAD_CONSUMER_PROFILE_PENDING: 'loyalty/profile/loadProfileInfo/pending',
+  LOAD_CONSUMER_PROFILE_FULFILLED: 'loyalty/profile/loadProfileInfo/fulfilled',
+  LOAD_CONSUMER_PROFILE_REJECTED: 'loyalty/profile/loadProfileInfo/rejected',
 };
 
 export const HOME_TYPES = {

@@ -29,11 +29,6 @@ describe('utils/monitoring/utils', () => {
         expect(getAPIRequestRelativePath(postUrl)).toBe('/api/consumers/*/address');
       });
 
-      test("return '/api/consumers/*/profile' for updateProfileInfo url", () => {
-        const putUrl = '/api/consumers/616652c5e9bba31aeaf74789/profile';
-        expect(getAPIRequestRelativePath(putUrl)).toBe('/api/consumers/*/profile');
-      });
-
       test("return '/api/consumers/*/profile' for getProfileInfo url", () => {
         const getUrl = '/api/consumers/616652c5e9bba31aeaf74789/profile';
         expect(getAPIRequestRelativePath(getUrl)).toBe('/api/consumers/*/profile');
