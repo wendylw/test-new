@@ -85,6 +85,9 @@ const mockState = {
         orderId: '815520056159098',
         status: 'pendingPayment',
         storeId: '5bb7127e92efcf71784c1727',
+        storeInfo: {
+          name: undefined,
+        },
         tableId: null,
         total: 1,
       },
@@ -245,7 +248,37 @@ const mockState = {
     },
     stores: {
       '123456': {
+        id: '123456',
         name: 'mockStore',
+        qrOrderingSettings: {
+          useStorehubLogistics: true,
+        },
+      },
+      '5de71ef1e872af6ab28a6c74': {
+        id: '5de71ef1e872af6ab28a6c74',
+        name: 'coffee',
+        isOnline: true,
+        isDeleted: null,
+        street1: '10 Boulevard, 47400 Jalan Kenanga, Damansara, Selangor, Malaysia.',
+        street2: '',
+        city: 'universe',
+        state: 'normal',
+        qrOrderingSettings: {
+          useStorehubLogistics: true,
+        },
+      },
+      '5de72d57e872af6ab28a7809': {
+        id: '5de72d57e872af6ab28a7809',
+        name: 'Mercy',
+        isOnline: true,
+        isDeleted: null,
+        street1: '10 Boulevard, 47400 Jalan Kenanga, Damansara, Selangor, Malaysia.',
+        street2: '',
+        city: 'my',
+        state: 'normal',
+        qrOrderingSettings: {
+          useStorehubLogistics: true,
+        },
       },
     },
     businesses: {
@@ -318,10 +351,6 @@ const mockState = {
     thankYouPageUrl: '',
     braintreeToken: '',
     bankingList: [],
-  },
-  thankYou: {
-    orderId: null,
-    cashbackInfo: null,
   },
 };
 export default mockState;

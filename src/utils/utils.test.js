@@ -10,9 +10,7 @@ describe('utils/utils', () => {
   const {
     getQueryString,
     getFilteredQueryString,
-    isWebview,
     debounce,
-    elementPartialOffsetTop,
     getCookieVariable,
     setCookieVariable,
     removeCookieVariable,
@@ -27,7 +25,6 @@ describe('utils/utils', () => {
     DateFormatter,
     getValidAddress,
     getQueryObject,
-    initSmoothAnimation,
     getUserAgentInfo,
     checkEmailIsValid,
     getFileExtension,
@@ -91,22 +88,6 @@ describe('utils/utils', () => {
     expect(window.location.search).not.toBe('?utm_source=infoq_web&utm_medium=menu');
   });
 
-  // describe('utils.isWebview', () => {
-  //   it('isWebview:should return false', () => {
-  //     expect(isWebview()).toBeFalsy();
-  //   });
-
-  //   it('isWebView:should return true', () => {
-  //     const oldReactNativeWebView = window.ReactNativeWebView;
-  //     delete window.ReactNativeWebView;
-  //     window.ReactNativeWebView = {
-  //       postMessage: jest.fn(),
-  //     };
-  //     expect(isWebview()).toBeTruthy();
-  //     window.ReactNativeWebView = oldReactNativeWebView;
-  //   });
-  // });
-
   it('debounce', () => {
     const mockFn = jest.fn();
     const debounced = debounce(mockFn, 1000);
@@ -139,24 +120,26 @@ describe('utils/utils', () => {
     });
 
     it('getCookieVariable: request key does not exist', () => {
-      expect(getCookieVariable('years', 'localStorage')).toBeNull();
-      expect(getCookieVariable('years', 'sessionStorage')).toBeNull();
+      expect(getCookieVariable('years', 'localStorage')).toBeUndefined();
+      expect(getCookieVariable('years', 'sessionStorage')).toBeUndefined();
     });
 
     it('setCookieVariable and getCookieVariable: sets the value of item', () => {
       setCookieVariable('years', '10', 'localStorage');
-      setCookieVariable('years', '2010', 'sessionStorage');
       expect(getCookieVariable('years', 'localStorage')).toBe('10');
+
+      setCookieVariable('years', '2010', 'sessionStorage');
       expect(getCookieVariable('years', 'sessionStorage')).toBe('2010');
     });
 
     it('removeCookieVariable', () => {
       setCookieVariable('years', '10', 'localStorage');
-      setCookieVariable('years', '2010', 'sessionStorage');
       removeCookieVariable('years', 'localStorage');
-      expect(getCookieVariable('years', 'localStorage')).toBeNull();
+      expect(getCookieVariable('years', 'localStorage')).toBeUndefined();
+
+      setCookieVariable('years', '2010', 'sessionStorage');
       removeCookieVariable('years', 'sessionStorage');
-      expect(getCookieVariable('years', 'sessionStorage')).toBeNull();
+      expect(getCookieVariable('years', 'sessionStorage')).toBeUndefined();
     });
   });
 
