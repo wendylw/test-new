@@ -190,6 +190,8 @@ export const initProfilePage = createAsyncThunk(
 
       if (isProfileModalShown) {
         if (isWebview) {
+          // WB-5109: The native profile page will not be called multiple times
+          // Subsequent modifications hope that the relevant data of the profile page will be processed by selectors to ensure that the display will only be triggered once
           if (!profileNativeModalVisibility) {
             await dispatch(callNativeProfile());
           }

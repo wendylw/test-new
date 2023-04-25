@@ -28,8 +28,6 @@ const initialState = {
   cancelOrderStatus: null, // pending || fulfilled || rejected
   cancelOrderError: null,
   profileModalVisibility: false,
-  // WB-5109: The native profile page will not be called multiple times
-  // Subsequent modifications hope that the relevant data of the profile page will be processed by selectors to ensure that the display will only be triggered once
   profileNativeModalVisibility: false,
   foodCourtInfo: {
     hashCode: null,
