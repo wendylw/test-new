@@ -20,10 +20,10 @@ export const mounted = createAsyncThunk('ordering/foodCourt/common/mounted', asy
     const foodCourtStoreList = await fetchFoodCourtStoreList({ foodCourtId, type: shippingType });
 
     return foodCourtStoreList;
-  } catch (e) {
-    console.error('load store list failed on food court landing page');
+  } catch (error) {
+    console.error('FoodCourt Common initial:', error?.message || '');
 
-    throw e;
+    throw error;
   }
 });
 

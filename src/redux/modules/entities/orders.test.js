@@ -19,6 +19,9 @@ describe('src/redux/modules/entities/orders.test.js:reducers', () => {
                 status: 'pendingPayment',
                 tableId: null,
                 storeId: '5bb7127e92efcf71784c1727',
+                storeInfo: {
+                  name: undefined,
+                },
               },
             ],
             error: null,
@@ -32,6 +35,9 @@ describe('src/redux/modules/entities/orders.test.js:reducers', () => {
           orderId: '815520056159098',
           status: 'pendingPayment',
           storeId: '5bb7127e92efcf71784c1727',
+          storeInfo: {
+            name: undefined,
+          },
           tableId: null,
           total: 1,
         },
@@ -50,6 +56,9 @@ describe('src/redux/modules/entities/orders.test.js:reducers', () => {
               status: 'pendingPayment',
               tableId: null,
               storeId: '5bb7127e92efcf71784c1727',
+              storeInfo: {
+                name: undefined,
+              },
             },
             error: null,
             redirectUrl: `/ordering/thank-you`,
@@ -62,6 +71,9 @@ describe('src/redux/modules/entities/orders.test.js:reducers', () => {
           orderId: '815520056159098',
           status: 'pendingPayment',
           storeId: '5bb7127e92efcf71784c1727',
+          storeInfo: {
+            name: undefined,
+          },
           tableId: null,
           total: 1,
         },
@@ -80,6 +92,9 @@ describe('src/redux/modules/entities/orders.test.js:selectors', () => {
       orderId: '815520056159098',
       status: 'pendingPayment',
       storeId: '5bb7127e92efcf71784c1727',
+      storeInfo: {
+        name: undefined,
+      },
       tableId: null,
       total: 1,
     });

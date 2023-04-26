@@ -3,7 +3,6 @@ import _get from 'lodash/get';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
-import Cookies from 'js-cookie';
 import * as UtilsV2 from '../common/utils';
 import { SOURCE_TYPE } from '../common/utils/constants';
 
@@ -11,7 +10,6 @@ dayjs.extend(utc);
 
 const {
   SH_LOGISTICS_VALID_TIME,
-  CLIENTS,
   ROUTER_PATHS,
   REGISTRATION_SOURCE,
   REGISTRATION_TOUCH_POINT,
@@ -529,8 +527,8 @@ Utils.getFulfillDate = (businessUTCOffset = 480) => {
     const fulfillDayjs = timeLib.setDateTime(expectedFromTime, expectedDayjs);
 
     return fulfillDayjs.toISOString();
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error('Common Utils getFulfillDate:', error?.message || '');
     return null;
   }
 };
@@ -654,21 +652,7 @@ Utils.getOrderSourceForCleverTab = () => {
   return mapping[orderSource];
 };
 
-Utils.getClient = () => {
-  if (Utils.isTNGMiniProgram()) {
-    return CLIENTS.TNG_MINI_PROGRAM;
-  }
-
-  if (Utils.isAndroidWebview()) {
-    return CLIENTS.ANDROID;
-  }
-
-  if (Utils.isIOSWebview()) {
-    return CLIENTS.IOS;
-  }
-
-  return CLIENTS.WEB;
-};
+Utils.getClient = UtilsV2.getClient;
 
 export const copyDataToClipboard = async text => {
   try {

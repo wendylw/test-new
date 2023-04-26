@@ -1,6 +1,4 @@
 import _get from 'lodash/get';
-import _isEmpty from 'lodash/isEmpty';
-import _isUndefined from 'lodash/isUndefined';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
@@ -22,6 +20,7 @@ import {
 } from '../../../../../redux/modules/app';
 import { getOrder } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
+import { getShowProfileVisibility, getShowProfileNativeModalVisibility } from './selector';
 import logger from '../../../../../../utils/monitoring/logger';
 
 export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/fetchCashbackInfo', async orderId => {
@@ -155,6 +154,8 @@ export const hideProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/
 export const callNativeProfile = createAsyncThunk('ordering/profile/callNativeProfile', async () => {
   try {
     await NativeMethods.showCompleteProfilePageAsync();
+
+    return true;
   } catch (error) {
     logger.error('Ordering_OrderStatus_CallNativeProfileFailed', { message: error?.message });
 
@@ -177,24 +178,32 @@ export const initProfilePage = createAsyncThunk(
 
       // First must to confirm profile info is loaded
       if (userIsLogin && !isUserProfileStatusFulfilled) {
-        await dispatch(appActions.getProfileInfo(consumerId));
+        await dispatch(appActions.loadProfileInfo(consumerId));
       }
-
-      // if (isWebview) {
-      //   dispatch(callNativeProfile());
-
-      //   return;
-      // }
 
       const profile = getUserProfile(getState());
       const { name, email, birthday } = profile || {};
-      const isProfileInfoComplete = !name || !email || !birthday;
-      const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoComplete && userIsLogin && !isWebview;
+      const isProfileInfoIncomplete = !name || !email || !birthday;
+      const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoIncomplete && userIsLogin;
+      const profileNativeModalVisibility = getShowProfileNativeModalVisibility(getState());
+      const profileModalVisibility = getShowProfileVisibility(getState());
 
       if (isProfileModalShown) {
-        setTimeout(() => {
-          dispatch(showProfileModal());
-        }, delay);
+        if (isWebview) {
+          // WB-5109: The native profile page will not be called multiple times
+          // Subsequent modifications hope that the relevant data of the profile page will be processed by selectors to ensure that the display will only be triggered once
+          if (!profileNativeModalVisibility) {
+            await dispatch(callNativeProfile());
+          }
+
+          return;
+        }
+
+        if (!profileModalVisibility) {
+          setTimeout(() => {
+            dispatch(showProfileModal());
+          }, delay);
+        }
       }
     } catch (error) {
       logger.error('Ordering_OrderStatus_InitProfileFailed', { message: error?.message });

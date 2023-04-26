@@ -15,15 +15,16 @@ export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated'
     const state = getState();
     const consumerId = getUserConsumerId(state);
     const birthday = getProfileBirthday(state);
-
-    const result = await putProfileInfo(consumerId, {
+    const payload = {
       firstName: getProfileName(state),
       email: getProfileEmail(state),
       birthday: getRequestBirthdayData(birthday),
-    });
+    };
+
+    const result = await putProfileInfo(consumerId, payload);
 
     // If profile info updated, should get new profile info for app level
-    dispatch(appActions.getProfileInfo(consumerId));
+    dispatch(appActions.updateProfile(payload));
 
     return result;
   } catch (error) {

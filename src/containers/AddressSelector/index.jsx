@@ -18,9 +18,9 @@ const fetchAutocompletePlaceList = _debounce(async (searchText, placeInfo, searc
   try {
     const places = await getPlaceAutocompleteList(searchText, { location, origin, radius, country });
     searchCallback(places);
-  } catch (e) {
+  } catch (error) {
     // do nothing for now, user can keep typing.
-    console.error(e);
+    console.error('Common AddressSelector fetchAutocompletePlaceList:', error?.message || '');
   }
 }, 700);
 

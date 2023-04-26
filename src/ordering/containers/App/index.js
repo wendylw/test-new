@@ -76,8 +76,8 @@ class App extends Component {
         const { ifAddressInfoExists } = this.props;
         if (ifAddressInfoExists) return;
       }
-    } catch (e) {
-      console.error(`failed to check fix address flow support: ${e.message}`);
+    } catch (error) {
+      console.error(`Ordering App initAddressInfo: ${error?.message || ''}`);
     }
 
     try {

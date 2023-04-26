@@ -1,4 +1,5 @@
 import { SOURCE_TYPE } from '../../../common/utils/constants';
+import logger from '../../../utils/monitoring/logger';
 
 export const bodyScrollTopPosition = () =>
   document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
@@ -43,7 +44,8 @@ export const getShareLinkUrl = () => {
 
     return storeUrl.toString();
   } catch (error) {
-    console.error(error);
+    logger.error('Ordering_Menu_getShareLinkUrlFailed', { message: error?.message || '' });
+
     return window.location.href;
   }
 };

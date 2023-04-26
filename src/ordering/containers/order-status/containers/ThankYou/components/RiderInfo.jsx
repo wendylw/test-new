@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import dayjs from 'dayjs';
 import Constants from '../../../../../../utils/constants';
 import Utils, { isValidUrl, copyDataToClipboard } from '../../../../../../utils/utils';
+import logger from '../../../../../../utils/monitoring/logger';
 import { formatCompletePhoneNumber } from '../utils';
 import { getOrderStoreName, getOrderDeliveryInfo } from '../redux/selector';
 import { getOrderStatus, getIsUseStorehubLogistics, getOrder, getOrderStoreInfo } from '../../../redux/selector';
@@ -43,8 +44,8 @@ function getDeliveredTimeRange(bestLastMileETA, worstLastMileETA) {
     const worstLastMileTime = dayjs(worstLastMileETA).format('hh:mm A');
 
     return `${bestLastMileTime} - ${worstLastMileTime}`;
-  } catch (e) {
-    console.error('bestLastMileTime or worstLastMileTime is invalid');
+  } catch (error) {
+    logger.error('Ordering_ThankYou_BestLastMileTimeOrWorstLastMileTimeIsInvalid', { message: error?.message || '' });
 
     return null;
   }
@@ -57,8 +58,8 @@ function getDeliveredTime(deliveredTime) {
 
   try {
     return dayjs(deliveredTime).format('hh:mm A');
-  } catch (e) {
-    console.error('deliveredTime is invalid');
+  } catch (error) {
+    logger.error('Ordering_ThankYou_GetDeliveredTimeFailed', { message: error?.message || '' });
 
     return null;
   }

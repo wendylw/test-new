@@ -28,18 +28,21 @@ describe('src/redux/modules/entities/categories.js:reducers', () => {
               '5e12bd73ed43e34e37874640',
               '5de7304b5234055a7724a4e1',
             ],
+            rank: 1,
           },
           '5de732c45234055a7724a9d9': {
             id: '5de732c45234055a7724a9d9',
             name: 'coffee',
             isEnabled: true,
             products: ['5de720aee872af6ab28a6ca3', '5de72ec75234055a77249c19', '5e12bd73ed43e34e37874640'],
+            rank: 2,
           },
           '5de733315234055a7724a9e1': {
             id: '5de733315234055a7724a9e1',
             name: 'tea',
             isEnabled: true,
             products: ['5de7304b5234055a7724a4e1'],
+            rank: 3,
           },
         };
         const newState = categoriesReducer({}, action);

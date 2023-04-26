@@ -32,6 +32,7 @@ import { closeWebView } from '../../../../../utils/native-methods';
 import { getDeliveryInfo, getIsFromBeepSite, getIsFromFoodCourt } from '../../../../redux/modules/app';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import { goBack, loadUserFavStoreStatus, saveFavoriteStore, shareStore } from '../../redux/common/thunks';
+import logger from '../../../../../utils/monitoring/logger';
 
 const OfflinePageHeader = () => {
   const dispatch = useDispatch();
@@ -122,7 +123,8 @@ const MenuHeader = ({ webHeaderVisibility }) => {
         },
       };
     } catch (error) {
-      console.error(`failed to share store link: ${error.message}`);
+      logger.error('Ordering_Menu_getShareLinkConfigFailed', { message: error?.message || '' });
+
       return null;
     }
   };

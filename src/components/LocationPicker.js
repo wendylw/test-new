@@ -10,6 +10,7 @@ import { IconBookmarks } from './Icons';
 import ErrorToast from './ErrorToast';
 import './LocationPicker.scss';
 import { captureException } from '@sentry/react';
+import logger from '../utils/monitoring/logger';
 
 class LocationPicker extends Component {
   static propTypes = {
@@ -40,8 +41,8 @@ class LocationPicker extends Component {
     try {
       const historicalAddresses = await getHistoricalDeliveryAddresses();
       this.setState({ historicalAddresses });
-    } catch (e) {
-      console.error('Failed to get historical addresses', e);
+    } catch (error) {
+      logger.error('Cashback_App_GetLoginStatusFailed', { message: error?.message || '' });
     }
   }
 
@@ -124,9 +125,10 @@ class LocationPicker extends Component {
           })}
         </div>
       );
-    } catch (e) {
-      console.error(e);
-      captureException(e);
+    } catch (error) {
+      console.error('CommonComponent renderHistoricalAddressList:', error?.message || '');
+
+      captureException(error);
       return null;
     }
   }
