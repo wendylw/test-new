@@ -83,7 +83,14 @@ export const loadPayLaterOrderStatus = createAsyncThunk(
 
 export const submitPayLaterOrder = createAsyncThunk(
   'ordering/orderStatus/common/submitPayLaterOrder',
-  async ({ receiptNumber, data }) => postPayLaterOrderSubmission(receiptNumber, data)
+  async ({ receiptNumber, data }, { rejectWithValue }) => {
+    try {
+      return await postPayLaterOrderSubmission(receiptNumber, data);
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+  // async ({ receiptNumber, data }) => postPayLaterOrderSubmission(receiptNumber, data)
 );
 
 // Store Review

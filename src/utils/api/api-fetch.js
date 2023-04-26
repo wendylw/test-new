@@ -83,7 +83,16 @@ async function _fetch(url, opts) {
       // Send log to Log service
       windowDispatchEvent('sh-fetch-error', url, opts, { error: error?.message || '' });
 
-      throw error;
+      let category = '';
+      if (error.name === 'AbortError') {
+        category = ERROR_TYPES.ABORT_ERROR;
+      } else if (error.name === 'TimeoutError') {
+        category = ERROR_TYPES.TIMEOUT_ERROR;
+      }
+      const errorOptions = {
+        category: category || ERROR_TYPES.NETWORK_ERROR,
+      };
+      throw new ApiFetchError(error?.message, errorOptions);
     }
 
     const { response } = error;
@@ -92,16 +101,16 @@ async function _fetch(url, opts) {
     // TODO: errorBody is string??
     const { message, code, extra } = errorBody || {};
     const errorOptions = {
-      type: ERROR_TYPES.UNKNOWN_ERROR,
+      category: ERROR_TYPES.UNKNOWN_ERROR,
       code: code || '50000',
       status,
       extra,
     };
 
     if (status >= 400 && status < 499) {
-      errorOptions.type = ERROR_TYPES.BAD_REQUEST_ERROR;
+      errorOptions.category = ERROR_TYPES.BAD_REQUEST_ERROR;
     } else if (status >= 500 && status < 599) {
-      errorOptions.type = ERROR_TYPES.SERVER_ERROR;
+      errorOptions.category = ERROR_TYPES.SERVER_ERROR;
     }
 
     if (typeof errorBody === 'object' && code) {
@@ -145,7 +154,7 @@ function convertOptions(options) {
       message: 'headers should be an object',
     });
 
-    throw new ApiFetchError('requestHeadersNotObject', { type: ERROR_TYPES.PARAMETER_ERROR });
+    throw new ApiFetchError('requestHeadersNotObject', { category: ERROR_TYPES.PARAMETER_ERROR });
   }
 
   const currentHooks = hooks || {};

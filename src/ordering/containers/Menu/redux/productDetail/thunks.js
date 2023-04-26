@@ -403,7 +403,7 @@ export const addToCart = createAsyncThunk(
           })
         );
       } else {
-        await dispatch(
+        const res = await dispatch(
           appActions.addOrUpdateShoppingCartItem({
             action: 'add',
             business,
@@ -413,6 +413,7 @@ export const addToCart = createAsyncThunk(
             variations,
           })
         );
+        console.log('addOrUpdateShoppingCartItem', res);
 
         const isAddOrUpdateShoppingCartItemRejected = getIsAddOrUpdateShoppingCartItemRejected(getState());
 

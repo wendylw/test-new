@@ -75,7 +75,7 @@ export const clearQueryOrdersAndStatus = () => () => {
 
 export const payByCoupons = createAsyncThunk(
   'ordering/orderStatus/tableSummary/payByCoupons',
-  async (_, { dispatch, getState }) => {
+  async (_, { dispatch, getState, rejectWithValue }) => {
     const state = getState();
     const receiptNumber = getOrderReceiptNumber(state);
     const cashback = getOrderCashback(state);
@@ -91,13 +91,15 @@ export const payByCoupons = createAsyncThunk(
       voucherCode,
     };
 
-    try {
-      await dispatch(showProcessingLoader());
-      await dispatch(submitOrder({ receiptNumber, data })).unwrap();
-    } catch (error) {
+    await dispatch(showProcessingLoader());
+    const res = await dispatch(submitOrder({ receiptNumber, data }));
+    console.log('payByCoupons', res);
+    if (res.error?.message === 'Rejected') {
       await dispatch(hideProcessingLoader());
-      throw error;
+      return rejectWithValue(res.payload);
     }
+    return res;
+    // await dispatch(submitOrder({ receiptNumber, data })).unwrap()
   }
 );
 
@@ -137,7 +139,12 @@ export const gotoPayment = createAsyncThunk(
     try {
       // Special case for free charge
       if (total === 0) {
-        await dispatch(payByCoupons()).unwrap();
+        const payByCouponsRes = await dispatch(payByCoupons());
+        console.log('payByCouponsRes', payByCouponsRes);
+        if (payByCouponsRes.error?.message === 'Rejected') {
+          throw payByCouponsRes.payload;
+        }
+        // await dispatch(payByCoupons()).unwrap();
         return;
       }
 
@@ -153,6 +160,7 @@ export const gotoPayment = createAsyncThunk(
       const search = getLocationSearch(state);
       dispatch(push(`${PATH_NAME_MAPPING.ORDERING_PAYMENT}${search}`));
     } catch (error) {
+      console.error('gotoPayment', error);
       logger.error('Ordering_TableSummary_GoToPaymentFailed', {
         message: error?.message,
         id: receiptNumber,

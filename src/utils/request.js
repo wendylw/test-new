@@ -1,5 +1,7 @@
 import Constants from './constants';
 import Utils from './utils';
+import ApiFetchError from './api/api-fetch-error';
+import { ERROR_TYPES } from './api/constants';
 
 const { REQUEST_ERROR_KEYS } = Constants;
 const headers = new Headers({
@@ -36,19 +38,24 @@ function get(url, options = {}) {
       return handleResponse(url, response, 'get', requestStart);
     })
     .catch(error => {
-      if (error instanceof TypeError) {
-        window.dispatchEvent(
-          new CustomEvent('sh-fetch-error', {
-            detail: {
-              type: 'get',
-              request: url,
-              error: error.message,
-              requestStart,
-            },
-          })
-        );
-      }
-      return Promise.reject(error);
+      const errorOptions = {
+        ...error,
+        category: ERROR_TYPES.NETWORK_ERROR,
+      };
+      return Promise.reject(new ApiFetchError(error?.message, errorOptions));
+      // if (error instanceof TypeError) {
+      //   window.dispatchEvent(
+      //     new CustomEvent('sh-fetch-error', {
+      //       detail: {
+      //         type: 'get',
+      //         request: url,
+      //         error: error.message,
+      //         requestStart,
+      //       },
+      //     })
+      //   );
+      // }
+      // return Promise.reject(error);
     });
 }
 
@@ -71,6 +78,11 @@ const fetchData = function(url, requestOptions) {
       return handleResponse(url, response, method.toLowerCase(), requestStart);
     })
     .catch(error => {
+      const errorOptions = {
+        ...error,
+        category: ERROR_TYPES.NETWORK_ERROR,
+      };
+      return Promise.reject(new ApiFetchError(error?.message, errorOptions));
       // NOTE: There are only 2 kinds of exceptions: AbortError or TypeError.
       // AbortError is called by ourselves so it shouldn't be treated as an error, that is why we only check the TypeError instances.
       // Refer to: https://developer.mozilla.org/en-US/docs/Web/API/fetch
