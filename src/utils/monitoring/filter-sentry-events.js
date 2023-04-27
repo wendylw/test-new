@@ -249,6 +249,16 @@ const isDuplicateAlert = hint => {
   }
 };
 
+// resizeObserver loop limit exceeded will not block page. refer: https://stackoverflow.com/a/50387233
+const isResizeObserverLoopLimitExceeded = hint => {
+  try {
+    const message = getErrorMessageFromHint(hint);
+    return message.includes('ResizeObserver loop limit exceeded');
+  } catch {
+    return false;
+  }
+};
+
 const shouldFilter = (event, hint) => {
   try {
     return (
@@ -267,7 +277,8 @@ const shouldFilter = (event, hint) => {
       isCleverTapIssues(event, hint) ||
       isOppoBrowserIssues(event, hint) ||
       isVivoAdblockProblem(event, hint) ||
-      isDuplicateAlert(hint)
+      isDuplicateAlert(hint) ||
+      isResizeObserverLoopLimitExceeded(hint)
     );
   } catch {
     return false;

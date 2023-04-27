@@ -29,7 +29,6 @@ import SeoulImage from '../../../../../images/food-court-temp/merchant-Seoul.png
 import SubwayImage from '../../../../../images/food-court-temp/merchant-Subway.png';
 import BobaTeaHouseImage from '../../../../../images/food-court-temp/merchant-Boba-Tea-House.jpg';
 import SaladAtelierImage from '../../../../../images/food-court-temp/merchant-Salad-Atelier.jpg';
-import XOXOImage from '../../../../../images/food-court-temp/merchant-XOXO.jpg';
 import HopeCoffeeImage from '../../../../../images/food-court-temp/merchant-Hope-Coffee.png';
 import IronBarImage from '../../../../../images/food-court-temp/merchant-Iron-Bar.png';
 import YuByRainGardenImage from '../../../../../images/food-court-temp/merchant-Yu-by-Rain-Garden.png';
@@ -42,6 +41,8 @@ import DrinkImage from '../../../../../images/food-court-temp/merchant-Drink.jpe
 import NurulImage from '../../../../../images/food-court-temp/food-Nurul-logo.jpg';
 import NurulAsamImage from '../../../../../images/food-court-temp/merchant-Nurul-Asam.png';
 import JomTarikImage from '../../../../../images/food-court-temp/merchant-Jom-Tarik.jpg';
+import ClassicBowlImage from '../../../../../images/food-court-temp/merchant-Classic-Bowl.png';
+import XOXOCoffeeImage from '../../../../../images/food-court-temp/merchant-XOXO-Coffee.png';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -214,17 +215,6 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '24:00',
     },
   },
-  '63523c45da13950007f71dd9': {
-    id: '63523c45da13950007f71dd9',
-    title: 'XOXO Cafe',
-    imageNoCompression: XOXOImage,
-    tags: ['Cafe', 'Coffee', 'Comfort Food'],
-    businessHours: {
-      validTimeFrom: '10:00',
-      validTimeTo: '20:00',
-    },
-    unable: true,
-  },
   '63747d2aa07b6a0008108c24': {
     id: '63747d2aa07b6a0008108c24',
     title: 'Hope Coffee',
@@ -263,6 +253,26 @@ export const AllFoodCourtStoreList = {
     businessHours: {
       validTimeFrom: '10:00',
       validTimeTo: '21:00',
+    },
+  },
+  '6407ff9a85a8cd000847051b': {
+    id: '6407ff9a85a8cd000847051b',
+    imageNoCompression: ClassicBowlImage,
+    title: 'Classic Bowl',
+    tags: ['Rice Bowls', 'Asian'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '22:00',
+    },
+  },
+  '642e864d6530b60008775fcc': {
+    id: '642e864d6530b60008775fcc',
+    imageNoCompression: XOXOCoffeeImage,
+    title: 'XOXO Coffee',
+    tags: ['Fusion Food', 'Coffee', 'Cakes', 'Pastries'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '22:00',
     },
   },
   '61b93058cef3c900060ca990': {
