@@ -84,8 +84,6 @@ export const getCancelOrderRequestErrorMessage = createSelector(getCancelOrderEr
 
 export const getShowProfileVisibility = state => state.orderStatus.thankYou.profileModalVisibility;
 
-export const getShowProfileNativeModalVisibility = state => state.orderStatus.thankYou.profileNativeModalVisibility;
-
 export const getUpdateShippingTypeStatus = state => state.orderStatus.thankYou.updateShippingTypeStatus;
 
 export const getUpdateShippingTypeError = state => state.orderStatus.thankYou.updateShippingTypeError;
