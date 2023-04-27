@@ -24,11 +24,11 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
   });
 
   describe('action creators', () => {
-    it('resetOtpStatus', () => {
+    it('resetGetOtpRequest', () => {
       const expectedAction = {
-        type: types.RESET_OTP_STATUS,
+        type: types.RESET_GET_OTP_REQUEST,
       };
-      return expect(actions.resetOtpStatus()).toEqual(expectedAction);
+      return expect(actions.resetGetOtpRequest()).toEqual(expectedAction);
     });
 
     it('clearError', () => {
@@ -53,16 +53,6 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       return expect(actions.showMessageInfo()).toEqual(expectedAction);
     });
 
-    // not sure
-    // it('setCashbackMessage', () => {
-    //   const reqParams = { status: 'Claimed_FirstTime' };
-    //   const expectedAction = {
-    //     type: types.SET_CASHBACK_MESSAGE_SUCCESS,
-    //     status: reqParams.status,
-    //   };
-    //   return expect(actions.setCashbackMessage()).toEqual(expectedAction);
-    // });
-
     it('hideMessageInfo', () => {
       const expectedAction = { type: types.HIDE_MESSAGE_MODAL };
       return expect(actions.hideMessageInfo()).toEqual(expectedAction);
@@ -79,62 +69,28 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
   });
 
   describe('Async Action Creators', () => {
-    describe('loginApp', () => {
-      const reqParams = { accessToken: 'mockAccessToken', refreshToken: 'mockRefreshToken' };
+    describe('getOtp', () => {
+      const reqParams = { phone: '18766668888', otpType: 'otp' };
       it(':Success', () => {
         successMockFetch();
         const expectedActions = [
-          {
-            type: types.CREATE_LOGIN_REQUEST,
-          },
-          {
-            type: types.CREATE_LOGIN_SUCCESS,
-            response: commonSuccessData,
-          },
-        ];
-        return expectedActionsCheck(actions.loginApp(reqParams), expectedActions);
-      });
-      it(':Fail', () => {
-        failMockFetch();
-        const expectedActions = [
-          {
-            type: types.CREATE_LOGIN_REQUEST,
-          },
-          {
-            type: types.CREATE_LOGIN_FAILURE,
-            error: new RequestError(mockErrorMsg, mockErrorCode),
-          },
-        ];
-        return expectedActionsCheck(actions.loginApp(reqParams), expectedActions);
-      });
-    });
-
-    describe('getOpt', () => {
-      const reqParams = { phone: '18766668888' };
-      it(':Success', () => {
-        successMockFetch();
-        const expectedActions = [
-          { type: types.GET_OTP_REQUEST },
+          { type: types.GET_OTP_REQUEST, payload: { otpType: reqParams.otp } },
           {
             type: types.GET_OTP_SUCCESS,
-            response: commonSuccessData,
-            params: {
-              grant_type: 'otp',
-              client: 'beep',
-              business_name: null,
-              username: reqParams.phone,
-            },
           },
         ];
         return expectedActionsCheck(actions.getOtp(reqParams), expectedActions);
       });
       it(':Fail', () => {
         failMockFetch();
-        const expectedAtions = [
-          { type: types.GET_OTP_REQUEST },
-          { type: types.GET_OTP_FAILURE, code: mockErrorCode, message: mockErrorMsg },
+        const expectedActions = [
+          {
+            type: types.GET_OTP_REQUEST,
+            payload: { otpType: reqParams.otp },
+          },
+          { type: types.GET_OTP_FAILURE, error: new Error(mockErrorMsg) },
         ];
-        return expectedActionsCheck(actions.getOtp(reqParams), expectedAtions);
+        return expectedActionsCheck(actions.getOtp(reqParams), expectedActions);
       });
     });
 

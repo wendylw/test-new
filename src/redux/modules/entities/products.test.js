@@ -13,6 +13,7 @@ describe('src/redux/modules/entities/products.js:reducers', () => {
     };
     const expectedState = {
       '5de720aee872af6ab28a6ca3': {
+        _exists: true,
         _needMore: 2,
         displayPrice: 25,
         id: '5de720aee872af6ab28a6ca3',
@@ -45,6 +46,7 @@ describe('src/redux/modules/entities/products.js:reducers', () => {
         ],
       },
       '5de72ec75234055a77249c19': {
+        _exists: true,
         _needMore: 1,
         displayPrice: 22,
         id: '5de72ec75234055a77249c19',
@@ -68,6 +70,7 @@ describe('src/redux/modules/entities/products.js:reducers', () => {
         ],
       },
       '5de7304b5234055a7724a4e1': {
+        _exists: true,
         _needMore: 0,
         displayPrice: 15,
         id: '5de7304b5234055a7724a4e1',
@@ -81,6 +84,7 @@ describe('src/redux/modules/entities/products.js:reducers', () => {
         variations: [],
       },
       '5e12b3f2ed43e34e37874636': {
+        _exists: true,
         _needMore: 1,
         displayPrice: 40,
         id: '5e12b3f2ed43e34e37874636',
@@ -102,6 +106,7 @@ describe('src/redux/modules/entities/products.js:reducers', () => {
         ],
       },
       '5e12bd73ed43e34e37874640': {
+        _exists: true,
         _needMore: 1,
         displayPrice: 20,
         id: '5e12bd73ed43e34e37874640',
@@ -143,6 +148,7 @@ describe('src/redux/modules/entities/products.js:reducers', () => {
       '5e12b3f2ed43e34e37874636': {
         id: '5e12b3f2ed43e34e37874636',
         title: 'test',
+        _exists: false,
       },
     };
     it('state is initial', () => {
@@ -160,6 +166,7 @@ describe('src/redux/modules/entities/products.js:reducers', () => {
           id: '5e12b3f2ed43e34e37874636',
           title: 'test',
           _needMore: false,
+          _exists: false,
         },
       });
     });
