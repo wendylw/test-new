@@ -153,8 +153,6 @@ export const hideProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/
 export const callNativeProfile = createAsyncThunk('ordering/profile/callNativeProfile', async () => {
   try {
     await NativeMethods.showCompleteProfilePageAsync();
-
-    return true;
   } catch (error) {
     logger.error('Ordering_OrderStatus_CallNativeProfileFailed', { message: error?.message });
 
