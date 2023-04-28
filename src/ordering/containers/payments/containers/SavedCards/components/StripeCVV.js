@@ -20,7 +20,8 @@ const CVVInput = React.forwardRef((props, ref) => {
         setErrorMessage(_get(result, 'error.message', null));
         return result;
       } catch (error) {
-        console.error(error);
+        console.error('Ordering StripeCVV getCvcToken:', error?.message || '');
+
         setErrorMessage(error.message);
         return null;
       }

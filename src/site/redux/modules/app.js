@@ -67,7 +67,7 @@ const actions = {
       });
     } catch (e) {
       // TODO: prompt user login failed
-      console.error(e);
+      console.error(`Fail to login Tng Mini Program: ${e.message || ''}`);
 
       dispatch({
         type: types.LOGIN_FAILURE,

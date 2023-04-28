@@ -5,6 +5,7 @@ export const soldoutProduct = {
   trackInventory: false,
   images: [],
   markedSoldOut: true,
+  stockStatus: 'outOfStock',
   variations: [
     {
       id: '5dce47f14817843f761aec89',
@@ -44,6 +45,7 @@ export const soldingProduct = {
     'https://d16kpilgrxu9w6.cloudfront.net/caipinfang/product/5de720aee872af6ab28a6ca3/eec6ee3e-35db-40f8-9d09-305d05c547fc',
   ],
   markedSoldOut: false,
+  stockStatus: 'inStock',
   variations: [
     {
       id: '5de720aee872af6ab28a6ca4',

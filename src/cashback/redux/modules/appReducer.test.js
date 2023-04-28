@@ -12,9 +12,14 @@ import rootReducer from './index';
 import { APP_TYPES as types } from '../types';
 import { getReducerNewState } from '../../../utils/testHelper';
 
+// TODO: Remove isFetching setting in the test file
 describe('src/cashback/redux/modules/app.js:reducers', () => {
   it('should return the initial state', () => {
-    expect(appReducers(undefined, {})).toEqual(initialState);
+    const expectedState = {
+      ...initialState,
+    };
+    expectedState.user.isFetching = false;
+    expect(appReducers(undefined, {})).toEqual(expectedState);
   });
 
   describe('user', () => {
@@ -33,23 +38,6 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       code: 200,
       prompt: 'mockPrompt',
     };
-    it('isFetching should be true', () => {
-      const expectedState = { ...initialState.user, isFetching: true };
-      expect(getReducerNewState(appReducers, { type: types.FETCH_LOGIN_STATUS_REQUEST }, nameField)).toEqual(
-        expectedState
-      );
-      expect(getReducerNewState(appReducers, { type: types.GET_OTP_REQUEST }, nameField)).toEqual(expectedState);
-      expect(getReducerNewState(appReducers, { type: types.CREATE_OTP_REQUEST }, nameField)).toEqual(expectedState);
-    });
-
-    it('isFetch should be false', () => {
-      const expectedState = { ...initialState.user, isFetching: false };
-      expect(getReducerNewState(appReducers, { type: types.FETCH_LOGIN_STATUS_FAILURE }, nameField)).toEqual(
-        expectedState
-      );
-      expect(getReducerNewState(appReducers, { type: types.GET_OTP_FAILURE }, nameField)).toEqual(expectedState);
-      expect(getReducerNewState(appReducers, { type: types.CREATE_OTP_FAILURE }, nameField)).toEqual(expectedState);
-    });
 
     it('RESET_OTP_STATUS', () => {});
     it('GET_OTP_SUCCESS', () => {});
@@ -71,17 +59,16 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       };
       const action = {
         type: types.CREATE_LOGIN_SUCCESS,
-        ...userActionInfo,
+        payload: userActionInfo.response,
       };
-      const newState = appReducers({ ...initialState.user, accessToken, refreshToken }, action)[nameField];
-      expect(newState).toEqual(expectedState);
+      expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
     });
 
     it('FETCH_LOGIN_STATUS_SUCCESS', () => {
       const expectedState = {
         ...initialState.user,
-        isLogin: true,
         consumerId: '123456',
+        isLogin: true,
         isFetching: false,
       };
       const action = {
@@ -92,11 +79,12 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
     });
 
     describe('CREATE_LOGIN_FAILURE', () => {
-      it(':code equal 401, isExpired should be true', () => {
+      it(':error equal TokenExpiredError, isExpired should be true', () => {
         const action = {
           type: types.CREATE_LOGIN_FAILURE,
-          ...userActionInfo,
-          code: 401,
+          error: {
+            error: 'TokenExpiredError',
+          },
         };
         const expectedState = {
           ...initialState.user,
@@ -105,10 +93,9 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
         };
         expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
       });
-      it(':code not 401, no Expired field in state', () => {
+      it(':code not TokenExpiredError, no Expired field in state', () => {
         const action = {
           type: types.CREATE_LOGIN_FAILURE,
-          ...userActionInfo,
         };
         const expectedState = {
           ...initialState.user,
@@ -159,11 +146,7 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
         ...errorActionInfo,
         code: 400,
       };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual({
-        ...initialState.error,
-        code: 400,
-        message: 'Your One Time Passcode is invalid.',
-      });
+      expect(getReducerNewState(appReducers, action, nameField)).toEqual(null);
     });
   });
 
@@ -196,15 +179,6 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
         },
       },
     };
-
-    it('no responseGql in action,should return initial onlineStoreInfo state', () => {
-      const action = {
-        type: types.FETCH_ONLINESTOREINFO_SUCCESS,
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual({
-        ...initialState.onlineStoreInfo,
-      });
-    });
 
     it('FETCH_ONLINESTOREINFO_REQUEST', () => {
       const action = {

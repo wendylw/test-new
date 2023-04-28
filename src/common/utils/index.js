@@ -1,7 +1,7 @@
 import qs from 'qs';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
-import { WEB_VIEW_SOURCE, SHIPPING_TYPES, PATH_NAME_MAPPING } from './constants';
+import { WEB_VIEW_SOURCE, SHIPPING_TYPES, PATH_NAME_MAPPING, CLIENTS } from './constants';
 // eslint-disable-next-line import/no-cycle
 import config from '../../config';
 
@@ -81,6 +81,22 @@ export const isSiteApp = (domain = window.location.hostname) => {
 // eslint-disable-next-line no-underscore-dangle
 export const isTNGMiniProgram = () => window._isTNGMiniProgram_;
 
+export const getClient = () => {
+  if (isTNGMiniProgram()) {
+    return CLIENTS.TNG_MINI_PROGRAM;
+  }
+
+  if (isAndroidWebview()) {
+    return CLIENTS.ANDROID;
+  }
+
+  if (isIOSWebview()) {
+    return CLIENTS.IOS;
+  }
+
+  return CLIENTS.WEB;
+};
+
 export const getExpectedDeliveryDateFromSession = () => {
   const selectedDate = JSON.parse(getSessionVariable('expectedDeliveryDate') || '{}');
   const selectedHour = JSON.parse(getSessionVariable('expectedDeliveryHour') || '{}');
@@ -145,7 +161,8 @@ export const isFromBeepSite = () => {
 
     return isSiteApp(hostname);
   } catch (error) {
-    console.error(error);
+    console.error('Common Utils isFromBeepSite:', error?.message || '');
+
     return false;
   }
 };
@@ -161,7 +178,8 @@ export const isFromBeepSiteOrderHistory = () => {
 
     return pathname === PATH_NAME_MAPPING.ORDER_HISTORY;
   } catch (error) {
-    console.error(error);
+    console.error('Common Utils isFromBeepSiteOrderHistory:', error?.message || '');
+
     return false;
   }
 };
@@ -178,7 +196,8 @@ export const isFromFoodCourt = () => {
 
     return pathname === `${ORDERING_BASE}${FOOD_COURT}`;
   } catch (error) {
-    console.error(error);
+    console.error('Common Utils isFromFoodCourt:', error?.message || '');
+
     return false;
   }
 };

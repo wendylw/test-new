@@ -37,7 +37,7 @@ export const callMessagePortal = async (method, data) => {
   } catch (error) {
     debug('[TNG utils] call fail method: %s\n parameter: %o\n error: %o', method, data, error);
     // eslint-disable-next-line no-console
-    console.error(error);
+    console.error('TNG Utils callMessagePortal:', error?.message || '');
     throw error;
   }
 };
