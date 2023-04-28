@@ -20,7 +20,6 @@ import {
 } from '../../../../../redux/modules/app';
 import { getOrder } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
-import { getShowProfileVisibility, getShowProfileNativeModalVisibility } from './selector';
 import logger from '../../../../../../utils/monitoring/logger';
 
 export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/fetchCashbackInfo', async orderId => {
@@ -185,7 +184,6 @@ export const initProfilePage = createAsyncThunk(
       const { name, email, birthday } = profile || {};
       const isProfileInfoIncomplete = !name || !email || !birthday;
       const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoIncomplete && userIsLogin;
-      const profileModalVisibility = getShowProfileVisibility(getState());
 
       if (isProfileModalShown) {
         if (isWebview) {
@@ -194,11 +192,9 @@ export const initProfilePage = createAsyncThunk(
           return;
         }
 
-        if (!profileModalVisibility) {
-          setTimeout(() => {
-            dispatch(showProfileModal());
-          }, delay);
-        }
+        setTimeout(() => {
+          dispatch(showProfileModal());
+        }, delay);
       }
     } catch (error) {
       logger.error('Ordering_OrderStatus_InitProfileFailed', { message: error?.message });
