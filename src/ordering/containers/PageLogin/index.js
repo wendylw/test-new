@@ -11,8 +11,10 @@ import PageLoader from '../../../components/PageLoader';
 import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import ApiFetchError from '../../../utils/api/api-fetch-error';
 import { actions as appActionCreators, getUser, getIsLoginRequestFailed } from '../../redux/modules/app';
 import {
+  getOtpRequestError,
   getShouldShowLoader,
   getOtpErrorTextI18nKey,
   getShouldShowErrorPopUp,
@@ -152,7 +154,7 @@ class PageLogin extends React.Component {
   async handleGetOtpCode(payload) {
     await this.props.appActions.getOtp(payload);
 
-    const { t, isOtpRequestFailed, shouldShowErrorPopUp, errorPopUpI18nKeys } = this.props;
+    const { t, isOtpRequestFailed, otpError, shouldShowErrorPopUp, errorPopUpI18nKeys } = this.props;
 
     if (!isOtpRequestFailed) return;
 
@@ -162,7 +164,7 @@ class PageLogin extends React.Component {
       alert(t(descriptionKey), { title: t(titleKey), closeButtonClassName: 'button__block text-uppercase' });
     }
 
-    throw new Error('Failed to get OTP code');
+    throw new ApiFetchError('Failed to get OTP code', { ...otpError });
   }
 
   async handleClickContinueButton(phone, type) {
@@ -193,6 +195,7 @@ class PageLogin extends React.Component {
             flow: KEY_EVENTS_FLOWS.LOGIN,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
           },
+          errorCategory: e?.name,
         }
       );
     }
@@ -227,6 +230,7 @@ class PageLogin extends React.Component {
             flow: KEY_EVENTS_FLOWS.LOGIN,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
           },
+          errorCategory: e?.name,
         }
       );
     }
@@ -464,6 +468,7 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
+      otpError: getOtpRequestError(state),
       shouldShowLoader: getShouldShowLoader(state),
       errorTextI18nKey: getOtpErrorTextI18nKey(state),
       errorPopUpI18nKeys: getOtpErrorPopUpI18nKeys(state),

@@ -1,6 +1,7 @@
 class ApiFetchError extends Error {
   constructor(message, { category, code, status, extra }) {
     super(message || '');
+    this.name = category;
 
     if (category) {
       this.category = category;

@@ -19,6 +19,7 @@ import {
 import { getPayLaterOrderModifiedTime as getOrderModifiedTime } from '../../../redux/selector';
 import { gotoPayment as initPayment, loadBilling } from '../../../../payments/redux/common/thunks';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../../utils/monitoring/constants';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
 
@@ -75,7 +76,7 @@ export const clearQueryOrdersAndStatus = () => () => {
 
 export const payByCoupons = createAsyncThunk(
   'ordering/orderStatus/tableSummary/payByCoupons',
-  async (_, { dispatch, getState, rejectWithValue }) => {
+  async (_, { dispatch, getState }) => {
     const state = getState();
     const receiptNumber = getOrderReceiptNumber(state);
     const cashback = getOrderCashback(state);
@@ -91,15 +92,13 @@ export const payByCoupons = createAsyncThunk(
       voucherCode,
     };
 
-    await dispatch(showProcessingLoader());
-    const res = await dispatch(submitOrder({ receiptNumber, data }));
-    console.log('payByCoupons', res);
-    if (res.error?.message === 'Rejected') {
+    try {
+      await dispatch(showProcessingLoader());
+      await dispatch(submitOrder({ receiptNumber, data })).unwrap();
+    } catch (error) {
       await dispatch(hideProcessingLoader());
-      return rejectWithValue(res.payload);
+      throw error;
     }
-    return res;
-    // await dispatch(submitOrder({ receiptNumber, data })).unwrap()
   }
 );
 
@@ -139,12 +138,7 @@ export const gotoPayment = createAsyncThunk(
     try {
       // Special case for free charge
       if (total === 0) {
-        const payByCouponsRes = await dispatch(payByCoupons());
-        console.log('payByCouponsRes', payByCouponsRes);
-        if (payByCouponsRes.error?.message === 'Rejected') {
-          throw payByCouponsRes.payload;
-        }
-        // await dispatch(payByCoupons()).unwrap();
+        await dispatch(payByCoupons()).unwrap();
         return;
       }
 
@@ -160,11 +154,20 @@ export const gotoPayment = createAsyncThunk(
       const search = getLocationSearch(state);
       dispatch(push(`${PATH_NAME_MAPPING.ORDERING_PAYMENT}${search}`));
     } catch (error) {
-      console.error('gotoPayment', error);
-      logger.error('Ordering_TableSummary_GoToPaymentFailed', {
-        message: error?.message,
-        id: receiptNumber,
-      });
+      logger.error(
+        'Ordering_TableSummary_GoToPaymentFailed',
+        {
+          message: error?.message,
+          id: receiptNumber,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+          errorCategory: error?.name,
+        }
+      );
       throw error;
     }
   }
