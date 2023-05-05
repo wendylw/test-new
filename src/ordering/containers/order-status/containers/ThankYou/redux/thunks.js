@@ -155,10 +155,10 @@ export const callNativeProfile = createAsyncThunk(
   'ordering/profile/callNativeProfile',
   async (_, { dispatch, getState }) => {
     try {
-      const result = await NativeMethods.showCompleteProfilePageAsync();
-      const user = getUser(getState());
-      const { consumerId } = user || {};
-      if (result?.fulfilled) {
+      const { fulfilled } = await NativeMethods.showCompleteProfilePageAsync();
+
+      if (fulfilled) {
+        const consumerId = getUserConsumerId(getState());
         dispatch(appActions.loadProfileInfo(consumerId));
       }
     } catch (error) {
