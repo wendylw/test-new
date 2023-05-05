@@ -12,6 +12,7 @@ import { PROFILE_DISPLAY_DELAY_DURATION } from '../constants';
 import {
   actions as appActions,
   getBusinessInfo,
+  getUser,
   getUserIsLogin,
   getUserConsumerId,
   getIsUserProfileStatusFulfilled,
@@ -150,15 +151,23 @@ export const showProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/
 
 export const hideProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/hideProfileModal', async () => {});
 
-export const callNativeProfile = createAsyncThunk('ordering/profile/callNativeProfile', async () => {
-  try {
-    await NativeMethods.showCompleteProfilePageAsync();
-  } catch (error) {
-    logger.error('Ordering_OrderStatus_CallNativeProfileFailed', { message: error?.message });
+export const callNativeProfile = createAsyncThunk(
+  'ordering/profile/callNativeProfile',
+  async (_, { dispatch, getState }) => {
+    try {
+      const result = await NativeMethods.showCompleteProfilePageAsync();
+      const user = getUser(getState());
+      const { consumerId } = user || {};
+      if (result?.fulfilled) {
+        dispatch(appActions.loadProfileInfo(consumerId));
+      }
+    } catch (error) {
+      logger.error('Ordering_OrderStatus_CallNativeProfileFailed', { message: error?.message });
 
-    throw error;
+      throw error;
+    }
   }
-});
+);
 
 export const initProfilePage = createAsyncThunk(
   'ordering/orderStatus/thankYou/loadProfilePageInfo',
