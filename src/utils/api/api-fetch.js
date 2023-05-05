@@ -95,11 +95,11 @@ async function _fetch(url, opts) {
       throw new ApiFetchError(error?.message, errorOptions);
     }
 
-    const { response } = error;
+    const { response, message: apiMessage } = error;
     const { status } = response;
     const errorBody = await parseResponse(response);
-    // TODO: errorBody is string??
-    const { message, code, extra } = errorBody || {};
+    const { message, code, extra } = typeof errorBody === 'object' && errorBody ? errorBody : {};
+    const errorMessage = code ? message : apiMessage;
     const errorOptions = {
       category: ERROR_TYPES.UNKNOWN_ERROR,
       code: code || '50000',
@@ -113,23 +113,14 @@ async function _fetch(url, opts) {
       errorOptions.category = ERROR_TYPES.SERVER_ERROR;
     }
 
-    if (typeof errorBody === 'object' && code) {
-      // Send log to Log service
-      windowDispatchEvent('sh-api-failure', url, opts, {
-        code: code.toString(),
-        error: message,
-        status: status,
-      });
-    } else {
-      // Send log to Log service
-      windowDispatchEvent('sh-api-failure', url, opts, {
-        code: '99999',
-        error: message,
-        status: status,
-      });
-    }
+    // Send log to Log service
+    windowDispatchEvent('sh-api-failure', url, opts, {
+      code: code ? code.toString() : '99999',
+      error: errorMessage,
+      status: status,
+    });
 
-    throw new ApiFetchError(message, errorOptions);
+    throw new ApiFetchError(errorMessage, errorOptions);
   }
 }
 
