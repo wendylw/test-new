@@ -94,6 +94,7 @@ const CartModel = {
     },
     applyCashback: false,
   },
+  errorCategory: null,
 };
 
 export const initialState = {
@@ -141,6 +142,7 @@ export const initialState = {
   },
   coreBusiness: {
     status: null,
+    errorCategory: null,
   },
   requestInfo: {
     tableId: config.table,
@@ -160,6 +162,7 @@ export const initialState = {
   },
   coreStores: {
     status: null,
+    errorCategory: null,
   },
   productDetail: {
     status: null,
@@ -1059,7 +1062,8 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
 };
 
 const coreBusiness = (state = initialState.coreBusiness, action) => {
-  const { type } = action;
+  const { type, category } = action;
+  console.log(' action', JSON.stringify(action));
 
   switch (type) {
     case types.RESET_COREBUSINESS_STATUS:
@@ -1069,7 +1073,7 @@ const coreBusiness = (state = initialState.coreBusiness, action) => {
     case types.FETCH_COREBUSINESS_SUCCESS:
       return { ...state, status: API_REQUEST_STATUS.FULFILLED };
     case types.FETCH_COREBUSINESS_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: category };
     default:
       return state;
   }
@@ -1082,7 +1086,7 @@ const coreStores = (state = initialState.coreStores, action) => {
     case types.FETCH_CORESTORES_SUCCESS:
       return { ...state, status: API_REQUEST_STATUS.FULFILLED };
     case types.FETCH_CORESTORES_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
     default:
       return state;
   }
@@ -1187,7 +1191,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       },
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
-    return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED };
+    return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
   } else if (action.type === types.UPDATE_SHOPPINGCART_APPLYCASHBACK) {
     return { ...state, billing: { ...state.billing, applyCashback: action.payload } };
   }
@@ -1328,6 +1332,8 @@ export const getOnlineStoreInfoStatus = state => state.app.onlineStoreInfo.statu
 
 export const getCoreStoresStatus = state => state.app.coreStores.status;
 
+export const getCoreStoresErrorCategory = state => state.app.coreStores.errorCategory;
+
 export const getOnlineCategoryStatus = state => state.app.onlineCategory.status;
 
 export const getIsOnlineCategoryRequestRejected = createSelector(
@@ -1383,6 +1389,8 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
 });
 
 export const getCoreBusinessAPIStatus = state => state.app.coreBusiness.status;
+
+export const getCoreBusinessAPIErrorCategory = state => state.app.coreBusiness.errorCategory;
 
 export const getIsCoreBusinessAPIPending = createSelector(
   getCoreBusinessAPIStatus,
@@ -1474,6 +1482,8 @@ export const getCartBilling = state => state.app.shoppingCart.billing;
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
 
 export const getCartStatus = state => state.app.shoppingCart.status;
+
+export const getCartErrorCategory = state => state.app.shoppingCart.errorCategory;
 
 export const getIsGetCartFailed = createSelector(
   getCartStatus,
