@@ -15,6 +15,7 @@ import {
   getFoodTagsForCleverTap,
   getIsProductDetailRequestRejected,
   getIsAddOrUpdateShoppingCartItemRejected,
+  getAddOrUpdateShoppingCartItemErrorCategory,
   getProductDetailErrorCategory,
 } from '../../../../redux/modules/app';
 import { updateCartItems } from '../../../../redux/cart/thunks';
@@ -407,7 +408,7 @@ export const addToCart = createAsyncThunk(
           })
         );
       } else {
-        const res = await dispatch(
+        await dispatch(
           appActions.addOrUpdateShoppingCartItem({
             action: 'add',
             business,
@@ -417,12 +418,14 @@ export const addToCart = createAsyncThunk(
             variations,
           })
         );
-        console.log('addOrUpdateShoppingCartItem', res);
 
         const isAddOrUpdateShoppingCartItemRejected = getIsAddOrUpdateShoppingCartItemRejected(getState());
 
         if (isAddOrUpdateShoppingCartItemRejected) {
-          throw new Error('Failed to add or update items to shopping cart');
+          const addOrUpdateShoppingCartItemErrorCategory = getAddOrUpdateShoppingCartItemErrorCategory(getState());
+          throw new ApiFetchError('Failed to add or update items to shopping cart', {
+            category: addOrUpdateShoppingCartItemErrorCategory,
+          });
         }
         await dispatch(appActions.loadShoppingCart());
       }
@@ -439,6 +442,7 @@ export const addToCart = createAsyncThunk(
             flow: KEY_EVENTS_FLOWS.SELECTION,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].ADD_TO_CART,
           },
+          errorCategory: error?.category,
         }
       );
       throw error;

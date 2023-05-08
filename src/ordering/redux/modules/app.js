@@ -152,6 +152,7 @@ export const initialState = {
   shoppingCart: CartModel,
   addOrUpdateShoppingCartItemRequest: {
     status: null,
+    errorCategory: null,
   },
   storeHashCode: {
     data: null,
@@ -1207,7 +1208,7 @@ const addOrUpdateShoppingCartItemRequest = (state = initialState.addOrUpdateShop
     case types.ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS:
       return { ...state, status: API_REQUEST_STATUS.FULFILLED };
     case types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
     default:
       return state;
   }
@@ -1891,6 +1892,9 @@ export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
 );
 
 export const getAddOrUpdateShoppingCartItemStatus = state => state.app.addOrUpdateShoppingCartItemRequest.status;
+
+export const getAddOrUpdateShoppingCartItemErrorCategory = state =>
+  state.app.addOrUpdateShoppingCartItemRequest.errorCategory;
 
 export const getIsAddOrUpdateShoppingCartItemRejected = createSelector(
   getAddOrUpdateShoppingCartItemStatus,
