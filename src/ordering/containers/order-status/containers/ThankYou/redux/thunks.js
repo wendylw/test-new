@@ -187,11 +187,9 @@ export const initProfilePage = createAsyncThunk(
         setTimeout(async () => {
           if (isWebview) {
             await dispatch(callNativeProfile());
-
-            return;
+          } else {
+            dispatch(showProfileModal());
           }
-
-          dispatch(showProfileModal());
         }, delay);
       }
     } catch (error) {
