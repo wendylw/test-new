@@ -28,7 +28,7 @@ class Routes extends Component {
             <Route exact path="/" component={Home} />
             <Route exact path="/claim" component={Claim} />
             <Route exact path="/activities" component={RecentActivities} />
-            <Route exact path="/redemption" component={Redemption} />
+            <Route exact path="/store-redemption" component={Redemption} />
             <Route exact path="/error" component={Error} />
             <Route path={'*'} component={NotFound} />
           </Switch>
