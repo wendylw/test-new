@@ -160,7 +160,7 @@ export class ThankYou extends PureComponent {
       const { from } = this.state;
       const isInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, hasOrderPaid);
 
-      if (isInitProfilePageEnabled) {
+      if (true) {
         await initProfilePage({ from });
       }
     });

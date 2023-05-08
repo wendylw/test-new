@@ -162,6 +162,7 @@ export const callNativeProfile = createAsyncThunk(
         dispatch(appActions.loadProfileInfo(consumerId));
       }
     } catch (error) {
+      alert(JSON.stringify(error), { title: 'callNativeProfile' });
       logger.error('Ordering_OrderStatus_CallNativeProfileFailed', { message: error?.message });
 
       throw error;
@@ -192,9 +193,9 @@ export const initProfilePage = createAsyncThunk(
       const isProfileInfoIncomplete = !name || !email || !birthday;
       const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoIncomplete && userIsLogin;
 
-      if (isProfileModalShown) {
+      if (true) {
         if (isWebview) {
-          // await dispatch(callNativeProfile());
+          await dispatch(callNativeProfile());
 
           return;
         }
