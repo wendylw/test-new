@@ -155,9 +155,10 @@ export const callNativeProfile = createAsyncThunk(
   'ordering/profile/callNativeProfile',
   async (_, { dispatch, getState }) => {
     try {
-      const { fulfilled } = await NativeMethods.showCompleteProfilePageAsync();
+      const res = await NativeMethods.showCompleteProfilePageAsync();
+      console.log('callNativeProfile', res);
 
-      if (fulfilled) {
+      if (res.fulfilled) {
         const consumerId = getUserConsumerId(getState());
         dispatch(appActions.loadProfileInfo(consumerId));
       }
@@ -193,6 +194,7 @@ export const initProfilePage = createAsyncThunk(
       const isProfileInfoIncomplete = !name || !email || !birthday;
       const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoIncomplete && userIsLogin;
 
+      console.log('isWebview', isWebview);
       if (true) {
         if (isWebview) {
           await dispatch(callNativeProfile());
