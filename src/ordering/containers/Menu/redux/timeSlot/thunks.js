@@ -8,7 +8,9 @@ import {
   getStoreSupportShippingTypes,
   getStoreInfoForCleverTap,
   getIsGetCartFailed,
+  getCartErrorCategory,
   getIsOnlineCategoryRequestRejected,
+  getOnlineCategoryErrorCategory,
 } from '../../../../redux/modules/app';
 import {
   getBusinessTimeZoneCurrentDayjs,
@@ -26,6 +28,7 @@ import Clevertap from '../../../../../utils/clevertap';
 import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
 import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
+import ApiFetchError from '../../../../../utils/api/api-fetch-error';
 
 export const loadTimeSlotSoldData = createAsyncThunk(
   'ordering/menu/timeSlot/loadTimeSlotSoldData',
@@ -244,13 +247,15 @@ export const timeSlotSelected = createAsyncThunk(
         const isGetCartFailed = getIsGetCartFailed(getState());
 
         if (isGetCartFailed) {
-          throw new Error('Failed to load shopping cart');
+          const cartErrorCategory = getCartErrorCategory(getState());
+          throw new ApiFetchError('Failed to load shopping cart', { category: cartErrorCategory });
         }
 
         const isOnlineCategoryRequestFailed = getIsOnlineCategoryRequestRejected(getState());
 
         if (isOnlineCategoryRequestFailed) {
-          throw new Error('Failed to reload product list');
+          const onlineCategoryErrorCategory = getOnlineCategoryErrorCategory(getState());
+          throw new ApiFetchError('Failed to reload product list', { category: onlineCategoryErrorCategory });
         }
       }
 
@@ -265,6 +270,7 @@ export const timeSlotSelected = createAsyncThunk(
             flow: KEY_EVENTS_FLOWS.SELECTION,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].SELECT_TIME_SLOT,
           },
+          errorCategory: error?.category,
         }
       );
       throw error;

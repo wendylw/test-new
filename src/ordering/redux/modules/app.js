@@ -160,6 +160,7 @@ export const initialState = {
   },
   onlineCategory: {
     status: null,
+    errorCategory: null,
   },
   coreStores: {
     status: null,
@@ -1057,7 +1058,7 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
     case types.FETCH_ONLINECATEGORY_SUCCESS:
       return { ...state, status: API_REQUEST_STATUS.FULFILLED };
     case types.FETCH_ONLINECATEGORY_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
     default:
       return state;
   }
@@ -1337,6 +1338,8 @@ export const getCoreStoresStatus = state => state.app.coreStores.status;
 export const getCoreStoresErrorCategory = state => state.app.coreStores.errorCategory;
 
 export const getOnlineCategoryStatus = state => state.app.onlineCategory.status;
+
+export const getOnlineCategoryErrorCategory = state => state.app.onlineCategory.errorCategory;
 
 export const getIsOnlineCategoryRequestRejected = createSelector(
   getOnlineCategoryStatus,
