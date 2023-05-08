@@ -20,7 +20,6 @@ import {
 } from '../../../../../redux/modules/app';
 import { getOrder } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
-import { getShowProfileVisibility, getShowProfileNativeModalVisibility } from './selector';
 import logger from '../../../../../../utils/monitoring/logger';
 
 export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/fetchCashbackInfo', async orderId => {
@@ -154,8 +153,6 @@ export const hideProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/
 export const callNativeProfile = createAsyncThunk('ordering/profile/callNativeProfile', async () => {
   try {
     await NativeMethods.showCompleteProfilePageAsync();
-
-    return true;
   } catch (error) {
     logger.error('Ordering_OrderStatus_CallNativeProfileFailed', { message: error?.message });
 
@@ -185,25 +182,17 @@ export const initProfilePage = createAsyncThunk(
       const { name, email, birthday } = profile || {};
       const isProfileInfoIncomplete = !name || !email || !birthday;
       const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoIncomplete && userIsLogin;
-      const profileNativeModalVisibility = getShowProfileNativeModalVisibility(getState());
-      const profileModalVisibility = getShowProfileVisibility(getState());
 
       if (isProfileModalShown) {
         if (isWebview) {
-          // WB-5109: The native profile page will not be called multiple times
-          // Subsequent modifications hope that the relevant data of the profile page will be processed by selectors to ensure that the display will only be triggered once
-          if (!profileNativeModalVisibility) {
-            await dispatch(callNativeProfile());
-          }
+          // await dispatch(callNativeProfile());
 
           return;
         }
 
-        if (!profileModalVisibility) {
-          setTimeout(() => {
-            dispatch(showProfileModal());
-          }, delay);
-        }
+        setTimeout(() => {
+          dispatch(showProfileModal());
+        }, delay);
       }
     } catch (error) {
       logger.error('Ordering_OrderStatus_InitProfileFailed', { message: error?.message });

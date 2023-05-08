@@ -28,7 +28,6 @@ const initialState = {
   cancelOrderStatus: null, // pending || fulfilled || rejected
   cancelOrderError: null,
   profileModalVisibility: false,
-  profileNativeModalVisibility: false,
   foodCourtInfo: {
     hashCode: null,
   },
@@ -108,12 +107,6 @@ const { reducer, actions } = createSlice({
     },
     [hideProfileModal.fulfilled.type]: state => {
       state.profileModalVisibility = false;
-    },
-    [callNativeProfile.fulfilled.type]: state => {
-      state.profileNativeModalVisibility = true;
-    },
-    [callNativeProfile.rejected.type]: state => {
-      state.profileNativeModalVisibility = false;
     },
   },
 });
