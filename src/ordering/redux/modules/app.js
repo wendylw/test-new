@@ -166,6 +166,7 @@ export const initialState = {
   },
   productDetail: {
     status: null,
+    errorCategory: null,
   },
   deliveryDetails: {
     username: '',
@@ -1099,7 +1100,7 @@ const productDetail = (state = initialState.productDetail, action) => {
     case types.FETCH_PRODUCTDETAIL_SUCCESS:
       return { ...state, status: API_REQUEST_STATUS.FULFILLED };
     case types.FETCH_PRODUCTDETAIL_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
     default:
       return state;
   }
@@ -1411,6 +1412,8 @@ export const getIsCoreBusinessAPICompleted = createSelector(getCoreBusinessAPISt
 );
 
 export const getProductDetailStatus = state => state.app.productDetail.status;
+
+export const getProductDetailErrorCategory = state => state.app.productDetail.errorCategory;
 
 export const getIsProductDetailRequestRejected = createSelector(
   getProductDetailStatus,
