@@ -37,6 +37,7 @@ export const loadStockStatus = createAsyncThunk('ordering/cart/common/fetchStock
           flow: KEY_EVENTS_FLOWS.CHECKOUT,
           step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SUBMIT_ORDER,
         },
+        errorCategory: e?.name,
       }
     );
 

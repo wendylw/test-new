@@ -383,7 +383,7 @@ const initializeForBeepQR = async ({ dispatch, getState }) => {
           flow: KEY_EVENTS_FLOWS.SELECTION,
           step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
         },
-        errorCategory: error?.category,
+        errorCategory: error?.name,
       }
     );
 
@@ -505,7 +505,7 @@ const initializeForBeepDelivery = async ({ dispatch, getState }) => {
           flow: KEY_EVENTS_FLOWS.SELECTION,
           step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
         },
-        errorCategory: error?.category,
+        errorCategory: error?.name,
       }
     );
 

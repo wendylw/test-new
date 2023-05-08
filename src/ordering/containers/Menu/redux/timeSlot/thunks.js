@@ -270,7 +270,7 @@ export const timeSlotSelected = createAsyncThunk(
             flow: KEY_EVENTS_FLOWS.SELECTION,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].SELECT_TIME_SLOT,
           },
-          errorCategory: error?.category,
+          errorCategory: error?.name,
         }
       );
       throw error;

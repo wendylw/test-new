@@ -178,7 +178,7 @@ export const showProductDetailDrawer = createAsyncThunk(
               step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
               flow: KEY_EVENTS_FLOWS.SELECTION,
             },
-            errorCategory: error?.category,
+            errorCategory: error?.name,
           }
         );
         console.error(error);
@@ -442,7 +442,7 @@ export const addToCart = createAsyncThunk(
             flow: KEY_EVENTS_FLOWS.SELECTION,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].ADD_TO_CART,
           },
-          errorCategory: error?.category,
+          errorCategory: error?.name,
         }
       );
       throw error;
