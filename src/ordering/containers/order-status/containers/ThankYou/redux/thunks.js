@@ -196,7 +196,7 @@ export const initProfilePage = createAsyncThunk(
 
       console.log('isWebview', isWebview);
       if (true) {
-        if (isWebview) {
+        if (true) {
           await dispatch(callNativeProfile());
 
           return;
