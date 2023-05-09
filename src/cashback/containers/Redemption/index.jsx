@@ -8,11 +8,9 @@ const Redemption = () => {
   return (
     <Frame>
       <StoreInfoBanner storeName={storeName} />
-      <ul>
-        <li>
-          <CashbackBlock />
-        </li>
-      </ul>
+      <section>
+        <CashbackBlock />
+      </section>
     </Frame>
   );
 };
