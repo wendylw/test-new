@@ -8,7 +8,9 @@ const RecentActivities = lazy(() =>
 );
 const Claim = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_CL" */ './Claim')));
 const Home = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_HM" */ './Home')));
-const Redemption = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_HM" */ './Redemption')));
+const StoreRedemption = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "CB_HM" */ './StoreRedemption'))
+);
 const Error = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_ERR" */ './Error')));
 
 class Routes extends Component {
@@ -28,7 +30,7 @@ class Routes extends Component {
             <Route exact path="/" component={Home} />
             <Route exact path="/claim" component={Claim} />
             <Route exact path="/activities" component={RecentActivities} />
-            <Route exact path="/store-redemption" component={Redemption} />
+            <Route exact path="/store-redemption" component={StoreRedemption} />
             <Route exact path="/error" component={Error} />
             <Route path={'*'} component={NotFound} />
           </Switch>

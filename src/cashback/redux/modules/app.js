@@ -17,7 +17,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { get } from '../../../utils/request';
 import { post } from '../../../utils/api/api-fetch';
-import { getProfileInfo } from './api-request';
+import { getConsumerLoginStatus, getProfileInfo } from './api-request';
 import { createSelector } from 'reselect';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -68,6 +68,9 @@ export const initialState = {
       birthdayChangeAllowed: false,
       status: null,
     },
+    loadConsumerLoginStatus: {
+      status: null,
+    },
   },
   error: null, // network error
   messageInfo: {
@@ -78,6 +81,7 @@ export const initialState = {
   business: config.business,
   onlineStoreInfo: {
     id: '',
+    logo: null,
     isFetching: false,
   },
   requestInfo: {
@@ -175,16 +179,14 @@ export const actions = {
     },
   }),
 
-  getLoginStatus: () => (dispatch, getState) => ({
-    types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
-    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(async resp => {
-      const { consumerId, login } = resp || {};
+  loadConsumerLoginStatus: () => async (dispatch, getState) => {
+    try {
+      dispatch({ type: types.FETCH_LOGIN_STATUS_REQUEST });
 
-      if (!login) {
-        return resp;
-      }
+      const result = await getConsumerLoginStatus();
+      const { consumerId, login } = result;
 
-      try {
+      if (login) {
         await dispatch(actions.loadProfileInfo(consumerId));
 
         const profile = getUserProfile(getState());
@@ -205,13 +207,21 @@ export const actions = {
         }
 
         CleverTap.onUserLogin(userInfo);
-
-        return resp;
-      } catch (error) {
-        logger.error('Cashback_App_getLoginStatus', { message: error?.message });
       }
-    }),
-  }),
+
+      dispatch({
+        type: types.FETCH_LOGIN_STATUS_SUCCESS,
+        response: result,
+      });
+    } catch (error) {
+      logger.error('Cash_initConsumerLoginStatusFailed', { message: error?.message });
+
+      dispatch({
+        type: types.types.FETCH_LOGIN_STATUS_FAILURE,
+        error,
+      });
+    }
+  },
 
   loadProfileInfo: consumerId => async dispatch => {
     try {
@@ -224,7 +234,7 @@ export const actions = {
         payload: result,
       });
     } catch (error) {
-      logger.error('Cash_LoadProfileInfoFailed', { message: error?.message });
+      logger.error('Cashback_LoadProfileInfoFailed', { message: error?.message });
 
       dispatch({
         type: types.types.LOAD_CONSUMER_PROFILE_REJECTED,
@@ -379,11 +389,23 @@ const user = (state = initialState.user, action) => {
         },
       };
     case types.FETCH_LOGIN_STATUS_REQUEST:
-      return { ...state, isFetching: true };
+      return {
+        ...state,
+        isFetching: true,
+        loadConsumerLoginStatus: {
+          status: API_REQUEST_STATUS.PENDING,
+        },
+      };
     case types.CREATE_OTP_REQUEST:
       return { ...state, isFetching: true, isError: false };
     case types.FETCH_LOGIN_STATUS_FAILURE:
-      return { ...state, isFetching: false };
+      return {
+        ...state,
+        isFetching: false,
+        loadConsumerLoginStatus: {
+          status: API_REQUEST_STATUS.REJECTED,
+        },
+      };
     case types.GET_OTP_FAILURE:
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
     case types.CREATE_OTP_FAILURE:
@@ -425,6 +447,9 @@ const user = (state = initialState.user, action) => {
         isLogin: login,
         consumerId,
         isFetching: false,
+        loadConsumerLoginStatus: {
+          status: API_REQUEST_STATUS.FULFILLED,
+        },
       };
     case types.CREATE_LOGIN_FAILURE:
       if (error?.error === 'TokenExpiredError' || error?.error === 'JsonWebTokenError') {
@@ -599,6 +624,29 @@ export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogi
 export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
 
 export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
+
+export const getLoadUserLoginStatus = createSelector(getUser, user =>
+  _get(user, 'loadConsumerLoginStatus.status', null)
+);
+
+export const getIsUserLoginStatusLoaded = createSelector(
+  getLoadUserLoginStatus,
+  loadUserLoginStatus => loadUserLoginStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsUserLoginStatusFailed = createSelector(
+  getLoadUserLoginStatus,
+  loadUserLoginStatus => loadUserLoginStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getIsDisplayLoginBanner = createSelector(
+  getUserIsLogin,
+  getIsUserLoginStatusLoaded,
+  getIsUserLoginStatusFailed,
+  getIsLoginRequestStatusPending,
+  (userIsLogin, isUserLoginStatusLoaded, isUserLoginStatusFailed, isLoginRequestStatusPending) =>
+    !userIsLogin && (isUserLoginStatusLoaded || isUserLoginStatusFailed || isLoginRequestStatusPending === false)
+);
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);
 

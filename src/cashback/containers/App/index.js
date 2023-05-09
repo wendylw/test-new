@@ -7,6 +7,7 @@ import {
   getMessageInfo,
   getError,
   getUser,
+  getIsDisplayLoginBanner,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
@@ -34,7 +35,7 @@ class App extends Component {
     const { appActions } = this.props;
 
     this.visitErrorPage();
-    await appActions.getLoginStatus();
+    await appActions.loadConsumerLoginStatus();
     await appActions.fetchOnlineStoreInfo();
     await appActions.fetchBusiness();
 
@@ -139,8 +140,8 @@ class App extends Component {
   };
 
   renderMainContent() {
-    const { user, error, onlineStoreInfo } = this.props;
-    const { isFetching, prompt, isLogin } = user || {};
+    const { user, error, onlineStoreInfo, isDisplayLoginBanner } = this.props;
+    const { prompt } = user || {};
     const { message } = error || {};
     const { favicon } = onlineStoreInfo || {};
 
@@ -148,7 +149,7 @@ class App extends Component {
       <main className="loyalty fixed-wrapper__main fixed-wrapper">
         {message ? <ErrorToast className="fixed" message={message} clearError={this.handleClearError} /> : null}
         <Message />
-        {!isFetching || !isLogin ? <Login className="aside fixed-wrapper" title={prompt} /> : null}
+        {isDisplayLoginBanner ? <Login className="aside fixed-wrapper" title={prompt} /> : null}
         <Routes />
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
@@ -175,6 +176,7 @@ App.displayName = 'CashbackApp';
 export default connect(
   state => ({
     user: getUser(state),
+    isDisplayLoginBanner: getIsDisplayLoginBanner(state),
     onlineStoreInfo: getOnlineStoreInfo(state),
     messageInfo: getMessageInfo(state),
     error: getError(state),
