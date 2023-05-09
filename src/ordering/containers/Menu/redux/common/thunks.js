@@ -592,6 +592,7 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
           flow: KEY_EVENTS_FLOWS.SELECTION,
           step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
         },
+        errorCategory: error?.category,
       }
     );
 
