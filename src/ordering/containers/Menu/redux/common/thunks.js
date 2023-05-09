@@ -66,7 +66,6 @@ import { getIfAddressInfoExists } from '../../../../../redux/modules/address/sel
 import { resetAddressListStatus } from '../../../../redux/modules/addressList/thunks';
 import { getStoreById } from '../../../../../redux/modules/entities/stores';
 import { STORE_OPENING_STATUS } from '../../constants';
-import { callNativeProfile } from '../../../order-status/containers/ThankYou/redux/thunks';
 
 const ensureTableId = state => {
   const tableId = getTableId(state);
@@ -522,7 +521,6 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
   const isBeepDelivery = getIsBeepDeliveryShippingType(state);
 
   try {
-    await dispatch(callNativeProfile());
     ensureShippingType();
 
     if (isBeepQR) {

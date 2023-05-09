@@ -156,7 +156,7 @@ export const callNativeProfile = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     try {
       const res = await NativeMethods.showCompleteProfilePageAsync();
-      console.log('callNativeProfile', res);
+      alert(JSON.stringify(res), { title: 'callNativeProfile' });
 
       if (res.fulfilled) {
         const consumerId = getUserConsumerId(getState());
