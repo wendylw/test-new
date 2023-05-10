@@ -362,11 +362,11 @@ export const actions = {
 const fetchCustomerProfile = consumerId => ({
   [API_REQUEST]: {
     types: [
-      types.FETCH_CUSTOMER_PROFILE_REQUEST,
-      types.FETCH_CUSTOMER_PROFILE_SUCCESS,
-      types.FETCH_CUSTOMER_PROFILE_FAILURE,
+      types.FETCH_CONSUMER_CUSTOMER_INFO_REQUEST,
+      types.FETCH_CONSUMER_CUSTOMER_INFO_SUCCESS,
+      types.FETCH_CONSUMER_CUSTOMER_INFO_FAILURE,
     ],
-    ...Url.API_URLS.GET_CUSTOMER_PROFILE(consumerId),
+    ...Url.API_URLS.GET_CUSTOMER_CUSTOMER_INFO(consumerId),
   },
 });
 
@@ -459,7 +459,7 @@ const user = (state = initialState.user, action) => {
       return { ...state, isFetching: false };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
-    case types.FETCH_CUSTOMER_PROFILE_SUCCESS:
+    case types.FETCH_CONSUMER_CUSTOMER_INFO_SUCCESS:
       const { storeCreditsBalance, customerId } = response || {};
 
       return { ...state, storeCreditsBalance, customerId };

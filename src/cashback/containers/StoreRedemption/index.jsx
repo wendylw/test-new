@@ -4,7 +4,7 @@ import CashbackBlock from './components/CashbackBlock';
 import styles from './StoreRedemption.module.scss';
 
 const StoreRedemption = () => (
-  <div className={styles.StoreRedemption}>
+  <div className={`${styles.StoreRedemption} flex`}>
     <RedemptionStoreInfo />
     <section>
       <CashbackBlock />

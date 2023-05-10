@@ -88,7 +88,7 @@ const API_URLS = {
     url: '/api/v3/otp/check-phone',
     method: 'post',
   },
-  GET_CUSTOMER_PROFILE: consumerId => ({
+  GET_CUSTOMER_CUSTOMER_INFO: consumerId => ({
     url: `/api/consumers/${consumerId}/customer`,
     method: 'get',
   }),
