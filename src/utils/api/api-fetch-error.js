@@ -3,21 +3,10 @@ class ApiFetchError extends Error {
     super(message || '');
     this.name = category || this.name;
 
-    if (category) {
-      this.category = category;
-    }
-
-    if (status || status === 0) {
-      this.status = status;
-    }
-
-    if (code) {
-      this.code = code;
-    }
-
-    if (extra) {
-      this.extra = extra;
-    }
+    this.category = category;
+    this.status = status;
+    this.code = code;
+    this.extra = extra;
   }
 }
 
