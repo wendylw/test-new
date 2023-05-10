@@ -1066,7 +1066,6 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
 
 const coreBusiness = (state = initialState.coreBusiness, action) => {
   const { type, category } = action;
-  console.log(' action', JSON.stringify(action));
 
   switch (type) {
     case types.RESET_COREBUSINESS_STATUS:
