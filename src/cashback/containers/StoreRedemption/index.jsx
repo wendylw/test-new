@@ -1,20 +1,27 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
 import { getUserStoreCashback } from '../../redux/modules/app';
 import { getStoreDisplayTitle } from './redux/selectors';
+import { mounted } from './redux/thunks';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
 import styles from './StoreRedemption.module.scss';
 
 const StoreRedemption = () => {
   const { t } = useTranslation('Cashback');
+  const dispatch = useDispatch;
   // get store display title, storeBrandName || onlineStoreName
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   // get is display store redemption content
   const userStoreCashback = getUserStoreCashback;
   const showStoreRedemptionAlert = true;
+
+  useMount(() => {
+    dispatch(mounted());
+  });
 
   useEffect(() => {
     if (showStoreRedemptionAlert) {
