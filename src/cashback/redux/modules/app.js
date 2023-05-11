@@ -377,7 +377,8 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response, responseGql, prompt, error, payload } = action || {};
-  const { login, consumerId, supportWhatsApp, storeCreditsBalance, customerId } = response || {};
+  const { login, consumerId, supportWhatsApp, storeCreditInfo, customerId } = response || {};
+  const { storeCreditsBalance } = storeCreditInfo || {};
   const otpType = _get(payload, 'otpType', null);
 
   switch (type) {
