@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { createSelector } from 'reselect';
 import _get from 'lodash/get';
 import _cloneDeep from 'lodash/cloneDeep';
 import Constants from '../../../utils/constants';
@@ -15,10 +16,9 @@ import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { get } from '../../../utils/request';
 import { post } from '../../../utils/api/api-fetch';
-import { getConsumerLoginStatus, getProfileInfo } from './api-request';
-import { createSelector } from 'reselect';
+import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo } from './api-request';
+import { setCookieVariable } from '../../../common/utils';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const {
@@ -287,14 +287,26 @@ export const actions = {
     prompt,
   }),
 
-  loadCustomerProfile: () => (dispatch, getState) => {
-    const { app } = getState();
+  loadCustomerProfile: () => async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const consumerId = getUserConsumerId(state);
 
-    if (app.user.consumerId) {
-      document.cookie = `consumerId=${app.user.consumerId}`;
+      dispatch({ type: types.FETCH_CONSUMER_CUSTOMER_INFO_REQUEST });
+
+      if (consumerId) {
+        setCookieVariable('consumerId', consumerId);
+      }
+
+      const result = await getConsumerCustomerInfo(consumerId || config.consumerId);
+
+      dispatch({
+        type: types.FETCH_CONSUMER_CUSTOMER_INFO_SUCCESS,
+        response: result,
+      });
+    } catch (error) {
+      dispatch({ type: types.FETCH_CONSUMER_CUSTOMER_INFO_FAILURE });
     }
-
-    return dispatch(fetchCustomerProfile(app.user.consumerId || config.consumerId));
   },
 
   fetchOnlineStoreInfo: () => ({
@@ -359,20 +371,9 @@ export const actions = {
   },
 };
 
-const fetchCustomerProfile = consumerId => ({
-  [API_REQUEST]: {
-    types: [
-      types.FETCH_CONSUMER_CUSTOMER_INFO_REQUEST,
-      types.FETCH_CONSUMER_CUSTOMER_INFO_SUCCESS,
-      types.FETCH_CONSUMER_CUSTOMER_INFO_FAILURE,
-    ],
-    ...Url.API_URLS.GET_CUSTOMER_CUSTOMER_INFO(consumerId),
-  },
-});
-
 const user = (state = initialState.user, action) => {
-  const { type, response, responseGql, prompt, error, payload } = action;
-  const { login, consumerId, supportWhatsApp } = response || {};
+  const { type, response, responseGql, prompt, error, payload } = action || {};
+  const { login, consumerId, supportWhatsApp, storeCreditsBalance, customerId } = response || {};
   const otpType = _get(payload, 'otpType', null);
 
   switch (type) {
@@ -432,11 +433,11 @@ const user = (state = initialState.user, action) => {
       };
     }
     case types.CREATE_LOGIN_SUCCESS: {
-      const { consumerId } = action.payload;
+      const { consumerId: loginConsumerId } = payload || {};
 
       return {
         ...state,
-        consumerId,
+        consumerId: loginConsumerId,
         isLogin: true,
         isFetching: false,
       };
@@ -460,8 +461,6 @@ const user = (state = initialState.user, action) => {
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
     case types.FETCH_CONSUMER_CUSTOMER_INFO_SUCCESS:
-      const { storeCreditsBalance, customerId } = response || {};
-
       return { ...state, storeCreditsBalance, customerId };
     case types.UPDATE_USER:
       return Object.assign({}, state, action.user);
@@ -487,8 +486,6 @@ const user = (state = initialState.user, action) => {
     case types.LOAD_CONSUMER_PROFILE_PENDING:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.PENDING } };
     case types.LOAD_CONSUMER_PROFILE_FULFILLED:
-      const { payload } = action || {};
-
       return {
         ...state,
         profile: {
@@ -605,13 +602,9 @@ export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
 export const getUserProfile = state => state.app.user.profile;
 export const getBusiness = state => state.app.business;
-export const getBusinessInfo = state => {
-  return getBusinessByName(state, state.app.business);
-};
+export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
 export const getError = state => state.app.error;
-export const getOnlineStoreInfo = state => {
-  return state.entities.onlineStores[state.app.onlineStoreInfo.id];
-};
+export const getOnlineStoreInfo = state => state.entities.onlineStores[state.app.onlineStoreInfo.id];
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageInfo = state => state.app.messageInfo;
 
@@ -620,6 +613,8 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
 );
 
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+
+export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', null));
 
 export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
 

@@ -88,10 +88,6 @@ const API_URLS = {
     url: '/api/v3/otp/check-phone',
     method: 'post',
   },
-  GET_CUSTOMER_CUSTOMER_INFO: consumerId => ({
-    url: `/api/consumers/${consumerId}/customer`,
-    method: 'get',
-  }),
   DELETE_CARTITEMS_BY_PRODUCTS: {
     url: '/api/cart/items',
     method: 'del',
