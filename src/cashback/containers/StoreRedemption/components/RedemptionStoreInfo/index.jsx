@@ -10,9 +10,15 @@ const RedemptionStoreInfo = () => {
   const storeLogo = useSelector(getStoreLogo);
   // get store display title, storeBrandName || onlineStoreName
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
+  // get is display store redemption content
+  const isDisplayStoreRedemptionContent = true;
 
   return (
-    <section className="tw-flex tw-column tw-items-center tw-justify-center tw-gap-y-12 sm:tw-gap-y-12px tw-px-16 sm:tw-px-16px tw-py-24 sm:tw-py-24px tw-bg-gray-200 tw-flex-1">
+    <section
+      className={`tw-flex ${
+        isDisplayStoreRedemptionContent ? styles.RedemptionStoreInfoContentExist : 'tw-flex-1'
+      } tw-flex-col tw-items-center tw-justify-center tw-flex-shrink-0 tw-gap-y-12 sm:tw-gap-y-12px tw-px-16 sm:tw-px-16px tw-py-24 sm:tw-py-24px tw-bg-gray-200`}
+    >
       <ObjectFitImage className="tw-rounded" src={storeLogo} />
       <h1
         className={`${styles.StoreRedemptionStoreName} tw-flex tw-items-center tw-text-xl tw-my-0 tw-leading-relaxed`}

@@ -68,10 +68,14 @@ export const initialState = {
       birthdayChangeAllowed: false,
       status: null,
     },
+    loadConsumerCustomer: {
+      status: null,
+    },
     loadConsumerLoginStatus: {
       status: null,
     },
   },
+  customerInfo: {},
   error: null, // network error
   messageInfo: {
     show: false,
@@ -460,8 +464,29 @@ const user = (state = initialState.user, action) => {
       return { ...state, isFetching: false };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
+    case types.FETCH_CONSUMER_CUSTOMER_INFO_REQUEST:
+      return {
+        ...state,
+        loadConsumerCustomer: {
+          status: API_REQUEST_STATUS.PENDING,
+        },
+      };
     case types.FETCH_CONSUMER_CUSTOMER_INFO_SUCCESS:
-      return { ...state, storeCreditsBalance, customerId };
+      return {
+        ...state,
+        storeCreditsBalance,
+        customerId,
+        loadConsumerCustomer: {
+          status: API_REQUEST_STATUS.FULFILLED,
+        },
+      };
+    case types.FETCH_CONSUMER_CUSTOMER_INFO_FAILURE:
+      return {
+        ...state,
+        loadConsumerCustomer: {
+          status: API_REQUEST_STATUS.REJECTED,
+        },
+      };
     case types.UPDATE_USER:
       return Object.assign({}, state, action.user);
     case types.FETCH_ONLINESTOREINFO_SUCCESS:
@@ -615,6 +640,8 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', null));
+
+export const getUserStoreCashback = createSelector(getUser, user => _get(user, 'storeCreditsBalance', 0));
 
 export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
 
