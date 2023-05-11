@@ -1,6 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from '@reduxjs/toolkit';
-import { getOnlineStoreInfo } from '../../../redux/modules/app';
+import { getOnlineStoreInfo, getUserStoreCashback } from '../../../redux/modules/app';
 
 /**
  *
@@ -27,3 +27,8 @@ export const getStoreDisplayTitle = createSelector(getOnlineStoreInfo, onlineSto
 
   return storeBrandName || onlineStoreName;
 });
+
+export const getIsDisplayStoreRedemptionContent = createSelector(
+  getUserStoreCashback,
+  userStoreCashback => userStoreCashback
+);
