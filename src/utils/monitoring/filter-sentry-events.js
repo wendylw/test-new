@@ -7,6 +7,13 @@ export const getErrorMessageFromHint = ({ originalException, syntheticException 
   return originalException?.message || syntheticException?.message || 'UnknownSentryErrorMessage';
 };
 
+export const getIsErrorExceptionValueFromEvent = (event, value) => {
+  const values = event.exception.values;
+  const exceptionValue = values.find(valueItem => valueItem.value === value);
+
+  return !!exceptionValue;
+};
+
 export const getErrorStacktraceFrames = event => {
   const values = event.exception.values;
   const frames = event.stacktrace?.frames || [];
@@ -250,10 +257,9 @@ const isDuplicateAlert = hint => {
 };
 
 // resizeObserver loop limit exceeded will not block page. refer: https://stackoverflow.com/a/50387233
-const isResizeObserverLoopLimitExceeded = hint => {
+const isResizeObserverLoopLimitExceeded = event => {
   try {
-    const message = getErrorMessageFromHint(hint);
-    return message.includes('ResizeObserver loop limit exceeded');
+    return getIsErrorExceptionValueFromEvent(event, 'ResizeObserver loop limit exceeded');
   } catch {
     return false;
   }
@@ -278,7 +284,7 @@ const shouldFilter = (event, hint) => {
       isOppoBrowserIssues(event, hint) ||
       isVivoAdblockProblem(event, hint) ||
       isDuplicateAlert(hint) ||
-      isResizeObserverLoopLimitExceeded(hint)
+      isResizeObserverLoopLimitExceeded(event)
     );
   } catch {
     return false;
