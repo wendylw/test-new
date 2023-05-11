@@ -113,8 +113,8 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       });
     });
 
-    it('FETCH_CONSUMER_CUSTOMER_INFO_SUCCESS', () => {
-      const action = { type: types.FETCH_CONSUMER_CUSTOMER_INFO_SUCCESS, ...userActionInfo };
+    it('LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED', () => {
+      const action = { type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED, ...userActionInfo };
       const expectedState = {
         ...initialState.user,
         customerId: '111111',

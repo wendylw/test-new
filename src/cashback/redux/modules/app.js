@@ -296,7 +296,7 @@ export const actions = {
       const state = getState();
       const consumerId = getUserConsumerId(state);
 
-      dispatch({ type: types.FETCH_CONSUMER_CUSTOMER_INFO_REQUEST });
+      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
 
       if (consumerId) {
         setCookieVariable('consumerId', consumerId);
@@ -305,11 +305,11 @@ export const actions = {
       const result = await getConsumerCustomerInfo(consumerId || config.consumerId);
 
       dispatch({
-        type: types.FETCH_CONSUMER_CUSTOMER_INFO_SUCCESS,
+        type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED,
         response: result,
       });
     } catch (error) {
-      dispatch({ type: types.FETCH_CONSUMER_CUSTOMER_INFO_FAILURE });
+      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED });
     }
   },
 
@@ -465,14 +465,14 @@ const user = (state = initialState.user, action) => {
       return { ...state, isFetching: false };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
-    case types.FETCH_CONSUMER_CUSTOMER_INFO_REQUEST:
+    case types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING:
       return {
         ...state,
         loadConsumerCustomer: {
           status: API_REQUEST_STATUS.PENDING,
         },
       };
-    case types.FETCH_CONSUMER_CUSTOMER_INFO_SUCCESS:
+    case types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED:
       return {
         ...state,
         storeCreditsBalance,
@@ -481,7 +481,7 @@ const user = (state = initialState.user, action) => {
           status: API_REQUEST_STATUS.FULFILLED,
         },
       };
-    case types.FETCH_CONSUMER_CUSTOMER_INFO_FAILURE:
+    case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
       return {
         ...state,
         loadConsumerCustomer: {
