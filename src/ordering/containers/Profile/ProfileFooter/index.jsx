@@ -37,23 +37,18 @@ const ProfileFooter = ({ onCloseProfile }) => {
     CleverTap.pushEvent('Complete profile page - Click continue');
 
     try {
-      const result = await dispatch(profileUpdated());
+      await dispatch(profileUpdated()).unwrap();
 
-      if (!result.error) {
-        toast.success(t('SaveSuccess'));
-        onCloseProfile();
-
+      toast.success(t('SaveSuccess'));
+      onCloseProfile();
+    } catch (error) {
+      if (error?.code === '40024') {
+        onConfirmDuplicatedEmailNextStep();
         return;
       }
 
-      if (result.error?.code === '40024') {
-        onConfirmDuplicatedEmailNextStep();
-      } else {
-        // 40002 is common error for verification failed. BE set this code as profile common error
-        alert(t('ApiError:40002Description'), { title: t('ApiError:40002Title', { error_code: '40002' }) });
-      }
-    } catch (error) {
-      logger.error('Ordering_OrderStatus_ProfileUpdatedFailed', { message: error?.message });
+      // 40002 is common error for verification failed. BE set this code as profile common error
+      alert(t('ApiError:40002Description'), { title: t('ApiError:40002Title', { error_code: '40002' }) });
     }
   };
 
