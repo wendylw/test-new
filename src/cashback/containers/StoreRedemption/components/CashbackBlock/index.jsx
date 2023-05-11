@@ -1,10 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import { getUserStoreCashback } from '../../../../redux/modules/app';
 import { Image } from '../../../../../common/components/Image';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
 import StoreRDMCashback from '../../../../../images/store-rdm-cashback.svg';
 
 const CashbackBlock = () => {
   const { t } = useTranslation('Cashback');
+  const userStoreCashback = useSelector(getUserStoreCashback);
 
   return (
     <div className="tw-bg-gray-50 tw-rounded-xl tw-shadow">
@@ -14,7 +18,7 @@ const CashbackBlock = () => {
       </h2>
       <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-p-16 sm:tw-p-16px">
         <h4 className="tw-my-2 sm:tw-my-2px tw-leading-loose">{t('StoreRedemptionCashbackDescription')}</h4>
-        <span className="tw-my-2 sm:tw-my-2px tw-text-3xl tw-font-bold">RM 10.45</span>
+        <CurrencyNumber className="tw-my-2 sm:tw-my-2px tw-text-3xl tw-font-bold" money={userStoreCashback} />
       </div>
     </div>
   );

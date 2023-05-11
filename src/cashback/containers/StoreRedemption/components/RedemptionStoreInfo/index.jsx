@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { ObjectFitImage } from '../../../../../common/components/Image';
 import { getStoreLogo, getStoreDisplayTitle } from '../../redux/selectors';
-import '../../../../../common/styles/base.scss';
 import styles from './RedemptionStoreInfo.module.scss';
 
 const RedemptionStoreInfo = () => {
@@ -16,8 +15,8 @@ const RedemptionStoreInfo = () => {
   return (
     <section
       className={`tw-flex ${
-        isDisplayStoreRedemptionContent ? styles.RedemptionStoreInfoContentExist : 'tw-flex-1'
-      } tw-flex-col tw-items-center tw-justify-center tw-flex-shrink-0 tw-gap-y-12 sm:tw-gap-y-12px tw-px-16 sm:tw-px-16px tw-py-24 sm:tw-py-24px tw-bg-gray-200`}
+        isDisplayStoreRedemptionContent ? styles.StoreRedemptionContentExist : 'tw-flex-1'
+      } tw-flex-col tw-items-center tw-justify-center tw-flex-shrink-0 tw-gap-y-12 sm:tw-gap-y-12px tw-px-16 sm:tw-px-16px tw-pt-24 sm:tw-pt-24px tw-bg-gray-200`}
     >
       <ObjectFitImage className="tw-rounded" src={storeLogo} />
       <h1

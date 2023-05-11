@@ -8,20 +8,17 @@ import { getStoreDisplayTitle } from './redux/selectors';
 import { mounted } from './redux/thunks';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
+import '../../../common/styles/base.scss';
 import styles from './StoreRedemption.module.scss';
 
 const StoreRedemption = () => {
   const { t } = useTranslation('Cashback');
-  const dispatch = useDispatch;
+  const dispatch = useDispatch();
   // get store display title, storeBrandName || onlineStoreName
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   // get is display store redemption content
-  const userStoreCashback = getUserStoreCashback;
+  const userStoreCashback = useSelector(getUserStoreCashback);
   const showStoreRedemptionAlert = true;
-
-  useMount(() => {
-    dispatch(mounted());
-  });
 
   useEffect(() => {
     if (showStoreRedemptionAlert) {
@@ -37,6 +34,10 @@ const StoreRedemption = () => {
       );
     }
   }, [userStoreCashback, showStoreRedemptionAlert, storeDisplayTitle, t]);
+
+  useMount(async () => {
+    await dispatch(mounted());
+  });
 
   return (
     <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>
