@@ -158,8 +158,8 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       },
     };
 
-    it('FETCH_BUSINESS_SUCCESS', () => {
-      const action = { type: types.FETCH_BUSINESS_SUCCESS, ...businessActionInfo };
+    it('FETCH_CASHBACK_BUSINESS_SUCCESS', () => {
+      const action = { type: types.FETCH_CASHBACK_BUSINESS_SUCCESS, ...businessActionInfo };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual('beep');
     });
 

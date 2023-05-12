@@ -26,7 +26,7 @@ const reducer = (state = initialState, action) => {
       const { business } = data;
       return { ...state, [business.name]: transferBusinessStoreName(business), loaded: true };
     }
-  } else if (action.type === APP_TYPES.FETCH_BUSINESS_SUCCESS) {
+  } else if (action.type === APP_TYPES.FETCH_CASHBACK_BUSINESS_SUCCESS) {
     const { name } = action.response;
 
     return { ...state, [name]: action.response };

@@ -63,9 +63,9 @@ describe('src/redux/modules/entities/businesses.js:reducers', () => {
       expect(businessesReducers(initialState, action)).toEqual(initialState);
     });
   });
-  it('actionType:APP_TYPES.FETCH_BUSINESS_SUCCESS', () => {
+  it('actionType:APP_TYPES.FETCH_CASHBACK_BUSINESS_SUCCESS', () => {
     const action = {
-      type: APP_TYPES.FETCH_BUSINESS_SUCCESS,
+      type: APP_TYPES.FETCH_CASHBACK_BUSINESS_SUCCESS,
       response: {
         name: 'mockName',
         test: 'hello',

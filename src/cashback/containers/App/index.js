@@ -37,7 +37,7 @@ class App extends Component {
     this.visitErrorPage();
     await appActions.loadConsumerLoginStatus();
     await appActions.fetchOnlineStoreInfo();
-    await appActions.fetchBusiness();
+    await appActions.fetchCashbackBusiness();
 
     const { user } = this.props;
     const { isLogin } = user || {};

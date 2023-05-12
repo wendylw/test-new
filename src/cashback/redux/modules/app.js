@@ -324,9 +324,13 @@ export const actions = {
     },
   }),
 
-  fetchBusiness: () => ({
+  fetchCashbackBusiness: () => ({
     [API_REQUEST]: {
-      types: [types.FETCH_BUSINESS_REQUEST, types.FETCH_BUSINESS_SUCCESS, types.FETCH_BUSINESS_FAILURE],
+      types: [
+        types.FETCH_CASHBACK_BUSINESS_REQUEST,
+        types.FETCH_CASHBACK_BUSINESS_SUCCESS,
+        types.FETCH_CASHBACK_BUSINESS_FAILURE,
+      ],
       ...Url.API_URLS.GET_CASHBACK_BUSINESS,
       params: {
         storeId: config.storeId,
@@ -558,7 +562,7 @@ const business = (state = initialState.business, action) => {
   const { type, response } = action;
 
   switch (type) {
-    case types.FETCH_BUSINESS_SUCCESS:
+    case types.FETCH_CASHBACK_BUSINESS_SUCCESS:
       const { name } = response || {};
       return name;
     default:
