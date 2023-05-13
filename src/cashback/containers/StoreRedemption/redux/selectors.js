@@ -41,10 +41,22 @@ export const getStoreDisplayTitle = createSelector(getOnlineStoreInfo, onlineSto
 export const getIsDisplayStoreRedemptionContent = createSelector(
   getIsCoreBusinessLoaded,
   getIsLoadCoreBusinessFailed,
+  getIsConsumerCustomerLoaded,
+  getIsLoadConsumerCustomerFailed,
   getIsCoreBusinessEnableCashback,
   getUserStoreCashback,
-  (isCoreBusinessLoaded, isLoadCoreBusinessFailed, isCoreBusinessEnableCashback, userStoreCashback) =>
-    (isCoreBusinessLoaded || isLoadCoreBusinessFailed) && isCoreBusinessEnableCashback && userStoreCashback > 0
+  (
+    isCoreBusinessLoaded,
+    isLoadCoreBusinessFailed,
+    isConsumerCustomerLoaded,
+    isLoadConsumerCustomerFailed,
+    isCoreBusinessEnableCashback,
+    userStoreCashback
+  ) =>
+    (isCoreBusinessLoaded || isLoadCoreBusinessFailed) &&
+    (isConsumerCustomerLoaded || isLoadConsumerCustomerFailed) &&
+    isCoreBusinessEnableCashback &&
+    userStoreCashback > 0
 );
 
 export const getIsDisplayStoreRedemptionAlert = createSelector(
