@@ -4,7 +4,11 @@ import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
 import { getUserStoreCashback } from '../../redux/modules/app';
-import { getStoreDisplayTitle } from './redux/selectors';
+import {
+  getStoreDisplayTitle,
+  getIsDisplayStoreRedemptionContent,
+  getIsDisplayStoreRedemptionAlert,
+} from './redux/selectors';
 import { mounted } from './redux/thunks';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
@@ -17,11 +21,12 @@ const StoreRedemption = () => {
   // get store display title, storeBrandName || onlineStoreName
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   // get is display store redemption content
+  const isDisplayStoreRedemptionContent = useSelector(getIsDisplayStoreRedemptionContent);
   const userStoreCashback = useSelector(getUserStoreCashback);
-  const showStoreRedemptionAlert = true;
+  const isDisplayStoreRedemptionAlert = useSelector(getIsDisplayStoreRedemptionAlert);
 
   useEffect(() => {
-    if (showStoreRedemptionAlert) {
+    if (isDisplayStoreRedemptionAlert) {
       alert(
         <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
           {userStoreCashback > 0
@@ -33,7 +38,7 @@ const StoreRedemption = () => {
         }
       );
     }
-  }, [userStoreCashback, showStoreRedemptionAlert, storeDisplayTitle, t]);
+  }, [userStoreCashback, isDisplayStoreRedemptionAlert, storeDisplayTitle, t]);
 
   useMount(async () => {
     await dispatch(mounted());
@@ -42,9 +47,13 @@ const StoreRedemption = () => {
   return (
     <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>
       <RedemptionStoreInfo />
-      <section className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}>
-        <CashbackBlock />
-      </section>
+      {isDisplayStoreRedemptionContent ? (
+        <section
+          className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}
+        >
+          <CashbackBlock />
+        </section>
+      ) : null}
     </div>
   );
 };

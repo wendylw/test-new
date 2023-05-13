@@ -1,6 +1,16 @@
 import _get from 'lodash/get';
 import { createSelector } from '@reduxjs/toolkit';
-import { getOnlineStoreInfo, getUserStoreCashback } from '../../../redux/modules/app';
+import {
+  getOnlineStoreInfo,
+  getIsCoreBusinessLoaded,
+  getIsLoadCoreBusinessFailed,
+  getIsCoreBusinessEnableCashback,
+  getIsConsumerCustomerLoaded,
+  getIsLoadConsumerCustomerFailed,
+  getUserStoreCashback,
+  getIsOnlineStoreInfoLoaded,
+  getIsLoadOnlineStoreInfoFailed,
+} from '../../../redux/modules/app';
 
 /**
  *
@@ -29,6 +39,30 @@ export const getStoreDisplayTitle = createSelector(getOnlineStoreInfo, onlineSto
 });
 
 export const getIsDisplayStoreRedemptionContent = createSelector(
+  getIsCoreBusinessLoaded,
+  getIsLoadCoreBusinessFailed,
+  getIsCoreBusinessEnableCashback,
   getUserStoreCashback,
-  userStoreCashback => userStoreCashback
+  (isCoreBusinessLoaded, isLoadCoreBusinessFailed, isCoreBusinessEnableCashback, userStoreCashback) =>
+    (isCoreBusinessLoaded || isLoadCoreBusinessFailed) && isCoreBusinessEnableCashback && userStoreCashback > 0
+);
+
+export const getIsDisplayStoreRedemptionAlert = createSelector(
+  getIsOnlineStoreInfoLoaded,
+  getIsLoadOnlineStoreInfoFailed,
+  getIsCoreBusinessLoaded,
+  getIsLoadCoreBusinessFailed,
+  getIsConsumerCustomerLoaded,
+  getIsLoadConsumerCustomerFailed,
+  (
+    isOnlineStoreInfoLoaded,
+    isLoadOnlineStoreInfoFailed,
+    isCoreBusinessLoaded,
+    isLoadCoreBusinessFailed,
+    isConsumerCustomerLoaded,
+    isLoadConsumerCustomerFailed
+  ) =>
+    (isOnlineStoreInfoLoaded || isLoadOnlineStoreInfoFailed) &&
+    (isCoreBusinessLoaded || isLoadCoreBusinessFailed) &&
+    (isConsumerCustomerLoaded || isLoadConsumerCustomerFailed)
 );

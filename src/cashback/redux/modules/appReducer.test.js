@@ -180,9 +180,9 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       },
     };
 
-    it('FETCH_ONLINESTOREINFO_REQUEST', () => {
+    it('FETCH_ONLINE_STORE_INFO_REQUEST', () => {
       const action = {
-        type: types.FETCH_ONLINESTOREINFO_REQUEST,
+        type: types.FETCH_ONLINE_STORE_INFO_REQUEST,
         ...onlineStoreInfoActionInfo,
       };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual({
@@ -191,9 +191,9 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       });
     });
 
-    it('FETCH_ONLINESTOREINFO_SUCCESS', () => {
+    it('FETCH_ONLINE_STORE_INFO_SUCCESS', () => {
       const action = {
-        type: types.FETCH_ONLINESTOREINFO_SUCCESS,
+        type: types.FETCH_ONLINE_STORE_INFO_SUCCESS,
         ...onlineStoreInfoActionInfo,
       };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual({
@@ -203,9 +203,9 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       });
     });
 
-    it('FETCH_ONLINESTOREINFO_FAILURE', () => {
+    it('FETCH_ONLINE_STORE_INFO_FAILURE', () => {
       const action = {
-        type: types.FETCH_ONLINESTOREINFO_FAILURE,
+        type: types.FETCH_ONLINE_STORE_INFO_FAILURE,
         ...onlineStoreInfoActionInfo,
       };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual({

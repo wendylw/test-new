@@ -68,12 +68,8 @@ export const initialState = {
       birthdayChangeAllowed: false,
       status: null,
     },
-    loadConsumerCustomer: {
-      status: null,
-    },
-    loadConsumerLoginStatus: {
-      status: null,
-    },
+    loadConsumerCustomerStatus: null,
+    loadConsumerIsLoginStatus: null,
   },
   customerInfo: {},
   error: null, // network error
@@ -87,6 +83,11 @@ export const initialState = {
     id: '',
     logo: null,
     isFetching: false,
+    loadOnlineStoreInfoStatus: null,
+  },
+  coreBusiness: {
+    enableCashback: true,
+    loadCoreBusinessStatus: null,
   },
   requestInfo: {
     tableId: config.table,
@@ -95,6 +96,14 @@ export const initialState = {
 };
 
 export const types = APP_TYPES;
+
+const fetchCoreBusiness = variables => ({
+  [FETCH_GRAPHQL]: {
+    types: [types.FETCH_CORE_BUSINESS_REQUEST, types.FETCH_CORE_BUSINESS_SUCCESS, types.FETCH_CORE_BUSINESS_FAILURE],
+    endpoint: Url.apiGql('CoreBusiness'),
+    variables,
+  },
+});
 
 //action creators
 export const actions = {
@@ -291,6 +300,12 @@ export const actions = {
     prompt,
   }),
 
+  loadCoreBusiness: () => async dispatch => {
+    const { business } = config;
+
+    await dispatch(fetchCoreBusiness({ business }));
+  },
+
   loadCustomerProfile: () => async (dispatch, getState) => {
     try {
       const state = getState();
@@ -316,9 +331,9 @@ export const actions = {
   fetchOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
       types: [
-        types.FETCH_ONLINESTOREINFO_REQUEST,
-        types.FETCH_ONLINESTOREINFO_SUCCESS,
-        types.FETCH_ONLINESTOREINFO_FAILURE,
+        types.FETCH_ONLINE_STORE_INFO_REQUEST,
+        types.FETCH_ONLINE_STORE_INFO_SUCCESS,
+        types.FETCH_ONLINE_STORE_INFO_FAILURE,
       ],
       endpoint: Url.apiGql('OnlineStoreInfo'),
     },
@@ -402,9 +417,7 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         isFetching: true,
-        loadConsumerLoginStatus: {
-          status: API_REQUEST_STATUS.PENDING,
-        },
+        loadConsumerIsLoginStatus: API_REQUEST_STATUS.PENDING,
       };
     case types.CREATE_OTP_REQUEST:
       return { ...state, isFetching: true, isError: false };
@@ -412,9 +425,7 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         isFetching: false,
-        loadConsumerLoginStatus: {
-          status: API_REQUEST_STATUS.REJECTED,
-        },
+        loadConsumerIsLoginStatus: API_REQUEST_STATUS.REJECTED,
       };
     case types.GET_OTP_FAILURE:
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
@@ -457,9 +468,7 @@ const user = (state = initialState.user, action) => {
         isLogin: login,
         consumerId,
         isFetching: false,
-        loadConsumerLoginStatus: {
-          status: API_REQUEST_STATUS.FULFILLED,
-        },
+        loadConsumerIsLoginStatus: API_REQUEST_STATUS.FULFILLED,
       };
     case types.CREATE_LOGIN_FAILURE:
       if (error?.error === 'TokenExpiredError' || error?.error === 'JsonWebTokenError') {
@@ -472,30 +481,24 @@ const user = (state = initialState.user, action) => {
     case types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING:
       return {
         ...state,
-        loadConsumerCustomer: {
-          status: API_REQUEST_STATUS.PENDING,
-        },
+        loadConsumerCustomerStatus: API_REQUEST_STATUS.PENDING,
       };
     case types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED:
       return {
         ...state,
         storeCreditsBalance,
         customerId,
-        loadConsumerCustomer: {
-          status: API_REQUEST_STATUS.FULFILLED,
-        },
+        loadConsumerCustomerStatus: API_REQUEST_STATUS.FULFILLED,
       };
     case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
       return {
         ...state,
-        loadConsumerCustomer: {
-          status: API_REQUEST_STATUS.REJECTED,
-        },
+        loadConsumerCustomerStatus: API_REQUEST_STATUS.REJECTED,
       };
     case types.UPDATE_USER:
       return Object.assign({}, state, action.user);
-    case types.FETCH_ONLINESTOREINFO_SUCCESS:
-    case types.FETCH_COREBUSINESS_SUCCESS:
+    case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
+    case types.FETCH_CORE_BUSINESS_SUCCESS:
       const { data } = responseGql;
       const { business, onlineStoreInfo } = data || {};
 
@@ -580,12 +583,33 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   }
 
   switch (type) {
-    case types.FETCH_ONLINESTOREINFO_REQUEST:
-      return { ...state, isFetching: true };
-    case types.FETCH_ONLINESTOREINFO_SUCCESS:
-      return { ...state, isFetching: false, id: onlineStoreInfo.id || '' };
-    case types.FETCH_ONLINESTOREINFO_FAILURE:
-      return { ...state, isFetching: false };
+    case types.FETCH_ONLINE_STORE_INFO_REQUEST:
+      return { ...state, isFetching: true, loadOnlineStoreInfoStatus: API_REQUEST_STATUS.PENDING };
+    case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        id: onlineStoreInfo.id || '',
+        loadOnlineStoreInfoStatus: API_REQUEST_STATUS.FULFILLED,
+      };
+    case types.FETCH_ONLINE_STORE_INFO_FAILURE:
+      return { ...state, isFetching: false, loadOnlineStoreInfoStatus: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
+};
+
+const coreBusiness = (state = initialState.coreBusiness, action) => {
+  const { type, responseGql } = action || {};
+  const enableCashback = _get(responseGql, 'data.business.enableCashback', false);
+
+  switch (type) {
+    case types.FETCH_CORE_BUSINESS_REQUEST:
+      return { ...state, loadCoreBusinessStatus: API_REQUEST_STATUS.PENDING };
+    case types.FETCH_CORE_BUSINESS_SUCCESS:
+      return { ...state, enableCashback, loadCoreBusinessStatus: API_REQUEST_STATUS.FULFILLED };
+    case types.FETCH_CORE_BUSINESS_FAILURE:
+      return { ...state, loadCoreBusinessStatus: API_REQUEST_STATUS.REJECTED };
     default:
       return state;
   }
@@ -624,6 +648,7 @@ export default combineReducers({
   messageInfo,
   business,
   onlineStoreInfo,
+  coreBusiness,
   requestInfo,
 });
 
@@ -635,16 +660,61 @@ export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
 export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => state.entities.onlineStores[state.app.onlineStoreInfo.id];
+export const getCoreBusiness = state => state.app.coreBusiness;
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageInfo = state => state.app.messageInfo;
+
+export const getLoadOnlineStoreInfoStatus = state => _get(state.app.onlineStoreInfo, 'loadOnlineStoreInfoStatus', null);
+
+export const getIsOnlineStoreInfoLoaded = createSelector(
+  getLoadOnlineStoreInfoStatus,
+  loadOnlineStoreInfoStatus => loadOnlineStoreInfoStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsLoadOnlineStoreInfoFailed = createSelector(
+  getLoadOnlineStoreInfoStatus,
+  loadOnlineStoreInfoStatus => loadOnlineStoreInfoStatus === API_REQUEST_STATUS.REJECTED
+);
 
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'timezoneOffset', 480)
 );
 
+export const getLoadCoreBusinessStatus = createSelector(getCoreBusiness, coreBusiness =>
+  _get(coreBusiness, 'loadCoreBusinessStatus', null)
+);
+
+export const getIsCoreBusinessLoaded = createSelector(
+  getLoadCoreBusinessStatus,
+  loadCoreBusinessStatus => loadCoreBusinessStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsLoadCoreBusinessFailed = createSelector(
+  getLoadCoreBusinessStatus,
+  loadCoreBusinessStatus => loadCoreBusinessStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, coreBusiness =>
+  _get(coreBusiness, 'enableCashback', false)
+);
+
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', null));
+
+export const getLoadConsumerCustomerStatus = createSelector(getUser, user =>
+  _get(user, 'loadConsumerCustomerStatus', 0)
+);
+
+export const getIsConsumerCustomerLoaded = createSelector(
+  getLoadConsumerCustomerStatus,
+  loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsLoadConsumerCustomerFailed = createSelector(
+  getLoadConsumerCustomerStatus,
+  loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.REJECTED
+);
 
 export const getUserStoreCashback = createSelector(getUser, user => _get(user, 'storeCreditsBalance', 0));
 
@@ -652,9 +722,7 @@ export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user
 
 export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
 
-export const getLoadUserLoginStatus = createSelector(getUser, user =>
-  _get(user, 'loadConsumerLoginStatus.status', null)
-);
+export const getLoadUserLoginStatus = createSelector(getUser, user => _get(user, 'loadConsumerIsLoginStatus', null));
 
 export const getIsUserLoginStatusLoaded = createSelector(
   getLoadUserLoginStatus,

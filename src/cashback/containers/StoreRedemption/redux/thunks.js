@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { actions as appActions } from '../../../redux/modules/app';
 import { patchShareConsumerInfoRequests, postShareConsumerInfoRequests } from './api-request';
 import { getStoreRedemptionRequestId } from './selectors';
 import { getCookieVariable } from '../../../../common/utils';
@@ -60,6 +61,7 @@ export const updateStoreRedemptionRequestId = createAsyncThunk(
 export const mounted = createAsyncThunk('loyalty/storeRedemption/mounted', async (_, { dispatch, getState }) => {
   try {
     await dispatch(updateStoreRedemptionRequestId());
+    await dispatch(appActions.loadCoreBusiness());
 
     const requestId = getStoreRedemptionRequestId(getState());
 
