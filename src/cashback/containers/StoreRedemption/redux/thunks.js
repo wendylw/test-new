@@ -49,8 +49,6 @@ export const updateStoreRedemptionRequestId = createAsyncThunk(
     try {
       const requestId = getCookieVariable('__sh_rdm_reqId');
 
-      console.log(requestId);
-
       return requestId;
     } catch (error) {
       logger.error('Loyalty_StoreRedemption_updateStoreRedemptionRequestIdFailed', { message: error?.message });
@@ -66,8 +64,6 @@ export const mounted = createAsyncThunk('loyalty/storeRedemption/mounted', async
     await dispatch(appActions.loadCoreBusiness());
 
     const requestId = getStoreRedemptionRequestId(getState());
-
-    console.log(requestId);
 
     if (requestId) {
       await dispatch(updateShareConsumerInfoRequests());
