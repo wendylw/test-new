@@ -9,6 +9,7 @@ import {
   loadFoodCourtIdHashCode,
   showProfileModal,
   hideProfileModal,
+  callNativeProfile,
 } from './thunks';
 
 const initialState = {

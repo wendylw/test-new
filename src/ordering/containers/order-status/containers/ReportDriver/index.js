@@ -84,9 +84,9 @@ class ReportDriver extends Component {
   };
 
   preFillEmail = async () => {
-    const { userConsumerId, getProfileInfo, initialEmail } = this.props;
+    const { userConsumerId, loadProfileInfo, initialEmail } = this.props;
 
-    userConsumerId && (await getProfileInfo(userConsumerId));
+    userConsumerId && (await loadProfileInfo(userConsumerId));
 
     initialEmail(this.props.userEmail);
   };
@@ -496,7 +496,7 @@ export default compose(
       updateInputEmail: reportDriverActionCreators.updateInputEmail,
       inputEmailCompleted: reportDriverActionCreators.inputEmailCompleted,
       initialEmail: reportDriverActionCreators.initialEmail,
-      getProfileInfo: appActionCreators.getProfileInfo,
+      loadProfileInfo: appActionCreators.loadProfileInfo,
       loginApp: appActionCreators.loginApp,
       loginByTngMiniProgram: appActionCreators.loginByTngMiniProgram,
     }
