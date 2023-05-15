@@ -90,7 +90,7 @@ class SavedCards extends Component {
       prefetch(['ORD_PMT', 'ORD_SRP', 'ORD_CC'], ['OrderingPayment']);
     } catch (error) {
       // TODO: Handle this error in Payment 2.0
-      console.error(error);
+      console.error('Ordering SavedCards initialize:', error?.message || '');
     } finally {
       // Resolve React Warning: perform a set state after component unmounted
       if (this.willUnmount) {

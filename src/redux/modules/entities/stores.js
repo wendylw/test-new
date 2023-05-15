@@ -31,6 +31,7 @@ const reducer = (state = initialState, action) => {
           newStores[s.id] = transferStoreName(s);
         }
       });
+
       return { ...state, ...newStores };
     }
   }
@@ -43,5 +44,7 @@ export default reducer;
 // selectors
 
 export const getAllStores = state => state.entities.stores;
+
 export const getStoreById = (state, storeId) => getAllStores(state)[storeId];
+
 export const getCoreStoreList = state => Object.values(state.entities.stores);

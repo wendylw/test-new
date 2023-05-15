@@ -112,6 +112,22 @@ const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Bee
 const otherText = 'Download the Beep app to track your Order History!';
 const otherLink = 'https://dl.beepit.com/kVmT';
 
+const getIsInitProfilePageEnabled = (isLogin, from, hasOrderPaid) => {
+  if (!isLogin) {
+    return false;
+  }
+
+  if (REFERRERS_REQUIRING_PROFILE.includes(from) && from !== REFERRER_SOURCE_TYPES.PAY_AT_COUNTER) {
+    return true;
+  }
+
+  if (hasOrderPaid && from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER) {
+    return true;
+  }
+
+  return false;
+};
+
 export class ThankYou extends PureComponent {
   constructor(props) {
     super(props);
@@ -130,6 +146,7 @@ export class ThankYou extends PureComponent {
 
   componentDidMount = async () => {
     const { user, loadCashbackInfo, loadOrderStoreReview, initProfilePage } = this.props;
+    const { isLogin } = user || {};
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
     loadCashbackInfo(receiptNumber);
@@ -139,16 +156,13 @@ export class ThankYou extends PureComponent {
 
     const from = Utils.getCookieVariable('__ty_source');
 
-    this.setState({ from }, () => {
-      const { from, hasOrderPaid } = this.state;
+    this.setState({ from }, async () => {
+      const { hasOrderPaid } = this.props;
+      const { from } = this.state;
+      const isInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, hasOrderPaid);
 
-      // WB-4979: If payment method is not pay at counter, will display profile page immediately
-      // Pay at counter logic is in componentDidUpdate
-      if (
-        hasOrderPaid ||
-        (from !== REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && REFERRERS_REQUIRING_PROFILE.includes(from))
-      ) {
-        initProfilePage({ from });
+      if (isInitProfilePageEnabled) {
+        await initProfilePage({ from });
       }
     });
 
@@ -210,7 +224,7 @@ export class ThankYou extends PureComponent {
       // we add the [promptEnableAppNotification] function on version 1.10.0
       // so before 1.10.0 call this function will throw NativeApiError with METHOD_NOT_EXIST of code
       if (error?.code !== NativeMethods.NATIVE_API_ERROR_CODES.METHOD_NOT_EXIST) {
-        console.error(error);
+        console.error('Ordering ThankYou promptUserEnableAppNotification: ', error?.message || '');
       }
     }
   }
@@ -273,7 +287,7 @@ export class ThankYou extends PureComponent {
         this.closeMap();
       }
     } catch (error) {
-      console.error(error);
+      console.error('Ordering ThankYou updateAppLocationAndStatus: ', error?.message || '');
     }
   };
 
@@ -377,13 +391,17 @@ export class ThankYou extends PureComponent {
       isCoreBusinessAPICompleted,
       loadOrderStoreReview,
       hasOrderPaid: currHasOrderPaid,
+      initProfilePage,
     } = this.props;
     const { from } = this.state;
+    const { isLogin } = user || {};
     const { storeId } = order || {};
+    const currIsInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, currHasOrderPaid);
+    const prevIsInitProfilePageEnabled = getIsInitProfilePageEnabled(prevProps.user.isLogin, from, prevHasOrderPaid);
 
     // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
-    if (from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && currHasOrderPaid && !prevHasOrderPaid) {
-      initProfilePage({ from });
+    if (!prevIsInitProfilePageEnabled && currIsInitProfilePageEnabled) {
+      await initProfilePage({ from });
     }
 
     if (storeId && prevStoreId !== storeId) {
@@ -951,10 +969,6 @@ export class ThankYou extends PureComponent {
     this.goToOrderingHomePage();
 
     return;
-  };
-
-  handleCompleteProfileModalClose = () => {
-    this.props.setShowProfileVisibility(false);
   };
 
   handleChangeStoreRating = rating => {

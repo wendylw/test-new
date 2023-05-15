@@ -104,3 +104,12 @@ export const SOURCE_TYPE = {
   PUSH_NOTIFICATION: 'PushNotification',
   SMS: 'SMS',
 };
+
+export const CLIENTS = {
+  WEB: 'web',
+  IOS: 'iOS',
+  ANDROID: 'Android',
+  MAC: 'Mac',
+  PC: 'PC',
+  TNG_MINI_PROGRAM: 'tngMiniProgram',
+};

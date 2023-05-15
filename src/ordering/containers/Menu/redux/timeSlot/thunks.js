@@ -108,7 +108,7 @@ export const timeSlotDrawerShown = createAsyncThunk('ordering/menu/timeSlot/time
       selectedTimeSlot: expectedDeliveryTimeDayjs.format('HH:mm'),
     };
   } catch (error) {
-    console.error(error);
+    console.error('Ordering Menu LoadTimeSlotData: ', error?.message || '');
 
     logger.error(
       'Ordering_Menu_LoadTimeSlotDataFailed',
@@ -160,7 +160,7 @@ export const changeShippingType = createAsyncThunk(
         selectedTimeSlot: fromTime,
       };
     } catch (error) {
-      console.error(error);
+      console.error('Ordering Menu changeShippingType: ', error?.message || '');
       throw error;
     }
   }
@@ -193,7 +193,8 @@ export const changeDate = createAsyncThunk('ordering/menu/timeSlot/changeDate', 
       selectedTimeSlot: fromTime,
     };
   } catch (error) {
-    console.error(error);
+    console.error('Ordering Menu changeDate: ', error?.message || '');
+
     throw error;
   }
 });

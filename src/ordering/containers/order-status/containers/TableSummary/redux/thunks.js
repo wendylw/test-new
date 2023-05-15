@@ -23,7 +23,7 @@ import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../../utils/moni
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
 
-export const queryOrdersAndStatus = receiptNumber => async (dispatch, getState) => {
+export const queryOrdersAndStatus = receiptNumber => async dispatch => {
   logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'start', id: receiptNumber });
   try {
     const queryOrderStatus = () => {
@@ -42,7 +42,7 @@ export const queryOrdersAndStatus = receiptNumber => async (dispatch, getState) 
     await dispatch(loadOrder(receiptNumber));
     queryOrderStatus();
   } catch (error) {
-    console.error(error);
+    logger.error('Ordering_OrderStatus_QueryOrdersAndStatusFailed', { message: error?.message || '' });
 
     throw error;
   }

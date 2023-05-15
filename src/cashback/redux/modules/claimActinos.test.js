@@ -48,7 +48,13 @@ describe('src/cashback/redux/modules/claims.js:actions', () => {
     });
 
     describe('createCashbackInfo', () => {
-      const reqParams = { receiptNumber: '0031912111604413', phone: '+8618813096217', source: 'RECEIPT' };
+      const reqParams = {
+        receiptNumber: '0031912111604413',
+        phone: '+8618813096217',
+        source: 'RECEIPT',
+        registrationSource: 'BeepStore',
+        registrationTouchpoint: 'OnlineOrder',
+      };
       it(':Success', () => {
         successMockFetch();
         const expectedActions = [

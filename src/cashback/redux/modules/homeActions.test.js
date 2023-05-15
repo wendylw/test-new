@@ -19,14 +19,6 @@ describe('src/cashback/redux/modules/home.js:actions', () => {
     store.clearActions();
   });
 
-  describe('action creators', () => {
-    it('setCustomerId', () => {
-      const customerId = '111111';
-      const expectedAction = { type: types.SET_CUSTOMER_ID_SUCCESS, customerId };
-      return expect(actions.setCustomerId(customerId)).toEqual(expectedAction);
-    });
-  });
-
   describe('Async Action Creators', () => {
     describe('getReceiptList', () => {
       const reqParams = { business: 'beep', page: 0, pageSize: 10 };

@@ -9,6 +9,7 @@ import config from '../../../config';
 import Url from '../../../utils/url';
 import * as TngUtils from '../../../utils/tng-utils';
 import * as ApiRequest from '../../../utils/api-request';
+import logger from '../../../utils/monitoring/logger';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -16,6 +17,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { get } from '../../../utils/request';
 import { post } from '../../../utils/api/api-fetch';
+import { getProfileInfo } from './api-request';
 import { createSelector } from 'reselect';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
@@ -33,6 +35,7 @@ const {
   OTP_ERROR_POPUP_I18N_KEYS,
 } = Constants;
 
+// TODO: Update user state lack isFetching
 export const initialState = {
   user: {
     isWebview: Utils.isWebview(),
@@ -53,6 +56,19 @@ export const initialState = {
     phone: localePhoneNumber,
     prompt: 'Do you have a Beep account? Login with your mobile phone number.',
     noWhatsAppAccount: true,
+    profile: {
+      id: '',
+      phone: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      gender: '',
+      birthday: '',
+      birthdayModifiedTime: '',
+      notificationSettings: '',
+      birthdayChangeAllowed: false,
+      status: null,
+    },
   },
   error: null, // network error
   messageInfo: {
@@ -160,32 +176,63 @@ export const actions = {
     },
   }),
 
-  getLoginStatus: () => ({
+  getLoginStatus: () => (dispatch, getState) => ({
     types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
-    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
-      if (resp) {
-        if (resp.consumerId) {
-          if (resp.login) {
-            get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
-              const userInfo = {
-                Name: resp.user?.firstName,
-                Phone: resp.user?.phone,
-                Identity: resp.consumerId,
-                ...(resp.user?.email ? { Email: resp.user?.email } : {}),
-              };
+    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(async resp => {
+      const { consumerId, login } = resp || {};
 
-              if (profile.birthday) {
-                userInfo.DOB = new Date(profile.birthday);
-              }
-
-              CleverTap.onUserLogin(userInfo);
-            });
-          }
-        }
+      if (!login) {
+        return resp;
       }
-      return resp;
+
+      try {
+        await dispatch(actions.loadProfileInfo(consumerId));
+
+        const profile = getUserProfile(getState());
+        const { firstName, phone, email, birthday } = profile || {};
+
+        const userInfo = {
+          Name: firstName,
+          Phone: phone,
+          Identity: consumerId,
+        };
+
+        if (email) {
+          userInfo.Email = email;
+        }
+
+        if (birthday) {
+          userInfo.DOB = new Date(birthday);
+        }
+
+        CleverTap.onUserLogin(userInfo);
+
+        return resp;
+      } catch (error) {
+        logger.error('Cashback_App_getLoginStatus', { message: error?.message });
+      }
     }),
   }),
+
+  loadProfileInfo: consumerId => async dispatch => {
+    try {
+      dispatch({ type: types.LOAD_CONSUMER_PROFILE_PENDING });
+
+      const result = await getProfileInfo(consumerId);
+
+      dispatch({
+        type: types.LOAD_CONSUMER_PROFILE_FULFILLED,
+        payload: result,
+      });
+    } catch (error) {
+      logger.error('Cash_LoadProfileInfoFailed', { message: error?.message });
+
+      dispatch({
+        type: types.types.LOAD_CONSUMER_PROFILE_REJECTED,
+        error,
+      });
+    }
+  },
 
   updateUser: (user = {}) => ({
     type: types.UPDATE_USER,
@@ -413,6 +460,30 @@ const user = (state = initialState.user, action) => {
     case types.GET_WHATSAPPSUPPORT_FAILURE:
       // Write down here just for the sake of completeness, we won't handle this failure case for now.
       return state;
+    case types.LOAD_CONSUMER_PROFILE_PENDING:
+      return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.PENDING } };
+    case types.LOAD_CONSUMER_PROFILE_FULFILLED:
+      const { payload } = action || {};
+
+      return {
+        ...state,
+        profile: {
+          id: payload.id,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          name: payload.firstName,
+          phone: payload.phone,
+          birthdayModifiedTime: payload.birthdayModifiedTime,
+          notificationSettings: payload.notificationSettings,
+          email: payload.email,
+          birthday: payload.birthday,
+          gender: payload.gender,
+          birthdayChangeAllowed: payload.birthdayChangeAllowed,
+          status: API_REQUEST_STATUS.FULFILLED,
+        },
+      };
+    case types.LOAD_CONSUMER_PROFILE_REJECTED:
+      return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.REJECTED } };
     default:
       return state;
   }
@@ -508,6 +579,7 @@ export default combineReducers({
 // selectors
 export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
+export const getUserProfile = state => state.app.user.profile;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => {
   return getBusinessByName(state, state.app.business);

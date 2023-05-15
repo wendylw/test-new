@@ -1,6 +1,4 @@
 import _get from 'lodash/get';
-import _isEmpty from 'lodash/isEmpty';
-import _isUndefined from 'lodash/isUndefined';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
@@ -177,21 +175,21 @@ export const initProfilePage = createAsyncThunk(
 
       // First must to confirm profile info is loaded
       if (userIsLogin && !isUserProfileStatusFulfilled) {
-        await dispatch(appActions.getProfileInfo(consumerId));
-      }
-
-      if (isWebview) {
-        dispatch(callNativeProfile());
-
-        return;
+        await dispatch(appActions.loadProfileInfo(consumerId));
       }
 
       const profile = getUserProfile(getState());
       const { name, email, birthday } = profile || {};
-      const isProfileInfoComplete = !name || !email || !birthday;
-      const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoComplete && userIsLogin && !isWebview;
+      const isProfileInfoIncomplete = !name || !email || !birthday;
+      const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoIncomplete && userIsLogin;
 
       if (isProfileModalShown) {
+        if (isWebview) {
+          // await dispatch(callNativeProfile());
+
+          return;
+        }
+
         setTimeout(() => {
           dispatch(showProfileModal());
         }, delay);

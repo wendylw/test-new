@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -39,7 +39,7 @@ const Profile = ({ show, onClose }) => {
   }
 
   return (
-    <aside className={className.join(' ')} data-heap-name="ordering.home.profile.container">
+    <aside className={className.join(' ')} data-heap-name="ordering.profile.container">
       <div className="profile__container flex flex-column flex-space-between aside__content">
         <section>
           <div className="text-right">

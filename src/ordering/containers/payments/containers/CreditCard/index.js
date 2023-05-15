@@ -414,8 +414,8 @@ class CreditCard extends Component {
       });
 
       return result.isRisky;
-    } catch (e) {
-      console.error('Check card payment risk fail, ', e);
+    } catch (error) {
+      console.error('Check card payment risk fail:', error?.message || '');
       // if failure, fallback to no risk
       return false;
     }

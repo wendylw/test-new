@@ -254,7 +254,6 @@ describe('utils/monitoring/logger', () => {
           code: 10000,
           message: 'OK',
           description: 'OK',
-          pagination: null,
           data: {
             addressInfo: {
               savedAddressId: '62ff6243036cf415336581a9',
