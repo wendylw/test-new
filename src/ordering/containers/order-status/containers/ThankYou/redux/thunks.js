@@ -193,12 +193,14 @@ export const initProfilePage = createAsyncThunk(
       const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoIncomplete && userIsLogin;
 
       if (isProfileModalShown) {
-        setTimeout(async () => {
-          if (isWebview) {
-            await dispatch(callNativeProfile());
-          } else {
-            dispatch(showProfileModal());
-          }
+        if (isWebview) {
+          // await dispatch(callNativeProfile());
+
+          return;
+        }
+
+        setTimeout(() => {
+          dispatch(showProfileModal());
         }, delay);
       }
     } catch (error) {
