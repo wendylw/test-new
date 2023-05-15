@@ -855,12 +855,14 @@ export const actions = {
     }
   },
 
-  updateProfile: payload => async dispatch => {
-    dispatch({
-      type: types.UPDATE_CONSUMER_PROFILE,
-      payload,
-    });
-  },
+  updateProfile: ({ firstName, email, birthday }) => ({
+    type: types.UPDATE_CONSUMER_PROFILE,
+    payload: {
+      firstName,
+      email,
+      birthday,
+    },
+  }),
 };
 
 const user = (state = initialState.user, action) => {
@@ -914,7 +916,6 @@ const user = (state = initialState.user, action) => {
         refreshToken: refresh_token,
       };
     case types.CREATE_LOGIN_SUCCESS: {
-      const { payload } = action || {};
       const consumerId = _get(payload, 'consumerId', '');
       const user = _get(payload, 'user', {});
 
@@ -998,22 +999,20 @@ const user = (state = initialState.user, action) => {
     case types.LOAD_CONSUMER_PROFILE_PENDING:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.PENDING } };
     case types.LOAD_CONSUMER_PROFILE_FULFILLED:
-      const { payload } = action || {};
-
       return {
         ...state,
         profile: {
-          id: payload.id,
-          firstName: payload.firstName,
-          lastName: payload.lastName,
-          name: payload.firstName,
-          phone: payload.phone,
-          birthdayModifiedTime: payload.birthdayModifiedTime,
-          notificationSettings: payload.notificationSettings,
-          email: payload.email,
-          birthday: payload.birthday,
-          gender: payload.gender,
-          birthdayChangeAllowed: payload.birthdayChangeAllowed,
+          id: _get(payload, 'id', ''),
+          firstName: _get(payload, 'firstName', ''),
+          lastName: _get(payload, 'lastName', ''),
+          name: _get(payload, 'firstName', ''),
+          phone: _get(payload, 'phone', ''),
+          birthdayModifiedTime: _get(payload, 'birthdayModifiedTime', ''),
+          notificationSettings: _get(payload, 'notificationSettings', ''),
+          email: _get(payload, 'email', ''),
+          birthday: _get(payload, 'birthday', ''),
+          gender: _get(payload, 'gender', ''),
+          birthdayChangeAllowed: _get(payload, 'birthdayChangeAllowed', false),
           status: API_REQUEST_STATUS.FULFILLED,
         },
       };

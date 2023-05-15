@@ -18,6 +18,7 @@ export const API_REQUEST_URL_PATTERNS = {
   // v3 API
   '/api/v3/cart/items/*': /^\/api\/v3\/cart\/items\/\w+$/,
   '/api/v3/transactions/*': /^\/api\/v3\/transactions\/\w+$/,
+  '/api/v3/consumers/*/profile': /^\/api\/v3\/consumers\/\w+\/profile$/,
   '/api/v3/food-courts/*/stores': /^\/api\/v3\/food-courts\/\w+\/stores$/,
   '/api/v3/transactions/*/status': /\/api\/v3\/transactions\/\w+\/status$/,
   '/api/v3/cart/submission/*/status': /\/api\/v3\/cart\/submission\/[a-zA-Z0-9-]+\/status$/,
