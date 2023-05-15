@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { ObjectFitImage } from '../../../../../common/components/Image';
-import { getStoreLogo, getStoreDisplayTitle } from '../../redux/selectors';
+import { getStoreLogo, getStoreDisplayTitle, getIsDisplayStoreRedemptionContent } from '../../redux/selectors';
 import styles from './RedemptionStoreInfo.module.scss';
 
 const RedemptionStoreInfo = () => {
@@ -10,7 +10,7 @@ const RedemptionStoreInfo = () => {
   // get store display title, storeBrandName || onlineStoreName
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   // get is display store redemption content
-  const isDisplayStoreRedemptionContent = true;
+  const isDisplayStoreRedemptionContent = useSelector(getIsDisplayStoreRedemptionContent);
 
   return (
     <section

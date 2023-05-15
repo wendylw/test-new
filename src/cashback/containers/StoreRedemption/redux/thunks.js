@@ -49,6 +49,8 @@ export const updateStoreRedemptionRequestId = createAsyncThunk(
     try {
       const requestId = getCookieVariable('__sh_rdm_reqId');
 
+      console.log(requestId);
+
       return requestId;
     } catch (error) {
       logger.error('Loyalty_StoreRedemption_updateStoreRedemptionRequestIdFailed', { message: error?.message });

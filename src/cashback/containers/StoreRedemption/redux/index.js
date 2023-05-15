@@ -37,7 +37,7 @@ export const { reducer, actions } = createSlice({
     [updateShareConsumerInfoRequests.pending.type]: state => {
       state.updateSharingConsumerInfo.status = API_REQUEST_STATUS.PENDING;
     },
-    [updateShareConsumerInfoRequests.fulfilled.type]: (state, payload) => {
+    [updateShareConsumerInfoRequests.fulfilled.type]: (state, { payload }) => {
       state.updateSharingConsumerInfo.status = API_REQUEST_STATUS.FULFILLED;
       state.sharedInfoDate = payload;
     },
@@ -47,14 +47,14 @@ export const { reducer, actions } = createSlice({
     [confirmToShareConsumerInfoRequests.pending.type]: state => {
       state.confirmSharingConsumerInfo.status = API_REQUEST_STATUS.PENDING;
     },
-    [confirmToShareConsumerInfoRequests.fulfilled.type]: (state, payload) => {
+    [confirmToShareConsumerInfoRequests.fulfilled.type]: (state, { payload }) => {
       state.confirmSharingConsumerInfo.status = API_REQUEST_STATUS.FULFILLED;
       state.sharedInfoDate = payload;
     },
     [confirmToShareConsumerInfoRequests.rejected.type]: state => {
       state.confirmSharingConsumerInfo.status = API_REQUEST_STATUS.REJECTED;
     },
-    [updateStoreRedemptionRequestId.fulfilled.type]: (state, payload) => {
+    [updateStoreRedemptionRequestId.fulfilled.type]: (state, { payload }) => {
       state.requestId = payload;
     },
   },
