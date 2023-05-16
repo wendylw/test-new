@@ -721,8 +721,6 @@ export const actions = {
         toast(i18next.t('Common:UnknownError'));
       }
 
-      console.error('Failed to get tokens from native: ', e.message);
-
       logger.error('Common_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
     }
   },
