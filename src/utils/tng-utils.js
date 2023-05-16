@@ -1,6 +1,7 @@
 import MessagePortal from './message-portal';
 import debug from './debug';
 import Utils from './utils';
+import logger from './monitoring/logger';
 
 export const TNG_MINI_PROGRAM_ENV_LIST = {
   SANDBOX: 'SBX',
@@ -33,11 +34,14 @@ export const callMessagePortal = async (method, data) => {
     const messagePortal = getMessagePortal();
     const result = await messagePortal.call(method, data);
     debug('[TNG utils] call success method: %s\n parameter: %o\n result: %o', method, data, result);
+    logger.log('Utils_MessagePortal_CallAPISucceeded', { method });
     return result;
   } catch (error) {
     debug('[TNG utils] call fail method: %s\n parameter: %o\n error: %o', method, data, error);
-    // eslint-disable-next-line no-console
-    console.error('TNG Utils callMessagePortal:', error?.message || '');
+    logger.error('Utils_MessagePortal_CallAPIFailed', {
+      method,
+      message: error?.message,
+    });
     throw error;
   }
 };
