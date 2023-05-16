@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { applyPromotion, removePromotion, applyVoucher, removeVoucher } from './api-request';
 import { getSelectedPromoId, getSelectedPromoCode } from '../../../../redux/modules/promotion';
 import Utils from '../../../../../utils/utils';
+import logger from '../../../../../utils/monitoring/logger';
 
 const formatErrorOfApplyPromoOrVoucher = e => ({ name: JSON.stringify(e.extra), code: e.code, message: e.message });
 
@@ -12,7 +13,7 @@ const removePromoOrVoucher = async removeMethods => {
 
     return result;
   } catch (e) {
-    console.error(e);
+    logger.error('Ordering_Promotion_RemovePromotionFailed', { message: e?.message });
 
     throw e;
   }
