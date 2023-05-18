@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
@@ -9,7 +10,7 @@ import {
   getIsDisplayStoreRedemptionAlert,
   getIsAvailableToShareConsumerInfo,
 } from './redux/selectors';
-import { mounted } from './redux/thunks';
+import { mounted, confirmToShareConsumerInfoRequests } from './redux/thunks';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
 import '../../../common/styles/base.scss';
@@ -43,9 +44,13 @@ const StoreRedemption = () => {
 
   useEffect(() => {
     if (isAvailableToShareConsumerInfo) {
-      dispatch(mounted());
+      dispatch(confirmToShareConsumerInfoRequests());
     }
   }, [dispatch, isAvailableToShareConsumerInfo]);
+
+  useMount(async () => {
+    await dispatch(mounted());
+  });
 
   return (
     <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>

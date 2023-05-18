@@ -19,7 +19,7 @@ import {
  * @param {*} state
  * @returns string
  */
-export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 'requestId', '');
+export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 'requestId', null);
 
 /**
  *
@@ -27,9 +27,11 @@ export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 
  * @returns boolean
  */
 export const getIsAvailableToShareConsumerInfo = createSelector(
+  getStoreRedemptionRequestId,
   getIsUserLoginStatusLoaded,
   getUserIsLogin,
-  (isUserLoginStatusLoaded, userIsLogin) => isUserLoginStatusLoaded && userIsLogin
+  (storeRedemptionRequestId, isUserLoginStatusLoaded, userIsLogin) =>
+    storeRedemptionRequestId && isUserLoginStatusLoaded && userIsLogin
 );
 
 /**
