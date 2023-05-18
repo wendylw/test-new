@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
 import { getUserStoreCashback } from '../../redux/modules/app';
@@ -8,6 +7,7 @@ import {
   getStoreDisplayTitle,
   getIsDisplayStoreRedemptionContent,
   getIsDisplayStoreRedemptionAlert,
+  getIsAvailableToShareConsumerInfo,
 } from './redux/selectors';
 import { mounted } from './redux/thunks';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
@@ -24,6 +24,7 @@ const StoreRedemption = () => {
   const isDisplayStoreRedemptionContent = useSelector(getIsDisplayStoreRedemptionContent);
   const userStoreCashback = useSelector(getUserStoreCashback);
   const isDisplayStoreRedemptionAlert = useSelector(getIsDisplayStoreRedemptionAlert);
+  const isAvailableToShareConsumerInfo = useSelector(getIsAvailableToShareConsumerInfo);
 
   useEffect(() => {
     if (isDisplayStoreRedemptionAlert) {
@@ -40,9 +41,11 @@ const StoreRedemption = () => {
     }
   }, [userStoreCashback, isDisplayStoreRedemptionAlert, storeDisplayTitle, t]);
 
-  useMount(async () => {
-    await dispatch(mounted());
-  });
+  useEffect(() => {
+    if (isAvailableToShareConsumerInfo) {
+      dispatch(mounted());
+    }
+  }, [dispatch, isAvailableToShareConsumerInfo]);
 
   return (
     <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>

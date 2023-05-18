@@ -19,9 +19,6 @@ const initialState = {
     customerId: '',
     sharedInfoDate: '',
   },
-  loadSharingConsumerInfo: {
-    status: null,
-  },
   updateSharingConsumerInfo: {
     status: null,
   },
