@@ -21,6 +21,7 @@ import {
   getTotal,
   getReceiptNumber,
   getInitPaymentRequestErrorMessage,
+  getInitPaymentRequestErrorCategory,
   getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
@@ -46,6 +47,7 @@ class SavedCards extends Component {
         supportSaveCard,
         isInitPaymentFailed,
         initPaymentErrorMessage,
+        initPaymentRequestErrorCategory,
       } = this.props;
 
       if (isInitPaymentFailed) {
@@ -59,6 +61,7 @@ class SavedCards extends Component {
               flow: KEY_EVENTS_FLOWS.CHECKOUT,
               step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
             },
+            errorCategory: initPaymentRequestErrorCategory,
           }
         );
       }
@@ -295,6 +298,7 @@ export default compose(
       receiptNumber: getReceiptNumber(state),
       isRequestSavedCardsPending: getIsRequestSavedCardsPending(state),
       initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+      initPaymentRequestErrorCategory: getInitPaymentRequestErrorCategory(state),
       isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
     }),
     dispatch => ({

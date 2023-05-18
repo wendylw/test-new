@@ -19,6 +19,7 @@ import { get } from '../../../utils/request';
 import { post } from '../../../utils/api/api-fetch';
 import { getProfileInfo } from './api-request';
 import { createSelector } from 'reselect';
+import { ERROR_TYPES } from '../../../utils/api/constants';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const {
@@ -608,6 +609,8 @@ export const getOtpType = createSelector(getOtpRequest, otp => _get(otp, 'data.t
 
 export const getOtpErrorCode = createSelector(getOtpRequestError, error => _get(error, 'code', null));
 
+export const getOtpErrorName = createSelector(getOtpRequestError, error => _get(error, 'name', null));
+
 export const getIsOtpRequestStatusPending = createSelector(
   getOtpRequestStatus,
   status => status === API_REQUEST_STATUS.PENDING
@@ -666,7 +669,10 @@ export const getShouldShowErrorPopUp = createSelector(
   }
 );
 
-export const getShouldShowNetworkErrorPopUp = createSelector(getOtpRequestError, error => error instanceof TypeError);
+export const getShouldShowNetworkErrorPopUp = createSelector(
+  getOtpErrorName,
+  errorName => errorName === ERROR_TYPES.NETWORK_ERROR
+);
 
 export const getShouldShowOtpApiErrorPopUp = createSelector(
   getOtpErrorCode,

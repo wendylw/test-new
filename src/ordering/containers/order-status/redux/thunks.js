@@ -85,7 +85,6 @@ export const submitPayLaterOrder = createAsyncThunk(
   'ordering/orderStatus/common/submitPayLaterOrder',
   async ({ receiptNumber, data }) => postPayLaterOrderSubmission(receiptNumber, data)
 );
-
 // Store Review
 export const showStoreReviewThankYouModal = createAsyncThunk(
   'ordering/orderStatus/common/showStoreReviewThankYouModal',

@@ -4,6 +4,7 @@ import { getPayments } from './api-info';
 import {
   actions as appActions,
   getCartStatus,
+  getCartErrorCategory,
   getCartTotal,
   getCartSubtotal,
   getCartTotalCashback,
@@ -17,6 +18,7 @@ import Constants from '../../../../../../utils/constants';
 import { getTotal, getCleverTapAttributes, getPaymentName } from '../selectors';
 import CleverTap from '../../../../../../utils/clevertap';
 import logger from '../../../../../../utils/monitoring/logger';
+import ApiFetchError from '../../../../../../utils/api/api-fetch-error';
 
 const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
 
@@ -182,7 +184,8 @@ export const loadBilling = createAsyncThunk('ordering/payments/loadBilling', asy
   await dispatch(appActions.loadShoppingCart());
   const loadShoppingCartStatus = getCartStatus(getState());
   if (loadShoppingCartStatus !== API_REQUEST_STATUS.FULFILLED) {
-    throw new Error('Load shopping cart failure in loadBilling thunk');
+    const cartErrorCategory = getCartErrorCategory(getState());
+    throw new ApiFetchError('Load shopping cart failure in loadBilling thunk', { category: cartErrorCategory });
   }
 
   return {
