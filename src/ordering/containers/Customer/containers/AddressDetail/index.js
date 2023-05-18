@@ -212,6 +212,7 @@ class AddressDetail extends Component {
             flow: KEY_EVENTS_FLOWS.CHECKOUT,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].CHANGE_ADDRESS,
           },
+          errorCategory: error?.name,
         }
       );
     }

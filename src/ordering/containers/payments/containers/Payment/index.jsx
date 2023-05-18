@@ -19,6 +19,7 @@ import {
   getTotal,
   getCashback,
   getInitPaymentRequestErrorMessage,
+  getInitPaymentRequestErrorCategory,
   getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import {
@@ -58,7 +59,7 @@ class Payment extends Component {
 
     await initialize();
 
-    const { isInitPaymentFailed, initPaymentErrorMessage } = this.props;
+    const { isInitPaymentFailed, initPaymentErrorMessage, initPaymentRequestErrorCategory } = this.props;
 
     if (isInitPaymentFailed) {
       logger.error(
@@ -71,6 +72,7 @@ class Payment extends Component {
             flow: KEY_EVENTS_FLOWS.CHECKOUT,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
           },
+          errorCategory: initPaymentRequestErrorCategory,
         }
       );
     }
@@ -425,6 +427,7 @@ Payment.propTypes = {
   shippingType: PropTypes.string,
   cashback: PropTypes.number,
   initPaymentErrorMessage: PropTypes.string,
+  initPaymentRequestErrorCategory: PropTypes.string,
   isInitPaymentFailed: PropTypes.bool,
 };
 
@@ -445,6 +448,7 @@ Payment.defaultProps = {
   shippingType: '',
   cashback: 0,
   initPaymentErrorMessage: '',
+  initPaymentRequestErrorCategory: '',
   isInitPaymentFailed: false,
 };
 
@@ -464,6 +468,7 @@ export default compose(
       cashback: getCashback(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
       initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+      initPaymentRequestErrorCategory: getInitPaymentRequestErrorCategory(state),
       isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
     }),
     dispatch => ({

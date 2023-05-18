@@ -1,8 +1,11 @@
 import originalKy from 'ky';
 import qs from 'qs';
 import Utils from '../utils';
+import ApiFetchError from './api-fetch-error';
+import { ERROR_TYPES } from './constants';
+import logger from '../monitoring/logger';
 
-export const ky = originalKy.create({
+const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
     beforeRequest: [req => req.headers.set('client', Utils.getClient())],
@@ -13,37 +16,153 @@ export const ky = originalKy.create({
   credentials: 'include',
 });
 
-async function parseResponse(resp) {
-  const rawContentType = resp.headers.get('content-type');
-  let body = resp;
-
-  if (!rawContentType) {
-    return body;
-  }
+/**
+ *
+ * @param {object} response : {headers: '', json: () => {}, text: () => {}}
+ * @returns {{data: {}} | dataObject}
+ */
+async function parseResponse(response) {
+  const rawContentType = response.headers.get('content-type');
+  let body = response;
 
   if (rawContentType.includes('application/json')) {
-    body = await resp.json();
+    body = await response.json();
   } else if (['text/plain', 'text/html'].some(type => rawContentType.includes(type))) {
-    body = await resp.text();
+    body = await response.text();
   } else {
-    console.warn(`Unexpected content type: ${rawContentType}, will respond with raw Response object.`);
+    logger.error('Tool_ApiFetch_parseResponseError', {
+      message: `Unexpected content type: ${rawContentType}, will respond with raw Response object.`,
+    });
   }
 
   return body;
 }
 
+/**
+ *
+ * @param {string} eventName
+ * @param {string} url
+ * @param {object} opts : {searchParams: string; method: string}
+ * @param {object} extraDetail
+ */
+function windowDispatchEvent(eventName, url, opts, extraDetail) {
+  const queryStr = qs.stringify(opts.searchParams, { addQueryPrefix: true });
+  const requestStart = new Date().valueOf();
+  const requestUrl = queryStr.length === 0 ? url : `${url}${queryStr}`;
+  const detail = {
+    type: opts.method,
+    request: requestUrl,
+    requestStart,
+    ...extraDetail,
+  };
+
+  window.dispatchEvent(new CustomEvent(eventName, { detail }));
+}
+
+/**
+ * @param {string} url url for the request
+ * @param {object} opts : {type: '', payload: {}, headers: {}, queryParams, ...others: {credentials: ''}}
+ * @param {any} options.payload data in request
+ * @param {object} options.queryParams query parameters in url
+ * @param {object} options.headers headers in request
+ */
+async function _fetch(url, opts) {
+  try {
+    // Response will throw HTTPError, if response status is not in the range of 200...299: https://github.com/sindresorhus/ky#kyinput-options
+    const response = await ky(url, opts);
+    const parsedResponseData = await parseResponse(response);
+    // Not v3 api will return {data: {}} as response data, so no need to extract the data
+    const result = url.startsWith('/api/v3/') && parsedResponseData.data ? parsedResponseData.data : parsedResponseData;
+
+    // Send log to Log service
+    windowDispatchEvent('sh-api-success', url, opts, { status: response.status });
+
+    return result;
+  } catch (error) {
+    if (!error.response) {
+      // Send log to Log service
+      windowDispatchEvent('sh-fetch-error', url, opts, { error: error?.message || '' });
+
+      let category = '';
+      if (error.name === 'AbortError') {
+        category = ERROR_TYPES.ABORT_ERROR;
+      } else if (error.name === 'TimeoutError') {
+        category = ERROR_TYPES.TIMEOUT_ERROR;
+      }
+      const errorOptions = {
+        category: category || ERROR_TYPES.NETWORK_ERROR,
+      };
+      throw new ApiFetchError(error?.message, errorOptions);
+    }
+
+    const { response, message: apiMessage } = error;
+    const { status } = response;
+    const errorBody = await parseResponse(response);
+    const { message, code, extra } = typeof errorBody === 'object' && errorBody ? errorBody : {};
+    const errorMessage = code ? message : apiMessage;
+    const errorOptions = {
+      category: ERROR_TYPES.UNKNOWN_ERROR,
+      code: code || '50000',
+      status,
+      extra,
+    };
+
+    if (status >= 400 && status < 499) {
+      errorOptions.category = ERROR_TYPES.BAD_REQUEST_ERROR;
+    } else if (status >= 500 && status < 599) {
+      errorOptions.category = ERROR_TYPES.SERVER_ERROR;
+    }
+
+    // Send log to Log service
+    windowDispatchEvent('sh-api-failure', url, opts, {
+      code: code ? code.toString() : '99999',
+      error: errorMessage,
+      status: status,
+    });
+
+    throw new ApiFetchError(errorMessage, errorOptions);
+  }
+}
+
+/**
+ *
+ * @param {object} options : {type = 'json', payload, headers, queryParams, ...othersOptions}
+ * @returns {{
+ *  body | json: any | json string,
+ *  searchParams: string,
+ *  hooks: {
+ *    beforeRequest: Function[]
+ *  },
+ *  headers: object
+ * }}
+ */
 function convertOptions(options) {
   // include is general credential value. if api fetching need Cross-domain without cookie that the value needs set `omit` in others.
-  const { type = 'json', payload, headers, queryParams, ...others } = options;
+  const { type = 'json', payload, headers, queryParams, hooks, ...others } = options;
+
+  if (headers && typeof headers !== 'object') {
+    logger.error('Tool_ApiFetch_convertOptionsHeaderTypeError', {
+      message: 'headers should be an object',
+    });
+
+    throw new ApiFetchError('requestHeadersNotObject', { category: ERROR_TYPES.PARAMETER_ERROR });
+  }
+
+  const currentHooks = hooks || {};
   const currentOptions = {
     ...others,
+    hooks: {
+      ...currentHooks,
+      beforeRequest: currentHooks.beforeRequest || [],
+    },
   };
 
   if (type === 'json') {
     if (payload && typeof payload !== 'object') {
-      console.warn(
-        `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`
-      );
+      logger.error('Tool_ApiFetch_convertOptionsTypePayloadNotMatch', {
+        message: `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`,
+      });
+
       currentOptions.body = payload;
     } else {
       currentOptions.json = payload;
@@ -56,13 +175,7 @@ function convertOptions(options) {
     currentOptions.searchParams = queryParams;
   }
 
-  currentOptions.hooks = currentOptions.hooks || {};
-  currentOptions.hooks.beforeRequest = currentOptions.hooks.beforeRequest || [];
-
   if (headers) {
-    if (typeof headers !== 'object') {
-      throw new Error('headers should be an object');
-    }
     // adding headers should be at the front of the hooks, so that other hooks have chance to modify the headers.
     currentOptions.hooks.beforeRequest.unshift(req => {
       Object.keys(headers).forEach(key => {
@@ -72,97 +185,6 @@ function convertOptions(options) {
   }
 
   return currentOptions;
-}
-
-/* For the new version of the response data structure, and compatible with the old interface data return */
-function formatResponseData(url, result) {
-  return url.startsWith('/api/v3/') && result.data ? result.data : result;
-}
-
-/**
- * @param {string} url url for the request
- * @param {object} opts : {type: '', payload: {}, headers: {}, queryParams, ...others: {credentials: ''}}
- * @param {any} options.payload data in request
- * @param {object} options.queryParams query parameters in url
- * @param {object} options.headers headers in request
- */
-async function _fetch(url, opts) {
-  const queryStr = qs.stringify(opts.searchParams, { addQueryPrefix: true });
-  const requestStart = new Date().valueOf();
-  const requestUrl = queryStr.length === 0 ? url : `${url}${queryStr}`;
-  try {
-    const resp = await ky(url, opts);
-
-    // Send log to Log service
-    window.dispatchEvent(
-      new CustomEvent('sh-api-success', {
-        detail: {
-          type: opts.method,
-          request: requestUrl,
-          requestStart,
-          status: resp.status,
-        },
-      })
-    );
-
-    return formatResponseData(url, await parseResponse(resp));
-  } catch (e) {
-    let error = e;
-
-    if (e.response) {
-      const body = await parseResponse(e.response);
-
-      if (typeof body === 'object' && body.code) {
-        error = body;
-        // Send log to Log service
-        window.dispatchEvent(
-          new CustomEvent('sh-api-failure', {
-            detail: {
-              type: opts.method,
-              request: requestUrl,
-              code: body.code.toString(),
-              error: body.message,
-              requestStart,
-              status: e.response.status,
-            },
-          })
-        );
-      } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
-        error = {
-          code: '50000',
-          status: e.status,
-          message: typeof body === 'string' ? body : JSON.stringify(body),
-        };
-        // Send log to Log service
-        window.dispatchEvent(
-          new CustomEvent('sh-api-failure', {
-            detail: {
-              type: opts.method,
-              request: requestUrl,
-              code: '99999',
-              error: error.message,
-              requestStart,
-              status: e.response.status,
-            },
-          })
-        );
-      }
-    } else {
-      // Send log to Log service
-      window.dispatchEvent(
-        new CustomEvent('sh-fetch-error', {
-          detail: {
-            type: opts.method,
-            request: requestUrl,
-            error: e.message,
-            requestStart,
-          },
-        })
-      );
-    }
-
-    throw error;
-  }
 }
 
 export function get(url, options = {}) {

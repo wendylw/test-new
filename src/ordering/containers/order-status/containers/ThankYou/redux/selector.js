@@ -103,6 +103,11 @@ export const getUpdateShippingTypeRequestErrorMessage = createSelector(
   updateShippingTypeError => _get(updateShippingTypeError, 'message', '')
 );
 
+export const getUpdateShippingTypeRequestErrorCategory = createSelector(
+  getUpdateShippingTypeError,
+  updateShippingTypeError => _get(updateShippingTypeError, 'name', '')
+);
+
 export const getOrderDeliveryInfo = createSelector(getOrder, order => {
   if (!order) {
     return null;

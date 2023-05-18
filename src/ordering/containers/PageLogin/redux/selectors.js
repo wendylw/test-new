@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import Constants from '../../../../utils/constants';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { getOtpRequest, getIsLoginRequestStatusPending } from '../../../redux/modules/app';
+import { ERROR_TYPES } from '../../../../utils/api/constants';
 
 const {
   OTP_REQUEST_TYPES,
@@ -21,6 +22,8 @@ export const getOtpRequestError = createSelector(getOtpRequest, otp => otp.error
 export const getOtpType = createSelector(getOtpRequest, otp => _get(otp, 'data.type', null));
 
 export const getOtpErrorCode = createSelector(getOtpRequestError, error => _get(error, 'code', null));
+
+export const getOtpErrorName = createSelector(getOtpRequestError, error => _get(error, 'name', null));
 
 export const getIsOtpRequestStatusPending = createSelector(
   getOtpRequestStatus,
@@ -80,7 +83,10 @@ export const getShouldShowErrorPopUp = createSelector(
   }
 );
 
-export const getShouldShowNetworkErrorPopUp = createSelector(getOtpRequestError, error => error instanceof TypeError);
+export const getShouldShowNetworkErrorPopUp = createSelector(
+  getOtpErrorName,
+  errorName => errorName === ERROR_TYPES.NETWORK_ERROR
+);
 
 export const getShouldShowOtpApiErrorPopUp = createSelector(
   getOtpErrorCode,

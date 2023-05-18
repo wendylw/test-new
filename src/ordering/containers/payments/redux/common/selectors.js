@@ -156,6 +156,10 @@ export const getInitPaymentRequestErrorMessage = createSelector(getInitPaymentRe
   _get(initRequestError, 'message', '')
 );
 
+export const getInitPaymentRequestErrorCategory = createSelector(getInitPaymentRequestError, initRequestError =>
+  _get(initRequestError, 'name', '')
+);
+
 export const getIsInitPaymentRequestStatusRejected = createSelector(
   getInitPaymentRequestStatus,
   initRequestStatus => initRequestStatus === API_REQUEST_STATUS.REJECTED

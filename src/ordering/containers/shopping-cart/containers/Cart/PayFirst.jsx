@@ -110,20 +110,6 @@ class PayFirst extends Component {
     if (error) {
       await appActions.loadShoppingCart();
 
-      // duplicate log can be removed in future
-      logger.error(
-        'Ordering_Cart_CheckStockStatusFailed',
-        {
-          message: _get(error, 'message', ''),
-        },
-        {
-          bizFlow: {
-            flow: KEY_EVENTS_FLOWS.CHECKOUT,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SUBMIT_ORDER,
-          },
-        }
-      );
-
       return;
     }
 
