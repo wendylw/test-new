@@ -67,7 +67,6 @@ export const mounted = createAsyncThunk('loyalty/storeRedemption/mounted', async
 
     if (requestId) {
       await dispatch(updateShareConsumerInfoRequests());
-      dispatch(confirmToShareConsumerInfoRequests());
     }
   } catch (error) {
     logger.error('Loyalty_StoreRedemption_mountedFailed', { message: error?.message });
