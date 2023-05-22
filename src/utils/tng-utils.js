@@ -1,10 +1,33 @@
+import _get from 'lodash/get';
 import MessagePortal from './message-portal';
 import debug from './debug';
 import Utils from './utils';
+import logger from './monitoring/logger';
 
 export const TNG_MINI_PROGRAM_ENV_LIST = {
   SANDBOX: 'SBX',
   PRODUCTION: 'PROD',
+};
+
+export const getMessagePortalErrorData = errorMessage => {
+  try {
+    // WB-5331: Normally, TnG JS Bridge will return an error object with the following structure:
+    // {
+    //  error: '10',
+    //  errorMessage: 'native node is null',
+    //  message: 'native node is null',
+    //  startTime: '3987877824'
+    // }
+    const data = JSON.parse(errorMessage);
+
+    return {
+      code: _get(data, 'error', ''),
+      message: _get(data, 'errorMessage', ''),
+    };
+  } catch (e) {
+    // If any unexpected error occurs, only return the original error message
+    return { message: errorMessage };
+  }
 };
 
 const initMessagePortal = () => {
@@ -33,11 +56,16 @@ export const callMessagePortal = async (method, data) => {
     const messagePortal = getMessagePortal();
     const result = await messagePortal.call(method, data);
     debug('[TNG utils] call success method: %s\n parameter: %o\n result: %o', method, data, result);
+    logger.log('Utils_MessagePortal_CallAPISucceeded', { method });
     return result;
   } catch (error) {
     debug('[TNG utils] call fail method: %s\n parameter: %o\n error: %o', method, data, error);
-    // eslint-disable-next-line no-console
-    console.error('TNG Utils callMessagePortal:', error?.message || '');
+    const errorData = getMessagePortalErrorData(error?.message);
+    logger.error('Utils_MessagePortal_CallAPIFailed', {
+      method,
+      ...errorData,
+      stack: _get(error, 'stack', ''),
+    });
     throw error;
   }
 };
