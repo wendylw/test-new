@@ -9,7 +9,7 @@ const RecentActivities = lazy(() =>
 const Claim = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_CL" */ './Claim')));
 const Home = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_HM" */ './Home')));
 const StoreRedemption = lazy(() =>
-  Utils.attemptLoad(() => import(/* webpackChunkName: "CB_HM" */ './StoreRedemption'))
+  Utils.attemptLoad(() => import(/* webpackChunkName: "CB_SR" */ './StoreRedemption'))
 );
 const Error = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_ERR" */ './Error')));
 
