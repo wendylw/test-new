@@ -3,6 +3,7 @@ import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
 import _sumBy from 'lodash/sumBy';
 import _map from 'lodash/map';
+import _escapeRegExp from 'lodash/escapeRegExp';
 import { API_REQUEST_STATUS, SHIPPING_TYPES } from '../../../../../common/utils/constants';
 import { getOpeningHours } from '../../../../../common/utils/index';
 import { getCartQuantity, getCartQuantityByProductId, getIsFulfillMinimumConsumption } from '../cart/selectors';
@@ -256,7 +257,7 @@ export const getSearchingProducts = createSelector(
             searchCheckingContent.push(product.description);
           }
           // title or description ignore case matching keywords
-          const keywordRegex = new RegExp(keyword, 'i');
+          const keywordRegex = new RegExp(_escapeRegExp(keyword), 'i');
 
           return searchCheckingContent.join(' ').match(keywordRegex);
         })
