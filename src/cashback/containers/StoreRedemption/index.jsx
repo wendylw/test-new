@@ -16,7 +16,7 @@ import { mounted, confirmToShareConsumerInfoRequests } from './redux/thunks';
 import Loader from '../../../common/components/Loader';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
-import PowerByBeepLogo from '../../../images/powered-by-beep-logo.svg';
+import PowerByStoreHubLogo from '../../../images/power-by-storehub-logo.svg';
 import BeepAppLogo from '../../../images/app-beep-logo.svg';
 import TNGAppLogo from '../../../images/app-tng-logo.svg';
 import '../../../common/styles/base.scss';
@@ -90,7 +90,7 @@ const StoreRedemption = () => {
       <div className={`${styles.StoreRedemptionWeb} tw-flex tw-flex-col`}>
         <header className={styles.StoreRedemptionHeader}>
           <h1 className={styles.StoreRedemptionHeaderLogoContainer}>
-            <img src={PowerByBeepLogo} alt="StoreHub Redemption power by beep" />
+            <img src={PowerByStoreHubLogo} alt="StoreHub Redemption power by StoreHub" />
           </h1>
         </header>
         <section className={styles.StoreRedemptionWebContent}>
