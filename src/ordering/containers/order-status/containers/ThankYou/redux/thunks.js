@@ -22,6 +22,7 @@ import {
 import { getOrder } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
 import logger from '../../../../../../utils/monitoring/logger';
+import { getRedirectFrom } from './selector';
 
 export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/fetchCashbackInfo', async orderId => {
   try {
@@ -177,16 +178,17 @@ export const updateRedirectFrom = createAsyncThunk('ordering/orderStatus/thankYo
 
 export const initProfilePage = createAsyncThunk(
   'ordering/orderStatus/thankYou/loadProfilePageInfo',
-  async ({ from }, { dispatch, getState }) => {
+  async (_, { dispatch, getState }) => {
     try {
       // Delay Profile display duration
-      const delay = PROFILE_DISPLAY_DELAY_DURATION[from] || PROFILE_DISPLAY_DELAY_DURATION.DEFAULT;
       const state = getState();
+      const from = getRedirectFrom(state);
       const userIsLogin = getUserIsLogin(state);
       const consumerId = getUserConsumerId(state);
       const isUserProfileStatusFulfilled = getIsUserProfileStatusFulfilled(state);
       const isProfileMissingSkippedExpired = getIsProfileMissingSkippedExpired(state);
       const isWebview = getIsWebview(state);
+      const delay = PROFILE_DISPLAY_DELAY_DURATION[from] || PROFILE_DISPLAY_DELAY_DURATION.DEFAULT;
 
       // First must to confirm profile info is loaded
       if (userIsLogin && !isUserProfileStatusFulfilled) {

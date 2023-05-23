@@ -23,7 +23,7 @@ import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
 import { getPaidToCurrentEventDurationMinutes } from './utils';
 import Constants from '../../../../../utils/constants';
-import { BEFORE_PAID_STATUS_LIST, REFERRERS_REQUIRING_PROFILE } from './constants';
+import { BEFORE_PAID_STATUS_LIST } from './constants';
 import {
   gtmEventTracking,
   gtmSetPageViewData,
@@ -91,6 +91,7 @@ import {
   getUpdateShippingTypeRequestErrorMessage,
   getUpdateShippingTypeRequestErrorCategory,
   getIsInitProfilePageEnabled,
+  getRedirectFrom,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -114,22 +115,6 @@ const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Bee
 const otherText = 'Download the Beep app to track your Order History!';
 const otherLink = 'https://dl.beepit.com/kVmT';
 
-const getIsInitProfilePageEnabled = (isLogin, from, hasOrderPaid) => {
-  if (!isLogin) {
-    return false;
-  }
-
-  if (REFERRERS_REQUIRING_PROFILE.includes(from) && from !== REFERRER_SOURCE_TYPES.PAY_AT_COUNTER) {
-    return true;
-  }
-
-  if (hasOrderPaid && from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER) {
-    return true;
-  }
-
-  return false;
-};
-
 export class ThankYou extends PureComponent {
   constructor(props) {
     super(props);
@@ -140,7 +125,6 @@ export class ThankYou extends PureComponent {
       phoneCopyTitle: '',
       phoneCopyContent: '',
       hasRecordedChargedEvent: false,
-      from: null,
     };
   }
 
@@ -163,7 +147,7 @@ export class ThankYou extends PureComponent {
     const { isInitProfilePageEnabled } = this.props;
 
     if (isInitProfilePageEnabled) {
-      await initProfilePage({ from });
+      await initProfilePage();
     }
 
     // expected delivery time is for pre order
@@ -376,7 +360,12 @@ export class ThankYou extends PureComponent {
   };
 
   async componentDidUpdate(prevProps) {
-    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo, hasOrderPaid: prevHasOrderPaid } = prevProps;
+    const {
+      order: prevOrder,
+      onlineStoreInfo: prevOnlineStoreInfo,
+      hasOrderPaid: prevHasOrderPaid,
+      isInitProfilePageEnabled: prevIsInitProfilePageEnabled,
+    } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const {
       order,
@@ -391,13 +380,11 @@ export class ThankYou extends PureComponent {
       initProfilePage,
       isInitProfilePageEnabled: currIsInitProfilePageEnabled,
     } = this.props;
-    const { from } = this.state;
     const { storeId } = order || {};
-    const prevIsInitProfilePageEnabled = getIsInitProfilePageEnabled(prevProps.user.isLogin, from, prevHasOrderPaid);
 
     // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
     if (!prevIsInitProfilePageEnabled && currIsInitProfilePageEnabled) {
-      await initProfilePage({ from });
+      await initProfilePage();
     }
 
     if (storeId && prevStoreId !== storeId) {
@@ -412,7 +399,7 @@ export class ThankYou extends PureComponent {
 
     if (
       !this.state.hasRecordedChargedEvent &&
-      this.state.from === 'payment' &&
+      this.props.redirectFrom === REFERRER_SOURCE_TYPES.PAYMENT &&
       this.props.order &&
       onlineStoreInfo &&
       isCoreBusinessAPICompleted
@@ -1138,6 +1125,7 @@ export default compose(
       updateShippingTypeRequestErrorCategory: getUpdateShippingTypeRequestErrorCategory(state),
       updateShippingTypRequestErrorMessage: getUpdateShippingTypeRequestErrorMessage(state),
       isInitProfilePageEnabled: getIsInitProfilePageEnabled(state),
+      redirectFrom: getRedirectFrom(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
