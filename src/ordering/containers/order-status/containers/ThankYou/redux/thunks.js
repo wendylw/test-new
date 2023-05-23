@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
+import { getCookieVariable } from '../../../../../../common/utils';
 import { alert } from '../../../../../../common/feedback';
 import { API_INFO, postFoodCourtIdHashCode } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
@@ -12,7 +13,6 @@ import { PROFILE_DISPLAY_DELAY_DURATION } from '../constants';
 import {
   actions as appActions,
   getBusinessInfo,
-  getUser,
   getUserIsLogin,
   getUserConsumerId,
   getIsUserProfileStatusFulfilled,
@@ -168,6 +168,12 @@ export const callNativeProfile = createAsyncThunk(
     }
   }
 );
+
+export const updateRedirectFrom = createAsyncThunk('ordering/orderStatus/thankYou/updateRedirectFrom', async () => {
+  const from = getCookieVariable('__ty_source');
+
+  return from;
+});
 
 export const initProfilePage = createAsyncThunk(
   'ordering/orderStatus/thankYou/loadProfilePageInfo',

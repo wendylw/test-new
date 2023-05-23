@@ -9,7 +9,7 @@ import {
   loadFoodCourtIdHashCode,
   showProfileModal,
   hideProfileModal,
-  callNativeProfile,
+  updateRedirectFrom,
 } from './thunks';
 
 const initialState = {
@@ -31,6 +31,7 @@ const initialState = {
   foodCourtInfo: {
     hashCode: null,
   },
+  redirectFrom: null,
 };
 
 const { reducer, actions } = createSlice({
@@ -45,6 +46,9 @@ const { reducer, actions } = createSlice({
     },
   },
   extraReducers: {
+    [updateRedirectFrom.fulfilled.type]: (state, { payload }) => {
+      state.redirectFrom = payload;
+    },
     [loadCashbackInfo.pending.type]: state => {
       state.updateCashbackInfoStatus = 'pending';
     },
