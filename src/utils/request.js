@@ -185,7 +185,7 @@ async function handleResponse(url, response, method, requestStart) {
               error: REQUEST_ERROR_KEYS[code],
               code: body.code?.toString(),
               requestStart,
-              status: response.status,
+              status: 401,
             },
           })
         );
@@ -203,7 +203,7 @@ async function handleResponse(url, response, method, requestStart) {
               code: '99999',
               error: e.message,
               requestStart,
-              status: response.status,
+              status: 401,
             },
           })
         );
