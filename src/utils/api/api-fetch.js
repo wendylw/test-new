@@ -78,33 +78,34 @@ async function _fetch(url, opts) {
     windowDispatchEvent('sh-api-success', url, opts, { status: response.status });
 
     return result;
-  } catch (error) {
-    if (!error.response) {
+  } catch (e) {
+    if (!e.response) {
       // Send log to Log service
-      windowDispatchEvent('sh-fetch-error', url, opts, { error: error?.message || '' });
+      windowDispatchEvent('sh-fetch-error', url, opts, { error: e?.message || '' });
 
       let category = '';
-      if (error.name === 'AbortError') {
+      if (e.name === 'AbortError') {
         category = ERROR_TYPES.ABORT_ERROR;
-      } else if (error.name === 'TimeoutError') {
+      } else if (e.name === 'TimeoutError') {
         category = ERROR_TYPES.TIMEOUT_ERROR;
       }
       const errorOptions = {
         category: category || ERROR_TYPES.NETWORK_ERROR,
       };
-      throw new ApiFetchError(error?.message, errorOptions);
+      throw new ApiFetchError(e?.message, errorOptions);
     }
 
-    const { response, message: apiMessage } = error;
+    const { response, message: apiMessage } = e;
     const { status } = response;
     const errorBody = await parseResponse(response);
-    const { message, code, extra } = typeof errorBody === 'object' && errorBody ? errorBody : {};
+    const { message, code, extra, error } = typeof errorBody === 'object' && errorBody ? errorBody : {};
     const errorMessage = code ? message : apiMessage;
     const errorOptions = {
       category: ERROR_TYPES.UNKNOWN_ERROR,
       code: code || '50000',
       status,
       extra,
+      error,
     };
 
     if (status >= 400 && status < 499) {
