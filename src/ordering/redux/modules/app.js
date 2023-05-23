@@ -967,10 +967,17 @@ const user = (state = initialState.user, action) => {
           isFetching: false,
           loginRequestStatus: API_REQUEST_STATUS.REJECTED,
           loginByBeepAppStatus,
+          loginAppErrorCategory: error?.category,
         };
       }
 
-      return { ...state, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED, loginByBeepAppStatus };
+      return {
+        ...state,
+        isFetching: false,
+        loginRequestStatus: API_REQUEST_STATUS.REJECTED,
+        loginByBeepAppStatus,
+        loginAppErrorCategory: error?.category,
+      };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
 
@@ -1370,6 +1377,8 @@ export const getApiError = state => state.app.apiError;
 export const getUserLoginRequestStatus = state => state.app.user.loginRequestStatus;
 
 export const getUserLoginByBeepAppStatus = state => state.app.user.loginByBeepAppStatus;
+
+export const getloginAppErrorCategory = state => state.app.user.loginAppErrorCategory;
 
 export const getUserProfile = state => state.app.user.profile;
 

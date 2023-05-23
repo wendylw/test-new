@@ -30,6 +30,7 @@ import {
   getOnlineCategoryErrorCategory,
   getIsGetCartFailed,
   getCartErrorCategory,
+  getloginAppErrorCategory,
 } from '../../../../redux/modules/app';
 import {
   getIsProductListReady,
@@ -905,6 +906,7 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
   // WB-4690: If users are unable to log in, then they will be stuck on the menu page.
   // We need to log this failure event for further troubleshooting.
   // NOTE: We probably will change the way how we log this event by the login refactor
+  const loginAppErrorCategory = getloginAppErrorCategory(getState());
   logger.error(
     'Ordering_Menu_ReviewCartFailed',
     {
@@ -916,6 +918,7 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
         flow: KEY_EVENTS_FLOWS.LOGIN,
         step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SIGN_INTO_APP,
       },
+      errorCategory: loginAppErrorCategory,
     }
   );
 });
