@@ -3,6 +3,31 @@
   width: 100%;
 }
 
+.StoreRedemptionWeb {
+  @extend .StoreRedemption;
+  @apply tw-fixed tw-left-0 tw-right-0;
+
+  margin: auto;
+  max-width: 414px;
+}
+
+.StoreRedemptionHeader {
+  @apply tw-flex tw-justify-between tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
+
+  max-height: 48px;
+}
+
+.StoreRedemptionHeaderLogoContainer {
+  @apply tw-flex tw-items-center tw-flex-shrink-0 tw-p-16 sm:tw-p-16px tw-h-full;
+}
+
 .StoreRedemptionContent {
   margin-top: -24px;
+}
+
+.StoreRedemptionWebContent {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-flex-1 tw-bg-no-repeat tw-bg-center;
+
+  background-image: url("../../../images/store-redemption-web-background.jpg");
+  background-size: 100% 100%;
 }

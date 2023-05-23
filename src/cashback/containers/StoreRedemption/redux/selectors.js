@@ -15,14 +15,14 @@ import {
 } from '../../../redux/modules/app';
 
 /**
- *
+ * get store redemption request id
  * @param {*} state
  * @returns string
  */
 export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 'requestId', null);
 
 /**
- *
+ * get consumer share info available status
  * @param {*} state
  * @returns boolean
  */
