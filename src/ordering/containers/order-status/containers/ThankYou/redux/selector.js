@@ -2,7 +2,12 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants from '../../../../../../utils/constants';
-import { CASHBACK_CAN_CLAIM_STATUS_LIST, AFTER_PAID_STATUS_LIST, CASHBACK_CLAIMED_STATUS_LIST } from '../constants';
+import {
+  CASHBACK_CAN_CLAIM_STATUS_LIST,
+  AFTER_PAID_STATUS_LIST,
+  CASHBACK_CLAIMED_STATUS_LIST,
+  REFERRERS_REQUIRING_PROFILE,
+} from '../constants';
 import {
   getOrder,
   getOrderStatus,
@@ -23,11 +28,13 @@ import {
   getAllowAnonymousQROrdering,
 } from '../../../../../redux/modules/app';
 
-const { ORDER_STATUS, DELIVERY_METHOD, API_REQUEST_STATUS } = Constants;
+const { ORDER_STATUS, DELIVERY_METHOD, API_REQUEST_STATUS, REFERRER_SOURCE_TYPES } = Constants;
 
 export const getStoreHashCode = state => state.orderStatus.thankYou.storeHashCode;
 
 export const getCashbackInfo = state => state.orderStatus.thankYou.cashbackInfo;
+
+export const getRedirectFrom = state => state.orderStatus.thankYou.redirectFrom;
 
 export const getOrderCancellationReasonAsideVisible = state =>
   state.orderStatus.thankYou.orderCancellationReasonAsideVisible;
@@ -197,4 +204,25 @@ export const getShouldShowStoreReviewCard = createSelector(
   getHasStoreReviewed,
   getIsStoreReviewable,
   (hasOrderPaid, hasReviewed, isReviewable) => hasOrderPaid && isReviewable && !hasReviewed
+);
+
+export const getIsInitProfilePageEnabled = createSelector(
+  getRedirectFrom,
+  getUserIsLogin,
+  getHasOrderPaid,
+  (redirectFrom, isLogin, hasOrderPaid) => {
+    if (!isLogin) {
+      return false;
+    }
+
+    if (REFERRERS_REQUIRING_PROFILE.includes(redirectFrom) && redirectFrom !== REFERRER_SOURCE_TYPES.PAY_AT_COUNTER) {
+      return true;
+    }
+
+    if (hasOrderPaid && redirectFrom === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER) {
+      return true;
+    }
+
+    return false;
+  }
 );

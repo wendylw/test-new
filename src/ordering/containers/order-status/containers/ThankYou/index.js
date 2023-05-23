@@ -74,6 +74,7 @@ import {
   loadFoodCourtIdHashCode,
   initProfilePage,
   hideProfileModal,
+  updateRedirectFrom,
 } from './redux/thunks';
 import {
   getCashback,
@@ -89,6 +90,7 @@ import {
   getIsUpdateShippingTypeRequestRejected,
   getUpdateShippingTypeRequestErrorMessage,
   getUpdateShippingTypeRequestErrorCategory,
+  getIsInitProfilePageEnabled,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -145,8 +147,7 @@ export class ThankYou extends PureComponent {
   pollOrderStatusTimer = null;
 
   componentDidMount = async () => {
-    const { user, loadCashbackInfo, loadOrderStoreReview, initProfilePage } = this.props;
-    const { isLogin } = user || {};
+    const { user, loadCashbackInfo, loadOrderStoreReview, initProfilePage, updateRedirectFrom } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
     loadCashbackInfo(receiptNumber);
@@ -154,20 +155,16 @@ export class ThankYou extends PureComponent {
     // BEEP-3035: we don't need to wait for the API response, just dispatch the API silently
     loadOrderStoreReview();
 
-    const from = Utils.getCookieVariable('__ty_source');
-
-    this.setState({ from }, async () => {
-      const { hasOrderPaid } = this.props;
-      const { from } = this.state;
-      const isInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, hasOrderPaid);
-
-      if (isInitProfilePageEnabled) {
-        await initProfilePage({ from });
-      }
+    await updateRedirectFrom().then(() => {
+      // immediately remove __ty_source cookie after setting in the state.
+      Utils.removeCookieVariable('__ty_source');
     });
 
-    // immidiately remove __ty_source cookie after setting in the state.
-    Utils.removeCookieVariable('__ty_source');
+    const { isInitProfilePageEnabled } = this.props;
+
+    if (isInitProfilePageEnabled) {
+      await initProfilePage({ from });
+    }
 
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
@@ -392,11 +389,10 @@ export class ThankYou extends PureComponent {
       loadOrderStoreReview,
       hasOrderPaid: currHasOrderPaid,
       initProfilePage,
+      isInitProfilePageEnabled: currIsInitProfilePageEnabled,
     } = this.props;
     const { from } = this.state;
-    const { isLogin } = user || {};
     const { storeId } = order || {};
-    const currIsInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, currHasOrderPaid);
     const prevIsInitProfilePageEnabled = getIsInitProfilePageEnabled(prevProps.user.isLogin, from, prevHasOrderPaid);
 
     // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
@@ -1141,6 +1137,7 @@ export default compose(
       isUpdateShippingTypeRequestFailed: getIsUpdateShippingTypeRequestRejected(state),
       updateShippingTypeRequestErrorCategory: getUpdateShippingTypeRequestErrorCategory(state),
       updateShippingTypRequestErrorMessage: getUpdateShippingTypeRequestErrorMessage(state),
+      isInitProfilePageEnabled: getIsInitProfilePageEnabled(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
@@ -1157,6 +1154,7 @@ export default compose(
       loadFoodCourtIdHashCode: bindActionCreators(loadFoodCourtIdHashCode, dispatch),
       initProfilePage: bindActionCreators(initProfilePage, dispatch),
       hideProfileModal: bindActionCreators(hideProfileModal, dispatch),
+      updateRedirectFrom: bindActionCreators(updateRedirectFrom, dispatch),
     })
   )
 )(ThankYou);
