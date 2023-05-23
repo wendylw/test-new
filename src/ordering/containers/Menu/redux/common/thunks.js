@@ -27,6 +27,7 @@ import {
   getIsCoreBusinessRequestRejected,
   getIsCoreStoresRequestRejected,
   getIsOnlineCategoryRequestRejected,
+  getOnlineCategoryErrorCategory,
   getIsGetCartFailed,
   getCartErrorCategory,
 } from '../../../../redux/modules/app';
@@ -561,6 +562,8 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
 
     const isOnlineCategoryRequestFailed = getIsOnlineCategoryRequestRejected(getState());
 
+    const onlineCategoryErrorCategory = getOnlineCategoryErrorCategory(getState());
+
     if (isOnlineCategoryRequestFailed) {
       logger.error(
         'Ordering_loadProductListFailed',
@@ -570,6 +573,7 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
             flow: KEY_EVENTS_FLOWS.SELECTION,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
           },
+          errorCategory: onlineCategoryErrorCategory,
         }
       );
     }
