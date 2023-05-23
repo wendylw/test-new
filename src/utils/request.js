@@ -157,7 +157,7 @@ async function handleResponse(url, response, method, requestStart) {
       );
       return Promise.resolve(data);
     });
-  } else if (response.status >= 400 && response.status <= 499) {
+  } else if (response.status === 401) {
     return response
       .json()
       .catch(e => {
@@ -177,7 +177,6 @@ async function handleResponse(url, response, method, requestStart) {
       })
       .then(function(body) {
         const code = response.status;
-        const { extraInfo } = body;
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
             detail: {
@@ -187,6 +186,42 @@ async function handleResponse(url, response, method, requestStart) {
               code: body.code?.toString(),
               requestStart,
               status: response.status,
+            },
+          })
+        );
+        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code, ERROR_TYPES.BAD_REQUEST_ERROR));
+      });
+  } else if (response.status === 400 || (response.status >= 402 && response.status < 499)) {
+    return response
+      .json()
+      .catch(e => {
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: method,
+              request: url,
+              code: '99999',
+              error: e.message,
+              requestStart,
+              status: response.status,
+            },
+          })
+        );
+        return Promise.reject(new RequestError('Error Page', '50000', ERROR_TYPES.BAD_REQUEST_ERROR));
+      })
+      .then(function(body) {
+        const code = body.code || response.status;
+        const errorCode = body.code?.toString();
+        const { extraInfo } = body;
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: method,
+              request: url,
+              error: REQUEST_ERROR_KEYS[code],
+              code: errorCode,
+              status: response.status,
+              requestStart,
             },
           })
         );
