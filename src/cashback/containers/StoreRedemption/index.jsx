@@ -94,11 +94,11 @@ const StoreRedemption = () => {
           </h1>
         </header>
         <section className={styles.StoreRedemptionWebContent}>
-          <h2 className="tw-text-center tw-my-12 sm:tw-my-12px tw-text-3xl tw-leading-relaxed tw-text-gray-50 tw-font-bold">
+          <h2 className="tw-text-center tw-text-3xl tw-leading-normal tw-text-gray-50 tw-font-bold">
             Oops... <br />
             Please scan with
           </h2>
-          <div className="tw-flex tw-p-24 sm:tw-p-24px tw-my-12 sm:tw-my-12px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl">
+          <div className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl">
             <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
             <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
           </div>
