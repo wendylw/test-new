@@ -12,12 +12,14 @@ const headers = new Headers({
 
 const MAINTENANCE_PAGE_URL = process.env.REACT_APP_MAINTENANCE_PAGE_URL;
 class RequestError extends Error {
-  constructor(message, code, extraInfo) {
+  constructor(message, code, category, extraInfo) {
     super();
+    this.name = category || this.name;
 
     this.message = message;
     this.code = code;
     this.extraInfo = extraInfo;
+    this.category = category;
   }
 }
 
@@ -83,6 +85,9 @@ const fetchData = function(url, requestOptions) {
       return handleResponse(url, response, method.toLowerCase(), requestStart);
     })
     .catch(error => {
+      if (error instanceof RequestError) {
+        return Promise.reject(error);
+      }
       // NOTE: There are only 2 kinds of exceptions: AbortError or TypeError.
       // AbortError is called by ourselves so it shouldn't be treated as an error, that is why we only check the TypeError instances.
       // Refer to: https://developer.mozilla.org/en-US/docs/Web/API/fetch
@@ -152,7 +157,7 @@ async function handleResponse(url, response, method, requestStart) {
       );
       return Promise.resolve(data);
     });
-  } else if (response.status === 401) {
+  } else if (response.status >= 400 && response.status <= 499) {
     return response
       .json()
       .catch(e => {
@@ -164,14 +169,15 @@ async function handleResponse(url, response, method, requestStart) {
               code: '99999',
               error: e.message,
               requestStart,
-              status: 401,
+              status: response.status,
             },
           })
         );
-        return Promise.reject(new RequestError('Error Page', '50000'));
+        return Promise.reject(new RequestError('Error Page', '50000', ERROR_TYPES.BAD_REQUEST_ERROR));
       })
       .then(function(body) {
         const code = response.status;
+        const { extraInfo } = body;
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
             detail: {
@@ -180,11 +186,13 @@ async function handleResponse(url, response, method, requestStart) {
               error: REQUEST_ERROR_KEYS[code],
               code: body.code?.toString(),
               requestStart,
-              status: 401,
+              status: response.status,
             },
           })
         );
-        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
+        return Promise.reject(
+          new RequestError(REQUEST_ERROR_KEYS[code], code, ERROR_TYPES.BAD_REQUEST_ERROR, extraInfo)
+        );
       });
   } else {
     return response
@@ -202,7 +210,7 @@ async function handleResponse(url, response, method, requestStart) {
             },
           })
         );
-        return Promise.reject(new RequestError('Error Page', '50000'));
+        return Promise.reject(new RequestError('Error Page', '50000', ERROR_TYPES.SERVER_ERROR));
       })
       .then(function(body) {
         // NOTE: Don't change the code if you don't understand it.
@@ -221,7 +229,7 @@ async function handleResponse(url, response, method, requestStart) {
             },
           })
         );
-        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code, extraInfo));
+        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code, ERROR_TYPES.SERVER_ERROR, extraInfo));
       });
   }
 }
