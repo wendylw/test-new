@@ -121,9 +121,6 @@ export class ThankYou extends PureComponent {
 
     this.state = {
       cashbackSuccessImage,
-      showPhoneCopy: false,
-      phoneCopyTitle: '',
-      phoneCopyContent: '',
       hasRecordedChargedEvent: false,
     };
   }
@@ -554,6 +551,7 @@ export class ThankYou extends PureComponent {
 
     return targetInfo;
   };
+
   cashbackSuccessStop = () => {
     let timer = setTimeout(() => {
       this.setState({
