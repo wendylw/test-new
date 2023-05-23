@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
+import { isWebview, isTNGMiniProgram } from '../../../common/utils';
 import { getUserStoreCashback } from '../../redux/modules/app';
 import {
   getStoreDisplayTitle,
@@ -13,10 +15,13 @@ import {
 import { mounted, confirmToShareConsumerInfoRequests } from './redux/thunks';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
+import PowerByBeepLogo from '../../../images/powered-by-beep-logo.svg';
+import BeepAppLogo from '../../../images/app-beep-logo.svg';
+import TNGAppLogo from '../../../images/app-tng-logo.svg';
 import '../../../common/styles/base.scss';
 import styles from './StoreRedemption.module.scss';
 
-const StoreRedemption = () => {
+const StoreRedemptionNative = () => {
   const { t } = useTranslation('Cashback');
   const dispatch = useDispatch();
   // get store display title, storeBrandName || onlineStoreName
@@ -64,6 +69,37 @@ const StoreRedemption = () => {
       ) : null}
     </div>
   );
+};
+
+StoreRedemptionNative.displayName = 'StoreRedemptionNative';
+
+const StoreRedemption = () => {
+  const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
+
+  if (isDisplayWebResult) {
+    return createPortal(
+      <div className={`${styles.StoreRedemptionWeb} tw-flex tw-flex-col`}>
+        <header className={styles.StoreRedemptionHeader}>
+          <h1 className={styles.StoreRedemptionHeaderLogoContainer}>
+            <img src={PowerByBeepLogo} alt="StoreHub Redemption power by beep" />
+          </h1>
+        </header>
+        <section className={styles.StoreRedemptionWebContent}>
+          <h2 className="tw-text-center tw-my-12 sm:tw-my-12px tw-text-3xl tw-leading-relaxed tw-text-gray-50 tw-font-bold">
+            Oops... <br />
+            Please scan with
+          </h2>
+          <div className="tw-flex tw-p-24 sm:tw-p-24px tw-my-12 sm:tw-my-12px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl">
+            <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
+            <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+          </div>
+        </section>
+      </div>,
+      document.getElementById('modal-mount-point')
+    );
+  }
+
+  return <StoreRedemptionNative />;
 };
 
 StoreRedemption.displayName = 'StoreRedemption';
