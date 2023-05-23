@@ -679,7 +679,7 @@ export const toggleUserSaveStoreStatus = createAsyncThunk(
     const updatedSaveResult = !getHasUserSaveStore(state);
 
     saveStoreFavStatus({ consumerId, storeId, isFavorite: updatedSaveResult }).catch(error =>
-      console.error(`Ordering Menu Failed to ${updatedSaveResult ? 'save' : 'unsave'} store: ${error?.message || ''}`)
+      logger.error(`Ordering_Menu_UpdateFavStoreSaveStatus`, { message: error?.message })
     );
 
     return updatedSaveResult;

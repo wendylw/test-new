@@ -734,6 +734,32 @@ export const OTP_SERVER_ERROR_I18N_KEYS = {
   [SMS_API_ERROR_CODES.NO_AVAILABLE_PROVIDER]: 'ApiError:395012ShortDescription',
 };
 
+export const PAYMENT_FAILED_ERROR_CODES = {
+  AUTHENTICATION_REQUIRED: 'AuthenticationRequired',
+  BANK_DECLINED: 'BankDeclined',
+  CARD_EXPIRED: 'CardExpired',
+  INCORRECT_CVC: 'IncorrectCvc',
+  AMOUNT_TOO_LARGE: 'AmountTooLarge',
+  AMOUNT_TOO_SMALL: 'AmountTooSmall',
+  BALANCE_INSUFFICIENT: 'BalanceInsufficient',
+  GATE_WAY_DECLINED: 'GateWayDeclined',
+  PAYMENT_GATEWAY_ERROR: 'PaymentGatewayError',
+  UNKNOWN_ERROR: 'UnknownError',
+};
+
+export const PAYMENT_FAILED_ERROR_I18N_KEYS = {
+  [PAYMENT_FAILED_ERROR_CODES.AUTHENTICATION_REQUIRED]: 'OrderingPayment:AuthenticationRequiredDescription',
+  [PAYMENT_FAILED_ERROR_CODES.BANK_DECLINED]: 'OrderingPayment:BankDeclinedDescription',
+  [PAYMENT_FAILED_ERROR_CODES.CARD_EXPIRED]: 'OrderingPayment:CardExpiredDescription',
+  [PAYMENT_FAILED_ERROR_CODES.INCORRECT_CVC]: 'OrderingPayment:IncorrectCvcDescription',
+  [PAYMENT_FAILED_ERROR_CODES.AMOUNT_TOO_LARGE]: 'OrderingPayment:AmountTooLargeDescription',
+  [PAYMENT_FAILED_ERROR_CODES.AMOUNT_TOO_SMALL]: 'OrderingPayment:AmountTooSmallDescription',
+  [PAYMENT_FAILED_ERROR_CODES.BALANCE_INSUFFICIENT]: 'OrderingPayment:BalanceInsufficientDescription',
+  [PAYMENT_FAILED_ERROR_CODES.GATE_WAY_DECLINED]: 'OrderingPayment:GateWayDeclinedDescription',
+  [PAYMENT_FAILED_ERROR_CODES.PAYMENT_GATEWAY_ERROR]: 'OrderingPayment:PaymentGatewayErrorDescription',
+  [PAYMENT_FAILED_ERROR_CODES.UNKNOWN_ERROR]: 'OrderingPayment:UnknownErrorDescription',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -795,4 +821,6 @@ export default {
   OTP_COMMON_ERROR_TYPES,
   OTP_ERROR_POPUP_I18N_KEYS,
   OTP_SERVER_ERROR_I18N_KEYS,
+  PAYMENT_FAILED_ERROR_CODES,
+  PAYMENT_FAILED_ERROR_I18N_KEYS,
 };

@@ -181,7 +181,6 @@ export const showProductDetailDrawer = createAsyncThunk(
           }
         );
 
-        console.error('Ordering Menu showProductDetailDrawer: ', error?.message || '');
         throw error;
       }
     }
