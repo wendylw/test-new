@@ -567,7 +567,7 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
 
     if (isOnlineCategoryRequestFailed) {
       logger.error(
-        'Ordering_loadProductListFailed',
+        'Ordering_Menu_loadProductListFailed',
         { message: 'Failed to load product list' },
         {
           bizFlow: {
