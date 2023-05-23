@@ -53,43 +53,35 @@ export const getStoreDisplayTitle = createSelector(getOnlineStoreInfo, onlineSto
   return storeBrandName || onlineStoreName;
 });
 
-export const getIsDisplayStoreRedemptionContent = createSelector(
+export const getIsLoadStoreRedemptionDataCompleted = createSelector(
   getIsCoreBusinessLoaded,
   getIsLoadCoreBusinessFailed,
   getIsConsumerCustomerLoaded,
   getIsLoadConsumerCustomerFailed,
-  getIsCoreBusinessEnableCashback,
-  getUserStoreCashback,
+  getIsOnlineStoreInfoLoaded,
+  getIsLoadOnlineStoreInfoFailed,
   (
     isCoreBusinessLoaded,
     isLoadCoreBusinessFailed,
     isConsumerCustomerLoaded,
     isLoadConsumerCustomerFailed,
-    isCoreBusinessEnableCashback,
-    userStoreCashback
+    isOnlineStoreInfoLoaded,
+    isLoadOnlineStoreInfoFailed
   ) =>
     (isCoreBusinessLoaded || isLoadCoreBusinessFailed) &&
     (isConsumerCustomerLoaded || isLoadConsumerCustomerFailed) &&
-    isCoreBusinessEnableCashback &&
-    userStoreCashback > 0
+    (isOnlineStoreInfoLoaded || isLoadOnlineStoreInfoFailed)
+);
+
+export const getIsDisplayStoreRedemptionContent = createSelector(
+  getIsLoadStoreRedemptionDataCompleted,
+  getIsCoreBusinessEnableCashback,
+  getUserStoreCashback,
+  (isLoadStoreRedemptionDataCompleted, isCoreBusinessEnableCashback, userStoreCashback) =>
+    isLoadStoreRedemptionDataCompleted && isCoreBusinessEnableCashback && userStoreCashback > 0
 );
 
 export const getIsDisplayStoreRedemptionAlert = createSelector(
-  getIsOnlineStoreInfoLoaded,
-  getIsLoadOnlineStoreInfoFailed,
-  getIsCoreBusinessLoaded,
-  getIsLoadCoreBusinessFailed,
-  getIsConsumerCustomerLoaded,
-  getIsLoadConsumerCustomerFailed,
-  (
-    isOnlineStoreInfoLoaded,
-    isLoadOnlineStoreInfoFailed,
-    isCoreBusinessLoaded,
-    isLoadCoreBusinessFailed,
-    isConsumerCustomerLoaded,
-    isLoadConsumerCustomerFailed
-  ) =>
-    (isOnlineStoreInfoLoaded || isLoadOnlineStoreInfoFailed) &&
-    (isCoreBusinessLoaded || isLoadCoreBusinessFailed) &&
-    (isConsumerCustomerLoaded || isLoadConsumerCustomerFailed)
+  getIsLoadStoreRedemptionDataCompleted,
+  isLoadStoreRedemptionDataCompleted => isLoadStoreRedemptionDataCompleted
 );

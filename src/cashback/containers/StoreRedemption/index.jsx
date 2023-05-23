@@ -9,10 +9,11 @@ import { getUserStoreCashback } from '../../redux/modules/app';
 import {
   getStoreDisplayTitle,
   getIsDisplayStoreRedemptionContent,
-  getIsDisplayStoreRedemptionAlert,
+  getIsLoadStoreRedemptionDataCompleted,
   getIsAvailableToShareConsumerInfo,
 } from './redux/selectors';
 import { mounted, confirmToShareConsumerInfoRequests } from './redux/thunks';
+import Loader from '../../../common/components/Loader';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
 import PowerByBeepLogo from '../../../images/powered-by-beep-logo.svg';
@@ -29,11 +30,11 @@ const StoreRedemptionNative = () => {
   // get is display store redemption content
   const isDisplayStoreRedemptionContent = useSelector(getIsDisplayStoreRedemptionContent);
   const userStoreCashback = useSelector(getUserStoreCashback);
-  const isDisplayStoreRedemptionAlert = useSelector(getIsDisplayStoreRedemptionAlert);
+  const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isAvailableToShareConsumerInfo = useSelector(getIsAvailableToShareConsumerInfo);
 
   useEffect(() => {
-    if (isDisplayStoreRedemptionAlert) {
+    if (isLoadStoreRedemptionDataCompleted) {
       alert(
         <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
           {userStoreCashback > 0
@@ -45,7 +46,7 @@ const StoreRedemptionNative = () => {
         }
       );
     }
-  }, [userStoreCashback, isDisplayStoreRedemptionAlert, storeDisplayTitle, t]);
+  }, [userStoreCashback, isLoadStoreRedemptionDataCompleted, storeDisplayTitle, t]);
 
   useEffect(() => {
     if (isAvailableToShareConsumerInfo) {
@@ -59,14 +60,20 @@ const StoreRedemptionNative = () => {
 
   return (
     <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>
-      <RedemptionStoreInfo />
-      {isDisplayStoreRedemptionContent ? (
-        <section
-          className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}
-        >
-          <CashbackBlock />
-        </section>
-      ) : null}
+      {isLoadStoreRedemptionDataCompleted ? (
+        <>
+          <RedemptionStoreInfo />
+          {isDisplayStoreRedemptionContent ? (
+            <section
+              className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}
+            >
+              <CashbackBlock />
+            </section>
+          ) : null}
+        </>
+      ) : (
+        <Loader />
+      )}
     </div>
   );
 };
