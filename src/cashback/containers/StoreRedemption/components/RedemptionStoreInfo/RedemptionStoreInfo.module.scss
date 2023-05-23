@@ -7,10 +7,16 @@
 }
 
 .StoreRedemptionStoreLogo {
+  @apply tw-rounded;
+
   width: 22.35vw;
   height: 22.35vw;
   max-width: 80px;
   max-height: 80px;
+}
+
+.StoreRedemptionStoreName {
+  @apply tw-flex tw-items-center tw-text-xl tw-py-12 sm:tw-py-12px tw-my-0 tw-leading-relaxed;
 }
 
 @media (min-width: 770px) {
