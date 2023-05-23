@@ -21,7 +21,7 @@ import TNGAppLogo from '../../../images/app-tng-logo.svg';
 import '../../../common/styles/base.scss';
 import styles from './StoreRedemption.module.scss';
 
-const StoreRedemption = () => {
+const StoreRedemptionNative = () => {
   const { t } = useTranslation('Cashback');
   const dispatch = useDispatch();
   // get store display title, storeBrandName || onlineStoreName
@@ -31,7 +31,6 @@ const StoreRedemption = () => {
   const userStoreCashback = useSelector(getUserStoreCashback);
   const isDisplayStoreRedemptionAlert = useSelector(getIsDisplayStoreRedemptionAlert);
   const isAvailableToShareConsumerInfo = useSelector(getIsAvailableToShareConsumerInfo);
-  const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
 
   useEffect(() => {
     if (isDisplayStoreRedemptionAlert) {
@@ -58,6 +57,25 @@ const StoreRedemption = () => {
     await dispatch(mounted());
   });
 
+  return (
+    <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>
+      <RedemptionStoreInfo />
+      {isDisplayStoreRedemptionContent ? (
+        <section
+          className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}
+        >
+          <CashbackBlock />
+        </section>
+      ) : null}
+    </div>
+  );
+};
+
+StoreRedemptionNative.displayName = 'StoreRedemptionNative';
+
+const StoreRedemption = () => {
+  const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
+
   if (isDisplayWebResult) {
     return createPortal(
       <div className={`${styles.StoreRedemptionWeb} tw-flex tw-flex-col`}>
@@ -81,18 +99,7 @@ const StoreRedemption = () => {
     );
   }
 
-  return (
-    <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>
-      <RedemptionStoreInfo />
-      {isDisplayStoreRedemptionContent ? (
-        <section
-          className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}
-        >
-          <CashbackBlock />
-        </section>
-      ) : null}
-    </div>
-  );
+  return <StoreRedemptionNative />;
 };
 
 StoreRedemption.displayName = 'StoreRedemption';
