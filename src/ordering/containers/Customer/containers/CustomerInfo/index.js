@@ -163,9 +163,18 @@ class CustomerInfo extends Component {
 
     if (error.show) {
       customerInfoActions.setCustomerError(error);
-      logger.error('Ordering_CustomerInfo_CreateOrderFailed', {
-        message: error.message,
-      });
+      logger.log(
+        'Ordering_CustomerInfo_CreateOrderFailed',
+        {
+          message: error.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SUBMIT_ORDER,
+          },
+        }
+      );
     } else {
       this.setState({ processing: true });
     }

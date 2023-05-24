@@ -213,7 +213,16 @@ export const showProductDetailDrawer = createAsyncThunk(
       throw new Error('Unknown reason');
     } catch (error) {
       await dispatch(saveSelectedProductItemInfo({ productId, categoryId }));
-      logger.error('Ordering_Menu_ShowProductDetailDrawerFailed', { message: error?.message });
+      logger.log(
+        'Ordering_Menu_ShowProductDetailDrawerFailed',
+        { message: error?.message },
+        {
+          bizFlow: {
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
+            flow: KEY_EVENTS_FLOWS.SELECTION,
+          },
+        }
+      );
       throw error;
     }
   }
