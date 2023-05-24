@@ -141,7 +141,6 @@ function del(url, data, options) {
   });
 }
 
-// TODO: Categorize error with response under nowadays requirement (api-fetch-error)
 async function handleResponse(url, response, method, requestStart) {
   if (response.status === 200) {
     return response.json().then(data => {
