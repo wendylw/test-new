@@ -136,10 +136,7 @@ export class ThankYou extends PureComponent {
     // BEEP-3035: we don't need to wait for the API response, just dispatch the API silently
     loadOrderStoreReview();
 
-    await updateRedirectFrom().then(() => {
-      // immediately remove __ty_source cookie after setting in the state.
-      Utils.removeCookieVariable('__ty_source');
-    });
+    await updateRedirectFrom();
 
     const { isInitProfilePageEnabled } = this.props;
 

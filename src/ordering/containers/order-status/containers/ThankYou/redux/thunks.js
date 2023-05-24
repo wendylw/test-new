@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
-import { getCookieVariable } from '../../../../../../common/utils';
+import { getCookieVariable, removeCookieVariable } from '../../../../../../common/utils';
 import { alert } from '../../../../../../common/feedback';
 import { API_INFO, postFoodCourtIdHashCode } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
@@ -172,6 +172,9 @@ export const callNativeProfile = createAsyncThunk(
 
 export const updateRedirectFrom = createAsyncThunk('ordering/orderStatus/thankYou/updateRedirectFrom', async () => {
   const from = getCookieVariable('__ty_source');
+
+  // immediately remove __ty_source cookie after setting in the state.
+  removeCookieVariable('__ty_source');
 
   return from;
 });
