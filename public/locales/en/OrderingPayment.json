@@ -51,5 +51,16 @@
   "SecurityHint": "Our card payment service is under PCI compliance protection to protect and encrypt cardholder data transmissions. <1>Know more here</1>",
   "TimeOut": "Time Out",
   "RiskyCardNumberMessage": "There is an issue with this transaction. Please try a different card to complete this payment",
-  "GoBack": "Go back"
+  "GoBack": "Go back",
+  "GeneralPaymentFailedDescription": "We could not process your online payment. Please try a different payment method.",
+  "AuthenticationRequiredDescription": "Oops! Authentication failed. No charge has been made. Please try again or contact your bank if this keeps happening. However, we encourage you to try a different payment method.",
+  "BankDeclinedDescription": "Sorry! We’re unable to process your payment because it was declined by your bank. Please try a different payment method or contact your bank for further assistance.",
+  "CardExpiredDescription": "Your card has expired. Please enter a valid card and try again.",
+  "IncorrectCvcDescription": "Your CVC number is invalid. Please check and try again.",
+  "AmountTooLargeDescription": "Sorry! Your payment amount has exceeded the limit. Please reduce the amount and try again.",
+  "AmountTooSmallDescription": "Sorry, your payment didn't meet the minimum amount. Please add the amount and try again.",
+  "BalanceInsufficientDescription": "Sorry! Your payment cannot be processed due to insufficient balance. Please top-up or use a different payment method.",
+  "GateWayDeclinedDescription": "Your payment was declined by the third-party payment provider. Please try a different payment method.",
+  "PaymentGatewayErrorDescription": "Your payment failed due to an unexpected error. Please try again later or use a different payment method.",
+  "UnknownErrorDescription": "Your payment failed due to an unexpected error. If you’ve been charged, {{ paidAmount }} will be refunded to you in {{ refundDays }} days. For now, please try again or use a different payment method."
 }

@@ -287,7 +287,7 @@ export class ThankYou extends PureComponent {
         this.closeMap();
       }
     } catch (error) {
-      console.error('Ordering ThankYou updateAppLocationAndStatus: ', error?.message || '');
+      logger.error('Ordering_OrderStatus_UpdateAppMapFailed', { message: error?.message });
     }
   };
 
