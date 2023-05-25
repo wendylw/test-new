@@ -7,6 +7,14 @@ export const getErrorMessageFromHint = ({ originalException, syntheticException 
   return originalException?.message || syntheticException?.message || 'UnknownSentryErrorMessage';
 };
 
+export const getErrorTypeFromHint = ({ originalException }) => {
+  if (typeof originalException === 'string') {
+    return originalException;
+  }
+
+  return originalException?.name || 'UnknownSentryErrorType';
+};
+
 export const getIsErrorExceptionValueFromEvent = (event, value) => {
   const values = event.exception.values;
   const exceptionValue = values.find(valueItem => valueItem.value === value);
@@ -239,6 +247,49 @@ const isVivoBrowserIssues = (event, hint) => {
   }
 };
 
+const isNetworkIssues = (event, hint) => {
+  // These issues are related to poor network conditions.
+  try {
+    const type = getErrorTypeFromHint(hint);
+    const message = getErrorMessageFromHint(hint);
+
+    /**
+     * WB-5088: The errors thrown directly from Chrome browser should be ignored.
+     * Reasons:
+     * 1. globalThis is not supported until Chrome for Android 91 version
+     * 2. If the client fails to load polyfill, it will throw this error.
+     * 3. We already track the polyfill load failure case. It's safe to filter this error out.
+     */
+    const isPolyfillLoadError = message.includes('globalThis is not defined');
+
+    /**
+     * Filter out the errors thrown by the chunk loading failure.
+     * Tickets: WB-4570 & WB-3704 & WB-2467:
+     * Reasons:
+     * 1. Chunk errors are not harmful since clients can fix them (mostly because of network issues).
+     * 2. To better track static asset errors, we should use Kibana rather than Sentry.
+     */
+    const chunkErrorRegex = /(Loading (CSS )?chunk \d+ failed)/;
+    const isChunkLoadError = type === 'ChunkLoadError' || chunkErrorRegex.test(message);
+
+    /**
+     * Filter out the errors thrown by the poor network conditions.
+     * Tickets: WB-5343 & WB-5379 & WB-2495 & WB-5427 & WB-5428
+     * Reasons:
+     * 1. Nothing can be done on our side.
+     * 2. If users switch to the strong network and refresh the page, the error will disappear.
+     * 3. FE already tracked the script load failure on New Relic while BE took over all service requests.
+     * 4. It's safe to filter this error out.
+     */
+    const poorNetworkIssues = [/Failed to fetch/, /Load failed/, /Network Error/];
+    const isPoorNetworkError = type === 'NetworkError' || poorNetworkIssues.some(issue => issue.test(message));
+
+    return isPolyfillLoadError || isChunkLoadError || isPoorNetworkError;
+  } catch {
+    return false;
+  }
+};
+
 const isReadGoogleMapsPropertiesFromNullIssues = (event, hint) => {
   try {
     const message = getErrorMessageFromHint(hint);
@@ -294,6 +345,7 @@ const shouldFilter = (event, hint) => {
       isCleverTapIssues(event, hint) ||
       isOppoBrowserIssues(event, hint) ||
       isVivoBrowserIssues(event, hint) ||
+      isNetworkIssues(event, hint) ||
       isDuplicateAlert(hint) ||
       isResizeObserverLoopLimitExceeded(event)
     );
