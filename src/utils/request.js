@@ -1,5 +1,7 @@
 import Constants from './constants';
 import Utils from './utils';
+import ApiFetchError from './api/api-fetch-error';
+import { ERROR_TYPES } from './api/constants';
 
 const { REQUEST_ERROR_KEYS } = Constants;
 const headers = new Headers({
@@ -48,7 +50,17 @@ function get(url, options = {}) {
           })
         );
       }
-      return Promise.reject(error);
+      let category = '';
+      if (error.name === 'AbortError') {
+        category = ERROR_TYPES.ABORT_ERROR;
+      } else if (error.name === 'TimeoutError') {
+        category = ERROR_TYPES.TIMEOUT_ERROR;
+      }
+      const errorOptions = {
+        category: category || ERROR_TYPES.NETWORK_ERROR,
+      };
+
+      return Promise.reject(new ApiFetchError(error?.message, errorOptions));
     });
 }
 
@@ -86,7 +98,17 @@ const fetchData = function(url, requestOptions) {
           })
         );
       }
-      return Promise.reject(error);
+      let category = '';
+      if (error.name === 'AbortError') {
+        category = ERROR_TYPES.ABORT_ERROR;
+      } else if (error.name === 'TimeoutError') {
+        category = ERROR_TYPES.TIMEOUT_ERROR;
+      }
+      const errorOptions = {
+        category: category || ERROR_TYPES.NETWORK_ERROR,
+      };
+
+      return Promise.reject(new ApiFetchError(error?.message, errorOptions));
     });
 };
 
@@ -114,6 +136,7 @@ function del(url, data, options) {
   });
 }
 
+// TODO: Categorize error with response under nowadays requirement (api-fetch-error)
 async function handleResponse(url, response, method, requestStart) {
   if (response.status === 200) {
     return response.json().then(data => {

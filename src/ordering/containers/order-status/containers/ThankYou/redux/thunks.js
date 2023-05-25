@@ -12,6 +12,7 @@ import { PROFILE_DISPLAY_DELAY_DURATION } from '../constants';
 import {
   actions as appActions,
   getBusinessInfo,
+  getUser,
   getUserIsLogin,
   getUserConsumerId,
   getIsUserProfileStatusFulfilled,
@@ -150,15 +151,23 @@ export const showProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/
 
 export const hideProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/hideProfileModal', async () => {});
 
-export const callNativeProfile = createAsyncThunk('ordering/profile/callNativeProfile', async () => {
-  try {
-    await NativeMethods.showCompleteProfilePageAsync();
-  } catch (error) {
-    logger.error('Ordering_OrderStatus_CallNativeProfileFailed', { message: error?.message });
+export const callNativeProfile = createAsyncThunk(
+  'ordering/profile/callNativeProfile',
+  async (_, { dispatch, getState }) => {
+    try {
+      const { fulfilled } = await NativeMethods.showCompleteProfilePageAsync();
 
-    throw error;
+      if (fulfilled) {
+        const consumerId = getUserConsumerId(getState());
+        dispatch(appActions.loadProfileInfo(consumerId));
+      }
+    } catch (error) {
+      logger.error('Ordering_OrderStatus_CallNativeProfileFailed', { message: error?.message });
+
+      throw error;
+    }
   }
-});
+);
 
 export const initProfilePage = createAsyncThunk(
   'ordering/orderStatus/thankYou/loadProfilePageInfo',
@@ -184,14 +193,12 @@ export const initProfilePage = createAsyncThunk(
       const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoIncomplete && userIsLogin;
 
       if (isProfileModalShown) {
-        if (isWebview) {
-          // await dispatch(callNativeProfile());
-
-          return;
-        }
-
-        setTimeout(() => {
-          dispatch(showProfileModal());
+        setTimeout(async () => {
+          if (isWebview) {
+            await dispatch(callNativeProfile());
+          } else {
+            dispatch(showProfileModal());
+          }
         }, delay);
       }
     } catch (error) {

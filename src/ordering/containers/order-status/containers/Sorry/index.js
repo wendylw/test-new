@@ -5,16 +5,18 @@ import { withTranslation } from 'react-i18next';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
-import { alert } from '../../../../../common/feedback';
+import { alert } from '../../../../../common/utils/feedback';
 import logger from '../../../../../utils/monitoring/logger';
+
+const { ROUTER_PATHS, PAYMENT_FAILED_ERROR_CODES, PAYMENT_FAILED_ERROR_I18N_KEYS } = Constants;
 
 class Sorry extends Component {
   async componentDidMount() {
-    const { t } = this.props;
+    const { t, history } = this.props;
     const queryParams = Utils.getQueryString();
-    const { errorCode, paymentProvider } = queryParams || {};
+    const { errorCode, paymentProvider, paidAmount, refundDays } = queryParams || {};
     const isPayLater = queryParams.isPayLater === 'true';
-    const errorDescription = isPayLater ? this.getDescriptionOfPayLater() : this.getDescription();
+    const errorDescription = this.getErrorDescription(errorCode, { paidAmount, refundDays });
 
     alert(errorDescription, { title: t('PaymentFailed') });
 
@@ -28,8 +30,8 @@ class Sorry extends Component {
     if (isPayLater) {
       const queryObject = _pick(queryParams, ['h', 'type', 'receiptNumber']);
 
-      this.props.history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
         search: qs.stringify(queryObject, {
           addQueryPrefix: true,
         }),
@@ -37,8 +39,8 @@ class Sorry extends Component {
     } else {
       const queryObject = _pick(queryParams, ['h', 'type']);
 
-      this.props.history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_CART,
         search: qs.stringify(queryObject, {
           addQueryPrefix: true,
         }),
@@ -48,27 +50,24 @@ class Sorry extends Component {
     prefetch(['ORD_MNU', 'ORD_SC'], ['OrderingDelivery', 'OrderingCart']);
   }
 
-  getDescription = () => {
-    const params = Utils.getQueryString();
-    const { errorCode } = params || {};
+  getErrorDescription(errorCode, errorInfo = {}) {
     const { t } = this.props;
+    const { paidAmount, refundDays } = errorInfo;
+    const i18nKey = PAYMENT_FAILED_ERROR_I18N_KEYS[errorCode];
 
-    return errorCode ? t('Description', { error: t(errorCode) }) : t('PaymentFailedDescription');
-  };
-
-  getDescriptionOfPayLater = () => {
-    const params = Utils.getQueryString();
-    const { errorCode } = params || {};
-    const { t } = this.props;
-
-    if (errorCode) {
-      return t('SpecificPaymentFailedDescriptionOfPayLater', {
-        error: t(errorCode),
-      });
+    // Safety check: if i18n key is not defined, return a general error message
+    if (!i18nKey) {
+      return t('GeneralPaymentFailedDescription');
     }
 
-    return t('GeneralPaymentFailedDescriptionOfPayLater');
-  };
+    if (errorCode === PAYMENT_FAILED_ERROR_CODES.UNKNOWN_ERROR) {
+      // For unknown errors, we need to dynamically interpolate refund information into the description
+      return t(i18nKey, { paidAmount, refundDays });
+    }
+
+    // For rest of the errors, we can just return the fixed description directly
+    return t(i18nKey);
+  }
 
   shouldComponentUpdate(nextProps) {
     return !!nextProps.order;
@@ -80,4 +79,4 @@ class Sorry extends Component {
 }
 Sorry.displayName = 'OrderingSorry';
 
-export default withTranslation()(Sorry);
+export default withTranslation('OrderingPayment')(Sorry);

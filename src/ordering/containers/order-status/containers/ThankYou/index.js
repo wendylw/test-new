@@ -88,6 +88,7 @@ import {
   getCancelOrderRequestErrorMessage,
   getIsUpdateShippingTypeRequestRejected,
   getUpdateShippingTypeRequestErrorMessage,
+  getUpdateShippingTypeRequestErrorCategory,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -286,7 +287,7 @@ export class ThankYou extends PureComponent {
         this.closeMap();
       }
     } catch (error) {
-      console.error('Ordering ThankYou updateAppLocationAndStatus: ', error?.message || '');
+      logger.error('Ordering_OrderStatus_UpdateAppMapFailed', { message: error?.message });
     }
   };
 
@@ -523,7 +524,13 @@ export class ThankYou extends PureComponent {
   };
 
   handleChangeToSelfPickup = () => {
-    const { order, businessInfo, isUpdateShippingTypeRequestFailed, updateShippingTypRequestErrorMessage } = this.props;
+    const {
+      order,
+      businessInfo,
+      isUpdateShippingTypeRequestFailed,
+      updateShippingTypRequestErrorMessage,
+      updateShippingTypeRequestErrorCategory,
+    } = this.props;
 
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
@@ -547,6 +554,7 @@ export class ThankYou extends PureComponent {
             flow: KEY_EVENTS_FLOWS.REFUND,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
           },
+          errorCategory: updateShippingTypeRequestErrorCategory,
         }
       );
     }
@@ -1131,6 +1139,7 @@ export default compose(
       isCancelOrderRequestFailed: getIsCancelOrderRequestRejected(state),
       cancelOrderRequestErrorMessage: getCancelOrderRequestErrorMessage(state),
       isUpdateShippingTypeRequestFailed: getIsUpdateShippingTypeRequestRejected(state),
+      updateShippingTypeRequestErrorCategory: getUpdateShippingTypeRequestErrorCategory(state),
       updateShippingTypRequestErrorMessage: getUpdateShippingTypeRequestErrorMessage(state),
     }),
     dispatch => ({

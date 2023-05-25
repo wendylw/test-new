@@ -94,6 +94,7 @@ const CartModel = {
     },
     applyCashback: false,
   },
+  errorCategory: null,
 };
 
 export const initialState = {
@@ -147,6 +148,7 @@ export const initialState = {
   },
   coreBusiness: {
     status: null,
+    errorCategory: null,
   },
   requestInfo: {
     tableId: config.table,
@@ -156,6 +158,7 @@ export const initialState = {
   shoppingCart: CartModel,
   addOrUpdateShoppingCartItemRequest: {
     status: null,
+    errorCategory: null,
   },
   storeHashCode: {
     data: null,
@@ -163,12 +166,15 @@ export const initialState = {
   },
   onlineCategory: {
     status: null,
+    errorCategory: null,
   },
   coreStores: {
     status: null,
+    errorCategory: null,
   },
   productDetail: {
     status: null,
+    errorCategory: null,
   },
   deliveryDetails: {
     username: '',
@@ -721,8 +727,6 @@ export const actions = {
         toast(i18next.t('Common:UnknownError'));
       }
 
-      console.error('Failed to get tokens from native: ', e.message);
-
       logger.error('Common_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
     }
   },
@@ -849,12 +853,14 @@ export const actions = {
     }
   },
 
-  updateProfile: payload => async dispatch => {
-    dispatch({
-      type: types.UPDATE_CONSUMER_PROFILE,
-      payload,
-    });
-  },
+  updateProfile: ({ firstName, email, birthday }) => ({
+    type: types.UPDATE_CONSUMER_PROFILE,
+    payload: {
+      firstName,
+      email,
+      birthday,
+    },
+  }),
 };
 
 const user = (state = initialState.user, action) => {
@@ -908,7 +914,6 @@ const user = (state = initialState.user, action) => {
         refreshToken: refresh_token,
       };
     case types.CREATE_LOGIN_SUCCESS: {
-      const { payload } = action || {};
       const consumerId = _get(payload, 'consumerId', '');
       const user = _get(payload, 'user', {});
 
@@ -992,22 +997,20 @@ const user = (state = initialState.user, action) => {
     case types.LOAD_CONSUMER_PROFILE_PENDING:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.PENDING } };
     case types.LOAD_CONSUMER_PROFILE_FULFILLED:
-      const { payload } = action || {};
-
       return {
         ...state,
         profile: {
-          id: payload.id,
-          firstName: payload.firstName,
-          lastName: payload.lastName,
-          name: payload.firstName,
-          phone: payload.phone,
-          birthdayModifiedTime: payload.birthdayModifiedTime,
-          notificationSettings: payload.notificationSettings,
-          email: payload.email,
-          birthday: payload.birthday,
-          gender: payload.gender,
-          birthdayChangeAllowed: payload.birthdayChangeAllowed,
+          id: _get(payload, 'id', ''),
+          firstName: _get(payload, 'firstName', ''),
+          lastName: _get(payload, 'lastName', ''),
+          name: _get(payload, 'firstName', ''),
+          phone: _get(payload, 'phone', ''),
+          birthdayModifiedTime: _get(payload, 'birthdayModifiedTime', ''),
+          notificationSettings: _get(payload, 'notificationSettings', ''),
+          email: _get(payload, 'email', ''),
+          birthday: _get(payload, 'birthday', ''),
+          gender: _get(payload, 'gender', ''),
+          birthdayChangeAllowed: _get(payload, 'birthdayChangeAllowed', false),
           status: API_REQUEST_STATUS.FULFILLED,
         },
       };
@@ -1071,14 +1074,14 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
     case types.FETCH_ONLINECATEGORY_SUCCESS:
       return { ...state, status: API_REQUEST_STATUS.FULFILLED };
     case types.FETCH_ONLINECATEGORY_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
     default:
       return state;
   }
 };
 
 const coreBusiness = (state = initialState.coreBusiness, action) => {
-  const { type } = action;
+  const { type, category } = action;
 
   switch (type) {
     case types.RESET_COREBUSINESS_STATUS:
@@ -1088,7 +1091,7 @@ const coreBusiness = (state = initialState.coreBusiness, action) => {
     case types.FETCH_COREBUSINESS_SUCCESS:
       return { ...state, status: API_REQUEST_STATUS.FULFILLED };
     case types.FETCH_COREBUSINESS_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: category };
     default:
       return state;
   }
@@ -1101,7 +1104,7 @@ const coreStores = (state = initialState.coreStores, action) => {
     case types.FETCH_CORESTORES_SUCCESS:
       return { ...state, status: API_REQUEST_STATUS.FULFILLED };
     case types.FETCH_CORESTORES_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
     default:
       return state;
   }
@@ -1114,7 +1117,7 @@ const productDetail = (state = initialState.productDetail, action) => {
     case types.FETCH_PRODUCTDETAIL_SUCCESS:
       return { ...state, status: API_REQUEST_STATUS.FULFILLED };
     case types.FETCH_PRODUCTDETAIL_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
     default:
       return state;
   }
@@ -1206,7 +1209,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       },
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
-    return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED };
+    return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
   } else if (action.type === types.UPDATE_SHOPPINGCART_APPLYCASHBACK) {
     return { ...state, billing: { ...state.billing, applyCashback: action.payload } };
   }
@@ -1221,7 +1224,7 @@ const addOrUpdateShoppingCartItemRequest = (state = initialState.addOrUpdateShop
     case types.ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS:
       return { ...state, status: API_REQUEST_STATUS.FULFILLED };
     case types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
     default:
       return state;
   }
@@ -1347,7 +1350,11 @@ export const getOnlineStoreInfoStatus = state => state.app.onlineStoreInfo.statu
 
 export const getCoreStoresStatus = state => state.app.coreStores.status;
 
+export const getCoreStoresErrorCategory = state => state.app.coreStores.errorCategory;
+
 export const getOnlineCategoryStatus = state => state.app.onlineCategory.status;
+
+export const getOnlineCategoryErrorCategory = state => state.app.onlineCategory.errorCategory;
 
 export const getIsOnlineCategoryRequestRejected = createSelector(
   getOnlineCategoryStatus,
@@ -1403,6 +1410,8 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
 
 export const getCoreBusinessAPIStatus = state => state.app.coreBusiness.status;
 
+export const getCoreBusinessAPIErrorCategory = state => state.app.coreBusiness.errorCategory;
+
 export const getIsCoreBusinessAPIPending = createSelector(
   getCoreBusinessAPIStatus,
   status => status === API_REQUEST_STATUS.PENDING
@@ -1422,6 +1431,8 @@ export const getIsCoreBusinessAPICompleted = createSelector(getCoreBusinessAPISt
 );
 
 export const getProductDetailStatus = state => state.app.productDetail.status;
+
+export const getProductDetailErrorCategory = state => state.app.productDetail.errorCategory;
 
 export const getIsProductDetailRequestRejected = createSelector(
   getProductDetailStatus,
@@ -1493,6 +1504,8 @@ export const getCartBilling = state => state.app.shoppingCart.billing;
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
 
 export const getCartStatus = state => state.app.shoppingCart.status;
+
+export const getCartErrorCategory = state => state.app.shoppingCart.errorCategory;
 
 export const getIsGetCartFailed = createSelector(
   getCartStatus,
@@ -1897,6 +1910,9 @@ export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
 );
 
 export const getAddOrUpdateShoppingCartItemStatus = state => state.app.addOrUpdateShoppingCartItemRequest.status;
+
+export const getAddOrUpdateShoppingCartItemErrorCategory = state =>
+  state.app.addOrUpdateShoppingCartItemRequest.errorCategory;
 
 export const getIsAddOrUpdateShoppingCartItemRejected = createSelector(
   getAddOrUpdateShoppingCartItemStatus,

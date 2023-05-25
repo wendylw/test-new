@@ -22,10 +22,13 @@ import {
   getURLQueryObject,
   getStoreSupportShippingTypes,
   getFoodTagsForCleverTap,
+  getCoreBusinessAPIErrorCategory,
+  getCoreStoresErrorCategory,
   getIsCoreBusinessRequestRejected,
   getIsCoreStoresRequestRejected,
   getIsOnlineCategoryRequestRejected,
   getIsGetCartFailed,
+  getCartErrorCategory,
 } from '../../../../redux/modules/app';
 import {
   getIsProductListReady,
@@ -66,6 +69,7 @@ import { getIfAddressInfoExists } from '../../../../../redux/modules/address/sel
 import { resetAddressListStatus } from '../../../../redux/modules/addressList/thunks';
 import { getStoreById } from '../../../../../redux/modules/entities/stores';
 import { STORE_OPENING_STATUS } from '../../constants';
+import ApiFetchError from '../../../../../utils/api/api-fetch-error';
 
 const ensureTableId = state => {
   const tableId = getTableId(state);
@@ -349,7 +353,8 @@ const initializeForBeepQR = async ({ dispatch, getState }) => {
 
       // 40005 and business does not existed should be filtered out from error log
       if (isCoreBusinessRequestRejected) {
-        throw new Error('Failed to load core business data');
+        const coreBusinessAPIErrorCategory = getCoreBusinessAPIErrorCategory(getState());
+        throw new ApiFetchError('Failed to load core business data', { category: coreBusinessAPIErrorCategory });
       }
     }
 
@@ -364,7 +369,8 @@ const initializeForBeepQR = async ({ dispatch, getState }) => {
     const isGetCartFailed = getIsGetCartFailed(getState());
 
     if (!enablePayLater && isGetCartFailed) {
-      throw new Error('Failed to load shopping cart');
+      const cartErrorCategory = getCartErrorCategory(getState());
+      throw new ApiFetchError('Failed to load shopping cart', { category: cartErrorCategory });
     }
   } catch (error) {
     logger.error(
@@ -377,6 +383,7 @@ const initializeForBeepQR = async ({ dispatch, getState }) => {
           flow: KEY_EVENTS_FLOWS.SELECTION,
           step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
         },
+        errorCategory: error?.name,
       }
     );
 
@@ -410,11 +417,13 @@ const initializeForBeepDelivery = async ({ dispatch, getState }) => {
 
       // 40005 and business does not existed should be filtered out from error log
       if (isCoreBusinessRequestRejected) {
-        throw new Error('Failed to load core business data');
+        const coreBusinessAPIErrorCategory = getCoreBusinessAPIErrorCategory(getState());
+        throw new ApiFetchError('Failed to load core business data', { category: coreBusinessAPIErrorCategory });
       }
 
       if (isCoreStoresRequestRejected) {
-        throw new Error('Failed to load core stores data');
+        const coreStoresErrorCategory = getCoreStoresErrorCategory(getState());
+        throw new ApiFetchError('Failed to load core stores data', { category: coreStoresErrorCategory });
       }
     }
 
@@ -496,6 +505,7 @@ const initializeForBeepDelivery = async ({ dispatch, getState }) => {
           flow: KEY_EVENTS_FLOWS.SELECTION,
           step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
         },
+        errorCategory: error?.name,
       }
     );
 
@@ -582,6 +592,7 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
           flow: KEY_EVENTS_FLOWS.SELECTION,
           step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
         },
+        errorCategory: error?.name,
       }
     );
 
@@ -668,7 +679,7 @@ export const toggleUserSaveStoreStatus = createAsyncThunk(
     const updatedSaveResult = !getHasUserSaveStore(state);
 
     saveStoreFavStatus({ consumerId, storeId, isFavorite: updatedSaveResult }).catch(error =>
-      console.error(`Ordering Menu Failed to ${updatedSaveResult ? 'save' : 'unsave'} store: ${error?.message || ''}`)
+      logger.error(`Ordering_Menu_UpdateFavStoreSaveStatus`, { message: error?.message })
     );
 
     return updatedSaveResult;

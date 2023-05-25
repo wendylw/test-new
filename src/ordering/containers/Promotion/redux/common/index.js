@@ -41,7 +41,7 @@ const { reducer, actions } = createSlice({
     [applyPromo.rejected.type]: (state, { error }) => {
       state.error.applyPromo.code = error.code;
       // ExtraReducers rejected need name field and restore from string format
-      state.error.applyPromo.extraInfo = JSON.parse(error.name);
+      state.error.applyPromo.extraInfo = error.extra;
       state.error.applyPromo.errorMessage = error.message;
       state.requestStatus.applyPromo = API_REQUEST_STATUS.REJECTED;
     },
@@ -66,7 +66,7 @@ const { reducer, actions } = createSlice({
     [applyVoucherPayLater.rejected.type]: (state, { error }) => {
       state.error.applyPromo.code = error.code;
       // ExtraReducers rejected need name field and restore from string format
-      state.error.applyPromo.extraInfo = JSON.parse(error.name);
+      state.error.applyPromo.extraInfo = error.extra;
       state.error.applyPromo.errorMessage = error.message;
       state.requestStatus.applyVoucherPayLater = API_REQUEST_STATUS.REJECTED;
     },

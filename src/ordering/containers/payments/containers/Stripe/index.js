@@ -20,6 +20,7 @@ import {
   getTotal,
   getReceiptNumber,
   getInitPaymentRequestErrorMessage,
+  getInitPaymentRequestErrorCategory,
   getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
@@ -36,7 +37,7 @@ class Stripe extends Component {
   async componentDidMount() {
     await this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
 
-    const { isInitPaymentFailed, initPaymentErrorMessage } = this.props;
+    const { isInitPaymentFailed, initPaymentErrorMessage, initPaymentRequestErrorCategory } = this.props;
 
     if (isInitPaymentFailed) {
       logger.error(
@@ -49,6 +50,7 @@ class Stripe extends Component {
             flow: KEY_EVENTS_FLOWS.CHECKOUT,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
           },
+          errorCategory: initPaymentRequestErrorCategory,
         }
       );
     }
@@ -117,6 +119,7 @@ export default compose(
         cleverTapAttributes: getCleverTapAttributes(state),
         receiptNumber: getReceiptNumber(state),
         initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+        initPaymentRequestErrorCategory: getInitPaymentRequestErrorCategory(state),
         isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
       };
     },

@@ -140,7 +140,7 @@ const track = async (name, data, options = {}) => {
       throw new Error('data should be plain object');
     }
 
-    const { level, tags, publicData, bizFlow } = options;
+    const { level, tags, publicData, bizFlow, errorCategory } = options;
     const { sess_tid: sessTid, perm_tid: permTid } = tids;
     const shippingType = getQueryString('type');
     const action = getFormattedActionName(name);
@@ -170,6 +170,7 @@ const track = async (name, data, options = {}) => {
         beepData: {
           bizFlow,
           shippingType,
+          errorCategory,
         },
         clientInfo: getClientInfo(),
       },

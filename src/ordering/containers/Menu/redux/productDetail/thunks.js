@@ -15,6 +15,8 @@ import {
   getFoodTagsForCleverTap,
   getIsProductDetailRequestRejected,
   getIsAddOrUpdateShoppingCartItemRejected,
+  getAddOrUpdateShoppingCartItemErrorCategory,
+  getProductDetailErrorCategory,
 } from '../../../../redux/modules/app';
 import { updateCartItems } from '../../../../redux/cart/thunks';
 import {
@@ -44,6 +46,7 @@ import {
 } from '../common/thunks';
 import { getHasSelectedExpectedDeliveryTime, getShouldShowProductDetailDrawer } from '../common/selectors';
 import logger from '../../../../../utils/monitoring/logger';
+import ApiFetchError from '../../../../../utils/api/api-fetch-error';
 
 /**
  * get product clever tap data
@@ -153,7 +156,8 @@ export const showProductDetailDrawer = createAsyncThunk(
         const isProductDetailRequestFailed = getIsProductDetailRequestRejected(getState());
 
         if (isProductDetailRequestFailed) {
-          throw new Error('Failed to load product detail');
+          const productDetailErrorCategory = getProductDetailErrorCategory(getState());
+          throw new ApiFetchError('Failed to load product detail', { category: productDetailErrorCategory });
         }
 
         gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, getViewProductGTMData(productInResult));
@@ -173,10 +177,10 @@ export const showProductDetailDrawer = createAsyncThunk(
               step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
               flow: KEY_EVENTS_FLOWS.SELECTION,
             },
+            errorCategory: error?.name,
           }
         );
 
-        console.error('Ordering Menu showProductDetailDrawer: ', error?.message || '');
         throw error;
       }
     }
@@ -417,7 +421,10 @@ export const addToCart = createAsyncThunk(
         const isAddOrUpdateShoppingCartItemRejected = getIsAddOrUpdateShoppingCartItemRejected(getState());
 
         if (isAddOrUpdateShoppingCartItemRejected) {
-          throw new Error('Failed to add or update items to shopping cart');
+          const addOrUpdateShoppingCartItemErrorCategory = getAddOrUpdateShoppingCartItemErrorCategory(getState());
+          throw new ApiFetchError('Failed to add or update items to shopping cart', {
+            category: addOrUpdateShoppingCartItemErrorCategory,
+          });
         }
         await dispatch(appActions.loadShoppingCart());
       }
@@ -434,6 +441,7 @@ export const addToCart = createAsyncThunk(
             flow: KEY_EVENTS_FLOWS.SELECTION,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].ADD_TO_CART,
           },
+          errorCategory: error?.name,
         }
       );
       throw error;

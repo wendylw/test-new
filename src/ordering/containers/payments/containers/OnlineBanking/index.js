@@ -24,6 +24,7 @@ import {
   getCleverTapAttributes,
   getReceiptNumber,
   getInitPaymentRequestErrorMessage,
+  getInitPaymentRequestErrorCategory,
   getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
@@ -51,7 +52,7 @@ class OnlineBanking extends Component {
      */
     await initialize(Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
 
-    const { isInitPaymentFailed, initPaymentErrorMessage } = this.props;
+    const { isInitPaymentFailed, initPaymentErrorMessage, initPaymentRequestErrorCategory } = this.props;
 
     if (isInitPaymentFailed) {
       logger.error(
@@ -64,6 +65,7 @@ class OnlineBanking extends Component {
             flow: KEY_EVENTS_FLOWS.CHECKOUT,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
           },
+          errorCategory: initPaymentRequestErrorCategory,
         }
       );
     }
@@ -275,6 +277,7 @@ export default compose(
         cleverTapAttributes: getCleverTapAttributes(state),
         receiptNumber: getReceiptNumber(state),
         initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+        initPaymentRequestErrorCategory: getInitPaymentRequestErrorCategory(state),
         isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
       };
     },
