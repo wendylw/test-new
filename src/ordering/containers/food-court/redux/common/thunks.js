@@ -5,6 +5,7 @@ import { fetchFoodCourtStoreList } from './api-request';
 import { isWebview, isTNGMiniProgram } from '../../../../../common/utils';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { actions as appActions, getUserIsLogin, getShippingType } from '../../../../redux/modules/app';
+import logger from '../../../../../utils/monitoring/logger';
 
 /**
  * Food court landing page mounted
@@ -21,7 +22,7 @@ export const mounted = createAsyncThunk('ordering/foodCourt/common/mounted', asy
 
     return foodCourtStoreList;
   } catch (error) {
-    console.error('FoodCourt Common initial:', error?.message || '');
+    logger.error('Ordering_FoodCourt_FetchFoodCourtStoreListFailed', { message: error?.message });
 
     throw error;
   }
