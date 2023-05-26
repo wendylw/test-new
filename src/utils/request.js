@@ -74,7 +74,7 @@ const fetchData = function(url, requestOptions) {
       return handleResponse(url, response, method.toLowerCase(), requestStart);
     })
     .catch(error => {
-      // NOTE: If the error is an instance of RequestError, it means that the error has been handled by the handleResponse function.
+      // NOTE: If the error is an instance of ApiFetchError, it means that the error has been handled by the handleResponse function.
       if (error instanceof ApiFetchError) {
         return Promise.reject(error);
       }
