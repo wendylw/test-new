@@ -193,7 +193,7 @@ export const changeDate = createAsyncThunk('ordering/menu/timeSlot/changeDate', 
       selectedTimeSlot: fromTime,
     };
   } catch (error) {
-    console.error('Ordering Menu changeDate: ', error?.message || '');
+    logger.error('Ordering_Menu_ChangeShippingDateFailed', error);
 
     throw error;
   }
