@@ -18,7 +18,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo } from './api-request';
-import { setCookieVariable } from '../../../common/utils';
+import { isWebview, isTNGMiniProgram, setCookieVariable } from '../../../common/utils';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -38,7 +38,6 @@ const {
 // TODO: Update user state lack isFetching
 export const initialState = {
   user: {
-    isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
     consumerId: config.consumerId,
@@ -355,7 +354,7 @@ export const actions = {
   }),
 
   loginByTngMiniProgram: () => async (dispatch, getState) => {
-    if (!Utils.isTNGMiniProgram()) {
+    if (!isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
     }
 
@@ -741,7 +740,9 @@ export const getIsDisplayLoginBanner = createSelector(
   getIsUserLoginStatusFailed,
   getIsLoginRequestStatusPending,
   (userIsLogin, isUserLoginStatusLoaded, isUserLoginStatusFailed, isLoginRequestStatusPending) =>
-    !userIsLogin && (isUserLoginStatusLoaded || isUserLoginStatusFailed || isLoginRequestStatusPending === false)
+    !userIsLogin &&
+    !isWebview() &&
+    (isUserLoginStatusLoaded || isUserLoginStatusFailed || isLoginRequestStatusPending === false)
 );
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);
