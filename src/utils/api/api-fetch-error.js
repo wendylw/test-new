@@ -1,5 +1,6 @@
 class ApiFetchError extends Error {
-  constructor(message, { category, code, status, extra }) {
+  // Some Api errors contain extra, some contain extraInfo, so we keep them both
+  constructor(message, { category, code, status, extra, extraInfo }) {
     super(message || '');
     this.name = category || this.name;
 
@@ -7,6 +8,7 @@ class ApiFetchError extends Error {
     this.status = status;
     this.code = code;
     this.extra = extra;
+    this.extraInfo = extraInfo;
   }
 }
 

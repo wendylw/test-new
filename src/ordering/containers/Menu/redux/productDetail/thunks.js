@@ -212,7 +212,7 @@ export const showProductDetailDrawer = createAsyncThunk(
       throw new Error('Unknown reason');
     } catch (error) {
       await dispatch(saveSelectedProductItemInfo({ productId, categoryId }));
-      logger.error(
+      logger.log(
         'Ordering_Menu_ShowProductDetailDrawerFailed',
         { message: error?.message },
         {

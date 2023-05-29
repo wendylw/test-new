@@ -163,7 +163,7 @@ class CustomerInfo extends Component {
 
     if (error.show) {
       customerInfoActions.setCustomerError(error);
-      logger.error(
+      logger.log(
         'Ordering_CustomerInfo_CreateOrderFailed',
         {
           message: error.message,
