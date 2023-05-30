@@ -10,6 +10,7 @@ import config from '../../../config';
 import Url from '../../../utils/url';
 import * as TngUtils from '../../../utils/tng-utils';
 import * as ApiRequest from '../../../utils/api-request';
+import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
 
 import { APP_TYPES } from '../types';
@@ -195,9 +196,28 @@ export const actions = {
   loadConsumerLoginStatus: () => async (dispatch, getState) => {
     try {
       dispatch({ type: types.FETCH_LOGIN_STATUS_REQUEST });
-
       const result = await getConsumerLoginStatus();
       const { consumerId, login } = result;
+
+      // if (isWebview()) {
+      //   const isAppLogin = NativeMethods.getLoginStatus();
+
+      //   if (isAppLogin && !login) {
+      //     const { appActions, user } = this.props;
+      //     const { isExpired } = user || {};
+
+      //     const res = isExpired ? await NativeMethods.tokenExpiredAsync() : await NativeMethods.getTokenAsync();
+      //     if (_isNil(res)) {
+      //       logger.error('Cashback_App_PostAppMessageFailedByInvalidNativeToken');
+      //     } else {
+      //       const { access_token, refresh_token } = res;
+      //       await appActions.loginApp({
+      //         accessToken: access_token,
+      //         refreshToken: refresh_token,
+      //       });
+      //     }
+      //   }
+      // }
 
       if (login) {
         await dispatch(actions.loadProfileInfo(consumerId));
@@ -224,10 +244,10 @@ export const actions = {
 
       dispatch({
         type: types.FETCH_LOGIN_STATUS_SUCCESS,
-        response: result,
+        response: { consumerId, login: login },
       });
     } catch (error) {
-      logger.error('Cash_initConsumerLoginStatusFailed', { message: error?.message });
+      logger.error('Cash_loadConsumerLoginStatusFailed', { message: error?.message });
 
       dispatch({
         type: types.types.FETCH_LOGIN_STATUS_FAILURE,
@@ -699,6 +719,8 @@ export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, c
 );
 
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+
+export const getUserIsExpired = createSelector(getUser, user => _get(user, 'isExpired', false));
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', null));
 
