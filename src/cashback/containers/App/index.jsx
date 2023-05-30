@@ -39,9 +39,14 @@ class App extends Component {
     const { appActions } = this.props;
 
     this.visitErrorPage();
-    await appActions.loadConsumerLoginStatus();
-    await appActions.fetchOnlineStoreInfo();
-    await appActions.fetchCashbackBusiness();
+
+    const initRequests = [
+      appActions.loadConsumerLoginStatus(),
+      appActions.fetchOnlineStoreInfo(),
+      appActions.fetchCashbackBusiness(),
+    ];
+
+    await Promise.all(initRequests);
 
     const { user } = this.props;
     const { isLogin } = user || {};
@@ -94,7 +99,7 @@ class App extends Component {
         showAppLoginPage: false,
       });
 
-      appActions.loadCustomerProfile();
+      appActions.loadConsumerCustomerInfo();
     }
   };
 
@@ -133,9 +138,7 @@ class App extends Component {
     const { pageError } = this.props;
 
     if (pageError && pageError.code) {
-      window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`;
-
-      return;
+      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
     }
   }
 

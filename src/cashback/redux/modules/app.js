@@ -1,7 +1,9 @@
-import { combineReducers } from 'redux';
-import { createSelector } from 'reselect';
 import _get from 'lodash/get';
 import _cloneDeep from 'lodash/cloneDeep';
+import _isEmpty from 'lodash/isEmpty';
+import i18next from 'i18next';
+import { combineReducers } from 'redux';
+import { createSelector } from 'reselect';
 import Constants from '../../../utils/constants';
 import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 import Utils from '../../../utils/utils';
@@ -19,7 +21,9 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo } from './api-request';
+import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
 import { isWebview, isTNGMiniProgram, setCookieVariable } from '../../../common/utils';
+import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -199,26 +203,6 @@ export const actions = {
       const result = await getConsumerLoginStatus();
       const { consumerId, login } = result;
 
-      // if (isWebview()) {
-      //   const isAppLogin = NativeMethods.getLoginStatus();
-
-      //   if (isAppLogin && !login) {
-      //     const { appActions, user } = this.props;
-      //     const { isExpired } = user || {};
-
-      //     const res = isExpired ? await NativeMethods.tokenExpiredAsync() : await NativeMethods.getTokenAsync();
-      //     if (_isNil(res)) {
-      //       logger.error('Cashback_App_PostAppMessageFailedByInvalidNativeToken');
-      //     } else {
-      //       const { access_token, refresh_token } = res;
-      //       await appActions.loginApp({
-      //         accessToken: access_token,
-      //         refreshToken: refresh_token,
-      //       });
-      //     }
-      //   }
-      // }
-
       if (login) {
         await dispatch(actions.loadProfileInfo(consumerId));
 
@@ -326,7 +310,7 @@ export const actions = {
     await dispatch(fetchCoreBusiness({ business }));
   },
 
-  loadCustomerProfile: () => async (dispatch, getState) => {
+  loadConsumerCustomerInfo: () => async (dispatch, getState) => {
     try {
       const state = getState();
       const consumerId = getUserConsumerId(state);
@@ -372,6 +356,36 @@ export const actions = {
       },
     },
   }),
+
+  loginByBeepApp: () => async (dispatch, getState) => {
+    try {
+      const tokens = await NativeMethods.getTokenAsync();
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+      if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
+
+      const source = REGISTRATION_SOURCE.BEEP_APP;
+
+      await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+
+      const isTokenExpired = getUserIsExpired(getState());
+
+      if (isTokenExpired) {
+        const tokens = await NativeMethods.tokenExpiredAsync();
+        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+        await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+      }
+    } catch (e) {
+      if (e?.code === 'B0001') {
+        toast(i18next.t('ApiError:B0001Description'));
+      } else {
+        toast(i18next.t('Common:UnknownError'));
+      }
+
+      logger.error('Common_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
+    }
+  },
 
   loginByTngMiniProgram: () => async (dispatch, getState) => {
     if (!isTNGMiniProgram()) {
