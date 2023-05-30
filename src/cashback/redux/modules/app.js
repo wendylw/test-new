@@ -44,6 +44,7 @@ const {
 export const initialState = {
   user: {
     isLogin: false,
+    isAppLogin: false,
     isExpired: false,
     consumerId: config.consumerId,
     customerId: '',
@@ -75,6 +76,7 @@ export const initialState = {
     },
     loadConsumerCustomerStatus: null,
     loadConsumerIsLoginStatus: null,
+    loadBeepIsAppLoginStatus: null,
   },
   customerInfo: {},
   error: null, // network error
@@ -240,6 +242,26 @@ export const actions = {
     }
   },
 
+  loadBeepAppLoginStatus: () => async dispatch => {
+    try {
+      dispatch({ type: types.LOAD_APP_LOGIN_STATUS_PENDING });
+
+      const result = await NativeMethods.getLoginStatus();
+
+      dispatch({
+        type: types.LOAD_APP_LOGIN_STATUS_FULFILLED,
+        response: { isAppLogin: result },
+      });
+    } catch (error) {
+      dispatch({
+        type: types.LOAD_APP_LOGIN_STATUS_REJECTED,
+        error,
+      });
+
+      logger.error('Cashback_App_loadBeepAppLoginStatusFailed', { message: error?.message });
+    }
+  },
+
   loadProfileInfo: consumerId => async dispatch => {
     try {
       dispatch({ type: types.LOAD_CONSUMER_PROFILE_PENDING });
@@ -268,6 +290,100 @@ export const actions = {
   updateOtpStatus: () => ({
     type: types.UPDATE_OTP_STATUS,
   }),
+
+  loadConsumerCustomerInfo: () => async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const consumerId = getUserConsumerId(state);
+
+      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
+
+      if (consumerId) {
+        setCookieVariable('consumerId', consumerId);
+      }
+
+      const result = await getConsumerCustomerInfo(consumerId || config.consumerId);
+
+      dispatch({
+        type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED,
+        response: result,
+      });
+    } catch (error) {
+      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED });
+    }
+  },
+
+  loginByBeepApp: () => async (dispatch, getState) => {
+    try {
+      const tokens = await NativeMethods.getTokenAsync();
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+      if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
+
+      const source = REGISTRATION_SOURCE.BEEP_APP;
+
+      await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+
+      const isTokenExpired = getIsUserExpired(getState());
+
+      if (isTokenExpired) {
+        const tokens = await NativeMethods.tokenExpiredAsync();
+        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+        await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+      }
+
+      dispatch(actions.loadBeepAppLoginStatus());
+    } catch (e) {
+      if (e?.code === 'B0001') {
+        toast(i18next.t('ApiError:B0001Description'));
+      } else {
+        toast(i18next.t('Common:UnknownError'));
+      }
+
+      logger.error('Cashback_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
+    }
+  },
+
+  loginByTngMiniProgram: () => async (dispatch, getState) => {
+    if (!isTNGMiniProgram()) {
+      throw new Error('Not in tng mini program');
+    }
+
+    try {
+      dispatch({
+        type: types.CREATE_LOGIN_REQUEST,
+      });
+
+      const business = getBusiness(getState());
+
+      const businessUTCOffset = getBusinessUTCOffset(getState());
+
+      const tokens = await TngUtils.getAccessToken({ business: business });
+
+      const { access_token, refresh_token } = tokens;
+
+      const result = ApiRequest.login({
+        accessToken: access_token,
+        refreshToken: refresh_token,
+        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
+      });
+
+      dispatch({
+        type: types.CREATE_LOGIN_SUCCESS,
+        payload: result,
+      });
+    } catch (error) {
+      dispatch({
+        type: types.CREATE_LOGIN_FAILURE,
+        error,
+      });
+
+      return false;
+    }
+
+    return getIsUserLogin(getState());
+  },
 
   clearError: () => ({
     type: types.CLEAR_ERROR,
@@ -310,29 +426,7 @@ export const actions = {
     await dispatch(fetchCoreBusiness({ business }));
   },
 
-  loadConsumerCustomerInfo: () => async (dispatch, getState) => {
-    try {
-      const state = getState();
-      const consumerId = getUserConsumerId(state);
-
-      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
-
-      if (consumerId) {
-        setCookieVariable('consumerId', consumerId);
-      }
-
-      const result = await getConsumerCustomerInfo(consumerId || config.consumerId);
-
-      dispatch({
-        type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED,
-        response: result,
-      });
-    } catch (error) {
-      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED });
-    }
-  },
-
-  fetchOnlineStoreInfo: () => ({
+  loadOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
       types: [
         types.FETCH_ONLINE_STORE_INFO_REQUEST,
@@ -343,7 +437,7 @@ export const actions = {
     },
   }),
 
-  fetchCashbackBusiness: () => ({
+  loadCashbackBusiness: () => ({
     [API_REQUEST]: {
       types: [
         types.FETCH_CASHBACK_BUSINESS_REQUEST,
@@ -356,81 +450,11 @@ export const actions = {
       },
     },
   }),
-
-  loginByBeepApp: () => async (dispatch, getState) => {
-    try {
-      const tokens = await NativeMethods.getTokenAsync();
-      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
-
-      if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
-
-      const source = REGISTRATION_SOURCE.BEEP_APP;
-
-      await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
-
-      const isTokenExpired = getUserIsExpired(getState());
-
-      if (isTokenExpired) {
-        const tokens = await NativeMethods.tokenExpiredAsync();
-        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
-
-        await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
-      }
-    } catch (e) {
-      if (e?.code === 'B0001') {
-        toast(i18next.t('ApiError:B0001Description'));
-      } else {
-        toast(i18next.t('Common:UnknownError'));
-      }
-
-      logger.error('Common_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
-    }
-  },
-
-  loginByTngMiniProgram: () => async (dispatch, getState) => {
-    if (!isTNGMiniProgram()) {
-      throw new Error('Not in tng mini program');
-    }
-
-    try {
-      dispatch({
-        type: types.CREATE_LOGIN_REQUEST,
-      });
-
-      const business = getBusiness(getState());
-
-      const businessUTCOffset = getBusinessUTCOffset(getState());
-
-      const tokens = await TngUtils.getAccessToken({ business: business });
-
-      const { access_token, refresh_token } = tokens;
-
-      const result = ApiRequest.login({
-        accessToken: access_token,
-        refreshToken: refresh_token,
-        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-      });
-
-      dispatch({
-        type: types.CREATE_LOGIN_SUCCESS,
-        payload: result,
-      });
-    } catch (error) {
-      dispatch({
-        type: types.CREATE_LOGIN_FAILURE,
-        error,
-      });
-
-      return false;
-    }
-
-    return getUserIsLogin(getState());
-  },
 };
 
 const user = (state = initialState.user, action) => {
   const { type, response, responseGql, prompt, error, payload } = action || {};
-  const { login, consumerId, supportWhatsApp, storeCreditInfo, customerId } = response || {};
+  const { login, isAppLogin, consumerId, supportWhatsApp, storeCreditInfo, customerId } = response || {};
   const { storeCreditsBalance } = storeCreditInfo || {};
   const otpType = _get(payload, 'otpType', null);
 
@@ -572,6 +596,12 @@ const user = (state = initialState.user, action) => {
       };
     case types.LOAD_CONSUMER_PROFILE_REJECTED:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.REJECTED } };
+    case types.LOAD_APP_LOGIN_STATUS_PENDING:
+      return { ...state, loadBeepIsAppLoginStatus: API_REQUEST_STATUS.PENDING };
+    case types.LOAD_APP_LOGIN_STATUS_FULFILLED:
+      return { ...state, isAppLogin, loadBeepIsAppLoginStatus: API_REQUEST_STATUS.FULFILLED };
+    case types.LOAD_APP_LOGIN_STATUS_REJECTED:
+      return { ...state, isAppLogin: false, loadBeepIsAppLoginStatus: API_REQUEST_STATUS.REJECTED };
     default:
       return state;
   }
@@ -698,6 +728,10 @@ export const getCoreBusiness = state => state.app.coreBusiness;
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageInfo = state => state.app.messageInfo;
 
+export const getOnlineStoreInfoFavicon = createSelector(getOnlineStoreInfo, onlineStoreInfo =>
+  _get(onlineStoreInfo, 'favicon', null)
+);
+
 export const getLoadOnlineStoreInfoStatus = state => _get(state.app.onlineStoreInfo, 'loadOnlineStoreInfoStatus', null);
 
 export const getIsOnlineStoreInfoLoaded = createSelector(
@@ -732,9 +766,11 @@ export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, c
   _get(coreBusiness, 'enableCashback', false)
 );
 
-export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+export const getIsUserLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
-export const getUserIsExpired = createSelector(getUser, user => _get(user, 'isExpired', false));
+export const getIsAppLogin = createSelector(getUser, user => _get(user, 'isAppLogin', false));
+
+export const getIsUserExpired = createSelector(getUser, user => _get(user, 'isExpired', false));
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', null));
 
@@ -770,15 +806,47 @@ export const getIsUserLoginStatusFailed = createSelector(
   loadUserLoginStatus => loadUserLoginStatus === API_REQUEST_STATUS.REJECTED
 );
 
+export const getLoadAppLoginStatus = createSelector(getUser, user => _get(user, 'loadBeepIsAppLoginStatus', null));
+
+export const getIsAppLoginStatusLoaded = createSelector(
+  getLoadAppLoginStatus,
+  loadAppLoginStatus => loadAppLoginStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsAppLoginStatusFailed = createSelector(
+  getLoadAppLoginStatus,
+  loadAppLoginStatus => loadAppLoginStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getIsDisplayRequestLoginPage = createSelector(
+  getIsUserLogin,
+  getIsUserLoginStatusLoaded,
+  getIsUserLoginStatusFailed,
+  getIsAppLogin,
+  getIsAppLoginStatusLoaded,
+  getIsAppLoginStatusFailed,
+  (
+    isUserLogin,
+    isUserLoginStatusLoaded,
+    isUserLoginStatusFailed,
+    isAppLogin,
+    isAppLoginStatusLoaded,
+    isAppLoginStatusFailed
+  ) =>
+    !isUserLogin &&
+    (isUserLoginStatusLoaded || isUserLoginStatusFailed) &&
+    ((!isAppLogin && isWebview() && (isAppLoginStatusLoaded || isAppLoginStatusFailed)) || isTNGMiniProgram())
+);
+
 export const getIsDisplayLoginBanner = createSelector(
-  getUserIsLogin,
+  getIsUserLogin,
   getIsUserLoginStatusLoaded,
   getIsUserLoginStatusFailed,
   getIsLoginRequestStatusPending,
-  (userIsLogin, isUserLoginStatusLoaded, isUserLoginStatusFailed, isLoginRequestStatusPending) =>
-    !userIsLogin &&
+  (isUserLogin, isUserLoginStatusLoaded, isUserLoginStatusFailed, isLoginRequestStatusPending) =>
     !isWebview() &&
     !isTNGMiniProgram() &&
+    !isUserLogin &&
     (isUserLoginStatusLoaded || isUserLoginStatusFailed || isLoginRequestStatusPending === false)
 );
 

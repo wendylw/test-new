@@ -148,14 +148,14 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       });
     });
 
-    describe('fetchOnlineStoreInfo', () => {
+    describe('loadOnlineStoreInfo', () => {
       it(':Success', () => {
         successMockFetch();
         const expectedActions = [
           { type: types.FETCH_ONLINE_STORE_INFO_REQUEST },
           { type: types.FETCH_ONLINE_STORE_INFO_SUCCESS, responseGql: commonSuccessData },
         ];
-        return expectedActionsCheck(actions.fetchOnlineStoreInfo(), expectedActions);
+        return expectedActionsCheck(actions.loadOnlineStoreInfo(), expectedActions);
       });
       it(':Fail', () => {
         failMockFetch();
@@ -163,18 +163,18 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
           { type: types.FETCH_ONLINE_STORE_INFO_REQUEST },
           { type: types.FETCH_ONLINE_STORE_INFO_FAILURE, code: mockErrorCode, message: mockErrorMsg },
         ];
-        return expectedActionsCheck(actions.fetchOnlineStoreInfo(), expectedActions);
+        return expectedActionsCheck(actions.loadOnlineStoreInfo(), expectedActions);
       });
     });
 
-    describe('fetchCashbackBusiness', () => {
+    describe('loadCashbackBusiness', () => {
       it(':Success', () => {
         successMockFetch();
         const expectedActions = [
           { type: types.FETCH_CASHBACK_BUSINESS_REQUEST },
           { type: types.FETCH_CASHBACK_BUSINESS_SUCCESS, response: commonSuccessData, params: { storeId: null } },
         ];
-        return expectedActionsCheck(actions.fetchCashbackBusiness(), expectedActions);
+        return expectedActionsCheck(actions.loadCashbackBusiness(), expectedActions);
       });
       it(':Fail', () => {
         failMockFetch();
@@ -182,7 +182,7 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
           { type: types.FETCH_CASHBACK_BUSINESS_REQUEST },
           { type: types.FETCH_CASHBACK_BUSINESS_FAILURE, code: mockErrorCode, message: mockErrorMsg },
         ];
-        return expectedActionsCheck(actions.fetchCashbackBusiness(), expectedActions);
+        return expectedActionsCheck(actions.loadCashbackBusiness(), expectedActions);
       });
     });
 
