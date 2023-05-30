@@ -451,6 +451,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
           flow: KEY_EVENTS_FLOWS.PAYMENT,
           step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
         },
+        errorCategory: error?.name,
       }
     );
 

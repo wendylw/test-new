@@ -11,15 +11,6 @@ const headers = new Headers({
 });
 
 const MAINTENANCE_PAGE_URL = process.env.REACT_APP_MAINTENANCE_PAGE_URL;
-class RequestError extends Error {
-  constructor(message, code, extraInfo) {
-    super();
-
-    this.message = message;
-    this.code = code;
-    this.extraInfo = extraInfo;
-  }
-}
 
 function get(url, options = {}) {
   const requestStart = new Date().valueOf();
@@ -83,6 +74,10 @@ const fetchData = function(url, requestOptions) {
       return handleResponse(url, response, method.toLowerCase(), requestStart);
     })
     .catch(error => {
+      // NOTE: If the error is an instance of ApiFetchError, it means that the error has been handled by the handleResponse function.
+      if (error instanceof ApiFetchError) {
+        return Promise.reject(error);
+      }
       // NOTE: There are only 2 kinds of exceptions: AbortError or TypeError.
       // AbortError is called by ourselves so it shouldn't be treated as an error, that is why we only check the TypeError instances.
       // Refer to: https://developer.mozilla.org/en-US/docs/Web/API/fetch
@@ -136,7 +131,6 @@ function del(url, data, options) {
   });
 }
 
-// TODO: Categorize error with response under nowadays requirement (api-fetch-error)
 async function handleResponse(url, response, method, requestStart) {
   if (response.status === 200) {
     return response.json().then(data => {
@@ -164,14 +158,20 @@ async function handleResponse(url, response, method, requestStart) {
               code: '99999',
               error: e.message,
               requestStart,
-              status: 401,
+              status: response.status,
             },
           })
         );
-        return Promise.reject(new RequestError('Error Page', '50000'));
+        const errorOptions = {
+          category: ERROR_TYPES.BAD_REQUEST_ERROR,
+          code: '50000',
+          status: response.status,
+        };
+        return Promise.reject(new ApiFetchError(e?.message, errorOptions));
       })
       .then(function(body) {
         const code = response.status;
+        const { message, extra, extraInfo } = body;
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
             detail: {
@@ -184,7 +184,62 @@ async function handleResponse(url, response, method, requestStart) {
             },
           })
         );
-        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
+        const errorOptions = {
+          category: ERROR_TYPES.BAD_REQUEST_ERROR,
+          code,
+          status: response.status,
+          extra,
+          extraInfo,
+        };
+        return Promise.reject(new ApiFetchError(message, errorOptions));
+      });
+  } else if (response.status === 400 || (response.status >= 402 && response.status < 499)) {
+    return response
+      .json()
+      .catch(e => {
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: method,
+              request: url,
+              code: '99999',
+              error: e.message,
+              requestStart,
+              status: response.status,
+            },
+          })
+        );
+        const errorOptions = {
+          category: ERROR_TYPES.BAD_REQUEST_ERROR,
+          code: '50000',
+          status: response.status,
+        };
+        return Promise.reject(new ApiFetchError(e?.message, errorOptions));
+      })
+      .then(function(body) {
+        const code = body.code || response.status;
+        const errorCode = body.code?.toString();
+        const { message, extra, extraInfo } = body;
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: method,
+              request: url,
+              error: REQUEST_ERROR_KEYS[code],
+              code: errorCode,
+              status: response.status,
+              requestStart,
+            },
+          })
+        );
+        const errorOptions = {
+          category: ERROR_TYPES.BAD_REQUEST_ERROR,
+          code,
+          status: response.status,
+          extra,
+          extraInfo,
+        };
+        return Promise.reject(new ApiFetchError(message, errorOptions));
       });
   } else {
     return response
@@ -202,13 +257,18 @@ async function handleResponse(url, response, method, requestStart) {
             },
           })
         );
-        return Promise.reject(new RequestError('Error Page', '50000'));
+        const errorOptions = {
+          category: ERROR_TYPES.SERVER_ERROR,
+          code: '50000',
+          status: response.status,
+        };
+        return Promise.reject(new ApiFetchError(e?.message, errorOptions));
       })
       .then(function(body) {
         // NOTE: Don't change the code if you don't understand it.
         const code = body.code || response.status;
         const errorCode = body.code?.toString();
-        const { extraInfo } = body;
+        const { message, extra, extraInfo } = body;
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
             detail: {
@@ -221,9 +281,16 @@ async function handleResponse(url, response, method, requestStart) {
             },
           })
         );
-        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code, extraInfo));
+        const errorOptions = {
+          category: ERROR_TYPES.SERVER_ERROR,
+          code,
+          status: response.status,
+          extra,
+          extraInfo,
+        };
+        return Promise.reject(new ApiFetchError(message, errorOptions));
       });
   }
 }
 
-export { get, post, put, del, RequestError };
+export { get, post, put, del };
