@@ -162,7 +162,6 @@ class App extends Component {
     return (
       <>
         {isWebview && <NativeHeader />}
-
         {showAppLoginPage ? <RequestLogin user={user} onClick={this.handleLoginClick} /> : this.renderMainContent()}
       </>
     );

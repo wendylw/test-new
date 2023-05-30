@@ -742,6 +742,7 @@ export const getIsDisplayLoginBanner = createSelector(
   (userIsLogin, isUserLoginStatusLoaded, isUserLoginStatusFailed, isLoginRequestStatusPending) =>
     !userIsLogin &&
     !isWebview() &&
+    !isTNGMiniProgram() &&
     (isUserLoginStatusLoaded || isUserLoginStatusFailed || isLoginRequestStatusPending === false)
 );
 
