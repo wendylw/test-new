@@ -612,6 +612,8 @@ const user = (state = initialState.user, action) => {
       return { ...state, prompt };
     case types.SHOW_REQUEST_LOGIN_MODAL:
       return { ...state, showRequestLoginModal: true };
+    case types.HIDE_REQUEST_LOGIN_MODAL:
+      return { ...state, showRequestLoginModal: false };
     default:
       return state;
   }
