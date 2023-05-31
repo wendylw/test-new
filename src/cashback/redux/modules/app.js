@@ -301,11 +301,15 @@ export const actions = {
       const state = getState();
       const consumerId = getUserConsumerId(state);
 
+      console.log('loadConsumerCustomerInfo', consumerId);
+
       dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
 
       if (consumerId) {
         setCookieVariable('consumerId', consumerId);
       }
+
+      console.log('getConsumerCustomerInfo', consumerId || config.consumerId);
 
       const result = await getConsumerCustomerInfo(consumerId || config.consumerId);
 
