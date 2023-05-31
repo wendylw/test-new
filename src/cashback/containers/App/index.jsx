@@ -81,7 +81,7 @@ class App extends Component {
     }
 
     if (isCurrentLoadCustomerInfoEnabled && !isPrevLoadCustomerInfoEnabled) {
-      appActions.loadConsumerCustomerInfo();
+      appActions.loadConsumerCustomerInfo({ consumerId: userConsumerId });
     }
   };
 

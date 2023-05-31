@@ -296,11 +296,8 @@ export const actions = {
     user,
   }),
 
-  loadConsumerCustomerInfo: () => async (dispatch, getState) => {
+  loadConsumerCustomerInfo: ({ consumerId }) => async (dispatch, getState) => {
     try {
-      const state = getState();
-      const consumerId = getUserConsumerId(state);
-
       console.log('loadConsumerCustomerInfo', consumerId);
 
       dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
