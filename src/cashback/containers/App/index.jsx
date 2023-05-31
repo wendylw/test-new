@@ -66,8 +66,10 @@ class App extends Component {
   }
 
   componentDidUpdate = async prevProps => {
-    const { appActions, pageError, isUserLogin, isUserExpired } = this.props;
+    const { appActions, pageError, isUserLogin, userConsumerId, isUserExpired } = this.props;
     const { code } = prevProps.pageError || {};
+    const isCurrentLoadCustomerInfoEnabled = userConsumerId && isUserLogin;
+    const isPrevLoadCustomerInfoEnabled = prevProps.userConsumerId && prevProps.isUserLogin;
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
@@ -78,7 +80,7 @@ class App extends Component {
       await appActions.loginByBeepApp();
     }
 
-    if (isUserLogin && prevProps.isUserLogin !== isUserLogin) {
+    if (isCurrentLoadCustomerInfoEnabled && !isPrevLoadCustomerInfoEnabled) {
       appActions.loadConsumerCustomerInfo();
     }
   };
@@ -145,6 +147,7 @@ App.displayName = 'CashbackApp';
 
 App.propTypes = {
   isUserLogin: PropTypes.bool,
+  userConsumerId: PropTypes.string,
   isAppLogin: PropTypes.bool,
   isUserExpired: PropTypes.bool,
   onlineStoreInfoFavicon: PropTypes.string,
@@ -173,6 +176,7 @@ App.propTypes = {
 
 App.defaultProps = {
   isUserLogin: false,
+  userConsumerId: null,
   isAppLogin: false,
   isUserExpired: false,
   onlineStoreInfoFavicon: '',
@@ -184,10 +188,11 @@ App.defaultProps = {
 };
 
 export default compose(
-  withTranslation(['ApiError', 'Cashback']),
+  withTranslation(['Cashback']),
   connect(
     state => ({
       isUserLogin: getIsUserLogin(state),
+      userConsumerId: getIsUserLogin(state),
       isAppLogin: getIsAppLogin(state),
       isUserExpired: getIsUserExpired(state),
       isDisplayLoginBanner: getIsDisplayLoginBanner(state),

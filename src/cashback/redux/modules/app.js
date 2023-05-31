@@ -515,6 +515,7 @@ const user = (state = initialState.user, action) => {
         loadConsumerIsLoginStatus: API_REQUEST_STATUS.REJECTED,
       };
     case types.FETCH_LOGIN_STATUS_SUCCESS:
+      console.log('FETCH_LOGIN_STATUS_SUCCESS', login, consumerId);
       return {
         ...state,
         isLogin: login,
@@ -565,11 +566,11 @@ const user = (state = initialState.user, action) => {
 
       return { ...state, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
     case types.CREATE_LOGIN_SUCCESS: {
-      const { consumerId: loginConsumerId } = payload || {};
+      console.log('CREATE_LOGIN_SUCCESS', payload);
 
       return {
         ...state,
-        consumerId: loginConsumerId,
+        consumerId: _get(payload, 'consumerId', null),
         isLogin: true,
         loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
       };
