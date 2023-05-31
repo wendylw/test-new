@@ -10,7 +10,8 @@ import {
   getUserStoreCashback,
   getIsOnlineStoreInfoLoaded,
   getIsLoadOnlineStoreInfoFailed,
-  getIsUserLoginStatusLoaded,
+  getIsConsumerIsLoginStatusLoaded,
+  getIsLoginRequestStatusFulfilled,
   getIsUserLogin,
 } from '../../../redux/modules/app';
 
@@ -28,10 +29,11 @@ export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 
  */
 export const getIsAvailableToShareConsumerInfo = createSelector(
   getStoreRedemptionRequestId,
-  getIsUserLoginStatusLoaded,
+  getIsConsumerIsLoginStatusLoaded,
+  getIsLoginRequestStatusFulfilled,
   getIsUserLogin,
-  (storeRedemptionRequestId, isUserLoginStatusLoaded, isUserLogin) =>
-    storeRedemptionRequestId && isUserLoginStatusLoaded && isUserLogin
+  (storeRedemptionRequestId, isConsumerIsLoginStatusLoaded, isLoginRequestStatusFulfilled, isUserLogin) =>
+    storeRedemptionRequestId && (isConsumerIsLoginStatusLoaded || isLoginRequestStatusFulfilled) && isUserLogin
 );
 
 /**

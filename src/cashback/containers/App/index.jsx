@@ -5,14 +5,13 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import {
   actions as appActionCreators,
-  getMessageInfo,
   getError,
   getIsUserLogin,
   getIsAppLogin,
   getIsUserExpired,
   getOnlineStoreInfoFavicon,
   getIsDisplayLoginBanner,
-  getIsDisplayRequestLoginPage,
+  getIsLoginRequestModalShown,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
@@ -50,12 +49,16 @@ class App extends Component {
 
       const { isUserLogin, isAppLogin } = this.props;
 
-      if (isUserLogin && isTNGMiniProgram()) {
-        await appActions.loginByTngMiniProgram();
+      if ((!isAppLogin && isWebview()) || (!isUserLogin && isTNGMiniProgram())) {
+        await appActions.showRequestLoginModal();
       }
 
       if (isAppLogin && isWebview()) {
         await appActions.loginByBeepApp();
+      }
+
+      if (isUserLogin && isTNGMiniProgram()) {
+        await appActions.loginByTngMiniProgram();
       }
     } catch (error) {
       logger.error('Cashback_App_InitFailed', { message: error?.message });
@@ -80,16 +83,20 @@ class App extends Component {
     }
   };
 
-  handleAppLoginClick = async () => {
+  handleRequestLoginClick = async () => {
     const { appActions } = this.props;
 
     if (isWebview()) {
       await appActions.loginByBeepApp();
-      return;
+      await appActions.loadBeepAppLoginStatus();
+    } else if (isTNGMiniProgram()) {
+      await appActions.loginByTngMiniProgram();
     }
 
-    if (isTNGMiniProgram()) {
-      await appActions.loginByTngMiniProgram();
+    const { isUserLogin } = this.props;
+
+    if (isUserLogin) {
+      appActions.hideRequestLoginModal();
     }
   };
 
@@ -104,21 +111,14 @@ class App extends Component {
   }
 
   render() {
-    const {
-      t,
-      error,
-      onlineStoreInfoFavicon,
-      isDisplayLoginBanner,
-      isDisplayRequestLoginPage,
-      appActions,
-    } = this.props;
+    const { t, error, onlineStoreInfoFavicon, isDisplayLoginBanner, isLoginRequestModalShown, appActions } = this.props;
     const { message } = error || {};
 
     return (
       <>
         {isWebview() && <NativeHeader />}
-        {isDisplayRequestLoginPage ? (
-          <RequestLogin onClick={this.handleAppLoginClick} />
+        {isLoginRequestModalShown ? (
+          <RequestLogin onClick={this.handleRequestLoginClick} />
         ) : (
           <main className="loyalty fixed-wrapper__main fixed-wrapper">
             {message ? (
@@ -148,9 +148,6 @@ App.propTypes = {
   isAppLogin: PropTypes.bool,
   isUserExpired: PropTypes.bool,
   onlineStoreInfoFavicon: PropTypes.string,
-  messageInfo: PropTypes.shape({
-    message: PropTypes.string,
-  }),
   error: PropTypes.shape({
     message: PropTypes.string,
   }),
@@ -158,7 +155,7 @@ App.propTypes = {
     code: PropTypes.number,
   }),
   isDisplayLoginBanner: PropTypes.bool,
-  isDisplayRequestLoginPage: PropTypes.bool,
+  isLoginRequestModalShown: PropTypes.bool,
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
     loadBeepAppLoginStatus: PropTypes.func,
@@ -169,6 +166,8 @@ App.propTypes = {
     clearError: PropTypes.func,
     loginByTngMiniProgram: PropTypes.func,
     loginByBeepApp: PropTypes.func,
+    showRequestLoginModal: PropTypes.func,
+    hideRequestLoginModal: PropTypes.func,
   }),
 };
 
@@ -177,11 +176,10 @@ App.defaultProps = {
   isAppLogin: false,
   isUserExpired: false,
   onlineStoreInfoFavicon: '',
-  messageInfo: {},
   error: {},
   pageError: {},
   isDisplayLoginBanner: false,
-  isDisplayRequestLoginPage: false,
+  isLoginRequestModalShown: false,
   appActions: {},
 };
 
@@ -193,9 +191,8 @@ export default compose(
       isAppLogin: getIsAppLogin(state),
       isUserExpired: getIsUserExpired(state),
       isDisplayLoginBanner: getIsDisplayLoginBanner(state),
-      isDisplayRequestLoginPage: getIsDisplayRequestLoginPage(state),
+      isLoginRequestModalShown: getIsLoginRequestModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
-      messageInfo: getMessageInfo(state),
       error: getError(state),
       pageError: getPageError(state),
     }),
