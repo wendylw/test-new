@@ -73,7 +73,7 @@ class App extends Component {
     }
 
     // token过期重新发postMessage
-    if (isUserExpired && prevProps.isUserExpired !== isUserExpired && isWebview()) {
+    if (isUserExpired && !prevProps.isUserExpired && isWebview()) {
       await appActions.loginByBeepApp();
     }
 
