@@ -52,13 +52,9 @@ class App extends Component {
 
       if ((!isAppLogin && isWebview()) || (!isUserLogin && isTNGMiniProgram())) {
         await appActions.showRequestLoginModal();
-      }
-
-      if (isAppLogin && isWebview()) {
+      } else if (isAppLogin && isWebview()) {
         await appActions.loginByBeepApp();
-      }
-
-      if (isUserLogin && isTNGMiniProgram()) {
+      } else if (isUserLogin && isTNGMiniProgram()) {
         await appActions.loginByTngMiniProgram();
       }
     } catch (error) {
