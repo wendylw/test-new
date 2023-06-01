@@ -144,6 +144,8 @@ export const actions = {
         payload: result,
       });
     } catch (error) {
+      console.log('loginApp', error);
+
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
         error: error,
@@ -582,6 +584,8 @@ const user = (state = initialState.user, action) => {
       };
     }
     case types.CREATE_LOGIN_FAILURE:
+      console.log('CREATE_LOGIN_FAILURE', error);
+
       if (error?.error === 'TokenExpiredError' || error?.error === 'JsonWebTokenError') {
         return { ...state, isExpired: true, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
       }
