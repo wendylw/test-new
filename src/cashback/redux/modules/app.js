@@ -314,6 +314,8 @@ export const actions = {
 
       const result = await getConsumerCustomerInfo(consumerId || config.consumerId);
 
+      console.log('getConsumerCustomerInfo result', result);
+
       dispatch({
         type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED,
         response: result,
