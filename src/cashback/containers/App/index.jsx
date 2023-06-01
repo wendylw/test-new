@@ -8,7 +8,6 @@ import {
   getError,
   getIsUserLogin,
   getIsAppLogin,
-  getIsUserExpired,
   getOnlineStoreInfoFavicon,
   getIsDisplayLoginBanner,
   getIsLoginRequestModalShown,
@@ -63,18 +62,13 @@ class App extends Component {
   }
 
   componentDidUpdate = async prevProps => {
-    const { appActions, pageError, isUserLogin, userConsumerId, isUserExpired } = this.props;
+    const { appActions, pageError, isUserLogin, userConsumerId } = this.props;
     const { code } = prevProps.pageError || {};
     const isCurrentLoadCustomerInfoEnabled = userConsumerId && isUserLogin;
     const isPrevLoadCustomerInfoEnabled = prevProps.userConsumerId && prevProps.isUserLogin;
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
-    }
-
-    // token过期重新发postMessage
-    if (isUserExpired && !prevProps.isUserExpired && isWebview()) {
-      await appActions.loginByBeepApp();
     }
 
     if (isCurrentLoadCustomerInfoEnabled && !isPrevLoadCustomerInfoEnabled) {
@@ -146,7 +140,6 @@ App.propTypes = {
   isUserLogin: PropTypes.bool,
   userConsumerId: PropTypes.string,
   isAppLogin: PropTypes.bool,
-  isUserExpired: PropTypes.bool,
   onlineStoreInfoFavicon: PropTypes.string,
   error: PropTypes.shape({
     message: PropTypes.string,
@@ -175,7 +168,6 @@ App.defaultProps = {
   isUserLogin: false,
   userConsumerId: null,
   isAppLogin: false,
-  isUserExpired: false,
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
@@ -191,7 +183,6 @@ export default compose(
       isUserLogin: getIsUserLogin(state),
       userConsumerId: getUserConsumerId(state),
       isAppLogin: getIsAppLogin(state),
-      isUserExpired: getIsUserExpired(state),
       isDisplayLoginBanner: getIsDisplayLoginBanner(state),
       isLoginRequestModalShown: getIsLoginRequestModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
