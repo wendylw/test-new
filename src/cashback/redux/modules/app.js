@@ -137,15 +137,11 @@ export const actions = {
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
       });
 
-      console.log('loginApp', result);
-
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
         payload: result,
       });
     } catch (error) {
-      console.log('loginApp', error);
-
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
         error: error,
@@ -308,11 +304,7 @@ export const actions = {
         setCookieVariable('consumerId', consumerId);
       }
 
-      console.log('getConsumerCustomerInfo', consumerId);
-
       const result = await getConsumerCustomerInfo(consumerId);
-
-      console.log('getConsumerCustomerInfo result', result);
 
       dispatch({
         type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED,
@@ -546,16 +538,12 @@ const user = (state = initialState.user, action) => {
       };
     }
     case types.CREATE_LOGIN_FAILURE:
-      console.log('CREATE_LOGIN_FAILURE', error);
-
       if (['TokenExpiredError', 'JsonWebTokenError'].includes(error?.error)) {
         return { ...state, isExpired: true, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
       }
 
       return { ...state, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
     case types.CREATE_LOGIN_SUCCESS: {
-      console.log('CREATE_LOGIN_SUCCESS action', action);
-
       return {
         ...state,
         consumerId: _get(payload, 'consumerId', null),
