@@ -108,6 +108,7 @@ class App extends Component {
     const { message } = error || {};
 
     return (
+      // eslint-disable-next-line react/jsx-filename-extension
       <>
         {isWebview() && <NativeHeader />}
         {isLoginRequestModalShown ? (
