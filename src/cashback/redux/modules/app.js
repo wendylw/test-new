@@ -371,6 +371,9 @@ export const actions = {
 
       const { access_token, refresh_token } = tokens;
 
+      console.log('access_token', access_token);
+      console.log('refresh_token', refresh_token);
+
       const result = ApiRequest.login({
         accessToken: access_token,
         refreshToken: refresh_token,
