@@ -241,8 +241,6 @@ export const actions = {
         CleverTap.onUserLogin(userInfo);
       }
 
-      console.log('loadConsumerLoginStatus', result);
-
       dispatch({
         type: types.FETCH_LOGIN_STATUS_SUCCESS,
         response: result,
@@ -304,8 +302,6 @@ export const actions = {
 
   loadConsumerCustomerInfo: ({ consumerId }) => async dispatch => {
     try {
-      console.log('loadConsumerCustomerInfo', consumerId);
-
       dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
 
       if (consumerId) {
@@ -340,13 +336,9 @@ export const actions = {
 
       const isTokenExpired = getIsUserExpired(getState());
 
-      console.log('loginByBeepApp isTokenExpired', isTokenExpired);
-
       if (isTokenExpired) {
         const tokens = await NativeMethods.tokenExpiredAsync();
         const { access_token: accessToken, refresh_token: refreshToken } = tokens;
-
-        console.log('loginByBeepApp tokens', tokens);
 
         await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
       }
@@ -367,43 +359,14 @@ export const actions = {
     }
 
     try {
-      // dispatch({
-      //   type: types.CREATE_LOGIN_REQUEST,
-      // });
-
       const business = getBusiness(getState());
-
-      // const businessUTCOffset = getBusinessUTCOffset(getState());
 
       const tokens = await TngUtils.getAccessToken({ business: business });
 
       const { access_token, refresh_token } = tokens;
 
       await dispatch(actions.loginApp({ accessToken: access_token, refreshToken: refresh_token }));
-
-      // console.log('access_token', access_token);
-      // console.log('refresh_token', refresh_token);
-      // console.log('fulfillDate', Utils.getFulfillDate(businessUTCOffset));
-
-      // const result = ApiRequest.login({
-      //   accessToken: access_token,
-      //   refreshToken: refresh_token,
-      //   fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-      // }).then(data => {
-      //   console.log('loginByTngMiniProgram data', data);
-      // });
-
-      // console.log('loginByTngMiniProgram', result);
-
-      // dispatch({
-      //   type: types.CREATE_LOGIN_SUCCESS,
-      //   payload: result,
-      // });
     } catch (error) {
-      // dispatch({
-      //   type: types.CREATE_LOGIN_FAILURE,
-      //   error,
-      // });
       logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
 
       return false;
@@ -539,7 +502,6 @@ const user = (state = initialState.user, action) => {
         loadConsumerIsLoginStatus: API_REQUEST_STATUS.REJECTED,
       };
     case types.FETCH_LOGIN_STATUS_SUCCESS:
-      console.log('FETCH_LOGIN_STATUS_SUCCESS', login, consumerId);
       return {
         ...state,
         isLogin: login,
@@ -592,7 +554,6 @@ const user = (state = initialState.user, action) => {
 
       return { ...state, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
     case types.CREATE_LOGIN_SUCCESS: {
-      console.log('CREATE_LOGIN_SUCCESS', _get(payload, 'consumerId', null));
       console.log('CREATE_LOGIN_SUCCESS action', action);
 
       return {

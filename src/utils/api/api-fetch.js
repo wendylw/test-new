@@ -98,7 +98,7 @@ async function _fetch(url, opts) {
     const { response, message: apiMessage } = error;
     const { status } = response;
     const errorBody = await parseResponse(response);
-    const { message, code, extra, extraInfo, error: errorsError } =
+    const { message, code, extra, extraInfo, error: thirdPartyError } =
       typeof errorBody === 'object' && errorBody ? errorBody : {};
     const errorMessage = code ? message : apiMessage;
     const errorOptions = {
@@ -107,7 +107,7 @@ async function _fetch(url, opts) {
       status,
       extra,
       extraInfo,
-      error: errorsError,
+      error: thirdPartyError,
     };
 
     if (status >= 400 && status < 499) {
