@@ -11,8 +11,6 @@ export const login = ({ accessToken, refreshToken, fulfillDate, shippingType }) 
     registrationTouchpoint: Utils.getRegistrationTouchPoint(),
     registrationSource: Utils.getRegistrationSource(),
   }).then(data => {
-    console.log('login data', data);
-
     if (!data?.consumerId) {
       return data;
     }

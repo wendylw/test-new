@@ -308,9 +308,9 @@ export const actions = {
         setCookieVariable('consumerId', consumerId);
       }
 
-      console.log('getConsumerCustomerInfo', consumerId || config.consumerId);
+      console.log('getConsumerCustomerInfo', consumerId);
 
-      const result = await getConsumerCustomerInfo(consumerId || config.consumerId);
+      const result = await getConsumerCustomerInfo(consumerId);
 
       console.log('getConsumerCustomerInfo result', result);
 
