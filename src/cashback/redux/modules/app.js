@@ -373,6 +373,7 @@ export const actions = {
 
       console.log('access_token', access_token);
       console.log('refresh_token', refresh_token);
+      console.log('fulfillDate', Utils.getFulfillDate(businessUTCOffset));
 
       const result = ApiRequest.login({
         accessToken: access_token,
