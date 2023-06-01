@@ -98,13 +98,16 @@ async function _fetch(url, opts) {
     const { response, message: apiMessage } = error;
     const { status } = response;
     const errorBody = await parseResponse(response);
-    const { message, code, extra } = typeof errorBody === 'object' && errorBody ? errorBody : {};
+    const { message, code, extra, extraInfo, error: errorsError } =
+      typeof errorBody === 'object' && errorBody ? errorBody : {};
     const errorMessage = code ? message : apiMessage;
     const errorOptions = {
       category: ERROR_TYPES.UNKNOWN_ERROR,
       code: code || '50000',
       status,
       extra,
+      extraInfo,
+      error: errorsError,
     };
 
     if (status >= 400 && status < 499) {
