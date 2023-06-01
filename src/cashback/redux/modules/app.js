@@ -578,6 +578,7 @@ const user = (state = initialState.user, action) => {
       return { ...state, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
     case types.CREATE_LOGIN_SUCCESS: {
       console.log('CREATE_LOGIN_SUCCESS', _get(payload, 'consumerId', null));
+      console.log('CREATE_LOGIN_SUCCESS action', action);
 
       return {
         ...state,
