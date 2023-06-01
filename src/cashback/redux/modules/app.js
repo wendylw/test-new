@@ -137,7 +137,7 @@ export const actions = {
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
       });
 
-      console.log('logiApp', result);
+      console.log('loginApp', result);
 
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
@@ -239,9 +239,11 @@ export const actions = {
         CleverTap.onUserLogin(userInfo);
       }
 
+      console.log('loadConsumerLoginStatus', result);
+
       dispatch({
         type: types.FETCH_LOGIN_STATUS_SUCCESS,
-        response: { consumerId, login: login },
+        response: result,
       });
     } catch (error) {
       logger.error('Cash_loadConsumerLoginStatusFailed', { message: error?.message });
@@ -518,6 +520,7 @@ const user = (state = initialState.user, action) => {
         loadConsumerIsLoginStatus: API_REQUEST_STATUS.REJECTED,
       };
     case types.FETCH_LOGIN_STATUS_SUCCESS:
+      console.log('FETCH_LOGIN_STATUS_SUCCESS', login, consumerId);
       return {
         ...state,
         isLogin: login,
