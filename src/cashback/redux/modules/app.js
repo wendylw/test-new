@@ -245,7 +245,7 @@ export const actions = {
       logger.error('Cash_loadConsumerLoginStatusFailed', { message: error?.message });
 
       dispatch({
-        type: types.types.FETCH_LOGIN_STATUS_FAILURE,
+        type: types.FETCH_LOGIN_STATUS_FAILURE,
         error,
       });
     }
@@ -285,7 +285,7 @@ export const actions = {
       logger.error('Cashback_LoadProfileInfoFailed', { message: error?.message });
 
       dispatch({
-        type: types.types.LOAD_CONSUMER_PROFILE_REJECTED,
+        type: types.LOAD_CONSUMER_PROFILE_REJECTED,
         error,
       });
     }
