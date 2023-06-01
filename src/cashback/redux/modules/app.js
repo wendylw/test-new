@@ -338,9 +338,13 @@ export const actions = {
 
       const isTokenExpired = getIsUserExpired(getState());
 
+      console.log('loginByBeepApp isTokenExpired', isTokenExpired);
+
       if (isTokenExpired) {
         const tokens = await NativeMethods.tokenExpiredAsync();
         const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+        console.log('loginByBeepApp tokens', tokens);
 
         await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
       }
