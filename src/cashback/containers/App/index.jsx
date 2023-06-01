@@ -12,6 +12,7 @@ import {
   getOnlineStoreInfoFavicon,
   getIsDisplayLoginBanner,
   getIsLoginRequestModalShown,
+  getUserConsumerId,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
@@ -192,7 +193,7 @@ export default compose(
   connect(
     state => ({
       isUserLogin: getIsUserLogin(state),
-      userConsumerId: getIsUserLogin(state),
+      userConsumerId: getUserConsumerId(state),
       isAppLogin: getIsAppLogin(state),
       isUserExpired: getIsUserExpired(state),
       isDisplayLoginBanner: getIsDisplayLoginBanner(state),
