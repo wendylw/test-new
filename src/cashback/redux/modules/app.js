@@ -137,6 +137,8 @@ export const actions = {
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
       });
 
+      console.log('logiApp', result);
+
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
         payload: result,
@@ -296,7 +298,7 @@ export const actions = {
     user,
   }),
 
-  loadConsumerCustomerInfo: ({ consumerId }) => async (dispatch, getState) => {
+  loadConsumerCustomerInfo: ({ consumerId }) => async dispatch => {
     try {
       console.log('loadConsumerCustomerInfo', consumerId);
 
@@ -516,7 +518,6 @@ const user = (state = initialState.user, action) => {
         loadConsumerIsLoginStatus: API_REQUEST_STATUS.REJECTED,
       };
     case types.FETCH_LOGIN_STATUS_SUCCESS:
-      console.log('FETCH_LOGIN_STATUS_SUCCESS', login, consumerId);
       return {
         ...state,
         isLogin: login,
@@ -567,7 +568,7 @@ const user = (state = initialState.user, action) => {
 
       return { ...state, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
     case types.CREATE_LOGIN_SUCCESS: {
-      console.log('CREATE_LOGIN_SUCCESS', payload);
+      console.log('CREATE_LOGIN_SUCCESS', _get(payload, 'consumerId', null));
 
       return {
         ...state,
