@@ -377,6 +377,8 @@ export const actions = {
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
       });
 
+      console.log('loginByTngMiniProgram', result);
+
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
         payload: result,
