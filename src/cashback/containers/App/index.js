@@ -6,6 +6,7 @@ import { withTranslation } from 'react-i18next';
 import {
   actions as appActionCreators,
   getError,
+  getLoginBannerPrompt,
   getIsUserLogin,
   getIsAppLogin,
   getOnlineStoreInfoFavicon,
@@ -104,7 +105,15 @@ class App extends Component {
   }
 
   render() {
-    const { t, error, onlineStoreInfoFavicon, isDisplayLoginBanner, isLoginRequestModalShown, appActions } = this.props;
+    const {
+      t,
+      error,
+      loginBannerPrompt,
+      onlineStoreInfoFavicon,
+      isDisplayLoginBanner,
+      isLoginRequestModalShown,
+      appActions,
+    } = this.props;
     const { message } = error || {};
 
     return (
@@ -125,7 +134,9 @@ class App extends Component {
               />
             ) : null}
             <Message />
-            {isDisplayLoginBanner ? <Login className="aside fixed-wrapper" title={t('LoginBannerPrompt')} /> : null}
+            {isDisplayLoginBanner ? (
+              <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
+            ) : null}
             <Routes />
             <DocumentFavicon icon={onlineStoreInfoFavicon || faviconImage} />
           </main>
@@ -138,6 +149,7 @@ class App extends Component {
 App.displayName = 'CashbackApp';
 
 App.propTypes = {
+  loginBannerPrompt: PropTypes.string,
   isUserLogin: PropTypes.bool,
   userConsumerId: PropTypes.string,
   isAppLogin: PropTypes.bool,
@@ -166,6 +178,7 @@ App.propTypes = {
 };
 
 App.defaultProps = {
+  loginBannerPrompt: null,
   isUserLogin: false,
   userConsumerId: null,
   isAppLogin: false,
@@ -181,6 +194,7 @@ export default compose(
   withTranslation(['Cashback']),
   connect(
     state => ({
+      loginBannerPrompt: getLoginBannerPrompt(state),
       isUserLogin: getIsUserLogin(state),
       userConsumerId: getUserConsumerId(state),
       isAppLogin: getIsAppLogin(state),

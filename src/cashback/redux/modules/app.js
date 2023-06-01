@@ -58,7 +58,7 @@ export const initialState = {
     },
     country: Utils.getCountry(localePhoneNumber, navigator.language, AVAILABLE_COUNTRIES, 'MY'),
     phone: localePhoneNumber,
-    prompt: 'Do you have a Beep account? Login with your mobile phone number.',
+    prompt: null,
     noWhatsAppAccount: true,
     profile: {
       id: '',
@@ -754,6 +754,8 @@ export const getIsLoadCoreBusinessFailed = createSelector(
 export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, coreBusiness =>
   _get(coreBusiness, 'enableCashback', false)
 );
+
+export const getLoginBannerPrompt = createSelector(getUser, user => _get(user, 'prompt', null));
 
 export const getIsUserLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
