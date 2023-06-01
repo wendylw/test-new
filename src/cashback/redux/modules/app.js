@@ -586,7 +586,7 @@ const user = (state = initialState.user, action) => {
     case types.CREATE_LOGIN_FAILURE:
       console.log('CREATE_LOGIN_FAILURE', error);
 
-      if (error?.error === 'TokenExpiredError' || error?.error === 'JsonWebTokenError') {
+      if (['TokenExpiredError', 'JsonWebTokenError'].includes(error?.error)) {
         return { ...state, isExpired: true, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
       }
 
