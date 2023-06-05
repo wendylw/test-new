@@ -41,10 +41,6 @@ class App extends Component {
         appActions.loadCashbackBusiness(),
       ];
 
-      if (isWebview()) {
-        initRequests.push(appActions.loadBeepAppLoginStatus());
-      }
-
       await Promise.all(initRequests);
 
       if (isWebview()) {
@@ -79,7 +75,6 @@ class App extends Component {
 
     if (isWebview()) {
       await appActions.loginByBeepApp();
-      await appActions.loadBeepAppLoginStatus();
     } else if (isTNGMiniProgram()) {
       await appActions.loginByTngMiniProgram();
     }
@@ -160,7 +155,6 @@ App.propTypes = {
   isLoginRequestModalShown: PropTypes.bool,
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
-    loadBeepAppLoginStatus: PropTypes.func,
     loadConsumerCustomerInfo: PropTypes.func,
     loadOnlineStoreInfo: PropTypes.func,
     loadCashbackBusiness: PropTypes.func,

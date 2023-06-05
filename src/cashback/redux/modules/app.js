@@ -43,7 +43,6 @@ const {
 export const initialState = {
   user: {
     isLogin: false,
-    isAppLogin: false,
     isExpired: false,
     consumerId: config.consumerId,
     customerId: '',
@@ -251,26 +250,6 @@ export const actions = {
     }
   },
 
-  loadBeepAppLoginStatus: () => async dispatch => {
-    try {
-      dispatch({ type: types.LOAD_APP_LOGIN_STATUS_PENDING });
-
-      const result = await NativeMethods.getLoginStatus();
-
-      dispatch({
-        type: types.LOAD_APP_LOGIN_STATUS_FULFILLED,
-        response: { isAppLogin: result },
-      });
-    } catch (error) {
-      dispatch({
-        type: types.LOAD_APP_LOGIN_STATUS_REJECTED,
-        error,
-      });
-
-      logger.error('Cashback_App_loadBeepAppLoginStatusFailed', { message: error?.message });
-    }
-  },
-
   loadProfileInfo: consumerId => async dispatch => {
     try {
       dispatch({ type: types.LOAD_CONSUMER_PROFILE_PENDING });
@@ -355,7 +334,6 @@ export const actions = {
       const isAppLogin = NativeMethods.getLoginStatus();
 
       if (!isAppLogin) {
-        dispatch(actions.showRequestLoginModal());
         return;
       }
 
@@ -462,7 +440,7 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response, responseGql, prompt, error, payload } = action || {};
-  const { login, isAppLogin, consumerId, supportWhatsApp, storeCreditInfo, customerId } = response || {};
+  const { login, consumerId, supportWhatsApp, storeCreditInfo, customerId } = response || {};
   const { storeCreditsBalance } = storeCreditInfo || {};
   const otpType = _get(payload, 'otpType', null);
 
@@ -526,13 +504,6 @@ const user = (state = initialState.user, action) => {
         consumerId,
         loadConsumerIsLoginStatus: API_REQUEST_STATUS.FULFILLED,
       };
-    // load app login status
-    case types.LOAD_APP_LOGIN_STATUS_PENDING:
-      return { ...state, loadBeepIsAppLoginStatus: API_REQUEST_STATUS.PENDING };
-    case types.LOAD_APP_LOGIN_STATUS_FULFILLED:
-      return { ...state, isAppLogin, loadBeepIsAppLoginStatus: API_REQUEST_STATUS.FULFILLED };
-    case types.LOAD_APP_LOGIN_STATUS_REJECTED:
-      return { ...state, isAppLogin: false, loadBeepIsAppLoginStatus: API_REQUEST_STATUS.REJECTED };
     // load consumer profile
     case types.LOAD_CONSUMER_PROFILE_PENDING:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.PENDING } };
@@ -784,8 +755,6 @@ export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, c
 export const getLoginBannerPrompt = createSelector(getUser, user => _get(user, 'prompt', null));
 
 export const getIsUserLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
-
-export const getIsAppLogin = createSelector(getUser, user => _get(user, 'isAppLogin', false));
 
 export const getIsUserExpired = createSelector(getUser, user => _get(user, 'isExpired', false));
 
