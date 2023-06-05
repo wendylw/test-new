@@ -7,7 +7,13 @@ import _isNumber from 'lodash/isNumber';
 import _sumBy from 'lodash/sumBy';
 import _isNil from 'lodash/isNil';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import { getAllProducts, getFormatCurrencyFunction } from '../../../../../redux/modules/app';
+import {
+  getAllProducts,
+  getFormatCurrencyFunction,
+  getIsDineType,
+  getEnableTakeaway,
+  getTakeawayCharge,
+} from '../../../../../redux/modules/app';
 import {
   getIsProductListReady,
   getTimeSlotDrawerVisible,
@@ -21,6 +27,8 @@ import { variationStructuredSelector } from './variationSelector';
 import { variationOptionStructuredSelector, formatVariationOptionPriceDiff } from './variationOptionSelector';
 import { getAllCategories } from '../../../../../../redux/modules/entities/categories';
 import { STOCK_STATUS_MAPPING } from '../../../../../../utils/gtm';
+
+export { getTakeawayCharge } from '../../../../../redux/modules/app';
 
 export const getProductDetailState = state => state.menu.productDetail;
 
@@ -257,6 +265,30 @@ export const getIsProductVariationFulfilled = createSelector(getProductVariation
 );
 
 /**
+ * Beep QR Takeaway from Table QR
+ */
+export const getHasExtraTakeawayCharge = createSelector(getTakeawayCharge, takeawayCharge => takeawayCharge > 0);
+
+export const getIsTakeawayVariantSelected = createSelector(
+  getProductDetailState,
+  state => state.isTakeawayVariantSelected
+);
+
+export const getIsTakeawayVariantAvailable = createSelector(
+  getIsDineType,
+  getEnableTakeaway,
+  (isDineType, enableTakeaway) => isDineType && enableTakeaway
+);
+
+export const getShouldIncludeTakeawayCharge = createSelector(
+  getHasExtraTakeawayCharge,
+  getIsTakeawayVariantSelected,
+  getIsTakeawayVariantAvailable,
+  (hasExtraTakeawayCharge, isTakeawayVariantSelected, isTakeawayVariantAvailable) =>
+    isTakeawayVariantAvailable && isTakeawayVariantSelected && hasExtraTakeawayCharge
+);
+
+/**
  * is product detail ready
  */
 export const getIsProductDetailLoading = createSelector(
@@ -284,21 +316,35 @@ export const getSingleSelectedOptionsNotChildMapTotalPriceDiff = createSelector(
 );
 
 export const getSelectedOptionsTotalPriceDiff = createSelector(
+  getTakeawayCharge,
   getHasChildProduct,
+  getShouldIncludeTakeawayCharge,
   getAllSelectedOptionsTotalPriceDiff,
   getMultipleSelectedOptionsTotalPriceDiff,
   getSingleSelectedOptionsNotChildMapTotalPriceDiff,
   (
+    takeawayCharge,
     hasChildProduct,
+    shouldIncludeTakeawayCharge,
     allSelectedOptionsPriceDiff,
     multipleSelectedOptionsTotalPriceDiff,
     singleSelectedOptionsNotChildMapTotalPriceDiff
   ) => {
-    // if has child product, exclude the price diff of single choice options
-    if (hasChildProduct) {
-      return multipleSelectedOptionsTotalPriceDiff + singleSelectedOptionsNotChildMapTotalPriceDiff;
+    const getProductOptionsPriceDiff = () => {
+      // if has child product, exclude the price diff of single choice options
+      if (hasChildProduct) {
+        return multipleSelectedOptionsTotalPriceDiff + singleSelectedOptionsNotChildMapTotalPriceDiff;
+      }
+      return allSelectedOptionsPriceDiff;
+    };
+
+    const productOptionsPriceDiff = getProductOptionsPriceDiff();
+
+    if (shouldIncludeTakeawayCharge) {
+      return productOptionsPriceDiff + takeawayCharge;
     }
-    return allSelectedOptionsPriceDiff;
+
+    return productOptionsPriceDiff;
   }
 );
 
@@ -477,9 +523,9 @@ export const getNotesContents = state => state?.menu.productDetail.comments;
 
 export const getIfCommentsShowStatus = state => state.menu.productDetail.showComments;
 
-export const getIfShowVariations = createSelector(
+export const getShouldShowProductVariations = createSelector(
   getProductDetailData,
-  productDetailData => productDetailData.variations.length
+  productDetailData => productDetailData.variations.length > 0
 );
 
 export const getCouldShowProductDetailDrawer = createSelector(

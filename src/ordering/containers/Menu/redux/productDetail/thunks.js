@@ -135,6 +135,15 @@ const getViewProductGTMData = product => ({
   product_description: product.description,
 });
 
+export const takeawayVariantToggled = createAsyncThunk(
+  'ordering/menu/productDetail/takeawayVariantToggled',
+  async isSelected => ({ isSelected })
+);
+
+export const resetTakeawayVariantSelectState = createAsyncThunk(
+  'ordering/menu/productDetail/resetTakeawayVariantSelectState',
+  async () => {}
+);
 /**
  * Show product detail drawer
  * Reset the selected variation options
@@ -253,7 +262,9 @@ export const productDetailDrawerShown = createAsyncThunk(
 
 export const productDetailDrawerHidden = createAsyncThunk(
   'ordering/menu/productDetail/productDetailDrawerHidden',
-  async () => {}
+  async (_, { dispatch }) => {
+    dispatch(resetTakeawayVariantSelectState());
+  }
 );
 
 export const productItemClicked = createAsyncThunk(
