@@ -317,19 +317,6 @@ export const actions = {
 
   loginByBeepApp: () => async (dispatch, getState) => {
     try {
-      const isLogin = getIsUserLogin(getState());
-      if (isLogin) {
-        return;
-      }
-
-      const isAppLogin = NativeMethods.getLoginStatus();
-
-      if (!isAppLogin) {
-        dispatch(actions.showRequestLoginModal());
-
-        return;
-      }
-
       const tokens = await NativeMethods.getTokenAsync();
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
@@ -358,9 +345,35 @@ export const actions = {
     }
   },
 
+  syncLoginFromNative: () => async (dispatch, getState) => {
+    try {
+      const isLogin = getIsUserLogin(getState());
+      if (isLogin) {
+        return;
+      }
+
+      const isAppLogin = NativeMethods.getLoginStatus();
+
+      if (!isAppLogin) {
+        dispatch(actions.showRequestLoginModal());
+        return;
+      }
+
+      dispatch(actions.loadByBeepApp());
+    } catch (e) {
+      logger.error('Cashback_syncLoginFromNativeFailed', { message: e?.message, code: e?.code });
+    }
+  },
+
   loginByTngMiniProgram: () => async (dispatch, getState) => {
     if (!isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
+    }
+
+    const isLogin = getIsUserLogin(getState());
+    if (!isLogin) {
+      dispatch(actions.showRequestLoginModal());
+      return;
     }
 
     try {
