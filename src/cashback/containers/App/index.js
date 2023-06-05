@@ -48,7 +48,7 @@ class App extends Component {
       }
 
       if (isTNGMiniProgram()) {
-        await appActions.loginByTngMiniProgram();
+        await appActions.syncLoginFromTngMiniProgram();
       }
     } catch (error) {
       logger.error('Cashback_App_InitFailed', { message: error?.message });
@@ -160,6 +160,7 @@ App.propTypes = {
     loadCashbackBusiness: PropTypes.func,
     loginApp: PropTypes.func,
     clearError: PropTypes.func,
+    syncLoginFromTngMiniProgram: PropTypes.func,
     loginByTngMiniProgram: PropTypes.func,
     syncLoginFromNative: PropTypes.func,
     loginByBeepApp: PropTypes.func,

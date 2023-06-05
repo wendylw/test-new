@@ -334,6 +334,7 @@ export const actions = {
       const isAppLogin = NativeMethods.getLoginStatus();
 
       if (!isAppLogin) {
+        dispatch(actions.showRequestLoginModal());
         return;
       }
 
@@ -346,12 +347,6 @@ export const actions = {
   loginByTngMiniProgram: () => async (dispatch, getState) => {
     if (!isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
-    }
-
-    const isLogin = getIsUserLogin(getState());
-    if (!isLogin) {
-      dispatch(actions.showRequestLoginModal());
-      return;
     }
 
     try {
@@ -369,6 +364,20 @@ export const actions = {
     }
 
     return getIsUserLogin(getState());
+  },
+
+  syncLoginFromTngMiniProgram: () => async (dispatch, getState) => {
+    try {
+      const isLogin = getIsUserLogin(getState());
+      if (!isLogin) {
+        dispatch(actions.showRequestLoginModal());
+        return;
+      }
+
+      dispatch(actions.loginByTngMiniProgram());
+    } catch (e) {
+      logger.error('Cashback_syncLoginFromTngMiniProgramFailed', { message: e?.message, code: e?.code });
+    }
   },
 
   clearError: () => ({
