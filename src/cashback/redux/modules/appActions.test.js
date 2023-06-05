@@ -167,14 +167,14 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       });
     });
 
-    describe('loadCashbackBusiness', () => {
+    describe('fetchCashbackBusiness', () => {
       it(':Success', () => {
         successMockFetch();
         const expectedActions = [
           { type: types.FETCH_CASHBACK_BUSINESS_REQUEST },
           { type: types.FETCH_CASHBACK_BUSINESS_SUCCESS, response: commonSuccessData, params: { storeId: null } },
         ];
-        return expectedActionsCheck(actions.loadCashbackBusiness(), expectedActions);
+        return expectedActionsCheck(actions.fetchCashbackBusiness(), expectedActions);
       });
       it(':Fail', () => {
         failMockFetch();
@@ -182,7 +182,7 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
           { type: types.FETCH_CASHBACK_BUSINESS_REQUEST },
           { type: types.FETCH_CASHBACK_BUSINESS_FAILURE, code: mockErrorCode, message: mockErrorMsg },
         ];
-        return expectedActionsCheck(actions.loadCashbackBusiness(), expectedActions);
+        return expectedActionsCheck(actions.fetchCashbackBusiness(), expectedActions);
       });
     });
 

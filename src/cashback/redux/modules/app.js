@@ -433,7 +433,7 @@ export const actions = {
     },
   }),
 
-  loadCashbackBusiness: () => ({
+  fetchCashbackBusiness: () => ({
     [API_REQUEST]: {
       types: [
         types.FETCH_CASHBACK_BUSINESS_REQUEST,

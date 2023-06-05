@@ -38,7 +38,7 @@ class App extends Component {
       const initRequests = [
         appActions.loadConsumerLoginStatus(),
         appActions.fetchOnlineStoreInfo(),
-        appActions.loadCashbackBusiness(),
+        appActions.fetchCashbackBusiness(),
       ];
 
       await Promise.all(initRequests);
@@ -157,7 +157,7 @@ App.propTypes = {
     loadConsumerLoginStatus: PropTypes.func,
     loadConsumerCustomerInfo: PropTypes.func,
     fetchOnlineStoreInfo: PropTypes.func,
-    loadCashbackBusiness: PropTypes.func,
+    fetchCashbackBusiness: PropTypes.func,
     loginApp: PropTypes.func,
     clearError: PropTypes.func,
     syncLoginFromTngMiniProgram: PropTypes.func,
