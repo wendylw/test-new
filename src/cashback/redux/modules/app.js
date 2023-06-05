@@ -474,21 +474,20 @@ const user = (state = initialState.user, action) => {
       return { ...state, otpRequest: _cloneDeep(initialState.user.otpRequest) };
     // create otp
     case types.CREATE_OTP_REQUEST:
-      return { ...state, isFetching: true, isError: false, createOtpRequestStatus: API_REQUEST_STATUS.PENDING };
+      return { ...state, isError: false, createOtpRequestStatus: API_REQUEST_STATUS.PENDING };
     case types.CREATE_OTP_FAILURE:
-      return { ...state, isFetching: false, isError: true, createOtpRequestStatus: API_REQUEST_STATUS.REJECTED };
+      return { ...state, isError: true, createOtpRequestStatus: API_REQUEST_STATUS.REJECTED };
     case types.CREATE_OTP_SUCCESS:
       const { access_token, refresh_token } = response;
 
       return {
         ...state,
-        isFetching: false,
         createOtpRequestStatus: API_REQUEST_STATUS.FULFILLED,
         accessToken: access_token,
         refreshToken: refresh_token,
       };
     case types.RESET_CREATE_OTP_REQUEST:
-      return { ...state, isFetching: false, isError: false, createOtpRequestStatus: null };
+      return { ...state, isError: false, createOtpRequestStatus: null };
     // get whatsapp support
     case types.GET_WHATSAPPSUPPORT_REQUEST:
       return { ...state, noWhatsAppAccount: true };
@@ -501,19 +500,16 @@ const user = (state = initialState.user, action) => {
     case types.FETCH_LOGIN_STATUS_REQUEST:
       return {
         ...state,
-        isFetching: true,
         loadConsumerIsLoginStatus: API_REQUEST_STATUS.PENDING,
       };
     case types.FETCH_LOGIN_STATUS_FAILURE:
       return {
         ...state,
-        isFetching: false,
         loadConsumerIsLoginStatus: API_REQUEST_STATUS.REJECTED,
       };
     case types.FETCH_LOGIN_STATUS_SUCCESS:
       return {
         ...state,
-        isFetching: false,
         isLogin: login,
         consumerId,
         loadConsumerIsLoginStatus: API_REQUEST_STATUS.FULFILLED,
@@ -545,20 +541,18 @@ const user = (state = initialState.user, action) => {
     case types.CREATE_LOGIN_REQUEST: {
       return {
         ...state,
-        isFetching: true,
         loginRequestStatus: API_REQUEST_STATUS.PENDING,
       };
     }
     case types.CREATE_LOGIN_FAILURE:
       if (['TokenExpiredError', 'JsonWebTokenError'].includes(error?.error)) {
-        return { ...state, isFetching: false, isExpired: true, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
+        return { ...state, isExpired: true, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
       }
 
       return { ...state, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
     case types.CREATE_LOGIN_SUCCESS: {
       return {
         ...state,
-        isFetching: false,
         consumerId: _get(payload, 'consumerId', null),
         isLogin: true,
         loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
@@ -796,8 +790,6 @@ export const getUserStoreCashback = createSelector(getUser, user => _get(user, '
 
 export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
 
-export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
-
 export const getCreateOtpRequestStatus = createSelector(getUser, user => _get(user, 'createOtpRequestStatus', null));
 
 export const getIsCreateOtpRequestStatusPending = createSelector(
@@ -855,12 +847,24 @@ export const getIsAppLoginStatusFailed = createSelector(
 
 export const getIsDisplayLoginBanner = createSelector(
   getIsUserLogin,
+  getIsConsumerIsLoginStatusLoaded,
+  getIsLoadConsumerIsLoginStatusFailed,
   getIsLoginRequestStatusFulfilled,
   getIsLoginRequestStatusRejected,
-  getIsLoginRequestStatusPending,
-  (isUserLogin, isLoginRequestStatusFulfilled, isLoginRequestStatusRejected, isLoginRequestStatusPending) =>
+  (
+    isUserLogin,
+    isConsumerIsLoginStatusLoaded,
+    isLoadConsumerIsLoginStatusFailed,
+    isLoginRequestStatusFulfilled,
+    isLoginRequestStatusRejected
+  ) =>
+    !isWebview() &&
+    !isTNGMiniProgram() &&
     !isUserLogin &&
-    (isLoginRequestStatusFulfilled || isLoginRequestStatusRejected || isLoginRequestStatusPending === false)
+    (isConsumerIsLoginStatusLoaded ||
+      isLoadConsumerIsLoginStatusFailed ||
+      isLoginRequestStatusFulfilled ||
+      isLoginRequestStatusRejected)
 );
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);
