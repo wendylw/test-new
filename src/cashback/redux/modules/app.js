@@ -369,6 +369,7 @@ export const actions = {
   syncLoginFromTngMiniProgram: () => async (dispatch, getState) => {
     try {
       const isLogin = getIsUserLogin(getState());
+
       if (!isLogin) {
         dispatch(actions.showRequestLoginModal());
         return;
