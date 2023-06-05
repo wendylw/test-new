@@ -422,7 +422,7 @@ export const actions = {
     await dispatch(fetchCoreBusiness({ business }));
   },
 
-  loadOnlineStoreInfo: () => ({
+  fetchOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
       types: [
         types.FETCH_ONLINE_STORE_INFO_REQUEST,

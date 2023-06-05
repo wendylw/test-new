@@ -37,7 +37,7 @@ class App extends Component {
     try {
       const initRequests = [
         appActions.loadConsumerLoginStatus(),
-        appActions.loadOnlineStoreInfo(),
+        appActions.fetchOnlineStoreInfo(),
         appActions.loadCashbackBusiness(),
       ];
 
@@ -156,7 +156,7 @@ App.propTypes = {
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
     loadConsumerCustomerInfo: PropTypes.func,
-    loadOnlineStoreInfo: PropTypes.func,
+    fetchOnlineStoreInfo: PropTypes.func,
     loadCashbackBusiness: PropTypes.func,
     loginApp: PropTypes.func,
     clearError: PropTypes.func,

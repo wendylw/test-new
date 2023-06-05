@@ -148,14 +148,14 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       });
     });
 
-    describe('loadOnlineStoreInfo', () => {
+    describe('fetchOnlineStoreInfo', () => {
       it(':Success', () => {
         successMockFetch();
         const expectedActions = [
           { type: types.FETCH_ONLINE_STORE_INFO_REQUEST },
           { type: types.FETCH_ONLINE_STORE_INFO_SUCCESS, responseGql: commonSuccessData },
         ];
-        return expectedActionsCheck(actions.loadOnlineStoreInfo(), expectedActions);
+        return expectedActionsCheck(actions.fetchOnlineStoreInfo(), expectedActions);
       });
       it(':Fail', () => {
         failMockFetch();
@@ -163,7 +163,7 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
           { type: types.FETCH_ONLINE_STORE_INFO_REQUEST },
           { type: types.FETCH_ONLINE_STORE_INFO_FAILURE, code: mockErrorCode, message: mockErrorMsg },
         ];
-        return expectedActionsCheck(actions.loadOnlineStoreInfo(), expectedActions);
+        return expectedActionsCheck(actions.fetchOnlineStoreInfo(), expectedActions);
       });
     });
 
