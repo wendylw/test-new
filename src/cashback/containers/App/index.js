@@ -48,12 +48,14 @@ class App extends Component {
 
       await Promise.all(initRequests);
 
-      const { isUserLogin, isAppLogin } = this.props;
+      const { isUserLogin } = this.props;
 
-      if ((!isAppLogin && isWebview()) || (!isUserLogin && isTNGMiniProgram())) {
-        await appActions.showRequestLoginModal();
-      } else if (isAppLogin && isWebview()) {
+      if (isWebview()) {
         await appActions.loginByBeepApp();
+      }
+
+      if (!isUserLogin && isTNGMiniProgram()) {
+        await appActions.showRequestLoginModal();
       } else if (isUserLogin && isTNGMiniProgram()) {
         await appActions.loginByTngMiniProgram();
       }
