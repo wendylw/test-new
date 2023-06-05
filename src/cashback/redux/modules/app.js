@@ -778,6 +778,8 @@ export const getIsLoginRequestModalShown = createSelector(getUser, user => _get(
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', null));
 
+export const getUserCustomerId = createSelector(getUser, user => _get(user, 'customerId', null));
+
 export const getLoadConsumerCustomerStatus = createSelector(getUser, user =>
   _get(user, 'loadConsumerCustomerStatus', 0)
 );
