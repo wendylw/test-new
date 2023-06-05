@@ -78,7 +78,6 @@ export const initialState = {
     loginRequestStatus: null,
     loadConsumerCustomerStatus: null,
     loadConsumerIsLoginStatus: null,
-    loadBeepIsAppLoginStatus: null,
   },
   customerInfo: {},
   error: null, // network error
@@ -837,18 +836,6 @@ export const getIsLoginRequestStatusFulfilled = createSelector(
 export const getIsLoginRequestStatusRejected = createSelector(
   getLoginRequestStatus,
   loginRequestStatus => loginRequestStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getLoadAppLoginStatus = createSelector(getUser, user => _get(user, 'loadBeepIsAppLoginStatus', null));
-
-export const getIsAppLoginStatusLoaded = createSelector(
-  getLoadAppLoginStatus,
-  loadAppLoginStatus => loadAppLoginStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsAppLoginStatusFailed = createSelector(
-  getLoadAppLoginStatus,
-  loadAppLoginStatus => loadAppLoginStatus === API_REQUEST_STATUS.REJECTED
 );
 
 export const getIsDisplayLoginBanner = createSelector(
