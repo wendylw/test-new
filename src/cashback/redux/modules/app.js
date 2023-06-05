@@ -279,10 +279,6 @@ export const actions = {
     try {
       dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
 
-      if (consumerId) {
-        setCookieVariable('consumerId', consumerId);
-      }
-
       const result = await getConsumerCustomerInfo(consumerId);
 
       dispatch({
