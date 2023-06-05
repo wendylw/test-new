@@ -2,7 +2,7 @@ import { push } from 'connected-react-router';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getFoodCourtId } from './selectors';
 import { fetchFoodCourtStoreList } from './api-request';
-import { isWebview, isTNGMiniProgram } from '../../../../../common/utils';
+import { isWebview, isTNGMiniProgram, getQueryString } from '../../../../../common/utils';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { actions as appActions, getUserIsLogin, getShippingType } from '../../../../redux/modules/app';
 import logger from '../../../../../utils/monitoring/logger';
@@ -16,8 +16,19 @@ export const mounted = createAsyncThunk('ordering/foodCourt/common/mounted', asy
   const state = getState();
   const foodCourtId = getFoodCourtId(state);
   const shippingType = getShippingType(state);
+  const h = getQueryString('h');
 
   try {
+    /**
+     * WB-5405: If the food court id does not exist, refresh the current page to fix the session cookies missing issue.
+     * NOTE: This fix only works when the h exists while the food court id is missing.
+     * Otherwise, the page will be stuck in a loop in the `/ordering/food-court` path.
+     */
+    if (!!h && !foodCourtId) {
+      window.location.reload();
+      throw new Error('food court id is not exist in session cookies');
+    }
+
     const foodCourtStoreList = await fetchFoodCourtStoreList({ foodCourtId, type: shippingType });
 
     return foodCourtStoreList;
