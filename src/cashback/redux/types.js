@@ -69,6 +69,10 @@ export const APP_TYPES = {
   LOAD_CONSUMER_PROFILE_PENDING: 'loyalty/profile/loadProfileInfo/pending',
   LOAD_CONSUMER_PROFILE_FULFILLED: 'loyalty/profile/loadProfileInfo/fulfilled',
   LOAD_CONSUMER_PROFILE_REJECTED: 'loyalty/profile/loadProfileInfo/rejected',
+
+  // show request login page
+  SHOW_REQUEST_LOGIN_MODAL: 'loyalty/app/showRequestLoginModal',
+  HIDE_REQUEST_LOGIN_MODAL: 'loyalty/app/hideRequestLoginModal',
 };
 
 export const HOME_TYPES = {

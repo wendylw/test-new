@@ -32,7 +32,7 @@ class RecentActivities extends React.Component {
     const { isLogin, consumerId } = user || {};
 
     if (isLogin) {
-      await appActions.loadCustomerProfile({ consumerId });
+      await appActions.loadConsumerCustomerInfo({ consumerId });
       this.getLoyaltyHistory();
     }
   }
@@ -46,7 +46,7 @@ class RecentActivities extends React.Component {
     }
 
     if (prevProps.user.isLogin !== isLogin) {
-      await appActions.loadCustomerProfile({ consumerId });
+      await appActions.loadConsumerCustomerInfo({ consumerId });
       this.getLoyaltyHistory();
     }
   }

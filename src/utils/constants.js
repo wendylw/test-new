@@ -596,10 +596,7 @@ const SH_LOGISTICS_VALID_TIME = {
   TO: '21:00',
 };
 
-const WEB_VIEW_SOURCE = {
-  IOS: 'iOS',
-  Android: 'Android',
-};
+const WEB_VIEW_SOURCE = ConstantsV2.WEB_VIEW_SOURCE;
 const PAYMENT_API_PAYMENT_OPTIONS = {
   SAVE_CARD: 'saveCard',
   TOKENIZATION: 'tokenization',
@@ -617,14 +614,7 @@ export const REGISTRATION_TOUCH_POINT = {
   TNG: 'TNG',
 };
 
-export const REGISTRATION_SOURCE = {
-  BEEP_APP: 'BeepApp',
-  RECEIPT: 'Receipt',
-  BEEP_STORE: 'BeepStore',
-  BEEP_SITE: 'BeepSite',
-  TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
-  SHARED_LINK: 'SharedLink',
-};
+export const REGISTRATION_SOURCE = ConstantsV2.REGISTRATION_SOURCE;
 
 export const API_REQUEST_STATUS = ConstantsV2.API_REQUEST_STATUS;
 

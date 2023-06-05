@@ -186,7 +186,7 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       });
     });
 
-    describe('loadCustomerProfile', () => {
+    describe('loadConsumerCustomerInfo', () => {
       it(':Success', () => {
         successMockFetch();
         const caseStore = configureMiddlewareStore(cashbackStore);
@@ -194,7 +194,7 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
           { type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING },
           { type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED, response: commonSuccessData, params: {} },
         ];
-        return caseStore.dispatch(actions.loadCustomerProfile()).then(() => {
+        return caseStore.dispatch(actions.loadConsumerCustomerInfo()).then(() => {
           expect(caseStore.getActions()).toEqual(expectedActions);
         });
       });
@@ -205,7 +205,7 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
           { type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING },
           { type: types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED, code: mockErrorCode, message: mockErrorMsg },
         ];
-        return caseStore.dispatch(actions.loadCustomerProfile()).then(() => {
+        return caseStore.dispatch(actions.loadConsumerCustomerInfo()).then(() => {
           expect(caseStore.getActions()).toEqual(expectedActions);
         });
       });

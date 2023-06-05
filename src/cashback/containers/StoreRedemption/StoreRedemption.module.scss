@@ -6,9 +6,6 @@
 .StoreRedemptionWeb {
   @extend .StoreRedemption;
   @apply tw-fixed tw-left-0 tw-right-0;
-
-  margin: auto;
-  max-width: 414px;
 }
 
 .StoreRedemptionHeader {
@@ -30,4 +27,11 @@
 
   background-image: url("../../../images/store-redemption-web-background.jpg");
   background-size: 100% 100%;
+}
+
+@media (min-width: 770px) {
+  .StoreRedemptionWeb {
+    margin: auto;
+    max-width: 414px;
+  }
 }
