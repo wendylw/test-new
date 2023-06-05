@@ -240,7 +240,7 @@ export const actions = {
         response: result,
       });
     } catch (error) {
-      logger.error('Cash_loadConsumerLoginStatusFailed', { message: error?.message });
+      logger.error('Cashback_loadConsumerLoginStatusFailed', { message: error?.message });
 
       dispatch({
         type: types.FETCH_LOGIN_STATUS_FAILURE,
