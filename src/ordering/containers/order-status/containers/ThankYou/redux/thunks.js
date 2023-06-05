@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
+import { getCookieVariable, removeCookieVariable } from '../../../../../../common/utils';
 import { alert } from '../../../../../../common/feedback';
 import { API_INFO, postFoodCourtIdHashCode } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
@@ -12,7 +13,6 @@ import { PROFILE_DISPLAY_DELAY_DURATION } from '../constants';
 import {
   actions as appActions,
   getBusinessInfo,
-  getUser,
   getUserIsLogin,
   getUserConsumerId,
   getIsUserProfileStatusFulfilled,
@@ -22,6 +22,7 @@ import {
 import { getOrder } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
 import logger from '../../../../../../utils/monitoring/logger';
+import { getRedirectFrom } from './selector';
 
 export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/fetchCashbackInfo', async orderId => {
   try {
@@ -169,18 +170,28 @@ export const callNativeProfile = createAsyncThunk(
   }
 );
 
+export const updateRedirectFrom = createAsyncThunk('ordering/orderStatus/thankYou/updateRedirectFrom', async () => {
+  const from = getCookieVariable('__ty_source');
+
+  // immediately remove __ty_source cookie after setting in the state.
+  removeCookieVariable('__ty_source');
+
+  return from;
+});
+
 export const initProfilePage = createAsyncThunk(
   'ordering/orderStatus/thankYou/loadProfilePageInfo',
-  async ({ from }, { dispatch, getState }) => {
+  async (_, { dispatch, getState }) => {
     try {
       // Delay Profile display duration
-      const delay = PROFILE_DISPLAY_DELAY_DURATION[from] || PROFILE_DISPLAY_DELAY_DURATION.DEFAULT;
       const state = getState();
+      const from = getRedirectFrom(state);
       const userIsLogin = getUserIsLogin(state);
       const consumerId = getUserConsumerId(state);
       const isUserProfileStatusFulfilled = getIsUserProfileStatusFulfilled(state);
       const isProfileMissingSkippedExpired = getIsProfileMissingSkippedExpired(state);
       const isWebview = getIsWebview(state);
+      const delay = PROFILE_DISPLAY_DELAY_DURATION[from] || PROFILE_DISPLAY_DELAY_DURATION.DEFAULT;
 
       // First must to confirm profile info is loaded
       if (userIsLogin && !isUserProfileStatusFulfilled) {
