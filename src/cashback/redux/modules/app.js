@@ -513,20 +513,22 @@ const user = (state = initialState.user, action) => {
     case types.CREATE_LOGIN_REQUEST: {
       return {
         ...state,
+        isFetching: true,
         loginRequestStatus: API_REQUEST_STATUS.PENDING,
       };
     }
     case types.CREATE_LOGIN_FAILURE:
       if (['TokenExpiredError', 'JsonWebTokenError'].includes(error?.error)) {
-        return { ...state, isExpired: true, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
+        return { ...state, isExpired: true, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
       }
 
-      return { ...state, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
+      return { ...state, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
     case types.CREATE_LOGIN_SUCCESS: {
       return {
         ...state,
         consumerId: _get(payload, 'consumerId', null),
         isLogin: true,
+        isFetching: false,
         loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
       };
     }
