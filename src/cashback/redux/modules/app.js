@@ -274,10 +274,12 @@ export const actions = {
     user,
   }),
 
-  loadConsumerCustomerInfo: ({ consumerId }) => async dispatch => {
+  loadConsumerCustomerInfo: () => async (dispatch, getState) => {
     try {
       dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
 
+      const state = getState();
+      const consumerId = getUserConsumerId(state);
       const result = await getConsumerCustomerInfo(consumerId);
 
       dispatch({
@@ -333,7 +335,7 @@ export const actions = {
         return;
       }
 
-      dispatch(actions.loadByBeepApp());
+      dispatch(actions.loginByBeepApp());
     } catch (e) {
       logger.error('Cashback_syncLoginFromNativeFailed', { message: e?.message, code: e?.code });
     }
@@ -361,7 +363,7 @@ export const actions = {
     return getIsUserLogin(getState());
   },
 
-  syncLoginFromTngMiniProgram: () => async (dispatch, getState) => {
+  syncLoginFromMiniProgram: () => async (dispatch, getState) => {
     try {
       const isLogin = getIsUserLogin(getState());
 
@@ -372,7 +374,7 @@ export const actions = {
 
       dispatch(actions.loginByTngMiniProgram());
     } catch (e) {
-      logger.error('Cashback_syncLoginFromTngMiniProgramFailed', { message: e?.message, code: e?.code });
+      logger.error('Cashback_syncLoginFromMiniProgramFailed', { message: e?.message, code: e?.code });
     }
   },
 
