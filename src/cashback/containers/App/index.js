@@ -44,7 +44,7 @@ class App extends Component {
       await Promise.all(initRequests);
 
       if (isWebview()) {
-        await appActions.syncLoginFromNative();
+        await appActions.syncLoginFromBeepApp();
       }
 
       if (isTNGMiniProgram()) {
@@ -161,7 +161,7 @@ App.propTypes = {
     clearError: PropTypes.func,
     syncLoginFromMiniProgram: PropTypes.func,
     loginByTngMiniProgram: PropTypes.func,
-    syncLoginFromNative: PropTypes.func,
+    syncLoginFromBeepApp: PropTypes.func,
     loginByBeepApp: PropTypes.func,
     showRequestLoginModal: PropTypes.func,
     hideRequestLoginModal: PropTypes.func,

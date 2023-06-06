@@ -317,7 +317,7 @@ export const actions = {
     }
   },
 
-  syncLoginFromNative: () => async (dispatch, getState) => {
+  syncLoginFromBeepApp: () => async (dispatch, getState) => {
     try {
       const isLogin = getIsUserLogin(getState());
       if (isLogin) {
@@ -333,7 +333,7 @@ export const actions = {
 
       dispatch(actions.loginByBeepApp());
     } catch (e) {
-      logger.error('Cashback_syncLoginFromNativeFailed', { message: e?.message, code: e?.code });
+      logger.error('Cashback_syncLoginFromBeepAppFailed', { message: e?.message, code: e?.code });
     }
   },
 
