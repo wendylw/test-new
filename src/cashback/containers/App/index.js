@@ -113,27 +113,27 @@ class App extends Component {
       // eslint-disable-next-line react/jsx-filename-extension
       <>
         {isWebview() && <NativeHeader />}
-        {isLoginModalShown && (isWebview() || isTNGMiniProgram()) ? (
-          <RequestLogin onClick={this.handleRequestLoginClick} />
-        ) : (
-          <main className="loyalty fixed-wrapper__main fixed-wrapper">
-            {message ? (
-              <ErrorToast
-                className="fixed"
-                message={message}
-                clearError={() => {
-                  appActions.clearError();
-                }}
-              />
-            ) : null}
-            <Message />
-            {isLoginModalShown ? (
+        <main className="loyalty fixed-wrapper__main fixed-wrapper">
+          {message ? (
+            <ErrorToast
+              className="fixed"
+              message={message}
+              clearError={() => {
+                appActions.clearError();
+              }}
+            />
+          ) : null}
+          <Message />
+          {isLoginModalShown ? (
+            isWebview() || isTNGMiniProgram() ? (
+              <RequestLogin onClick={this.handleRequestLoginClick} />
+            ) : (
               <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
-            ) : null}
-            <Routes />
-            <DocumentFavicon icon={onlineStoreInfoFavicon || faviconImage} />
-          </main>
-        )}
+            )
+          ) : null}
+          <Routes />
+          <DocumentFavicon icon={onlineStoreInfoFavicon || faviconImage} />
+        </main>
       </>
     );
   }
