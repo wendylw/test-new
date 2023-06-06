@@ -44,9 +44,9 @@ class RecentActivities extends React.Component {
   async componentDidUpdate(prevProps) {
     const { homeActions, userCustomerId } = this.props;
 
-    // userCustomerId !== prevProps.user.userCustomerId instead of !prevProps.user.userCustomerId
+    // userCustomerId !== prevProps.userCustomerId instead of !prevProps.userCustomerId
     // The 3rd MiniProgram cached the previous userCustomerId, so the userCustomerId is not the correct account
-    if (userCustomerId && userCustomerId !== prevProps.user.userCustomerId) {
+    if (userCustomerId && userCustomerId !== prevProps.userCustomerId) {
       homeActions.getCashbackHistory(userCustomerId);
     }
   }

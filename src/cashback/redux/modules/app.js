@@ -432,6 +432,8 @@ const user = (state = initialState.user, action) => {
   const { storeCreditsBalance } = storeCreditInfo || {};
   const otpType = _get(payload, 'otpType', null);
 
+  console.log(customerId);
+
   switch (type) {
     // get otp
     case types.GET_OTP_REQUEST:
