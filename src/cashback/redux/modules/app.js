@@ -74,7 +74,6 @@ export const initialState = {
     },
     showLoginModal: false,
     loadConsumerCustomerStatus: null,
-    loginRequestStatus: null,
   },
   customerInfo: {},
   error: null, // network error
@@ -514,22 +513,20 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         isFetching: true,
-        loginRequestStatus: API_REQUEST_STATUS.PENDING,
       };
     }
     case types.CREATE_LOGIN_FAILURE:
       if (['TokenExpiredError', 'JsonWebTokenError'].includes(error?.error)) {
-        return { ...state, isExpired: true, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
+        return { ...state, isExpired: true, isFetching: false };
       }
 
-      return { ...state, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
+      return { ...state, isFetching: false };
     case types.CREATE_LOGIN_SUCCESS: {
       return {
         ...state,
         consumerId: _get(payload, 'consumerId', null),
         isLogin: true,
         isFetching: false,
-        loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
       };
     }
     // load consumer customer info
@@ -748,18 +745,6 @@ export const getUserStoreCashback = createSelector(getUser, user => _get(user, '
 export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
 
 export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
-
-export const getLoginRequestStatus = createSelector(getUser, user => _get(user, 'loginRequestStatus', null));
-
-export const getIsLoginRequestStatusFulfilled = createSelector(
-  getLoginRequestStatus,
-  loginRequestStatus => loginRequestStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoginRequestStatusRejected = createSelector(
-  getLoginRequestStatus,
-  loginRequestStatus => loginRequestStatus === API_REQUEST_STATUS.REJECTED
-);
 
 export const getLoadConsumerCustomerStatus = createSelector(getUser, user =>
   _get(user, 'loadConsumerCustomerStatus', null)
