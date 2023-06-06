@@ -726,6 +726,7 @@ export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, c
   _get(coreBusiness, 'enableCashback', false)
 );
 
+// TODO: Will remove from reducer, prompt should in component
 export const getLoginBannerPrompt = createSelector(getUser, user => _get(user, 'prompt', null));
 
 export const getIsUserLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
