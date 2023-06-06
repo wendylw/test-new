@@ -73,11 +73,7 @@ export const initialState = {
       status: null,
     },
     showRequestLoginModal: false,
-    createOtpRequestStatus: null,
-    updateOtpRequestStatus: null,
     loginRequestStatus: null,
-    loadConsumerCustomerStatus: null,
-    loadConsumerIsLoginStatus: null,
   },
   customerInfo: {},
   error: null, // network error
@@ -365,14 +361,15 @@ export const actions = {
 
   syncLoginFromMiniProgram: () => async (dispatch, getState) => {
     try {
-      const isLogin = getIsUserLogin(getState());
+      const isUserLogin = getIsUserLogin(getState());
 
-      if (!isLogin) {
+      if (!isUserLogin) {
         dispatch(actions.showRequestLoginModal());
+
         return;
       }
 
-      dispatch(actions.loginByTngMiniProgram());
+      isTNGMiniProgram() && dispatch(actions.loginByTngMiniProgram());
     } catch (e) {
       logger.error('Cashback_syncLoginFromMiniProgramFailed', { message: e?.message, code: e?.code });
     }
@@ -471,20 +468,20 @@ const user = (state = initialState.user, action) => {
       return { ...state, otpRequest: _cloneDeep(initialState.user.otpRequest) };
     // create otp
     case types.CREATE_OTP_REQUEST:
-      return { ...state, isError: false, createOtpRequestStatus: API_REQUEST_STATUS.PENDING };
+      return { ...state, isFetching: true, isError: false };
     case types.CREATE_OTP_FAILURE:
-      return { ...state, isError: true, createOtpRequestStatus: API_REQUEST_STATUS.REJECTED };
+      return { ...state, isFetching: false, isError: true };
     case types.CREATE_OTP_SUCCESS:
       const { access_token, refresh_token } = response;
 
       return {
         ...state,
-        createOtpRequestStatus: API_REQUEST_STATUS.FULFILLED,
+        isFetching: false,
         accessToken: access_token,
         refreshToken: refresh_token,
       };
     case types.RESET_CREATE_OTP_REQUEST:
-      return { ...state, isError: false, createOtpRequestStatus: null };
+      return { ...state, isFetching: false, isError: false };
     // get whatsapp support
     case types.GET_WHATSAPPSUPPORT_REQUEST:
       return { ...state, noWhatsAppAccount: true };
@@ -495,21 +492,14 @@ const user = (state = initialState.user, action) => {
       return state;
     // fetch login status
     case types.FETCH_LOGIN_STATUS_REQUEST:
-      return {
-        ...state,
-        loadConsumerIsLoginStatus: API_REQUEST_STATUS.PENDING,
-      };
+      return state;
     case types.FETCH_LOGIN_STATUS_FAILURE:
-      return {
-        ...state,
-        loadConsumerIsLoginStatus: API_REQUEST_STATUS.REJECTED,
-      };
+      return state;
     case types.FETCH_LOGIN_STATUS_SUCCESS:
       return {
         ...state,
         isLogin: login,
         consumerId,
-        loadConsumerIsLoginStatus: API_REQUEST_STATUS.FULFILLED,
       };
     // load consumer profile
     case types.LOAD_CONSUMER_PROFILE_PENDING:
@@ -557,22 +547,15 @@ const user = (state = initialState.user, action) => {
     }
     // load consumer customer info
     case types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING:
-      return {
-        ...state,
-        loadConsumerCustomerStatus: API_REQUEST_STATUS.PENDING,
-      };
+      return state;
     case types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED:
       return {
         ...state,
         storeCreditsBalance,
         customerId,
-        loadConsumerCustomerStatus: API_REQUEST_STATUS.FULFILLED,
       };
     case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
-      return {
-        ...state,
-        loadConsumerCustomerStatus: API_REQUEST_STATUS.REJECTED,
-      };
+      return state;
     // fetch online store info success
     // fetch core business success
     case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
@@ -771,44 +754,11 @@ export const getUserConsumerId = createSelector(getUser, user => _get(user, 'con
 
 export const getUserCustomerId = createSelector(getUser, user => _get(user, 'customerId', null));
 
-export const getLoadConsumerCustomerStatus = createSelector(getUser, user =>
-  _get(user, 'loadConsumerCustomerStatus', 0)
-);
-
-export const getIsConsumerCustomerLoaded = createSelector(
-  getLoadConsumerCustomerStatus,
-  loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadConsumerCustomerFailed = createSelector(
-  getLoadConsumerCustomerStatus,
-  loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.REJECTED
-);
-
 export const getUserStoreCashback = createSelector(getUser, user => _get(user, 'storeCreditsBalance', 0));
 
 export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
 
-export const getCreateOtpRequestStatus = createSelector(getUser, user => _get(user, 'createOtpRequestStatus', null));
-
-export const getIsCreateOtpRequestStatusPending = createSelector(
-  getCreateOtpRequestStatus,
-  createOtpRequestStatus => createOtpRequestStatus === API_REQUEST_STATUS.PENDING
-);
-
-export const getLoadConsumerIsLoginStatus = createSelector(getUser, user =>
-  _get(user, 'loadConsumerIsLoginStatus', null)
-);
-
-export const getIsConsumerIsLoginStatusLoaded = createSelector(
-  getLoadConsumerIsLoginStatus,
-  loadConsumerIsLoginStatus => loadConsumerIsLoginStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadConsumerIsLoginStatusFailed = createSelector(
-  getLoadConsumerIsLoginStatus,
-  loadConsumerIsLoginStatus => loadConsumerIsLoginStatus === API_REQUEST_STATUS.REJECTED
-);
+export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
 
 export const getLoginRequestStatus = createSelector(getUser, user => _get(user, 'loginRequestStatus', null));
 
@@ -824,24 +774,10 @@ export const getIsLoginRequestStatusRejected = createSelector(
 
 export const getIsDisplayLoginBanner = createSelector(
   getIsUserLogin,
-  getIsConsumerIsLoginStatusLoaded,
-  getIsLoadConsumerIsLoginStatusFailed,
   getIsLoginRequestStatusFulfilled,
   getIsLoginRequestStatusRejected,
-  (
-    isUserLogin,
-    isConsumerIsLoginStatusLoaded,
-    isLoadConsumerIsLoginStatusFailed,
-    isLoginRequestStatusFulfilled,
-    isLoginRequestStatusRejected
-  ) =>
-    !isWebview() &&
-    !isTNGMiniProgram() &&
-    !isUserLogin &&
-    (isConsumerIsLoginStatusLoaded ||
-      isLoadConsumerIsLoginStatusFailed ||
-      isLoginRequestStatusFulfilled ||
-      isLoginRequestStatusRejected)
+  (isUserLogin, isLoginRequestStatusFulfilled, isLoginRequestStatusRejected) =>
+    !isUserLogin && (isLoginRequestStatusFulfilled || isLoginRequestStatusRejected)
 );
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);
@@ -945,7 +881,6 @@ export const getOtpErrorPopUpI18nKeys = createSelector(
 
 export const getShouldShowLoader = createSelector(
   getIsOtpRequestStatusPending,
-  getIsCreateOtpRequestStatusPending,
-  (isOtpRequestStatusPending, isCreateOtpRequestStatusPending) =>
-    isOtpRequestStatusPending || isCreateOtpRequestStatusPending
+  getIsLoginRequestStatusPending,
+  (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
 );
