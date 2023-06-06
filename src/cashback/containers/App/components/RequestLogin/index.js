@@ -4,7 +4,7 @@ import beepLoginImage from '../../../../../images/login.svg';
 import './RequestLogin.scss';
 
 function RequestLogin(props) {
-  const { t, onClick } = props;
+  const { t, onClick, isLoginRequestStatusPending } = props;
   return (
     <section className="request-login flex flex-column flex-center">
       <section className="page-login__content text-center">
@@ -15,11 +15,12 @@ function RequestLogin(props) {
 
       <p className="text-center text-size-big font-weight-bold padding-top-bottom-small">{t('CashbackLoginTip')}</p>
       <button
+        disabled={isLoginRequestStatusPending}
         onClick={onClick}
         className="login-button login-button__fill text-uppercase"
         data-heap-name="cashback.common.request-login.btn"
       >
-        {t('Login')}
+        {isLoginRequestStatusPending ? t('Processing') : t('Login')}
       </button>
     </section>
   );

@@ -8,6 +8,7 @@ import {
   getError,
   getLoginBannerPrompt,
   getIsUserLogin,
+  getIsLoginRequestStatusPending,
   getOnlineStoreInfoFavicon,
   getIsLoginModalShown,
   getUserConsumerId,
@@ -106,7 +107,15 @@ class App extends Component {
   }
 
   render() {
-    const { t, error, loginBannerPrompt, onlineStoreInfoFavicon, isLoginModalShown, appActions } = this.props;
+    const {
+      t,
+      error,
+      loginBannerPrompt,
+      onlineStoreInfoFavicon,
+      isLoginModalShown,
+      isLoginRequestStatusPending,
+      appActions,
+    } = this.props;
     const { message } = error || {};
 
     return (
@@ -126,7 +135,10 @@ class App extends Component {
           <Message />
           {isLoginModalShown ? (
             isWebview() || isTNGMiniProgram() ? (
-              <RequestLogin onClick={this.handleRequestLoginClick} />
+              <RequestLogin
+                onClick={this.handleRequestLoginClick}
+                isLoginRequestStatusPending={isLoginRequestStatusPending}
+              />
             ) : (
               <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
             )
@@ -143,6 +155,7 @@ App.displayName = 'CashbackApp';
 
 App.propTypes = {
   loginBannerPrompt: PropTypes.string,
+  isLoginRequestStatusPending: PropTypes.bool,
   isUserLogin: PropTypes.bool,
   userConsumerId: PropTypes.string,
   onlineStoreInfoFavicon: PropTypes.string,
@@ -170,6 +183,7 @@ App.propTypes = {
 
 App.defaultProps = {
   loginBannerPrompt: null,
+  isLoginRequestStatusPending: false,
   isUserLogin: false,
   userConsumerId: null,
   onlineStoreInfoFavicon: '',
@@ -184,6 +198,7 @@ export default compose(
   connect(
     state => ({
       loginBannerPrompt: getLoginBannerPrompt(state),
+      isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
       isUserLogin: getIsUserLogin(state),
       userConsumerId: getUserConsumerId(state),
       isLoginModalShown: getIsLoginModalShown(state),
