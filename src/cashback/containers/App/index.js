@@ -61,8 +61,8 @@ class App extends Component {
   }
 
   componentDidUpdate = async prevProps => {
-    const { appActions, pageError, userConsumerId: currUserConsumerId } = this.props;
-    const { pageError: prevPageError, userConsumerId: prevUserConsumerId } = prevProps;
+    const { appActions, pageError, isUserLogin: currIsUserLogin, userConsumerId: currUserConsumerId } = this.props;
+    const { pageError: prevPageError, isUserLogin: prevIsUserLogin, userConsumerId: prevUserConsumerId } = prevProps;
     const { code } = prevPageError || {};
 
     if (pageError.code && pageError.code !== code) {
@@ -74,6 +74,10 @@ class App extends Component {
     if (currUserConsumerId && currUserConsumerId !== prevUserConsumerId) {
       appActions.loadConsumerCustomerInfo();
     }
+
+    if (currIsUserLogin && !prevIsUserLogin) {
+      appActions.hideLoginModal();
+    }
   };
 
   handleRequestLoginClick = async () => {
@@ -83,12 +87,6 @@ class App extends Component {
       await appActions.loginByBeepApp();
     } else if (isTNGMiniProgram()) {
       await appActions.loginByTngMiniProgram();
-    }
-
-    const { isUserLogin } = this.props;
-
-    if (isUserLogin) {
-      appActions.hideLoginModal();
     }
   };
 
