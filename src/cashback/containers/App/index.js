@@ -48,13 +48,17 @@ class App extends Component {
         return;
       }
 
-      const { isUserLogin } = this.props;
+      const { isUserLogin, userConsumerId } = this.props;
 
       if (!isUserLogin) {
         appActions.showLoginModal();
       } else {
         // The user is logged in, the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
         isTNGMiniProgram() && (await appActions.loginByTngMiniProgram());
+      }
+
+      if (userConsumerId) {
+        appActions.loadConsumerCustomerInfo();
       }
     } catch (error) {
       logger.error('Cashback_App_InitFailed', { message: error?.message });
