@@ -53,6 +53,7 @@ class App extends Component {
       if (!isUserLogin) {
         appActions.showLoginModal();
       } else {
+        // The user is logged in, the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
         isTNGMiniProgram() && (await appActions.loginByTngMiniProgram());
       }
     } catch (error) {
