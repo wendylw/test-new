@@ -476,14 +476,21 @@ const user = (state = initialState.user, action) => {
       return state;
     // fetch login status
     case types.FETCH_LOGIN_STATUS_REQUEST:
-      return state;
+      return {
+        ...state,
+        isFetching: true,
+      };
     case types.FETCH_LOGIN_STATUS_FAILURE:
-      return state;
+      return {
+        ...state,
+        isFetching: false,
+      };
     case types.FETCH_LOGIN_STATUS_SUCCESS:
       return {
         ...state,
         isLogin: login,
         consumerId,
+        isFetching: false,
       };
     // load consumer profile
     case types.LOAD_CONSUMER_PROFILE_PENDING:
