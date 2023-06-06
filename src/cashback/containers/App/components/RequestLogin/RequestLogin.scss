@@ -1,5 +1,6 @@
 $white: #ffffff;
 $theme-color: #ff9419;
+$disabled-color: #dededf;
 
 .request-login {
   height: 100vh;
@@ -13,6 +14,10 @@ $theme-color: #ff9419;
   border-color: transparent;
   border-radius: 4px;
   margin: 20px auto;
+
+  &:disabled {
+    background-color: $disabled-color;
+  }
 
   &__fill {
     border: 0;

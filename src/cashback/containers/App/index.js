@@ -81,7 +81,7 @@ class App extends Component {
       appActions.loadConsumerCustomerInfo();
     }
 
-    if (currIsUserLogin && !prevIsUserLogin) {
+    if (currIsUserLogin && currIsUserLogin !== prevIsUserLogin) {
       appActions.hideLoginModal();
     }
   };
