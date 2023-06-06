@@ -9,7 +9,7 @@ import {
   getLoginBannerPrompt,
   getIsUserLogin,
   getOnlineStoreInfoFavicon,
-  getIsDisplayLoginBanner,
+  getIsWebLoginBannerShown,
   getIsLoginRequestModalShown,
   getUserConsumerId,
 } from '../../redux/modules/app';
@@ -101,7 +101,7 @@ class App extends Component {
       error,
       loginBannerPrompt,
       onlineStoreInfoFavicon,
-      isDisplayLoginBanner,
+      isWebLoginBannerShown,
       isLoginRequestModalShown,
       appActions,
     } = this.props;
@@ -125,7 +125,7 @@ class App extends Component {
               />
             ) : null}
             <Message />
-            {isDisplayLoginBanner ? (
+            {isWebLoginBannerShown ? (
               <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
             ) : null}
             <Routes />
@@ -150,7 +150,7 @@ App.propTypes = {
   pageError: PropTypes.shape({
     code: PropTypes.number,
   }),
-  isDisplayLoginBanner: PropTypes.bool,
+  isWebLoginBannerShown: PropTypes.bool,
   isLoginRequestModalShown: PropTypes.bool,
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
@@ -175,7 +175,7 @@ App.defaultProps = {
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
-  isDisplayLoginBanner: false,
+  isWebLoginBannerShown: false,
   isLoginRequestModalShown: false,
   appActions: {},
 };
@@ -187,7 +187,7 @@ export default compose(
       loginBannerPrompt: getLoginBannerPrompt(state),
       isUserLogin: getIsUserLogin(state),
       userConsumerId: getUserConsumerId(state),
-      isDisplayLoginBanner: getIsDisplayLoginBanner(state),
+      isWebLoginBannerShown: getIsWebLoginBannerShown(state),
       isLoginRequestModalShown: getIsLoginRequestModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),

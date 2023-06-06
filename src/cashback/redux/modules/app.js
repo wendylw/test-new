@@ -772,7 +772,7 @@ export const getIsLoginRequestStatusRejected = createSelector(
   loginRequestStatus => loginRequestStatus === API_REQUEST_STATUS.REJECTED
 );
 
-export const getIsDisplayLoginBanner = createSelector(
+export const getIsWebLoginBannerShown = createSelector(
   getIsUserLogin,
   getIsLoginRequestStatusFulfilled,
   getIsLoginRequestStatusRejected,
