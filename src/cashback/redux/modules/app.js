@@ -797,16 +797,6 @@ export const getIsCreateOtpRequestStatusPending = createSelector(
   createOtpRequestStatus => createOtpRequestStatus === API_REQUEST_STATUS.PENDING
 );
 
-export const getIsOtpRequestStatusCreated = createSelector(
-  getCreateOtpRequestStatus,
-  createOtpRequestStatus => createOtpRequestStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsCreateOtpRequestStatusFailed = createSelector(
-  getCreateOtpRequestStatus,
-  createOtpRequestStatus => createOtpRequestStatus === API_REQUEST_STATUS.REJECTED
-);
-
 export const getLoadConsumerIsLoginStatus = createSelector(getUser, user =>
   _get(user, 'loadConsumerIsLoginStatus', null)
 );
