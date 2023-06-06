@@ -72,7 +72,7 @@ export const initialState = {
       birthdayChangeAllowed: false,
       status: null,
     },
-    showRequestLoginModal: false,
+    showLoginModal: false,
     loginRequestStatus: null,
   },
   customerInfo: {},
@@ -111,11 +111,11 @@ const fetchCoreBusiness = variables => ({
 
 //action creators
 export const actions = {
-  showRequestLoginModal: () => ({
-    type: types.SHOW_REQUEST_LOGIN_MODAL,
+  showLoginModal: () => ({
+    type: types.SHOW_LOGIN_MODAL,
   }),
-  hideRequestLoginModal: () => ({
-    type: types.HIDE_REQUEST_LOGIN_MODAL,
+  hideLoginModal: () => ({
+    type: types.HIDE_LOGIN_MODAL,
   }),
   loginApp: ({ accessToken, refreshToken }) => async (dispatch, getState) => {
     try {
@@ -327,7 +327,7 @@ export const actions = {
       const isAppLogin = NativeMethods.getLoginStatus();
 
       if (!isAppLogin) {
-        dispatch(actions.showRequestLoginModal());
+        dispatch(actions.showLoginModal());
         return;
       }
 
@@ -357,22 +357,6 @@ export const actions = {
     }
 
     return getIsUserLogin(getState());
-  },
-
-  syncLoginFromMiniProgram: () => async (dispatch, getState) => {
-    try {
-      const isUserLogin = getIsUserLogin(getState());
-
-      if (!isUserLogin) {
-        dispatch(actions.showRequestLoginModal());
-
-        return;
-      }
-
-      isTNGMiniProgram() && dispatch(actions.loginByTngMiniProgram());
-    } catch (e) {
-      logger.error('Cashback_syncLoginFromMiniProgramFailed', { message: e?.message, code: e?.code });
-    }
   },
 
   clearError: () => ({
@@ -574,10 +558,10 @@ const user = (state = initialState.user, action) => {
       return Object.assign({}, state, action.user);
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
-    case types.SHOW_REQUEST_LOGIN_MODAL:
-      return { ...state, showRequestLoginModal: true };
-    case types.HIDE_REQUEST_LOGIN_MODAL:
-      return { ...state, showRequestLoginModal: false };
+    case types.SHOW_LOGIN_MODAL:
+      return { ...state, showLoginModal: true };
+    case types.HIDE_LOGIN_MODAL:
+      return { ...state, showLoginModal: false };
     default:
       return state;
   }
@@ -748,7 +732,7 @@ export const getIsUserLogin = createSelector(getUser, user => _get(user, 'isLogi
 
 export const getIsUserExpired = createSelector(getUser, user => _get(user, 'isExpired', false));
 
-export const getIsLoginRequestModalShown = createSelector(getUser, user => _get(user, 'showRequestLoginModal', false));
+export const getIsLoginModalShown = createSelector(getUser, user => _get(user, 'showLoginModal', false));
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', null));
 
@@ -770,14 +754,6 @@ export const getIsLoginRequestStatusFulfilled = createSelector(
 export const getIsLoginRequestStatusRejected = createSelector(
   getLoginRequestStatus,
   loginRequestStatus => loginRequestStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getIsWebLoginBannerShown = createSelector(
-  getIsUserLogin,
-  getIsLoginRequestStatusFulfilled,
-  getIsLoginRequestStatusRejected,
-  (isUserLogin, isLoginRequestStatusFulfilled, isLoginRequestStatusRejected) =>
-    !isUserLogin && (isLoginRequestStatusFulfilled || isLoginRequestStatusRejected)
 );
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);

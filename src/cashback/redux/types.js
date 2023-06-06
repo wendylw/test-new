@@ -71,8 +71,8 @@ export const APP_TYPES = {
   LOAD_CONSUMER_PROFILE_REJECTED: 'loyalty/profile/loadProfileInfo/rejected',
 
   // show request login page
-  SHOW_REQUEST_LOGIN_MODAL: 'loyalty/app/showRequestLoginModal',
-  HIDE_REQUEST_LOGIN_MODAL: 'loyalty/app/hideRequestLoginModal',
+  SHOW_LOGIN_MODAL: 'loyalty/app/showLoginModal',
+  HIDE_LOGIN_MODAL: 'loyalty/app/hideLoginModal',
 };
 
 export const HOME_TYPES = {

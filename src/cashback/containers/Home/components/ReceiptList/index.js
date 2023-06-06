@@ -34,25 +34,21 @@ class RecentActivities extends React.Component {
   };
 
   async componentWillMount() {
-    const { userCustomerId } = this.props;
+    const { homeActions, userCustomerId } = this.props;
 
     if (userCustomerId) {
-      this.getLoyaltyHistory();
+      homeActions.getCashbackHistory(userCustomerId);
     }
   }
 
   async componentDidUpdate(prevProps) {
-    const { userCustomerId } = this.props;
-
-    if (userCustomerId && !prevProps.user.userCustomerId) {
-      this.getLoyaltyHistory();
-    }
-  }
-
-  getLoyaltyHistory() {
     const { homeActions, userCustomerId } = this.props;
 
-    homeActions.getCashbackHistory(userCustomerId);
+    // userCustomerId !== prevProps.user.userCustomerId instead of !prevProps.user.userCustomerId
+    // The 3rd MiniProgram cached the previous userCustomerId, so the userCustomerId is not the correct account
+    if (userCustomerId && userCustomerId !== prevProps.user.userCustomerId) {
+      homeActions.getCashbackHistory(userCustomerId);
+    }
   }
 
   loadItems(page) {

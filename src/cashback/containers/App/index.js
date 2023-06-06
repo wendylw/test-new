@@ -9,8 +9,7 @@ import {
   getLoginBannerPrompt,
   getIsUserLogin,
   getOnlineStoreInfoFavicon,
-  getIsWebLoginBannerShown,
-  getIsLoginRequestModalShown,
+  getIsLoginModalShown,
   getUserConsumerId,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
@@ -47,8 +46,12 @@ class App extends Component {
         await appActions.syncLoginFromBeepApp();
       }
 
-      if (isTNGMiniProgram()) {
-        await appActions.syncLoginFromMiniProgram();
+      const { isUserLogin } = this.props;
+
+      if (!isUserLogin) {
+        appActions.showLoginModal();
+      } else {
+        isTNGMiniProgram() && (await appActions.loginByTngMiniProgram());
       }
     } catch (error) {
       logger.error('Cashback_App_InitFailed', { message: error?.message });
@@ -64,7 +67,9 @@ class App extends Component {
       this.visitErrorPage();
     }
 
-    if (currUserConsumerId && !prevUserConsumerId) {
+    // currUserConsumerId !== prevUserConsumerId instead of !prevUserConsumerId .
+    // The 3rd MiniProgram cached the previous consumerId, so the consumerId is not the correct account
+    if (currUserConsumerId && currUserConsumerId !== prevUserConsumerId) {
       appActions.loadConsumerCustomerInfo();
     }
   };
@@ -81,7 +86,7 @@ class App extends Component {
     const { isUserLogin } = this.props;
 
     if (isUserLogin) {
-      appActions.hideRequestLoginModal();
+      appActions.hideLoginModal();
     }
   };
 
@@ -96,22 +101,14 @@ class App extends Component {
   }
 
   render() {
-    const {
-      t,
-      error,
-      loginBannerPrompt,
-      onlineStoreInfoFavicon,
-      isWebLoginBannerShown,
-      isLoginRequestModalShown,
-      appActions,
-    } = this.props;
+    const { t, error, loginBannerPrompt, onlineStoreInfoFavicon, isLoginModalShown, appActions } = this.props;
     const { message } = error || {};
 
     return (
       // eslint-disable-next-line react/jsx-filename-extension
       <>
         {isWebview() && <NativeHeader />}
-        {isLoginRequestModalShown ? (
+        {isLoginModalShown && isWebview() && isTNGMiniProgram() ? (
           <RequestLogin onClick={this.handleRequestLoginClick} />
         ) : (
           <main className="loyalty fixed-wrapper__main fixed-wrapper">
@@ -125,7 +122,7 @@ class App extends Component {
               />
             ) : null}
             <Message />
-            {isWebLoginBannerShown ? (
+            {isLoginModalShown ? (
               <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
             ) : null}
             <Routes />
@@ -150,8 +147,7 @@ App.propTypes = {
   pageError: PropTypes.shape({
     code: PropTypes.number,
   }),
-  isWebLoginBannerShown: PropTypes.bool,
-  isLoginRequestModalShown: PropTypes.bool,
+  isLoginModalShown: PropTypes.bool,
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
     loadConsumerCustomerInfo: PropTypes.func,
@@ -159,12 +155,11 @@ App.propTypes = {
     fetchCashbackBusiness: PropTypes.func,
     loginApp: PropTypes.func,
     clearError: PropTypes.func,
-    syncLoginFromMiniProgram: PropTypes.func,
     loginByTngMiniProgram: PropTypes.func,
     syncLoginFromBeepApp: PropTypes.func,
     loginByBeepApp: PropTypes.func,
-    showRequestLoginModal: PropTypes.func,
-    hideRequestLoginModal: PropTypes.func,
+    showLoginModal: PropTypes.func,
+    hideLoginModal: PropTypes.func,
   }),
 };
 
@@ -175,8 +170,7 @@ App.defaultProps = {
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
-  isWebLoginBannerShown: false,
-  isLoginRequestModalShown: false,
+  isLoginModalShown: false,
   appActions: {},
 };
 
@@ -187,8 +181,7 @@ export default compose(
       loginBannerPrompt: getLoginBannerPrompt(state),
       isUserLogin: getIsUserLogin(state),
       userConsumerId: getUserConsumerId(state),
-      isWebLoginBannerShown: getIsWebLoginBannerShown(state),
-      isLoginRequestModalShown: getIsLoginRequestModalShown(state),
+      isLoginModalShown: getIsLoginModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
       pageError: getPageError(state),
