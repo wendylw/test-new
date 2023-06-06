@@ -5,7 +5,13 @@ import { IconTicket } from '../../../../../components/Icons';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getUser,
+  getUserCustomerId,
+  getBusiness,
+} from '../../../../redux/modules/app';
 import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import {
   actions as homeActionCreators,
@@ -28,35 +34,25 @@ class RecentActivities extends React.Component {
   };
 
   async componentWillMount() {
-    const { user, appActions } = this.props;
-    const { isLogin, consumerId } = user || {};
+    const { userCustomerId } = this.props;
 
-    if (isLogin) {
-      await appActions.loadConsumerCustomerInfo({ consumerId });
+    if (userCustomerId) {
       this.getLoyaltyHistory();
     }
   }
 
   async componentDidUpdate(prevProps) {
-    const { isFetching, user, appActions } = this.props;
-    const { isLogin, consumerId } = user || {};
+    const { userCustomerId } = this.props;
 
-    if (isFetching || !isLogin) {
-      return;
-    }
-
-    if (prevProps.user.isLogin !== isLogin) {
-      await appActions.loadConsumerCustomerInfo({ consumerId });
+    if (userCustomerId && !prevProps.user.userCustomerId) {
       this.getLoyaltyHistory();
     }
   }
 
   getLoyaltyHistory() {
-    const { homeActions, user } = this.props;
-    const { customerId } = user || {};
-    if (customerId) {
-      homeActions.getCashbackHistory(customerId);
-    }
+    const { homeActions, userCustomerId } = this.props;
+
+    homeActions.getCashbackHistory(userCustomerId);
   }
 
   loadItems(page) {
@@ -154,6 +150,7 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
+      userCustomerId: getUserCustomerId(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       business: getBusiness(state),
       cashbackHistory: getCashbackHistory(state),

@@ -22,7 +22,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo } from './api-request';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
-import { isWebview, isTNGMiniProgram, setCookieVariable } from '../../../common/utils';
+import { isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
@@ -78,7 +78,6 @@ export const initialState = {
     loginRequestStatus: null,
     loadConsumerCustomerStatus: null,
     loadConsumerIsLoginStatus: null,
-    loadBeepIsAppLoginStatus: null,
   },
   customerInfo: {},
   error: null, // network error
@@ -241,7 +240,7 @@ export const actions = {
         response: result,
       });
     } catch (error) {
-      logger.error('Cash_loadConsumerLoginStatusFailed', { message: error?.message });
+      logger.error('Cashback_loadConsumerLoginStatusFailed', { message: error?.message });
 
       dispatch({
         type: types.FETCH_LOGIN_STATUS_FAILURE,
@@ -275,14 +274,12 @@ export const actions = {
     user,
   }),
 
-  loadConsumerCustomerInfo: ({ consumerId }) => async dispatch => {
+  loadConsumerCustomerInfo: () => async (dispatch, getState) => {
     try {
       dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
 
-      if (consumerId) {
-        setCookieVariable('consumerId', consumerId);
-      }
-
+      const state = getState();
+      const consumerId = getUserConsumerId(state);
       const result = await getConsumerCustomerInfo(consumerId);
 
       dispatch({
@@ -338,7 +335,7 @@ export const actions = {
         return;
       }
 
-      dispatch(actions.loadByBeepApp());
+      dispatch(actions.loginByBeepApp());
     } catch (e) {
       logger.error('Cashback_syncLoginFromNativeFailed', { message: e?.message, code: e?.code });
     }
@@ -366,7 +363,7 @@ export const actions = {
     return getIsUserLogin(getState());
   },
 
-  syncLoginFromTngMiniProgram: () => async (dispatch, getState) => {
+  syncLoginFromMiniProgram: () => async (dispatch, getState) => {
     try {
       const isLogin = getIsUserLogin(getState());
 
@@ -377,7 +374,7 @@ export const actions = {
 
       dispatch(actions.loginByTngMiniProgram());
     } catch (e) {
-      logger.error('Cashback_syncLoginFromTngMiniProgramFailed', { message: e?.message, code: e?.code });
+      logger.error('Cashback_syncLoginFromMiniProgramFailed', { message: e?.message, code: e?.code });
     }
   },
 
@@ -772,6 +769,8 @@ export const getIsLoginRequestModalShown = createSelector(getUser, user => _get(
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', null));
 
+export const getUserCustomerId = createSelector(getUser, user => _get(user, 'customerId', null));
+
 export const getLoadConsumerCustomerStatus = createSelector(getUser, user =>
   _get(user, 'loadConsumerCustomerStatus', 0)
 );
@@ -821,18 +820,6 @@ export const getIsLoginRequestStatusFulfilled = createSelector(
 export const getIsLoginRequestStatusRejected = createSelector(
   getLoginRequestStatus,
   loginRequestStatus => loginRequestStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getLoadAppLoginStatus = createSelector(getUser, user => _get(user, 'loadBeepIsAppLoginStatus', null));
-
-export const getIsAppLoginStatusLoaded = createSelector(
-  getLoadAppLoginStatus,
-  loadAppLoginStatus => loadAppLoginStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsAppLoginStatusFailed = createSelector(
-  getLoadAppLoginStatus,
-  loadAppLoginStatus => loadAppLoginStatus === API_REQUEST_STATUS.REJECTED
 );
 
 export const getIsDisplayLoginBanner = createSelector(

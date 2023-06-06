@@ -48,7 +48,7 @@ class App extends Component {
       }
 
       if (isTNGMiniProgram()) {
-        await appActions.syncLoginFromTngMiniProgram();
+        await appActions.syncLoginFromMiniProgram();
       }
     } catch (error) {
       logger.error('Cashback_App_InitFailed', { message: error?.message });
@@ -56,17 +56,16 @@ class App extends Component {
   }
 
   componentDidUpdate = async prevProps => {
-    const { appActions, pageError, isUserLogin, userConsumerId } = this.props;
-    const { code } = prevProps.pageError || {};
-    const isCurrentLoadCustomerInfoEnabled = userConsumerId && isUserLogin;
-    const isPrevLoadCustomerInfoEnabled = prevProps.userConsumerId && prevProps.isUserLogin;
+    const { appActions, pageError, userConsumerId: currUserConsumerId } = this.props;
+    const { pageError: prevPageError, userConsumerId: prevUserConsumerId } = prevProps;
+    const { code } = prevPageError || {};
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
     }
 
-    if (isCurrentLoadCustomerInfoEnabled && !isPrevLoadCustomerInfoEnabled) {
-      appActions.loadConsumerCustomerInfo({ consumerId: userConsumerId });
+    if (currUserConsumerId && !prevUserConsumerId) {
+      appActions.loadConsumerCustomerInfo();
     }
   };
 
@@ -160,7 +159,7 @@ App.propTypes = {
     fetchCashbackBusiness: PropTypes.func,
     loginApp: PropTypes.func,
     clearError: PropTypes.func,
-    syncLoginFromTngMiniProgram: PropTypes.func,
+    syncLoginFromMiniProgram: PropTypes.func,
     loginByTngMiniProgram: PropTypes.func,
     syncLoginFromNative: PropTypes.func,
     loginByBeepApp: PropTypes.func,
