@@ -319,8 +319,8 @@ export const actions = {
 
   syncLoginFromBeepApp: () => async (dispatch, getState) => {
     try {
-      const isLogin = getIsUserLogin(getState());
-      if (isLogin) {
+      const isUserLogin = getIsUserLogin(getState());
+      if (isUserLogin) {
         return;
       }
 

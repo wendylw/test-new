@@ -44,6 +44,8 @@ class App extends Component {
 
       if (isWebview()) {
         await appActions.syncLoginFromBeepApp();
+
+        return;
       }
 
       const { isUserLogin } = this.props;
@@ -108,7 +110,7 @@ class App extends Component {
       // eslint-disable-next-line react/jsx-filename-extension
       <>
         {isWebview() && <NativeHeader />}
-        {isLoginModalShown && isWebview() && isTNGMiniProgram() ? (
+        {isLoginModalShown && (isWebview() || isTNGMiniProgram()) ? (
           <RequestLogin onClick={this.handleRequestLoginClick} />
         ) : (
           <main className="loyalty fixed-wrapper__main fixed-wrapper">
