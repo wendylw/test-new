@@ -73,6 +73,7 @@ export const initialState = {
       status: null,
     },
     showLoginModal: false,
+    loadConsumerCustomerStatus: null,
     loginRequestStatus: null,
   },
   customerInfo: {},
@@ -531,15 +532,16 @@ const user = (state = initialState.user, action) => {
     }
     // load consumer customer info
     case types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING:
-      return state;
+      return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.PENDING };
     case types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED:
       return {
         ...state,
+        loadConsumerCustomerStatus: API_REQUEST_STATUS.FULFILLED,
         storeCreditsBalance,
         customerId,
       };
     case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
-      return state;
+      return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.REJECTED };
     // fetch online store info success
     // fetch core business success
     case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
@@ -755,6 +757,20 @@ export const getIsLoginRequestStatusFulfilled = createSelector(
 export const getIsLoginRequestStatusRejected = createSelector(
   getLoginRequestStatus,
   loginRequestStatus => loginRequestStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getLoadConsumerCustomerStatus = createSelector(getUser, user =>
+  _get(user, 'loadConsumerCustomerStatus', null)
+);
+
+export const getIsConsumerCustomerLoaded = createSelector(
+  getLoadConsumerCustomerStatus,
+  loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsLoadConsumerCustomerFailed = createSelector(
+  getLoadConsumerCustomerStatus,
+  loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.REJECTED
 );
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);
