@@ -40,6 +40,12 @@
   @apply tw-px-2 sm:tw-px-2px tw-my-2 sm:tw-my-2px tw-leading-loose tw-text-orange tw-text-sm;
 }
 
+.cartItemTakeVariant {
+  @apply tw-leading-loose tw-text-orange-dark tw-text-sm;
+
+  font-weight: 600;
+}
+
 .cartItemComments {
   @apply tw-px-2 sm:tw-px-2px tw-text-sm tw-text-gray-600;
 

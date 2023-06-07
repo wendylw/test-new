@@ -109,7 +109,7 @@ export const increaseCartItemQuantity = createAsyncThunk(
     const enablePayLater = getEnablePayLater(state);
     const originalCartItems = getOriginalCartItems(state);
     const originalCartItem = originalCartItems.find(item => item.id === cartItemId) || {};
-    const { quantity, productId, variations } = originalCartItem;
+    const { quantity, productId, variations, isTakeaway } = originalCartItem;
     const selectedOptions = (variations || []).map(({ variationId, optionId, quantity: variationQuantity }) => ({
       variationId,
       optionId,
@@ -146,6 +146,7 @@ export const increaseCartItemQuantity = createAsyncThunk(
           comments,
           quantity: quantity + 1,
           variations: selectedOptions,
+          isTakeaway,
         })
       ).then(() => {
         dispatch(appActions.loadShoppingCart());
@@ -166,7 +167,7 @@ export const removeCartItem = createAsyncThunk(
     const enablePayLater = getEnablePayLater(state);
     const originalCartItems = getOriginalCartItems(state);
     const originalCartItem = originalCartItems.find(item => item.id === cartItemId) || {};
-    const { comments } = originalCartItem;
+    const { comments, isTakeaway } = originalCartItem;
 
     const { id, productId, variations } = originalCartItem;
 
@@ -178,6 +179,7 @@ export const removeCartItem = createAsyncThunk(
           productId,
           comments,
           variations,
+          isTakeaway,
         })
       ).then(() => {
         dispatch(appActions.loadShoppingCart());
@@ -203,7 +205,7 @@ export const decreaseCartItemQuantity = createAsyncThunk(
 
     const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
     const cartItemCleverTapAttributes = getCartItemCleverTapAttributes(originalCartItem);
-    const { comments } = originalCartItem;
+    const { comments, isTakeaway } = originalCartItem;
 
     Clevertap.pushEvent('Menu Page - Cart Preview - Decrease quantity', {
       ...storeInfoForCleverTap,
@@ -235,6 +237,7 @@ export const decreaseCartItemQuantity = createAsyncThunk(
               comments,
               quantity: quantity - 1,
               variations: selectedOptions,
+              isTakeaway,
             })
           ).then(() => {
             dispatch(appActions.loadShoppingCart());

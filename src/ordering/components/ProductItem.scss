@@ -30,6 +30,11 @@
     line-clamp: 3;
     -webkit-line-clamp: 3;
   }
+
+  &__takeaway-variant {
+    color: $status-primary-basic;
+    font-weight: $font-weight-bolder;
+  }
 }
 
 @media (min-width: 770px) {

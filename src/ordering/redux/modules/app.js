@@ -57,6 +57,7 @@ const CartItemModel = {
   productId: null,
   title: '',
   variationTexts: [],
+  isTakeaway: false,
   displayPrice: 0,
   originalDisplayPrice: 0,
   image: null,

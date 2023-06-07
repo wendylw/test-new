@@ -29,6 +29,7 @@ import {
   getSelectedCategory,
   getAddToCartGTMData,
   getNotesContents,
+  getIsTakeawayVariantSelected,
 } from './selectors';
 import Clevertap from '../../../../../utils/clevertap';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
@@ -391,6 +392,7 @@ export const addToCart = createAsyncThunk(
     const childProductId = getSelectedChildProductId(state);
     const quantity = getSelectedQuantity(state);
     const variations = getSelectedVariationDataForAddToCartApi(state);
+    const isTakeaway = getIsTakeawayVariantSelected(state);
     const product = getSelectedProduct(getState());
     const category = getSelectedCategory(getState());
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
@@ -426,6 +428,7 @@ export const addToCart = createAsyncThunk(
             quantity,
             comments,
             variations,
+            isTakeaway,
           })
         );
 
