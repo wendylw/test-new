@@ -12,9 +12,7 @@ function RequestLogin(props) {
       {isLoginRequestStatusPending ? (
         <>
           <Loader className="request-login__prompt-loader circle-loader" />
-          {!isLoginRequestStatusPending ? (
-            <span className="margin-top-bottom-smaller">{t('Redirecting...')}</span>
-          ) : null}
+          <span className="margin-top-bottom-smaller">{t('Redirecting')}</span>
         </>
       ) : (
         <>
