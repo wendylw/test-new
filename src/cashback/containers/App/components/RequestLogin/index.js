@@ -26,12 +26,11 @@ function RequestLogin(props) {
 
           <p className="text-center text-size-big font-weight-bold padding-top-bottom-small">{t('CashbackLoginTip')}</p>
           <button
-            disabled={isLoginRequestStatusPending}
             onClick={onClick}
             className="login-button login-button__fill text-uppercase"
             data-heap-name="cashback.common.request-login.btn"
           >
-            {isLoginRequestStatusPending ? t('Processing') : t('Login')}
+            {t('Login')}
           </button>
         </>
       )}
