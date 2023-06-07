@@ -17,5 +17,6 @@
   "StoreRedemptionCashbackDescription": "Total balance to redeem",
   "StoreRedemptionCashRedeemAlert": "Your cashback balance will be auto redeemed at the cashier",
   "StoreRedemptionNoCashbackAlert": "Thanks for signing up with {{storeDisplayTitle}}",
-  "LoginBannerPrompt": "Do you have a Beep account? Login with your mobile phone number."
+  "LoginBannerPrompt": "Do you have a Beep account? Login with your mobile phone number.",
+  "Redirecting": "Redirecting..."
 }

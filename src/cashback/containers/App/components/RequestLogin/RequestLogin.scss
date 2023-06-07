@@ -4,6 +4,10 @@ $disabled-color: #dededf;
 
 .request-login {
   height: 100vh;
+
+  &__prompt-loader {
+    border: 0;
+  }
 }
 
 .login-button {
