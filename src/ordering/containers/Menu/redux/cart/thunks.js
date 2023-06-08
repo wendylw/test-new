@@ -136,6 +136,7 @@ export const increaseCartItemQuantity = createAsyncThunk(
           comments,
           quantityChange: 1,
           variations: selectedOptions,
+          isTakeaway,
         })
       );
     } else {
@@ -228,6 +229,7 @@ export const decreaseCartItemQuantity = createAsyncThunk(
               comments,
               quantityChange: -1,
               variations: selectedOptions,
+              isTakeaway,
             })
           )
         : dispatch(

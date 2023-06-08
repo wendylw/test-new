@@ -65,6 +65,11 @@ $table-summary-background: #fffbe6;
     color: $theme-color;
   }
 
+  &__takeaway-variant {
+    color: $status-primary-basic;
+    font-weight: $font-weight-bolder;
+  }
+
   &__textarea {
     width: 100%;
     border: 0;
