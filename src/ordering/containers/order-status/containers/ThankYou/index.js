@@ -23,7 +23,7 @@ import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
 import { getPaidToCurrentEventDurationMinutes } from './utils';
 import Constants from '../../../../../utils/constants';
-import { BEFORE_PAID_STATUS_LIST, REFERRERS_REQUIRING_PROFILE } from './constants';
+import { BEFORE_PAID_STATUS_LIST } from './constants';
 import {
   gtmEventTracking,
   gtmSetPageViewData,
@@ -74,6 +74,7 @@ import {
   loadFoodCourtIdHashCode,
   initProfilePage,
   hideProfileModal,
+  updateRedirectFrom,
 } from './redux/thunks';
 import {
   getCashback,
@@ -89,6 +90,8 @@ import {
   getIsUpdateShippingTypeRequestRejected,
   getUpdateShippingTypeRequestErrorMessage,
   getUpdateShippingTypeRequestErrorCategory,
+  getIsInitProfilePageEnabled,
+  getRedirectFrom,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -112,41 +115,20 @@ const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Bee
 const otherText = 'Download the Beep app to track your Order History!';
 const otherLink = 'https://dl.beepit.com/kVmT';
 
-const getIsInitProfilePageEnabled = (isLogin, from, hasOrderPaid) => {
-  if (!isLogin) {
-    return false;
-  }
-
-  if (REFERRERS_REQUIRING_PROFILE.includes(from) && from !== REFERRER_SOURCE_TYPES.PAY_AT_COUNTER) {
-    return true;
-  }
-
-  if (hasOrderPaid && from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER) {
-    return true;
-  }
-
-  return false;
-};
-
 export class ThankYou extends PureComponent {
   constructor(props) {
     super(props);
 
     this.state = {
       cashbackSuccessImage,
-      showPhoneCopy: false,
-      phoneCopyTitle: '',
-      phoneCopyContent: '',
       hasRecordedChargedEvent: false,
-      from: null,
     };
   }
 
   pollOrderStatusTimer = null;
 
   componentDidMount = async () => {
-    const { user, loadCashbackInfo, loadOrderStoreReview, initProfilePage } = this.props;
-    const { isLogin } = user || {};
+    const { user, loadCashbackInfo, loadOrderStoreReview, initProfilePage, updateRedirectFrom } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
     loadCashbackInfo(receiptNumber);
@@ -154,20 +136,13 @@ export class ThankYou extends PureComponent {
     // BEEP-3035: we don't need to wait for the API response, just dispatch the API silently
     loadOrderStoreReview();
 
-    const from = Utils.getCookieVariable('__ty_source');
+    await updateRedirectFrom();
 
-    this.setState({ from }, async () => {
-      const { hasOrderPaid } = this.props;
-      const { from } = this.state;
-      const isInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, hasOrderPaid);
+    const { isInitProfilePageEnabled } = this.props;
 
-      if (isInitProfilePageEnabled) {
-        await initProfilePage({ from });
-      }
-    });
-
-    // immidiately remove __ty_source cookie after setting in the state.
-    Utils.removeCookieVariable('__ty_source');
+    if (isInitProfilePageEnabled) {
+      await initProfilePage();
+    }
 
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
@@ -379,7 +354,12 @@ export class ThankYou extends PureComponent {
   };
 
   async componentDidUpdate(prevProps) {
-    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo, hasOrderPaid: prevHasOrderPaid } = prevProps;
+    const {
+      order: prevOrder,
+      onlineStoreInfo: prevOnlineStoreInfo,
+      hasOrderPaid: prevHasOrderPaid,
+      isInitProfilePageEnabled: prevIsInitProfilePageEnabled,
+    } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const {
       order,
@@ -392,16 +372,13 @@ export class ThankYou extends PureComponent {
       loadOrderStoreReview,
       hasOrderPaid: currHasOrderPaid,
       initProfilePage,
+      isInitProfilePageEnabled: currIsInitProfilePageEnabled,
     } = this.props;
-    const { from } = this.state;
-    const { isLogin } = user || {};
     const { storeId } = order || {};
-    const currIsInitProfilePageEnabled = getIsInitProfilePageEnabled(isLogin, from, currHasOrderPaid);
-    const prevIsInitProfilePageEnabled = getIsInitProfilePageEnabled(prevProps.user.isLogin, from, prevHasOrderPaid);
 
     // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
     if (!prevIsInitProfilePageEnabled && currIsInitProfilePageEnabled) {
-      await initProfilePage({ from });
+      await initProfilePage();
     }
 
     if (storeId && prevStoreId !== storeId) {
@@ -416,7 +393,7 @@ export class ThankYou extends PureComponent {
 
     if (
       !this.state.hasRecordedChargedEvent &&
-      this.state.from === 'payment' &&
+      this.props.redirectFrom === REFERRER_SOURCE_TYPES.PAYMENT &&
       this.props.order &&
       onlineStoreInfo &&
       isCoreBusinessAPICompleted
@@ -571,6 +548,7 @@ export class ThankYou extends PureComponent {
 
     return targetInfo;
   };
+
   cashbackSuccessStop = () => {
     let timer = setTimeout(() => {
       this.setState({
@@ -1141,6 +1119,8 @@ export default compose(
       isUpdateShippingTypeRequestFailed: getIsUpdateShippingTypeRequestRejected(state),
       updateShippingTypeRequestErrorCategory: getUpdateShippingTypeRequestErrorCategory(state),
       updateShippingTypRequestErrorMessage: getUpdateShippingTypeRequestErrorMessage(state),
+      isInitProfilePageEnabled: getIsInitProfilePageEnabled(state),
+      redirectFrom: getRedirectFrom(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
@@ -1157,6 +1137,7 @@ export default compose(
       loadFoodCourtIdHashCode: bindActionCreators(loadFoodCourtIdHashCode, dispatch),
       initProfilePage: bindActionCreators(initProfilePage, dispatch),
       hideProfileModal: bindActionCreators(hideProfileModal, dispatch),
+      updateRedirectFrom: bindActionCreators(updateRedirectFrom, dispatch),
     })
   )
 )(ThankYou);
