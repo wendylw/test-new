@@ -13,8 +13,9 @@ import {
   decreaseProductQuantity,
   increaseProductQuantity,
   unselectVariationOption,
-  takeawayVariantToggled,
-  resetTakeawayVariantSelectState,
+  takeawayOptionChecked,
+  takeawayOptionUnchecked,
+  resetTakeawayOptionCheckState,
   increaseVariationOptionQuantity,
   decreaseVariationOptionQuantity,
   showNotesDrawer,
@@ -22,7 +23,7 @@ import {
 } from './thunks';
 
 const initialState = {
-  isTakeawayVariantSelected: false,
+  isTakeawayOptionChecked: false,
   isProductDetailDrawerVisible: false,
   selectedProductId: null,
   selectedCategoryId: null,
@@ -180,12 +181,14 @@ export const { reducer, actions } = createSlice({
     [hideNotesDrawer.fulfilled.type]: state => {
       state.showComments = false;
     },
-    [takeawayVariantToggled.fulfilled.type]: (state, { payload }) => {
-      const { isSelected } = payload;
-      state.isTakeawayVariantSelected = isSelected;
+    [takeawayOptionChecked.fulfilled.type]: state => {
+      state.isTakeawayOptionChecked = true;
     },
-    [resetTakeawayVariantSelectState.fulfilled.type]: state => {
-      state.isTakeawayVariantSelected = false;
+    [takeawayOptionUnchecked.fulfilled.type]: state => {
+      state.isTakeawayOptionChecked = false;
+    },
+    [resetTakeawayOptionCheckState.fulfilled.type]: state => {
+      state.isTakeawayOptionChecked = false;
     },
   },
 });

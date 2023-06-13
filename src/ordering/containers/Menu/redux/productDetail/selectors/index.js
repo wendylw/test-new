@@ -269,10 +269,7 @@ export const getIsProductVariationFulfilled = createSelector(getProductVariation
  */
 export const getHasExtraTakeawayCharge = createSelector(getTakeawayCharge, takeawayCharge => takeawayCharge > 0);
 
-export const getIsTakeawayVariantSelected = createSelector(
-  getProductDetailState,
-  state => state.isTakeawayVariantSelected
-);
+export const getIsTakeawayOptionChecked = createSelector(getProductDetailState, state => state.isTakeawayOptionChecked);
 
 export const getIsTakeawayVariantAvailable = createSelector(
   getIsDineType,
@@ -282,10 +279,10 @@ export const getIsTakeawayVariantAvailable = createSelector(
 
 export const getShouldIncludeTakeawayCharge = createSelector(
   getHasExtraTakeawayCharge,
-  getIsTakeawayVariantSelected,
+  getIsTakeawayOptionChecked,
   getIsTakeawayVariantAvailable,
-  (hasExtraTakeawayCharge, isTakeawayVariantSelected, isTakeawayVariantAvailable) =>
-    isTakeawayVariantAvailable && isTakeawayVariantSelected && hasExtraTakeawayCharge
+  (hasExtraTakeawayCharge, isTakeawayOptionChecked, isTakeawayVariantAvailable) =>
+    isTakeawayVariantAvailable && isTakeawayOptionChecked && hasExtraTakeawayCharge
 );
 
 /**
