@@ -121,7 +121,7 @@ class App extends Component {
     return (
       // eslint-disable-next-line react/jsx-filename-extension
       <>
-        {isWebview() && <NativeHeader />}
+        {/* {isWebview() && <NativeHeader />} */}
         <main className="loyalty fixed-wrapper__main fixed-wrapper">
           {message ? (
             <ErrorToast
