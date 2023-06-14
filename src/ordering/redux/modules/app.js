@@ -462,11 +462,6 @@ export const actions = {
     });
   },
 
-  setLoginPrompt: prompt => ({
-    type: types.SET_LOGIN_PROMPT,
-    prompt,
-  }),
-
   hideApiMessageModal: () => ({
     type: types.CLEAR_API_ERROR,
   }),

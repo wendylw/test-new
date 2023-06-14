@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { withTranslation } from 'react-i18next';
 import {
   actions as appActionCreators,
-  getOnlineStoreInfo,
-  getMessageInfo,
   getError,
-  getUser,
-  getIsDisplayLoginBanner,
+  getLoginBannerPrompt,
+  getIsUserLogin,
+  getIsLoginRequestStatusPending,
+  getOnlineStoreInfoFavicon,
+  getIsLoginModalShown,
+  getUserConsumerId,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
+import { isTNGMiniProgram, isWebview } from '../../../common/utils';
+import faviconImage from '../../../images/favicon.ico';
 import '../../../Common.scss';
 import './Loyalty.scss';
 import Routes from '../Routes';
@@ -18,152 +24,128 @@ import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
-import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
-import * as NativeMethods from '../../../utils/native-methods';
-import Utils from '../../../utils/utils';
-import logger from '../../../utils/monitoring/logger';
-import _isNil from 'lodash/isNil';
 import NativeHeader from '../../../components/NativeHeader';
+import logger from '../../../utils/monitoring/logger';
 
 class App extends Component {
-  state = {
-    showAppLoginPage: false,
-  };
-
   async componentDidMount() {
     const { appActions } = this.props;
 
     this.visitErrorPage();
-    await appActions.loadConsumerLoginStatus();
-    await appActions.fetchOnlineStoreInfo();
-    await appActions.fetchCashbackBusiness();
 
-    const { user } = this.props;
-    const { isLogin } = user || {};
-
-    if (Utils.isWebview()) {
-      const appLogin = this.getAppLoginStatus();
-
-      this.setState({
-        showAppLoginPage: !appLogin && !isLogin,
-      });
-
-      if (appLogin && !isLogin) {
-        await this.postAppMessage();
-      }
-    }
-
-    if (Utils.isTNGMiniProgram()) {
-      this.setState({
-        showAppLoginPage: !isLogin,
-      });
-    }
-  }
-
-  getAppLoginStatus() {
     try {
-      return NativeMethods.getLoginStatus();
-    } catch (error) {
-      logger.error('Cashback_App_GetAppLoginStatusFailed', { message: error?.message });
+      const initRequests = [
+        appActions.loadConsumerLoginStatus(),
+        appActions.fetchOnlineStoreInfo(),
+        appActions.fetchCashbackBusiness(),
+      ];
 
-      return false;
+      await Promise.all(initRequests);
+
+      const { isUserLogin, userConsumerId } = this.props;
+
+      if (userConsumerId) {
+        appActions.loadConsumerCustomerInfo();
+      }
+
+      if (isWebview()) {
+        await appActions.syncLoginFromBeepApp();
+
+        return;
+      }
+
+      if (!isUserLogin) {
+        appActions.showLoginModal();
+      } else {
+        // The user is logged in, the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
+        isTNGMiniProgram() && (await appActions.loginByTngMiniProgram());
+      }
+    } catch (error) {
+      logger.error('Cashback_App_InitFailed', { message: error?.message });
     }
   }
 
   componentDidUpdate = async prevProps => {
-    const { appActions, user, pageError } = this.props;
-    const { isExpired, isLogin } = user || {};
-    const { code } = prevProps.pageError || {};
+    const { appActions, pageError, isUserLogin: currIsUserLogin, userConsumerId: currUserConsumerId } = this.props;
+    const { pageError: prevPageError, isUserLogin: prevIsUserLogin, userConsumerId: prevUserConsumerId } = prevProps;
+    const { code } = prevPageError || {};
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
     }
 
-    // token过期重新发postMessage
-    if (isExpired && prevProps.user.isExpired !== isExpired && Utils.isWebview()) {
-      await this.postAppMessage();
+    // currUserConsumerId !== prevUserConsumerId instead of !prevUserConsumerId .
+    // The 3rd MiniProgram cached the previous consumerId, so the consumerId is not the correct account
+    if (currUserConsumerId && currUserConsumerId !== prevUserConsumerId) {
+      appActions.loadConsumerCustomerInfo();
     }
 
-    if (isLogin && prevProps.user.isLogin !== isLogin) {
-      this.setState({
-        showAppLoginPage: false,
-      });
-
-      appActions.loadCustomerProfile();
+    if (currIsUserLogin && currIsUserLogin !== prevIsUserLogin) {
+      appActions.hideLoginModal();
     }
   };
 
-  handleLoginClick = async () => {
-    if (Utils.isWebview()) {
-      await this.postAppMessage();
-      return;
-    }
+  handleRequestLoginClick = async () => {
+    const { appActions } = this.props;
 
-    if (Utils.isTNGMiniProgram()) {
-      await this.props.appActions.loginByTngMiniProgram();
-    }
-  };
-
-  postAppMessage = async () => {
-    const { appActions, user } = this.props;
-    const { isExpired } = user || {};
-
-    const res = isExpired ? await NativeMethods.tokenExpiredAsync() : await NativeMethods.getTokenAsync();
-    if (_isNil(res)) {
-      logger.error('Cashback_App_PostAppMessageFailedByInvalidNativeToken');
-    } else {
-      const { access_token, refresh_token } = res;
-      await appActions.loginApp({
-        accessToken: access_token,
-        refreshToken: refresh_token,
-      });
+    if (isWebview()) {
+      await appActions.loginByBeepApp();
+    } else if (isTNGMiniProgram()) {
+      await appActions.loginByTngMiniProgram();
     }
   };
 
+  // eslint-disable-next-line consistent-return
   visitErrorPage() {
     const { pageError } = this.props;
 
     if (pageError && pageError.code) {
+      // eslint-disable-next-line no-return-assign
       return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
     }
   }
 
-  handleClearError = () => {
-    this.props.appActions.clearError();
-  };
-
-  handleCloseMessageModal = () => {
-    this.props.appActions.hideMessageModal();
-  };
-
-  renderMainContent() {
-    const { user, error, onlineStoreInfo, isDisplayLoginBanner } = this.props;
-    const { prompt } = user || {};
-    const { message } = error || {};
-    const { favicon } = onlineStoreInfo || {};
-
-    return (
-      <main className="loyalty fixed-wrapper__main fixed-wrapper">
-        {message ? <ErrorToast className="fixed" message={message} clearError={this.handleClearError} /> : null}
-        <Message />
-        {isDisplayLoginBanner ? <Login className="aside fixed-wrapper" title={prompt} /> : null}
-        <Routes />
-        <DocumentFavicon icon={favicon || faviconImage} />
-      </main>
-    );
-  }
-
   render() {
-    const { user } = this.props;
-    const { showAppLoginPage } = this.state;
-    const isWebview = Utils.isWebview();
+    const {
+      t,
+      error,
+      loginBannerPrompt,
+      onlineStoreInfoFavicon,
+      isLoginModalShown,
+      isLoginRequestStatusPending,
+      appActions,
+    } = this.props;
+    const { message } = error || {};
 
     return (
+      // eslint-disable-next-line react/jsx-filename-extension
       <>
-        {isWebview && <NativeHeader />}
-
-        {showAppLoginPage ? <RequestLogin user={user} onClick={this.handleLoginClick} /> : this.renderMainContent()}
+        {isWebview() && <NativeHeader />}
+        <main className="loyalty fixed-wrapper__main fixed-wrapper">
+          {message ? (
+            <ErrorToast
+              className="fixed"
+              message={message}
+              clearError={() => {
+                appActions.clearError();
+              }}
+            />
+          ) : null}
+          <Message />
+          {isLoginModalShown ? (
+            isWebview() || isTNGMiniProgram() ? (
+              <RequestLogin
+                onClick={this.handleRequestLoginClick}
+                isLoginRequestStatusPending={isLoginRequestStatusPending}
+              />
+            ) : (
+              <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
+            )
+          ) : null}
+          <Routes />
+          <DocumentFavicon icon={onlineStoreInfoFavicon || faviconImage} />
+        </main>
       </>
     );
   }
@@ -171,16 +153,61 @@ class App extends Component {
 
 App.displayName = 'CashbackApp';
 
-export default connect(
-  state => ({
-    user: getUser(state),
-    isDisplayLoginBanner: getIsDisplayLoginBanner(state),
-    onlineStoreInfo: getOnlineStoreInfo(state),
-    messageInfo: getMessageInfo(state),
-    error: getError(state),
-    pageError: getPageError(state),
+App.propTypes = {
+  loginBannerPrompt: PropTypes.string,
+  isLoginRequestStatusPending: PropTypes.bool,
+  isUserLogin: PropTypes.bool,
+  userConsumerId: PropTypes.string,
+  onlineStoreInfoFavicon: PropTypes.string,
+  error: PropTypes.shape({
+    message: PropTypes.string,
   }),
-  dispatch => ({
-    appActions: bindActionCreators(appActionCreators, dispatch),
-  })
+  pageError: PropTypes.shape({
+    code: PropTypes.number,
+  }),
+  isLoginModalShown: PropTypes.bool,
+  appActions: PropTypes.shape({
+    loadConsumerLoginStatus: PropTypes.func,
+    loadConsumerCustomerInfo: PropTypes.func,
+    fetchOnlineStoreInfo: PropTypes.func,
+    fetchCashbackBusiness: PropTypes.func,
+    loginApp: PropTypes.func,
+    clearError: PropTypes.func,
+    loginByTngMiniProgram: PropTypes.func,
+    syncLoginFromBeepApp: PropTypes.func,
+    loginByBeepApp: PropTypes.func,
+    showLoginModal: PropTypes.func,
+    hideLoginModal: PropTypes.func,
+  }),
+};
+
+App.defaultProps = {
+  loginBannerPrompt: null,
+  isLoginRequestStatusPending: false,
+  isUserLogin: false,
+  userConsumerId: null,
+  onlineStoreInfoFavicon: '',
+  error: {},
+  pageError: {},
+  isLoginModalShown: false,
+  appActions: {},
+};
+
+export default compose(
+  withTranslation(['Cashback']),
+  connect(
+    state => ({
+      loginBannerPrompt: getLoginBannerPrompt(state),
+      isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
+      isUserLogin: getIsUserLogin(state),
+      userConsumerId: getUserConsumerId(state),
+      isLoginModalShown: getIsLoginModalShown(state),
+      onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
+      error: getError(state),
+      pageError: getPageError(state),
+    }),
+    dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
+    })
+  )
 )(App);

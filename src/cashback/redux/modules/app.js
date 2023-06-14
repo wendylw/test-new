@@ -1,7 +1,9 @@
-import { combineReducers } from 'redux';
-import { createSelector } from 'reselect';
 import _get from 'lodash/get';
 import _cloneDeep from 'lodash/cloneDeep';
+import _isEmpty from 'lodash/isEmpty';
+import i18next from 'i18next';
+import { combineReducers } from 'redux';
+import { createSelector } from 'reselect';
 import Constants from '../../../utils/constants';
 import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 import Utils from '../../../utils/utils';
@@ -10,6 +12,7 @@ import config from '../../../config';
 import Url from '../../../utils/url';
 import * as TngUtils from '../../../utils/tng-utils';
 import * as ApiRequest from '../../../utils/api-request';
+import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
 
 import { APP_TYPES } from '../types';
@@ -18,7 +21,9 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo } from './api-request';
-import { setCookieVariable } from '../../../common/utils';
+import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
+import { isTNGMiniProgram } from '../../../common/utils';
+import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -35,10 +40,8 @@ const {
   OTP_ERROR_POPUP_I18N_KEYS,
 } = Constants;
 
-// TODO: Update user state lack isFetching
 export const initialState = {
   user: {
-    isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
     consumerId: config.consumerId,
@@ -54,7 +57,7 @@ export const initialState = {
     },
     country: Utils.getCountry(localePhoneNumber, navigator.language, AVAILABLE_COUNTRIES, 'MY'),
     phone: localePhoneNumber,
-    prompt: 'Do you have a Beep account? Login with your mobile phone number.',
+    prompt: null,
     noWhatsAppAccount: true,
     profile: {
       id: '',
@@ -69,8 +72,8 @@ export const initialState = {
       birthdayChangeAllowed: false,
       status: null,
     },
+    showLoginModal: false,
     loadConsumerCustomerStatus: null,
-    loadConsumerIsLoginStatus: null,
   },
   customerInfo: {},
   error: null, // network error
@@ -108,6 +111,12 @@ const fetchCoreBusiness = variables => ({
 
 //action creators
 export const actions = {
+  showLoginModal: () => ({
+    type: types.SHOW_LOGIN_MODAL,
+  }),
+  hideLoginModal: () => ({
+    type: types.HIDE_LOGIN_MODAL,
+  }),
   loginApp: ({ accessToken, refreshToken }) => async (dispatch, getState) => {
     try {
       const businessUTCOffset = getBusinessUTCOffset(getState());
@@ -196,7 +205,6 @@ export const actions = {
   loadConsumerLoginStatus: () => async (dispatch, getState) => {
     try {
       dispatch({ type: types.FETCH_LOGIN_STATUS_REQUEST });
-
       const result = await getConsumerLoginStatus();
       const { consumerId, login } = result;
 
@@ -228,10 +236,10 @@ export const actions = {
         response: result,
       });
     } catch (error) {
-      logger.error('Cash_initConsumerLoginStatusFailed', { message: error?.message });
+      logger.error('Cashback_loadConsumerLoginStatusFailed', { message: error?.message });
 
       dispatch({
-        type: types.types.FETCH_LOGIN_STATUS_FAILURE,
+        type: types.FETCH_LOGIN_STATUS_FAILURE,
         error,
       });
     }
@@ -251,7 +259,7 @@ export const actions = {
       logger.error('Cashback_LoadProfileInfoFailed', { message: error?.message });
 
       dispatch({
-        type: types.types.LOAD_CONSUMER_PROFILE_REJECTED,
+        type: types.LOAD_CONSUMER_PROFILE_REJECTED,
         error,
       });
     }
@@ -262,9 +270,94 @@ export const actions = {
     user,
   }),
 
-  updateOtpStatus: () => ({
-    type: types.UPDATE_OTP_STATUS,
-  }),
+  loadConsumerCustomerInfo: () => async (dispatch, getState) => {
+    try {
+      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
+
+      const state = getState();
+      const consumerId = getUserConsumerId(state);
+      const result = await getConsumerCustomerInfo(consumerId);
+
+      dispatch({
+        type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED,
+        response: result,
+      });
+    } catch (error) {
+      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED });
+    }
+  },
+
+  loginByBeepApp: () => async (dispatch, getState) => {
+    try {
+      const tokens = await NativeMethods.getTokenAsync();
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+      if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
+
+      const source = REGISTRATION_SOURCE.BEEP_APP;
+
+      await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+
+      const isTokenExpired = getIsUserExpired(getState());
+
+      if (isTokenExpired) {
+        const tokens = await NativeMethods.tokenExpiredAsync();
+        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+        await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+      }
+    } catch (e) {
+      if (e?.code === 'B0001') {
+        toast(i18next.t('ApiError:B0001Description'));
+      } else {
+        toast(i18next.t('Common:UnknownError'));
+      }
+
+      logger.error('Cashback_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
+    }
+  },
+
+  syncLoginFromBeepApp: () => async (dispatch, getState) => {
+    try {
+      const isUserLogin = getIsUserLogin(getState());
+      if (isUserLogin) {
+        return;
+      }
+
+      const isAppLogin = NativeMethods.getLoginStatus();
+
+      if (!isAppLogin) {
+        dispatch(actions.showLoginModal());
+        return;
+      }
+
+      await dispatch(actions.loginByBeepApp());
+    } catch (e) {
+      logger.error('Cashback_syncLoginFromBeepAppFailed', { message: e?.message, code: e?.code });
+    }
+  },
+
+  loginByTngMiniProgram: () => async (dispatch, getState) => {
+    if (!isTNGMiniProgram()) {
+      throw new Error('Not in tng mini program');
+    }
+
+    try {
+      const business = getBusiness(getState());
+
+      const tokens = await TngUtils.getAccessToken({ business: business });
+
+      const { access_token, refresh_token } = tokens;
+
+      await dispatch(actions.loginApp({ accessToken: access_token, refreshToken: refresh_token }));
+    } catch (error) {
+      logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
+
+      return false;
+    }
+
+    return getIsUserLogin(getState());
+  },
 
   clearError: () => ({
     type: types.CLEAR_ERROR,
@@ -307,28 +400,6 @@ export const actions = {
     await dispatch(fetchCoreBusiness({ business }));
   },
 
-  loadCustomerProfile: () => async (dispatch, getState) => {
-    try {
-      const state = getState();
-      const consumerId = getUserConsumerId(state);
-
-      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
-
-      if (consumerId) {
-        setCookieVariable('consumerId', consumerId);
-      }
-
-      const result = await getConsumerCustomerInfo(consumerId || config.consumerId);
-
-      dispatch({
-        type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED,
-        response: result,
-      });
-    } catch (error) {
-      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED });
-    }
-  },
-
   fetchOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
       types: [
@@ -353,46 +424,6 @@ export const actions = {
       },
     },
   }),
-
-  loginByTngMiniProgram: () => async (dispatch, getState) => {
-    if (!Utils.isTNGMiniProgram()) {
-      throw new Error('Not in tng mini program');
-    }
-
-    try {
-      dispatch({
-        type: types.CREATE_LOGIN_REQUEST,
-      });
-
-      const business = getBusiness(getState());
-
-      const businessUTCOffset = getBusinessUTCOffset(getState());
-
-      const tokens = await TngUtils.getAccessToken({ business: business });
-
-      const { access_token, refresh_token } = tokens;
-
-      const result = ApiRequest.login({
-        accessToken: access_token,
-        refreshToken: refresh_token,
-        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-      });
-
-      dispatch({
-        type: types.CREATE_LOGIN_SUCCESS,
-        payload: result,
-      });
-    } catch (error) {
-      dispatch({
-        type: types.CREATE_LOGIN_FAILURE,
-        error,
-      });
-
-      return false;
-    }
-
-    return getUserIsLogin(getState());
-  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -402,8 +433,7 @@ const user = (state = initialState.user, action) => {
   const otpType = _get(payload, 'otpType', null);
 
   switch (type) {
-    case types.RESET_CREATE_OTP_REQUEST:
-      return { ...state, isFetching: false, isError: false };
+    // get otp
     case types.GET_OTP_REQUEST:
       return {
         ...state,
@@ -414,30 +444,17 @@ const user = (state = initialState.user, action) => {
           error: null,
         },
       };
-    case types.FETCH_LOGIN_STATUS_REQUEST:
-      return {
-        ...state,
-        isFetching: true,
-        loadConsumerIsLoginStatus: API_REQUEST_STATUS.PENDING,
-      };
-    case types.CREATE_OTP_REQUEST:
-      return { ...state, isFetching: true, isError: false };
-    case types.FETCH_LOGIN_STATUS_FAILURE:
-      return {
-        ...state,
-        isFetching: false,
-        loadConsumerIsLoginStatus: API_REQUEST_STATUS.REJECTED,
-      };
     case types.GET_OTP_FAILURE:
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
-    case types.CREATE_OTP_FAILURE:
-      return { ...state, isFetching: false, isError: true };
-    case types.RESET_GET_OTP_REQUEST:
-      return { ...state, otpRequest: _cloneDeep(initialState.user.otpRequest) };
-    case types.UPDATE_OTP_STATUS:
-      return { ...state, isFetching: false, isError: false };
     case types.GET_OTP_SUCCESS:
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.FULFILLED } };
+    case types.RESET_GET_OTP_REQUEST:
+      return { ...state, otpRequest: _cloneDeep(initialState.user.otpRequest) };
+    // create otp
+    case types.CREATE_OTP_REQUEST:
+      return { ...state, isFetching: true, isError: false };
+    case types.CREATE_OTP_FAILURE:
+      return { ...state, isFetching: false, isError: true };
     case types.CREATE_OTP_SUCCESS:
       const { access_token, refresh_token } = response;
 
@@ -447,69 +464,9 @@ const user = (state = initialState.user, action) => {
         accessToken: access_token,
         refreshToken: refresh_token,
       };
-    case types.CREATE_LOGIN_REQUEST: {
-      return {
-        ...state,
-        isFetching: true,
-      };
-    }
-    case types.CREATE_LOGIN_SUCCESS: {
-      const { consumerId: loginConsumerId } = payload || {};
-
-      return {
-        ...state,
-        consumerId: loginConsumerId,
-        isLogin: true,
-        isFetching: false,
-      };
-    }
-    case types.FETCH_LOGIN_STATUS_SUCCESS:
-      return {
-        ...state,
-        isLogin: login,
-        consumerId,
-        isFetching: false,
-        loadConsumerIsLoginStatus: API_REQUEST_STATUS.FULFILLED,
-      };
-    case types.CREATE_LOGIN_FAILURE:
-      if (error?.error === 'TokenExpiredError' || error?.error === 'JsonWebTokenError') {
-        return { ...state, isExpired: true, isFetching: false };
-      }
-
-      return { ...state, isFetching: false };
-    case types.SET_LOGIN_PROMPT:
-      return { ...state, prompt };
-    case types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING:
-      return {
-        ...state,
-        loadConsumerCustomerStatus: API_REQUEST_STATUS.PENDING,
-      };
-    case types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED:
-      return {
-        ...state,
-        storeCreditsBalance,
-        customerId,
-        loadConsumerCustomerStatus: API_REQUEST_STATUS.FULFILLED,
-      };
-    case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
-      return {
-        ...state,
-        loadConsumerCustomerStatus: API_REQUEST_STATUS.REJECTED,
-      };
-    case types.UPDATE_USER:
-      return Object.assign({}, state, action.user);
-    case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
-    case types.FETCH_CORE_BUSINESS_SUCCESS:
-      const { data } = responseGql;
-      const { business, onlineStoreInfo } = data || {};
-
-      if (!state.phone && business && business.country) {
-        return { ...state, country: business.country };
-      } else if (!state.phone && onlineStoreInfo && onlineStoreInfo.country) {
-        return { ...state, country: onlineStoreInfo.country };
-      } else {
-        return state;
-      }
+    case types.RESET_CREATE_OTP_REQUEST:
+      return { ...state, isFetching: false, isError: false };
+    // get whatsapp support
     case types.GET_WHATSAPPSUPPORT_REQUEST:
       return { ...state, noWhatsAppAccount: true };
     case types.GET_WHATSAPPSUPPORT_SUCCESS:
@@ -517,6 +474,25 @@ const user = (state = initialState.user, action) => {
     case types.GET_WHATSAPPSUPPORT_FAILURE:
       // Write down here just for the sake of completeness, we won't handle this failure case for now.
       return state;
+    // fetch login status
+    case types.FETCH_LOGIN_STATUS_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+      };
+    case types.FETCH_LOGIN_STATUS_FAILURE:
+      return {
+        ...state,
+        isFetching: false,
+      };
+    case types.FETCH_LOGIN_STATUS_SUCCESS:
+      return {
+        ...state,
+        isLogin: login,
+        consumerId,
+        isFetching: false,
+      };
+    // load consumer profile
     case types.LOAD_CONSUMER_PROFILE_PENDING:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.PENDING } };
     case types.LOAD_CONSUMER_PROFILE_FULFILLED:
@@ -539,6 +515,61 @@ const user = (state = initialState.user, action) => {
       };
     case types.LOAD_CONSUMER_PROFILE_REJECTED:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.REJECTED } };
+    // create login
+    case types.CREATE_LOGIN_REQUEST: {
+      return {
+        ...state,
+        isFetching: true,
+      };
+    }
+    case types.CREATE_LOGIN_FAILURE:
+      if (['TokenExpiredError', 'JsonWebTokenError'].includes(error?.error)) {
+        return { ...state, isExpired: true, isFetching: false };
+      }
+
+      return { ...state, isFetching: false };
+    case types.CREATE_LOGIN_SUCCESS: {
+      return {
+        ...state,
+        consumerId: _get(payload, 'consumerId', null),
+        isLogin: true,
+        isFetching: false,
+      };
+    }
+    // load consumer customer info
+    case types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING:
+      return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.PENDING };
+    case types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED:
+      return {
+        ...state,
+        loadConsumerCustomerStatus: API_REQUEST_STATUS.FULFILLED,
+        storeCreditsBalance,
+        customerId,
+      };
+    case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
+      return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.REJECTED };
+    // fetch online store info success
+    // fetch core business success
+    case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
+    case types.FETCH_CORE_BUSINESS_SUCCESS:
+      const { data } = responseGql;
+      const { business, onlineStoreInfo } = data || {};
+
+      if (!state.phone && business && business.country) {
+        return { ...state, country: business.country };
+      } else if (!state.phone && onlineStoreInfo && onlineStoreInfo.country) {
+        return { ...state, country: onlineStoreInfo.country };
+      } else {
+        return state;
+      }
+    case types.UPDATE_USER:
+      return Object.assign({}, state, action.user);
+    case types.SET_LOGIN_PROMPT:
+      return { ...state, prompt };
+    case types.SHOW_LOGIN_MODAL:
+      return { ...state, showLoginModal: true };
+    case types.HIDE_LOGIN_MODAL:
+      return { ...state, showLoginModal: false };
     default:
       return state;
   }
@@ -665,6 +696,10 @@ export const getCoreBusiness = state => state.app.coreBusiness;
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageInfo = state => state.app.messageInfo;
 
+export const getOnlineStoreInfoFavicon = createSelector(getOnlineStoreInfo, onlineStoreInfo =>
+  _get(onlineStoreInfo, 'favicon', null)
+);
+
 export const getLoadOnlineStoreInfoStatus = state => _get(state.app.onlineStoreInfo, 'loadOnlineStoreInfoStatus', null);
 
 export const getIsOnlineStoreInfoLoaded = createSelector(
@@ -699,12 +734,27 @@ export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, c
   _get(coreBusiness, 'enableCashback', false)
 );
 
-export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+// TODO: Will remove from reducer, prompt should in component
+export const getLoginBannerPrompt = createSelector(getUser, user => _get(user, 'prompt', null));
+
+export const getIsUserLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+
+export const getIsUserExpired = createSelector(getUser, user => _get(user, 'isExpired', false));
+
+export const getIsLoginModalShown = createSelector(getUser, user => _get(user, 'showLoginModal', false));
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', null));
 
+export const getUserCustomerId = createSelector(getUser, user => _get(user, 'customerId', null));
+
+export const getUserStoreCashback = createSelector(getUser, user => _get(user, 'storeCreditsBalance', 0));
+
+export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
+
+export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
+
 export const getLoadConsumerCustomerStatus = createSelector(getUser, user =>
-  _get(user, 'loadConsumerCustomerStatus', 0)
+  _get(user, 'loadConsumerCustomerStatus', null)
 );
 
 export const getIsConsumerCustomerLoaded = createSelector(
@@ -715,33 +765,6 @@ export const getIsConsumerCustomerLoaded = createSelector(
 export const getIsLoadConsumerCustomerFailed = createSelector(
   getLoadConsumerCustomerStatus,
   loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getUserStoreCashback = createSelector(getUser, user => _get(user, 'storeCreditsBalance', 0));
-
-export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
-
-export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
-
-export const getLoadUserLoginStatus = createSelector(getUser, user => _get(user, 'loadConsumerIsLoginStatus', null));
-
-export const getIsUserLoginStatusLoaded = createSelector(
-  getLoadUserLoginStatus,
-  loadUserLoginStatus => loadUserLoginStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsUserLoginStatusFailed = createSelector(
-  getLoadUserLoginStatus,
-  loadUserLoginStatus => loadUserLoginStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getIsDisplayLoginBanner = createSelector(
-  getUserIsLogin,
-  getIsUserLoginStatusLoaded,
-  getIsUserLoginStatusFailed,
-  getIsLoginRequestStatusPending,
-  (userIsLogin, isUserLoginStatusLoaded, isUserLoginStatusFailed, isLoginRequestStatusPending) =>
-    !userIsLogin && (isUserLoginStatusLoaded || isUserLoginStatusFailed || isLoginRequestStatusPending === false)
 );
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);

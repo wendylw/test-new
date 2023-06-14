@@ -5,7 +5,13 @@ import { IconTicket } from '../../../../../components/Icons';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getUser,
+  getUserCustomerId,
+  getBusiness,
+} from '../../../../redux/modules/app';
 import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import {
   actions as homeActionCreators,
@@ -28,34 +34,21 @@ class RecentActivities extends React.Component {
   };
 
   async componentWillMount() {
-    const { user, appActions } = this.props;
-    const { isLogin, consumerId } = user || {};
+    const { homeActions, userCustomerId } = this.props;
 
-    if (isLogin) {
-      await appActions.loadCustomerProfile({ consumerId });
-      this.getLoyaltyHistory();
+    if (userCustomerId) {
+      homeActions.getCashbackHistory(userCustomerId);
     }
   }
 
   async componentDidUpdate(prevProps) {
-    const { isFetching, user, appActions } = this.props;
-    const { isLogin, consumerId } = user || {};
+    const { homeActions, userCustomerId: currUserCustomerId } = this.props;
+    const { userCustomerId: prevUserCustomerId } = prevProps || {};
 
-    if (isFetching || !isLogin) {
-      return;
-    }
-
-    if (prevProps.user.isLogin !== isLogin) {
-      await appActions.loadCustomerProfile({ consumerId });
-      this.getLoyaltyHistory();
-    }
-  }
-
-  getLoyaltyHistory() {
-    const { homeActions, user } = this.props;
-    const { customerId } = user || {};
-    if (customerId) {
-      homeActions.getCashbackHistory(customerId);
+    // userCustomerId !== prevProps.userCustomerId instead of !prevProps.userCustomerId
+    // The 3rd MiniProgram cached the previous userCustomerId, so the userCustomerId is not the correct account
+    if (currUserCustomerId && currUserCustomerId !== prevUserCustomerId) {
+      homeActions.getCashbackHistory(currUserCustomerId);
     }
   }
 
@@ -154,6 +147,7 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
+      userCustomerId: getUserCustomerId(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       business: getBusiness(state),
       cashbackHistory: getCashbackHistory(state),

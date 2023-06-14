@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
-import { actions as homeActionCreators, getCashbackHistorySummary } from '../../redux/modules/home';
+import { getCashbackHistorySummary } from '../../redux/modules/home';
 import './LoyaltyHome.scss';
 import Utils from '../../../utils/utils';
 

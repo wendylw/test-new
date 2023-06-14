@@ -113,3 +113,12 @@ export const CLIENTS = {
   PC: 'PC',
   TNG_MINI_PROGRAM: 'tngMiniProgram',
 };
+
+export const REGISTRATION_SOURCE = {
+  BEEP_APP: 'BeepApp',
+  RECEIPT: 'Receipt',
+  BEEP_STORE: 'BeepStore',
+  BEEP_SITE: 'BeepSite',
+  TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
+  SHARED_LINK: 'SharedLink',
+};
