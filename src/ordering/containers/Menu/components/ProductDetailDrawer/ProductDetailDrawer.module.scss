@@ -1,3 +1,5 @@
+@import "../../../../../common/styles/variables.scss";
+
 // basic layout
 .productDetailDrawer {
   @apply tw-p-0;
@@ -46,6 +48,11 @@
 
 .productSoldOutStatus {
   @apply tw-flex tw-items-center tw-justify-end;
+}
+
+.productTitle {
+  @apply tw-font-bold tw-flex-1 tw-text-xl tw-leading-normal;
+  @include text-line-clamp(2);
 }
 
 .productDetailVariationAndNote {
