@@ -52,7 +52,9 @@
 
 .productTitle {
   @apply tw-font-bold tw-flex-1 tw-text-xl tw-leading-normal;
-  @include text-line-clamp(2);
+
+  word-break: break-word;
+  hyphens: none;
 }
 
 .productDetailVariationAndNote {
