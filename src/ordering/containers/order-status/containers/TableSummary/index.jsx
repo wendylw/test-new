@@ -616,9 +616,9 @@ export class TableSummary extends React.Component {
                                 </p>
                               )}
                               {isTakeaway && (
-                                <li className="margin-top-bottom-smaller">
+                                <div className="margin-top-bottom-smaller">
                                   <span className="table-summary__takeaway-variant">{t('TakeAway')}</span>
-                                </li>
+                                </div>
                               )}
                             </div>
                             <CurrencyNumber

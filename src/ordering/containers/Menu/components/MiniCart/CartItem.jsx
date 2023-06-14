@@ -96,9 +96,9 @@ const CartItem = ({ item, isDineType }) => {
             <p className={styles.cartItemDescription}>{item.variationTitles.join(', ')}</p>
           ) : null}
           {shouldShowTakeawayVariant && (
-            <li className="tw-px-2 sm:tw-px-2px tw-my-2 sm:tw-my-2px">
+            <div className="tw-px-2 sm:tw-px-2px tw-my-2 sm:tw-my-2px">
               <span className={styles.cartItemTakeVariant}>{t('TakeAway')}</span>
-            </li>
+            </div>
           )}
           <div className="tw-flex tw-items-start tw-justify-between">
             <div>

@@ -35,9 +35,9 @@ const ItemDetails = ({ item, shippingType }) => {
             </p>
           )}
           {shouldShowTakeawayVariant && (
-            <li className="margin-top-bottom-smaller">
+            <div className="margin-top-bottom-smaller">
               <span className="item-details__takeaway-variant">{t('TakeAway')}</span>
-            </li>
+            </div>
           )}
         </div>
       </div>

@@ -39,9 +39,9 @@ class ProductItem extends Component {
             </p>
           ) : null}
           {shouldShowTakeawayVariant ? (
-            <li className="margin-top-bottom-smaller">
+            <div className="margin-top-bottom-smaller">
               <span className="product-item__takeaway-variant">{t('TakeAway')}</span>
-            </li>
+            </div>
           ) : null}
         </div>
         {details}
