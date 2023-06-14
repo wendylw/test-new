@@ -7,6 +7,7 @@ import ReceiptList from './components/ReceiptList';
 import RecentActivities from './components/RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import DownloadBanner from '../../../components/DownloadBanner';
+import NativeHeader from '../../../components/NativeHeader';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -75,31 +76,36 @@ class PageLoyalty extends React.Component {
     const { showRecentActivities } = this.state;
     const hideDownloadBanner = isWebview || isTNGMiniProgram;
 
-    return !showRecentActivities ? (
-      <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
-        <article className="loyalty-home__article text-center margin-top-bottom-normal">
-          {logo ? (
-            <Image
-              className="loyalty-home__logo logo logo__big margin-top-bottom-normal"
-              src={logo}
-              alt={displayBusinessName || name}
-            />
-          ) : null}
-          <h5 className="loyalty-home__title padding-top-bottom-small text-uppercase">{t('TotalCashback')}</h5>
+    return (
+      <>
+        {isWebview && <NativeHeader />}
+        {!showRecentActivities ? (
+          <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
+            <article className="loyalty-home__article text-center margin-top-bottom-normal">
+              {logo ? (
+                <Image
+                  className="loyalty-home__logo logo logo__big margin-top-bottom-normal"
+                  src={logo}
+                  alt={displayBusinessName || name}
+                />
+              ) : null}
+              <h5 className="loyalty-home__title padding-top-bottom-small text-uppercase">{t('TotalCashback')}</h5>
 
-          {this.renderCashback()}
+              {this.renderCashback()}
 
-          {this.renderLocation()}
-          <RedeemInfo
-            buttonClassName="redeem-info__button-link button border-radius-base text-uppercase"
-            buttonText={t('HowToUseCashback')}
-          />
-        </article>
-        {!hideDownloadBanner && <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />}
-        <ReceiptList history={history} />
-      </section>
-    ) : (
-      <RecentActivities history={history} closeActivity={this.closeActivity.bind(this)} />
+              {this.renderLocation()}
+              <RedeemInfo
+                buttonClassName="redeem-info__button-link button border-radius-base text-uppercase"
+                buttonText={t('HowToUseCashback')}
+              />
+            </article>
+            {!hideDownloadBanner && <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />}
+            <ReceiptList history={history} />
+          </section>
+        ) : (
+          <RecentActivities history={history} closeActivity={this.closeActivity.bind(this)} />
+        )}
+      </>
     );
   }
 }

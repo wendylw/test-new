@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
-import { getUserStoreCashback } from '../../redux/modules/app';
+import CleverTap from '../../../utils/clevertap';
+import { getUserStoreCashback, getUserCountry } from '../../redux/modules/app';
 import {
   getStoreDisplayTitle,
   getIsDisplayStoreRedemptionContent,
@@ -30,6 +31,7 @@ const StoreRedemptionNative = () => {
   // get is display store redemption content
   const isDisplayStoreRedemptionContent = useSelector(getIsDisplayStoreRedemptionContent);
   const userStoreCashback = useSelector(getUserStoreCashback);
+  const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isAvailableToShareConsumerInfo = useSelector(getIsAvailableToShareConsumerInfo);
 
@@ -43,6 +45,11 @@ const StoreRedemptionNative = () => {
         </p>,
         {
           id: 'StoreRedemptionInitialAlert',
+          onClose: () => {
+            CleverTap.pushEvent('POS Redemption Landing Page (Pop-up)', {
+              country: userCountry,
+            });
+          },
         }
       );
     }
@@ -85,7 +92,7 @@ StoreRedemptionNative.displayName = 'StoreRedemptionNative';
 const StoreRedemption = () => {
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
 
-  if (isDisplayWebResult) {
+  if (!isDisplayWebResult) {
     // Use createPortal to load the page because the Login Modal in App/index level DOM needs to be covered
     return createPortal(
       <div className={`${styles.StoreRedemptionWeb} tw-flex tw-flex-col`}>
