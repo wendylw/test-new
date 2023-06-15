@@ -41,9 +41,7 @@
 }
 
 .cartItemTakeVariant {
-  @apply tw-leading-loose tw-text-orange-dark tw-text-sm;
-
-  font-weight: 600;
+  @apply tw-leading-loose tw-text-orange-dark tw-text-sm tw-font-bold;
 }
 
 .cartItemComments {
