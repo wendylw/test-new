@@ -594,37 +594,52 @@ export class TableSummary extends React.Component {
                 </span>
               </div>
               <ul>
-                {subOrderItems.map(({ id, productInfo, displayPrice, quantity, comments: itemComments }) => (
-                  <li
-                    key={`product-item-${id}`}
-                    className="flex flex-middle flex-space-between padding-left-right-small"
-                  >
-                    <div className="flex">
-                      <div className="table-summary__image-container flex__shrink-fixed margin-small">
-                        <Image className="table-summary__image card__image" src={productInfo?.image} alt="" />
-                      </div>
-                      <div className="padding-small flex flex-column flex-space-between">
-                        <span className="table-summary__item-title">{productInfo?.title}</span>
-                        <p className="table-summary__item-variations">
-                          {(productInfo?.variationTexts || []).join(', ')}
-                        </p>
-                        <CurrencyNumber
-                          className="padding-top-bottom-smaller flex__shrink-fixed text-opacity"
-                          money={displayPrice * quantity}
-                          numberOnly
-                        />
-                        {itemComments ? (
-                          <p className="table-summary__comments padding-top-bottom-smaller text-size-small text-line-height-higher">
-                            {itemComments}
-                          </p>
-                        ) : null}
-                      </div>
-                    </div>
-                    <span className="padding-top-bottom-small flex__shrink-fixed margin-small text-opacity">
-                      x {quantity}
-                    </span>
-                  </li>
-                ))}
+                {subOrderItems.map(
+                  ({ id, productInfo, displayPrice, quantity, comments: itemComments, isTakeaway }) => {
+                    const itemVariants = (productInfo?.variationTexts || []).join(', ');
+
+                    return (
+                      <li
+                        key={`product-item-${id}`}
+                        className="flex flex-middle flex-space-between padding-left-right-small"
+                      >
+                        <div className="flex">
+                          <div className="table-summary__image-container flex__shrink-fixed margin-small">
+                            <Image className="table-summary__image card__image" src={productInfo?.image} alt="" />
+                          </div>
+                          <div className="padding-small flex flex-column flex-space-between">
+                            <span className="table-summary__item-title">{productInfo?.title}</span>
+                            <div>
+                              {itemVariants && (
+                                <p className="table-summary__item-variations margin-top-bottom-smaller">
+                                  {itemVariants}
+                                </p>
+                              )}
+                              {isTakeaway && (
+                                <div className="margin-top-bottom-smaller">
+                                  <span className="table-summary__takeaway-variant">{t('TakeAway')}</span>
+                                </div>
+                              )}
+                            </div>
+                            <CurrencyNumber
+                              className="padding-top-bottom-smaller flex__shrink-fixed text-opacity"
+                              money={displayPrice * quantity}
+                              numberOnly
+                            />
+                            {itemComments ? (
+                              <p className="table-summary__comments padding-top-bottom-smaller text-size-small text-line-height-higher">
+                                {itemComments}
+                              </p>
+                            ) : null}
+                          </div>
+                        </div>
+                        <span className="padding-top-bottom-small flex__shrink-fixed margin-small text-opacity">
+                          x {quantity}
+                        </span>
+                      </li>
+                    );
+                  }
+                )}
               </ul>
 
               {comments && (

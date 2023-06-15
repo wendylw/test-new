@@ -11,6 +11,7 @@ import {
   getServiceCharge,
   getDisplayDiscount,
 } from '../../../redux/selector';
+import ItemDetails from '../../../components/ItemDetails';
 import CurrencyNumber from '../../../../../components/CurrencyNumber';
 
 const { ORDER_STATUS } = Constants;
@@ -25,15 +26,15 @@ const itemPropTypes = PropTypes.arrayOf(
   })
 );
 
-const OrderDetails = ({ items }) => {
+const OrderDetails = ({ items, shippingType }) => {
   const { t } = useTranslation('OrderingThankYou');
 
   return (
     <>
       <span className="ordering-details__items">{t('Items')}</span>
       <ul>
-        {(items || []).map(value => {
-          const { id, title, displayPrice, quantity, variationTexts, itemType } = value;
+        {(items || []).map(item => {
+          const { itemType } = item;
 
           // remove items whose itemType is not null
           if (itemType) {
@@ -41,23 +42,11 @@ const OrderDetails = ({ items }) => {
           }
 
           return (
-            <li key={`title-${id}`} className="flex flex-middle flex-space-between">
-              <div className="flex flex-top">
-                <span className="padding-top-bottom-small flex__shrink-fixed text-opacity">{quantity} x</span>
-                <div className="padding-small">
-                  <span className="ordering-details__item-title text-opacity">{title}</span>
-                  <p>
-                    {variationTexts && variationTexts[0] ? (
-                      <span className="ordering-details__item-variations">{variationTexts.join(', ')}</span>
-                    ) : null}
-                  </p>
-                </div>
-              </div>
-              <CurrencyNumber
-                className="padding-top-bottom-small flex__shrink-fixed text-opacity"
-                money={displayPrice * quantity}
-              />
-            </li>
+            <ItemDetails
+              item={item}
+              shippingType={shippingType}
+              data-heap-name="ordering.order-status.thank-you.cart-item"
+            />
           );
         })}
       </ul>
@@ -69,15 +58,17 @@ OrderDetails.displayName = 'OrderDetails';
 
 OrderDetails.propTypes = {
   items: itemPropTypes,
+  shippingType: PropTypes.string,
 };
 
 OrderDetails.defaultProps = {
   items: [],
+  shippingType: '',
 };
 
 function PendingPaymentOrderDetail({ order, promotion, items, serviceCharge, displayDiscount, orderStatus }) {
   const { t } = useTranslation(['OrderingThankYou', 'OrderingDelivery']);
-  const { id, shippingFee, subtotal, total, tax, productsManualDiscount } = order || {};
+  const { id, shippingFee, shippingType, subtotal, total, tax, productsManualDiscount } = order || {};
   const invalidStatus = [
     ORDER_STATUS.CREATED,
     ORDER_STATUS.PENDING_PAYMENT,
@@ -92,7 +83,7 @@ function PendingPaymentOrderDetail({ order, promotion, items, serviceCharge, dis
   return (
     <div className="card padding-top-bottom-small padding-left-right-normal margin-small">
       <div className="border__bottom-divider padding-top-bottom-normal">
-        <OrderDetails items={items} />
+        <OrderDetails items={items} shippingType={shippingType} />
       </div>
 
       <ul className="ordering-details__billing-container padding-top-bottom-normal">

@@ -57,6 +57,7 @@ const CartItemModel = {
   productId: null,
   title: '',
   variationTexts: [],
+  isTakeaway: false,
   displayPrice: 0,
   originalDisplayPrice: 0,
   image: null,
@@ -1671,6 +1672,14 @@ export const getEnableConditionalFreeShipping = createSelector(getQROrderingSett
   _get(qrOrderingSettings, 'defaultShippingZone.defaultShippingZoneMethod.enableConditionalFreeShipping', null)
 );
 
+export const getEnableTakeaway = createSelector(getQROrderingSettings, qrOrderingSettings =>
+  _get(qrOrderingSettings, 'enableTakeaway', false)
+);
+
+export const getTakeawayCharge = createSelector(getQROrderingSettings, qrOrderingSettings =>
+  _get(qrOrderingSettings, 'takeawayCharge', 0)
+);
+
 const mergeWithShoppingCart = (onlineCategory, carts) => {
   if (!Array.isArray(onlineCategory)) {
     return null;
@@ -1780,6 +1789,11 @@ export const getIsDeliveryType = createSelector(
  * Is pickup shipping type
  */
 export const getIsPickUpType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.PICKUP);
+
+/**
+ * Is dine shipping type
+ */
+export const getIsDineType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.DINE_IN);
 
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)

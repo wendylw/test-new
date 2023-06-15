@@ -7,6 +7,7 @@ import Drawer from '../../../../../common/components/Drawer';
 import Loader from '../../../../../common/components/Loader';
 import QuantityAdjuster from '../../../../../common/components/QuantityAdjuster';
 import ImageSwiper from '../ImageSwiper';
+import TakeawayVariation from './TakeawayVariation';
 import SingleChoiceVariation from './SingleChoiceVariation';
 import SimpleMultipleChoiceVariation from './SimpleMultipleChoiceVariation';
 import QuantityMultipleChoiceVariation from './QuantityMultipleChoiceVariation';
@@ -27,6 +28,8 @@ import {
   getUnableAddToCartReason,
   getIsOutOfStockProduct,
   getIsUnavailableProduct,
+  getShouldShowProductVariations,
+  getIsTakeawayVariantAvailable,
   getCouldShowProductDetailDrawer,
 } from '../../redux/productDetail/selectors';
 import {
@@ -75,6 +78,8 @@ const ProductDetailDrawer = () => {
   const isUnavailableProduct = useSelector(getIsUnavailableProduct);
   const selectedProductItemInfo = useSelector(getSelectedProductItemInfo);
   const couldShowProductDetailDrawer = useSelector(getCouldShowProductDetailDrawer);
+  const shouldShowProductVariations = useSelector(getShouldShowProductVariations);
+  const shouldShowTakeawayVariant = useSelector(getIsTakeawayVariantAvailable);
 
   const contentRef = useRef();
   const imageSectionRef = useRef();
@@ -179,18 +184,27 @@ const ProductDetailDrawer = () => {
               </div>
               <p className={styles.productDescription} dangerouslySetInnerHTML={{ __html: product.description }} />
             </section>
-            <section className={styles.productDetailVariationAndNote}>
-              <div>
-                {product.variations.map(variation =>
-                  variation.type === 'SingleChoice' ? (
-                    <SingleChoiceVariation key={variation.id} variation={variation} />
-                  ) : variation.type === 'SimpleMultipleChoice' ? (
-                    <SimpleMultipleChoiceVariation key={variation.id} variation={variation} />
-                  ) : variation.type === 'QuantityMultipleChoice' ? (
-                    <QuantityMultipleChoiceVariation key={variation.id} variation={variation} />
-                  ) : null
-                )}
-              </div>
+            {shouldShowTakeawayVariant && (
+              <section className={styles.takeawayVariationSection}>
+                <TakeawayVariation />
+              </section>
+            )}
+            {shouldShowProductVariations && (
+              <section className={styles.productVariationSection}>
+                <div>
+                  {product.variations.map(variation =>
+                    variation.type === 'SingleChoice' ? (
+                      <SingleChoiceVariation key={variation.id} variation={variation} />
+                    ) : variation.type === 'SimpleMultipleChoice' ? (
+                      <SimpleMultipleChoiceVariation key={variation.id} variation={variation} />
+                    ) : variation.type === 'QuantityMultipleChoice' ? (
+                      <QuantityMultipleChoiceVariation key={variation.id} variation={variation} />
+                    ) : null
+                  )}
+                </div>
+              </section>
+            )}
+            <section className={styles.itemNoteSection}>
               <AddSpecialNotes />
             </section>
             <section className={styles.quantitySection}>

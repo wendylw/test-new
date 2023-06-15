@@ -14,6 +14,7 @@ import {
   decreaseCartItemQuantity,
 } from '../../redux/cart/thunks';
 import { getCartItems, getCartQuantity, getIsMiniCartDrawerVisible } from '../../redux/cart/selectors';
+import { getIsDineType } from '../../../../redux/modules/app';
 import styles from './MiniCart.module.scss';
 
 const MiniCart = () => {
@@ -22,6 +23,7 @@ const MiniCart = () => {
   const cartItems = useSelector(getCartItems);
   const cartQuantity = useSelector(getCartQuantity);
   const isMiniCartDrawerVisible = useSelector(getIsMiniCartDrawerVisible);
+  const isDineType = useSelector(getIsDineType);
 
   useEffect(() => {
     // if there is no cart item, then hide mini cart drawer
@@ -77,6 +79,7 @@ const MiniCart = () => {
           <CartItem
             item={item}
             key={item.id}
+            isDineType={isDineType}
             onIncreaseCartItemQuantity={() => {
               dispatch(increaseCartItemQuantity({ cartItemId: item.id }));
             }}

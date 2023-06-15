@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -78,9 +78,10 @@ CartItemOperator.defaultProps = {
   isAbleToIncreaseQuantity: false,
 };
 
-const CartItem = ({ item }) => {
+const CartItem = ({ item, isDineType }) => {
   const { t } = useTranslation();
   const itemClassName = [styles.cartItem];
+  const shouldShowTakeawayVariant = useMemo(() => isDineType && item.isTakeaway, [isDineType, item.isTakeaway]);
 
   if (item.isOutOfStock) {
     itemClassName.push(styles.cartItemOutStock);
@@ -94,6 +95,11 @@ const CartItem = ({ item }) => {
           {item.variationTitles && item.variationTitles.length > 0 ? (
             <p className={styles.cartItemDescription}>{item.variationTitles.join(', ')}</p>
           ) : null}
+          {shouldShowTakeawayVariant && (
+            <div className="tw-px-2 sm:tw-px-2px tw-my-2 sm:tw-my-2px">
+              <span className={styles.cartItemTakeVariant}>{t('TakeAway')}</span>
+            </div>
+          )}
           <div className="tw-flex tw-items-start tw-justify-between">
             <div>
               <div className="tw-flex tw-items-center tw-my-8 sm:tw-my-8px">
@@ -155,10 +161,12 @@ CartItem.displayName = 'CartItem';
 CartItem.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   item: PropTypes.object,
+  isDineType: PropTypes.bool,
 };
 CartItem.defaultProps = {
   // eslint-disable-next-line react/forbid-prop-types
   item: {},
+  isDineType: false,
 };
 
 export default CartItem;

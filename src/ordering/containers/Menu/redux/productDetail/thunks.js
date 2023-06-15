@@ -29,6 +29,7 @@ import {
   getSelectedCategory,
   getAddToCartGTMData,
   getNotesContents,
+  getIsTakeawayOptionChecked,
 } from './selectors';
 import Clevertap from '../../../../../utils/clevertap';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
@@ -135,6 +136,40 @@ const getViewProductGTMData = product => ({
   product_description: product.description,
 });
 
+export const takeawayOptionChecked = createAsyncThunk(
+  'ordering/menu/productDetail/takeawayOptionChecked',
+  async (_, { getState }) => {
+    const product = getSelectedProduct(getState());
+    const category = getSelectedCategory(getState());
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+    const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
+
+    Clevertap.pushEvent('Product details - Check Takeaway option', {
+      ...storeInfoForCleverTap,
+      ...productCleverTapAttributes,
+    });
+  }
+);
+
+export const takeawayOptionUnchecked = createAsyncThunk(
+  'ordering/menu/productDetail/takeawayOptionUnchecked',
+  async (_, { getState }) => {
+    const product = getSelectedProduct(getState());
+    const category = getSelectedCategory(getState());
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+    const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
+
+    Clevertap.pushEvent('Product details - Uncheck Takeaway option', {
+      ...storeInfoForCleverTap,
+      ...productCleverTapAttributes,
+    });
+  }
+);
+
+export const resetTakeawayOptionCheckState = createAsyncThunk(
+  'ordering/menu/productDetail/resetTakeawayOptionCheckState',
+  async () => {}
+);
 /**
  * Show product detail drawer
  * Reset the selected variation options
@@ -253,7 +288,9 @@ export const productDetailDrawerShown = createAsyncThunk(
 
 export const productDetailDrawerHidden = createAsyncThunk(
   'ordering/menu/productDetail/productDetailDrawerHidden',
-  async () => {}
+  async (_, { dispatch }) => {
+    dispatch(resetTakeawayOptionCheckState());
+  }
 );
 
 export const productItemClicked = createAsyncThunk(
@@ -380,6 +417,7 @@ export const addToCart = createAsyncThunk(
     const childProductId = getSelectedChildProductId(state);
     const quantity = getSelectedQuantity(state);
     const variations = getSelectedVariationDataForAddToCartApi(state);
+    const isTakeaway = getIsTakeawayOptionChecked(state);
     const product = getSelectedProduct(getState());
     const category = getSelectedCategory(getState());
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
@@ -415,6 +453,7 @@ export const addToCart = createAsyncThunk(
             quantity,
             comments,
             variations,
+            isTakeaway,
           })
         );
 
