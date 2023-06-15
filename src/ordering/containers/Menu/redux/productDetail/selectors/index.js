@@ -271,6 +271,13 @@ export const getHasExtraTakeawayCharge = createSelector(getTakeawayCharge, takea
 
 export const getIsTakeawayOptionChecked = createSelector(getProductDetailState, state => state.isTakeawayOptionChecked);
 
+export const getFormattedTakeawayCharge = createSelector(
+  getTakeawayCharge,
+  getFormatCurrencyFunction,
+  (takeawayCharge, formatCurrency) =>
+    _isNil(takeawayCharge) ? '' : formatCurrency(takeawayCharge, { hiddenCurrency: true })
+);
+
 export const getIsTakeawayVariantAvailable = createSelector(
   getIsDineType,
   getEnableTakeaway,
