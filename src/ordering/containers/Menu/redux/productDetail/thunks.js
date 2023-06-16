@@ -442,6 +442,7 @@ export const addToCart = createAsyncThunk(
             quantityChange: quantity,
             comments,
             variations,
+            isTakeaway,
           })
         );
       } else {
