@@ -349,5 +349,5 @@ export const getCountry = (phone, language, countries, defaultCountry) => {
     return language.split('-')[0];
   }
 
-  return '';
+  return undefined;
 };
