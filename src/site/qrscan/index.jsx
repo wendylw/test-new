@@ -174,7 +174,7 @@ class QRScan extends Component {
 
       qr.decodeFromImage(canvas.toDataURL('image/png')).then(res => {
         if (res.data) {
-          processQR(res.data).then(() => {
+          processQR(res.data).finally(() => {
             window.clearInterval(this.timer);
           });
         }

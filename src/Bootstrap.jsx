@@ -20,8 +20,6 @@ const AsyncOrdering = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkN
 
 const AsyncCashbackApp = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB" */ './cashback')));
 
-const AsyncQRScanner = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "QRSCN" */ './qrscan')));
-
 const AsyncSite = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "SITE" */ './site')));
 
 const AsyncVoucher = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "VOU" */ './voucher')));
@@ -112,7 +110,6 @@ class Bootstrap extends Component {
         />
         <Route path={ROUTER_PATHS.ORDERING_BASE} component={AsyncOrdering} />
         <Route path={ROUTER_PATHS.CASHBACK_BASE} component={AsyncCashbackApp} />
-        <Route path={ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
         <Route path={ROUTER_PATHS.VOUCHER_HOME} component={AsyncVoucher} />
         <Route path={ROUTER_PATHS.DINE} component={AsyncStoresApp} />
         <Route path="*" component={NotFound} />
