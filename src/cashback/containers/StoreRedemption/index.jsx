@@ -38,6 +38,12 @@ const StoreRedemptionNative = () => {
 
   useEffect(() => {
     if (isLoadStoreRedemptionDataCompleted) {
+      console.log(111);
+    }
+  }, [isLoadStoreRedemptionDataCompleted]);
+
+  useEffect(() => {
+    if (isLoadStoreRedemptionDataCompleted) {
       alert(
         <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
           {userStoreCashback > 0
