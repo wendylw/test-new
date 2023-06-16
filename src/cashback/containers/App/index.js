@@ -25,7 +25,6 @@ import Message from '../../components/Message';
 import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import RequestLogin from './components/RequestLogin';
-import NativeHeader from '../../../components/NativeHeader';
 import logger from '../../../utils/monitoring/logger';
 
 class App extends Component {
