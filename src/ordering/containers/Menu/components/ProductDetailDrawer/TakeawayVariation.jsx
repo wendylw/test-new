@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import styles from './ProductDetailDrawer.module.scss';
 import CheckBox from '../../../../../common/components/CheckBox';
 import {
-  getTakeawayCharge,
+  getFormattedTakeawayCharge,
   getIsTakeawayOptionChecked,
   getHasExtraTakeawayCharge,
 } from '../../redux/productDetail/selectors';
@@ -15,7 +15,7 @@ const TakeawayVariation = () => {
   const dispatch = useDispatch();
   const isTakeawayOptionChecked = useSelector(getIsTakeawayOptionChecked);
   const hasExtraTakeawayCharge = useSelector(getHasExtraTakeawayCharge);
-  const takeawayCharge = useSelector(getTakeawayCharge);
+  const formattedTakeawayCharge = useSelector(getFormattedTakeawayCharge);
 
   const handleToggleTakeawayVariant = useCallback(
     event => {
@@ -41,7 +41,7 @@ const TakeawayVariation = () => {
         <div className={styles.takeawayVariationItemName}>{t('TakeAway')}</div>
         {hasExtraTakeawayCharge && (
           <div className={styles.variationOptionItemNote}>
-            {t('TakeawayPackagingFee', { packagingFee: takeawayCharge })}
+            {t('TakeawayPackagingFee', { packagingFee: formattedTakeawayCharge })}
           </div>
         )}
       </div>

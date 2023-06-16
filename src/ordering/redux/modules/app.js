@@ -1629,6 +1629,14 @@ export const getEnableCashback = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'enableCashback', null)
 );
 
+export const getEnableTakeaway = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'enableTakeaway', false)
+);
+
+export const getTakeawayCharge = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'takeawayCharge', 0)
+);
+
 export const getQROrderingSettings = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'qrOrderingSettings', null)
 );
@@ -1670,14 +1678,6 @@ export const getMinimumConsumption = createSelector(getQROrderingSettings, qrOrd
 
 export const getEnableConditionalFreeShipping = createSelector(getQROrderingSettings, qrOrderingSettings =>
   _get(qrOrderingSettings, 'defaultShippingZone.defaultShippingZoneMethod.enableConditionalFreeShipping', null)
-);
-
-export const getEnableTakeaway = createSelector(getQROrderingSettings, qrOrderingSettings =>
-  _get(qrOrderingSettings, 'enableTakeaway', false)
-);
-
-export const getTakeawayCharge = createSelector(getQROrderingSettings, qrOrderingSettings =>
-  _get(qrOrderingSettings, 'takeawayCharge', 0)
 );
 
 const mergeWithShoppingCart = (onlineCategory, carts) => {
