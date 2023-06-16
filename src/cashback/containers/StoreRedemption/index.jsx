@@ -37,10 +37,13 @@ const StoreRedemptionNative = () => {
   const isAvailableToShareConsumerInfo = useSelector(getIsAvailableToShareConsumerInfo);
 
   useEffect(() => {
-    if (isLoadStoreRedemptionDataCompleted) {
-      console.log(111);
+    if (isDisplayStoreRedemptionContent) {
+      CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
+        country: userCountry,
+        page: userStoreCashback ? 'With Cashback' : 'Without Cashback',
+      });
     }
-  }, [isLoadStoreRedemptionDataCompleted]);
+  }, [isDisplayStoreRedemptionContent]);
 
   useEffect(() => {
     if (isLoadStoreRedemptionDataCompleted) {
@@ -108,7 +111,17 @@ const StoreRedemptionNative = () => {
 StoreRedemptionNative.displayName = 'StoreRedemptionNative';
 
 const StoreRedemption = () => {
+  const userCountry = useSelector(getUserCountry);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
+
+  useMount(() => {
+    if (!isDisplayWebResult) {
+      CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
+        country: userCountry,
+        page: 'When users scan QR with phone camera',
+      });
+    }
+  });
 
   if (!isDisplayWebResult) {
     // Use createPortal to load the page because the Login Modal in App/index level DOM needs to be covered
