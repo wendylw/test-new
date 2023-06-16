@@ -1,9 +1,10 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
+import { isWebview } from '../../../common/utils';
+import NativeHeader from '../../../components/NativeHeader';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { IconPending, IconChecked, IconEarned } from '../../../../../components/Icons';
 import Header from '../../../../../components/Header';
-import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -122,27 +123,22 @@ class RecentActivities extends React.Component {
     const { t, closeActivity } = this.props;
 
     return (
-      <section
-        className="recent-activities"
-        style={
-          {
-            // backgroundImage: `url(${theImage})`,
-          }
-        }
-        data-heap-name="cashback.home.recent-activities.container"
-      >
-        <Header
-          className="flex-middle text-center"
-          contentClassName="flex-middle"
-          data-heap-name="cashback.home.recent-activities.header"
-          title={t('CashbackHistory')}
-          isPage={true}
-          navFunc={() => {
-            closeActivity();
-          }}
-        />
-        <article className="flex__shrink-fixed">{this.renderLogList()}</article>
-      </section>
+      <>
+        {isWebview() && <NativeHeader />}
+        <section className="recent-activities" data-heap-name="cashback.home.recent-activities.container">
+          <Header
+            className="flex-middle text-center"
+            contentClassName="flex-middle"
+            data-heap-name="cashback.home.recent-activities.header"
+            title={t('CashbackHistory')}
+            isPage={true}
+            navFunc={() => {
+              closeActivity();
+            }}
+          />
+          <article className="flex__shrink-fixed">{this.renderLogList()}</article>
+        </section>
+      </>
     );
   }
 }
