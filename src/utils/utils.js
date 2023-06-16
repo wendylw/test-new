@@ -35,6 +35,7 @@ Utils.isIOSWebview = UtilsV2.isIOSWebview;
 
 Utils.isAndroidWebview = UtilsV2.isAndroidWebview;
 
+// TODO: will be remove and replace by getQueryString
 Utils.getQueryVariable = variable => {
   var query = window.location.search.substring(1);
   var vars = query.split('&');
@@ -47,6 +48,7 @@ Utils.getQueryVariable = variable => {
   return false;
 };
 
+// TODO: never be used to remove
 Utils.debounce = function debounce(fn, timeout = 50) {
   let timer = null;
   return function newFn(...args) {
@@ -115,6 +117,7 @@ Utils.setSessionVariable = UtilsV2.setSessionVariable;
 
 Utils.removeSessionVariable = UtilsV2.removeSessionVariable;
 
+// TODO: will move to ordering
 Utils.isProductSoldOut = product => {
   const { stockStatus, variations } = product;
 
@@ -158,21 +161,7 @@ Utils.getFormatPhoneNumber = function getFormatPhoneNumber(phone, countryCode) {
   return phone;
 };
 
-Utils.getCountry = function getCountry(phone, language, countries, defaultCountry) {
-  if (phone) {
-    return '';
-  }
-
-  if (!language || (!language.split('-')[1] && !language.split('-')[0])) {
-    return defaultCountry;
-  }
-
-  if (countries.includes(language.split('-')[1])) {
-    return language.split('-')[1];
-  } else if (countries.includes(language.split('-')[0])) {
-    return language.split('-')[0];
-  }
-};
+Utils.getCountry = UtilsV2.getCountry;
 
 Utils.DateFormatter = function DateFormatter(dateString, deletedDelimiter) {
   if (!dateString) {

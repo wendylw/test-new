@@ -120,33 +120,30 @@ class App extends Component {
 
     return (
       // eslint-disable-next-line react/jsx-filename-extension
-      <>
-        {/* {isWebview() && <NativeHeader />} */}
-        <main className="loyalty fixed-wrapper__main fixed-wrapper">
-          {message ? (
-            <ErrorToast
-              className="fixed"
-              message={message}
-              clearError={() => {
-                appActions.clearError();
-              }}
+      <main className="loyalty fixed-wrapper__main fixed-wrapper">
+        {message ? (
+          <ErrorToast
+            className="fixed"
+            message={message}
+            clearError={() => {
+              appActions.clearError();
+            }}
+          />
+        ) : null}
+        <Message />
+        {isLoginModalShown ? (
+          isWebview() || isTNGMiniProgram() ? (
+            <RequestLogin
+              onClick={this.handleRequestLoginClick}
+              isLoginRequestStatusPending={isLoginRequestStatusPending}
             />
-          ) : null}
-          <Message />
-          {isLoginModalShown ? (
-            isWebview() || isTNGMiniProgram() ? (
-              <RequestLogin
-                onClick={this.handleRequestLoginClick}
-                isLoginRequestStatusPending={isLoginRequestStatusPending}
-              />
-            ) : (
-              <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
-            )
-          ) : null}
-          <Routes />
-          <DocumentFavicon icon={onlineStoreInfoFavicon || faviconImage} />
-        </main>
-      </>
+          ) : (
+            <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
+          )
+        ) : null}
+        <Routes />
+        <DocumentFavicon icon={onlineStoreInfoFavicon || faviconImage} />
+      </main>
     );
   }
 }
