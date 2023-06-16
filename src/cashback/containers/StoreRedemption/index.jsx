@@ -17,6 +17,7 @@ import { mounted, confirmToShareConsumerInfoRequests } from './redux/thunks';
 import Loader from '../../../common/components/Loader';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
+import NativeHeader from '../../../components/NativeHeader';
 import PowerByStoreHubLogo from '../../../images/power-by-storehub-logo.svg';
 import BeepAppLogo from '../../../images/app-beep-logo.svg';
 import TNGAppLogo from '../../../images/app-tng-logo.svg';
@@ -66,24 +67,27 @@ const StoreRedemptionNative = () => {
   });
 
   return (
-    <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>
-      {isLoadStoreRedemptionDataCompleted ? (
-        <>
-          <RedemptionStoreInfo />
-          {isDisplayStoreRedemptionContent ? (
-            <section
-              className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}
-            >
-              <CashbackBlock />
-            </section>
-          ) : null}
-        </>
-      ) : (
-        <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center">
-          <Loader className="tw-text-3xl tw-text-orange" weight="bold" />
-        </div>
-      )}
-    </div>
+    <>
+      {isWebview() && <NativeHeader />}
+      <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>
+        {isLoadStoreRedemptionDataCompleted ? (
+          <>
+            <RedemptionStoreInfo />
+            {isDisplayStoreRedemptionContent ? (
+              <section
+                className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}
+              >
+                <CashbackBlock />
+              </section>
+            ) : null}
+          </>
+        ) : (
+          <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center">
+            <Loader className="tw-text-3xl tw-text-orange" weight="bold" />
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
@@ -95,23 +99,26 @@ const StoreRedemption = () => {
   if (!isDisplayWebResult) {
     // Use createPortal to load the page because the Login Modal in App/index level DOM needs to be covered
     return createPortal(
-      <div className={`${styles.StoreRedemptionWeb} tw-flex tw-flex-col`}>
-        <header className={styles.StoreRedemptionHeader}>
-          <h1 className={styles.StoreRedemptionHeaderLogoContainer}>
-            <img src={PowerByStoreHubLogo} alt="StoreHub Redemption power by StoreHub" />
-          </h1>
-        </header>
-        <section className={styles.StoreRedemptionWebContent}>
-          <h2 className="tw-text-center tw-text-3xl tw-leading-normal tw-text-gray-50 tw-font-bold">
-            Oops... <br />
-            Please scan with
-          </h2>
-          <div className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl">
-            <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
-            <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
-          </div>
-        </section>
-      </div>,
+      <>
+        {isWebview() && <NativeHeader />}
+        <div className={`${styles.StoreRedemptionWeb} tw-flex tw-flex-col`}>
+          <header className={styles.StoreRedemptionHeader}>
+            <h1 className={styles.StoreRedemptionHeaderLogoContainer}>
+              <img src={PowerByStoreHubLogo} alt="StoreHub Redemption power by StoreHub" />
+            </h1>
+          </header>
+          <section className={styles.StoreRedemptionWebContent}>
+            <h2 className="tw-text-center tw-text-3xl tw-leading-normal tw-text-gray-50 tw-font-bold">
+              Oops... <br />
+              Please scan with
+            </h2>
+            <div className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl">
+              <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
+              <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+            </div>
+          </section>
+        </div>
+      </>,
       document.getElementById('modal-mount-point')
     );
   }

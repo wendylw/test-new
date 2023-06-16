@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { isWebview, isTNGMiniProgram } from '../../../common/utils';
 import Image from '../../../components/Image';
 import RedeemInfo from '../../components/RedeemInfo';
 import { IconInfo } from '../../../components/Icons';
@@ -15,8 +15,6 @@ import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
 import { getCashbackHistorySummary } from '../../redux/modules/home';
 import './LoyaltyHome.scss';
-import Utils from '../../../utils/utils';
-import { isWebview, isTNGMiniProgram } from '../../../common/utils';
 
 const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
 const cashbackDownloadText = 'Download the Beep app to keep track of your cashback!';
