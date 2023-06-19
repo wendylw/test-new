@@ -34,7 +34,7 @@ const OrderDetails = ({ items, shippingType }) => {
       <span className="ordering-details__items">{t('Items')}</span>
       <ul>
         {(items || []).map(item => {
-          const { itemType } = item;
+          const { itemType, id } = item;
 
           // remove items whose itemType is not null
           if (itemType) {
@@ -43,6 +43,7 @@ const OrderDetails = ({ items, shippingType }) => {
 
           return (
             <ItemDetails
+              key={id}
               item={item}
               shippingType={shippingType}
               data-heap-name="ordering.order-status.thank-you.cart-item"

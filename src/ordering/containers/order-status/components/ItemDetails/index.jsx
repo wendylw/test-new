@@ -16,7 +16,7 @@ const itemPropTypes = PropTypes.shape({
 
 const ItemDetails = ({ item, shippingType }) => {
   const { t } = useTranslation('OrderingThankYou');
-  const { id, title, displayPrice, quantity, variationTexts, isTakeaway } = item;
+  const { title, displayPrice, quantity, variationTexts, isTakeaway } = item;
   const shouldShowProductVariations = useMemo(() => variationTexts && variationTexts[0], [variationTexts]);
   const shouldShowTakeawayVariant = useMemo(() => shippingType === SHIPPING_TYPES.DINE_IN && isTakeaway, [
     isTakeaway,
@@ -24,7 +24,7 @@ const ItemDetails = ({ item, shippingType }) => {
   ]);
 
   return (
-    <li key={`title-${id}`} className="flex flex-middle flex-space-between">
+    <li className="flex flex-middle flex-space-between">
       <div className="flex flex-top">
         <span className="padding-top-bottom-small flex__shrink-fixed text-opacity">{quantity} x</span>
         <div className="padding-small">
