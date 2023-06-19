@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
+import { closeWebView } from '../../../utils/native-methods';
 import { getUserStoreCashback, getUserCountry } from '../../redux/modules/app';
 import {
   getStoreDisplayTitle,
@@ -83,6 +84,8 @@ const StoreRedemptionNative = () => {
             CleverTap.pushEvent('POS Redemption Landing Page - Click Back', {
               country: userCountry,
             });
+
+            closeWebView();
           }}
         />
       )}
