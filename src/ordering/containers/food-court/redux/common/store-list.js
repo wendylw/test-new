@@ -43,6 +43,7 @@ import NurulAsamImage from '../../../../../images/food-court-temp/merchant-Nurul
 import JomTarikImage from '../../../../../images/food-court-temp/merchant-Jom-Tarik.jpg';
 import ClassicBowlImage from '../../../../../images/food-court-temp/merchant-Classic-Bowl.png';
 import XOXOCoffeeImage from '../../../../../images/food-court-temp/merchant-XOXO-Coffee.png';
+import TintoCafeImage from '../../../../../images/food-court-temp/merchant-Tinto-Cafe.png';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -273,6 +274,16 @@ export const AllFoodCourtStoreList = {
     businessHours: {
       validTimeFrom: '10:00',
       validTimeTo: '22:00',
+    },
+  },
+  '646dcd32356d2100070d16cc': {
+    id: '646dcd32356d2100070d16cc',
+    imageNoCompression: TintoCafeImage,
+    title: 'Tinto Cafe',
+    tags: ['Local Delicacies', 'Matcha', 'Coffee'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '20:00',
     },
   },
   '61b93058cef3c900060ca990': {
