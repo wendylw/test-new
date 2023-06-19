@@ -40,7 +40,7 @@ const StoreRedemptionNative = () => {
     if (isDisplayStoreRedemptionContent) {
       CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
         country: userCountry,
-        page: userStoreCashback ? 'With Cashback' : 'Without Cashback',
+        page: userStoreCashback > 0 ? 'With Cashback' : 'Without Cashback',
       });
     }
   }, [isDisplayStoreRedemptionContent]);
