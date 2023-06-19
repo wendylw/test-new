@@ -1,7 +1,8 @@
 /* eslint-disable dot-notation */
 import { getMerchantID, getFormattedTags, getFormattedActionName, getStringifiedJSON } from './logger';
-import { get as requestGet, RequestError } from '../request';
+import { get as requestGet } from '../request';
 import { get as apiFetchGet } from '../api/api-fetch';
+import RequestError from '../api/request-error';
 import { NativeAPIError } from '../native-methods';
 
 describe('utils/monitoring/logger', () => {
@@ -339,7 +340,7 @@ describe('utils/monitoring/logger', () => {
         type: 'get',
         request: 'api/v3/storage/selected-address',
         code: '99999',
-        error: '{"message":"Service Unavailable"}',
+        error: 'Request failed with status code 500 Internal Server Error',
         status: 500,
       });
     });
@@ -437,7 +438,7 @@ describe('utils/monitoring/logger', () => {
         });
 
         test('return value should have error info if the private data contains custom error (without toJSON getter)', () => {
-          payload.privateData['BeepV1Web_native_error'] = new RequestError('API request error');
+          payload.privateData['BeepV1Web_native_error'] = new RequestError('API request error', {});
 
           const stringifiedJSON = getStringifiedJSON(payload);
           expect(JSON.parse(stringifiedJSON)).toMatchObject({
@@ -492,7 +493,7 @@ describe('utils/monitoring/logger', () => {
         test('return value should have error info if the field contains custom error (without toJSON getter)', () => {
           payload.privateData['BeepV1Web_payment_error'] = {
             paymentMethod: 'Stripe',
-            e: new RequestError('API request error'),
+            e: new RequestError('API request error', {}),
           };
 
           const stringifiedJSON = getStringifiedJSON(payload);
