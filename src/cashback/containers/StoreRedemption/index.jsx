@@ -37,13 +37,13 @@ const StoreRedemptionNative = () => {
   const isAvailableToShareConsumerInfo = useSelector(getIsAvailableToShareConsumerInfo);
 
   useEffect(() => {
-    if (isDisplayStoreRedemptionContent) {
+    if (isLoadStoreRedemptionDataCompleted) {
       CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
         country: userCountry,
         page: userStoreCashback > 0 ? 'With Cashback' : 'Without Cashback',
       });
     }
-  }, [isDisplayStoreRedemptionContent]);
+  }, [isLoadStoreRedemptionDataCompleted]);
 
   useEffect(() => {
     if (isLoadStoreRedemptionDataCompleted) {
