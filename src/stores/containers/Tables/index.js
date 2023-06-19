@@ -58,11 +58,10 @@ class Tables extends Component {
           <ul className="ordering-tables__list flex flex-middle padding-smaller margin-top-bottom-small">
             {tables.map(table => {
               return (
-                <li className="ordering-tables__list-item padding-small">
+                <li className="ordering-tables__list-item padding-small" key={table.id}>
                   <button
                     onClick={() => this.handleSelectTable(table.id)}
                     data-heap-name="stores.tables.table-btn"
-                    key={table.id}
                     className={`button button__block text-line-height-base border-radius-large ${
                       table.id === currentTableId ? 'button__fill' : 'button__outline'
                     }`}
