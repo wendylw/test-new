@@ -91,6 +91,10 @@ const PAYMENTS_MAPPING = {
     key: 'GetzPay',
     logo: 'paymentBankingImage',
   },
+  StripeApplePay: {
+    key: 'ApplePay',
+    logo: 'paymentApplePay',
+  },
 };
 
 const PaymentOptionModel = {

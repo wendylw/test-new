@@ -39,7 +39,7 @@ import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { fetchOrder } from '../../../../../utils/api-request';
 import { alert } from '../../../../../common/feedback';
-import { getPaymentType, getIsSupportApplePayBrowser } from './utils';
+import { getPaymentType, getIsApplePaySupported } from './utils';
 
 const { PAYMENT_PROVIDERS, ORDER_STATUS, ROUTER_PATHS } = Constants;
 
@@ -54,8 +54,6 @@ class Payment extends Component {
 
   componentDidMount = async () => {
     const { initialize, paymentActions } = this.props;
-
-    console.log(getIsSupportApplePayBrowser());
 
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
@@ -318,11 +316,12 @@ class Payment extends Component {
 
   renderPaymentList() {
     const { allPaymentOptions } = this.props;
+    const isApplePaySupported = getIsApplePaySupported();
 
     return (
       <ul>
         {allPaymentOptions.map(option => (
-          <PaymentItem key={option.key} option={option} />
+          <PaymentItem key={option.key} option={option} isApplePaySupported={isApplePaySupported} />
         ))}
       </ul>
     );

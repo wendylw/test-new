@@ -10,6 +10,7 @@ import paymentTNGImage from '../../../../images/payment-tng.png';
 import paymentGcashImage from '../../../../images/payment-gcash.png';
 import paymentLineImage from '../../../../images/payment-line.png';
 import paymentPayByCashImage from '../../../../images/payment-pay-by-cash.png';
+import paymentApplePay from '../../../../images/payment-apple-pay.png';
 
 const imageMap = {
   paymentBankingImage,
@@ -20,6 +21,7 @@ const imageMap = {
   paymentGcashImage,
   paymentLineImage,
   paymentPayByCashImage,
+  paymentApplePay,
 };
 
 const PaymentLogo = ({ logo, alt }) => (
