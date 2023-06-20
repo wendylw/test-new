@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { PAYMENT_TYPE } from './constants';
@@ -29,4 +30,12 @@ export const getPaymentType = paymentProvider => {
 
   // For other payment providers, we ONLY return undefined
   return undefined;
+};
+
+export const getIsSupportApplePayBrowser = () => {
+  if (window.ApplePaySession) {
+    return window.ApplePaySession.canMakePayments();
+  }
+
+  return false;
 };

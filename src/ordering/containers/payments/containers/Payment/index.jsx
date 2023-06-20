@@ -39,7 +39,7 @@ import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { fetchOrder } from '../../../../../utils/api-request';
 import { alert } from '../../../../../common/feedback';
-import { getPaymentType } from './utils';
+import { getPaymentType, getIsSupportApplePayBrowser } from './utils';
 
 const { PAYMENT_PROVIDERS, ORDER_STATUS, ROUTER_PATHS } = Constants;
 
@@ -54,6 +54,8 @@ class Payment extends Component {
 
   componentDidMount = async () => {
     const { initialize, paymentActions } = this.props;
+
+    getIsSupportApplePayBrowser();
 
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
