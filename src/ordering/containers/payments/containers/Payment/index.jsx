@@ -55,7 +55,7 @@ class Payment extends Component {
   componentDidMount = async () => {
     const { initialize, paymentActions } = this.props;
 
-    getIsSupportApplePayBrowser();
+    console.log(getIsSupportApplePayBrowser());
 
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 

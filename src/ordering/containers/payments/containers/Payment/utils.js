@@ -32,6 +32,7 @@ export const getPaymentType = paymentProvider => {
   return undefined;
 };
 
+// Apple pay provide tracking method: https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/checking_for_apple_pay_availability#overview
 export const getIsSupportApplePayBrowser = () => {
   if (window.ApplePaySession) {
     return window.ApplePaySession.canMakePayments();
