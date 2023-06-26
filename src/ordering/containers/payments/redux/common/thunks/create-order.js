@@ -398,7 +398,10 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       payload.consumerId = consumerId;
     }
 
-    const { redirectURL: thankYouPageUrl, paymentUrl, paymentData, paymentId } = await initPayment(payload, dispatch);
+    const { redirectURL: thankYouPageUrl, paymentUrl, paymentData, paymentId, paymentRecordId } = await initPayment(
+      payload,
+      dispatch
+    );
 
     if (isTNGMiniProgram) {
       const { redirectionUrl } = paymentData?.actionForm || {};
@@ -414,6 +417,24 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
         source,
         isInternal,
         paymentId,
+      });
+      return;
+    }
+
+    if (paymentProvider === PAYMENT_PROVIDERS.APPLE_PAY) {
+      const { stripeApplePayCompleteUrl } = paymentData || {};
+
+      Utils.submitForm(stripeApplePayCompleteUrl, {
+        amount: total,
+        receiptNumber: orderId,
+        businessName: business,
+        redirectURL: stripeApplePayCompleteUrl,
+        webhookURL,
+        paymentMethod: PAYMENT_PROVIDERS.APPLE_PAY,
+        currency,
+        source,
+        isInternal,
+        paymentId: paymentRecordId,
       });
       return;
     }
