@@ -331,3 +331,23 @@ export const getUUID = () => {
     /* eslint-enable */
   }
 };
+
+export const getCountry = (phone, language, countries, defaultCountry) => {
+  if (phone) {
+    return '';
+  }
+
+  if (!language || (!language.split('-')[1] && !language.split('-')[0])) {
+    return defaultCountry;
+  }
+
+  if (countries.includes(language.split('-')[1])) {
+    return language.split('-')[1];
+  }
+
+  if (countries.includes(language.split('-')[0])) {
+    return language.split('-')[0];
+  }
+
+  return undefined;
+};
