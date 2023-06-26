@@ -6,6 +6,7 @@ import Image from '../../../components/Image';
 
 import prefetch from '../../../common/utils/prefetch-assets';
 import Utils from '../../../utils/utils';
+import { isWebview } from '../../../common/utils';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
@@ -18,6 +19,7 @@ import {
   getReceiptNumber,
   isFetchingCashbackInfo,
 } from '../../redux/modules/claim';
+import NativeHeader from '../../../components/NativeHeader';
 import './LoyaltyClaim.scss';
 
 class PageClaim extends React.Component {
@@ -172,21 +174,24 @@ class PageClaim extends React.Component {
     }
 
     return (
-      <section className="loyalty-claim__container flex flex-column" data-heap-name="cashback.claim.container">
-        <article className="text-center margin-top-bottom-normal">
-          {logo ? (
-            <Image
-              className="loyalty-claim__logo logo logo__big margin-top-bottom-normal"
-              src={logo}
-              alt={displayBusinessName || name}
-            />
-          ) : null}
-          <h5 className="loyalty-claim__title padding-top-bottom-small text-uppercase">{t('EarnCashbackNow')}</h5>
-          {this.renderCashback()}
+      <>
+        {isWebview() && <NativeHeader />}
+        <section className="loyalty-claim__container flex flex-column" data-heap-name="cashback.claim.container">
+          <article className="text-center margin-top-bottom-normal">
+            {logo ? (
+              <Image
+                className="loyalty-claim__logo logo logo__big margin-top-bottom-normal"
+                src={logo}
+                alt={displayBusinessName || name}
+              />
+            ) : null}
+            <h5 className="loyalty-claim__title padding-top-bottom-small text-uppercase">{t('EarnCashbackNow')}</h5>
+            {this.renderCashback()}
 
-          {this.renderLocation()}
-        </article>
-      </section>
+            {this.renderLocation()}
+          </article>
+        </section>
+      </>
     );
   }
 }
