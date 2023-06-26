@@ -122,3 +122,11 @@ export const REGISTRATION_SOURCE = {
   TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
   SHARED_LINK: 'SharedLink',
 };
+
+export const PRODUCT_STOCK_STATUS = {
+  NOT_TRACK_INVENTORY: 'notTrackInventory',
+  IN_STOCK: 'inStock',
+  LOW_STOCK: 'lowStock',
+  OUT_OF_STOCK: 'outOfStock',
+  UNAVAILABLE: 'unavailable',
+};

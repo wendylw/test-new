@@ -117,35 +117,6 @@ Utils.setSessionVariable = UtilsV2.setSessionVariable;
 
 Utils.removeSessionVariable = UtilsV2.removeSessionVariable;
 
-// TODO: will move to ordering
-Utils.isProductSoldOut = product => {
-  const { stockStatus, variations } = product;
-
-  if (stockStatus === 'outOfStock') {
-    return true;
-  }
-
-  if (Array.isArray(variations) && variations.length > 0) {
-    let soldOut = false;
-
-    const firstVariation = variations[0];
-
-    if (firstVariation && firstVariation.variationType === 'SingleChoice') {
-      const soldOutOptions = firstVariation.optionValues.filter(optionValue => {
-        return optionValue.markedSoldOut;
-      });
-
-      if (soldOutOptions.length === firstVariation.optionValues.length) {
-        soldOut = true;
-      }
-    }
-
-    return soldOut;
-  }
-
-  return false;
-};
-
 Utils.getFormatPhoneNumber = function getFormatPhoneNumber(phone, countryCode) {
   if (!countryCode) {
     return phone;

@@ -4,7 +4,7 @@ import _get from 'lodash/get';
 import _sumBy from 'lodash/sumBy';
 import _map from 'lodash/map';
 import _escapeRegExp from 'lodash/escapeRegExp';
-import { API_REQUEST_STATUS, SHIPPING_TYPES } from '../../../../../common/utils/constants';
+import { API_REQUEST_STATUS, SHIPPING_TYPES, PRODUCT_STOCK_STATUS } from '../../../../../common/utils/constants';
 import { getOpeningHours } from '../../../../../common/utils/index';
 import { getCartQuantity, getCartQuantityByProductId, getIsFulfillMinimumConsumption } from '../cart/selectors';
 import {
@@ -177,7 +177,9 @@ export const getProductsByCategory = createSelector(
             formattedOriginalDisplayPrice: product.originalDisplayPrice
               ? formatCurrency(product.originalDisplayPrice, { hiddenCurrency: true })
               : '',
-            isSoldOut: ['outOfStock', 'unavailable'].includes(product.stockStatus),
+            isSoldOut: [PRODUCT_STOCK_STATUS.OUT_OF_STOCK, PRODUCT_STOCK_STATUS.UNAVAILABLE].includes(
+              product.stockStatus
+            ),
             cartQuantity: cartQuantityByProductId[product.id] || 0,
             isBestSeller: product.isFeaturedProduct,
           };
