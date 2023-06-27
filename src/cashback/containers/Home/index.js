@@ -77,7 +77,7 @@ class PageLoyalty extends React.Component {
       <>
         {isWebview() && (
           <NativeHeader
-            title={showRecentActivities && t('CashbackHistory')}
+            title={showRecentActivities ? t('CashbackHistory') : null}
             navFunc={() => {
               if (showRecentActivities) {
                 this.closeActivity();
