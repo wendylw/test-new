@@ -118,20 +118,23 @@ class RecentActivities extends React.Component {
   }
 
   render() {
-    const { t, closeActivity } = this.props;
+    const { t, closeActivity, isPage } = this.props;
 
     return (
       <>
-        <HybridHeader
-          data-heap-name="cashback.home.recent-activities.header"
-          className="flex-middle text-center"
-          contentClassName="flex-middle"
-          isPage={true}
-          title={t('CashbackHistory')}
-          navFunc={() => {
-            closeActivity();
-          }}
-        />
+        {isPage ? (
+          <HybridHeader
+            data-heap-name="cashback.home.recent-activities.header"
+            className="flex-middle text-center"
+            contentClassName="flex-middle"
+            isPage
+            title={t('CashbackHistory')}
+            navFunc={() => {
+              closeActivity();
+            }}
+          />
+        ) : null}
+
         <section className="recent-activities" data-heap-name="cashback.home.recent-activities.container">
           <article className="flex__shrink-fixed">{this.renderLogList()}</article>
         </section>
@@ -141,6 +144,11 @@ class RecentActivities extends React.Component {
 }
 
 RecentActivities.displayName = 'RecentActivities';
+
+RecentActivities.defaultProps = {
+  isPage: true,
+  onModalVisibilityChanged: () => {},
+};
 
 export default compose(
   withTranslation(['Cashback']),
