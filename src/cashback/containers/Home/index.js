@@ -75,12 +75,16 @@ class PageLoyalty extends React.Component {
 
     return (
       <>
-        {isWebview() &&
-          (showRecentActivities ? (
-            <NativeHeader title={t('CashbackHistory')} navFunc={this.closeActivity.bind(this)} />
-          ) : (
-            <NativeHeader />
-          ))}
+        {isWebview() && (
+          <NativeHeader
+            title={showRecentActivities && t('CashbackHistory')}
+            navFunc={() => {
+              if (showRecentActivities) {
+                this.closeActivity();
+              }
+            }}
+          />
+        )}
         {!showRecentActivities ? (
           <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
             <article className="loyalty-home__article text-center margin-top-bottom-normal">
