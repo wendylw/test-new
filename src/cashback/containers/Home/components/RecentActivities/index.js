@@ -11,6 +11,7 @@ import { actions as homeActionCreators, getCashbackHistory } from '../../../../r
 import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import './RecentActivities.scss';
 import { withBackButtonSupport } from '../../../../../utils/modal-back-button-support';
+import { isWebview } from '../../../../../common/utils';
 
 const DATE_OPTIONS = {
   weekday: 'short',
@@ -122,7 +123,7 @@ class RecentActivities extends React.Component {
 
     return (
       <>
-        {isPage ? (
+        {isPage && !isWebview() ? (
           <HybridHeader
             data-heap-name="cashback.home.recent-activities.header"
             className="flex-middle text-center"
