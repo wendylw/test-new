@@ -1,5 +1,6 @@
 import React from 'react';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
+import * as NativeMethods from '../../../utils/native-methods';
 import Image from '../../../components/Image';
 import RedeemInfo from '../../components/RedeemInfo';
 import { IconInfo } from '../../../components/Icons';
@@ -77,10 +78,12 @@ class PageLoyalty extends React.Component {
       <>
         {isWebview() && (
           <NativeHeader
-            title={showRecentActivities ? t('CashbackHistory') : null}
+            title={showRecentActivities ? t('CashbackHistory') : window.document.title}
             navFunc={() => {
               if (showRecentActivities) {
                 this.closeActivity();
+              } else {
+                NativeMethods.goBack();
               }
             }}
           />
