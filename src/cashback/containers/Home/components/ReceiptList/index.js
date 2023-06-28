@@ -86,7 +86,7 @@ class RecentActivities extends React.Component {
             return (
               <div className="flex flex-middle padding-normal margin-top-bottom-small base-box-shadow" key={`${i}`}>
                 <IconTicket className="icon__primary ticket" />
-                <summary className="padding-left-right-normal">
+                <summary className="receipt-list__item-summary padding-left-right-normal">
                   <h4 className="margin-top-bottom-small">
                     <label>{t('Receipt')} - </label>
                     <CurrencyNumber money={Math.abs(total || 0)} />
