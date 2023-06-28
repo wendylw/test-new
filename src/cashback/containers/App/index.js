@@ -24,7 +24,6 @@ import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
-import RequestLogin from './components/RequestLogin';
 import logger from '../../../utils/monitoring/logger';
 
 class App extends Component {
@@ -42,7 +41,7 @@ class App extends Component {
 
       await Promise.all(initRequests);
 
-      const { isUserLogin, userConsumerId } = this.props;
+      const { userConsumerId } = this.props;
 
       if (userConsumerId) {
         appActions.loadConsumerCustomerInfo();
@@ -54,10 +53,8 @@ class App extends Component {
         return;
       }
 
-      if (!isUserLogin) {
-        appActions.showLoginModal();
-      } else {
-        // The user is logged in, the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
+      if (isTNGMiniProgram()) {
+        // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
         isTNGMiniProgram() && (await appActions.loginByTngMiniProgram());
       }
     } catch (error) {
@@ -85,16 +82,6 @@ class App extends Component {
     }
   };
 
-  handleRequestLoginClick = async () => {
-    const { appActions } = this.props;
-
-    if (isWebview()) {
-      await appActions.loginByBeepApp();
-    } else if (isTNGMiniProgram()) {
-      await appActions.loginByTngMiniProgram();
-    }
-  };
-
   // eslint-disable-next-line consistent-return
   visitErrorPage() {
     const { pageError } = this.props;
@@ -106,15 +93,7 @@ class App extends Component {
   }
 
   render() {
-    const {
-      t,
-      error,
-      loginBannerPrompt,
-      onlineStoreInfoFavicon,
-      isLoginModalShown,
-      isLoginRequestStatusPending,
-      appActions,
-    } = this.props;
+    const { t, error, loginBannerPrompt, onlineStoreInfoFavicon, isLoginModalShown, appActions } = this.props;
     const { message } = error || {};
 
     return (
@@ -130,15 +109,8 @@ class App extends Component {
           />
         ) : null}
         <Message />
-        {isLoginModalShown ? (
-          isWebview() || isTNGMiniProgram() ? (
-            <RequestLogin
-              onClick={this.handleRequestLoginClick}
-              isLoginRequestStatusPending={isLoginRequestStatusPending}
-            />
-          ) : (
-            <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
-          )
+        {isLoginModalShown && !isWebview() && !isTNGMiniProgram() ? (
+          <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
         ) : null}
         <Routes />
         <DocumentFavicon icon={onlineStoreInfoFavicon || faviconImage} />
@@ -151,7 +123,6 @@ App.displayName = 'CashbackApp';
 
 App.propTypes = {
   loginBannerPrompt: PropTypes.string,
-  isLoginRequestStatusPending: PropTypes.bool,
   isUserLogin: PropTypes.bool,
   userConsumerId: PropTypes.string,
   onlineStoreInfoFavicon: PropTypes.string,
@@ -179,7 +150,6 @@ App.propTypes = {
 
 App.defaultProps = {
   loginBannerPrompt: null,
-  isLoginRequestStatusPending: false,
   isUserLogin: false,
   userConsumerId: null,
   onlineStoreInfoFavicon: '',
