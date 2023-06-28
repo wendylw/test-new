@@ -120,7 +120,7 @@ class RecentActivities extends React.Component {
           data-heap-name="cashback.home.recent-activities.header"
           className="flex-middle text-center"
           contentClassName="flex-middle"
-          isPage
+          isPage={true}
           title={t('CashbackHistory')}
         />
 
