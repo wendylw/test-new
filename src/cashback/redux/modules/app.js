@@ -287,6 +287,10 @@ export const actions = {
     }
   },
 
+  resetConsumerCustomerInfo: () => ({
+    type: types.RESET_CONSUMER_CUSTOMER_INFO,
+  }),
+
   loginByBeepApp: () => async (dispatch, getState) => {
     try {
       const tokens = await NativeMethods.getTokenAsync();
@@ -548,6 +552,8 @@ const user = (state = initialState.user, action) => {
       };
     case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
       return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.REJECTED };
+    case type.RESET_CONSUMER_CUSTOMER_INFO:
+      return { ...state, loadConsumerCustomerStatus: null, storeCreditsBalance: 0, customerId: null };
     // fetch online store info success
     // fetch core business success
     case types.FETCH_ONLINE_STORE_INFO_SUCCESS:

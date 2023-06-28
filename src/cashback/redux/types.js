@@ -61,6 +61,7 @@ export const APP_TYPES = {
   LOAD_CONSUMER_CUSTOMER_INFO_PENDING: 'loyalty/app/loadConsumerCustomerInfo/pending',
   LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED: 'loyalty/app/loadConsumerCustomerInfo/fulfilled',
   LOAD_CONSUMER_CUSTOMER_INFO_REJECTED: 'loyalty/app/LoadConsumerCustomerInfo/rejected',
+  RESET_CONSUMER_CUSTOMER_INFO: 'loyalty/app/resetConsumerCustomerInfo',
 
   // Update user
   UPDATE_USER: 'LOYALTY/APP/UPDATE_USER',
