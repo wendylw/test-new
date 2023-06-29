@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import WebHeader from '../../../components/WebHeader';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
@@ -245,9 +246,9 @@ class Login extends React.Component {
 
     return (
       <section className={classList.join(' ')} data-heap-name="cashback.login.container">
+        <WebHeader className="login__header" isPage={false} title="Login or Create Account" navFunc={() => {}} />
         <PhoneViewContainer
           className="absolute-wrapper login__container padding-left-right-normal"
-          title={title}
           phone={phone}
           country={country}
           buttonText={isOtpRequestPending ? t('Processing') : t('Continue')}

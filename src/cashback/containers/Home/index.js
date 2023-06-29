@@ -66,7 +66,7 @@ class PageLoyalty extends React.Component {
 
     return (
       <>
-        <NativeHeader />
+        {isWebview() && <NativeHeader />}
         <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
           <article className="loyalty-home__article text-center margin-top-bottom-normal">
             {logo ? (

@@ -324,14 +324,6 @@ export const actions = {
         return;
       }
 
-      // const isAppLogin = NativeMethods.getLoginStatus();
-
-      // if (!isAppLogin) {
-      //   dispatch(actions.showLoginModal());
-      //   await  dispatch(actions.loginByBeepApp());
-      //   return;
-      // }
-
       await dispatch(actions.loginByBeepApp());
     } catch (e) {
       logger.error('Cashback_syncLoginFromBeepAppFailed', { message: e?.message, code: e?.code });
