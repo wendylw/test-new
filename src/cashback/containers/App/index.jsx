@@ -101,14 +101,15 @@ class App extends Component {
     }
   };
 
-  // eslint-disable-next-line consistent-return
   visitErrorPage() {
     const { pageError } = this.props;
 
-    if (pageError && pageError.code) {
-      // eslint-disable-next-line no-return-assign
-      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
+    if (!pageError || !pageError.code) {
+      return;
     }
+
+    // eslint-disable-next-line consistent-return, no-return-assign
+    return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
   }
 
   render() {
@@ -124,7 +125,6 @@ class App extends Component {
     const { message } = error || {};
 
     return (
-      // eslint-disable-next-line react/jsx-filename-extension
       <main className="loyalty fixed-wrapper__main fixed-wrapper">
         {message ? (
           <ErrorToast
