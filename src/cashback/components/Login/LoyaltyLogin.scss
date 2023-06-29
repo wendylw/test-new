@@ -3,10 +3,6 @@
 .login {
   background-color: $white;
 
-  &__container {
-    height: 100%;
-  }
-
   &__header {
     border-bottom-width: 0;
   }
@@ -24,17 +20,5 @@
 
   &__button-link {
     color: inherit;
-  }
-
-  &__terms-privacy {
-    margin-bottom: 30vw;
-  }
-}
-
-@media (min-width: 770px) {
-  .login {
-    &__terms-privacy {
-      margin-bottom: 90px;
-    }
   }
 }

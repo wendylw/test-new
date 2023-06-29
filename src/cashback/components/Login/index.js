@@ -194,6 +194,12 @@ class Login extends React.Component {
     }
   }
 
+  handleHideLoginPage = async () => {
+    const { appActions } = this.props;
+
+    await appActions.hideLoginModal();
+  };
+
   renderOtpModal() {
     const { user, shouldShowLoader, isOtpRequestPending, isLoginRequestFailed } = this.props;
     const { sendOtp, shouldShowModal } = this.state;
@@ -249,7 +255,16 @@ class Login extends React.Component {
 
     return (
       <section className={classList.join(' ')} data-heap-name="cashback.login.container">
-        <WebHeader className="login__header" isPage={false} title="Login or Create Account" navFunc={() => {}} />
+        <WebHeader
+          className="login__header"
+          isPage={false}
+          title="Login or Create Account"
+          navFunc={() => {
+            this.handleHideLoginPage();
+
+            return;
+          }}
+        />
         <div className="login__image-container padding-normal margin-top-bottom-small">
           <ObjectFitImage
             noCompression
