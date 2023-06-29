@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useMount, useUnmount } from 'react-use';
+import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
-import { actions as cashbackAppActions, getUserStoreCashback, getUserCountry } from '../../redux/modules/app';
+import { getUserStoreCashback, getUserCountry } from '../../redux/modules/app';
 import {
   getStoreDisplayTitle,
   getIsDisplayStoreRedemptionContent,
@@ -74,10 +74,6 @@ const StoreRedemptionNative = () => {
 
   useMount(async () => {
     await dispatch(mounted());
-  });
-
-  useUnmount(async () => {
-    await dispatch(cashbackAppActions.resetConsumerCustomerInfo());
   });
 
   return (

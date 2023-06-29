@@ -85,6 +85,12 @@ class App extends Component {
     }
   };
 
+  async componentWillUnmount() {
+    const { appActions } = this.props;
+
+    await appActions.resetConsumerCustomerInfo();
+  }
+
   handleRequestLoginClick = async () => {
     const { appActions } = this.props;
 
@@ -165,6 +171,7 @@ App.propTypes = {
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
     loadConsumerCustomerInfo: PropTypes.func,
+    resetConsumerCustomerInfo: PropTypes.func,
     fetchOnlineStoreInfo: PropTypes.func,
     fetchCashbackBusiness: PropTypes.func,
     loginApp: PropTypes.func,
