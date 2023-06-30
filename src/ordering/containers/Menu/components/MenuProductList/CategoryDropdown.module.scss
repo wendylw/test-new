@@ -8,7 +8,7 @@
 }
 
 .menuProductCategoryContentButton {
-  @apply tw-flex tw-flex-grow tw-items-center tw-justify-between;
+  @apply tw-flex tw-flex-grow tw-items-center tw-justify-between max-w-full;
 }
 
 .menuProductHighlightedCategory {
