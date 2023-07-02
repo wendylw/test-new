@@ -23,6 +23,7 @@ import {
   getUserPhone,
   getIsTNGMiniProgram,
   getIsWebview,
+  getMerchantCountry,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
 import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
@@ -422,6 +423,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
     }
 
     if (paymentProvider === PAYMENT_PROVIDERS.APPLE_PAY) {
+      const country = getMerchantCountry(state);
       const { stripeApplePayCompleteUrl } = paymentData || {};
 
       Utils.submitForm(stripeApplePayCompleteUrl, {
@@ -431,10 +433,11 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
         redirectURL: stripeApplePayCompleteUrl,
         webhookURL,
         paymentMethod: PAYMENT_PROVIDERS.APPLE_PAY,
+        country,
         currency,
         source,
         isInternal,
-        paymentId: paymentRecordId,
+        paymentRecordId,
       });
       return;
     }
