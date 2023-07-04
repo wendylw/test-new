@@ -69,7 +69,7 @@ const Slider = ({
       slideChanged(slider) {
         setCurrentSlide(slider.track.details.rel);
       },
-      created(slider) {
+      created() {
         setLoaded(true);
       },
       destroyed() {
@@ -103,12 +103,12 @@ const Slider = ({
       {showPagination && loaded && instanceRef.current && (
         <div className={styles.SliderDots}>
           {[...Array(instanceRef.current.track.details.slides.length).keys()].map(index => (
-            /* eslint-disable-next-line */
             <button
               key={index}
               onClick={() => {
                 instanceRef.current?.moveToIdx(index);
               }}
+              aria-label="Slide"
               className={styles.SliderDot + (currentSlide === index ? ' active' : '')}
             />
           ))}

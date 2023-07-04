@@ -30,8 +30,6 @@ const legacyFiles = [
   'src/cashback/redux/store.js',
   'src/cashback/redux/store.test.js',
   'src/cashback/redux/types.js',
-  'src/common/feedback/index.jsx',
-  'src/common/feedback/utils.js',
   'src/components/CheckBox.js',
   'src/components/DeliverToBar.js',
   'src/components/DeliverToBar.stories.js',
@@ -349,6 +347,7 @@ const legacyFiles = [
   'src/ordering/containers/order-status/redux/selector.js',
   'src/ordering/containers/order-status/redux/thunks.js',
   'src/ordering/containers/order-status/redux/selector.js',
+  'src/common/components/ReCAPTCHA/index.jsx',
 ];
 
 module.exports = {

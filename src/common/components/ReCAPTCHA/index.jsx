@@ -3,15 +3,6 @@
 // PR: https://github.com/dozoisch/react-google-recaptcha/pull/239
 // Issues: https://github.com/dozoisch/react-google-recaptcha/issues/228
 // Once the original repo meets the needs of the enterprise version, we will remove this file and directly import the 'react-google-recaptcha' library.
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable react/sort-comp */
-/* eslint-disable no-else-return */
-/* eslint-disable consistent-return */
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/require-default-props */
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable import/no-unresolved */
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import makeAsyncScriptLoader from 'react-async-script';
@@ -155,7 +146,6 @@ class ReCAPTCHA extends React.Component {
 
   render() {
     // consume properties owned by the reCATPCHA, pass the rest to the div so the user can style it.
-    /* eslint-disable no-unused-vars */
     const {
       sitekey,
       onChange,

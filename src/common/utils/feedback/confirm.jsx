@@ -59,12 +59,7 @@ const createConfirm = (content, options) => {
     } = options;
     const rootDOM = document.createElement('div');
 
-    const children = customizeContent ? (
-      content
-    ) : (
-      // eslint-disable-next-line react/jsx-filename-extension
-      <ConfirmContent content={content} title={title} />
-    );
+    const children = customizeContent ? content : <ConfirmContent content={content} title={title} />;
     const confirmInstance = React.createElement(
       Confirm,
       {

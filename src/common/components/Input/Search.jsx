@@ -31,7 +31,7 @@ const Search = React.forwardRef(
       await onClearInput();
 
       searchInputRef.current?.focus();
-    });
+    }, [onClearInput, searchInputRef]);
 
     if (className) {
       classNameList.push(className);
@@ -89,7 +89,6 @@ const Search = React.forwardRef(
 Search.displayName = 'Search';
 
 Search.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   addOnIcon: PropTypes.node,
   className: PropTypes.string,
   placeholder: PropTypes.string,

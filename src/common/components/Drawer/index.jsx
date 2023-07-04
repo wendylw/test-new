@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React, { useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
@@ -126,6 +125,7 @@ Drawer.propTypes = {
   /* The class name of inner container */
   childrenClassName: PropTypes.string,
   /* The style of outer container */
+  // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.object,
   /* The callback when the use touch the backdrop */
   onClose: PropTypes.func,

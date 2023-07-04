@@ -24,7 +24,6 @@ const createToast = (content, options) =>
   new Promise(resolve => {
     const { container, onClose, ...restOptions } = options;
     const rootDOM = document.createElement('div');
-    // eslint-disable-next-line react/no-children-prop
     const toastInstance = React.createElement(
       Toast,
       {

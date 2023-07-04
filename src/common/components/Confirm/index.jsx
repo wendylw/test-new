@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { CONFIRM_BUTTON_ALIGNMENT, CONFIRM_TRIGGER_TARGET } from '../../utils/feedback/utils';
@@ -29,7 +29,7 @@ const ConfirmFooterDefaultProps = {
   confirmButtonStyle: {},
   buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL,
   // target is one of CONFIRM_TRIGGER_TARGET
-  onSelection: target => {},
+  onSelection: () => {},
 };
 
 const ConfirmFooter = props => {
