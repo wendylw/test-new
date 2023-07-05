@@ -20,7 +20,6 @@ class CollectionCard extends React.Component {
               className={styles.IconCollectionContainer}
               data-testid="collection"
               data-test-id="site.home.collection-icon"
-              data-heap-collection-name={name}
               onClick={() => {
                 CleverTap.pushEvent('Homepage - Click Collection Icon', {
                   'collection name': name,

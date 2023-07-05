@@ -418,7 +418,6 @@ class ReportDriver extends Component {
                           this.handleSelectReason(code);
                         }}
                         data-test-id="ordering.report-driver.reason-item"
-                        data-heap-reason={code}
                         checked={selectedReasonCode === code}
                         inputId={`reason_${code}`}
                         name="reason"

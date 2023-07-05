@@ -78,11 +78,7 @@ class Carousel extends Component {
         {(collections || []).map((item, index) => {
           const { name, stores, beepCollectionId } = item;
           return (
-            <section
-              key={beepCollectionId}
-              data-test-id="site.home.carousel.container"
-              data-heap-collection-name={name}
-            >
+            <section key={beepCollectionId} data-test-id="site.home.carousel.container">
               <Banner title={name} onClick={this.handleTitleBarClicked.bind(this, index, item)} />
               {stores &&
                 this.renderCarouselStores(stores, {

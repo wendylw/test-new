@@ -447,7 +447,6 @@ class CollectionPage extends React.Component {
           ref={this.sectionRef}
           className="entry-home fixed-wrapper__container wrapper"
           data-test-id="site.collection.container"
-          data-heap-collection-name={currentCollection.name}
         >
           {this.renderStoreList()}
         </section>

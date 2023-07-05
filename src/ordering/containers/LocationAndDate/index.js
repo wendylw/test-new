@@ -516,7 +516,6 @@ class LocationAndDate extends Component {
           disabled={!isOpen}
           data-testid="preOrderDate"
           data-test-id="ordering.location-and-date.date-item"
-          data-heap-is-today={isToday ? 'yes' : 'no'}
           onClick={() => {
             CleverTap.pushEvent('Shipping Details - click shipping date', storeInfoForCleverTap);
             this.handleSelectDeliveryDate(orderDate);
@@ -598,7 +597,6 @@ class LocationAndDate extends Component {
             `}
           data-testid="preOrderHour"
           data-test-id="ordering.location-and-date.time-item"
-          data-heap-is-immediate={isImmediate ? 'yes' : 'no'}
           onClick={() => {
             CleverTap.pushEvent('Shipping Details - click shipping time', storeInfoForCleverTap);
             this.handleSelectDeliveryHourTime(timeItem);

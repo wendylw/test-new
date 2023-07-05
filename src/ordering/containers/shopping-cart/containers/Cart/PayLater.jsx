@@ -397,7 +397,7 @@ class PayLater extends Component {
                     color: '#fa4133',
                   },
                   attributes: {
-                    'data-heap-name': 'ordering.cart.clear-btn',
+                    'data-test-id': 'ordering.cart.clear-btn',
                   },
                   onClick: this.handleClearAll,
                 }

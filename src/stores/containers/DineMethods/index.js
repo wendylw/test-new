@@ -111,7 +111,6 @@ class DineMethods extends Component {
                   className="border__bottom-divider flex flex-middle flex-space-between"
                   onClick={() => this.handleSelectMethod(method.name)}
                   data-test-id="stores.dine-methods.method-item"
-                  data-heap-method-name={method.name}
                 >
                   <summary className="taking-meal-method__summary">
                     <figure className="taking-meal-method__image-container text-middle margin-normal">

@@ -112,7 +112,6 @@ class DeliveryMethods extends Component {
                 className="border__bottom-divider flex flex-middle flex-space-between"
                 data-testid="selectPrefrence"
                 data-test-id="stores.delivery-methods.method-item"
-                data-heap-method-name={method.name}
                 onClick={() => this.handleVisitStore(method.name)}
               >
                 <summary className="taking-meal-method__summary">

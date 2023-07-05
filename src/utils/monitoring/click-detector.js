@@ -15,7 +15,7 @@ window.addEventListener('click', e => {
 
         let trackPointName = null;
         if (path[i].getAttribute) {
-          trackPointName = path[i].getAttribute('data-heap-name');
+          trackPointName = path[i].getAttribute('data-test-id');
         }
 
         if (i === 0 || trackPointName) {

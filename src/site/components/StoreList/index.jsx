@@ -21,8 +21,6 @@ class StoreList extends Component {
               <StoreCard
                 store={store}
                 data-test-id="site.common.store-item"
-                data-heap-store-name={name}
-                data-heap-store-index={index}
                 onClick={onStoreClicked.bind(this, store, index)}
               />
             </div>

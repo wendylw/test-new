@@ -23,7 +23,7 @@ class SiteFooter extends Component {
         <ul className="flex flex-middle flex-space-around">
           {tabs.map(tab => (
             <li key={tab.pathname} className="entry__item">
-              <Link to={tab.pathname} data-test-id="site.common.footer.tab-icon" data-heap-tab-pathname={tab.pathname}>
+              <Link to={tab.pathname} data-test-id="site.common.footer.tab-icon">
                 <tab.component
                   className={`icon ${this.isIconActive(tab.pathname) ? 'icon__primary' : 'icon__default'}`}
                 />
