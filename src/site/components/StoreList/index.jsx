@@ -20,7 +20,7 @@ class StoreList extends Component {
             <div key={id} className={styles.StoreListItemWrapper}>
               <StoreCard
                 store={store}
-                data-heap-name="site.common.store-item"
+                data-test-id="site.common.store-item"
                 data-heap-store-name={name}
                 data-heap-store-index={index}
                 onClick={onStoreClicked.bind(this, store, index)}

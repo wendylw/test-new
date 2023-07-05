@@ -51,7 +51,7 @@ const StoreCard = ({ store, onClick }) => {
   return (
     <button
       className={styles.StoreCardContainer}
-      data-heap-name="site.home.carousel.store-item"
+      data-test-id="site.home.carousel.store-item"
       data-heap-store-name={name}
       onClick={onClick}
     >

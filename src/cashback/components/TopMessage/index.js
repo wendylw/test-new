@@ -14,10 +14,10 @@ class TopMessage extends React.Component {
     }
 
     return (
-      <div className={classList.join(' ')} data-heap-name="cashback.common.top-message.container">
+      <div className={classList.join(' ')} data-test-id="cashback.common.top-message.container">
         <IconClose
           className="top-message__close-icon icon icon__normal"
-          data-heap-name="cashback.common.top-message.close-btn"
+          data-test-id="cashback.common.top-message.close-btn"
           onClick={() => hideMessage()}
         />
         <span className="text-line-height-base">{message}</span>

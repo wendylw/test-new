@@ -228,7 +228,7 @@ class ReportDriver extends Component {
         <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
-          data-heap-name="ordering.report-driver.thank-you-header"
+          data-test-id="ordering.report-driver.thank-you-header"
           isPage={true}
           title={t('ReportIssue')}
           navFunc={this.handleGoBack}
@@ -264,7 +264,7 @@ class ReportDriver extends Component {
         <div className="ordering-report-driver__group form__group margin-left-right-small border-radius-normal">
           <textarea
             className="ordering-report-driver__textarea form__textarea padding-small"
-            data-heap-name="ordering.report-driver.notes-input"
+            data-test-id="ordering.report-driver.notes-input"
             placeholder={disabled ? '' : t('NoteFieldPlaceholder')}
             rows="5"
             maxLength={NOTE_MAX_LENGTH}
@@ -329,7 +329,7 @@ class ReportDriver extends Component {
               <button
                 onClick={this.handleRemoveUploadPhoto}
                 className="ordering-report-driver__button-close button flex flex-middle flex-center margin-smaller"
-                data-heap-name="ordering.report-driver.remove-image"
+                data-test-id="ordering.report-driver.remove-image"
               >
                 <IconClose className="ordering-report-driver__icon-close icon icon__smaller" />
               </button>
@@ -342,7 +342,7 @@ class ReportDriver extends Component {
               onChange={this.handleUploadPhoto}
               type="file"
               accept="image/*"
-              data-heap-name="ordering.report-driver.add-image"
+              data-test-id="ordering.report-driver.add-image"
             />
             <div className="ordering-report-driver__upload padding-normal border-radius-large">
               <IconInsertPhoto className="icon icon__normal" />
@@ -379,11 +379,11 @@ class ReportDriver extends Component {
     }
 
     return (
-      <section className="ordering-report-driver flex flex-column" data-heap-name="ordering.report-driver.container">
+      <section className="ordering-report-driver flex flex-column" data-test-id="ordering.report-driver.container">
         <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
-          data-heap-name="ordering.report-driver.header"
+          data-test-id="ordering.report-driver.header"
           isPage={true}
           title={t('ReportIssue')}
           navFunc={this.handleGoBack}
@@ -417,7 +417,7 @@ class ReportDriver extends Component {
                         onChange={() => {
                           this.handleSelectReason(code);
                         }}
-                        data-heap-name="ordering.report-driver.reason-item"
+                        data-test-id="ordering.report-driver.reason-item"
                         data-heap-reason={code}
                         checked={selectedReasonCode === code}
                         inputId={`reason_${code}`}
@@ -447,7 +447,7 @@ class ReportDriver extends Component {
             <div className="margin-small">
               <button
                 className="button button__block button__fill text-uppercase text-weight-bolder"
-                data-heap-name="ordering.report-driver.submit-btn"
+                data-test-id="ordering.report-driver.submit-btn"
                 disabled={isSubmitButtonDisabled}
                 onClick={this.handleSubmit}
               >

@@ -18,7 +18,7 @@ class StoreList extends Component {
               key={id}
               className="padding-top-bottom-small padding-left-right-normal"
               data-testid="store"
-              data-heap-name="stores.home.store-item"
+              data-test-id="stores.home.store-item"
               data-heap-store-name={name}
               onClick={() => {
                 onSelect(id);

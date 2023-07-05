@@ -81,7 +81,7 @@ class PaymentItem extends Component {
         id={`paymentItem-${key}`}
         className={classList.join(' ')}
         data-testid="paymentSelector"
-        data-heap-name="ordering.payment.payment-item"
+        data-test-id="ordering.payment.payment-item"
         data-heap-payment-name={key}
         onClick={() => this.handleSelectPaymentOption(option, currentPaymentOption)}
       >

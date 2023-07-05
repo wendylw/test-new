@@ -53,9 +53,9 @@ class WebHeader extends Component {
       <header ref={headerRef} style={style} className={classList.join(' ')} {...dataAttributes}>
         <div className={contentClassList.join(' ')}>
           {isPage ? (
-            <IconLeftArrow className={iconClassName} data-heap-name="common.header.back-btn" onClick={navFunc} />
+            <IconLeftArrow className={iconClassName} data-test-id="common.header.back-btn" onClick={navFunc} />
           ) : (
-            <IconClose className={iconClassName} data-heap-name="common.header.close-btn" onClick={navFunc} />
+            <IconClose className={iconClassName} data-test-id="common.header.close-btn" onClick={navFunc} />
           )}
           <h2
             className="header__title text-size-big text-weight-bolder text-middle text-omit__single-line"

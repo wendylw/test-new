@@ -94,11 +94,11 @@ class DineMethods extends Component {
 
     return (
       afterLoadTables && (
-        <section className="dine" data-heap-name="stores.dine-methods.container">
+        <section className="dine" data-test-id="stores.dine-methods.container">
           <HybridHeader
             className="flex-middle border__bottom-divider"
             contentClassName="flex-middle"
-            data-heap-name="stores.dine-methods.header"
+            data-test-id="stores.dine-methods.header"
             isPage={true}
             title={t('SelectYourPreference')}
             navFunc={this.handleClickBack}
@@ -110,7 +110,7 @@ class DineMethods extends Component {
                   key={method.name}
                   className="border__bottom-divider flex flex-middle flex-space-between"
                   onClick={() => this.handleSelectMethod(method.name)}
-                  data-heap-name="stores.dine-methods.method-item"
+                  data-test-id="stores.dine-methods.method-item"
                   data-heap-method-name={method.name}
                 >
                   <summary className="taking-meal-method__summary">

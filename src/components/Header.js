@@ -24,9 +24,9 @@ class Header extends Component {
         } icon__default text-middle flex__shrink-fixed`;
 
         return isPage ? (
-          <IconLeftArrow className={iconClassName} data-heap-name="common.header.back-btn" onClick={navFunc} />
+          <IconLeftArrow className={iconClassName} data-test-id="common.header.back-btn" onClick={navFunc} />
         ) : (
-          <IconClose className={iconClassName} data-heap-name="common.header.close-btn" onClick={navFunc} />
+          <IconClose className={iconClassName} data-test-id="common.header.close-btn" onClick={navFunc} />
         );
       }
     };

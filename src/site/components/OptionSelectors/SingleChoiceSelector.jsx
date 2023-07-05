@@ -12,7 +12,7 @@ const SingleChoiceSelector = ({ className, category, onClick }) => {
 
   return (
     <ul className={classNameList.join(' ')}>
-      <Radio.Group name={category.id} data-heap-name="site.common.option-selector.radio-group-container">
+      <Radio.Group name={category.id} data-test-id="site.common.option-selector.radio-group-container">
         {category.options.map(option => (
           <Radio
             key={option.id}
@@ -22,7 +22,7 @@ const SingleChoiceSelector = ({ className, category, onClick }) => {
             value={option.name}
             containerClassName={OptionSelectorStyles.OptionItemContainer}
             onChange={() => onClick(category, option)}
-            data-heap-name="site.common.option-selector.radio-btn"
+            data-test-id="site.common.option-selector.radio-btn"
           >
             <span className={OptionSelectorStyles.OptionItemLabel}>{option.name}</span>
           </Radio>

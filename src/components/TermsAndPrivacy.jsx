@@ -25,7 +25,7 @@ const TermsAndPrivacy = ({ buttonLinkClassName, termsOfUseDataHeapName, privacyP
       <a
         className={linkClassName}
         target="_blank"
-        data-heap-name={termsOfUseDataHeapName}
+        data-test-id={termsOfUseDataHeapName}
         href={TERMS_OF_USE_FULL_URL}
         rel="noreferrer"
       >
@@ -35,7 +35,7 @@ const TermsAndPrivacy = ({ buttonLinkClassName, termsOfUseDataHeapName, privacyP
       <a
         className={linkClassName}
         target="_blank"
-        data-heap-name={privacyPolicyDataHeapName}
+        data-test-id={privacyPolicyDataHeapName}
         href={PRIVACY_FULL_URL}
         rel="noreferrer"
       >

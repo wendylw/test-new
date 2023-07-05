@@ -88,7 +88,7 @@ class CartList extends Component {
           className="button padding-top-bottom-smaller padding-left-right-normal"
           onClick={() => onRemoveCartItem(cartItem)}
           data-testid="removeCartItem"
-          data-heap-name="ordering.home.mini-cart.remove-item-btn"
+          data-test-id="ordering.home.mini-cart.remove-item-btn"
         >
           <IconDelete className="icon icon__small icon__error text-middle" />
           <span className="text-middle text-error">{t('Remove')}</span>
@@ -100,7 +100,7 @@ class CartList extends Component {
       <div className={classList.join(' ')}>
         <ItemOperator
           className="flex-middle"
-          data-heap-name="ordering.home.mini-cart.item-operator"
+          data-test-id="ordering.home.mini-cart.item-operator"
           quantity={quantity}
           decreaseDisabled={!quantity}
           increaseDisabled={disabledIncreaseQuantity}
@@ -125,7 +125,7 @@ class CartList extends Component {
     const cartItems = [...unavailableItems, ...items].sort(sortFn);
 
     return (
-      <ul style={style} data-heap-name="ordering.cart.cart-list">
+      <ul style={style} data-test-id="ordering.cart.cart-list">
         {cartItems.map(cartItem => {
           const {
             id,
@@ -151,7 +151,7 @@ class CartList extends Component {
             <li key={`mini-cart-item-${id}`}>
               <ProductItem
                 className="flex-top"
-                data-heap-name="ordering.home.mini-cart.cart-item"
+                data-test-id="ordering.home.mini-cart.cart-item"
                 imageUrl={image}
                 imageCover={this.renderImageCover(stockStatus)}
                 title={title}

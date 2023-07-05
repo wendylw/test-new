@@ -59,11 +59,11 @@ export class Error extends Component {
     return (
       <>
         {Utils.isWebview() && <NativeHeader />}
-        <ErrorPage title={title} description={description} data-heap-name="ordering.error-page.container">
+        <ErrorPage title={title} description={description} data-test-id="ordering.error-page.container">
           <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
             <button
               className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
-              data-heap-name="common.error-page.back-btn"
+              data-test-id="common.error-page.back-btn"
               onClick={this.handleGoBack}
             >
               {t('BackToHome')}

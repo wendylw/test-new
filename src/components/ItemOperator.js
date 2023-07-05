@@ -33,7 +33,7 @@ class ItemOperator extends Component {
             disabled={decreaseDisabled}
             onClick={onDecrease}
             data-testid="itemDecrease"
-            data-heap-name="common.item-operator.decrease"
+            data-test-id="common.item-operator.decrease"
           >
             <i className="item-operator__ctrl item-operator__minus margin-smaller">
               <span className="item-operator__icon"></span>
@@ -44,7 +44,7 @@ class ItemOperator extends Component {
         <span
           className="item-operator__quantity text-center text-weight-bolder"
           data-testid="itemDetailQuantity"
-          data-heap-name="common.item-operator.quantity"
+          data-test-id="common.item-operator.quantity"
         >
           {(from === 'productDetail' ? quantity >= 0 : quantity > 0) ? quantity : null}
         </span>
@@ -55,7 +55,7 @@ class ItemOperator extends Component {
             onClick={onIncrease}
             disabled={increaseDisabled}
             data-testid="itemIncrease"
-            data-heap-name="common.item-operator.increase"
+            data-test-id="common.item-operator.increase"
           >
             <i className="item-operator__ctrl item-operator__add margin-smaller">
               <span className="item-operator__icon"></span>

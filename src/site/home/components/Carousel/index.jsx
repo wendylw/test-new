@@ -80,7 +80,7 @@ class Carousel extends Component {
           return (
             <section
               key={beepCollectionId}
-              data-heap-name="site.home.carousel.container"
+              data-test-id="site.home.carousel.container"
               data-heap-collection-name={name}
             >
               <Banner title={name} onClick={this.handleTitleBarClicked.bind(this, index, item)} />
