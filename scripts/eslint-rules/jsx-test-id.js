@@ -44,7 +44,7 @@ const rule = {
         if (ifExistAttrs.includes(node.name.name)) {
           const parent = node.parent;
           const hasShouldExist = parent.attributes.some(
-            (attr) => (attr.name && attr.name.name) === shouldExist
+            (attr) => (attr && attr.name && attr.name.name) === shouldExist
           );
 
           if (!hasShouldExist) {

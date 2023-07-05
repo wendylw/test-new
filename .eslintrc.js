@@ -387,7 +387,7 @@ module.exports = {
         'no-param-reassign': ['error', { ignorePropertyModificationsFor: ['state'] }],
         'no-unused-vars': 'warn',
         'import/no-named-as-default-member': 'warn',
-        'rulesdir/jsx-test-id': 'warn',
+        'rulesdir/jsx-test-id': ['warn', { ifExist: ['onClick', 'onChange', 'onBlur', 'onFocus']}],
         'rulesdir/no-data-heap-name': 'error'
       },
     },
@@ -397,7 +397,7 @@ module.exports = {
       rules: {
         'no-unused-expressions': 'off',
         'react/display-name': ['warn', { ignoreTranspilerName: true }],
-        'rulesdir/jsx-test-id': 'warn',
+        'rulesdir/jsx-test-id': ['warn', { ifExist: ['onClick', 'onChange', 'onBlur', 'onFocus']}],
         'rulesdir/no-data-heap-name': 'error'
       },
     },
