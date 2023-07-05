@@ -424,9 +424,10 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
 
     if (paymentProvider === PAYMENT_PROVIDERS.APPLE_PAY) {
       const country = getMerchantCountry(state);
-      const { stripeApplePayCompleteUrl } = paymentData || {};
+      const { paymentAction } = paymentData || {};
+      const { actionUrl } = paymentAction || {};
 
-      Utils.submitForm(stripeApplePayCompleteUrl, {
+      Utils.submitForm(actionUrl, {
         amount: total,
         receiptNumber: orderId,
         businessName: business,
