@@ -1,20 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import withDataAttributes from './withDataAttributes';
 import './ItemOperator.scss';
+import { extractDataAttributes } from '../common/utils';
 
 class ItemOperator extends Component {
   render() {
-    const {
-      quantity,
-      className,
-      decreaseDisabled,
-      increaseDisabled,
-      onDecrease,
-      onIncrease,
-      dataAttributes,
-      from,
-    } = this.props;
+    const { quantity, className, decreaseDisabled, increaseDisabled, onDecrease, onIncrease, from } = this.props;
     const classList = [
       `item-operator flex flex-space-between ${
         (from === 'productDetail' ? quantity >= 0 : quantity > 0) ? 'item-operator--minus' : ''
@@ -26,7 +17,7 @@ class ItemOperator extends Component {
     }
 
     return (
-      <div className={classList.join(' ')} {...dataAttributes}>
+      <div className={classList.join(' ')} {...extractDataAttributes(this.props)}>
         {onDecrease ? (
           <button
             className="item-operator__button item-operator__button-minus padding-top-bottom-small padding-left-right-smaller item-operator__button-decrease"
@@ -84,4 +75,4 @@ ItemOperator.defaultProps = {
 };
 ItemOperator.displayName = 'ItemOperator';
 export const ItemOperatorComponent = ItemOperator;
-export default withDataAttributes(ItemOperator);
+export default ItemOperator;

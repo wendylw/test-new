@@ -7,8 +7,8 @@ import Tag from './Tag';
 import Image from './Image';
 import Utils from '../utils/utils';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
-import withDataAttributes from './withDataAttributes';
 import './Header.scss';
+import { extractDataAttributes } from '../common/utils';
 
 // TODO: This Header component will be deprecated
 class Header extends Component {
@@ -59,7 +59,6 @@ class Header extends Component {
       enablePreOrder,
       enableCashback,
       defaultLoyaltyRatio,
-      dataAttributes,
       headerRef,
       isDeliveryType,
       isPickUpType,
@@ -79,7 +78,7 @@ class Header extends Component {
     }
 
     return (
-      <header ref={headerRef} style={style} className={classList.join(' ')} {...dataAttributes}>
+      <header ref={headerRef} style={style} className={classList.join(' ')} {...extractDataAttributes(this.props)}>
         <div className={contentClassList.join(' ')}>
           {this.renderLogoAndNavDom()}
           {isDeliveryHomePage ? (
@@ -166,4 +165,4 @@ Header.defaultProps = {
 };
 Header.displayName = 'Header';
 export const HeaderComponent = Header;
-export default withDataAttributes(withTranslation()(Header));
+export default withTranslation()(Header);
