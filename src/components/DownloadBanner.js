@@ -17,7 +17,6 @@ function DownloadBanner(props) {
       className="download-banner flex flex-middle flex-space-around margin-small padding-top-bottom-small padding-left-right-normal"
       href={link}
       target={desktopClients.includes(client) ? '_blank' : ''}
-      rel="noreferrer"
     >
       <span className="download-banner__text text-weight-bolder">{text}</span>
       <img
