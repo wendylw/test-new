@@ -62,7 +62,7 @@ class AddressDetail extends Component {
     const { isLoginRequestStatusPending: prevIsLoginRequestStatusPending } = prevProps;
     const { isUserLogin, isLoginRequestStatusPending } = this.props;
 
-    if (!isLoginRequestStatusPending && prevIsLoginRequestStatusPending && !isUserLogin) {
+    if (isLoginRequestStatusPending !== prevIsLoginRequestStatusPending && !isUserLogin) {
       this.gotoLoginPage();
     }
   };
