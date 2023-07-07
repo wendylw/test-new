@@ -9,6 +9,8 @@ import { connect } from 'react-redux';
 import {
   actions as appActionCreators,
   getUser,
+  getIsLoginRequestStatusPending,
+  getUserIsLogin,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
@@ -21,6 +23,7 @@ import url from '../../../../../utils/url';
 import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
 import prefetch from '../../../../../common/utils/prefetch-assets';
+import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import _trim from 'lodash/trim';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
@@ -38,12 +41,30 @@ class AddressDetail extends Component {
     hasAnyChanges: false,
   };
 
+  gotoLoginPage = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: PATH_NAME_MAPPING.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
+  };
+
   componentDidMount = async () => {
     const { init, location } = this.props;
     const { type: actionType, selectedAddress } = location.state || {};
     await init({ actionType, selectedAddress });
 
     prefetch(['ORD_AL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
+  };
+
+  componentDidUpdate = prevProps => {
+    const { isLoginRequestStatusPending: prevIsLoginRequestStatusPending } = prevProps;
+    const { isUserLogin, isLoginRequestStatusPending } = this.props;
+
+    if (!isLoginRequestStatusPending && prevIsLoginRequestStatusPending && !isUserLogin) {
+      this.gotoLoginPage();
+    }
   };
 
   handleClickBack = () => {
@@ -414,6 +435,8 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
+      isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
+      isUserLogin: getUserIsLogin(state),
       deliveryDetails: getDeliveryDetails(state),
       addressInfo: getAddressInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
