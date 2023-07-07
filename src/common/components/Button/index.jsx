@@ -16,7 +16,6 @@ const Button = props => {
     icon = null,
     loading = false,
     onClick = () => {},
-    'data-test-id': dataTestId = '',
     ...rest
   } = props;
   const onButtonClick = useCallback(
@@ -35,7 +34,6 @@ const Button = props => {
         block ? ' tw-w-full' : ''
       } ${className}`}
       style={style}
-      data-test-id={dataTestId}
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...rest}
     >
@@ -68,7 +66,6 @@ Button.propTypes = {
   // The size and placement of buttons can change as parent containers, such as cards, adapt for larger screens.
   block: propTypes.bool,
   onClick: propTypes.func,
-  'data-test-id': propTypes.string,
 };
 
 Button.defaultProps = {
@@ -82,7 +79,6 @@ Button.defaultProps = {
   size: 'normal',
   theme: 'default',
   block: false,
-  'data-test-id': '',
   onClick: () => {},
 };
 
