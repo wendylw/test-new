@@ -804,9 +804,6 @@ export class ThankYou extends PureComponent {
 
     const rightContentOfTableId = {
       text: tableId ? t('TableIdText', { tableId }) : '',
-      style: {
-        color: '#8d90a1',
-      },
       attributes: {
         'data-testid': 'thanks__self-pickup',
       },
