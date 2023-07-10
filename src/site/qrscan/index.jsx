@@ -222,13 +222,13 @@ class QRScan extends Component {
     const showMessage = !/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
 
     return (
-      <main id="contentHolder" className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.scan.container">
+      <main id="contentHolder" className="fixed-wrapper fixed-wrapper__main" data-test-id="site.scan.container">
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
             <IconLeftArrow
               className="icon icon__big icon__default text-middle"
               onClick={this.handleBackClicked}
-              data-heap-name="site.scan.back-btn"
+              data-test-id="site.scan.back-btn"
             />
             <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">
               {t('ScanQRCode')}

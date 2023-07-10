@@ -19,7 +19,7 @@ const Header = ({ onLocationBarClick, onQRScannerClick }) => {
   const isTnGMiniProgram = useSelector(getIsTNGMiniProgram);
 
   return (
-    <section className={styles.HeaderContainer} data-heap-name="site.home.delivery-bar">
+    <section className={styles.HeaderContainer} data-test-id="site.home.delivery-bar">
       <div
         className="tw-flex-grow tw-flex tw-justify-start tw-items-center tw-overflow-hidden sm:tw-px-4px tw-px-4 tw-cursor-pointer"
         role="button"
@@ -36,7 +36,7 @@ const Header = ({ onLocationBarClick, onQRScannerClick }) => {
         {!isTnGMiniProgram && (
           <Link
             to={ROUTER_PATHS.QRSCAN}
-            data-heap-name="site.home.qr-scan-icon"
+            data-test-id="site.home.qr-scan-icon"
             className="tw-flex tw-items-center sm:tw-p-8px tw-p-8"
             onClick={onQRScannerClick}
           >

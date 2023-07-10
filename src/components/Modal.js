@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import withDataAttributes from './withDataAttributes';
 import './Modal.scss';
+import { extractDataAttributes } from '../common/utils';
 
 class Modal extends Component {
   state = {
@@ -45,7 +45,7 @@ class Modal extends Component {
   };
 
   render() {
-    const { children, className = '', dataAttributes } = this.props;
+    const { children, className = '' } = this.props;
     const { show } = this.state;
 
     if (!show) {
@@ -56,7 +56,7 @@ class Modal extends Component {
       <section
         className={`modal absolute-wrapper flex flex-column flex-middle flex-center ${className}`}
         onClick={this.handleClick.bind(this)}
-        {...dataAttributes}
+        {...extractDataAttributes(this.props)}
       >
         <div className="modal__content border-radius-large">{children}</div>
       </section>
@@ -90,4 +90,4 @@ Modal.defaultProps = {
   onHide: () => {},
 };
 
-export default withDataAttributes(Modal);
+export default Modal;

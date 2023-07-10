@@ -340,13 +340,13 @@ class Payment extends Component {
     const { payNowLoading, cartContainerHeight } = this.state;
 
     return (
-      <section className="ordering-payment flex flex-column" data-heap-name="ordering.payment.container">
+      <section className="ordering-payment flex flex-column" data-test-id="ordering.payment.container">
         <HybridHeader
           // eslint-disable-next-line no-return-assign
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
-          data-heap-name="ordering.payment.header"
+          data-test-id="ordering.payment.header"
           isPage
           title={t('SelectPayment')}
           navFunc={() => {
@@ -377,7 +377,7 @@ class Payment extends Component {
             history={history}
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-testid="payNow"
-            data-heap-name="ordering.payment.pay-btn"
+            data-test-id="ordering.payment.pay-btn"
             orderId={receiptNumber}
             total={total}
             disabled={payNowLoading || areAllOptionsUnavailable}

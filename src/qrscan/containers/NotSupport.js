@@ -5,7 +5,7 @@ import '../styles.scss';
 class NotSupport extends Component {
   render() {
     return (
-      <div data-heap-name="qrscan.not-support.container">
+      <div data-test-id="qrscan.not-support.container">
         <Sorry />
       </div>
     );

@@ -80,11 +80,11 @@ class Contact extends Component {
     const storeName = onlineStoreName || businessDisplayName;
 
     return (
-      <section className="voucher-contact flex flex-column" data-heap-name="voucher.contact.container">
+      <section className="voucher-contact flex flex-column" data-test-id="voucher.contact.container">
         <Header
           className="flex-middle"
           contentClassName="flex-middle"
-          data-heap-name="voucher.contact.header"
+          data-test-id="voucher.contact.header"
           isPage={true}
           navFunc={this.handleClickBack}
         />
@@ -105,7 +105,7 @@ class Contact extends Component {
             <div className="voucher-contact__group form__group margin-top-bottom-normal">
               <input
                 className={`voucher-contact__input form__input padding-left-right-normal text-size-biggest ${invalidEmailClass}`}
-                data-heap-name="voucher.contact.email-input"
+                data-test-id="voucher.contact.email-input"
                 onChange={this.handleEmailChange}
                 value={contactEmail}
               />
@@ -119,7 +119,7 @@ class Contact extends Component {
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             onClick={this.handleContinue}
             disabled={!contactEmail}
-            data-heap-name="voucher.contact.continue-btn"
+            data-test-id="voucher.contact.continue-btn"
           >
             {t('Continue')}
           </button>

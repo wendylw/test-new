@@ -55,7 +55,7 @@ class ContactDetail extends Component {
                 <div className="contact-details__group form__group">
                   <input
                     className="contact-details__input form__input padding-left-right-normal text-size-biggest"
-                    data-heap-name="ordering.contact-details.name-input"
+                    data-test-id="ordering.contact-details.name-input"
                     type="text"
                     placeholder={t('Name')}
                     value={username || ''}
@@ -70,7 +70,7 @@ class ContactDetail extends Component {
                 <PhoneInput
                   international // If input want to show country code when phone number is empty, pls add international on props
                   smartCaret={false}
-                  data-heap-name="ordering.contact-details.phone-input"
+                  data-test-id="ordering.contact-details.phone-input"
                   placeholder={t('EnterPhoneNumber')}
                   value={formatPhoneNumberIntl(phone)}
                   country={country}
@@ -91,14 +91,14 @@ class ContactDetail extends Component {
           <button
             className="contact-details__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
             onClick={this.handleClickBack.bind(this)}
-            data-heap-name="ordering.contact-detail.back-btn"
+            data-test-id="ordering.contact-detail.back-btn"
           >
             {t('Back')}
           </button>
           <button
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
-            data-heap-name="ordering.contact-detail.pay-btn"
+            data-test-id="ordering.contact-detail.pay-btn"
             disabled={!username || !username.length || !isValidPhoneNumber(phone || '')}
             onClick={this.handleClickContinue}
           >
