@@ -341,7 +341,7 @@ export const actions = {
         return;
       }
 
-      console.log(test, 'test');
+      console.log('test');
 
       await dispatch(actions.loginByBeepApp());
     } catch (e) {
