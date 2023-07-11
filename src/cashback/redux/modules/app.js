@@ -293,7 +293,7 @@ export const actions = {
   },
 
   loginByBeepApp: () => async (dispatch, getState) => {
-    console.log(test, 'test');
+    console.log('test2');
     try {
       const tokens = await NativeMethods.getTokenAsync();
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
@@ -335,13 +335,9 @@ export const actions = {
     try {
       const isUserLogin = getIsUserLogin(getState());
 
-      console.log(isUserLogin, 'isUserLogin');
-
       if (isUserLogin) {
         return;
       }
-
-      console.log('test');
 
       await dispatch(actions.loginByBeepApp());
     } catch (e) {
