@@ -44,7 +44,7 @@ class App extends Component {
       const { isUserLogin, userConsumerId } = this.props;
 
       if (userConsumerId) {
-        appActions.loadConsumerCustomerInfo();
+        await appActions.loadConsumerCustomerInfo();
       }
 
       if (isWebview()) {
