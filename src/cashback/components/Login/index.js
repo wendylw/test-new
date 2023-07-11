@@ -1,13 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import beepLoginDisabled from '../../../images/beep-login-disabled.png';
-import beepLoginActive from '../../../images/beep-login-active.svg';
-import WebHeader from '../../../components/WebHeader';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
-import { ObjectFitImage } from '../../../common/components/Image';
 import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -194,12 +190,6 @@ class Login extends React.Component {
     }
   }
 
-  handleHideLoginPage = async () => {
-    const { appActions } = this.props;
-
-    await appActions.hideLoginModal();
-  };
-
   renderOtpModal() {
     const { user, shouldShowLoader, isOtpRequestPending, isLoginRequestFailed } = this.props;
     const { sendOtp, shouldShowModal } = this.state;
@@ -241,7 +231,7 @@ class Login extends React.Component {
   }
 
   render() {
-    const { user, className, t, errorTextI18nKey, isOtpRequestPending, isOtpErrorFieldVisible } = this.props;
+    const { user, title, className, t, errorTextI18nKey, isOtpRequestPending, isOtpErrorFieldVisible } = this.props;
     const { isLogin, phone, country } = user || {};
     const classList = ['login'];
 
@@ -255,26 +245,9 @@ class Login extends React.Component {
 
     return (
       <section className={classList.join(' ')} data-heap-name="cashback.login.container">
-        <WebHeader
-          className="login__header"
-          isPage={false}
-          title="Login or Create Account"
-          navFunc={() => {
-            this.handleHideLoginPage();
-
-            return;
-          }}
-        />
-        <div className="login__image-container padding-normal margin-top-bottom-small">
-          <ObjectFitImage
-            noCompression
-            src={isOtpErrorFieldVisible ? beepLoginActive : beepLoginDisabled}
-            alt="StoreHub - Beep login image"
-          />
-        </div>
         <PhoneViewContainer
-          className="login__container padding-normal margin-normal"
-          content={t('LoginTip')}
+          className="absolute-wrapper login__container padding-left-right-normal"
+          title={title}
           phone={phone}
           country={country}
           buttonText={isOtpRequestPending ? t('Processing') : t('Continue')}
@@ -303,6 +276,7 @@ class Login extends React.Component {
 
 Login.propTypes = {
   className: PropTypes.string,
+  title: PropTypes.string,
 };
 
 Login.defaultProps = {};
