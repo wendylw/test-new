@@ -131,6 +131,8 @@ export const actions = {
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
       });
 
+      console.log('loginApp result', result);
+
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
         payload: result,
@@ -292,6 +294,9 @@ export const actions = {
       const tokens = await NativeMethods.getTokenAsync();
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
+      console.log(accessToken, 'accessToken');
+      console.log(refreshToken, 'refreshToken');
+
       if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
 
       const source = REGISTRATION_SOURCE.BEEP_APP;
@@ -300,9 +305,14 @@ export const actions = {
 
       const isTokenExpired = getIsUserExpired(getState());
 
+      console.log(isTokenExpired, 'isTokenExpired');
+
       if (isTokenExpired) {
         const tokens = await NativeMethods.tokenExpiredAsync();
         const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+        console.log(accessToken, 'access_token');
+        console.log(refreshToken, 'refresh_token');
 
         await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
       }
@@ -320,6 +330,9 @@ export const actions = {
   syncLoginFromBeepApp: () => async (dispatch, getState) => {
     try {
       const isUserLogin = getIsUserLogin(getState());
+
+      console.log(isUserLogin, 'isUserLogin');
+
       if (isUserLogin) {
         return;
       }
