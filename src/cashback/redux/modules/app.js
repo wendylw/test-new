@@ -340,6 +340,8 @@ export const actions = {
         return;
       }
 
+      console.log(test, 'test');
+
       await dispatch(actions.loginByBeepApp());
     } catch (e) {
       logger.error('Cashback_syncLoginFromBeepAppFailed', { message: e?.message, code: e?.code });
