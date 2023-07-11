@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import {
   actions as appActionCreators,
   getUser,
-  getIsLoginRequestStatusPending,
+  getLoadIsLoginStatusPending,
   getUserIsLogin,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
@@ -59,12 +59,15 @@ class AddressDetail extends Component {
   };
 
   componentDidUpdate = prevProps => {
-    const { isLoginRequestStatusPending: prevIsLoginRequestStatusPending } = prevProps;
-    const { isUserLogin, isLoginRequestStatusPending } = this.props;
+    const { loadIsLoginStatusPending: prevLoadIsLoginStatusPending } = prevProps;
+    const { isUserLogin, loadIsLoginStatusPending } = this.props;
 
-    if (isLoginRequestStatusPending !== prevIsLoginRequestStatusPending && !isUserLogin) {
-      this.gotoLoginPage();
-    }
+    console.log('loadIsLoginStatusPending', loadIsLoginStatusPending);
+    console.log('prevLoadIsLoginStatusPending', prevLoadIsLoginStatusPending);
+
+    // if (!loadIsLoginStatusPending && loadIsLoginStatusPending !== prevLoadIsLoginStatusPending && !isUserLogin) {
+    //   this.gotoLoginPage();
+    // }
   };
 
   handleClickBack = () => {
@@ -435,7 +438,7 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
-      isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
+      loadIsLoginStatusPending: getLoadIsLoginStatusPending(state),
       isUserLogin: getUserIsLogin(state),
       deliveryDetails: getDeliveryDetails(state),
       addressInfo: getAddressInfo(state),

@@ -118,6 +118,7 @@ export const initialState = {
     noWhatsAppAccount: true,
     loginRequestStatus: null,
     loginByBeepAppStatus: null,
+    loadIsLoginStatus: null,
     profile: {
       id: '',
       phone: '',
@@ -430,6 +431,8 @@ export const actions = {
       types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
       requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(async resp => {
         const { consumerId, login } = resp || {};
+
+        console.log(111);
 
         if (!login) {
           return resp;
@@ -869,7 +872,7 @@ const user = (state = initialState.user, action) => {
     case types.RESET_CREATE_OTP_REQUEST:
       return { ...state, isFetching: false, isError: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
-      return { ...state, isFetching: true };
+      return { ...state, isFetching: true, loadIsLoginStatus: API_REQUEST_STATUS.PENDING };
     case types.CREATE_OTP_REQUEST:
       return { ...state, isFetching: true, isError: false };
     case types.CREATE_LOGIN_REQUEST:
@@ -880,7 +883,7 @@ const user = (state = initialState.user, action) => {
         loginByBeepAppStatus: isFromBeepApp ? API_REQUEST_STATUS.PENDING : null,
       };
     case types.FETCH_LOGIN_STATUS_FAILURE:
-      return { ...state, isFetching: false };
+      return { ...state, isFetching: false, loadIsLoginStatus: API_REQUEST_STATUS.REJECTED };
     case types.GET_OTP_FAILURE:
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
     case types.CREATE_OTP_FAILURE:
@@ -947,6 +950,7 @@ const user = (state = initialState.user, action) => {
         consumerId,
         isFetching: false,
         isExpired: false,
+        loadIsLoginStatus: API_REQUEST_STATUS.FULFILLED,
       };
     case types.CREATE_LOGIN_FAILURE:
       CleverTap.pushEvent('Login - login failed');
@@ -1339,6 +1343,13 @@ export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
 
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+
+export const getLoadIsLoginStatus = createSelector(getUser, user => _get(user, 'loadIsLoginStatus', null));
+
+export const getLoadIsLoginStatusPending = createSelector(
+  getLoadIsLoginStatus,
+  loadIsLoginStatus => loadIsLoginStatus === API_REQUEST_STATUS.PENDING
+);
 
 export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
 
