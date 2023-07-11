@@ -121,6 +121,8 @@ export const actions = {
     try {
       const businessUTCOffset = getBusinessUTCOffset(getState());
 
+      console.log('businessUTCOffset', businessUTCOffset);
+
       dispatch({
         type: types.CREATE_LOGIN_REQUEST,
       });
@@ -138,6 +140,7 @@ export const actions = {
         payload: result,
       });
     } catch (error) {
+      console.log('loginApp error', error);
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
         error: error,
