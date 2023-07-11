@@ -293,6 +293,7 @@ export const actions = {
   },
 
   loginByBeepApp: () => async (dispatch, getState) => {
+    console.log(test, 'test');
     try {
       const tokens = await NativeMethods.getTokenAsync();
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
