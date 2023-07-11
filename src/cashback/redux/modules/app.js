@@ -121,8 +121,6 @@ export const actions = {
     try {
       const businessUTCOffset = getBusinessUTCOffset(getState());
 
-      console.log('businessUTCOffset', businessUTCOffset);
-
       dispatch({
         type: types.CREATE_LOGIN_REQUEST,
       });
@@ -133,14 +131,11 @@ export const actions = {
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
       });
 
-      console.log('loginApp result', result);
-
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
         payload: result,
       });
     } catch (error) {
-      console.log('loginApp error', error);
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
         error: error,
@@ -296,8 +291,6 @@ export const actions = {
     try {
       const tokens = await NativeMethods.getTokenAsync();
 
-      console.log(tokens, 'tokens');
-
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
       if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
@@ -308,14 +301,9 @@ export const actions = {
 
       const isTokenExpired = getIsUserExpired(getState());
 
-      console.log(isTokenExpired, 'isTokenExpired');
-
       if (isTokenExpired) {
         const tokens = await NativeMethods.tokenExpiredAsync();
         const { access_token: accessToken, refresh_token: refreshToken } = tokens;
-
-        console.log(accessToken, 'access_token');
-        console.log(refreshToken, 'refresh_token');
 
         await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
       }
