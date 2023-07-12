@@ -32,7 +32,7 @@ class Campaign extends Component {
       <React.Fragment>
         <section
           className="offer-details__bar"
-          data-heap-name="site.home.campaign-bar"
+          data-test-id="site.home.campaign-bar"
           onClick={this.handleToggleOfferDetails}
         >
           <p className="flex flex-middle flex-center">
@@ -46,7 +46,7 @@ class Campaign extends Component {
               <div>
                 <IconClose
                   className="icon icon__big icon__default text-middle"
-                  data-heap-name="site.campaign.close-btn"
+                  data-test-id="site.campaign.close-btn"
                   onClick={this.handleToggleOfferDetails}
                 />
                 <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">

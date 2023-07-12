@@ -351,3 +351,13 @@ export const getCountry = (phone, language, countries, defaultCountry) => {
 
   return undefined;
 };
+
+export const extractDataAttributes = (props = {}) => {
+  const dataAttributes = {};
+  Object.keys(props).forEach(key => {
+    if (key.startsWith('data-')) {
+      dataAttributes[key] = props[key];
+    }
+  });
+  return dataAttributes;
+};

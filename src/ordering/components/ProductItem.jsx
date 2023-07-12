@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import withDataAttributes from '../../components/withDataAttributes';
 import Image from '../../components/Image';
 import './ProductItem.scss';
+import { extractDataAttributes } from '../../common/utils';
 
 class ProductItem extends Component {
   renderImageEl() {
@@ -45,11 +45,11 @@ class ProductItem extends Component {
   }
 
   render() {
-    const { children, className, dataAttributes, handleClickItem } = this.props;
+    const { children, className, handleClickItem } = this.props;
     const classList = ['product-item flex flex-top', ...(className ? [className] : [])];
 
     return (
-      <div className={classList.join(' ')} {...dataAttributes} onClick={() => handleClickItem()}>
+      <div className={classList.join(' ')} {...extractDataAttributes(this.props)} onClick={() => handleClickItem()}>
         {this.renderImageEl()}
         {this.renderContent()}
         {children}
@@ -81,4 +81,4 @@ ProductItem.defaultProps = {
 };
 
 export const ItemStoryComponent = ProductItem;
-export default withDataAttributes(withTranslation()(ProductItem));
+export default withTranslation()(ProductItem);

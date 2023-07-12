@@ -74,7 +74,7 @@ class Sorry extends Component {
   }
 
   render() {
-    return <div className="loader theme full-page" data-heap-name="ordering.sorry.container"></div>;
+    return <div className="loader theme full-page" data-test-id="ordering.sorry.container"></div>;
   }
 }
 Sorry.displayName = 'OrderingSorry';

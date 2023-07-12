@@ -176,7 +176,7 @@ class PageClaim extends React.Component {
     return (
       <>
         {isWebview() && <NativeHeader />}
-        <section className="loyalty-claim__container flex flex-column" data-heap-name="cashback.claim.container">
+        <section className="loyalty-claim__container flex flex-column" data-test-id="cashback.claim.container">
           <article className="text-center margin-top-bottom-normal">
             {logo ? (
               <Image

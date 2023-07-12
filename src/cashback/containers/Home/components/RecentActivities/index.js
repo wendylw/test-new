@@ -125,7 +125,7 @@ class RecentActivities extends React.Component {
       <>
         {isPage && !isWebview() ? (
           <HybridHeader
-            data-heap-name="cashback.home.recent-activities.header"
+            data-test-id="cashback.home.recent-activities.header"
             className="flex-middle text-center"
             contentClassName="flex-middle"
             isPage
@@ -136,7 +136,7 @@ class RecentActivities extends React.Component {
           />
         ) : null}
 
-        <section className="recent-activities" data-heap-name="cashback.home.recent-activities.container">
+        <section className="recent-activities" data-test-id="cashback.home.recent-activities.container">
           <article className="flex__shrink-fixed">{this.renderLogList()}</article>
         </section>
       </>
