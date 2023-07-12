@@ -40,7 +40,7 @@ import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import logger from '../../../utils/monitoring/logger';
-import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt, isProductSoldOut } from '../../../common/utils';
+import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt } from '../../../common/utils';
 import { replace } from 'connected-react-router';
 import { toast } from '../../../common/utils/feedback';
 import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
@@ -1701,7 +1701,7 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
 
     products.forEach(function(product) {
       product.variations = product.variations || [];
-      product.soldOut = isProductSoldOut(product || {});
+      product.soldOut = Utils.isProductSoldOut(product || {});
       product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
       product.cartQuantity = 0;
 

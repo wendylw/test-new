@@ -1,7 +1,7 @@
 import qs from 'qs';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
-import { WEB_VIEW_SOURCE, SHIPPING_TYPES, PATH_NAME_MAPPING, CLIENTS, PRODUCT_STOCK_STATUS } from './constants';
+import { WEB_VIEW_SOURCE, SHIPPING_TYPES, PATH_NAME_MAPPING, CLIENTS } from './constants';
 // eslint-disable-next-line import/no-cycle
 import config from '../../config';
 
@@ -95,32 +95,6 @@ export const getClient = () => {
   }
 
   return CLIENTS.WEB;
-};
-
-export const isProductSoldOut = product => {
-  const { stockStatus, variations } = product;
-
-  if (stockStatus === PRODUCT_STOCK_STATUS.OUT_OF_STOCK) {
-    return true;
-  }
-
-  if (Array.isArray(variations) && variations.length > 0) {
-    let soldOut = false;
-
-    const firstVariation = variations[0];
-
-    if (firstVariation && firstVariation.variationType === 'SingleChoice') {
-      const soldOutOptions = firstVariation.optionValues.filter(optionValue => optionValue.markedSoldOut);
-
-      if (soldOutOptions.length === firstVariation.optionValues.length) {
-        soldOut = true;
-      }
-    }
-
-    return soldOut;
-  }
-
-  return false;
 };
 
 export const getExpectedDeliveryDateFromSession = () => {

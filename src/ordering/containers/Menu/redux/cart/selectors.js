@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 import _isNil from 'lodash/isNil';
-import { SHIPPING_TYPES, PRODUCT_STOCK_STATUS } from '../../../../../common/utils/constants';
+import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
 import {
   getTableId,
   getFormatCurrencyFunction,
@@ -192,14 +192,11 @@ export const getCartItems = createSelector(
     const sortedCartItems = originalCartItems.sort(sortFn);
 
     return sortedCartItems.map(cartItem => {
-      const { quantity, quantityOnHand, stockStatus } = cartItem;
-      const isItemUntracked = stockStatus === PRODUCT_STOCK_STATUS.NOT_TRACK_INVENTORY;
-      const isItemOutOfStock = [PRODUCT_STOCK_STATUS.OUT_OF_STOCK, PRODUCT_STOCK_STATUS.UNAVAILABLE].includes(
-        stockStatus
-      );
-      const isItemLowStock = stockStatus === PRODUCT_STOCK_STATUS.LOW_STOCK;
-      const isAbleToIncreaseQuantity = isItemUntracked || quantity < quantityOnHand;
-      const isAbleToDecreaseQuantity = quantity > 0;
+      const inventory = cartItem.inventory || cartItem.quantityOnHand;
+      const inventoryStatus = cartItem.inventoryStatus || cartItem.stockStatus;
+      const isAbleToIncreaseQuantity =
+        !(inventoryStatus !== 'notTrackInventory' && inventory && cartItem.quantity > inventory) &&
+        !(inventory && cartItem.quantity === inventory);
 
       const displayPrice = cartItem.price || cartItem.displayPrice;
       const originalDisplayPrice = cartItem.originalPrice || cartItem.originalDisplayPrice;
@@ -218,11 +215,11 @@ export const getCartItems = createSelector(
         formattedDisplayPrice,
         formattedOriginalDisplayPrice,
         quantity: cartItem.quantity,
-        inventory: quantityOnHand,
-        isOutOfStock: isItemOutOfStock,
-        isLowStock: isItemLowStock,
+        inventory,
+        isOutOfStock: inventoryStatus === 'outOfStock' || inventoryStatus === 'unavailable',
+        isLowStock: inventoryStatus === 'lowStock',
         isAbleToIncreaseQuantity,
-        isAbleToDecreaseQuantity,
+        isAbleToDecreaseQuantity: cartItem.quantity > 0,
         comments: cartItem.comments,
       };
     });

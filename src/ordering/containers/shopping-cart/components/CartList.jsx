@@ -5,7 +5,6 @@ import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators } from '../../../redux/modules/app';
 import { GTM_TRACKING_EVENTS, gtmEventTracking, STOCK_STATUS_MAPPING } from '../../../../utils/gtm';
-import { PRODUCT_STOCK_STATUS } from '../../../../common/utils/constants';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import { IconDelete } from '../../../../components/Icons';
 import ProductItem from '../../../components/ProductItem';
@@ -29,7 +28,7 @@ class CartList extends Component {
   };
 
   getOutStockStatus(stockStatus) {
-    return [PRODUCT_STOCK_STATUS.OUT_OF_STOCK, PRODUCT_STOCK_STATUS.UNAVAILABLE].includes(stockStatus);
+    return ['outOfStock', 'unavailable'].includes(stockStatus);
   }
 
   renderImageCover(stockStatus) {
@@ -76,12 +75,12 @@ class CartList extends Component {
   renderProductItemRightController(cartItem) {
     const { t, onIncreaseCartItem, onDecreaseCartItem, onRemoveCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
-    const isItemUntracked = stockStatus === PRODUCT_STOCK_STATUS.NOT_TRACK_INVENTORY;
-    const isItemLowStock = stockStatus === PRODUCT_STOCK_STATUS.LOW_STOCK;
-    const isAbleToIncreaseQuantity = isItemUntracked || quantity < quantityOnHand;
-    const isItemQuantityExceedStockOnHand = !isItemUntracked && quantity > quantityOnHand;
-    const isAbleToDecreaseQuantity = quantity > 0;
-    const classList = ['text-center', ...(isItemQuantityExceedStockOnHand ? ['text-error'] : [])];
+    const inventoryShortage = Boolean(
+      stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand
+    );
+    const quantityEqualStock = !!quantityOnHand && quantity === quantityOnHand;
+    const disabledIncreaseQuantity = inventoryShortage || quantityEqualStock;
+    const classList = ['text-center', ...(inventoryShortage ? ['text-error'] : [])];
 
     if (this.getOutStockStatus(stockStatus)) {
       return (
@@ -103,12 +102,12 @@ class CartList extends Component {
           className="flex-middle"
           data-test-id="ordering.home.mini-cart.item-operator"
           quantity={quantity}
-          decreaseDisabled={!isAbleToDecreaseQuantity}
-          increaseDisabled={!isAbleToIncreaseQuantity}
+          decreaseDisabled={!quantity}
+          increaseDisabled={disabledIncreaseQuantity}
           onDecrease={() => onDecreaseCartItem(cartItem)}
           onIncrease={() => onIncreaseCartItem(cartItem)}
         />
-        {isItemLowStock || !isAbleToIncreaseQuantity ? (
+        {stockStatus === 'lowStock' || disabledIncreaseQuantity ? (
           <span className="text-size-small text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand })}</span>
         ) : null}
       </div>

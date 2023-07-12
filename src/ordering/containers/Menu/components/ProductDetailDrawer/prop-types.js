@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { PRODUCT_STOCK_STATUS } from '../../../../../common/utils/constants';
 
 export const VariationOptionShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
@@ -38,11 +37,7 @@ export const ProductShape = PropTypes.shape({
   formattedOriginalDisplayPrice: PropTypes.string.isRequired,
   quantity: PropTypes.number.isRequired,
   formattedTotalPrice: PropTypes.string.isRequired,
-  stockStatus: PropTypes.oneOf([
-    PRODUCT_STOCK_STATUS.IN_STOCK,
-    PRODUCT_STOCK_STATUS.LOW_STOCK,
-    PRODUCT_STOCK_STATUS.OUT_OF_STOCK,
-  ]).isRequired,
+  stockStatus: PropTypes.oneOf(['inStock', 'lowStock', 'outOfStock']).isRequired,
   quantityOnHand: PropTypes.number.isRequired,
   isBestSeller: PropTypes.bool.isRequired,
   isAbleToDecreaseQuantity: PropTypes.bool.isRequired,
