@@ -204,13 +204,13 @@ function CheckoutForm({
   return (
     <section
       className={`payment-credit-card flex flex-column ${match.isExact ? '' : 'hide'}`}
-      data-test-id="ordering.payment.stripe.container"
+      data-heap-name="ordering.payment.stripe.container"
     >
       <HybridHeader
         headerRef={headerRef}
         className="flex-middle"
         contentClassName="flex-middle"
-        data-test-id="ordering.payment.stripe.header"
+        data-heap-name="ordering.payment.stripe.header"
         isPage={true}
         title={title}
         navFunc={() => {
@@ -250,7 +250,7 @@ function CheckoutForm({
               className={`payment-credit-card__group-card-number padding-left-right-normal form__group ${
                 cardNumberHasError ? 'error' : ''
               }`}
-              data-test-id="ordering.payment.stripe.card-number-wrapper"
+              data-heap-name="ordering.payment.stripe.card-number-wrapper"
             >
               <CardNumberElement
                 options={{
@@ -295,7 +295,7 @@ function CheckoutForm({
             <div className="flex flex-middle">
               <div
                 className="payment-credit-card__group-left-bottom form__group padding-left-right-normal"
-                data-test-id="ordering.payment.stripe.valid-date-wrapper"
+                data-heap-name="ordering.payment.stripe.valid-date-wrapper"
                 style={{
                   width: '50%',
                   borderColor: cardExpiryHasError ? '#fa4133' : '#dededf',
@@ -347,7 +347,7 @@ function CheckoutForm({
                   borderWidth: cardCvcHasError ? '1px' : '1px 1px 1px 0',
                   borderColor: cardCvcHasError ? '#fa4133' : '#dededf',
                 }}
-                data-test-id="ordering.payment.stripe.cvc-wrapper"
+                data-heap-name="ordering.payment.stripe.cvc-wrapper"
               >
                 <CardCvcElement
                   options={{
@@ -414,7 +414,7 @@ function CheckoutForm({
             type="text"
             required
             autoComplete="name"
-            data-test-id="ordering.payment.stripe.holder-name"
+            data-heap-name="ordering.payment.stripe.holder-name"
             value={cardHolderName.value}
             showRequiredLabel={showCardHolderNameRequiredLabel}
             error={cardHolderName.error}
@@ -462,7 +462,7 @@ function CheckoutForm({
           buttonType="submit"
           total={total}
           orderId={receiptNumber}
-          data-test-id="ordering.payment.stripe.pay-btn"
+          data-heap-name="ordering.payment.stripe.pay-btn"
           disabled={createButtonDisabled}
           beforeCreateOrder={handleBeforeCreateOrder}
           validCreateOrder={!!paymentMethod}

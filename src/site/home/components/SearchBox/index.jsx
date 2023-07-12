@@ -12,7 +12,7 @@ const SearchBox = ({ onClick }) => {
       <button
         className={styles.SearchBoxContainer}
         data-testid="searchStore"
-        data-test-id="site.home.search-box"
+        data-heap-name="site.home.search-box"
         onClick={onClick}
       >
         <MagnifyingGlass className={styles.SearchBoxIcon} weight="light" />

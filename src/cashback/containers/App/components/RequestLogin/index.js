@@ -26,7 +26,7 @@ function RequestLogin(props) {
           <button
             onClick={onClick}
             className="login-button login-button__fill text-uppercase"
-            data-test-id="cashback.common.request-login.btn"
+            data-heap-name="cashback.common.request-login.btn"
           >
             {t('Login')}
           </button>

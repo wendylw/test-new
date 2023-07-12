@@ -176,7 +176,7 @@ class OrderHistory extends React.Component {
                   <li
                     key={order.receiptNumber}
                     className="margin-normal"
-                    data-test-id="site.order-history.order"
+                    data-heap-name="site.order-history.order"
                     onClick={() => this.handleOrderItemClick(order)}
                   >
                     <OrderItem order={order} />

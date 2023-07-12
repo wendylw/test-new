@@ -241,7 +241,7 @@ class App extends Component {
       <main
         id="ordering-app-container"
         className="table-ordering fixed-wrapper fixed-wrapper__main"
-        data-test-id="ordering.app.container"
+        data-heap-name="ordering.app.container"
       >
         {apiErrorMessage.show ? (
           <MessageModal

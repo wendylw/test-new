@@ -39,7 +39,7 @@ const Profile = ({ show, onClose }) => {
   }
 
   return (
-    <aside className={className.join(' ')} data-test-id="ordering.profile.container">
+    <aside className={className.join(' ')} data-heap-name="ordering.profile.container">
       <div className="profile__container flex flex-column flex-space-between aside__content">
         <section>
           <div className="text-right">

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import withDataAttributes from './withDataAttributes';
 import './DeliverToBar.scss';
-import { extractDataAttributes } from '../common/utils';
 
 /**
  * `<DeliverToBar />` is used on the homepage of beepit.com and ordering.
@@ -21,6 +21,7 @@ class DeliverToBar extends Component {
       gotoLocationPage,
       backLeftPosition,
       deliverToBarRef,
+      dataAttributes,
       children,
     } = this.props;
     const classList = ['deliver-to-entry flex flex-space-between sticky-wrapper'];
@@ -34,7 +35,7 @@ class DeliverToBar extends Component {
         {showBackButton ? backIcon : null}
         <div
           className="deliver-to-entry__content"
-          {...extractDataAttributes(this.props)}
+          {...dataAttributes}
           data-testid="DeliverToBar"
           onClick={() => {
             if (backLeftPosition) {
@@ -97,4 +98,4 @@ DeliverToBar.defaultProps = {
   gotoLocationPage: () => {},
 };
 
-export default DeliverToBar;
+export default withDataAttributes(DeliverToBar);

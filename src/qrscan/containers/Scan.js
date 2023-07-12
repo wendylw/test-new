@@ -5,7 +5,7 @@ import '../styles.scss';
 class Scan extends Component {
   render() {
     return (
-      <div data-test-id="qrscan.scan.container">
+      <div data-heap-name="qrscan.scan.container">
         <Scanner />
       </div>
     );

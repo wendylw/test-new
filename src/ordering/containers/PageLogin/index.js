@@ -403,11 +403,11 @@ class PageLogin extends React.Component {
 
     return (
       <React.Fragment>
-        <section className={classList.join(' ')} data-test-id="ordering.login.container">
+        <section className={classList.join(' ')} data-heap-name="ordering.login.container">
           <HybridHeader
             className="flex-middle"
             contentClassName="flex-middle"
-            data-test-id="ordering.login.header"
+            data-heap-name="ordering.login.header"
             title="Login or Create Account"
             isPage={true}
             navFunc={this.goBack}

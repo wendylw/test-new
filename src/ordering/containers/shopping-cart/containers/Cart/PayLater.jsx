@@ -339,14 +339,14 @@ class PayLater extends Component {
           placeholder={t('OrderNotesPlaceholder')}
           maxLength="140"
           value={additionalComments || ''}
-          data-test-id="ordering.cart.additional-msg"
+          data-heap-name="ordering.cart.additional-msg"
           onChange={this.handleChangeAdditionalComments}
           onFocus={this.AdditionalCommentsFocus}
         />
         {additionalComments ? (
           <IconClose
             className="icon icon__big icon__default flex__shrink-fixed"
-            data-test-id="ordering.cart.clear-additional-msg"
+            data-heap-name="ordering.cart.clear-additional-msg"
             onClick={this.handleClearAdditionalComments}
           />
         ) : null}
@@ -374,14 +374,14 @@ class PayLater extends Component {
     );
 
     return (
-      <section className="ordering-cart flex flex-column" data-test-id="ordering.cart.container">
+      <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
         <HybridHeader
           headerRef={ref => {
             this.headerEl = ref;
           }}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
-          data-test-id="ordering.cart.header"
+          data-heap-name="ordering.cart.header"
           isPage
           title={t('ProductsInOrderText', { count })}
           navFunc={() => {
@@ -397,7 +397,7 @@ class PayLater extends Component {
                     color: '#fa4133',
                   },
                   attributes: {
-                    'data-test-id': 'ordering.cart.clear-btn',
+                    'data-heap-name': 'ordering.cart.clear-btn',
                   },
                   onClick: this.handleClearAll,
                 }
@@ -429,14 +429,14 @@ class PayLater extends Component {
             onClick={() => {
               this.handleClickBack();
             }}
-            data-test-id="ordering.cart.back-btn"
+            data-heap-name="ordering.cart.back-btn"
           >
             {t('Back')}
           </button>
           <button
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
-            data-test-id="ordering.cart.pay-btn"
+            data-heap-name="ordering.cart.pay-btn"
             onClick={async () => {
               await this.handleClickContinue();
             }}

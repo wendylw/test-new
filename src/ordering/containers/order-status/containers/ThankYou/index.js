@@ -605,7 +605,7 @@ export class ThankYou extends PureComponent {
           });
         }}
         data-testid="thanks__view-receipt"
-        data-test-id="ordering.thank-you.view-detail-btn"
+        data-heap-name="ordering.thank-you.view-detail-btn"
       >
         {t('ViewOrderDetails')}
       </button>
@@ -990,7 +990,7 @@ export class ThankYou extends PureComponent {
     return (
       <section
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
-        data-test-id="ordering.thank-you.container"
+        data-heap-name="ordering.thank-you.container"
       >
         {orderStatus && <Profile onClose={hideProfileModal} show={profileModalVisibility} />}
         <>
@@ -999,7 +999,7 @@ export class ThankYou extends PureComponent {
             className="flex-middle border__bottom-divider"
             isPage={true}
             contentClassName="flex-middle"
-            data-test-id="ordering.thank-you.header"
+            data-heap-name="ordering.thank-you.header"
             title={`#${orderId}`}
             navFunc={this.handleHeaderNavFunc}
             rightContent={this.getRightContentOfHeader()}
@@ -1049,7 +1049,7 @@ export class ThankYou extends PureComponent {
                 <a
                   className="ordering-thanks__button-footer-link button button__link padding-small"
                   href="https://www.storehub.com/"
-                  data-test-id="ordering.thank-you.storehub-link"
+                  data-heap-name="ordering.thank-you.storehub-link"
                 >
                   {t('StoreHub')}
                 </a>

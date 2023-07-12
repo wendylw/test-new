@@ -139,7 +139,7 @@ class OnlineBanking extends Component {
       <select
         className="ordering-banking__select form__select text-size-biggest"
         onChange={this.handleSelectBank}
-        data-test-id="ordering.payment.online-banking.bank-select"
+        data-heap-name="ordering.payment.online-banking.bank-select"
       >
         {onlineBankingList.map(banking => {
           return (
@@ -175,12 +175,12 @@ class OnlineBanking extends Component {
     return (
       <section
         className={`ordering-banking flex flex-column ${match.isExact ? '' : 'hide'}`}
-        data-test-id="ordering.payment.online-banking.container"
+        data-heap-name="ordering.payment.online-banking.container"
       >
         <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
-          data-test-id="ordering.payment.online-banking.header"
+          data-heap-name="ordering.payment.online-banking.header"
           isPage={true}
           title={t('PayViaOnlineBanking')}
           navFunc={() => {
@@ -223,7 +223,7 @@ class OnlineBanking extends Component {
             total={total}
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-test-id="payMoney"
-            data-test-id="ordering.payment.online-banking.pay-btn"
+            data-heap-name="ordering.payment.online-banking.pay-btn"
             disabled={payNowLoading}
             beforeCreateOrder={() => {
               CleverTap.pushEvent('online banking - click continue', {

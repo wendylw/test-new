@@ -349,7 +349,7 @@ class LocationAndDate extends Component {
         <button
           className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
           data-testid="continue"
-          data-test-id="ordering.location-and-date.continue-btn"
+          data-heap-name="ordering.location-and-date.continue-btn"
           disabled={this.isContinueButtonDisabled()}
           onClick={this.goToNext}
         >
@@ -409,7 +409,7 @@ class LocationAndDate extends Component {
             CleverTap.pushEvent('Shipping Details - click delivery tab', storeInfoForCleverTap);
             this.handleDeliveryTypeChange(DELIVERY_METHOD.DELIVERY);
           }}
-          data-test-id="ordering.location-and-date.delivery"
+          data-heap-name="ordering.location-and-date.delivery"
         >
           {t('Delivery')}
         </li>
@@ -421,7 +421,7 @@ class LocationAndDate extends Component {
             CleverTap.pushEvent('Shipping Details - click pickup tab', storeInfoForCleverTap);
             this.handleDeliveryTypeChange(DELIVERY_METHOD.PICKUP);
           }}
-          data-test-id="ordering.location-and-date.pickup"
+          data-heap-name="ordering.location-and-date.pickup"
         >
           {t('Pickup')}
         </li>
@@ -443,7 +443,7 @@ class LocationAndDate extends Component {
             CleverTap.pushEvent('Shipping Details - click deliver to', storeInfoForCleverTap);
             this.gotoLocationSearch();
           }}
-          data-test-id="ordering.location-and-date.deliver-to"
+          data-heap-name="ordering.location-and-date.deliver-to"
           data-testid="deliverTo"
         >
           {!addressName && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
@@ -472,7 +472,7 @@ class LocationAndDate extends Component {
           CleverTap.pushEvent('Shipping Details - click selected store', storeInfoForCleverTap);
           this.handleGotoStoreListClick();
         }}
-        data-test-id="ordering.location-and-date.selected-store"
+        data-heap-name="ordering.location-and-date.selected-store"
       >
         <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
           {t('SelectedStore')}
@@ -515,7 +515,8 @@ class LocationAndDate extends Component {
           ${isToday || isTomorrow ? 'text-uppercase' : ''}`}
           disabled={!isOpen}
           data-testid="preOrderDate"
-          data-test-id="ordering.location-and-date.date-item"
+          data-heap-name="ordering.location-and-date.date-item"
+          data-heap-is-today={isToday ? 'yes' : 'no'}
           onClick={() => {
             CleverTap.pushEvent('Shipping Details - click shipping date', storeInfoForCleverTap);
             this.handleSelectDeliveryDate(orderDate);
@@ -596,7 +597,8 @@ class LocationAndDate extends Component {
               ${isSelected ? 'selected text-weight-bolder' : ''}
             `}
           data-testid="preOrderHour"
-          data-test-id="ordering.location-and-date.time-item"
+          data-heap-name="ordering.location-and-date.time-item"
+          data-heap-is-immediate={isImmediate ? 'yes' : 'no'}
           onClick={() => {
             CleverTap.pushEvent('Shipping Details - click shipping time', storeInfoForCleverTap);
             this.handleSelectDeliveryHourTime(timeItem);
@@ -687,12 +689,12 @@ class LocationAndDate extends Component {
     const { businessDeliveryTypes, showLoading } = this.props;
 
     return (
-      <section className="location-date flex flex-column" data-test-id="ordering.location-and-date.container">
+      <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
         <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           contentClassName="flex-middle"
-          data-test-id="ordering.location-and-date.header"
+          data-heap-name="ordering.location-and-date.header"
           isPage={true}
           title={this.getLocationDisplayTitle()}
           navFunc={() => {

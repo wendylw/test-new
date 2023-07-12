@@ -8,7 +8,7 @@ export class Error extends Component {
     return (
       <>
         {Utils.isWebview() && <NativeHeader />}
-        <ErrorPage data-test-id="cashback.error-page.container"></ErrorPage>
+        <ErrorPage data-heap-name="cashback.error-page.container"></ErrorPage>
       </>
     );
   }

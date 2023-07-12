@@ -44,11 +44,11 @@ class ThankYou extends Component {
     } = this.props;
 
     return (
-      <section className="voucher-thanks flex flex-column" data-test-id="voucher.thank-you.container">
+      <section className="voucher-thanks flex flex-column" data-heap-name="voucher.thank-you.container">
         <Header
           className="flex-middle"
           contentClassName="flex-middle"
-          data-test-id="voucher.thank-you.header"
+          data-heap-name="voucher.thank-you.header"
           isPage={true}
           navFunc={this.handleClickBack}
         />
@@ -88,7 +88,7 @@ class ThankYou extends Component {
                 <a
                   class="voucher-thanks__button-link button button__link text-size-big text-weight-bolder"
                   href={beepSiteUrl}
-                  data-test-id="voucher.thank-you.visit-site-link"
+                  data-heap-name="voucher.thank-you.visit-site-link"
                 >
                   {t('VisitSiteToUseVoucherNow', { onlineStoreName })}
                 </a>

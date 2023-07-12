@@ -51,7 +51,7 @@ class Billing extends Component {
     }
 
     return (
-      <section ref={billingRef} className={classList.join(' ')} data-test-id="ordering.common.billing.container">
+      <section ref={billingRef} className={classList.join(' ')} data-heap-name="ordering.common.billing.container">
         <ul className="billing__list">
           <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
             <label className="margin-top-bottom-smaller text-size-big">{t('Subtotal')}</label>

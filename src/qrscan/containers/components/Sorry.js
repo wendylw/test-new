@@ -32,7 +32,7 @@ class Sorry extends Component {
     }
 
     return (
-      <div data-test-id="qrscan.common.sorry.container">
+      <div data-heap-name="qrscan.common.sorry.container">
         <div className="content-contenter">
           <div className="content-header"></div>
 

@@ -57,7 +57,7 @@ class Home extends Component {
     const { id: selectedVoucherId, unitPrice } = selectedVoucher || {};
 
     return (
-      <section className="voucher-home flex flex-column" data-test-id="voucher.home.container">
+      <section className="voucher-home flex flex-column" data-heap-name="voucher.home.container">
         <div className="voucher-home__container">
           <div>
             <h1 className="text-center text-size-huge text-weight-bolder">{t('GiveThePerfectGift')}</h1>
@@ -87,7 +87,7 @@ class Home extends Component {
                     className={`voucher-home__button-price button ${
                       selectedVoucher && selectedVoucherId === voucher.id ? 'button__fill' : 'button__outline'
                     } padding-top-bottom-smaller padding-left-right-normal`}
-                    data-test-id="voucher.home.voucher-item"
+                    data-heap-name="voucher.home.voucher-item"
                     onClick={() => {
                       this.handleSelectVoucher(voucher);
                     }}
@@ -108,7 +108,7 @@ class Home extends Component {
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             onClick={this.handleContinue}
             disabled={!selectedVoucher}
-            data-test-id="voucher.home.continue-btn"
+            data-heap-name="voucher.home.continue-btn"
           >
             {t('Continue')}
           </button>

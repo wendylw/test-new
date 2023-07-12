@@ -12,7 +12,7 @@ class SearchBox extends React.Component {
         <input
           className={styles.SearchBoxInput}
           data-testid="inputStore"
-          data-test-id="site.search.search-box"
+          data-heap-name="site.search.search-box"
           autoFocus="autoFocus"
           type="type"
           placeholder={t('SearchRestaurantPlaceholder')}
@@ -21,7 +21,7 @@ class SearchBox extends React.Component {
         />
         <button
           className={styles.SearchBoxCloseIconWrapper}
-          data-test-id="site.search.search-box-clear-btn"
+          data-heap-name="site.search.search-box-clear-btn"
           onClick={handleClearSearchText}
           style={{ visibility: keyword ? 'visible' : 'hidden' }}
         >
