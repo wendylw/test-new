@@ -289,7 +289,6 @@ export const getTokenAsync = () => {
     },
     mode: MODE.ASYNC,
   };
-
   return dsBridgeCall(data);
 };
 
