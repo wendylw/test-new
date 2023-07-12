@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import withDataAttributes from '../components/withDataAttributes';
 import './Radio.scss';
-import { extractDataAttributes } from '../common/utils';
 
 class Radio extends PureComponent {
   handleOnChange = e => {
@@ -13,7 +13,7 @@ class Radio extends PureComponent {
   };
 
   render() {
-    const { className, checked = false, name = '', inputId = '', disabled = false } = this.props;
+    const { className, checked = false, name = '', inputId = '', disabled = false, dataAttributes } = this.props;
     const active = checked ? 'active' : '';
 
     return (
@@ -25,7 +25,7 @@ class Radio extends PureComponent {
           name={name}
           id={inputId}
           type="radio"
-          {...extractDataAttributes(this.props)}
+          {...dataAttributes}
         ></input>
       </div>
     );
@@ -49,4 +49,4 @@ Radio.defaultProps = {
 
 Radio.displayName = 'Radio';
 
-export default Radio;
+export default withDataAttributes(Radio);

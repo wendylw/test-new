@@ -17,7 +17,7 @@
 7. [Style Guide](#style-guide)
 8. [Analyzing bundle size](#analyzing-bundle-size)
 9. [Trouble Shooting](#trouble-shooting)
-10. [data-test-id name convention for log](https://storehub.atlassian.net/wiki/spaces/TS/pages/617087695/data-test-id+name+convention)
+10. [Heap name convention for log](https://storehub.atlassian.net/wiki/spaces/SHFET/pages/617087695/Heap+name+convention)
 11. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
 
 <a name="abstraction"></a>

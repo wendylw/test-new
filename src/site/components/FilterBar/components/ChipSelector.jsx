@@ -25,7 +25,7 @@ const ChipSelector = ({ category, left, right, children, className, onClick }) =
       className={classNameList.join(' ')}
       style={borderStyles}
       onClick={clickHandler}
-      data-test-id="site.common.filter.category-btn"
+      data-heap-name="site.common.filter.category-btn"
     >
       <div className={styles.ChipSelectorSider}>{left}</div>
       <div className={styles.ChipSelectorContent}>{children}</div>

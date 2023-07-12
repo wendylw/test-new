@@ -186,11 +186,11 @@ class Promotion extends Component {
     }
 
     return (
-      <section className="ordering-promotion flex flex-column" data-test-id="ordering.promotion.container">
+      <section className="ordering-promotion flex flex-column" data-heap-name="ordering.promotion.container">
         <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
-          data-test-id="ordering.promotion.header"
+          data-heap-name="ordering.promotion.header"
           isPage={true}
           title={t('MyVouchersAndPromos')}
           titleAlignment="center"
@@ -219,14 +219,14 @@ class Promotion extends Component {
                 }}
                 value={promoCode}
                 className="form__input padding-left-right-smaller margin-left-right-small text-size-big form__group "
-                data-test-id="ordering.promotion.promotion-input"
+                data-heap-name="ordering.promotion.promotion-input"
                 placeholder={t('EnterPromoCodeHere')}
               />
               {showCleanButton ? (
                 <button
                   onClick={this.handleCleanClick}
                   className="ordering-promotion__button-close button flex__shrink-fixed"
-                  data-test-id="ordering.promotion.clear-btn"
+                  data-heap-name="ordering.promotion.clear-btn"
                 >
                   <IconWrappedClose className="icon icon__small icon__default text-opacity" />
                 </button>
@@ -245,7 +245,7 @@ class Promotion extends Component {
         >
           <button
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
-            data-test-id="ordering.promotion.apply-btn"
+            data-heap-name="ordering.promotion.apply-btn"
             disabled={!selectedPromo.code || inProcess || applyPromoOrVoucherPendingStatus}
             onClick={this.handleApplyPromotion}
           >

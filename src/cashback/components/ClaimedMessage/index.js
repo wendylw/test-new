@@ -32,9 +32,9 @@ class ClaimedMessage extends React.Component {
     const { animationGifSrc } = this.state;
 
     return (
-      <aside className="aside active" data-test-id="cashback.common.claimed-message.container">
+      <aside className="aside active" data-heap-name="cashback.common.claimed-message.container">
         <div className="aside__section-content border-radius-base">
-          <Modal show={true} className="align-middle" data-test-id="cashback.common.claimed-message.modal">
+          <Modal show={true} className="align-middle" data-heap-name="cashback.common.claimed-message.modal">
             <Modal.Body className="active">
               <img src={beepRewardImage} alt="beep reward" />
               <div className="modal__detail text-center">
@@ -50,7 +50,7 @@ class ClaimedMessage extends React.Component {
                 <button
                   className="button button__block button__block-link link text-uppercase text-weight-bolder"
                   onClick={() => hideMessage()}
-                  data-test-id="cashback.common.claimed-message.close-btn"
+                  data-heap-name="cashback.common.claimed-message.close-btn"
                 >
                   {t('Close')}
                 </button>

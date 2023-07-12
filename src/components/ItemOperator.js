@@ -1,11 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import withDataAttributes from './withDataAttributes';
 import './ItemOperator.scss';
-import { extractDataAttributes } from '../common/utils';
 
 class ItemOperator extends Component {
   render() {
-    const { quantity, className, decreaseDisabled, increaseDisabled, onDecrease, onIncrease, from } = this.props;
+    const {
+      quantity,
+      className,
+      decreaseDisabled,
+      increaseDisabled,
+      onDecrease,
+      onIncrease,
+      dataAttributes,
+      from,
+    } = this.props;
     const classList = [
       `item-operator flex flex-space-between ${
         (from === 'productDetail' ? quantity >= 0 : quantity > 0) ? 'item-operator--minus' : ''
@@ -17,14 +26,14 @@ class ItemOperator extends Component {
     }
 
     return (
-      <div className={classList.join(' ')} {...extractDataAttributes(this.props)}>
+      <div className={classList.join(' ')} {...dataAttributes}>
         {onDecrease ? (
           <button
             className="item-operator__button item-operator__button-minus padding-top-bottom-small padding-left-right-smaller item-operator__button-decrease"
             disabled={decreaseDisabled}
             onClick={onDecrease}
             data-testid="itemDecrease"
-            data-test-id="common.item-operator.decrease"
+            data-heap-name="common.item-operator.decrease"
           >
             <i className="item-operator__ctrl item-operator__minus margin-smaller">
               <span className="item-operator__icon"></span>
@@ -35,7 +44,7 @@ class ItemOperator extends Component {
         <span
           className="item-operator__quantity text-center text-weight-bolder"
           data-testid="itemDetailQuantity"
-          data-test-id="common.item-operator.quantity"
+          data-heap-name="common.item-operator.quantity"
         >
           {(from === 'productDetail' ? quantity >= 0 : quantity > 0) ? quantity : null}
         </span>
@@ -46,7 +55,7 @@ class ItemOperator extends Component {
             onClick={onIncrease}
             disabled={increaseDisabled}
             data-testid="itemIncrease"
-            data-test-id="common.item-operator.increase"
+            data-heap-name="common.item-operator.increase"
           >
             <i className="item-operator__ctrl item-operator__add margin-smaller">
               <span className="item-operator__icon"></span>
@@ -75,4 +84,4 @@ ItemOperator.defaultProps = {
 };
 ItemOperator.displayName = 'ItemOperator';
 export const ItemOperatorComponent = ItemOperator;
-export default ItemOperator;
+export default withDataAttributes(ItemOperator);

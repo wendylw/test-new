@@ -33,7 +33,7 @@ const StoreListItem = props => (
       props.isClose ? 'ordering-stores__item-disabled' : ''
     }`}
     onClick={() => props.select(props.store)}
-    data-test-id="ordering.store-list.store-item"
+    data-heap-name="ordering.store-list.store-item"
   >
     <summary
       className={`${
@@ -192,12 +192,12 @@ class StoreList extends Component {
 
     return (
       (onlineStoreInfo && (
-        <section className="ordering-stores flex flex-column" data-test-id="ordering.store-list.container">
+        <section className="ordering-stores flex flex-column" data-heap-name="ordering.store-list.container">
           <HybridHeader
             className="flex-middle"
             contentClassName="flex-middle"
             isPage={true}
-            data-test-id="ordering.store-list.header"
+            data-heap-name="ordering.store-list.header"
             title={t('SelectStore')}
             navFunc={() => {
               history.go(-1);

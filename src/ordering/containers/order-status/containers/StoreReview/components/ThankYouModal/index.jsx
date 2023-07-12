@@ -73,7 +73,7 @@ const ThankYouModal = () => {
             type="primary"
             className={styles.ThankYouModalButton}
             data-testid="OkayButton"
-            data-test-id="ordering.order-status.store-review.confirm.okay"
+            data-heap-name="ordering.order-status.store-review.confirm.okay"
             onClick={clickOkayButtonHandler}
           >
             {t('Okay')}
@@ -85,7 +85,7 @@ const ThankYouModal = () => {
               type="secondary"
               className={styles.ThankYouModalButton}
               data-testid="refuseButton"
-              data-test-id="ordering.order-status.store-review.confirm.reject"
+              data-heap-name="ordering.order-status.store-review.confirm.reject"
               onClick={clickRefuseButtonHandler}
             >
               {t('NoThanks')}
@@ -95,7 +95,7 @@ const ThankYouModal = () => {
               type="primary"
               className={styles.ThankYouModalButton}
               data-testid="acceptButton"
-              data-test-id="ordering.order-status.store-review.confirm.accept"
+              data-heap-name="ordering.order-status.store-review.confirm.accept"
               onClick={clickAcceptButtonHandler}
             >
               {isCommentEmpty ? t('RateNow') : t('CopyAndRate')}

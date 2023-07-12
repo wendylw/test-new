@@ -126,11 +126,11 @@ class OtpModal extends React.Component {
     const { currentOtpTime, otp } = this.state;
 
     return (
-      <div className="otp-modal absolute-wrapper flex flex-column" data-test-id="common.otp-modal.container">
+      <div className="otp-modal absolute-wrapper flex flex-column" data-heap-name="common.otp-modal.container">
         <Header
           className="otp-modal__header border__bottom-divider"
           navFunc={onClose}
-          data-test-id="common.otp-modal.header"
+          data-heap-name="common.otp-modal.header"
         />
 
         <section ref={this.addressAsideInnerRef} className="text-center">
@@ -155,7 +155,7 @@ class OtpModal extends React.Component {
                   ref={this.inputRef}
                   value={showError ? '' : otp}
                   className="otp-modal__input form__input text-size-larger"
-                  data-test-id="common.otp-modal.new-otp-input"
+                  data-heap-name="common.otp-modal.new-otp-input"
                   onChange={e => this.updateAndValidateOtp(e.target.value)}
                   maxLength={Constants.OTP_CODE_SIZE}
                   type="tel"
@@ -177,7 +177,7 @@ class OtpModal extends React.Component {
               <div className="flex flex-column">
                 <button
                   className="otp-modal__button-resend-sms button button__link padding-normal text-weight-bolder text-uppercase"
-                  data-test-id="common.otp-modal.resend-btn"
+                  data-heap-name="common.otp-modal.resend-btn"
                   onClick={() => {
                     CleverTap.pushEvent('Login - Resend OTP');
                     getOtp(phone, Constants.OTP_REQUEST_TYPES.RE_SEND_OTP);
@@ -188,7 +188,7 @@ class OtpModal extends React.Component {
                 {showWhatsAppResendBtn && (
                   <button
                     className="otp-modal__button-resend-whats button button__link padding-small margin-top-bottom-normal text-size-small text-weight-bolder text-uppercase"
-                    data-test-id="common.otp-modal.resend-whats-btn"
+                    data-heap-name="common.otp-modal.resend-whats-btn"
                     onClick={() => {
                       CleverTap.pushEvent('Login - Resend Whatsapp OTP');
                       getOtp(phone, Constants.OTP_REQUEST_TYPES.WHATSAPP);

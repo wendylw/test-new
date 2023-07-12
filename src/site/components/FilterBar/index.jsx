@@ -22,7 +22,7 @@ const FilterBar = ({ className, categories, shouldShowResetButton, onResetButton
           className={styles.FilterBarButtonWrapper}
           type="text"
           onClick={onResetButtonClick}
-          data-test-id="site.common.filter.reset-filter-btn"
+          data-heap-name="site.common.filter.reset-filter-btn"
         >
           {t('Reset')}
         </button>

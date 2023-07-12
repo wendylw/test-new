@@ -7,8 +7,8 @@ import Tag from './Tag';
 import Image from './Image';
 import Utils from '../utils/utils';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
+import withDataAttributes from './withDataAttributes';
 import './Header.scss';
-import { extractDataAttributes } from '../common/utils';
 
 // TODO: This Header component will be deprecated
 class Header extends Component {
@@ -24,9 +24,9 @@ class Header extends Component {
         } icon__default text-middle flex__shrink-fixed`;
 
         return isPage ? (
-          <IconLeftArrow className={iconClassName} data-test-id="common.header.back-btn" onClick={navFunc} />
+          <IconLeftArrow className={iconClassName} data-heap-name="common.header.back-btn" onClick={navFunc} />
         ) : (
-          <IconClose className={iconClassName} data-test-id="common.header.close-btn" onClick={navFunc} />
+          <IconClose className={iconClassName} data-heap-name="common.header.close-btn" onClick={navFunc} />
         );
       }
     };
@@ -59,6 +59,7 @@ class Header extends Component {
       enablePreOrder,
       enableCashback,
       defaultLoyaltyRatio,
+      dataAttributes,
       headerRef,
       isDeliveryType,
       isPickUpType,
@@ -78,7 +79,7 @@ class Header extends Component {
     }
 
     return (
-      <header ref={headerRef} style={style} className={classList.join(' ')} {...extractDataAttributes(this.props)}>
+      <header ref={headerRef} style={style} className={classList.join(' ')} {...dataAttributes}>
         <div className={contentClassList.join(' ')}>
           {this.renderLogoAndNavDom()}
           {isDeliveryHomePage ? (
@@ -165,4 +166,4 @@ Header.defaultProps = {
 };
 Header.displayName = 'Header';
 export const HeaderComponent = Header;
-export default withTranslation()(Header);
+export default withDataAttributes(withTranslation()(Header));

@@ -26,7 +26,7 @@ const WarningModal = () => {
           type="secondary"
           className={styles.WarningModalButton}
           data-testid="refuseButton"
-          data-test-id="ordering.order-status.store-review.confirm.reject"
+          data-heap-name="ordering.order-status.store-review.confirm.reject"
           onClick={clickLeaveButtonHandler}
         >
           {t('Leave')}
@@ -36,7 +36,7 @@ const WarningModal = () => {
           type="primary"
           className={styles.WarningModalButton}
           data-testid="acceptButton"
-          data-test-id="ordering.order-status.store-review.confirm.accept"
+          data-heap-name="ordering.order-status.store-review.confirm.accept"
           onClick={clickStayButtonHandler}
         >
           {t('Stay')}

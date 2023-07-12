@@ -525,7 +525,7 @@ export class TableSummary extends React.Component {
           <button
             onClick={this.handleClickLoginButton}
             className="table-summary__button-login button button__fill padding-top-bottom-smaller padding-left-right-normal"
-            data-test-id="ordering.table-summary.cashback.login-btn"
+            data-heap-name="ordering.table-summary.cashback.login-btn"
           >
             {t('Login')}
           </button>
@@ -549,7 +549,7 @@ export class TableSummary extends React.Component {
               <button
                 onClick={this.handleDismissPromotion}
                 className="button flex__shrink-fixed"
-                data-test-id="ordering.table-summary.dismiss-promo"
+                data-heap-name="ordering.table-summary.dismiss-promo"
               >
                 <IconClose className="icon icon__small" />
               </button>
@@ -566,7 +566,7 @@ export class TableSummary extends React.Component {
           <button
             className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
             onClick={this.handleGotoPromotion}
-            data-test-id="ordering.table-summary.add-promo"
+            data-heap-name="ordering.table-summary.add-promo"
           >
             <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
             <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
@@ -698,7 +698,10 @@ export class TableSummary extends React.Component {
     }
 
     return (
-      <section className="table-summary flex flex-column" data-test-id="ordering.order-status.table-summary.container">
+      <section
+        className="table-summary flex flex-column"
+        data-heap-name="ordering.order-status.table-summary.container"
+      >
         <HybridHeader
           headerRef={ref => {
             this.headerEl = ref;
@@ -706,7 +709,7 @@ export class TableSummary extends React.Component {
           titleAlignment="center"
           className="flex-middle"
           contentClassName="table-summary__header-content flex-middle flex-center flex-space-between text-capitalize"
-          data-test-id="ordering.table-summary.header"
+          data-heap-name="ordering.table-summary.header"
           isPage
           title={t('TableSummary')}
           navFunc={this.handleHeaderNavFunc}
@@ -766,7 +769,7 @@ export class TableSummary extends React.Component {
             <button
               className="button button__fill button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
               data-testid="pay"
-              data-test-id="ordering.order-status.table-summary.pay-btn"
+              data-heap-name="ordering.order-status.table-summary.pay-btn"
               onClick={this.handleClickPayButton}
               disabled={shouldDisablePayButton}
             >

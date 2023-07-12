@@ -162,7 +162,7 @@ const ViewOrderDetailsButton = ({ history }) => {
         });
       }}
       data-testid="thanks__view-receipt"
-      data-test-id="ordering.thank-you.view-detail-btn"
+      data-heap-name="ordering.thank-you.view-detail-btn"
     >
       {t('ViewOrderDetails')}
     </button>
@@ -251,7 +251,7 @@ function OrderSummary({
             } button button__block text-weight-bolder text-uppercase`}
             onClick={handleOrderCancellationButtonClick}
             data-testid="thanks__order-cancellation-button"
-            data-test-id="ordering.thank-you.order-cancellation-button"
+            data-heap-name="ordering.thank-you.order-cancellation-button"
           >
             {t('CancelOrder')}
           </button>

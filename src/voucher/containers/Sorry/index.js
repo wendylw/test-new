@@ -17,11 +17,11 @@ class Sorry extends Component {
   render() {
     const { t } = this.props;
     return (
-      <section className="voucher-sorry flex flex-column" data-test-id="voucher.sorry.container">
+      <section className="voucher-sorry flex flex-column" data-heap-name="voucher.sorry.container">
         <Header
           className="flex-middle"
           contentClassName="flex-middle"
-          data-test-id="voucher.sorry.header"
+          data-heap-name="voucher.sorry.header"
           isPage={true}
           navFunc={this.handleClickBack}
         />
@@ -42,7 +42,7 @@ class Sorry extends Component {
         <footer className="footer__transparent footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
-            data-test-id="voucher.sorry.try-again-btn"
+            data-heap-name="voucher.sorry.try-again-btn"
             onClick={this.handleClickBack}
           >
             {t('TryAgain')}

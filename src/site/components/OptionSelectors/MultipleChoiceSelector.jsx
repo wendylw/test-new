@@ -33,7 +33,7 @@ const MultipleChoiceSelector = ({ className, category, onResetButtonClick, onApp
   return (
     <>
       <ul className={classNameList.join(' ')}>
-        <CheckBox.Group name={category.id} data-test-id="site.common.option-selector.checkbox-group-container">
+        <CheckBox.Group name={category.id} data-heap-name="site.common.option-selector.checkbox-group-container">
           {options.map(option => (
             <div key={option.id}>
               <CheckBox
@@ -42,7 +42,7 @@ const MultipleChoiceSelector = ({ className, category, onResetButtonClick, onApp
                 containerClassName={OptionSelectorStyles.OptionItemContainer}
                 className={styles.MultipleChoiceSelectorCheckbox}
                 onChange={() => handleClickChoice(option.id)}
-                data-test-id="site.common.option-selector.checkbox-btn"
+                data-heap-name="site.common.option-selector.checkbox-btn"
               >
                 <span className={OptionSelectorStyles.OptionItemLabel}>{option.name}</span>
               </CheckBox>
@@ -59,7 +59,7 @@ const MultipleChoiceSelector = ({ className, category, onResetButtonClick, onApp
           contentClassName={styles.MultipleChoiceSelectorFooterResetButtonContent}
           disabled={shouldDisableFooterButton}
           onClick={() => onResetButtonClick(category)}
-          data-test-id="site.common.option-selector.reset-btn"
+          data-heap-name="site.common.option-selector.reset-btn"
         >
           {t('Reset')}
         </Button>
@@ -69,7 +69,7 @@ const MultipleChoiceSelector = ({ className, category, onResetButtonClick, onApp
           contentClassName={styles.MultipleChoiceSelectorFooterButton}
           disabled={shouldDisableFooterButton}
           onClick={() => onApplyButtonClick(category, options)}
-          data-test-id="site.common.option-selector.apply-btn"
+          data-heap-name="site.common.option-selector.apply-btn"
         >
           {t('Apply')}
         </Button>

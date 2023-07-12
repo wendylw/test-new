@@ -60,7 +60,7 @@ class PageLoyalty extends React.Component {
           className="loyalty-home__money-currency padding-left-right-small text-size-large"
           money={totalCredits || 0}
         />
-        <span onClick={this.showRecentActivities.bind(this)} data-test-id="cashback.home.cashback-info">
+        <span onClick={this.showRecentActivities.bind(this)} data-heap-name="cashback.home.cashback-info">
           <IconInfo className="icon icon__default" />
         </span>
       </div>
@@ -89,7 +89,7 @@ class PageLoyalty extends React.Component {
           />
         )}
         {!showRecentActivities ? (
-          <section className="loyalty-home__container flex flex-column" data-test-id="cashback.home.container">
+          <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
             <article className="loyalty-home__article text-center margin-top-bottom-normal">
               {logo ? (
                 <Image

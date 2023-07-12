@@ -95,11 +95,11 @@ class DeliveryMethods extends Component {
     const { t, currentStoreInfo } = this.props;
     const { fulfillmentOptions } = currentStoreInfo || {};
     return (
-      <section className="delivery" data-test-id="stores.delivery-methods.container">
+      <section className="delivery" data-heap-name="stores.delivery-methods.container">
         <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
-          data-test-id="stores.delivery-methods.header"
+          data-heap-name="stores.delivery-methods.header"
           isPage={true}
           title={t('SelectYourPreference')}
           navFunc={this.handleClickBack.bind(this)}
@@ -111,7 +111,8 @@ class DeliveryMethods extends Component {
                 key={method.name}
                 className="border__bottom-divider flex flex-middle flex-space-between"
                 data-testid="selectPrefrence"
-                data-test-id="stores.delivery-methods.method-item"
+                data-heap-name="stores.delivery-methods.method-item"
+                data-heap-method-name={method.name}
                 onClick={() => this.handleVisitStore(method.name)}
               >
                 <summary className="taking-meal-method__summary">

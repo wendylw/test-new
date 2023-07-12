@@ -173,7 +173,7 @@ class Scanner extends Component {
     const { t } = this.props;
 
     return (
-      <div data-test-id="qrscan.common.scanner.container">
+      <div data-heap-name="qrscan.common.scanner.container">
         <div id="contentHolder">
           <Message />
           <video className="viedo-player" ref="video" autoPlay playsInline></video>

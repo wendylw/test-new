@@ -21,7 +21,7 @@ class PeopleCountModal extends Component {
       <Modal
         ref={ref => (this.modal = ref)}
         className="customer-numbers__modal"
-        data-test-id="common.people-count-modal.container"
+        data-heap-name="common.people-count-modal.container"
         show
         onHide={() => history.replace(Constants.ROUTER_PATHS.ORDERING_HOME)}
       >
@@ -34,7 +34,7 @@ class PeopleCountModal extends Component {
               <li className="text-center" key={`${n}`}>
                 <span
                   className={`tag__card ${this.state.value === n ? 'active' : ''}`}
-                  data-test-id="common.people-count-modal.people-number"
+                  data-heap-name="common.people-count-modal.people-number"
                   onClick={() => this.setState({ value: n })}
                 >
                   {n}
@@ -45,7 +45,7 @@ class PeopleCountModal extends Component {
               <li className="text-center" key={`${lastNumber}`}>
                 <span
                   className={`tag__card ${this.state.value === Constants.PEOPLE_COUNT.MAX_PLUS ? 'active' : ''}`}
-                  data-test-id="common.people-count-modal.people-max-number"
+                  data-heap-name="common.people-count-modal.people-max-number"
                   onClick={() => this.setState({ value: Constants.PEOPLE_COUNT.MAX_PLUS })}
                 >
                   {lastNumber}
@@ -57,7 +57,7 @@ class PeopleCountModal extends Component {
         <Modal.Footer>
           <button
             className="button__fill button__block"
-            data-test-id="common.people-count-modal.ok-btn"
+            data-heap-name="common.people-count-modal.ok-btn"
             onClick={() => {
               config.peopleCount = this.state.value;
               this.modal.hide();

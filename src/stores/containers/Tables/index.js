@@ -44,11 +44,11 @@ class Tables extends Component {
     const { t, tables, currentTableId } = this.props;
 
     return (
-      <section className="ordering-tables flex flex-column" data-test-id="stores.tables.container">
+      <section className="ordering-tables flex flex-column" data-heap-name="stores.tables.container">
         <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
-          data-test-id="stores.tables.header"
+          data-heap-name="stores.tables.header"
           isPage={true}
           title={t('SelectTableNumber')}
           navFunc={this.handleClickBack}
@@ -61,7 +61,7 @@ class Tables extends Component {
                 <li className="ordering-tables__list-item padding-small">
                   <button
                     onClick={() => this.handleSelectTable(table.id)}
-                    data-test-id="stores.tables.table-btn"
+                    data-heap-name="stores.tables.table-btn"
                     key={table.id}
                     className={`button button__block text-line-height-base border-radius-large ${
                       table.id === currentTableId ? 'button__fill' : 'button__outline'
@@ -80,7 +80,7 @@ class Tables extends Component {
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             disabled={currentTableId === ''}
             onClick={this.handleContinue}
-            data-test-id="stores.tables.continue"
+            data-heap-name="stores.tables.continue"
           >
             {t('Continue')}
           </button>

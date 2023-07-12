@@ -85,7 +85,7 @@ const AlcoholModal = ({ history }) => {
               type="secondary"
               className={styles.AlcoholCloseButton}
               data-testid="noIamNot"
-              data-test-id="ordering.home.confirm.reject"
+              data-heap-name="ordering.home.confirm.reject"
               onClick={() => handleClick(false)}
             >
               {t('AlcoholNo')}
@@ -95,7 +95,7 @@ const AlcoholModal = ({ history }) => {
               type="primary"
               className={styles.AlcoholOkButton}
               data-testid="yesIam"
-              data-test-id="ordering.home.confirm.accept"
+              data-heap-name="ordering.home.confirm.accept"
               onClick={() => handleClick(true)}
             >
               {t('AlcoholYes')}
@@ -117,7 +117,7 @@ const AlcoholModal = ({ history }) => {
               block
               type="primary"
               className={styles.AlcoholDeniedButton}
-              data-test-id="ordering.home.confirm.got"
+              data-heap-name="ordering.home.confirm.got"
               onClick={() => dispatch(confirmAlcoholDenied(history))}
             >
               {t('GotItQr')}

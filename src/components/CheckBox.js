@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import withDataAttributes from '../components/withDataAttributes';
 import { IconDone } from './Icons';
 import './CheckBox.scss';
-import { extractDataAttributes } from '../common/utils';
 
 class CheckBox extends PureComponent {
   handleOnChange = e => {
@@ -14,7 +14,7 @@ class CheckBox extends PureComponent {
   };
 
   render() {
-    const { className, checked = false, name = '', inputId = '', disabled = false } = this.props;
+    const { className, checked = false, name = '', inputId = '', disabled = false, dataAttributes } = this.props;
     const active = checked ? 'active' : '';
 
     return (
@@ -26,7 +26,7 @@ class CheckBox extends PureComponent {
           name={name}
           id={inputId}
           type="checkbox"
-          {...extractDataAttributes(this.props)}
+          {...dataAttributes}
         ></input>
       </div>
     );
@@ -50,4 +50,4 @@ CheckBox.defaultProps = {
   disabled: false,
 };
 
-export default CheckBox;
+export default withDataAttributes(CheckBox);

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import withDataAttributes from '../components/withDataAttributes';
 import './SwitchButton.scss';
-import { extractDataAttributes } from '../common/utils';
 
 class SwitchButton extends PureComponent {
   handleOnChange = e => {
@@ -13,7 +13,15 @@ class SwitchButton extends PureComponent {
   };
 
   render() {
-    const { className = '', checked = '', name = '', switchId = '', disabled = false, type = 'radio' } = this.props;
+    const {
+      className = '',
+      checked = '',
+      name = '',
+      switchId = '',
+      disabled = false,
+      dataAttributes,
+      type = 'radio',
+    } = this.props;
 
     return (
       <label className={`switch-button ${className}`}>
@@ -24,7 +32,7 @@ class SwitchButton extends PureComponent {
           name={name}
           id={switchId}
           onChange={this.handleOnChange}
-          {...extractDataAttributes(this.props)}
+          {...dataAttributes}
         />
         <span className="switch-button__slider"></span>
       </label>
@@ -51,4 +59,4 @@ SwitchButton.defaultProps = {
 
 SwitchButton.displayName = 'SwitchButton';
 
-export default SwitchButton;
+export default withDataAttributes(SwitchButton);

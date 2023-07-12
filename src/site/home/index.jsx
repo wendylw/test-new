@@ -273,7 +273,7 @@ class Home extends React.Component {
     }
 
     return (
-      <main className="entry fixed-wrapper fixed-wrapper__main" data-test-id="site.home.container">
+      <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
         <Header onLocationBarClick={this.gotoLocationPage} onQRScannerClick={this.handleQRCodeClicked} />
         <section
           ref={this.sectionRef}
@@ -296,7 +296,7 @@ class Home extends React.Component {
           {shouldShowCampaignBar && (
             <a
               className="offer-details__bar"
-              data-test-id="site.home.campaign-bar"
+              data-heap-name="site.home.campaign-bar"
               target="_blank"
               href="https://storehub.page.link/pzok"
               rel="noopener noreferrer"

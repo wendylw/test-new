@@ -77,7 +77,7 @@ class PhoneViewContainer extends React.Component {
           smartCaret={false}
           placeholder={t('EnterPhoneNumber')}
           className={showError ? 'phone-view__input-error' : ''}
-          data-test-id="common.phone-view-container.phone-number-input"
+          data-heap-name="common.phone-view-container.phone-number-input"
           value={formatPhoneNumberIntl(phone)}
           defaultCountry={country}
           country={country}
@@ -87,7 +87,7 @@ class PhoneViewContainer extends React.Component {
         {showError && <p className="phone-view__error-message">{errorText}</p>}
         <button
           className="button button__fill button__block margin-top-bottom-small text-weight-bolder text-uppercase"
-          data-test-id="common.phone-view-container.submit-btn"
+          data-heap-name="common.phone-view-container.submit-btn"
           onClick={this.handleSubmitPhoneNumber.bind(this)}
           disabled={!phone || isProcessing || !isValidPhoneNumber(phone || '')}
         >

@@ -189,12 +189,12 @@ class LocationPage extends Component {
     const addressPickerEnabled = hasUserLoggedIn && addressPickerAllowed;
 
     return (
-      <section className="ordering-location flex flex-column" data-test-id="ordering.location.container">
+      <section className="ordering-location flex flex-column" data-heap-name="ordering.location.container">
         <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           contentClassName="flex-middle"
-          data-test-id="ordering.location.header"
+          data-heap-name="ordering.location.header"
           isPage={true}
           title={t('DeliverTo')}
           navFunc={this.handleBackClicked}

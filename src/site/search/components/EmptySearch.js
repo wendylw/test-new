@@ -31,7 +31,7 @@ class EmptySearch extends Component {
                   });
                   this.handleClick(urlPath);
                 }}
-                data-test-id="site.search.popular-categories"
+                data-heap-name="site.search.popular-categories"
               >
                 {name}
               </span>
@@ -61,7 +61,7 @@ class EmptySearch extends Component {
                 });
                 this.handleClick(urlPath);
               }}
-              data-test-id="site.search.other-categories"
+              data-heap-name="site.search.other-categories"
             >
               <span className={styles.EmptySearchCategoryContent}>{name}</span>
             </li>
