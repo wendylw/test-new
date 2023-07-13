@@ -245,6 +245,10 @@ export const actions = {
     }
   },
 
+  resetConsumerLoginStatus: () => ({
+    type: types.RESET_LOGIN_STATUS_REQUEST,
+  }),
+
   loadProfileInfo: consumerId => async dispatch => {
     try {
       dispatch({ type: types.LOAD_CONSUMER_PROFILE_PENDING });
@@ -495,6 +499,13 @@ const user = (state = initialState.user, action) => {
         isLogin: login,
         consumerId,
         isFetching: false,
+      };
+    case types.RESET_LOGIN_STATUS_REQUEST:
+      return {
+        ...state,
+        isFetching: false,
+        isLogin: false,
+        consumerId: null,
       };
     // load consumer profile
     case types.LOAD_CONSUMER_PROFILE_PENDING:
