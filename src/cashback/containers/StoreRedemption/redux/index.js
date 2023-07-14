@@ -29,6 +29,9 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'loyalty/storeRedemption',
   initialState,
+  reducers: {
+    resetStoreRedemption: () => initialState,
+  },
   extraReducers: {
     [updateShareConsumerInfoRequests.pending.type]: state => {
       state.updateSharingConsumerInfo.status = API_REQUEST_STATUS.PENDING;
