@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import './Header.scss';
 import WebHeader from './WebHeader';
@@ -7,8 +6,10 @@ import Utils from '../utils/utils';
 
 function HybridHeader(props) {
   if (Utils.isWebview()) {
+    // eslint-disable-next-line react/jsx-props-no-spreading
     return <NativeHeader {...props} />;
   }
+  // eslint-disable-next-line react/jsx-props-no-spreading
   return <WebHeader {...props} />;
 }
 

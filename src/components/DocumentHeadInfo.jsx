@@ -22,8 +22,6 @@ class DocumentHeadInfo extends React.Component {
     }
   }
 
-  displayName = 'DocumentTitle';
-
   componentDidMount() {
     const { title, description, keywords } = this.props;
 
@@ -39,14 +37,23 @@ class DocumentHeadInfo extends React.Component {
   render() {
     const { children } = this.props;
 
-    return <React.Fragment>{children}</React.Fragment>;
+    return <>{children}</>;
   }
 }
+
+DocumentHeadInfo.displayName = 'DocumentTitle';
 
 DocumentHeadInfo.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
   keywords: PropTypes.string,
+  children: PropTypes.node,
+};
+
+DocumentHeadInfo.defaultProps = {
+  description: '',
+  keywords: '',
+  children: null,
 };
 
 export default DocumentHeadInfo;

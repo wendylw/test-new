@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -62,6 +61,7 @@ const AddressPicker = ({ addressList, onSelect, displayMode }) => {
 
 AddressPicker.propTypes = {
   displayMode: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
   addressList: PropTypes.array,
   onSelect: PropTypes.func,
 };

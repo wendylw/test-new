@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import beepAppAppleStore from '../images/beep-app-apple-store.svg';
 import beepAppGooglePlay from '../images/beep-app-google-play.svg';
 import Utils from '../utils/utils';
@@ -16,6 +17,7 @@ function DownloadBanner(props) {
     <a
       className="download-banner flex flex-middle flex-space-around margin-small padding-top-bottom-small padding-left-right-normal"
       href={link}
+      rel="noreferrer"
       target={desktopClients.includes(client) ? '_blank' : ''}
     >
       <span className="download-banner__text text-weight-bolder">{text}</span>
@@ -30,5 +32,10 @@ function DownloadBanner(props) {
 }
 
 DownloadBanner.displayName = 'DownloadBanner';
+
+DownloadBanner.propTypes = {
+  link: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
+};
 
 export default DownloadBanner;

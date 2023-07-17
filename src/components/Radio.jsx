@@ -1,15 +1,13 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import withDataAttributes from '../components/withDataAttributes';
+import withDataAttributes from './withDataAttributes';
 import './Radio.scss';
 
 class Radio extends PureComponent {
   handleOnChange = e => {
-    const onChange = this.props.onChange;
+    const { onChange } = this.props;
 
-    if (typeof onChange === 'function') {
-      onChange(e);
-    }
+    onChange(e);
   };
 
   render() {
@@ -18,15 +16,16 @@ class Radio extends PureComponent {
 
     return (
       <div className={`radio flex__shrink-fixed ${active} ${className || ''}`}>
-        <i className="radio__check-icon"></i>
+        <i className="radio__check-icon" />
         <input
           disabled={disabled}
           onChange={this.handleOnChange}
           name={name}
           id={inputId}
           type="radio"
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...dataAttributes}
-        ></input>
+        />
       </div>
     );
   }
@@ -38,13 +37,18 @@ Radio.propTypes = {
   name: PropTypes.string,
   inputId: PropTypes.string,
   disabled: PropTypes.bool,
+  onChange: PropTypes.func,
+  dataAttributes: PropTypes.objectOf(PropTypes.string),
 };
 
 Radio.defaultProps = {
-  checked: false,
   name: '',
   inputId: '',
+  className: '',
+  checked: false,
   disabled: false,
+  dataAttributes: {},
+  onChange: () => {},
 };
 
 Radio.displayName = 'Radio';

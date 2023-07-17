@@ -4,36 +4,21 @@ import withDataAttributes from './withDataAttributes';
 import './Modal.scss';
 
 class Modal extends Component {
-  state = {
-    show: typeof this.props.show === 'boolean' ? this.props.show : false,
-  };
+  constructor(props) {
+    super(props);
+    const { show } = props;
+
+    this.state = { show };
+  }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.show !== this.props.show) {
-      this.setState({ show: this.props.show });
+    const { show: currShow } = this.props;
+    const { show: prevShow } = prevProps;
+
+    if (prevShow !== currShow) {
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({ show: currShow });
     }
-  }
-
-  hide() {
-    this.setState({ show: false }, () => {
-      this.props.onHide();
-    });
-  }
-
-  show() {
-    this.setState({ show: true }, () => {
-      this.props.onShow();
-    });
-  }
-
-  toggle() {
-    this.setState({ show: !this.state.show }, () => {
-      if (this.state.show) {
-        this.props.onShow();
-      } else {
-        this.props.onHide();
-      }
-    });
   }
 
   handleClick = e => {
@@ -44,6 +29,37 @@ class Modal extends Component {
     }
   };
 
+  hide() {
+    const { onHide } = this.props;
+
+    this.setState({ show: false }, () => {
+      onHide();
+    });
+  }
+
+  show() {
+    const { onShow } = this.props;
+
+    this.setState({ show: true }, () => {
+      onShow();
+    });
+  }
+
+  toggle() {
+    const { onShow, onHide } = this.props;
+    const { show: currShow } = this.state;
+
+    this.setState({ show: !currShow }, () => {
+      const { show } = this.state;
+
+      if (show) {
+        onShow();
+      } else {
+        onHide();
+      }
+    });
+  }
+
   render() {
     const { children, className = '', dataAttributes } = this.props;
     const { show } = this.state;
@@ -53,9 +69,11 @@ class Modal extends Component {
     }
 
     return (
+      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
       <section
         className={`modal absolute-wrapper flex flex-column flex-middle flex-center ${className}`}
         onClick={this.handleClick.bind(this)}
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...dataAttributes}
       >
         <div className="modal__content border-radius-large">{children}</div>
@@ -68,26 +86,65 @@ Modal.displayName = 'Modal';
 Modal.Header = ({ children, className = '' }) => (
   <header className={`modal__header border__bottom-divider ${className}`}>{children}</header>
 );
+
 Modal.Header.displayName = 'ModalHeader';
 
+Modal.Header.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+};
+
+Modal.Header.defaultProps = {
+  className: '',
+  children: null,
+};
+
 Modal.Body = ({ children, className = '' }) => <div className={`modal__body ${className}`}>{children}</div>;
+
 Modal.Body.displayName = 'ModalBody';
 
+Modal.Body.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+};
+
+Modal.Body.defaultProps = {
+  className: '',
+  children: null,
+};
+
 Modal.Footer = ({ children, className = '' }) => <footer className={className}>{children}</footer>;
+
 Modal.Footer.displayName = 'ModalFooter';
+
+Modal.Footer.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+};
+
+Modal.Footer.defaultProps = {
+  className: '',
+  children: null,
+};
 
 Modal.propTypes = {
   show: PropTypes.bool,
   hideOnBlank: PropTypes.bool,
   onShow: PropTypes.func,
   onHide: PropTypes.func,
+  children: PropTypes.node,
+  className: PropTypes.string,
+  dataAttributes: PropTypes.objectOf(PropTypes.string),
 };
 
 Modal.defaultProps = {
   show: false,
+  className: '',
   hideOnBlank: false,
   onShow: () => {},
   onHide: () => {},
+  children: null,
+  dataAttributes: {},
 };
 
 export default withDataAttributes(Modal);

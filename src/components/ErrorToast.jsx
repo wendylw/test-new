@@ -4,8 +4,10 @@ import './ErrorToast.scss';
 
 class ErrorToast extends Component {
   componentDidMount() {
+    const { clearError } = this.props;
+
     this.timer = setTimeout(() => {
-      this.props.clearError();
+      clearError();
     }, 3000);
   }
 

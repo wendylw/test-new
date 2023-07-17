@@ -11,6 +11,7 @@ export default Component => {
         dataAttrs[propName] = props[propName];
       }
     });
+    // eslint-disable-next-line react/jsx-props-no-spreading
     return <Component {...props} dataAttributes={dataAttrs} />;
   };
   hoistNonReactStatic(WithDataAttr, Component);
