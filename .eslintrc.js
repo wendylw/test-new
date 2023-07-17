@@ -11,7 +11,6 @@ const legacyFiles = [
   'src/cashback/components/RedeemInfo/index.js',
   'src/cashback/components/TopMessage/index.js',
   'src/cashback/components/TopMessage/TopMessage.stories.js',
-  'src/cashback/containers/App/components/RequestLogin/index.js',
   'src/cashback/containers/Claim/index.js',
   'src/cashback/containers/Error/index.js',
   'src/cashback/containers/Home/components/ReceiptList/index.js',
