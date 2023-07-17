@@ -50,7 +50,7 @@ class PageLoyalty extends React.Component {
           onClick={() => {
             history.push({ pathname: '/activities', search: window.location.search });
           }}
-          data-heap-name="cashback.home.cashback-info"
+          data-test-id="cashback.home.cashback-info"
         >
           <IconInfo className="icon icon__default" />
         </span>
@@ -67,7 +67,7 @@ class PageLoyalty extends React.Component {
     return (
       <>
         {isWebview() && <NativeHeader />}
-        <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
+        <section className="loyalty-home__container flex flex-column" data-test-id="cashback.home.container">
           <article className="loyalty-home__article text-center margin-top-bottom-normal">
             {logo ? (
               <Image

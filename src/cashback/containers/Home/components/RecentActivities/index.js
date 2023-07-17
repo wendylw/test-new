@@ -117,7 +117,7 @@ class RecentActivities extends React.Component {
     return (
       <>
         <HybridHeader
-          data-heap-name="cashback.home.recent-activities.header"
+          data-test-id="cashback.home.recent-activities.header"
           className="flex-middle text-center"
           contentClassName="flex-middle"
           isPage={true}
