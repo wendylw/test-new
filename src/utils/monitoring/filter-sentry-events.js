@@ -211,6 +211,47 @@ const isCleverTapIssues = (event, hint) => {
   }
 };
 
+const isClarityIssues = (event, hint) => {
+  // These issues are raised by Clarity script.
+  try {
+    // WB-5720 & WB-5722: The errors thrown directly from Clarity script should be ignored.
+    // Reasons: Nothing can be done on our side and it also won't block users to make orders.
+    // Refer to: https://github.com/microsoft/clarity/issues/421
+    const clarityRegex = /\/clarity.js/;
+    const isScriptIssue = getErrorStacktraceFrames(event).some(({ filename }) => clarityRegex.test(filename));
+
+    return isScriptIssue;
+  } catch {
+    return false;
+  }
+};
+
+const isEdgeBrowserIssues = (event, hint) => {
+  // These issues are raised by the Edge browser.
+  try {
+    // WB-5721: The errors thrown directly from Edge browser should be ignored.
+    // Reasons: Nothing can be done on our side and it also won't block users to make orders.
+    // Refer to: https://github.com/getsentry/sentry-javascript/issues/8444#issuecomment-1632171546
+    const message = getErrorMessageFromHint(hint);
+    return message.includes('msDiscoverChatAvailable');
+  } catch {
+    return false;
+  }
+};
+
+const isWKWebViewIssues = (event, hint) => {
+  // These issues are raised only in WKWebView environments.
+  try {
+    // WB-5723: The errors thrown directly from Edge browser should be ignored.
+    // Reasons: Nothing can be done on our side and it also won't block users to make orders.
+    // Refer to: https://github.com/getsentry/sentry-javascript/issues/3040#issuecomment-913549441
+    const message = getErrorMessageFromHint(hint);
+    return message.includes('window.webkit.messageHandlers');
+  } catch {
+    return false;
+  }
+};
+
 const isOppoBrowserIssues = (event, hint) => {
   // These issues are raised by the HeyTap browser - the default browser for Oppo devices.
   try {
@@ -343,8 +384,11 @@ const shouldFilter = (event, hint) => {
       isReCAPTCHAIssues(event, hint) ||
       isGoogleMapsIssues(event, hint) ||
       isCleverTapIssues(event, hint) ||
+      isClarityIssues(event, hint) ||
+      isWKWebViewIssues(event, hint) ||
       isOppoBrowserIssues(event, hint) ||
       isVivoBrowserIssues(event, hint) ||
+      isEdgeBrowserIssues(event, hint) ||
       isNetworkIssues(event, hint) ||
       isDuplicateAlert(hint) ||
       isResizeObserverLoopLimitExceeded(event)
