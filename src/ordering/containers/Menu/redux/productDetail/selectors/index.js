@@ -11,6 +11,7 @@ import {
   getAllProducts,
   getFormatCurrencyFunction,
   getIsDineType,
+  getIsTakeawayType,
   getEnableTakeaway,
   getTakeawayCharge,
 } from '../../../../../redux/modules/app';
@@ -290,6 +291,14 @@ export const getShouldIncludeTakeawayCharge = createSelector(
   getIsTakeawayVariantAvailable,
   (hasExtraTakeawayCharge, isTakeawayOptionChecked, isTakeawayVariantAvailable) =>
     isTakeawayVariantAvailable && isTakeawayOptionChecked && hasExtraTakeawayCharge
+);
+
+// WB-5784: This is for the backward compatibility sake,
+// If the shipping type is takeaway, `isTakeaway` should always be true.
+export const getIsTakeawayProduct = createSelector(
+  getIsTakeawayType,
+  getIsTakeawayOptionChecked,
+  (isTakeawayType, isTakeawayOptionChecked) => isTakeawayType || isTakeawayOptionChecked
 );
 
 /**

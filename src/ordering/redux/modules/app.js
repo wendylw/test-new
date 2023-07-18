@@ -1795,6 +1795,14 @@ export const getIsPickUpType = createSelector(getShippingType, shippingType => s
  */
 export const getIsDineType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.DINE_IN);
 
+/**
+ * Is Takeaway type
+ */
+export const getIsTakeawayType = createSelector(
+  getShippingType,
+  shippingType => shippingType === DELIVERY_METHOD.TAKE_AWAY
+);
+
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)
 );
