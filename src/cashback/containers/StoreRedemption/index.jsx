@@ -98,7 +98,7 @@ const StoreRedemption = () => {
     }
   });
 
-  if (isDisplayWebResult) {
+  if (!isDisplayWebResult) {
     // Use createPortal to load the page because the Login Modal in App/index level DOM needs to be covered
     return createPortal(
       <div className={`${styles.StoreRedemptionWeb} tw-flex tw-flex-col`}>
