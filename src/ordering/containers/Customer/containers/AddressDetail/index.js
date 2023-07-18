@@ -9,13 +9,16 @@ import { connect } from 'react-redux';
 import {
   actions as appActionCreators,
   getUser,
-  getLoadIsLoginStatusPending,
   getUserIsLogin,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
 import { actions as customerActionCreators } from './redux';
-import { getAddressInfo, getContactNumberInvalidErrorVisibility } from './redux/selectors';
+import {
+  getAddressInfo,
+  getContactNumberInvalidErrorVisibility,
+  getLoadIsLoginStatusComplete,
+} from './redux/selectors';
 import { init, completePhoneNumber } from './redux/thunk';
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
@@ -51,23 +54,25 @@ class AddressDetail extends Component {
   };
 
   componentDidMount = async () => {
-    const { init, location } = this.props;
+    const { init, location, loadIsLoginStatusComplete, isUserLogin } = this.props;
     const { type: actionType, selectedAddress } = location.state || {};
+
+    if (loadIsLoginStatusComplete && !isUserLogin) {
+      this.gotoLoginPage();
+    }
+
     await init({ actionType, selectedAddress });
 
     prefetch(['ORD_AL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
   };
 
   componentDidUpdate = prevProps => {
-    const { loadIsLoginStatusPending: prevLoadIsLoginStatusPending } = prevProps;
-    const { isUserLogin, loadIsLoginStatusPending } = this.props;
+    const { loadIsLoginStatusComplete: prevLoadIsLoginStatusComplete } = prevProps;
+    const { isUserLogin, loadIsLoginStatusComplete } = this.props;
 
-    console.log('loadIsLoginStatusPending', loadIsLoginStatusPending);
-    console.log('prevLoadIsLoginStatusPending', prevLoadIsLoginStatusPending);
-
-    // if (!loadIsLoginStatusPending && loadIsLoginStatusPending !== prevLoadIsLoginStatusPending && !isUserLogin) {
-    //   this.gotoLoginPage();
-    // }
+    if (loadIsLoginStatusComplete && !prevLoadIsLoginStatusComplete && !isUserLogin) {
+      this.gotoLoginPage();
+    }
   };
 
   handleClickBack = () => {
@@ -438,7 +443,7 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
-      loadIsLoginStatusPending: getLoadIsLoginStatusPending(state),
+      loadIsLoginStatusComplete: getLoadIsLoginStatusComplete(state),
       isUserLogin: getUserIsLogin(state),
       deliveryDetails: getDeliveryDetails(state),
       addressInfo: getAddressInfo(state),

@@ -432,8 +432,6 @@ export const actions = {
       requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(async resp => {
         const { consumerId, login } = resp || {};
 
-        console.log(111);
-
         if (!login) {
           return resp;
         }
@@ -1346,9 +1344,14 @@ export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogi
 
 export const getLoadIsLoginStatus = createSelector(getUser, user => _get(user, 'loadIsLoginStatus', null));
 
-export const getLoadIsLoginStatusPending = createSelector(
+export const getIsLoginStatusLoaded = createSelector(
   getLoadIsLoginStatus,
-  loadIsLoginStatus => loadIsLoginStatus === API_REQUEST_STATUS.PENDING
+  loadIsLoginStatus => loadIsLoginStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getLoadIsLoginStatusFailed = createSelector(
+  getLoadIsLoginStatus,
+  loadIsLoginStatus => loadIsLoginStatus === API_REQUEST_STATUS.REJECTED
 );
 
 export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
