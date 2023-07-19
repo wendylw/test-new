@@ -457,7 +457,7 @@ class SearchPage extends React.Component {
   render() {
     const { searchKeyword, shouldShowFilterBar, categoryFilterList, shouldShowResetButton } = this.props;
     return (
-      <main className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.search.container">
+      <main className="fixed-wrapper fixed-wrapper__main" data-test-id="site.search.container">
         <div className="tw-sticky tw-top-0 tw-z-100 tw-w-full tw-bg-white">
           <header
             className={`${styles.SearchPageHeaderWrapper} ${
@@ -467,7 +467,7 @@ class SearchPage extends React.Component {
             <button
               className={styles.SearchPageIconWrapper}
               onClick={this.onGoBack}
-              data-heap-name="site.search.back-btn"
+              data-test-id="site.search.back-btn"
             >
               <CaretLeft size={24} weight="light" />
             </button>

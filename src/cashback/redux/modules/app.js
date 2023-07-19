@@ -298,6 +298,7 @@ export const actions = {
   loginByBeepApp: () => async (dispatch, getState) => {
     try {
       const tokens = await NativeMethods.getTokenAsync();
+
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
       if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
@@ -328,14 +329,8 @@ export const actions = {
   syncLoginFromBeepApp: () => async (dispatch, getState) => {
     try {
       const isUserLogin = getIsUserLogin(getState());
+
       if (isUserLogin) {
-        return;
-      }
-
-      const isAppLogin = NativeMethods.getLoginStatus();
-
-      if (!isAppLogin) {
-        dispatch(actions.showLoginModal());
         return;
       }
 

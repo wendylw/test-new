@@ -34,37 +34,30 @@ const StoreRedemptionNative = () => {
   const isDisplayStoreRedemptionContent = useSelector(getIsDisplayStoreRedemptionContent);
   const userStoreCashback = useSelector(getUserStoreCashback);
   const userCountry = useSelector(getUserCountry);
-  const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isAvailableToShareConsumerInfo = useSelector(getIsAvailableToShareConsumerInfo);
 
-  useEffect(() => {
-    if (isLoadStoreRedemptionDataCompleted) {
-      CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
-        country: userCountry,
-        page: userStoreCashback > 0 ? 'With Cashback' : 'Without Cashback',
-      });
-    }
-  }, [isLoadStoreRedemptionDataCompleted]);
+  useMount(() => {
+    CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
+      country: userCountry,
+      page: userStoreCashback > 0 ? 'With Cashback' : 'Without Cashback',
+    });
 
-  useEffect(() => {
-    if (isLoadStoreRedemptionDataCompleted) {
-      alert(
-        <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
-          {userStoreCashback > 0
-            ? t('StoreRedemptionCashRedeemAlert')
-            : t('StoreRedemptionNoCashbackAlert', { storeDisplayTitle })}
-        </p>,
-        {
-          id: 'StoreRedemptionInitialAlert',
-          onClose: () => {
-            CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
-              country: userCountry,
-            });
-          },
-        }
-      );
-    }
-  }, [userStoreCashback, isLoadStoreRedemptionDataCompleted, storeDisplayTitle, t]);
+    alert(
+      <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
+        {userStoreCashback > 0
+          ? t('StoreRedemptionCashRedeemAlert')
+          : t('StoreRedemptionNoCashbackAlert', { storeDisplayTitle })}
+      </p>,
+      {
+        id: 'StoreRedemptionInitialAlert',
+        onClose: () => {
+          CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
+            country: userCountry,
+          });
+        },
+      }
+    );
+  });
 
   useEffect(() => {
     if (isAvailableToShareConsumerInfo) {
@@ -72,41 +65,16 @@ const StoreRedemptionNative = () => {
     }
   }, [dispatch, isAvailableToShareConsumerInfo]);
 
-  useMount(async () => {
-    await dispatch(mounted());
-  });
-
   return (
     <>
-      {isWebview() && (
-        <NativeHeader
-          navFunc={() => {
-            CleverTap.pushEvent('POS Redemption Landing Page - Click Back', {
-              country: userCountry,
-            });
-
-            closeWebView();
-          }}
-        />
-      )}
-      <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>
-        {isLoadStoreRedemptionDataCompleted ? (
-          <>
-            <RedemptionStoreInfo />
-            {isDisplayStoreRedemptionContent ? (
-              <section
-                className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}
-              >
-                <CashbackBlock />
-              </section>
-            ) : null}
-          </>
-        ) : (
-          <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center">
-            <Loader className="tw-text-3xl tw-text-orange" weight="bold" />
-          </div>
-        )}
-      </div>
+      <RedemptionStoreInfo />
+      {isDisplayStoreRedemptionContent ? (
+        <section
+          className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}
+        >
+          <CashbackBlock />
+        </section>
+      ) : null}
     </>
   );
 };
@@ -114,15 +82,19 @@ const StoreRedemptionNative = () => {
 StoreRedemptionNative.displayName = 'StoreRedemptionNative';
 
 const StoreRedemption = () => {
+  const dispatch = useDispatch();
   const userCountry = useSelector(getUserCountry);
+  const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
 
-  useMount(() => {
+  useMount(async () => {
     if (isDisplayWebResult) {
       CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
         country: userCountry,
         page: 'When users scan QR with phone camera',
       });
+    } else {
+      await dispatch(mounted());
     }
   });
 
@@ -150,7 +122,30 @@ const StoreRedemption = () => {
     );
   }
 
-  return <StoreRedemptionNative />;
+  return (
+    <>
+      {isWebview() && (
+        <NativeHeader
+          navFunc={() => {
+            CleverTap.pushEvent('POS Redemption Landing Page - Click Back', {
+              country: userCountry,
+            });
+
+            closeWebView();
+          }}
+        />
+      )}
+      <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>
+        {isLoadStoreRedemptionDataCompleted ? (
+          <StoreRedemptionNative />
+        ) : (
+          <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center">
+            <Loader className="tw-text-3xl tw-text-orange" weight="bold" />
+          </div>
+        )}
+      </div>
+    </>
+  );
 };
 
 StoreRedemption.displayName = 'StoreRedemption';

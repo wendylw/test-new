@@ -86,7 +86,7 @@ class RecentActivities extends React.Component {
             return (
               <div className="flex flex-middle padding-normal margin-top-bottom-small base-box-shadow" key={`${i}`}>
                 <IconTicket className="icon__primary ticket" />
-                <summary className="padding-left-right-normal">
+                <summary className="receipt-list__item-summary padding-left-right-normal">
                   <h4 className="margin-top-bottom-small">
                     <label>{t('Receipt')} - </label>
                     <CurrencyNumber money={Math.abs(total || 0)} />
@@ -112,18 +112,18 @@ class RecentActivities extends React.Component {
     return (
       <div
         className={`receipt-list ${this.state.fullScreen ? 'receipt-list--full' : ''}`}
-        data-heap-name="cashback.home.receipt-list.container"
+        data-test-id="cashback.home.receipt-list.container"
       >
         <aside className="receipt-list__container padding-left-right-small">
           <i
             className="receipt-list__slide-button padding-small"
             onClick={this.toggleFullScreen.bind(this)}
-            data-heap-name="cashback.home.receipt-list.screen-toggler"
+            data-test-id="cashback.home.receipt-list.screen-toggler"
           />
           <h3
             className="padding-top-bottom-small text-center text-size-bigger"
             onClick={this.toggleFullScreen.bind(this)}
-            data-heap-name="cashback.home.receipt-list.title"
+            data-test-id="cashback.home.receipt-list.title"
           >
             {t('Receipts')}
           </h3>

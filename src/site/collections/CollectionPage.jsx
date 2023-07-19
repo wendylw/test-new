@@ -429,7 +429,7 @@ class CollectionPage extends React.Component {
             <button
               className={styles.CollectionPageHeaderIconWrapper}
               onClick={this.backToPreviousPage}
-              data-heap-name="site.common.back-btn"
+              data-test-id="site.common.back-btn"
             >
               <CaretLeft size={24} weight="light" />
             </button>
@@ -446,8 +446,7 @@ class CollectionPage extends React.Component {
         <section
           ref={this.sectionRef}
           className="entry-home fixed-wrapper__container wrapper"
-          data-heap-name="site.collection.container"
-          data-heap-collection-name={currentCollection.name}
+          data-test-id="site.collection.container"
         >
           {this.renderStoreList()}
         </section>

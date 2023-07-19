@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import beepErrorImage from '../images/beep-error.png';
-import withDataAttributes from './withDataAttributes';
 import './Error.scss';
+import { extractDataAttributes } from '../common/utils';
 
 /**
  * `<Error />` is used on the beepit.com and ordering.
@@ -13,7 +13,7 @@ import './Error.scss';
 
 class Error extends React.Component {
   render() {
-    const { t, dataAttributes } = this.props;
+    const { t } = this.props;
     const { title, description, children } = this.props || {};
     const error = {
       title,
@@ -26,7 +26,7 @@ class Error extends React.Component {
     }
 
     return (
-      <section className="error flex flex-column" {...dataAttributes}>
+      <section className="error flex flex-column" {...extractDataAttributes(this.props)}>
         <div className="error__container">
           <figure className="error__image-container margin-top-bottom-normal text-center">
             <img src={beepErrorImage} alt="Error found" />
@@ -58,4 +58,4 @@ Error.defaultProps = {
 
 Error.displayName = 'Error';
 
-export default withDataAttributes(withTranslation()(Error));
+export default withTranslation()(Error);

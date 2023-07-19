@@ -503,7 +503,7 @@ class CreditCard extends Component {
                 ref={ref => (this.cardNumberEl = ref)}
                 id="cardNumber"
                 className="payment-credit-card__input form__input text-size-biggest"
-                data-heap-name="ordering.payment.credit-card.card-number"
+                data-test-id="ordering.payment.credit-card.card-number"
                 type="tel"
                 placeholder="1234 1234 1234 1234"
                 value={formattedCardNumber || ''}
@@ -519,7 +519,7 @@ class CreditCard extends Component {
                   className={`payment-credit-card__input form__input text-size-biggest ${
                     invalidCardInfoFields.includes('validDate') ? 'error' : ''
                   }`}
-                  data-heap-name="ordering.payment.credit-card.valid-date"
+                  data-test-id="ordering.payment.credit-card.valid-date"
                   type="tel"
                   placeholder="MM / YY"
                   value={validDate || ''}
@@ -535,7 +535,7 @@ class CreditCard extends Component {
                   className={`payment-credit-card__input form__input text-size-biggest ${
                     invalidCardInfoFields.includes('cvv') ? 'error' : ''
                   }`}
-                  data-heap-name="ordering.payment.credit-card.cvv"
+                  data-test-id="ordering.payment.credit-card.cvv"
                   type="password"
                   placeholder="CVV"
                   onBlur={this.validCardInfo.bind(this)}
@@ -575,7 +575,7 @@ class CreditCard extends Component {
               className={`payment-credit-card__input form__input padding-left-right-normal text-size-biggest ${
                 cardHolderNameError.key === FormValidate.errorNames.required ? 'error' : ''
               }`}
-              data-heap-name="ordering.payment.credit-card.holder-name"
+              data-test-id="ordering.payment.credit-card.holder-name"
               type="text"
               value={cardholderName || ''}
               onChange={this.handleChangeCardHolderName.bind(this)}
@@ -603,13 +603,13 @@ class CreditCard extends Component {
     return (
       <section
         className={`payment-credit-card flex flex-column ${match.isExact ? '' : 'hide'}`}
-        data-heap-name="ordering.payment.credit-card.container"
+        data-test-id="ordering.payment.credit-card.container"
       >
         <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
-          data-heap-name="ordering.payment.credit-card.header"
+          data-test-id="ordering.payment.credit-card.header"
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
@@ -640,7 +640,7 @@ class CreditCard extends Component {
             total={total}
             className="margin-top-bottom-smaller text-uppercase"
             data-test-id="payMoney"
-            data-heap-name="ordering.payment.credit-card.pay-btn"
+            data-test-id="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}
             beforeCreateOrder={this.handleBeforeCreateOrder}
             validCreateOrder={Boolean(this.isFromComplete())}

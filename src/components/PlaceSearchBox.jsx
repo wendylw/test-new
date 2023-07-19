@@ -31,7 +31,7 @@ const PlaceSearchBox = ({ onChange, onClear }) => {
         <input
           className="place-search-box__input form__input text-size-big"
           data-testid="searchAddress"
-          data-heap-name="common.location-picker.search-box"
+          data-test-id="common.location-picker.search-box"
           type="text"
           placeholder={t('SearchYourAddress')}
           onChange={changeInputHandler}
@@ -40,7 +40,7 @@ const PlaceSearchBox = ({ onChange, onClear }) => {
         <IconClose
           className="icon icon__normal icon__default"
           onClick={clickCloseButtonHandler}
-          data-heap-name="common.location-picker.search-box-clear-icon"
+          data-test-id="common.location-picker.search-box-clear-icon"
           style={{ visibility: searchText ? 'visible' : 'hidden' }}
         />
       </div>

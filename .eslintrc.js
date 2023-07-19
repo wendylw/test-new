@@ -1,3 +1,6 @@
+const rulesDirPlugin = require('eslint-plugin-rulesdir');
+rulesDirPlugin.RULES_DIR = 'scripts/eslint-rules';
+
 // We will progressively remove files from this list
 const legacyFiles = [
   'src/Bootstrap.js',
@@ -8,7 +11,6 @@ const legacyFiles = [
   'src/cashback/components/RedeemInfo/index.js',
   'src/cashback/components/TopMessage/index.js',
   'src/cashback/components/TopMessage/TopMessage.stories.js',
-  'src/cashback/containers/App/components/RequestLogin/index.js',
   'src/cashback/containers/Claim/index.js',
   'src/cashback/containers/Error/index.js',
   'src/cashback/containers/Home/components/ReceiptList/index.js',
@@ -361,7 +363,7 @@ module.exports = {
       jsx: true,
     },
   },
-  plugins: ['react'],
+  plugins: ['react', 'rulesdir'],
   overrides: [
     {
       files: 'src/**/*.@(js|jsx|ts|jsx)',
@@ -382,6 +384,8 @@ module.exports = {
         'no-param-reassign': ['error', { ignorePropertyModificationsFor: ['state'] }],
         'no-unused-vars': 'warn',
         'import/no-named-as-default-member': 'warn',
+        'rulesdir/jsx-test-id': ['warn', { ifExist: ['onClick', 'onChange', 'onBlur', 'onFocus']}],
+        'rulesdir/no-data-heap-name': 'error'
       },
     },
     {
@@ -390,6 +394,8 @@ module.exports = {
       rules: {
         'no-unused-expressions': 'off',
         'react/display-name': ['warn', { ignoreTranspilerName: true }],
+        'rulesdir/jsx-test-id': ['warn', { ifExist: ['onClick', 'onChange', 'onBlur', 'onFocus']}],
+        'rulesdir/no-data-heap-name': 'error'
       },
     },
   ],
