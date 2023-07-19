@@ -20,7 +20,7 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
-import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo } from './api-request';
+import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo, getCoreBusinessInfo } from './api-request';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
 import { isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
@@ -100,14 +100,6 @@ export const initialState = {
 };
 
 export const types = APP_TYPES;
-
-const fetchCoreBusiness = variables => ({
-  [FETCH_GRAPHQL]: {
-    types: [types.FETCH_CORE_BUSINESS_REQUEST, types.FETCH_CORE_BUSINESS_SUCCESS, types.FETCH_CORE_BUSINESS_FAILURE],
-    endpoint: Url.apiGql('CoreBusiness'),
-    variables,
-  },
-});
 
 //action creators
 export const actions = {
@@ -398,9 +390,25 @@ export const actions = {
   }),
 
   loadCoreBusiness: () => async dispatch => {
-    const { business } = config;
+    try {
+      await dispatch({
+        type: types.FETCH_CORE_BUSINESS_REQUEST,
+      });
+      const { business } = config;
+      const response = await getCoreBusinessInfo(business);
+      const { enableCashback } = _get(response, 'data.business', {});
 
-    await dispatch(fetchCoreBusiness({ business }));
+      await dispatch({
+        type: types.FETCH_CORE_BUSINESS_SUCCESS,
+        payload: { enableCashback },
+      });
+    } catch (e) {
+      await dispatch({
+        type: types.FETCH_CORE_BUSINESS_FAILURE,
+      });
+
+      logger.error('Cashback_LoadCoreBusinessFailed', { message: e?.message });
+    }
   },
 
   fetchOnlineStoreInfo: () => ({
@@ -563,7 +571,6 @@ const user = (state = initialState.user, action) => {
     // fetch online store info success
     // fetch core business success
     case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
-    case types.FETCH_CORE_BUSINESS_SUCCESS:
       const { data } = responseGql;
       const { business, onlineStoreInfo } = data || {};
 
@@ -644,8 +651,8 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 };
 
 const coreBusiness = (state = initialState.coreBusiness, action) => {
-  const { type, responseGql } = action || {};
-  const enableCashback = _get(responseGql, 'data.business.enableCashback', false);
+  const { payload, type } = action || {};
+  const enableCashback = payload || {};
 
   switch (type) {
     case types.FETCH_CORE_BUSINESS_REQUEST:
