@@ -33,6 +33,16 @@ class App extends Component {
     this.visitErrorPage();
 
     try {
+      // TNGD code is executed at the very beginning.
+      // Because the MP and Beep accounts are not synchronized,
+      // it is impossible to determine that the accounts are the same
+      if (isTNGMiniProgram()) {
+        // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
+        await appActions.loginByTngMiniProgram();
+
+        return;
+      }
+
       const initRequests = [
         appActions.loadConsumerLoginStatus(),
         appActions.fetchOnlineStoreInfo(),
@@ -49,13 +59,6 @@ class App extends Component {
 
       if (isWebview()) {
         await appActions.syncLoginFromBeepApp();
-
-        return;
-      }
-
-      if (isTNGMiniProgram()) {
-        // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
-        await appActions.loginByTngMiniProgram();
 
         return;
       }
