@@ -7,7 +7,7 @@ import { alert } from '../../../common/utils/feedback';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
-import { getUserStoreCashback, getUserCountry } from '../../redux/modules/app';
+import { getUserStoreCashback, getUserCountry, getIsUserLogin } from '../../redux/modules/app';
 import {
   getStoreDisplayTitle,
   getIsDisplayStoreRedemptionContent,

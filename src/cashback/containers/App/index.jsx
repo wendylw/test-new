@@ -26,11 +26,6 @@ import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import logger from '../../../utils/monitoring/logger';
 
-const TNGDBeforeOnUnload = async appActions => {
-  await appActions.resetConsumerLoginStatus();
-  await appActions.resetConsumerCustomerInfo();
-};
-
 class App extends Component {
   async componentDidMount() {
     const { appActions } = this.props;
@@ -59,12 +54,6 @@ class App extends Component {
       }
 
       if (isTNGMiniProgram()) {
-        window.onbeforeunload = () => {
-          alert('TNGDBeforeOnUnload');
-
-          TNGDBeforeOnUnload(appActions);
-        };
-
         // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
         await appActions.loginByTngMiniProgram();
 

@@ -274,6 +274,8 @@ export const actions = {
       const consumerId = getUserConsumerId(state);
       const result = await getConsumerCustomerInfo(consumerId);
 
+      console.log('result', result);
+
       dispatch({
         type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED,
         response: result,
