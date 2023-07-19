@@ -63,7 +63,7 @@ const StoreRedemptionNative = () => {
     if (isAvailableToShareConsumerInfo) {
       dispatch(confirmToShareConsumerInfoRequests());
     }
-  }, [dispatch, isAvailableToShareConsumerInfo]);
+  }, [isAvailableToShareConsumerInfo]);
 
   return (
     <>

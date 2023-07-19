@@ -33,10 +33,12 @@ class App extends Component {
     this.visitErrorPage();
 
     try {
+      // 1. fetch online store info
       const initRequests = [appActions.fetchOnlineStoreInfo(), appActions.fetchCashbackBusiness()];
 
       await Promise.all(initRequests);
 
+      // 2. login
       // TNGD code is executed at the very beginning.
       // Because the MP and Beep accounts are not synchronized,
       // it is impossible to determine that the accounts are the same
