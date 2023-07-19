@@ -59,14 +59,14 @@ class App extends Component {
       }
 
       if (isTNGMiniProgram()) {
-        // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
-        await appActions.loginByTngMiniProgram();
-
         window.onbeforeunload = () => {
           alert('TNGDBeforeOnUnload');
 
           TNGDBeforeOnUnload(appActions);
         };
+
+        // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
+        await appActions.loginByTngMiniProgram();
 
         return;
       }
