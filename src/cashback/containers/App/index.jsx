@@ -33,6 +33,10 @@ class App extends Component {
     this.visitErrorPage();
 
     try {
+      const initRequests = [appActions.fetchOnlineStoreInfo(), appActions.fetchCashbackBusiness()];
+
+      await Promise.all(initRequests);
+
       // TNGD code is executed at the very beginning.
       // Because the MP and Beep accounts are not synchronized,
       // it is impossible to determine that the accounts are the same
@@ -41,13 +45,7 @@ class App extends Component {
         await appActions.loginByTngMiniProgram();
       }
 
-      const initRequests = [
-        appActions.loadConsumerLoginStatus(),
-        appActions.fetchOnlineStoreInfo(),
-        appActions.fetchCashbackBusiness(),
-      ];
-
-      await Promise.all(initRequests);
+      await appActions.loadConsumerLoginStatus();
 
       const { isUserLogin, userConsumerId } = this.props;
 
