@@ -1,5 +1,4 @@
 import { createSelector } from 'reselect';
-import { getIsLoginStatusLoaded, getLoadIsLoginStatusFailed } from '../../../../../redux/modules/app';
 
 export const getAddressInfo = state => state.customer.addressDetail;
 
