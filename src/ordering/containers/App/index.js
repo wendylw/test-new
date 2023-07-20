@@ -216,8 +216,8 @@ class App extends Component {
     const { redirectUrl } = apiErrorMessage;
     const { ROUTER_PATHS } = Constants;
     const { ORDERING_BASE, ORDERING_LOCATION_AND_DATE, ORDERING_HOME } = ROUTER_PATHS;
-    const h = Utils.getQueryVariable('h');
-    const type = Utils.getQueryVariable('type');
+    const h = Utils.getQueryString('h');
+    const type = Utils.getQueryString('type');
     let callback_url;
 
     appActions.hideApiMessageModal();

@@ -4,37 +4,30 @@ import dayjs from 'dayjs';
 const InvalidTimeErrorMessage = 'Invalid time string format';
 
 /**
- * add a specified amount of time
- * @param {string} time time like "10:30"
- * @param {Object} param1
- * @param {number} param1.value added amount
- * @param {string} param1.unit hour or minute
- * @returns {string} time
+ * pad zero
+ * @param {number} num
+ * @returns {string}
  */
-export const add = (time, { value, unit }) => {
-  invariant(isValidTime(time), InvalidTimeErrorMessage);
-
-  const amountOfMinutes = getAmountOfMinutes(time);
-  const minutes = toMinutes(Number(value), unit);
-
-  return minutesToTime(amountOfMinutes + minutes);
+export const padZero = num => {
+  const str = num.toString();
+  if (str.length === 1) {
+    return `0${str}`;
+  }
+  return str;
 };
 
 /**
- * minus a specified amount of time
- * @param {string} time time like "10:30"
- * @param {Object} param1
- * @param {number} param1.value added amount
- * @param {string} param1.unit "hour" or "minute"
- * @returns {string} time
+ * is valid time string
+ * @param {string} time
+ * @returns {boolean} result
  */
-export const minus = (time, { value, unit }) => {
-  invariant(isValidTime(time), InvalidTimeErrorMessage);
-
-  return add(time, {
-    value: -value,
-    unit,
-  });
+export const isValidTime = time => {
+  try {
+    const regex = /^-?\d+:[0-5]\d$/;
+    return regex.test(time);
+  } catch (e) {
+    return false;
+  }
 };
 
 /**
@@ -66,6 +59,81 @@ export const stringify = ({ hour, minute }) => {
   const m = minute - h * 60;
 
   return `${padZero(hour + h)}:${padZero(m)}`;
+};
+
+/**
+ * calculate specify value and unit amount of minutes
+ * @param {number} value
+ * @param {string} unit "hour" or "minute"
+ * @returns {number} amount of minutes
+ */
+export const toMinutes = (value, unit) => {
+  switch (unit) {
+    case 'hour':
+      return Number(value) * 60;
+    case 'minute':
+      return Number(value);
+    default:
+      throw new Error("Invalid argument of 'unit'");
+  }
+};
+
+/**
+ * calculate minutes corresponding time from 00:00
+ * @param {number} minutes
+ * @returns time string
+ */
+export const minutesToTime = minutes => {
+  const hour = Math.floor(minutes / 60);
+  const minute = minutes - hour * 60;
+
+  return stringify({ hour, minute });
+};
+
+/**
+ * get the time amount of minutes from 00:00
+ * @param {string} time
+ * @returns {number} amount of minutes
+ */
+export const getAmountOfMinutes = time => {
+  invariant(isValidTime(time), InvalidTimeErrorMessage);
+
+  const { hour, minute } = parse(time);
+  return toMinutes(hour, 'hour') + minute;
+};
+
+/**
+ * add a specified amount of time
+ * @param {string} time time like "10:30"
+ * @param {Object} param1
+ * @param {number} param1.value added amount
+ * @param {string} param1.unit hour or minute
+ * @returns {string} time
+ */
+export const add = (time, { value, unit }) => {
+  invariant(isValidTime(time), InvalidTimeErrorMessage);
+
+  const amountOfMinutes = getAmountOfMinutes(time);
+  const minutes = toMinutes(Number(value), unit);
+
+  return minutesToTime(amountOfMinutes + minutes);
+};
+
+/**
+ * minus a specified amount of time
+ * @param {string} time time like "10:30"
+ * @param {Object} param1
+ * @param {number} param1.value added amount
+ * @param {string} param1.unit "hour" or "minute"
+ * @returns {string} time
+ */
+export const minus = (time, { value, unit }) => {
+  invariant(isValidTime(time), InvalidTimeErrorMessage);
+
+  return add(time, {
+    value: -value,
+    unit,
+  });
 };
 
 /**
@@ -159,7 +227,7 @@ export const floorToHour = time => {
   const { hour } = parse(time);
 
   return stringify({
-    hour: hour,
+    hour,
     minute: 0,
   });
 };
@@ -212,61 +280,6 @@ export const isBetween = (time, { minTime, maxTime }, inclusivity = '()') => {
 };
 
 /**
- * get the time amount of minutes from 00:00
- * @param {string} time
- * @returns {number} amount of minutes
- */
-export const getAmountOfMinutes = time => {
-  invariant(isValidTime(time), InvalidTimeErrorMessage);
-
-  const { hour, minute } = parse(time);
-  return toMinutes(hour, 'hour') + minute;
-};
-
-/**
- * calculate specify value and unit amount of minutes
- * @param {number} value
- * @param {string} unit "hour" or "minute"
- * @returns {number} amount of minutes
- */
-export const toMinutes = (value, unit) => {
-  switch (unit) {
-    case 'hour':
-      return Number(value) * 60;
-    case 'minute':
-      return Number(value);
-    default:
-      throw new Error("Invalid argument of 'unit'");
-  }
-};
-
-/**
- * calculate minutes corresponding time from 00:00
- * @param {number} minutes
- * @returns time string
- */
-export const minutesToTime = minutes => {
-  const hour = Math.floor(minutes / 60);
-  const minute = minutes - hour * 60;
-
-  return stringify({ hour, minute });
-};
-
-/**
- * is valid time string
- * @param {string} time
- * @returns {boolean} result
- */
-export const isValidTime = time => {
-  try {
-    const regex = /^-?\d+:[0-5]\d$/;
-    return regex.test(time);
-  } catch (e) {
-    return false;
-  }
-};
-
-/**
  * set dayjs hour and minute by time
  * @param {string} time
  * @param {Dayjs} date
@@ -315,6 +328,7 @@ export const formatTo12hour = (time, withTimePeriod = true) => {
  */
 export const formatTime = (time, formatter = 'h:mm A') => {
   if (!isValidTime(time)) {
+    // eslint-disable-next-line no-console
     console.warn(`The "${time}" is not valid time to format.`);
     return time;
   }
@@ -322,19 +336,6 @@ export const formatTime = (time, formatter = 'h:mm A') => {
   const dateTime = setDateTime(time);
 
   return dateTime.format(formatter);
-};
-
-/**
- * pad zero
- * @param {number} num
- * @returns {string}
- */
-export const padZero = num => {
-  const str = num.toString();
-  if (str.length === 1) {
-    return `0${str}`;
-  }
-  return str;
 };
 
 /**

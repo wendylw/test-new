@@ -1,11 +1,11 @@
-import * as timeLib from './time-lib';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import _flow from 'lodash/flow';
+import _get from 'lodash/get';
+import * as timeLib from './time-lib';
 import { computeStraightDistance } from './geoUtils';
 import Utils from './utils';
 import Constants from './constants';
-import _flow from 'lodash/flow';
-import _get from 'lodash/get';
 
 const { DELIVERY_METHOD, SH_LOGISTICS_VALID_TIME, TIME_SLOT_NOW } = Constants;
 
@@ -16,110 +16,80 @@ const UTC8_TIME_ZONE_OFFSET = 480;
 dayjs.extend(utc);
 
 /**
- * get data list
- * @param {Store} store
- * @param {Date} currentDate
- * @returns {object[]} dateList
+ * return merchant current time
+ * @param {number} utcOffset  merchant time zone utc offset
+ * @param {Date} date date obj, default is today
+ * @returns {Dayjs}
  */
-export const getOrderDateList = (store, deliveryType, currentDate, utcOffset = UTC8_TIME_ZONE_OFFSET) => {
-  if (!store) {
-    return [];
-  }
+export const getBusinessDateTime = (utcOffset, date = new Date()) => dayjs(date).utcOffset(utcOffset);
 
-  const { qrOrderingSettings } = store;
-  const { validDays, vacations, enablePreOrder } = qrOrderingSettings;
-
-  const current = getBusinessDateTime(utcOffset, currentDate);
-
-  const dateList = [];
-
-  for (let i = 0; i < MAX_PRE_ORDER_DATE; i++) {
-    const date = current.add(i, 'day').startOf('day');
-    const isToday = i === 0;
-    const dayOfWeek = date.day();
-    const isOpen = isInValidDays(dayOfWeek, validDays) && !isInVacations(date, vacations);
-
-    if (isToday) {
-      const todayTimeList = getTodayTimeList(store, {
-        todayDate: currentDate,
-        deliveryType,
-        utcOffset,
-      });
-
-      dateList.push({
-        date: date.toDate(),
-        isOpen: isOpen && todayTimeList.length > 0,
-        isToday: true,
-      });
-    } else {
-      dateList.push({
-        date: date.toDate(),
-        isOpen: enablePreOrder && isOpen,
-        isToday: false,
-      });
-    }
-  }
-
-  return dateList;
-};
 /**
- * order time list
- * @param {Store} store
- * @param {string} deliveryType
- * @returns {string[]} timeList
+ * check whether dayOfWeek is in valid days
+ * @param {number} dayOfWeek
+ * @param {number[]} validDays
+ * @returns {boolean}
  */
-export const getPreOrderTimeList = (store, deliveryType) => {
-  switch (deliveryType) {
-    case DELIVERY_METHOD.DELIVERY:
-      return getDeliveryPreOrderTimeList(store);
-    case DELIVERY_METHOD.PICKUP:
-      return getPickupPreOrderTimeList(store);
-    default:
-      throw [];
+export const isInValidDays = (dayOfWeek, validDays) => {
+  if (!validDays) {
+    return false;
   }
+
+  // validDays from api start from 1
+  return validDays.includes(dayOfWeek + 1);
 };
 
 /**
- * delivery time list
- * @param {Store} store
+ * check whether dateTime is in vacations
+ * @param {Dayjs} dateTime
+ * @param {Object} vacations
+ * @param {string} vacations[].vacationTimeFrom
+ * @param {string} vacations[].vacationTimeTo
+ * @returns {boolean}
  */
-export const getDeliveryPreOrderTimeList = store => {
-  if (!store) {
-    return [];
+export const isInVacations = (dateTime, vacations) => {
+  if (!vacations) {
+    return false;
   }
 
-  const { qrOrderingSettings } = store;
-  const { breakTimeFrom, breakTimeTo, enablePreOrder } = qrOrderingSettings;
+  const formatDate = dateTime.format('YYYY/MM/DD');
 
-  if (!enablePreOrder) {
-    return [];
+  const inVacation = vacations.some(
+    ({ vacationTimeFrom, vacationTimeTo }) => formatDate >= vacationTimeFrom && formatDate <= vacationTimeTo
+  );
+
+  return inVacation;
+};
+
+/**
+ * check whether time is in valid time
+ * @param {string} time
+ * @param {Object} param1
+ * @param {string} param1.validTimeFrom
+ * @param {string} param1.validTimeTo
+ * @returns {boolean}
+ */
+export const isInValidTime = (time, { validTimeFrom, validTimeTo }) => {
+  if (!timeLib.isValidTime(validTimeFrom) || !timeLib.isValidTime(validTimeTo)) {
+    return false;
   }
 
-  const { validTimeFrom, validTimeTo } = getDeliveryPreOrderValidTimePeriod(store);
+  return timeLib.isBetween(time, { minTime: validTimeFrom, maxTime: validTimeTo }, '[]');
+};
 
-  const timeList = [];
-
-  for (
-    let time = validTimeFrom;
-    timeLib.isSameOrBefore(time, validTimeTo);
-    time = timeLib.add(time, {
-      value: 1,
-      unit: 'hour',
-    })
-  ) {
-    if (isInBreakTime(time, { breakTimeFrom, breakTimeTo })) {
-      continue;
-    }
-
-    // remove 24:00
-    if (timeLib.isSame(time, '24:00')) {
-      continue;
-    }
-
-    timeList.push(time);
+/**
+ * check whether time is in break time
+ * @param {string} time
+ * @param {Object} param1
+ * @param {string} param1.breakTimeFrom
+ * @param {string} param1.breakTimeTo
+ * @returns {boolean}
+ */
+export const isInBreakTime = (time, { breakTimeFrom, breakTimeTo }) => {
+  if (!timeLib.isValidTime(breakTimeFrom) || !timeLib.isValidTime(breakTimeTo)) {
+    return false;
   }
 
-  return timeList;
+  return timeLib.isBetween(time, { minTime: breakTimeFrom, maxTime: breakTimeTo }, '[)');
 };
 
 /**
@@ -154,7 +124,7 @@ export const getDeliveryPreOrderValidTimePeriod = store => {
 
   return {
     validTimeFrom: logisticsValidTimeFrom,
-    //floor hour, like 19:30 will get 19:00
+    // floor hour, like 19:30 will get 19:00
     validTimeTo: timeLib.floorToHour(logisticsValidTimeTo),
   };
 };
@@ -168,8 +138,53 @@ export const getPickupPreOrderTimePeriod = store => {
       value: 30,
       unit: 'minute',
     }),
-    validTimeTo: validTimeTo,
+    validTimeTo,
   };
+};
+
+/**
+ * delivery time list
+ * @param {Store} store
+ */
+export const getDeliveryPreOrderTimeList = store => {
+  if (!store) {
+    return [];
+  }
+
+  const { qrOrderingSettings } = store;
+  const { breakTimeFrom, breakTimeTo, enablePreOrder } = qrOrderingSettings;
+
+  if (!enablePreOrder) {
+    return [];
+  }
+
+  const { validTimeFrom, validTimeTo } = getDeliveryPreOrderValidTimePeriod(store);
+
+  const timeList = [];
+
+  for (
+    let time = validTimeFrom;
+    timeLib.isSameOrBefore(time, validTimeTo);
+    time = timeLib.add(time, {
+      value: 1,
+      unit: 'hour',
+    })
+  ) {
+    if (isInBreakTime(time, { breakTimeFrom, breakTimeTo })) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
+    // remove 24:00
+    if (timeLib.isSame(time, '24:00')) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
+    timeList.push(time);
+  }
+
+  return timeList;
 };
 
 /**
@@ -205,11 +220,13 @@ export const getPickupPreOrderTimeList = store => {
       isInBreakTime(time, { breakTimeFrom, breakTimeTo }) ||
       (timeLib.isValidTime(breakTimeTo) && timeLib.isSame(time, breakTimeTo))
     ) {
+      // eslint-disable-next-line no-continue
       continue;
     }
 
     // remove 24:00
     if (timeLib.isSame(time, '24:00')) {
+      // eslint-disable-next-line no-continue
       continue;
     }
 
@@ -217,166 +234,6 @@ export const getPickupPreOrderTimeList = store => {
   }
 
   return timeList;
-};
-
-export const getDeliveryTodayTimeList = (store, currentDate, utcOffset) => {
-  const { disableTodayPreOrder, disableTodayDeliveryPreOrder, enablePreOrder } = store.qrOrderingSettings;
-  const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(
-    store,
-    currentDate,
-    utcOffset,
-    DELIVERY_METHOD.DELIVERY
-  );
-  const timeList = [];
-
-  if (isAvailableOnDemandOrder) {
-    timeList.push(TIME_SLOT_NOW);
-  }
-
-  if (!enablePreOrder || disableTodayPreOrder || disableTodayDeliveryPreOrder) {
-    return timeList;
-  }
-
-  const current = getBusinessDateTime(utcOffset, currentDate);
-
-  const time = timeLib.getTimeFromDayjs(current);
-  const availablePreOrderValidTimeFrom = timeLib.add(time, { value: 1, unit: 'hour' });
-  const deliveryTimeList = getDeliveryPreOrderTimeList(store);
-
-  const availableTimeList = deliveryTimeList.filter(time => timeLib.isAfter(time, availablePreOrderValidTimeFrom));
-
-  return timeList.concat(availableTimeList);
-};
-
-export const getTodayTimeList = (store, { todayDate, deliveryType, utcOffset }) => {
-  switch (deliveryType) {
-    case DELIVERY_METHOD.PICKUP:
-      return getPickupTodayTimeList(store, todayDate, utcOffset);
-    case DELIVERY_METHOD.DELIVERY:
-      return getDeliveryTodayTimeList(store, todayDate, utcOffset);
-    default:
-      return [];
-  }
-};
-
-export const getPickupTodayTimeList = (store, currentDate, utcOffset) => {
-  const { disableTodayPreOrder, enablePreOrder } = store.qrOrderingSettings;
-  const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(store, currentDate, utcOffset, DELIVERY_METHOD.PICKUP);
-  const timeList = [];
-
-  if (isAvailableOnDemandOrder) {
-    timeList.push(TIME_SLOT_NOW);
-  }
-
-  if (!enablePreOrder || disableTodayPreOrder) {
-    return timeList;
-  }
-
-  const current = getBusinessDateTime(utcOffset, currentDate);
-
-  const time = timeLib.getTimeFromDayjs(current);
-  const availablePreOrderValidTimeFrom = timeLib.add(time, { value: 30, unit: 'minute' });
-  const pickupTimeList = getPickupPreOrderTimeList(store);
-
-  const availableTimeList = pickupTimeList.filter(time => timeLib.isAfter(time, availablePreOrderValidTimeFrom));
-
-  return timeList.concat(availableTimeList);
-};
-
-/**
- * get delivery available stores
- * @param {*} stores
- * @param {date} date
- * @returns {Store[]}
- */
-export const filterDeliveryAvailableStores = (stores, date, utcOffset) => {
-  return stores.filter(store => {
-    const { qrOrderingSettings, fulfillmentOptions } = store;
-    if (!qrOrderingSettings) {
-      return false;
-    }
-
-    if (!qrOrderingSettings.enableLiveOnline) {
-      return false;
-    }
-
-    const isSupportDelivery = fulfillmentOptions.some(type => type.toLowerCase() === DELIVERY_METHOD.DELIVERY);
-
-    if (!isSupportDelivery) {
-      return false;
-    }
-
-    const isStoreOpened = checkStoreIsOpened(store, date, utcOffset);
-
-    if (!isStoreOpened) {
-      return false;
-    }
-
-    return true;
-  });
-};
-
-/**
- * find a store that nearest to specify geo location
- * @param {*} stores
- * @param {*} param1
- */
-export const findNearestAvailableStore = (stores, { coords: { lat = 0, lng = 0 }, currentDate, utcOffset }) => {
-  let nearlyStore = {
-    distance: Infinity,
-    store: null,
-  };
-
-  const availableStores = filterDeliveryAvailableStores(stores, currentDate, utcOffset);
-
-  availableStores.forEach(store => {
-    if (!store.location) {
-      return;
-    }
-    const { latitude, longitude } = store.location;
-
-    const distance = computeStraightDistance(
-      { lat, lng },
-      {
-        lat: latitude,
-        lng: longitude,
-      }
-    );
-
-    if (distance < nearlyStore.distance) {
-      nearlyStore = {
-        distance,
-        store,
-      };
-    }
-  });
-
-  return nearlyStore;
-};
-
-/**
- * check store whether it is open or not at given time
- * @param {Date} dateTime
- * @param {Store} store
- * @returns {boolean}
- */
-export const checkStoreIsOpened = (store, date, utcOffset) => {
-  if (!date || !store) {
-    return false;
-  }
-
-  const { qrOrderingSettings } = store;
-  const { enablePreOrder, pauseModeEnabled } = qrOrderingSettings;
-
-  if (pauseModeEnabled) {
-    return false;
-  }
-
-  if (enablePreOrder) {
-    return true;
-  }
-
-  return isAvailableOrderTime(store, date, utcOffset);
 };
 
 /**
@@ -433,82 +290,233 @@ export const isAvailableOnDemandOrderTime = (store, date, utcOffset, deliveryTyp
   return isAvailableOrderTime(store, date, utcOffset, deliveryType);
 };
 
-/**
- * check whether dayOfWeek is in valid days
- * @param {number} dayOfWeek
- * @param {number[]} validDays
- * @returns {boolean}
- */
-export const isInValidDays = (dayOfWeek, validDays) => {
-  if (!validDays) {
-    return false;
+export const getPickupTodayTimeList = (store, currentDate, utcOffset) => {
+  const { disableTodayPreOrder, enablePreOrder } = store.qrOrderingSettings;
+  const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(store, currentDate, utcOffset, DELIVERY_METHOD.PICKUP);
+  const timeList = [];
+
+  if (isAvailableOnDemandOrder) {
+    timeList.push(TIME_SLOT_NOW);
   }
 
-  // validDays from api start from 1
-  return validDays.includes(dayOfWeek + 1);
+  if (!enablePreOrder || disableTodayPreOrder) {
+    return timeList;
+  }
+
+  const current = getBusinessDateTime(utcOffset, currentDate);
+
+  const time = timeLib.getTimeFromDayjs(current);
+  const availablePreOrderValidTimeFrom = timeLib.add(time, { value: 30, unit: 'minute' });
+  const pickupTimeList = getPickupPreOrderTimeList(store);
+
+  const availableTimeList = pickupTimeList.filter(pickupTime =>
+    timeLib.isAfter(pickupTime, availablePreOrderValidTimeFrom)
+  );
+
+  return timeList.concat(availableTimeList);
+};
+
+export const getDeliveryTodayTimeList = (store, currentDate, utcOffset) => {
+  const { disableTodayPreOrder, disableTodayDeliveryPreOrder, enablePreOrder } = store.qrOrderingSettings;
+  const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(
+    store,
+    currentDate,
+    utcOffset,
+    DELIVERY_METHOD.DELIVERY
+  );
+  const timeList = [];
+
+  if (isAvailableOnDemandOrder) {
+    timeList.push(TIME_SLOT_NOW);
+  }
+
+  if (!enablePreOrder || disableTodayPreOrder || disableTodayDeliveryPreOrder) {
+    return timeList;
+  }
+
+  const current = getBusinessDateTime(utcOffset, currentDate);
+
+  const time = timeLib.getTimeFromDayjs(current);
+  const availablePreOrderValidTimeFrom = timeLib.add(time, { value: 1, unit: 'hour' });
+  const deliveryTimeList = getDeliveryPreOrderTimeList(store);
+
+  const availableTimeList = deliveryTimeList.filter(deliveryTime =>
+    timeLib.isAfter(deliveryTime, availablePreOrderValidTimeFrom)
+  );
+
+  return timeList.concat(availableTimeList);
+};
+
+export const getTodayTimeList = (store, { todayDate, deliveryType, utcOffset }) => {
+  switch (deliveryType) {
+    case DELIVERY_METHOD.PICKUP:
+      return getPickupTodayTimeList(store, todayDate, utcOffset);
+    case DELIVERY_METHOD.DELIVERY:
+      return getDeliveryTodayTimeList(store, todayDate, utcOffset);
+    default:
+      return [];
+  }
 };
 
 /**
- * check whether time is in valid time
- * @param {string} time
- * @param {Object} param1
- * @param {string} param1.validTimeFrom
- * @param {string} param1.validTimeTo
- * @returns {boolean}
+ * order time list
+ * @param {Store} store
+ * @param {string} deliveryType
+ * @returns {string[]} timeList
  */
-export const isInValidTime = (time, { validTimeFrom, validTimeTo }) => {
-  if (!timeLib.isValidTime(validTimeFrom) || !timeLib.isValidTime(validTimeTo)) {
-    return false;
+export const getPreOrderTimeList = (store, deliveryType) => {
+  switch (deliveryType) {
+    case DELIVERY_METHOD.DELIVERY:
+      return getDeliveryPreOrderTimeList(store);
+    case DELIVERY_METHOD.PICKUP:
+      return getPickupPreOrderTimeList(store);
+    default:
+      return [];
   }
-
-  return timeLib.isBetween(time, { minTime: validTimeFrom, maxTime: validTimeTo }, '[]');
 };
 
 /**
- * check whether time is in break time
- * @param {string} time
- * @param {Object} param1
- * @param {string} param1.breakTimeFrom
- * @param {string} param1.breakTimeTo
- * @returns {boolean}
+ * get data list
+ * @param {Store} store
+ * @param {Date} currentDate
+ * @returns {object[]} dateList
  */
-export const isInBreakTime = (time, { breakTimeFrom, breakTimeTo }) => {
-  if (!timeLib.isValidTime(breakTimeFrom) || !timeLib.isValidTime(breakTimeTo)) {
-    return false;
+export const getOrderDateList = (store, deliveryType, currentDate, utcOffset = UTC8_TIME_ZONE_OFFSET) => {
+  if (!store) {
+    return [];
   }
 
-  return timeLib.isBetween(time, { minTime: breakTimeFrom, maxTime: breakTimeTo }, '[)');
+  const { qrOrderingSettings } = store;
+  const { validDays, vacations, enablePreOrder } = qrOrderingSettings;
+
+  const current = getBusinessDateTime(utcOffset, currentDate);
+
+  const dateList = [];
+
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < MAX_PRE_ORDER_DATE; i++) {
+    const date = current.add(i, 'day').startOf('day');
+    const isToday = i === 0;
+    const dayOfWeek = date.day();
+    const isOpen = isInValidDays(dayOfWeek, validDays) && !isInVacations(date, vacations);
+
+    if (isToday) {
+      const todayTimeList = getTodayTimeList(store, {
+        todayDate: currentDate,
+        deliveryType,
+        utcOffset,
+      });
+
+      dateList.push({
+        date: date.toDate(),
+        isOpen: isOpen && todayTimeList.length > 0,
+        isToday: true,
+      });
+    } else {
+      dateList.push({
+        date: date.toDate(),
+        isOpen: enablePreOrder && isOpen,
+        isToday: false,
+      });
+    }
+  }
+
+  return dateList;
 };
 
 /**
- * check whether dateTime is in vacations
- * @param {Dayjs} dateTime
- * @param {Object} vacations
- * @param {string} vacations[].vacationTimeFrom
- * @param {string} vacations[].vacationTimeTo
+ * check store whether it is open or not at given time
+ * @param {Date} dateTime
+ * @param {Store} store
  * @returns {boolean}
  */
-export const isInVacations = (dateTime, vacations) => {
-  if (!vacations) {
+export const checkStoreIsOpened = (store, date, utcOffset) => {
+  if (!date || !store) {
     return false;
   }
 
-  const formatDate = dateTime.format('YYYY/MM/DD');
+  const { qrOrderingSettings } = store;
+  const { enablePreOrder, pauseModeEnabled } = qrOrderingSettings;
 
-  const inVacation = vacations.some(({ vacationTimeFrom, vacationTimeTo }) => {
-    return formatDate >= vacationTimeFrom && formatDate <= vacationTimeTo;
+  if (pauseModeEnabled) {
+    return false;
+  }
+
+  if (enablePreOrder) {
+    return true;
+  }
+
+  return isAvailableOrderTime(store, date, utcOffset);
+};
+
+/**
+ * get delivery available stores
+ * @param {*} stores
+ * @param {date} date
+ * @returns {Store[]}
+ */
+export const filterDeliveryAvailableStores = (stores, date, utcOffset) =>
+  stores.filter(store => {
+    const { qrOrderingSettings, fulfillmentOptions } = store;
+    if (!qrOrderingSettings) {
+      return false;
+    }
+
+    if (!qrOrderingSettings.enableLiveOnline) {
+      return false;
+    }
+
+    const isSupportDelivery = fulfillmentOptions.some(type => type.toLowerCase() === DELIVERY_METHOD.DELIVERY);
+
+    if (!isSupportDelivery) {
+      return false;
+    }
+
+    const isStoreOpened = checkStoreIsOpened(store, date, utcOffset);
+
+    if (!isStoreOpened) {
+      return false;
+    }
+
+    return true;
   });
 
-  return inVacation;
-};
 /**
- * return merchant current time
- * @param {number} utcOffset  merchant time zone utc offset
- * @param {Date} date date obj, default is today
- * @returns {Dayjs}
+ * find a store that nearest to specify geo location
+ * @param {*} stores
+ * @param {*} param1
  */
-export const getBusinessDateTime = (utcOffset, date = new Date()) => {
-  return dayjs(date).utcOffset(utcOffset);
+export const findNearestAvailableStore = (stores, { coords: { lat = 0, lng = 0 }, currentDate, utcOffset }) => {
+  let nearlyStore = {
+    distance: Infinity,
+    store: null,
+  };
+
+  const availableStores = filterDeliveryAvailableStores(stores, currentDate, utcOffset);
+
+  availableStores.forEach(store => {
+    if (!store.location) {
+      return;
+    }
+    const { latitude, longitude } = store.location;
+
+    const distance = computeStraightDistance(
+      { lat, lng },
+      {
+        lat: latitude,
+        lng: longitude,
+      }
+    );
+
+    if (distance < nearlyStore.distance) {
+      nearlyStore = {
+        distance,
+        store,
+      };
+    }
+  });
+
+  return nearlyStore;
 };
 
 export const isDateTimeSoldOut = (store, soldData, selectedDate, utcOffset) => {
@@ -604,11 +612,11 @@ export const getStoreInfoForCleverTap = ({ business, allBusinessInfo, cartSummar
     'store id': id,
     'free delivery above': freeShippingMinAmount,
     'shipping type': shippingType,
-    country: country,
+    country,
   };
 
   if (enableCashback) {
-    res['cashback'] = cashbackRate;
+    res.cashback = cashbackRate;
   }
 
   if (enableConditionalFreeShipping) {
@@ -618,7 +626,7 @@ export const getStoreInfoForCleverTap = ({ business, allBusinessInfo, cartSummar
   if (cartSummary) {
     res['cart items quantity'] = count;
     res['cart amount'] = subtotal;
-    res['has met minimum order value'] = subtotal >= minimumConsumption ? true : false;
+    res['has met minimum order value'] = subtotal >= minimumConsumption;
   }
 
   return res;

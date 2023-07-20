@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import _ from 'lodash';
 import {
   getBusinessDateTime,
   getOrderDateList,
@@ -7,7 +10,6 @@ import {
   isInValidTime,
   getDeliveryPreOrderTimeList,
   getPickupPreOrderTimeList,
-  getPreOrderTimeList,
   getDeliveryTodayTimeList,
   getPickupTodayTimeList,
   getDeliveryPreOrderValidTimePeriod,
@@ -17,10 +19,8 @@ import {
   checkStoreIsOpened,
   isDateTimeSoldOut,
 } from './store-utils';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import _ from 'lodash';
 import Constants from './constants';
+
 const { TIME_SLOT_NOW, DELIVERY_METHOD } = Constants;
 
 dayjs.extend(utc);
@@ -34,12 +34,12 @@ expect.extend({
         message: () => `expected ${receivedStartArray} not to start with ${expectedStartArray}, `,
         pass: true,
       };
-    } else {
-      return {
-        message: () => `expected ${receivedStartArray} start with ${expectedStartArray}`,
-        pass: false,
-      };
     }
+
+    return {
+      message: () => `expected ${receivedStartArray} start with ${expectedStartArray}`,
+      pass: false,
+    };
   },
   toArrayEndWith: (received, expectedEndArray) => {
     const receivedEndArray = _.takeRight(received, expectedEndArray.length);
@@ -49,12 +49,12 @@ expect.extend({
         message: () => `expected ${receivedEndArray} not to end with ${expectedEndArray}`,
         pass: true,
       };
-    } else {
-      return {
-        message: () => `expected ${receivedEndArray} end with ${expectedEndArray}`,
-        pass: false,
-      };
     }
+
+    return {
+      message: () => `expected ${receivedEndArray} end with ${expectedEndArray}`,
+      pass: false,
+    };
   },
 });
 

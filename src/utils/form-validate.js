@@ -1,4 +1,4 @@
-const getRequiredError = function(value, errorMessage) {
+const getRequiredError = (value, errorMessage) => {
   if (value || !!value.length) {
     return null;
   }
@@ -6,7 +6,7 @@ const getRequiredError = function(value, errorMessage) {
   return errorMessage;
 };
 
-const geIncompleteError = function(value, errorMessage, length) {
+const geIncompleteError = (value, errorMessage, length) => {
   if (value.length === length) {
     return null;
   }
@@ -14,7 +14,7 @@ const geIncompleteError = function(value, errorMessage, length) {
   return errorMessage;
 };
 
-const getCustomValidateError = function(func, errorMessage) {
+const getCustomValidateError = (func, errorMessage) => {
   if (func) {
     return null;
   }
@@ -31,8 +31,8 @@ const FormValidate = {
     required: getRequiredError,
     fixedLength: geIncompleteError,
   },
-  getErrorMessage: function(id, options) {
-    const value = document.getElementById(id).value;
+  getErrorMessage(id, options) {
+    const { value } = document.getElementById(id);
     let result = null;
 
     Object.keys(options.rules).some(item => {
@@ -55,12 +55,12 @@ const FormValidate = {
 
     return result;
   },
-  validate: function(id, options) {
+  validate(id, options) {
     if (!document.getElementById(id)) {
       return {};
     }
 
-    const value = document.getElementById(id).value;
+    const { value } = document.getElementById(id);
     let result = {};
 
     Object.keys(options.rules).some(item => {
