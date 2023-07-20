@@ -31,8 +31,6 @@ const legacyFiles = [
   'src/cashback/redux/store.test.js',
   'src/cashback/redux/types.js',
   'src/config.js',
-  'src/containers/NotFound.jsx',
-  'src/containers/TermsPrivacy.js',
   'src/i18n.js',
   'src/index.js',
   'src/models/Error.js',

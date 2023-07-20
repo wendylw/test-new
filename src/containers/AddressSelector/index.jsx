@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import _trim from 'lodash/trim';
@@ -168,8 +167,10 @@ const AddressSelector = ({ placeInfo, addressList, addressPickerEnabled, onSelec
 };
 
 AddressSelector.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
   placeInfo: PropTypes.object,
   addressList: PropTypes.array,
+  /* eslint-disable */
   addressPickerEnabled: PropTypes.bool,
   onSelect: PropTypes.func,
 };
