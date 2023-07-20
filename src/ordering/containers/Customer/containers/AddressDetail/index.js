@@ -12,13 +12,10 @@ import {
   getUserIsLogin,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
+  getIsFetchLoginStatusComplete,
 } from '../../../../redux/modules/app';
 import { actions as customerActionCreators } from './redux';
-import {
-  getAddressInfo,
-  getContactNumberInvalidErrorVisibility,
-  getLoadIsLoginStatusComplete,
-} from './redux/selectors';
+import { getAddressInfo, getContactNumberInvalidErrorVisibility } from './redux/selectors';
 import { init, completePhoneNumber } from './redux/thunk';
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
@@ -54,10 +51,10 @@ class AddressDetail extends Component {
   };
 
   componentDidMount = async () => {
-    const { init, location, loadIsLoginStatusComplete, isUserLogin } = this.props;
+    const { init, location, isFetchLoginStatusComplete, isUserLogin } = this.props;
     const { type: actionType, selectedAddress } = location.state || {};
 
-    if (loadIsLoginStatusComplete && !isUserLogin) {
+    if (isFetchLoginStatusComplete && !isUserLogin) {
       this.gotoLoginPage();
     }
 
@@ -67,10 +64,10 @@ class AddressDetail extends Component {
   };
 
   componentDidUpdate = prevProps => {
-    const { loadIsLoginStatusComplete: prevLoadIsLoginStatusComplete } = prevProps;
-    const { isUserLogin, loadIsLoginStatusComplete } = this.props;
+    const { isFetchLoginStatusComplete: prevIsFetchLoginStatusComplete } = prevProps;
+    const { isUserLogin, isFetchLoginStatusComplete } = this.props;
 
-    if (loadIsLoginStatusComplete && !prevLoadIsLoginStatusComplete && !isUserLogin) {
+    if (isFetchLoginStatusComplete && !prevIsFetchLoginStatusComplete && !isUserLogin) {
       this.gotoLoginPage();
     }
   };
@@ -443,7 +440,7 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
-      loadIsLoginStatusComplete: getLoadIsLoginStatusComplete(state),
+      isFetchLoginStatusComplete: getIsFetchLoginStatusComplete(state),
       isUserLogin: getUserIsLogin(state),
       deliveryDetails: getDeliveryDetails(state),
       addressInfo: getAddressInfo(state),

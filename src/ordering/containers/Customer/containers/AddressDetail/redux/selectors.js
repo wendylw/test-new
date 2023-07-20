@@ -13,9 +13,3 @@ export const getContactNumberInvalidErrorVisibility = createSelector(
 );
 
 export const getContactNumber = state => state.customer.addressDetail.contactNumber;
-
-export const getLoadIsLoginStatusComplete = createSelector(
-  getIsLoginStatusLoaded,
-  getLoadIsLoginStatusFailed,
-  (isLoginStatusLoaded, loadIsLoginStatusFailed) => isLoginStatusLoaded || loadIsLoginStatusFailed
-);

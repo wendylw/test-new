@@ -118,7 +118,7 @@ export const initialState = {
     noWhatsAppAccount: true,
     loginRequestStatus: null,
     loginByBeepAppStatus: null,
-    loadIsLoginStatus: null,
+    fetchLoginRequestStatus: null,
     profile: {
       id: '',
       phone: '',
@@ -870,7 +870,7 @@ const user = (state = initialState.user, action) => {
     case types.RESET_CREATE_OTP_REQUEST:
       return { ...state, isFetching: false, isError: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
-      return { ...state, isFetching: true, loadIsLoginStatus: API_REQUEST_STATUS.PENDING };
+      return { ...state, isFetching: true, fetchLoginRequestStatus: API_REQUEST_STATUS.PENDING };
     case types.CREATE_OTP_REQUEST:
       return { ...state, isFetching: true, isError: false };
     case types.CREATE_LOGIN_REQUEST:
@@ -881,7 +881,7 @@ const user = (state = initialState.user, action) => {
         loginByBeepAppStatus: isFromBeepApp ? API_REQUEST_STATUS.PENDING : null,
       };
     case types.FETCH_LOGIN_STATUS_FAILURE:
-      return { ...state, isFetching: false, loadIsLoginStatus: API_REQUEST_STATUS.REJECTED };
+      return { ...state, isFetching: false, fetchLoginRequestStatus: API_REQUEST_STATUS.REJECTED };
     case types.GET_OTP_FAILURE:
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
     case types.CREATE_OTP_FAILURE:
@@ -948,7 +948,7 @@ const user = (state = initialState.user, action) => {
         consumerId,
         isFetching: false,
         isExpired: false,
-        loadIsLoginStatus: API_REQUEST_STATUS.FULFILLED,
+        fetchLoginRequestStatus: API_REQUEST_STATUS.FULFILLED,
       };
     case types.CREATE_LOGIN_FAILURE:
       CleverTap.pushEvent('Login - login failed');
@@ -1342,16 +1342,22 @@ export const getError = state => state.app.error;
 
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
-export const getLoadIsLoginStatus = createSelector(getUser, user => _get(user, 'loadIsLoginStatus', null));
+export const getFetchLoginRequestStatus = createSelector(getUser, user => user.fetchLoginRequestStatus || null);
 
-export const getIsLoginStatusLoaded = createSelector(
-  getLoadIsLoginStatus,
-  loadIsLoginStatus => loadIsLoginStatus === API_REQUEST_STATUS.FULFILLED
+export const getIsFetchLoginStatusFulfilled = createSelector(
+  getFetchLoginRequestStatus,
+  fetchLoginRequestStatus => fetchLoginRequestStatus === API_REQUEST_STATUS.FULFILLED
 );
 
-export const getLoadIsLoginStatusFailed = createSelector(
-  getLoadIsLoginStatus,
-  loadIsLoginStatus => loadIsLoginStatus === API_REQUEST_STATUS.REJECTED
+export const getIsFetchLoginStatusRejected = createSelector(
+  getFetchLoginRequestStatus,
+  fetchLoginRequestStatus => fetchLoginRequestStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getIsFetchLoginStatusComplete = createSelector(
+  getIsFetchLoginStatusFulfilled,
+  getIsFetchLoginStatusRejected,
+  (isFetchLoginStatusFulfilled, isFetchLoginStatusRejected) => isFetchLoginStatusFulfilled || isFetchLoginStatusRejected
 );
 
 export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
