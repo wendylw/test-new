@@ -1,6 +1,5 @@
 // We will progressively remove files from this list
 const legacyFiles = [
-  'src/Bootstrap.js',
   'src/cashback/components/ClaimedMessage/index.js',
   'src/cashback/components/CurrencyNumber/index.js',
   'src/cashback/components/Login/index.js',
@@ -30,10 +29,6 @@ const legacyFiles = [
   'src/cashback/redux/store.js',
   'src/cashback/redux/store.test.js',
   'src/cashback/redux/types.js',
-  'src/config.js',
-  'src/i18n.js',
-  'src/index.js',
-  'src/models/Error.js',
   'src/ordering/components/Billing/index.js',
   'src/ordering/components/CreateOrderButton/index.js',
   'src/ordering/components/CurrencyNumber/index.js',
@@ -173,9 +168,6 @@ const legacyFiles = [
   'src/redux/modules/entities/products.test.js',
   'src/redux/modules/entities/stores.js',
   'src/redux/modules/entities/stores.test.js',
-  'src/serviceWorker.js',
-  'src/setupProxy.js',
-  'src/setupTests.js',
   'src/site/account/components/AuthButton.jsx',
   'src/site/account/containers/AccountAddress/index.jsx',
   'src/site/account/containers/AccountCashback/index.jsx',
@@ -245,12 +237,6 @@ const legacyFiles = [
   'src/stores/redux/modules/tables.js',
   'src/stores/redux/store.js',
   'src/stores/redux/store.test.js',
-  'src/sw-build.js',
-  'src/sw-template.js',
-  'src/testDemos/footer.js',
-  'src/testDemos/footer.test.js',
-  'src/testDemos/header.js',
-  'src/testDemos/header.test.js',
   'src/voucher/components/PageError.js',
   'src/voucher/components/PageLoader.js',
   'src/voucher/components/VoucherGiftCard.js',
@@ -275,6 +261,11 @@ const legacyFiles = [
   'src/ordering/containers/order-status/redux/thunks.js',
   'src/ordering/containers/order-status/redux/selector.js',
   'src/common/components/ReCAPTCHA/index.jsx',
+  'src/serviceWorker.js',
+  'src/setupProxy.js',
+  'src/setupTests.js',
+  'src/sw-build.js',
+  'src/sw-template.js',
 ];
 
 module.exports = {
