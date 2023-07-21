@@ -1,11 +1,9 @@
 import React from 'react';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
-import * as NativeMethods from '../../../utils/native-methods';
 import Image from '../../../components/Image';
 import RedeemInfo from '../../components/RedeemInfo';
 import { IconInfo } from '../../../components/Icons';
 import ReceiptList from './components/ReceiptList';
-import RecentActivities from './components/RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import DownloadBanner from '../../../components/DownloadBanner';
 import NativeHeader from '../../../components/NativeHeader';
@@ -20,10 +18,6 @@ import './LoyaltyHome.scss';
 const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
 const cashbackDownloadText = 'Download the Beep app to keep track of your cashback!';
 class PageLoyalty extends React.Component {
-  state = {
-    showRecentActivities: false,
-  };
-
   async componentDidMount() {
     const { appActions } = this.props;
     await appActions.setCashbackMessage();
@@ -42,16 +36,8 @@ class PageLoyalty extends React.Component {
     );
   }
 
-  showRecentActivities() {
-    this.setState({ showRecentActivities: true });
-  }
-
-  closeActivity() {
-    this.setState({ showRecentActivities: false });
-  }
-
   renderCashback() {
-    const { cashbackHistorySummary } = this.props;
+    const { history, cashbackHistorySummary } = this.props;
     const { totalCredits } = cashbackHistorySummary || {};
 
     return (
@@ -60,7 +46,12 @@ class PageLoyalty extends React.Component {
           className="loyalty-home__money-currency padding-left-right-small text-size-large"
           money={totalCredits || 0}
         />
-        <span onClick={this.showRecentActivities.bind(this)} data-heap-name="cashback.home.cashback-info">
+        <span
+          onClick={() => {
+            history.push({ pathname: '/activities', search: window.location.search });
+          }}
+          data-test-id="cashback.home.cashback-info"
+        >
           <IconInfo className="icon icon__default" />
         </span>
       </div>
@@ -71,49 +62,33 @@ class PageLoyalty extends React.Component {
     const { history, businessInfo, onlineStoreInfo, t } = this.props;
     const { displayBusinessName, name } = businessInfo || {};
     const { logo } = onlineStoreInfo || {};
-    const { showRecentActivities } = this.state;
     const hideDownloadBanner = isWebview() || isTNGMiniProgram();
 
     return (
       <>
-        {isWebview() && (
-          <NativeHeader
-            title={showRecentActivities ? t('CashbackHistory') : window.document.title}
-            navFunc={() => {
-              if (showRecentActivities) {
-                this.closeActivity();
-              } else {
-                NativeMethods.goBack();
-              }
-            }}
-          />
-        )}
-        {!showRecentActivities ? (
-          <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
-            <article className="loyalty-home__article text-center margin-top-bottom-normal">
-              {logo ? (
-                <Image
-                  className="loyalty-home__logo logo logo__big margin-top-bottom-normal"
-                  src={logo}
-                  alt={displayBusinessName || name}
-                />
-              ) : null}
-              <h5 className="loyalty-home__title padding-top-bottom-small text-uppercase">{t('TotalCashback')}</h5>
-
-              {this.renderCashback()}
-
-              {this.renderLocation()}
-              <RedeemInfo
-                buttonClassName="redeem-info__button-link button border-radius-base text-uppercase"
-                buttonText={t('HowToUseCashback')}
+        {isWebview() && <NativeHeader />}
+        <section className="loyalty-home__container flex flex-column" data-test-id="cashback.home.container">
+          <article className="loyalty-home__article text-center margin-top-bottom-normal">
+            {logo ? (
+              <Image
+                className="loyalty-home__logo logo logo__big margin-top-bottom-normal"
+                src={logo}
+                alt={displayBusinessName || name}
               />
-            </article>
-            {!hideDownloadBanner && <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />}
-            <ReceiptList history={history} />
-          </section>
-        ) : (
-          <RecentActivities isPage={false} history={history} closeActivity={this.closeActivity.bind(this)} />
-        )}
+            ) : null}
+            <h5 className="loyalty-home__title padding-top-bottom-small text-uppercase">{t('TotalCashback')}</h5>
+
+            {this.renderCashback()}
+
+            {this.renderLocation()}
+            <RedeemInfo
+              buttonClassName="redeem-info__button-link button border-radius-base text-uppercase"
+              buttonText={t('HowToUseCashback')}
+            />
+          </article>
+          {!hideDownloadBanner && <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />}
+          <ReceiptList history={history} />
+        </section>
       </>
     );
   }

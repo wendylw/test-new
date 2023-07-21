@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import withDataAttributes from './withDataAttributes';
+import { extractDataAttributes } from '../common/utils';
 import './SwitchButton.scss';
 
 class SwitchButton extends PureComponent {
@@ -11,15 +11,7 @@ class SwitchButton extends PureComponent {
   };
 
   render() {
-    const {
-      className = '',
-      checked = '',
-      name = '',
-      switchId = '',
-      disabled = false,
-      dataAttributes,
-      type = 'radio',
-    } = this.props;
+    const { className = '', checked = '', name = '', switchId = '', disabled = false, type = 'radio' } = this.props;
 
     return (
       // eslint-disable-next-line jsx-a11y/label-has-associated-control
@@ -32,7 +24,7 @@ class SwitchButton extends PureComponent {
           id={switchId}
           onChange={this.handleOnChange}
           // eslint-disable-next-line react/jsx-props-no-spreading
-          {...dataAttributes}
+          {...extractDataAttributes(this.props)}
         />
         <span className="switch-button__slider" />
       </label>
@@ -49,7 +41,6 @@ SwitchButton.propTypes = {
   disabled: PropTypes.bool,
   onChange: PropTypes.func,
   type: PropTypes.string,
-  dataAttributes: PropTypes.objectOf(PropTypes.string),
 };
 
 SwitchButton.defaultProps = {
@@ -61,9 +52,8 @@ SwitchButton.defaultProps = {
   disabled: false,
   onChange: () => {},
   type: 'radio',
-  dataAttributes: {},
 };
 
 SwitchButton.displayName = 'SwitchButton';
 
-export default withDataAttributes(SwitchButton);
+export default SwitchButton;

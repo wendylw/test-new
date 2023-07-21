@@ -19,15 +19,11 @@ class SiteFooter extends Component {
 
   render() {
     return (
-      <footer className="entry__bar wrapper" data-heap-name="site.common.footer.container">
+      <footer className="entry__bar wrapper" data-test-id="site.common.footer.container">
         <ul className="flex flex-middle flex-space-around">
           {tabs.map(tab => (
             <li key={tab.pathname} className="entry__item">
-              <Link
-                to={tab.pathname}
-                data-heap-name="site.common.footer.tab-icon"
-                data-heap-tab-pathname={tab.pathname}
-              >
+              <Link to={tab.pathname} data-test-id="site.common.footer.tab-icon">
                 <tab.component
                   className={`icon ${this.isIconActive(tab.pathname) ? 'icon__primary' : 'icon__default'}`}
                 />

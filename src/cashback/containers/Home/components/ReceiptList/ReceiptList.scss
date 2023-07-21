@@ -47,6 +47,10 @@
     }
   }
 
+  &__item-summary::marker {
+    font-size: 0;
+  }
+
   &__time {
     color: $gray-2;
   }

@@ -103,13 +103,13 @@ class Location extends React.Component {
     return (
       <main
         className="fixed-wrapper fixed-wrapper__main flex flex-column site-location__wrapper"
-        data-heap-name="site.location.container"
+        data-test-id="site.location.container"
       >
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
             <IconLeftArrow
               className="icon icon__big icon__default text-middle"
-              data-heap-name="site.location.back-btn"
+              data-test-id="site.location.back-btn"
               onClick={this.handleBackClicked}
             />
             <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">

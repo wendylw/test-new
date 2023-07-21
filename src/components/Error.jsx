@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import beepErrorImage from '../images/beep-error.png';
-import withDataAttributes from './withDataAttributes';
+import { extractDataAttributes } from '../common/utils';
 import './Error.scss';
 
 /**
@@ -12,7 +12,7 @@ import './Error.scss';
  */
 
 const Error = props => {
-  const { t, dataAttributes } = props;
+  const { t } = props;
   const { title, description, children } = props || {};
   const error = {
     title,
@@ -26,7 +26,7 @@ const Error = props => {
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <section className="error flex flex-column" {...dataAttributes}>
+    <section className="error flex flex-column" {...extractDataAttributes(this.props)}>
       <div className="error__container">
         <figure className="error__image-container margin-top-bottom-normal text-center">
           <img src={beepErrorImage} alt="Error found" />
@@ -48,16 +48,13 @@ const Error = props => {
 Error.propTypes = {
   title: PropTypes.node,
   description: PropTypes.node,
-  // eslint-disable-next-line react/forbid-prop-types
-  dataAttributes: PropTypes.object,
 };
 
 Error.defaultProps = {
   title: '',
   description: '',
-  dataAttributes: {},
 };
 
 Error.displayName = 'Error';
 
-export default withDataAttributes(withTranslation()(Error));
+export default withTranslation()(Error);

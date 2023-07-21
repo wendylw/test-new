@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import withDataAttributes from './withDataAttributes';
+import { extractDataAttributes } from '../common/utils';
 import './Modal.scss';
 
 class Modal extends Component {
@@ -61,7 +61,7 @@ class Modal extends Component {
   }
 
   render() {
-    const { children, className = '', dataAttributes } = this.props;
+    const { children, className = '' } = this.props;
     const { show } = this.state;
 
     if (!show) {
@@ -74,7 +74,7 @@ class Modal extends Component {
         className={`modal absolute-wrapper flex flex-column flex-middle flex-center ${className}`}
         onClick={this.handleClick.bind(this)}
         // eslint-disable-next-line react/jsx-props-no-spreading
-        {...dataAttributes}
+        {...extractDataAttributes(this.props)}
       >
         <div className="modal__content border-radius-large">{children}</div>
       </section>
@@ -134,7 +134,6 @@ Modal.propTypes = {
   onHide: PropTypes.func,
   children: PropTypes.node,
   className: PropTypes.string,
-  dataAttributes: PropTypes.objectOf(PropTypes.string),
 };
 
 Modal.defaultProps = {
@@ -144,7 +143,6 @@ Modal.defaultProps = {
   onShow: () => {},
   onHide: () => {},
   children: null,
-  dataAttributes: {},
 };
 
-export default withDataAttributes(Modal);
+export default Modal;

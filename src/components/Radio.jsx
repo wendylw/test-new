@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import withDataAttributes from './withDataAttributes';
+import { extractDataAttributes } from '../common/utils';
 import './Radio.scss';
 
 class Radio extends PureComponent {
@@ -11,7 +11,7 @@ class Radio extends PureComponent {
   };
 
   render() {
-    const { className, checked = false, name = '', inputId = '', disabled = false, dataAttributes } = this.props;
+    const { className, checked = false, name = '', inputId = '', disabled = false } = this.props;
     const active = checked ? 'active' : '';
 
     return (
@@ -24,7 +24,7 @@ class Radio extends PureComponent {
           id={inputId}
           type="radio"
           // eslint-disable-next-line react/jsx-props-no-spreading
-          {...dataAttributes}
+          {...extractDataAttributes(this.props)}
         />
       </div>
     );
@@ -38,7 +38,6 @@ Radio.propTypes = {
   inputId: PropTypes.string,
   disabled: PropTypes.bool,
   onChange: PropTypes.func,
-  dataAttributes: PropTypes.objectOf(PropTypes.string),
 };
 
 Radio.defaultProps = {
@@ -47,10 +46,9 @@ Radio.defaultProps = {
   className: '',
   checked: false,
   disabled: false,
-  dataAttributes: {},
   onChange: () => {},
 };
 
 Radio.displayName = 'Radio';
 
-export default withDataAttributes(Radio);
+export default Radio;

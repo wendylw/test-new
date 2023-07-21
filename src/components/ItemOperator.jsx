@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withDataAttributes from './withDataAttributes';
+import { extractDataAttributes } from '../common/utils';
 import './ItemOperator.scss';
 
 const ItemOperator = props => {
@@ -26,14 +26,13 @@ const ItemOperator = props => {
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <div className={classList.join(' ')} {...dataAttributes}>
+    <div className={classList.join(' ')} {...extractDataAttributes(this.props)}>
       {onDecrease ? (
         <button
           className="item-operator__button item-operator__button-minus padding-top-bottom-small padding-left-right-smaller item-operator__button-decrease"
           disabled={decreaseDisabled}
           onClick={onDecrease}
           data-testid="itemDecrease"
-          data-heap-name="common.item-operator.decrease"
         >
           <i className="item-operator__ctrl item-operator__minus margin-smaller">
             <span className="item-operator__icon" />
@@ -41,11 +40,7 @@ const ItemOperator = props => {
         </button>
       ) : null}
 
-      <span
-        className="item-operator__quantity text-center text-weight-bolder"
-        data-testid="itemDetailQuantity"
-        data-heap-name="common.item-operator.quantity"
-      >
+      <span className="item-operator__quantity text-center text-weight-bolder" data-testid="itemDetailQuantity">
         {(from === 'productDetail' ? quantity >= 0 : quantity > 0) ? quantity : null}
       </span>
 
@@ -55,7 +50,6 @@ const ItemOperator = props => {
           onClick={onIncrease}
           disabled={increaseDisabled}
           data-testid="itemIncrease"
-          data-heap-name="common.item-operator.increase"
         >
           <i className="item-operator__ctrl item-operator__add margin-smaller">
             <span className="item-operator__icon" />
@@ -74,7 +68,6 @@ ItemOperator.propTypes = {
   onIncrease: PropTypes.func,
   quantity: PropTypes.number,
   from: PropTypes.string,
-  dataAttributes: PropTypes.objectOf(PropTypes.string),
 };
 
 ItemOperator.defaultProps = {
@@ -85,8 +78,7 @@ ItemOperator.defaultProps = {
   onIncrease: () => {},
   quantity: 0,
   from: 'home',
-  dataAttributes: {},
 };
 ItemOperator.displayName = 'ItemOperator';
 export const ItemOperatorComponent = ItemOperator;
-export default withDataAttributes(ItemOperator);
+export default ItemOperator;

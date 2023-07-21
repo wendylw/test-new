@@ -266,7 +266,7 @@ class AddressDetail extends Component {
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big text-line-height-base"
-                  data-heap-name="ordering.customer.delivery-address-name"
+                  data-test-id="ordering.customer.delivery-address-name"
                   type="text"
                   maxLength="140"
                   value={contactName}
@@ -292,7 +292,7 @@ class AddressDetail extends Component {
                   <PhoneInput
                     international // If input want to show country code when phone number is empty, pls add international on props
                     smartCaret={false}
-                    data-heap-name="ordering.contact-details.phone-input"
+                    data-test-id="ordering.contact-details.phone-input"
                     placeholder={t('EnterPhoneNumber')}
                     value={formatPhoneNumberIntl(contactNumber)}
                     country={country}
@@ -322,7 +322,7 @@ class AddressDetail extends Component {
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big text-line-height-base"
-                  data-heap-name="ordering.customer.delivery-address-name"
+                  data-test-id="ordering.customer.delivery-address-name"
                   type="text"
                   maxLength="140"
                   value={name}
@@ -343,7 +343,7 @@ class AddressDetail extends Component {
                 <div className="address-detail__title required">
                   <span className="text-size-small text-top">{t('AddressDetails')}</span>
                 </div>
-                <div data-heap-name="ordering.customer.delivery-address">
+                <div data-test-id="ordering.customer.delivery-address">
                   <p className="address-detail__detail-content text-size-big text-line-height-base">{address}</p>
                 </div>
               </div>
@@ -359,7 +359,7 @@ class AddressDetail extends Component {
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big text-line-height-base"
-                  data-heap-name="ordering.customer.delivery-address-detail"
+                  data-test-id="ordering.customer.delivery-address-detail"
                   type="text"
                   maxLength="140"
                   value={details}
@@ -379,7 +379,7 @@ class AddressDetail extends Component {
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big"
-                  data-heap-name="ordering.customer.delivery-note"
+                  data-test-id="ordering.customer.delivery-note"
                   type="text"
                   maxLength="140"
                   value={comments}

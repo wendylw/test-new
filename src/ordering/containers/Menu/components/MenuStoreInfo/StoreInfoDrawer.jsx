@@ -60,7 +60,7 @@ const StoreInfoDrawer = () => {
         <button
           className={styles.storeInfoDrawerButton}
           onClick={() => dispatch(showStoreInfoDrawer())}
-          data-heap-name="ordering.menu.stor-info-drawer.info-button"
+          data-test-id="ordering.menu.stor-info-drawer.info-button"
         >
           <Info weight="light" size={24} className="tw-flex-shrink-0 tw-text-black" />
         </button>

@@ -123,7 +123,7 @@ class Home extends Component {
 
     return (
       this.props.isHome && (
-        <section className="store-list__content" data-heap-name="stores.home.container">
+        <section className="store-list__content" data-test-id="stores.home.container">
           {isWebView && (
             <NativeHeader
               isPage={true}
@@ -136,7 +136,7 @@ class Home extends Component {
           <Header
             className="flex-middle border__bottom-divider"
             contentClassName="flex-middle"
-            data-heap-name="stores.home.header"
+            data-test-id="stores.home.header"
             isPage={true}
             isStoreHome={true}
             logo={logo}

@@ -214,7 +214,7 @@ function RiderInfo({
         href={trackingUrl}
         className="rider-info__button button button__link flex__fluid-content text-center padding-normal text-weight-bolder text-uppercase"
         target="__blank"
-        data-heap-name="ordering.thank-you.logistics-tracking-link"
+        data-test-id="ordering.thank-you.logistics-tracking-link"
       >
         {t('TrackOrder')}
       </a>
@@ -259,7 +259,7 @@ function RiderInfo({
             <button
               className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
               onClick={() => visitReportPage()}
-              data-heap-name="ordering.need-help.report-driver-btn"
+              data-test-id="ordering.need-help.report-driver-btn"
             >
               {t('ReportIssue')}
             </button>

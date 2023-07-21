@@ -7,7 +7,7 @@ import shouldFilter, { getErrorMessageFromHint } from './filter-sentry-events';
 import './navigation-detector';
 import './click-detector';
 import logger from './logger';
-import { getAppPlatform, getAPIRequestRelativePath } from './utils';
+import { getAppPlatform, getAPIRequestRelativePath, getIsDebugMode } from './utils';
 
 const trackError = (event, hint) => {
   try {
@@ -33,6 +33,7 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     integrations: [new CaptureConsole({ levels: ['error', 'assert'] })],
     attachStacktrace: true,
     environment: process.env.NODE_ENV,
+    debug: getIsDebugMode(),
     beforeSend: (event, hint) => {
       if (shouldFilter(event, hint)) {
         return null;

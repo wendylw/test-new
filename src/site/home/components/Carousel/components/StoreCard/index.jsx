@@ -49,12 +49,7 @@ const StoreCard = ({ store, onClick }) => {
   }, [t, isFreeDeliveryAvailable, isCashbackAvailable, cashbackRatePercentage]);
 
   return (
-    <button
-      className={styles.StoreCardContainer}
-      data-heap-name="site.home.carousel.store-item"
-      data-heap-store-name={name}
-      onClick={onClick}
-    >
+    <button className={styles.StoreCardContainer} data-test-id="site.home.carousel.store-item" onClick={onClick}>
       <div className={styles.StoreCardImageContainer}>
         {_isEmpty(ribbonBadges) ? null : (
           <div className={styles.StoreCardRibbonBadgeWrapper}>

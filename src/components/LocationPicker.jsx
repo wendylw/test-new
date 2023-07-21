@@ -106,7 +106,7 @@ class LocationPicker extends Component {
                 </div>
                 <div
                   className="location-picker__historical-container"
-                  data-heap-name="common.location-picker.historical-location-item"
+                  data-test-id="common.location-picker.historical-location-item"
                 >
                   {this.renderAddressItem(mainText, secondaryText)}
                 </div>
@@ -133,7 +133,7 @@ class LocationPicker extends Component {
             onClick={() => this.selectSearchResultHandler(searchResult, index)}
             role="button"
             tabIndex="0"
-            data-heap-name="common.location-picker.search-result-item"
+            data-test-id="common.location-picker.search-result-item"
           >
             {this.renderAddressItem(
               searchResult.structured_formatting.main_text,

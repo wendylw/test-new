@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { IconLeftArrow, IconClose } from './Icons';
-import withDataAttributes from './withDataAttributes';
 import './Header.scss';
+import { extractDataAttributes } from '../common/utils';
 
 class WebHeader extends Component {
   renderRightContent() {
@@ -34,7 +34,7 @@ class WebHeader extends Component {
   }
 
   render() {
-    const { headerRef, style, className, dataAttributes, contentClassName, isPage, navFunc, title } = this.props;
+    const { headerRef, style, className, contentClassName, isPage, navFunc, title } = this.props;
     const classList = ['header flex flex-space-between flex-middle flex__shrink-fixed sticky-wrapper'];
     const contentClassList = ['header__content flex padding-top-bottom-smaller'];
     const iconClassName = `icon icon__big icon__default text-middle flex__shrink-fixed`;
@@ -49,12 +49,12 @@ class WebHeader extends Component {
 
     return (
       // eslint-disable-next-line react/jsx-props-no-spreading
-      <header ref={headerRef} style={style} className={classList.join(' ')} {...dataAttributes}>
+      <header ref={headerRef} style={style} className={classList.join(' ')} {...extractDataAttributes(this.props)}>
         <div className={contentClassList.join(' ')}>
           {isPage ? (
-            <IconLeftArrow className={iconClassName} data-heap-name="common.header.back-btn" onClick={navFunc} />
+            <IconLeftArrow className={iconClassName} data-test-id="common.header.back-btn" onClick={navFunc} />
           ) : (
-            <IconClose className={iconClassName} data-heap-name="common.header.close-btn" onClick={navFunc} />
+            <IconClose className={iconClassName} data-test-id="common.header.close-btn" onClick={navFunc} />
           )}
           <h2
             className="header__title text-size-big text-weight-bolder text-middle text-omit__single-line"
@@ -101,4 +101,4 @@ WebHeader.defaultProps = {
 };
 
 export const WebHeaderComponent = WebHeader;
-export default withDataAttributes(WebHeader);
+export default WebHeader;
