@@ -27,12 +27,14 @@ const QuantityAdjuster = props => {
         className={`${styles.icon} ${decreaseDisabled ? styles.disabled : ''}`}
         weight="thin"
         onClick={() => handleIconClick(-1)}
+        data-test-id="common.quantity-adjuster.decrease-btn"
       />
       <span className={`${styles.number} ${decreaseDisabled && increaseDisabled ? styles.disabled : ''}`}>{value}</span>
       <PlusCircle
         className={`${styles.icon} ${increaseDisabled ? styles.disabled : ''}`}
         weight="thin"
         onClick={() => handleIconClick(1)}
+        data-test-id="common.quantity-adjuster.increase-btn"
       />
     </div>
   );

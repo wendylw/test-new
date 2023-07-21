@@ -26,7 +26,7 @@ const Error = props => {
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <section className="error flex flex-column" {...extractDataAttributes(this.props)}>
+    <section className="error flex flex-column" {...extractDataAttributes(props)}>
       <div className="error__container">
         <figure className="error__image-container margin-top-bottom-normal text-center">
           <img src={beepErrorImage} alt="Error found" />

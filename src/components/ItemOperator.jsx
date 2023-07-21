@@ -4,16 +4,7 @@ import { extractDataAttributes } from '../common/utils';
 import './ItemOperator.scss';
 
 const ItemOperator = props => {
-  const {
-    quantity,
-    className,
-    decreaseDisabled,
-    increaseDisabled,
-    onDecrease,
-    onIncrease,
-    dataAttributes,
-    from,
-  } = props;
+  const { quantity, className, decreaseDisabled, increaseDisabled, onDecrease, onIncrease, from } = props;
   const classList = [
     `item-operator flex flex-space-between ${
       (from === 'productDetail' ? quantity >= 0 : quantity > 0) ? 'item-operator--minus' : ''
@@ -26,13 +17,14 @@ const ItemOperator = props => {
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <div className={classList.join(' ')} {...extractDataAttributes(this.props)}>
+    <div className={classList.join(' ')} {...extractDataAttributes(props)}>
       {onDecrease ? (
         <button
           className="item-operator__button item-operator__button-minus padding-top-bottom-small padding-left-right-smaller item-operator__button-decrease"
           disabled={decreaseDisabled}
           onClick={onDecrease}
           data-testid="itemDecrease"
+          data-test-id="common.item-operator.decrease-btn"
         >
           <i className="item-operator__ctrl item-operator__minus margin-smaller">
             <span className="item-operator__icon" />
@@ -50,6 +42,7 @@ const ItemOperator = props => {
           onClick={onIncrease}
           disabled={increaseDisabled}
           data-testid="itemIncrease"
+          data-test-id="common.item-operator.increase-btn"
         >
           <i className="item-operator__ctrl item-operator__add margin-smaller">
             <span className="item-operator__icon" />

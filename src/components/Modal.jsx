@@ -73,6 +73,7 @@ class Modal extends Component {
       <section
         className={`modal absolute-wrapper flex flex-column flex-middle flex-center ${className}`}
         onClick={this.handleClick.bind(this)}
+        data-test-id="common.modal.hide-btn"
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...extractDataAttributes(this.props)}
       >

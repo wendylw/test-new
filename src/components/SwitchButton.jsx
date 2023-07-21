@@ -23,6 +23,7 @@ class SwitchButton extends PureComponent {
           name={name}
           id={switchId}
           onChange={this.handleOnChange}
+          data-test-id="common.switch-button.input"
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...extractDataAttributes(this.props)}
         />

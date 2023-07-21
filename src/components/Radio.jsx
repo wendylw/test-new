@@ -23,6 +23,7 @@ class Radio extends PureComponent {
           name={name}
           id={inputId}
           type="radio"
+          data-test-id="common.radio.input"
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...extractDataAttributes(this.props)}
         />

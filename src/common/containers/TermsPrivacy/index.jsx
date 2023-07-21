@@ -78,6 +78,7 @@ export class TermsPrivacy extends Component {
           onClick={this.handleContentClick}
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={content}
+          data-test-id="common.terms-privacy.link"
         />
       </DocumentHeadInfo>
     );

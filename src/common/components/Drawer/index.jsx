@@ -72,6 +72,7 @@ const Drawer = props => {
         style={{ top: 0, bottom }}
         onClick={onBackdropClick}
         ref={ref}
+        data-test-id="common.drawer.backdrop"
       >
         <div
           className={`drawer-animation__content ${styles.container} ${className}`}

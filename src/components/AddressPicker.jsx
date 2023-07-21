@@ -24,6 +24,7 @@ const AddressPicker = ({ addressList, onSelect, displayMode }) => {
             key={id}
             role="button"
             tabIndex={index}
+            data-test-id="common.address-picker.select-btn"
             onClick={() => (availableStatus ? onSelect(address, index) : null)}
           >
             <div className="margin-top-bottom-normal">

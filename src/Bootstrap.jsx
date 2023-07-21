@@ -128,6 +128,7 @@ class Bootstrap extends Component {
             <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
               <button
                 className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+                data-test-id="common.render-error.back-btn"
                 onClick={this.onErrorScreenBackToHomeButtonClick}
               >
                 {t('BackToHome')}

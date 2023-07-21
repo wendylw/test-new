@@ -18,7 +18,11 @@ const PageHeader = props => {
         <header className={`${styles.PageHeaderContainer} ${className}`}>
           <div className={styles.PageHeaderLeftContainer}>
             {isShowBackButton && (
-              <button className={styles.PageHeaderIconWrapper} onClick={onBackArrowClick}>
+              <button
+                className={styles.PageHeaderIconWrapper}
+                onClick={onBackArrowClick}
+                data-test-id="common.page-header.back-btn"
+              >
                 <CaretLeft size={24} weight="light" />
               </button>
             )}

@@ -100,6 +100,7 @@ class LocationPicker extends Component {
                 role="button"
                 tabIndex="0"
                 key={positionInfo.address}
+                data-test-id="common.location-picker.select-btn"
               >
                 <div className="margin-smaller">
                   <IconBookmarks className="icon icon__smaller icon__primary-light margin-small" />

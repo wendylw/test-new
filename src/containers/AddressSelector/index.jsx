@@ -150,7 +150,12 @@ const AddressSelector = ({ placeInfo, addressList, addressPickerEnabled, onSelec
 
   return (
     <>
-      <PlaceSearchBox placeInfo={placeInfo} onChange={changeSearchTextHandler} onClear={clearSearchTextHandler} />
+      <PlaceSearchBox
+        placeInfo={placeInfo}
+        onChange={changeSearchTextHandler}
+        onClear={clearSearchTextHandler}
+        data-test-id="common.address-selector.search-btn"
+      />
       <div className="address-selector__container">
         {shouldShowAddressPicker ? (
           <AddressPicker addressList={addressList} onSelect={selectSavedAddressHandler} />

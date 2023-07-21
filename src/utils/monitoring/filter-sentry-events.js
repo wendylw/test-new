@@ -228,7 +228,7 @@ const isCleverTapIssues = event => {
   }
 };
 
-const isClarityIssues = (event, hint) => {
+const isClarityIssues = event => {
   // These issues are raised by Clarity script.
   try {
     // WB-5720 & WB-5722: The errors thrown directly from Clarity script should be ignored.

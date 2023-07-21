@@ -52,6 +52,7 @@ const Search = React.forwardRef(
           className="tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-600 tw-border-gray-200 tw-bg-gray-200"
           type="text"
           value={inputValue}
+          data-test-id="common.search.input"
           onChange={e => {
             setInputValue(e.target.value);
             onChangeInputValue(e.target.value);
@@ -74,6 +75,7 @@ const Search = React.forwardRef(
                 className={_isEmpty(inputValue) ? 'tw-opacity-0' : 'tw-flex-shrink-0'}
                 contentClassName={styles.SearchClearButtonContent}
                 disabled={_isEmpty(inputValue)}
+                data-test-id="common.search.clear-btn"
                 onClick={onHandleClearSearchKeyword}
               >
                 <XCircle className="tw-text-2xl tw-text-gray-600" weight="fill" />

@@ -127,6 +127,7 @@ class LiveChat extends Component {
     return (
       <button
         className={`button live-chat flex flex-middle flex__shrink-fixed ${hasScriptLoaded ? '' : 'text-opacity'}`}
+        data-test-id="common.live-chat.btn"
         onClick={this.handleClick}
       >
         {!hasScriptLoaded && <div className="loader live-chat__loader margin-left-right-smaller" />}

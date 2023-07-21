@@ -56,6 +56,7 @@ const ConfirmFooter = props => {
             onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
           }}
           style={cancelButtonStyle}
+          data-test-id="common.confirm.cancel-btn"
         >
           {cancelButtonContent || t('Cancel')}
         </Button>
@@ -68,6 +69,7 @@ const ConfirmFooter = props => {
           onSelection(CONFIRM_TRIGGER_TARGET.CONFIRM);
         }}
         style={confirmButtonStyle}
+        data-test-id="common.confirm.confirm-btn"
       >
         {confirmButtonContent || t('OK')}
       </Button>
@@ -81,6 +83,7 @@ const ConfirmFooter = props => {
             onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
           }}
           style={cancelButtonStyle}
+          data-test-id="common.confirm.close-btn"
         >
           {cancelButtonContent || t('ConfirmCloseButtonText')}
         </Button>

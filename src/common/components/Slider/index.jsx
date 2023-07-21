@@ -110,6 +110,7 @@ const Slider = ({
               }}
               aria-label="Slide"
               className={styles.SliderDot + (currentSlide === index ? ' active' : '')}
+              data-test-id="common.slider.move-btn"
             />
           ))}
         </div>

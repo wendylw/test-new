@@ -77,6 +77,7 @@ const CheckBox = props => {
       className={getClassName([styles.checkbox, className, size])}
       style={style}
       disabled={disabled}
+      data-test-id="common.checkbox.input"
     />
   );
   if (!children) {
