@@ -34,12 +34,7 @@ const createResult = (content, options) =>
   new Promise(resolve => {
     const { container, customizeContent, title, onClose, ...restOptions } = options;
     const rootDOM = document.createElement('div');
-    const children = customizeContent ? (
-      content
-    ) : (
-      // eslint-disable-next-line react/jsx-filename-extension
-      <ResultContent content={content} title={title} />
-    );
+    const children = customizeContent ? content : <ResultContent content={content} title={title} />;
     const resultInstance = React.createElement(
       Result,
       {

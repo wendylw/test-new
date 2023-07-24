@@ -52,12 +52,7 @@ const createAlert = (content, options) =>
     const deleteAlertId = () => {
       alertIdsSet.delete(id);
     };
-    const children = customizeContent ? (
-      content
-    ) : (
-      // eslint-disable-next-line react/jsx-filename-extension
-      <AlertContent content={content} title={title} />
-    );
+    const children = customizeContent ? content : <AlertContent content={content} title={title} />;
     const alertInstance = React.createElement(
       Alert,
       {

@@ -18,6 +18,7 @@ const Card = props => {
       role="button"
       tabIndex="0"
       className={containerClassName}
+      data-test-id="common.card.card-content"
       onClick={() => {
         if (!disabled) {
           onClick();

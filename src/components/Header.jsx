@@ -6,22 +6,18 @@ import { IconLeftArrow, IconClose, IconMotorcycle, IconWallet } from './Icons';
 import Tag from './Tag';
 import Image from './Image';
 import Utils from '../utils/utils';
+import { extractDataAttributes } from '../common/utils';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
 import './Header.scss';
-import { extractDataAttributes } from '../common/utils';
 
 // TODO: This Header component will be deprecated
 class Header extends Component {
   renderLogoAndNavDom() {
-    const { isStoreHome, isPage, logo, title, backHomeSiteButtonVisibility, navFunc } = this.props;
+    const { isStoreHome, isPage, logo, title, navFunc } = this.props;
 
     const renderPageAction = () => {
-      const isHomePageBack = isStoreHome && backHomeSiteButtonVisibility;
-
-      if (!isStoreHome || isHomePageBack) {
-        const iconClassName = `icon ${
-          isHomePageBack ? 'icon__normal' : 'icon__big'
-        } icon__default text-middle flex__shrink-fixed`;
+      if (!isStoreHome) {
+        const iconClassName = `icon icon__big icon__default text-middle flex__shrink-fixed`;
 
         return isPage ? (
           <IconLeftArrow className={iconClassName} data-test-id="common.header.back-btn" onClick={navFunc} />
@@ -29,10 +25,12 @@ class Header extends Component {
           <IconClose className={iconClassName} data-test-id="common.header.close-btn" onClick={navFunc} />
         );
       }
+
+      return null;
     };
 
     return (
-      <React.Fragment>
+      <>
         {renderPageAction()}
         {isStoreHome ? (
           <Image
@@ -41,7 +39,7 @@ class Header extends Component {
             alt={title}
           />
         ) : null}
-      </React.Fragment>
+      </>
     );
   }
 
@@ -78,6 +76,7 @@ class Header extends Component {
     }
 
     return (
+      // eslint-disable-next-line react/jsx-props-no-spreading
       <header ref={headerRef} style={style} className={classList.join(' ')} {...extractDataAttributes(this.props)}>
         <div className={contentClassList.join(' ')}>
           {this.renderLogoAndNavDom()}
@@ -135,8 +134,12 @@ class Header extends Component {
 
 Header.propTypes = {
   className: PropTypes.string,
+  contentClassName: PropTypes.string,
+  children: PropTypes.node,
+  /* eslint-disable react/forbid-prop-types */
   style: PropTypes.object,
   headerRef: PropTypes.any,
+  /* eslint-enable */
   deliveryFee: PropTypes.number,
   isPage: PropTypes.bool,
   isStoreHome: PropTypes.bool,
@@ -146,16 +149,25 @@ Header.propTypes = {
   navFunc: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
   enableCashback: PropTypes.bool,
+  enablePreOrder: PropTypes.bool,
   defaultLoyaltyRatio: PropTypes.number,
   isDeliveryType: PropTypes.bool,
   isPickUpType: PropTypes.bool,
 };
 
 Header.defaultProps = {
+  className: '',
+  contentClassName: '',
+  children: null,
+  style: {},
+  headerRef: null,
+  deliveryFee: 0,
+  logo: '',
   isPage: false,
   isStoreHome: false,
   isValidTimeToOrder: true,
   enableCashback: false,
+  enablePreOrder: false,
   title: '',
   storeAddress: '',
   defaultLoyaltyRatio: 0,

@@ -1,3 +1,4 @@
+/* eslint-disable no-var, prefer-rest-params */
 // Refer to: https://stackoverflow.com/a/52809105/1861937
 const { history } = window;
 if (history) {

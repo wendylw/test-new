@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { CONFIRM_BUTTON_ALIGNMENT, CONFIRM_TRIGGER_TARGET } from '../../utils/feedback/utils';
@@ -29,7 +29,7 @@ const ConfirmFooterDefaultProps = {
   confirmButtonStyle: {},
   buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL,
   // target is one of CONFIRM_TRIGGER_TARGET
-  onSelection: target => {},
+  onSelection: () => {},
 };
 
 const ConfirmFooter = props => {
@@ -56,6 +56,7 @@ const ConfirmFooter = props => {
             onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
           }}
           style={cancelButtonStyle}
+          data-test-id="common.confirm.cancel-btn"
         >
           {cancelButtonContent || t('Cancel')}
         </Button>
@@ -68,6 +69,7 @@ const ConfirmFooter = props => {
           onSelection(CONFIRM_TRIGGER_TARGET.CONFIRM);
         }}
         style={confirmButtonStyle}
+        data-test-id="common.confirm.confirm-btn"
       >
         {confirmButtonContent || t('OK')}
       </Button>
@@ -81,6 +83,7 @@ const ConfirmFooter = props => {
             onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
           }}
           style={cancelButtonStyle}
+          data-test-id="common.confirm.close-btn"
         >
           {cancelButtonContent || t('ConfirmCloseButtonText')}
         </Button>

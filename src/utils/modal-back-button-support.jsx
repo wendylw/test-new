@@ -174,7 +174,7 @@ export const useBackButtonSupport = ({
         }
       }
     },
-    [onHistoryBackReceived, disabled]
+    [disabled, modalIdRef, onHistoryBackReceived]
   );
 
   useEffect(() => {

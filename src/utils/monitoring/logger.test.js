@@ -1,6 +1,7 @@
 /* eslint-disable dot-notation */
 import { getMerchantID, getFormattedTags, getFormattedActionName, getStringifiedJSON } from './logger';
-import { get as requestGet, RequestError } from '../request';
+import { get as requestGet } from '../request';
+import RequestError from '../api/request-error';
 import { get as apiFetchGet } from '../api/api-fetch';
 import { NativeAPIError } from '../native-methods';
 

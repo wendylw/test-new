@@ -4,12 +4,13 @@ import _isEmpty from 'lodash/isEmpty';
 window.addEventListener('click', e => {
   try {
     if (e.composedPath) {
-      let trackPath = [];
+      const trackPath = [];
       const content = e.target?.innerText || '';
       const path = e.composedPath() || [];
 
       const trimmedContent = content.length > 100 ? `${content.substr(0, 100)}...` : content;
 
+      // eslint-disable-next-line no-plusplus
       for (let i = 0; i < path.length; i++) {
         const { className, tagName = 'notag' } = path[i];
 
@@ -47,8 +48,9 @@ window.addEventListener('click', e => {
         })
       );
     }
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log(error);
   }
 });
 

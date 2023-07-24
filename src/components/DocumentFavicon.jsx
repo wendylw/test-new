@@ -6,10 +6,13 @@ class DocumentFavicon extends React.Component {
   static icon = '';
 
   componentDidMount() {
-    DocumentFavicon.setIcon(this.props.icon);
+    const { icon } = this.props;
+
+    DocumentFavicon.setIcon(icon);
   }
 
   static setIcon(icon) {
+    // eslint-disable-next-line no-param-reassign
     icon = icon || faviconImage;
 
     if (icon !== DocumentFavicon.icon) {
@@ -44,14 +47,19 @@ class DocumentFavicon extends React.Component {
   render() {
     const { children } = this.props;
 
-    return <React.Fragment>{children}</React.Fragment>;
+    return <>{children}</>;
   }
 }
 
 DocumentFavicon.displayName = 'DocumentFavicon';
 
 DocumentFavicon.propTypes = {
-  icon: PropTypes.string,
+  icon: PropTypes.string.isRequired,
+  children: PropTypes.node,
+};
+
+DocumentFavicon.defaultProps = {
+  children: null,
 };
 
 export default DocumentFavicon;

@@ -10,22 +10,49 @@ import { getLiveChatUserProfile } from '../ordering/containers/order-status/redu
 import './LiveChat.scss';
 
 class LiveChat extends Component {
-  state = { hasScriptLoaded: false };
+  constructor(props) {
+    super(props);
+    this.state = { hasScriptLoaded: false };
+  }
 
   componentDidMount() {
     this.launchIntercomMessenger();
   }
 
+  componentDidUpdate(prevProps) {
+    const { userProfile: prevUserProfile } = prevProps;
+    const { userProfile: currUserProfile } = this.props;
+
+    if (prevUserProfile !== currUserProfile) {
+      const { name, phone, email } = currUserProfile;
+      this.updateIntercomSettings({ name, phone, email });
+    }
+  }
+
+  componentWillUnmount() {
+    window.Intercom?.('shutdown');
+  }
+
+  handleClick = () => {
+    const { onClick } = this.props;
+    const { hasScriptLoaded } = this.state;
+
+    if (!hasScriptLoaded) return;
+
+    _isFunction(onClick) && onClick();
+    window.Intercom?.('show');
+  };
+
   launchIntercomMessenger() {
-    const { userId, hasUserLoggedIn, orderId: order_id, storeName: store_name, userProfile } = this.props;
+    const { userId, hasUserLoggedIn, orderId, storeName, userProfile } = this.props;
     const userInfo = hasUserLoggedIn ? { user_id: userId, ...userProfile } : {};
 
     window.intercomSettings = {
       app_base: process.env.REACT_APP_INTERCOM_APP_BASE,
       app_id: process.env.REACT_APP_INTERCOM_APP_ID,
       hide_default_launcher: true,
-      order_id,
-      store_name,
+      order_id: orderId,
+      store_name: storeName,
       department: 'beep',
       ...userInfo,
     };
@@ -47,6 +74,7 @@ class LiveChat extends Component {
     };
 
     // Copy from intercom JS library
+    /* eslint-disable */
     (function() {
       var w = window;
       var ic = w.Intercom;
@@ -83,6 +111,7 @@ class LiveChat extends Component {
         }
       }
     })();
+    /* eslint-enable */
   }
 
   updateIntercomSettings(profileInfo) {
@@ -91,30 +120,6 @@ class LiveChat extends Component {
     window.Intercom?.('update', window.intercomSettings);
   }
 
-  componentDidUpdate(prevProps) {
-    const { userProfile: prevUserProfile } = prevProps;
-    const { userProfile: currUserProfile } = this.props;
-
-    if (prevUserProfile !== currUserProfile) {
-      const { name, phone, email } = currUserProfile;
-      this.updateIntercomSettings({ name, phone, email });
-    }
-  }
-
-  componentWillUnmount() {
-    window.Intercom?.('shutdown');
-  }
-
-  handleClick = () => {
-    const { onClick } = this.props;
-    const { hasScriptLoaded } = this.state;
-
-    if (!hasScriptLoaded) return;
-
-    _isFunction(onClick) && onClick();
-    window.Intercom?.('show');
-  };
-
   render() {
     const { t } = this.props;
     const { hasScriptLoaded } = this.state;
@@ -122,9 +127,10 @@ class LiveChat extends Component {
     return (
       <button
         className={`button live-chat flex flex-middle flex__shrink-fixed ${hasScriptLoaded ? '' : 'text-opacity'}`}
+        data-test-id="common.live-chat.btn"
         onClick={this.handleClick}
       >
-        {!hasScriptLoaded && <div className="loader live-chat__loader margin-left-right-smaller"></div>}
+        {!hasScriptLoaded && <div className="loader live-chat__loader margin-left-right-smaller" />}
         <div className="live-chat__loading-text flex flex-middle">
           <Headset weight="fill" className="live-chat__icon flex__shrink-fixed" size={20} />
           <span className="live-chat__text text-weight-bold text-size-big">{`${t('Help')}`}</span>
@@ -140,6 +146,7 @@ LiveChat.propTypes = {
   userId: PropTypes.string,
   onClick: PropTypes.func,
   hasUserLoggedIn: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
   userProfile: PropTypes.object,
 };
 

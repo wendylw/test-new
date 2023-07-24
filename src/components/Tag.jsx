@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import './Tag.scss';
 
@@ -7,37 +7,38 @@ import './Tag.scss';
  *
  * A very simple example is by `className="tag tag__primary"` is used with component
  */
-class Tag extends Component {
-  render() {
-    const { text, className, style } = this.props;
-    const classList = ['tag text-uppercase text-weight-bolder'];
+const Tag = props => {
+  const { text, className, style } = props;
+  const classList = ['tag text-uppercase text-weight-bolder'];
 
-    if (className) {
-      classList.push(className);
-    }
-
-    if (!text) {
-      return null;
-    }
-
-    return (
-      <i className={classList.join(' ')} style={style}>
-        {text}
-      </i>
-    );
+  if (className) {
+    classList.push(className);
   }
-}
+
+  if (!text) {
+    return null;
+  }
+
+  return (
+    <i className={classList.join(' ')} style={style}>
+      {text}
+    </i>
+  );
+};
 
 Tag.propTypes = {
   className: PropTypes.string,
   text: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.object,
 };
 
 Tag.defaultProps = {
+  className: '',
   text: '',
   style: {},
 };
+
 Tag.displayName = 'Tag';
 
 export default Tag;

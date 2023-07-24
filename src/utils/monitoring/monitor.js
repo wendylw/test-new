@@ -1,3 +1,4 @@
+import _get from 'lodash/get';
 import * as Sentry from '@sentry/react';
 import { CaptureConsole } from '@sentry/integrations';
 import { onFCP, onCLS, onFID, onLCP, onTTFB } from 'web-vitals';
@@ -7,6 +8,23 @@ import './navigation-detector';
 import './click-detector';
 import logger from './logger';
 import { getAppPlatform, getAPIRequestRelativePath, getIsDebugMode } from './utils';
+
+const trackError = (event, hint) => {
+  try {
+    const errorMessage = getErrorMessageFromHint(hint);
+    const sentryId = _get(event, 'event_id', 'unknown');
+
+    logger.error('Common_SentryCapturedError', { message: errorMessage, id: sentryId });
+
+    window.newrelic?.addPageAction('common.error', {
+      message: errorMessage,
+      sentryId,
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+  }
+};
 
 if (process.env.REACT_APP_SENTRY_DSN) {
   Sentry.init({
@@ -27,11 +45,11 @@ if (process.env.REACT_APP_SENTRY_DSN) {
 }
 
 // inject xhr and fetch to inspect error
-const isRelativePath = url => {
+const isRelativePath = url =>
   // https://stackoverflow.com/questions/10687099/how-to-test-if-a-url-string-is-absolute-or-relative
-  return !/^(?:[a-z]+:)?\/\//.test(url);
-};
+  !/^(?:[a-z]+:)?\/\//.test(url);
 const originXHROpen = window.XMLHttpRequest.prototype.open;
+/* eslint-disable prefer-rest-params, func-names */
 window.XMLHttpRequest.prototype.open = function() {
   const url = arguments[1];
   this.addEventListener('load', function() {
@@ -44,6 +62,7 @@ window.XMLHttpRequest.prototype.open = function() {
   });
   originXHROpen.apply(this, arguments);
 };
+/* eslint-disable */
 
 const originFetch = window.fetch;
 window.fetch = function fetch(...args) {
@@ -85,20 +104,6 @@ class SentryCapturedError extends Error {
     this.name = 'SentryCapturedError';
   }
 }
-
-const trackError = (event, hint) => {
-  try {
-    const errorMessage = getErrorMessageFromHint(hint);
-    logger.error('Common_SentryCapturedError', { message: errorMessage, id: event?.event_id });
-
-    window.newrelic?.addPageAction('common.error', {
-      message: errorMessage,
-      sentryId: event?.event_id,
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
 
 const logUrlChange = type => {
   logger.log('Common_PageNavigation', {

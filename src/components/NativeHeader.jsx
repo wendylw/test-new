@@ -1,6 +1,4 @@
-/* eslint-disable react/no-unused-prop-types */
 import { Component } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import PropTypes from 'prop-types';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
@@ -134,21 +132,11 @@ class NativeHeader extends Component {
 }
 
 NativeHeader.propTypes = {
-  isPage: PropTypes.bool,
-  title: PropTypes.string,
-  titleAlignment: PropTypes.oneOf(['left', 'center', 'right']),
-  navFunc: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
   rightContent: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };
 
 NativeHeader.defaultProps = {
-  isPage: true,
-  title: window.document.title,
-  titleAlignment: 'left',
-  navFunc: () => {
-    NativeMethods.goBack();
-  },
   rightContent: null,
 };
 

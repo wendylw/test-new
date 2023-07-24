@@ -20,9 +20,11 @@ export const getAPIRequestRelativePath = path => {
   // Remove query parameters to reduce unnecessary match patterns.
   const filteredQueryPath = filteredHostnamePath.split('?')[0];
   // Try to match the wildcards by URL patterns.
+  // eslint-disable-next-line no-unused-vars
   const entry = Object.entries(API_REQUEST_URL_PATTERNS).find(([_, pattern]) => pattern.test(filteredQueryPath));
 
   if (!_isEmpty(entry)) {
+    // eslint-disable-next-line no-unused-vars
     const [wildcardPath, _] = entry;
     return wildcardPath;
   }
@@ -40,6 +42,7 @@ export const getAPIRequestRelativePath = path => {
   const shouldShowWarning = hasWildcardHit && isDebugMode;
 
   if (shouldShowWarning) {
+    // eslint-disable-next-line no-console
     console.warn(`seems like you miss adding '${path}' to wildcard patterns, please take a look.`);
   }
 

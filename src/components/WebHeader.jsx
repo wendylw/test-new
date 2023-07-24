@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import PropTypes from 'prop-types';
 import { IconLeftArrow, IconClose } from './Icons';
 import './Header.scss';
@@ -27,6 +26,7 @@ class WebHeader extends Component {
         onClick={onClick}
         style={style}
         className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
+        data-test-id="common.web-header.btn"
       >
         {icon && <img alt="icon" className="text-middle icon__normal" src={icon} />}
         <span className="text-middle text-size-big">{text}</span>

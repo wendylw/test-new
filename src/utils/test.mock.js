@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 export class LocalStorageMock {
   constructor() {
     this.store = {};
@@ -20,7 +21,7 @@ export class LocalStorageMock {
   }
 }
 
-export class sessionStorageMock {
+export class SessionStorageMock {
   constructor() {
     this.store = {};
   }

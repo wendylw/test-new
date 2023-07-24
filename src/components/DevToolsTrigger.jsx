@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { toggleDevTools } from '../utils/dev-tools';
@@ -26,7 +24,14 @@ const DevToolsTrigger = props => {
   }, [clickQueue]);
   const { children, className, style } = props;
   return (
-    <span onClick={onClick} className={className} style={style}>
+    <span
+      role="button"
+      tabIndex="0"
+      onClick={onClick}
+      className={className}
+      style={style}
+      data-test-id="common.dev-tool.btn"
+    >
       {children}
     </span>
   );

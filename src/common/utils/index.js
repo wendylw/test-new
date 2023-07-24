@@ -2,7 +2,6 @@ import qs from 'qs';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
 import { WEB_VIEW_SOURCE, SHIPPING_TYPES, PATH_NAME_MAPPING, CLIENTS } from './constants';
-// eslint-disable-next-line import/no-cycle
 import config from '../../config';
 
 // todo: make old legacy utils to import function from here, rather than define same functions twice
@@ -46,8 +45,7 @@ export const removeSessionVariable = name => {
 
 export const getUserAgentInfo = _once(() => {
   /* https://www.regextester.com/97574 */
-  // eslint-disable-next-line
-  const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/g;
+  const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d.apre]+)/g;
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(
     navigator.userAgent
   );
@@ -322,13 +320,13 @@ export const getUUID = () => {
     return crypto.randomUUID();
   } catch {
     // Our application is not mission-critical, so Broofa's answer is good enough for us as a backup plan since it is pretty slick and effective.
-    /* eslint-disable */
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = (Math.random() * 16) | 0,
-        v = c == 'x' ? r : (r & 0x3) | 0x8;
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      /* eslint-disable no-bitwise */
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      /* eslint-enable */
       return v.toString(16);
     });
-    /* eslint-enable */
   }
 };
 

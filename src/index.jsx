@@ -1,11 +1,11 @@
 import 'whatwg-fetch';
+import smoothscroll from 'smoothscroll-polyfill';
 import './utils/monitoring/monitor';
 import './utils/monkey-patches';
 import './utils/polyfills';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-import smoothscroll from 'smoothscroll-polyfill';
 import './i18n';
 import Bootstrap from './Bootstrap';
 import './index.css';
@@ -13,6 +13,7 @@ import './index.css';
 try {
   // kick off the polyfill!
   smoothscroll.polyfill();
+  // eslint-disable-next-line no-useless-catch
 } catch (e) {
   throw e;
 } finally {

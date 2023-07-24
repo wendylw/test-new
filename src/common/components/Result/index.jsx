@@ -70,6 +70,7 @@ const Result = props => {
             }`}
             onClick={onClose}
             style={closeButtonStyle}
+            data-test-id="common.result.close-btn"
           >
             {closeButtonContent || t('Okay')}
           </Button>

@@ -66,13 +66,17 @@ class PhoneViewContainer extends React.Component {
     return (
       <section className={classList.join(' ')}>
         {title ? (
-          <label className="phone-view__label text-center padding-top-bottom-small text-size-bigger text-line-height-base text-weight-bolder">
+          <label
+            htmlFor="phoneNumber"
+            className="phone-view__label text-center padding-top-bottom-small text-size-bigger text-line-height-base text-weight-bolder"
+          >
             {title}
           </label>
         ) : null}
         {content ? <p className="text-weight-bolder">{content}</p> : null}
         {/* react-phone-number-input style guide  https://catamphetamine.gitlab.io/react-phone-number-input/docs/index.html#phoneinputwithcountry */}
         <PhoneInput
+          name="phoneNumber"
           international // If input want to show country code when phone number is empty, pls add international on props
           smartCaret={false}
           placeholder={t('EnterPhoneNumber')}
@@ -105,6 +109,7 @@ PhoneViewContainer.propTypes = {
   title: PropTypes.string,
   country: PropTypes.string,
   buttonText: PropTypes.string,
+  content: PropTypes.string,
   isProcessing: PropTypes.bool,
   errorText: PropTypes.string,
   showError: PropTypes.bool,
@@ -112,12 +117,20 @@ PhoneViewContainer.propTypes = {
   updateCountry: PropTypes.func,
   onSubmit: PropTypes.func,
   onValidate: PropTypes.func,
+  children: PropTypes.node,
 };
 
 PhoneViewContainer.defaultProps = {
+  phone: '',
+  className: '',
+  title: '',
+  country: '',
   isProcessing: false,
   errorText: '',
+  buttonText: '',
+  content: '',
   showError: false,
+  children: null,
   updatePhoneNumber: () => {},
   updateCountry: () => {},
   onSubmit: () => {},

@@ -6,7 +6,6 @@ import Alert from './Alert';
 import '../Feedback.scss';
 
 const AlertStandardContent = ({ content, title }) => (
-  // eslint-disable-next-line react/jsx-filename-extension
   <>
     {title ? <h4 className="alert__title padding-small text-size-biggest text-weight-bolder">{title}</h4> : null}
     {content ? (

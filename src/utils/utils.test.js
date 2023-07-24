@@ -1,5 +1,5 @@
 import Utils from './utils';
-import { LocalStorageMock, sessionStorageMock } from './test.mock';
+import { LocalStorageMock, SessionStorageMock } from './test.mock';
 import { addressInfo, soldingProduct, soldoutProduct } from './__fixtures__/utils.fixtures';
 
 beforeEach(() => {
@@ -168,7 +168,7 @@ describe('utils/utils', () => {
   });
 
   describe('utils.sessionStorage', () => {
-    global.sessionStorage = new sessionStorageMock();
+    global.sessionStorage = new SessionStorageMock();
 
     beforeEach(() => sessionStorage.clear());
     afterAll(() => sessionStorage.clear());

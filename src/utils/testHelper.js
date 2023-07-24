@@ -1,10 +1,11 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { routerMiddleware } from 'connected-react-router';
 import history from '../ordering/orderingHistory';
 import api from '../redux/middlewares/api';
 import apiGql from '../redux/middlewares/apiGql';
-import { RequestError } from './request';
+import RequestError from './api/request-error';
 import requestPromise from '../redux/middlewares/requestPromise';
 
 const middlewares = [thunk, apiGql, api, requestPromise];
@@ -33,9 +34,8 @@ function expectedActionsCheck(dispatchedAction, expectedActions) {
     expect(store.getActions()).toEqual(expectedActions);
   });
 }
-const getReducerNewState = (combinedReducers, action, nameField) => {
-  return combinedReducers(undefined, action)[nameField];
-};
+const getReducerNewState = (combinedReducers, action, nameField) => combinedReducers(undefined, action)[nameField];
+
 export {
   store,
   expectedActionsCheck,

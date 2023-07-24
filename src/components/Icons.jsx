@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 
 export const IconPending = props => (
@@ -338,7 +339,7 @@ export const IconAddAddress = props => (
         <polygon
           id="path-1"
           points="16.82 21.82 16.82 16.82 21.82 16.82 21.82 15.18 16.82 15.18 16.82 10.18 15.18 10.18 15.18 15.18 10.18 15.18 10.18 16.82 15.18 16.82 15.18 21.82"
-        ></polygon>
+        />
       </defs>
       <g id="Beep-Delivery-2.0" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
         <g id="00---Deliver-To---Add-Address" transform="translate(-14.000000, -82.000000)">
@@ -346,11 +347,11 @@ export const IconAddAddress = props => (
             <g id="Molecules/Location/Default-Copy-4" transform="translate(0.000000, 6.000000)">
               <g id="Icon" transform="translate(14.000000, 16.000000)">
                 <mask id="mask-2" fill="white">
-                  <use xlinkHref="#path-1"></use>
+                  <use xlinkHref="#path-1" />
                 </mask>
-                <use id="" fill="#000000" fillRule="nonzero" xlinkHref="#path-1"></use>
+                <use id="" fill="#000000" fillRule="nonzero" xlinkHref="#path-1" />
                 <g id="Variables/Palette/Neutrals/05-Manatee" mask="url(#mask-2)" fill="#8D90A1">
-                  <rect id="Color" x="0" y="0" width="32" height="32"></rect>
+                  <rect id="Color" x="0" y="0" width="32" height="32" />
                 </g>
               </g>
             </g>

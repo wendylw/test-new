@@ -9,21 +9,9 @@ import {
 import { IconBookmarks } from './Icons';
 import ErrorToast from './ErrorToast';
 import './LocationPicker.scss';
-import { captureException } from '@sentry/react';
 import logger from '../utils/monitoring/logger';
 
 class LocationPicker extends Component {
-  static propTypes = {
-    onSearchResultSelect: PropTypes.func,
-    onHistoricalResultSelect: PropTypes.func,
-    searchResultList: PropTypes.array,
-  };
-  static defaultProps = {
-    onSearchResultSelect: () => {},
-    onHistoricalResultSelect: () => {},
-    searchResultList: [],
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -50,14 +38,18 @@ class LocationPicker extends Component {
     const placeDetail = await getPlaceInfoFromPlaceId(searchResult.place_id, {
       fromAutocomplete: true,
     });
-    const { main_text, secondary_text } = searchResult.structured_formatting;
-    placeDetail.address = `${main_text}, ${secondary_text}`;
+    const { main_text: mainText, secondary_text: secondaryText } = searchResult.structured_formatting;
+    placeDetail.address = `${mainText}, ${secondaryText}`;
     placeDetail.displayComponents = {
-      mainText: main_text,
-      secondaryText: secondary_text,
+      mainText,
+      secondaryText,
     };
     return placeDetail;
   }
+
+  clearErrorToast = () => {
+    this.setState({ errorToast: null });
+  };
 
   async selectSearchResultHandler(searchResult, index) {
     const { t, onSearchResultSelect } = this.props;
@@ -72,11 +64,7 @@ class LocationPicker extends Component {
     }
   }
 
-  clearErrorToast = () => {
-    this.setState({ errorToast: null });
-  };
-
-  renderAddressItem(summary, detail, distance) {
+  renderAddressItem(summary, detail) {
     return (
       <summary
         className="location-picker__address-summary padding-top-bottom-small"
@@ -109,7 +97,10 @@ class LocationPicker extends Component {
               <div
                 className="location-picker__historical-address flex flex-top border__bottom-divider"
                 onClick={() => onHistoricalResultSelect(positionInfo)}
+                role="button"
+                tabIndex="0"
                 key={positionInfo.address}
+                data-test-id="common.location-picker.select-btn"
               >
                 <div className="margin-smaller">
                   <IconBookmarks className="icon icon__smaller icon__primary-light margin-small" />
@@ -127,8 +118,6 @@ class LocationPicker extends Component {
       );
     } catch (error) {
       console.error('CommonComponent renderHistoricalAddressList:', error?.message || '');
-
-      captureException(error);
       return null;
     }
   }
@@ -138,28 +127,29 @@ class LocationPicker extends Component {
 
     return (
       <div>
-        {searchResultList.map((searchResult, index) => {
-          return (
-            <div
-              className="location-picker__result-item"
-              key={searchResult.place_id}
-              onClick={() => this.selectSearchResultHandler(searchResult, index)}
-              data-test-id="common.location-picker.search-result-item"
-            >
-              {this.renderAddressItem(
-                searchResult.structured_formatting.main_text,
-                searchResult.structured_formatting.secondary_text,
-                searchResult.distance_meters / 1000
-              )}
-            </div>
-          );
-        })}
+        {searchResultList.map((searchResult, index) => (
+          <div
+            className="location-picker__result-item"
+            key={searchResult.place_id}
+            onClick={() => this.selectSearchResultHandler(searchResult, index)}
+            role="button"
+            tabIndex="0"
+            data-test-id="common.location-picker.search-result-item"
+          >
+            {this.renderAddressItem(
+              searchResult.structured_formatting.main_text,
+              searchResult.structured_formatting.secondary_text,
+              searchResult.distance_meters / 1000
+            )}
+          </div>
+        ))}
       </div>
     );
   }
 
   renderMainContent() {
-    const shouldShowSearchResultList = !!this.props.searchResultList.length;
+    const { searchResultList } = this.props;
+    const shouldShowSearchResultList = !!searchResultList.length;
     return shouldShowSearchResultList ? this.renderSearchResultList() : this.renderHistoricalAddressList();
   }
 
@@ -180,6 +170,18 @@ class LocationPicker extends Component {
   }
 }
 LocationPicker.displayName = 'LocationPicker';
+
+LocationPicker.propTypes = {
+  onSearchResultSelect: PropTypes.func,
+  onHistoricalResultSelect: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  searchResultList: PropTypes.array,
+};
+LocationPicker.defaultProps = {
+  onSearchResultSelect: () => {},
+  onHistoricalResultSelect: () => {},
+  searchResultList: [],
+};
 
 export * from '../utils/geoUtils';
 

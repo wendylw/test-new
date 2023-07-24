@@ -2,12 +2,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Trans, withTranslation } from 'react-i18next';
+import { captureException } from '@sentry/react';
 import Header from './Header';
 import Constants from '../utils/constants';
 import beepOtpLock from '../images/beep-otp-lock.svg';
 import beepOtpError from '../images/beep-otp-error.svg';
 import Utils from '../utils/utils';
-import { captureException } from '@sentry/react';
 import './OtpModal.scss';
 import TermsAndPrivacy from './TermsAndPrivacy';
 import CleverTap from '../utils/clevertap';
@@ -16,14 +16,18 @@ import CleverTap from '../utils/clevertap';
 class OtpModal extends React.Component {
   countDownSetTimeoutObj = null;
 
-  state = {
-    otp: '',
-    currentOtpTime: this.props.resendOtpTime,
-    isNewInput: true,
-  };
-
   inputRef = React.createRef();
+
   addressAsideInnerRef = React.createRef();
+
+  constructor(props) {
+    super(props);
+    const { resendOtpTime } = props;
+    this.state = {
+      otp: '',
+      currentOtpTime: resendOtpTime,
+    };
+  }
 
   componentDidMount() {
     const { currentOtpTime } = this.state;
@@ -63,6 +67,19 @@ class OtpModal extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    const { shouldCountdown: currShouldCountdown, resendOtpTime } = this.props;
+    const { shouldCountdown: prevShouldCountdown } = prevProps;
+
+    if (!prevShouldCountdown && currShouldCountdown) {
+      this.countDown(resendOtpTime);
+    }
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.countDownSetTimeoutObj);
+  }
+
   getScrollBottom() {
     const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
     const otpInput = document.getElementById('newOtpInput');
@@ -70,19 +87,6 @@ class OtpModal extends React.Component {
     const inputBottom = windowHeight - top;
     const scrollHeight = windowHeight / 2 - inputBottom;
     return scrollHeight;
-  }
-
-  componentWillUnmount() {
-    clearTimeout(this.countDownSetTimeoutObj);
-  }
-
-  componentDidUpdate(prevProps) {
-    const { shouldCountdown: currShouldCountdown } = this.props;
-    const { shouldCountdown: prevShouldCountdown } = prevProps;
-
-    if (!prevShouldCountdown && currShouldCountdown) {
-      this.countDown(this.props.resendOtpTime);
-    }
   }
 
   updateAndValidateOtp = otp => {
@@ -168,12 +172,8 @@ class OtpModal extends React.Component {
               )}
             </div>
           </div>
-          <div className={`flex flex-center flex-middle`}>
-            {!!currentOtpTime ? (
-              <button className="otp-modal__resend-tip button button__link margin-top-bottom-normal">
-                {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? ` ${currentOtpTime}` : '' })}
-              </button>
-            ) : (
+          <div className="flex flex-center flex-middle">
+            {!currentOtpTime ? (
               <div className="flex flex-column">
                 <button
                   className="otp-modal__button-resend-sms button button__link padding-normal text-weight-bolder text-uppercase"
@@ -198,13 +198,17 @@ class OtpModal extends React.Component {
                   </button>
                 )}
               </div>
+            ) : (
+              <button className="otp-modal__resend-tip button button__link margin-top-bottom-normal">
+                {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? ` ${currentOtpTime}` : '' })}
+              </button>
             )}
           </div>
           {isLoading ? (
             <div className="page-loader flex flex-middle flex-center">
               <div className="prompt-loader padding-small border-radius-large text-center flex flex-middle flex-center">
                 <div className="prompt-loader__content">
-                  <i className="circle-loader margin-smaller"></i>
+                  <i className="circle-loader margin-smaller" />
                   <span className="prompt-loader__text margin-top-bottom-smaller text-size-smaller">
                     {isResending ? t('ResendingCode') : t('VerifyingCode')}
                   </span>
@@ -230,6 +234,7 @@ OtpModal.propTypes = {
   phone: PropTypes.string,
   resendOtpTime: PropTypes.number,
   isLoading: PropTypes.bool,
+  isResending: PropTypes.bool,
   showError: PropTypes.bool,
   showWhatsAppResendBtn: PropTypes.bool,
   shouldCountdown: PropTypes.bool,
@@ -244,10 +249,13 @@ OtpModal.defaultProps = {
   resendOtpTime: 0,
   showError: false,
   isLoading: false,
+  isResending: false,
   shouldCountdown: false,
+  showWhatsAppResendBtn: false,
   onClose: () => {},
   onChange: () => {},
   sendOtp: () => {},
+  getOtp: () => {},
 };
 OtpModal.displayName = 'OtpModal';
 
