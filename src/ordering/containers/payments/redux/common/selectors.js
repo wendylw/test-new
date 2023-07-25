@@ -15,7 +15,9 @@ import {
   getIsCoreBusinessAPIPending,
   getIsUserLoginRequestStatusInPending,
 } from '../../../../redux/modules/app';
-import { API_REQUEST_STATUS } from '../../../../../utils/constants';
+import Constants, { API_REQUEST_STATUS } from '../../../../../utils/constants';
+
+const { PAYMENT_PROVIDERS } = Constants;
 
 export const getSelectedPaymentProvider = ({ payments }) => payments.common.selectedOptionProvider;
 export const getPayByCashPromptDisplayStatus = ({ payments }) => payments.common.payByCashPromptDisplay;
@@ -60,22 +62,28 @@ export const getAllPaymentsOptions = createSelector(
   getOriginalPaymentOptions,
   getTotal,
   (originalPaymentOptions, total) => {
-    return originalPaymentOptions.map(originalOption => {
-      const option = { ...originalOption };
-      const { available, minAmount, isStoreSupported } = option;
+    return originalPaymentOptions
+      .map(originalOption => {
+        const option = { ...originalOption };
+        const { available, minAmount, isStoreSupported, isApplePaySupported, paymentProvider } = option;
 
-      option.disabledConditions = {
-        minAmount: false,
-        available: !available,
-        unSupport: !isStoreSupported,
-      };
+        if (!isApplePaySupported && paymentProvider === PAYMENT_PROVIDERS.APPLE_PAY) {
+          return undefined;
+        }
 
-      if (minAmount && total < minAmount) {
-        option.disabledConditions.minAmount = true;
-      }
+        option.disabledConditions = {
+          minAmount: false,
+          available: !available,
+          unSupport: !isStoreSupported,
+        };
 
-      return option;
-    });
+        if (minAmount && total < minAmount) {
+          option.disabledConditions.minAmount = true;
+        }
+
+        return option;
+      })
+      .filter(option => option);
   }
 );
 

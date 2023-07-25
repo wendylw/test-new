@@ -197,3 +197,20 @@ export const getCreditCardFormPathname = (paymentProvider, saveCard = false) => 
       return ROUTER_PATHS.ORDERING_PAYMENT;
   }
 };
+
+// Apple pay provide tracking method: https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/checking_for_apple_pay_availability#overview
+export const getIsApplePaySupported = () => {
+  try {
+    if (window.ApplePaySession) {
+      return window.ApplePaySession.canMakePayments();
+    }
+
+    return false;
+  } catch (error) {
+    // Apple Pay is only available on HTTPS: https://developer.apple.com/forums/thread/670439
+    // Illegal access error
+    console.error('Ordering_Payment_GetApplePaySupportFailed', error?.message || 'Unknown error');
+
+    return false;
+  }
+};

@@ -39,7 +39,7 @@ import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { fetchOrder } from '../../../../../utils/api-request';
 import { alert } from '../../../../../common/feedback';
-import { getPaymentType, getIsApplePaySupported } from './utils';
+import { getPaymentType } from './utils';
 
 const { PAYMENT_PROVIDERS, ORDER_STATUS, ROUTER_PATHS } = Constants;
 
@@ -316,12 +316,11 @@ class Payment extends Component {
 
   renderPaymentList() {
     const { allPaymentOptions } = this.props;
-    const isApplePaySupported = getIsApplePaySupported();
 
     return (
       <ul>
         {allPaymentOptions.map(option => (
-          <PaymentItem key={option.key} option={option} isApplePaySupported={isApplePaySupported} />
+          <PaymentItem key={option.key} option={option} />
         ))}
       </ul>
     );

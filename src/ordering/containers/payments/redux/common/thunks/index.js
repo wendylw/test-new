@@ -15,6 +15,7 @@ import {
 import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
 import Constants from '../../../../../../utils/constants';
+import { getIsApplePaySupported } from '../../../utils';
 import { getTotal, getCleverTapAttributes, getPaymentName } from '../selectors';
 import CleverTap from '../../../../../../utils/clevertap';
 import logger from '../../../../../../utils/monitoring/logger';
@@ -204,6 +205,7 @@ export const loadBilling = createAsyncThunk('ordering/payments/loadBilling', asy
 export const loadPaymentOptions = createAsyncThunk(
   'ordering/payments/loadPaymentOptions',
   async (selectedPaymentMethod, { getState }) => {
+    const isApplePaySupported = getIsApplePaySupported();
     const state = getState();
     const total = getTotal(state);
     const storeId = getStoreId(state);
@@ -234,6 +236,10 @@ export const loadPaymentOptions = createAsyncThunk(
     if (onlineBankingOption) {
       onlineBankingOption.agentCodes = preprocessOnlineBankings(onlineBankingOption.agentCodes || [], OnlineBankModel);
     }
+
+    const applePayOption = paymentOptions.find(option => option.key === PAYMENT_METHOD_LABELS.APPLE_PAY);
+
+    applePayOption.isApplePaySupported = isApplePaySupported;
 
     return { paymentOptions, selectedPaymentOption };
   }
