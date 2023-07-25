@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { PAYMENT_TYPE } from './constants';
