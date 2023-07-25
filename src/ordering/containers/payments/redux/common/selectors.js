@@ -65,11 +65,7 @@ export const getAllPaymentsOptions = createSelector(
     return originalPaymentOptions
       .map(originalOption => {
         const option = { ...originalOption };
-        const { available, minAmount, isStoreSupported, isApplePaySupported, paymentProvider } = option;
-
-        if (!isApplePaySupported && paymentProvider === PAYMENT_PROVIDERS.APPLE_PAY) {
-          return undefined;
-        }
+        const { available, minAmount, isStoreSupported } = option;
 
         option.disabledConditions = {
           minAmount: false,
@@ -83,7 +79,15 @@ export const getAllPaymentsOptions = createSelector(
 
         return option;
       })
-      .filter(option => option);
+      .filter(option => {
+        const { isApplePaySupported, paymentProvider } = option;
+
+        if (!isApplePaySupported && paymentProvider === PAYMENT_PROVIDERS.APPLE_PAY) {
+          return false;
+        }
+
+        return true;
+      });
   }
 );
 
