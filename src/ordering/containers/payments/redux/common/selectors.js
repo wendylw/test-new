@@ -82,8 +82,8 @@ export const getAllPaymentsOptions = createSelector(
       .filter(option => {
         const { isApplePaySupported, paymentProvider } = option;
 
-        if (!isApplePaySupported && paymentProvider === PAYMENT_PROVIDERS.APPLE_PAY) {
-          return false;
+        if (paymentProvider === PAYMENT_PROVIDERS.APPLE_PAY) {
+          return isApplePaySupported;
         }
 
         return true;

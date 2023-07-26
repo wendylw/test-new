@@ -209,7 +209,7 @@ export const getIsApplePaySupported = () => {
   } catch (error) {
     // Apple Pay is only available on HTTPS: https://developer.apple.com/forums/thread/670439
     // Illegal access error
-    console.error('Ordering_Payment_GetApplePaySupportFailed', error?.message || 'Unknown error');
+    logger.error('Ordering_Payment_GetApplePaySupportFailed', error?.message || 'Unknown error');
 
     return false;
   }
