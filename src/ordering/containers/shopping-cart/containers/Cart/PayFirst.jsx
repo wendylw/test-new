@@ -139,7 +139,6 @@ class PayFirst extends Component {
 
   handleClickBack = async () => {
     const { history } = this.props;
-    const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
 
     if (this.additionalCommentsEl) {
       await this.additionalCommentsEl.blur();
@@ -151,7 +150,7 @@ class PayFirst extends Component {
 
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-        search: newSearchParams,
+        search: window.location.search,
       });
     }, 100);
   };
@@ -376,7 +375,7 @@ class PayFirst extends Component {
       <button
         className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
         data-testid="pay"
-        data-heap-name="ordering.cart.pay-btn"
+        data-test-id="ordering.cart.pay-btn"
         onClick={this.handleClickPayButton}
         disabled={shouldDisablePayButton}
       >
@@ -393,7 +392,7 @@ class PayFirst extends Component {
         className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
         history={history}
         data-testid="pay"
-        data-heap-name="ordering.cart.pay-btn"
+        data-test-id="ordering.cart.pay-btn"
         disabled={shouldDisablePayButton || pendingBeforeCreateOrder || isCreatingOrder}
         validCreateOrder={isValidCreateOrder}
         beforeCreateOrder={this.handleBeforeCreateOrder}
@@ -632,7 +631,7 @@ class PayFirst extends Component {
           <button
             onClick={this.handleClickLoginButton}
             className="cart-cashback__button-login button button__fill padding-top-bottom-smaller padding-left-right-normal"
-            data-heap-name="ordering.cart.cashback.login-btn"
+            data-test-id="ordering.cart.cashback.login-btn"
           >
             {t('Login')}
           </button>
@@ -657,7 +656,7 @@ class PayFirst extends Component {
               <button
                 onClick={this.handleDismissPromotion}
                 className="button flex__shrink-fixed"
-                data-heap-name="ordering.cart.dismiss-promo"
+                data-test-id="ordering.cart.dismiss-promo"
               >
                 <IconClose className="icon icon__small" />
               </button>
@@ -670,7 +669,7 @@ class PayFirst extends Component {
           <button
             className="cart-promotion__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
             onClick={this.handleGotoPromotion}
-            data-heap-name="ordering.cart.add-promo"
+            data-test-id="ordering.cart.add-promo"
           >
             <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
             <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
@@ -700,14 +699,14 @@ class PayFirst extends Component {
           placeholder={t('OrderNotesPlaceholder')}
           maxLength="140"
           value={additionalComments || ''}
-          data-heap-name="ordering.cart.additional-msg"
+          data-test-id="ordering.cart.additional-msg"
           onChange={this.handleChangeAdditionalComments.bind(this)}
           onFocus={this.AdditionalCommentsFocus}
         />
         {additionalComments ? (
           <IconClose
             className="icon icon__big icon__default flex__shrink-fixed"
-            data-heap-name="ordering.cart.clear-additional-msg"
+            data-test-id="ordering.cart.clear-additional-msg"
             onClick={this.handleClearAdditionalComments}
           />
         ) : null}
@@ -761,14 +760,14 @@ class PayFirst extends Component {
     }
 
     return (
-      <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
+      <section className="ordering-cart flex flex-column" data-test-id="ordering.cart.container">
         <HybridHeader
           headerRef={ref => {
             this.headerEl = ref;
           }}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
-          data-heap-name="ordering.cart.header"
+          data-test-id="ordering.cart.header"
           isPage
           title={t('ProductsInOrderText', { count: count || 0 })}
           navFunc={() => {
@@ -782,7 +781,7 @@ class PayFirst extends Component {
               color: '#fa4133',
             },
             attributes: {
-              'data-heap-name': 'ordering.cart.clear-btn',
+              'data-test-id': 'ordering.cart.clear-btn',
             },
             onClick: this.handleClearAll,
           }}
@@ -834,7 +833,7 @@ class PayFirst extends Component {
               CleverTap.pushEvent('Cart Page - click back button(bottom)');
               this.handleClickBack();
             }}
-            data-heap-name="ordering.cart.back-btn"
+            data-test-id="ordering.cart.back-btn"
           >
             {t('Back')}
           </button>

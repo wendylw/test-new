@@ -49,8 +49,7 @@ function getImageQuality() {
 }
 
 function getImageURL(dimension, imageURL) {
-  // eslint-disable-next-line no-extra-boolean-cast
-  if (!Boolean(imageURL)) {
+  if (!imageURL) {
     return null;
   }
 

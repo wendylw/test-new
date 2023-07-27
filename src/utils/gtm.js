@@ -11,9 +11,8 @@ export const gtmEventTracking = (eventName, data, callback) => {
         eventCallback: id => (id === process.env.REACT_APP_GOOGLE_TAG_MANAGER_ID ? callback() : null),
         eventTimeout: 2000,
       });
-    } else {
-      return callback();
     }
+    return callback();
   }
 
   return window.dataLayer.push({
@@ -65,6 +64,7 @@ export const gtmSetUserProperties = ({ onlineStoreInfo, userInfo, store }) => {
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(
+    // eslint-disable-next-line prefer-object-spread
     Object.assign(
       {
         event: 'initial',
@@ -74,7 +74,6 @@ export const gtmSetUserProperties = ({ onlineStoreInfo, userInfo, store }) => {
       selectedStoreInfoForGtm
     )
   );
-  return;
 };
 
 export const gtmSetPageViewData = data => {

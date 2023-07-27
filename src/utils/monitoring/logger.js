@@ -96,6 +96,7 @@ export const getFormattedActionName = name => {
   const regexFormatRule = /\W+/g;
 
   if (regexFormatRule.test(name)) {
+    // eslint-disable-next-line no-console
     getIsDebugMode() && console.warn(`Illegal character in action name: ${name}`);
     return name.replace(regexFormatRule, '_');
   }
@@ -181,6 +182,7 @@ const track = async (name, data, options = {}) => {
 
     send(payload);
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.warn(e.message);
     if (getIsDebugMode()) {
       throw e;

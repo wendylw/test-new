@@ -20,7 +20,7 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
-import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo } from './api-request';
+import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo, getCoreBusinessInfo } from './api-request';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
 import { isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
@@ -100,14 +100,6 @@ export const initialState = {
 };
 
 export const types = APP_TYPES;
-
-const fetchCoreBusiness = variables => ({
-  [FETCH_GRAPHQL]: {
-    types: [types.FETCH_CORE_BUSINESS_REQUEST, types.FETCH_CORE_BUSINESS_SUCCESS, types.FETCH_CORE_BUSINESS_FAILURE],
-    endpoint: Url.apiGql('CoreBusiness'),
-    variables,
-  },
-});
 
 //action creators
 export const actions = {
@@ -245,6 +237,10 @@ export const actions = {
     }
   },
 
+  resetConsumerLoginStatus: () => ({
+    type: types.RESET_LOGIN_STATUS_REQUEST,
+  }),
+
   loadProfileInfo: consumerId => async dispatch => {
     try {
       dispatch({ type: types.LOAD_CONSUMER_PROFILE_PENDING });
@@ -287,9 +283,14 @@ export const actions = {
     }
   },
 
+  resetConsumerCustomerInfo: () => ({
+    type: types.RESET_CONSUMER_CUSTOMER_INFO,
+  }),
+
   loginByBeepApp: () => async (dispatch, getState) => {
     try {
       const tokens = await NativeMethods.getTokenAsync();
+
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
       if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
@@ -320,14 +321,8 @@ export const actions = {
   syncLoginFromBeepApp: () => async (dispatch, getState) => {
     try {
       const isUserLogin = getIsUserLogin(getState());
+
       if (isUserLogin) {
-        return;
-      }
-
-      const isAppLogin = NativeMethods.getLoginStatus();
-
-      if (!isAppLogin) {
-        dispatch(actions.showLoginModal());
         return;
       }
 
@@ -395,9 +390,25 @@ export const actions = {
   }),
 
   loadCoreBusiness: () => async dispatch => {
-    const { business } = config;
+    try {
+      await dispatch({
+        type: types.FETCH_CORE_BUSINESS_REQUEST,
+      });
+      const { business } = config;
+      const response = await getCoreBusinessInfo(business);
+      const { enableCashback } = _get(response, 'data.business', {});
 
-    await dispatch(fetchCoreBusiness({ business }));
+      await dispatch({
+        type: types.FETCH_CORE_BUSINESS_SUCCESS,
+        payload: { enableCashback },
+      });
+    } catch (e) {
+      await dispatch({
+        type: types.FETCH_CORE_BUSINESS_FAILURE,
+      });
+
+      logger.error('Cashback_LoadCoreBusinessFailed', { message: e?.message });
+    }
   },
 
   fetchOnlineStoreInfo: () => ({
@@ -492,6 +503,13 @@ const user = (state = initialState.user, action) => {
         consumerId,
         isFetching: false,
       };
+    case types.RESET_LOGIN_STATUS_REQUEST:
+      return {
+        ...state,
+        isFetching: false,
+        isLogin: false,
+        consumerId: null,
+      };
     // load consumer profile
     case types.LOAD_CONSUMER_PROFILE_PENDING:
       return { ...state, profile: { ...state.profile, status: API_REQUEST_STATUS.PENDING } };
@@ -548,10 +566,11 @@ const user = (state = initialState.user, action) => {
       };
     case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
       return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.REJECTED };
+    case type.RESET_CONSUMER_CUSTOMER_INFO:
+      return { ...state, loadConsumerCustomerStatus: null, storeCreditsBalance: 0, customerId: null };
     // fetch online store info success
     // fetch core business success
     case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
-    case types.FETCH_CORE_BUSINESS_SUCCESS:
       const { data } = responseGql;
       const { business, onlineStoreInfo } = data || {};
 
@@ -632,8 +651,8 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 };
 
 const coreBusiness = (state = initialState.coreBusiness, action) => {
-  const { type, responseGql } = action || {};
-  const enableCashback = _get(responseGql, 'data.business.enableCashback', false);
+  const { payload, type } = action || {};
+  const enableCashback = payload || {};
 
   switch (type) {
     case types.FETCH_CORE_BUSINESS_REQUEST:
@@ -738,6 +757,8 @@ export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, c
 export const getLoginBannerPrompt = createSelector(getUser, user => _get(user, 'prompt', null));
 
 export const getIsUserLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+
+export const getUserCountry = createSelector(getUser, user => _get(user, 'country', false));
 
 export const getIsUserExpired = createSelector(getUser, user => _get(user, 'isExpired', false));
 

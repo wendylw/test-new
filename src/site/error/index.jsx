@@ -59,13 +59,13 @@ class Error extends Component {
     const error = this.getErrorContent();
 
     return (
-      <main className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.error.container">
+      <main className="fixed-wrapper fixed-wrapper__main" data-test-id="site.error.container">
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
             <IconLeftArrow
               className="icon icon__big icon__default text-middle"
               onClick={this.handleBackClicked}
-              data-heap-name="site.error.back-btn"
+              data-test-id="site.error.back-btn"
             />
             <h2 className="header__title text-middle text-size-big text-weight-bolder text-omit__single-line">
               {t('ScanQRCode')}

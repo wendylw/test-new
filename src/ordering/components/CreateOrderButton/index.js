@@ -13,7 +13,6 @@ import {
   getIsCoreBusinessAPIFulfilled,
 } from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
-import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
 import Constants from '../../../utils/constants';
 import logger from '../../../utils/monitoring/logger';
@@ -21,6 +20,7 @@ import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/co
 import { fetchOrder } from '../../../utils/api-request';
 import i18next from 'i18next';
 import { alert } from '../../../common/feedback/';
+import { extractDataAttributes } from '../../../common/utils';
 
 const { ROUTER_PATHS, REFERRER_SOURCE_TYPES, PAYMENT_PROVIDERS, ORDER_STATUS } = Constants;
 
@@ -240,7 +240,7 @@ class CreateOrderButton extends React.Component {
   };
 
   render() {
-    const { children, className, buttonType, disabled, dataAttributes, loaderText, processing } = this.props;
+    const { children, className, buttonType, disabled, loaderText, processing } = this.props;
     const { isLoadingCreatedOrder } = this.state;
     const classList = ['button button__fill button__block text-weight-bolder'];
 
@@ -255,7 +255,7 @@ class CreateOrderButton extends React.Component {
           type={buttonType}
           disabled={disabled || isLoadingCreatedOrder}
           onClick={this.handleCreateOrderSafety}
-          {...dataAttributes}
+          {...extractDataAttributes(this.props)}
         >
           {isLoadingCreatedOrder ? loaderText : children}
         </button>
@@ -299,7 +299,6 @@ CreateOrderButton.defaultProps = {
 };
 
 export default compose(
-  withDataAttributes,
   connect(
     state => {
       return {

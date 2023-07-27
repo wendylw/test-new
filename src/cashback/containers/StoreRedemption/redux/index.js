@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../utils/constants';
 import {
@@ -30,6 +29,7 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'loyalty/storeRedemption',
   initialState,
+  reducers: {},
   extraReducers: {
     [updateShareConsumerInfoRequests.pending.type]: state => {
       state.updateSharingConsumerInfo.status = API_REQUEST_STATUS.PENDING;

@@ -1,5 +1,5 @@
 /**
- * @deprecated
+ * NOTE: deprecated
  * This file should ONLY be imported by v1 files. We will migrate the content
  * to ../common/utils/constants.js when something is required by v2 pages, and
  * changed the constant here to a reference.
@@ -88,7 +88,7 @@ const CHANNEL_TYPE = {
   BEEP: 3,
 };
 
-const ADDRESS_RANGE = ConstantsV2.ADDRESS_RANGE;
+const { ADDRESS_RANGE } = ConstantsV2;
 
 const ADD_TO_CART_MIN_QUANTITY = 1;
 
@@ -430,7 +430,7 @@ const ASIDE_NAMES = {
 
 const DELIVERY_METHOD = ConstantsV2.SHIPPING_TYPES;
 
-const WEEK_DAYS_I18N_KEYS = ConstantsV2.WEEK_DAYS_I18N_KEYS;
+const { WEEK_DAYS_I18N_KEYS } = ConstantsV2;
 
 const PROMOTION_ERROR_CODES = {
   /* temp promotion error code */
@@ -598,7 +598,7 @@ const SH_LOGISTICS_VALID_TIME = {
   TO: '21:00',
 };
 
-const WEB_VIEW_SOURCE = ConstantsV2.WEB_VIEW_SOURCE;
+const { WEB_VIEW_SOURCE } = ConstantsV2;
 const PAYMENT_API_PAYMENT_OPTIONS = {
   SAVE_CARD: 'saveCard',
   TOKENIZATION: 'tokenization',
@@ -607,7 +607,7 @@ const PAYMENT_API_PAYMENT_OPTIONS = {
 const TIME_SLOT_NOW = 'now';
 
 export const AVAILABLE_REPORT_DRIVER_ORDER_STATUSES = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
-const CLIENTS = ConstantsV2.CLIENTS;
+const { CLIENTS } = ConstantsV2;
 
 export const REGISTRATION_TOUCH_POINT = {
   CLAIM_CASHBACK: 'ClaimCashback',
@@ -616,9 +616,9 @@ export const REGISTRATION_TOUCH_POINT = {
   TNG: 'TNG',
 };
 
-export const REGISTRATION_SOURCE = ConstantsV2.REGISTRATION_SOURCE;
+export const { REGISTRATION_SOURCE } = ConstantsV2;
 
-export const API_REQUEST_STATUS = ConstantsV2.API_REQUEST_STATUS;
+export const { API_REQUEST_STATUS } = ConstantsV2;
 
 export const ORDER_SOURCE = {
   TNG_MINI_PROGRAM: 'BeepTngMiniProgram',
@@ -634,7 +634,7 @@ export const ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING = {
   [DELIVERY_METHOD.TAKE_AWAY]: 'takeaway',
 };
 
-export const PROMOTION_CLIENT_TYPES = ConstantsV2.PROMOTION_CLIENT_TYPES;
+export const { PROMOTION_CLIENT_TYPES } = ConstantsV2;
 
 export const REFERRER_SOURCE_TYPES = {
   PAYMENT: 'payment',
@@ -669,7 +669,7 @@ export const DISPLAY_ICON_TYPES = {
   CARET_DOWN: 'CaretDown',
 };
 
-export const LOCATION_SELECTION_REASON_CODES = ConstantsV2.LOCATION_SELECTION_REASON_CODES;
+export const { LOCATION_SELECTION_REASON_CODES } = ConstantsV2;
 
 export const LIVE_CHAT_SOURCE_TYPES = {
   ORDER_DETAILS: 'order details',

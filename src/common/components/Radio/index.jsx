@@ -66,6 +66,7 @@ const Radio = props => {
       className={`${styles.radio} ${className}`}
       style={style}
       disabled={disabled}
+      data-test-id="common.radio.input"
     />
   );
   if (!children) {

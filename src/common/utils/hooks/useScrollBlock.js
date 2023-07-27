@@ -12,7 +12,7 @@ const useScrollBlock = shouldBlock => {
     } else {
       unblock(uid.current);
     }
-  }, [shouldBlock]);
+  }, [shouldBlock, uid]);
   useUnmount(() => {
     unblock(uid.current);
   });

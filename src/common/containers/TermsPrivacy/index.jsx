@@ -76,7 +76,9 @@ export class TermsPrivacy extends Component {
         <div
           className={Utils.isTNGMiniProgram() ? 'terms-privacy__remove-link-style' : ''}
           onClick={this.handleContentClick}
+          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={content}
+          data-test-id="common.terms-privacy.link"
         />
       </DocumentHeadInfo>
     );

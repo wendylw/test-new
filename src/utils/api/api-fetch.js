@@ -66,6 +66,7 @@ function windowDispatchEvent(eventName, url, opts, extraDetail) {
  * @param {object} options.queryParams query parameters in url
  * @param {object} options.headers headers in request
  */
+// eslint-disable-next-line no-underscore-dangle
 async function _fetch(url, opts) {
   try {
     // Response will throw HTTPError, if response status is not in the range of 200...299: https://github.com/sindresorhus/ky#kyinput-options
@@ -120,7 +121,7 @@ async function _fetch(url, opts) {
     windowDispatchEvent('sh-api-failure', url, opts, {
       code: code ? code.toString() : '99999',
       error: errorMessage,
-      status: status,
+      status,
     });
 
     throw new ApiFetchError(errorMessage, errorOptions);

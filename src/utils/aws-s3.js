@@ -11,18 +11,16 @@ export const fetchPolicyData = action => {
   return get(url);
 };
 
-export const postToS3 = (endPoint, formData) => {
-  return fetch(endPoint, { method: 'post', body: formData }).then(response => {
+export const postToS3 = (endPoint, formData) =>
+  fetch(endPoint, { method: 'post', body: formData }).then(response => {
     if (response.ok) {
       return {
         status: response.status,
         location: `${endPoint}/${formData.get('key')}`,
       };
-    } else {
-      return Promise.reject(response);
     }
+    return Promise.reject(response);
   });
-};
 
 export const uploadReportDriverPhoto = async file => {
   try {

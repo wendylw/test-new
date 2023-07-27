@@ -39,7 +39,7 @@ class Banners extends Component {
                     pathname: `/collections/${urlPath}`,
                   });
                 }}
-                data-heap-name="site.home.collection-banners"
+                data-test-id="site.home.collection-banners"
                 className="banners-item tw-cursor-pointer"
               >
                 <Image src={image} alt={name} scalingRatioIndex={2} />

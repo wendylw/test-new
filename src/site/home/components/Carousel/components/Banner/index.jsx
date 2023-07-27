@@ -12,7 +12,7 @@ const Banner = ({ title, onClick }) => {
       <h3 className="tw-flex-grow tw-font-bold tw-text-xl tw-leading-normal tw-truncate">{title}</h3>
       <button
         className="tw-flex tw-items-center tw-flex-shrink-0 tw-border-none tw-outline-none tw-p-0 tw-m-0 tw-cursor-pointer tw-bg-transparent"
-        data-heap-name="site.home.carousel.see-all-btn"
+        data-test-id="site.home.carousel.see-all-btn"
         onClick={onClick}
       >
         <span className="tw-text-base tw-text-gray-700 tw-leading-relaxed sm:tw-pr-2px tw-pr-2 sm:tw-pl-20px tw-pl-20">

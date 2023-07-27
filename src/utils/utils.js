@@ -1,20 +1,14 @@
-import Constants from './constants';
 import _get from 'lodash/get';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import Constants, { REGISTRATION_SOURCE, REGISTRATION_TOUCH_POINT, ORDER_SOURCE } from './constants';
 import * as timeLib from './time-lib';
 import * as UtilsV2 from '../common/utils';
 import { SOURCE_TYPE } from '../common/utils/constants';
 
 dayjs.extend(utc);
 
-const {
-  SH_LOGISTICS_VALID_TIME,
-  ROUTER_PATHS,
-  REGISTRATION_SOURCE,
-  REGISTRATION_TOUCH_POINT,
-  ORDER_SOURCE,
-} = Constants;
+const { SH_LOGISTICS_VALID_TIME, ROUTER_PATHS } = Constants;
 const Utils = {};
 
 Utils.getQueryString = UtilsV2.getQueryString;
@@ -35,18 +29,7 @@ Utils.isIOSWebview = UtilsV2.isIOSWebview;
 
 Utils.isAndroidWebview = UtilsV2.isAndroidWebview;
 
-Utils.getQueryVariable = variable => {
-  var query = window.location.search.substring(1);
-  var vars = query.split('&');
-  for (var i = 0; i < vars.length; i++) {
-    var pair = vars[i].split('=');
-    if (pair[0] === variable) {
-      return pair[1];
-    }
-  }
-  return false;
-};
-
+// TODO: never be used to remove
 Utils.debounce = function debounce(fn, timeout = 50) {
   let timer = null;
   return function newFn(...args) {
@@ -60,7 +43,7 @@ Utils.debounce = function debounce(fn, timeout = 50) {
 
 Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustment = 0, windowScrolledTop = 0) {
   const isSafari = Utils.getUserAgentInfo().browser.includes('Safari');
-  let height = isSafari ? el.getBoundingClientRect().height : el.offsetHeight;
+  const height = isSafari ? el.getBoundingClientRect().height : el.offsetHeight;
   let top = windowScrolledTop + el.getBoundingClientRect().top;
 
   if (!isSafari) {
@@ -77,12 +60,13 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
   return top + height - windowScrolledTop - topAdjustment;
 };
 
+// eslint-disable-next-line consistent-return
 Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   try {
     return localStorage.getItem(name);
   } catch (e) {
     const { getCookieVariable } = Utils;
-    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    const cookieNameOfLocalStorage = `localStorage_${name}`;
     getCookieVariable(cookieNameOfLocalStorage);
   }
 };
@@ -93,7 +77,7 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
     localStorage.setItem(name, value || '');
   } catch (e) {
     const { setCookieVariable } = Utils;
-    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    const cookieNameOfLocalStorage = `localStorage_${name}`;
     setCookieVariable(cookieNameOfLocalStorage, value);
   }
 };
@@ -103,7 +87,7 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
     localStorage.removeItem(name);
   } catch (e) {
     const { removeCookieVariable } = Utils;
-    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    const cookieNameOfLocalStorage = `localStorage_${name}`;
     removeCookieVariable(cookieNameOfLocalStorage);
   }
 };
@@ -115,6 +99,7 @@ Utils.setSessionVariable = UtilsV2.setSessionVariable;
 
 Utils.removeSessionVariable = UtilsV2.removeSessionVariable;
 
+// TODO: will move to ordering
 Utils.isProductSoldOut = product => {
   const { stockStatus, variations } = product;
 
@@ -128,9 +113,7 @@ Utils.isProductSoldOut = product => {
     const firstVariation = variations[0];
 
     if (firstVariation && firstVariation.variationType === 'SingleChoice') {
-      const soldOutOptions = firstVariation.optionValues.filter(optionValue => {
-        return optionValue.markedSoldOut;
-      });
+      const soldOutOptions = firstVariation.optionValues.filter(optionValue => optionValue.markedSoldOut);
 
       if (soldOutOptions.length === firstVariation.optionValues.length) {
         soldOut = true;
@@ -152,27 +135,13 @@ Utils.getFormatPhoneNumber = function getFormatPhoneNumber(phone, countryCode) {
   const currentPhone = (phone || '').substring(startIndex);
 
   if (countryCode && !currentPhone.indexOf(countryCode)) {
-    phone = '+' + countryCode + currentPhone.substring(countryCode.length);
+    return `+${countryCode}${currentPhone.substring(countryCode.length)}`;
   }
 
   return phone;
 };
 
-Utils.getCountry = function getCountry(phone, language, countries, defaultCountry) {
-  if (phone) {
-    return '';
-  }
-
-  if (!language || (!language.split('-')[1] && !language.split('-')[0])) {
-    return defaultCountry;
-  }
-
-  if (countries.includes(language.split('-')[1])) {
-    return language.split('-')[1];
-  } else if (countries.includes(language.split('-')[0])) {
-    return language.split('-')[0];
-  }
-};
+Utils.getCountry = UtilsV2.getCountry;
 
 Utils.DateFormatter = function DateFormatter(dateString, deletedDelimiter) {
   if (!dateString) {
@@ -201,7 +170,7 @@ Utils.DateFormatter = function DateFormatter(dateString, deletedDelimiter) {
       if (dateArray[index] === '00') {
         dateArray[index] = '01';
       } else if (parseInt(dateArray[index].slice(0, 1), 10) > 1) {
-        dateArray[index] = '0' + dateArray[index].slice(0, 1);
+        dateArray[index] = `0${dateArray[index].slice(0, 1)}`;
       } else if (parseInt(dateArray[index], 10) > 12) {
         dateArray[index] = '12';
       }
@@ -245,34 +214,6 @@ Utils.getQueryObject = function getQueryObject(history, paramName) {
   return params.get(paramName);
 };
 
-Utils.initSmoothAnimation = function initSmoothAnimation() {
-  const vendors = ['webkit', 'moz'];
-  let lastTime = 0;
-
-  for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-    window.cancelAnimationFrame =
-      window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame']; // name has changed in Webkit
-  }
-
-  if (!window.requestAnimationFrame) {
-    window.requestAnimationFrame = function(callback, element) {
-      var currTime = new Date().getTime();
-      var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
-      var id = window.setTimeout(function() {
-        callback(currTime + timeToCall);
-      }, timeToCall);
-      lastTime = currTime + timeToCall;
-      return id;
-    };
-  }
-  if (!window.cancelAnimationFrame) {
-    window.cancelAnimationFrame = function(id) {
-      clearTimeout(id);
-    };
-  }
-};
-
 Utils.getUserAgentInfo = UtilsV2.getUserAgentInfo;
 
 Utils.isSafari = UtilsV2.isSafari;
@@ -286,33 +227,19 @@ Utils.removeHtmlTag = UtilsV2.removeHtmlTag;
 
 Utils.getOrderTypeFromUrl = UtilsV2.getShippingTypeFromUrl;
 
-Utils.isDeliveryType = () => {
-  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DELIVERY;
-};
+Utils.isDeliveryType = () => Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DELIVERY;
 
-Utils.isPickUpType = () => {
-  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.PICKUP;
-};
+Utils.isPickUpType = () => Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.PICKUP;
 
-Utils.isDineInType = () => {
-  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DINE_IN;
-};
+Utils.isDineInType = () => Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DINE_IN;
 
-Utils.isDigitalType = () => {
-  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DIGITAL;
-};
+Utils.isDigitalType = () => Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DIGITAL;
 
-Utils.isTakeAwayType = () => {
-  return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.TAKE_AWAY;
-};
+Utils.isTakeAwayType = () => Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.TAKE_AWAY;
 
-Utils.isDeliveryOrder = () => {
-  return Utils.isDeliveryType() || Utils.isPickUpType();
-};
+Utils.isDeliveryOrder = () => Utils.isDeliveryType() || Utils.isPickUpType();
 
-Utils.isQROrder = () => {
-  return Utils.isDineInType() || Utils.isTakeAwayType();
-};
+Utils.isQROrder = () => Utils.isDineInType() || Utils.isTakeAwayType();
 
 Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistics }) => {
   let logisticsValidTimeFrom = validTimeFrom;
@@ -395,12 +322,10 @@ Utils.formatTimeWithColon = time => {
   return `${hour}:${minute}`;
 };
 
-Utils.getHourAndMinuteFromString = timeString => {
-  return {
-    hour: timeString.split(':')[0],
-    minute: timeString.split(':')[1],
-  };
-};
+Utils.getHourAndMinuteFromString = timeString => ({
+  hour: timeString.split(':')[0],
+  minute: timeString.split(':')[1],
+});
 
 Utils.formatHour = (hour = 0) => {
   if (hour >= 12) {
@@ -415,17 +340,7 @@ Utils.isPreOrderPage = () => {
   return enablePreOrder === 'true' || false;
 };
 
-Utils.getDateNumber = date => {
-  date = new Date(date);
-  let y = date.getFullYear(),
-    m = date.getMonth() + 1,
-    d = date.getDate();
-  m = m < 10 ? '0' + m : m;
-  d = d < 10 ? '0' + d : d;
-
-  return +`${y}${m}${d}`;
-};
-
+// eslint-disable-next-line consistent-return
 Utils.isPreOrder = () => {
   const isPreOrderPage = Utils.isPreOrderPage();
   if (isPreOrderPage) {
@@ -444,42 +359,27 @@ Utils.removeExpectedDeliveryTime = UtilsV2.removeExpectedDeliveryTime;
 Utils.isSiteApp = UtilsV2.isSiteApp;
 
 // unicode string to base64
-Utils.utoa = str => {
-  return window.btoa(unescape(encodeURIComponent(str)));
-};
+Utils.utoa = str => window.btoa(unescape(encodeURIComponent(str)));
 
 // base64 to unicode string
-Utils.atou = str => {
-  return decodeURIComponent(escape(window.atob(str)));
-};
+Utils.atou = str => decodeURIComponent(escape(window.atob(str)));
 
 Utils.getMerchantStoreUrl = UtilsV2.getMerchantStoreUrl;
 
 if (process.env.NODE_ENV !== 'production') {
+  // eslint-disable-next-line no-console
   console.warn('development mode. window.Utils is ready.');
   window.Utils = Utils;
 }
 
-Utils.addParamToSearch = (key, value) => {
-  const searchStr = window.location.search;
-  var re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i');
-  var separator = searchStr.indexOf('?') !== -1 ? '&' : '?';
-  if (searchStr.match(re)) {
-    return searchStr.replace(re, '$1' + key + '=' + value + '$2');
-  } else {
-    return searchStr + separator + key + '=' + value;
-  }
-};
-
-Utils.notHomeOrLocationPath = pathname => {
-  return !(
+Utils.notHomeOrLocationPath = pathname =>
+  !(
     ['/ordering/', '/ordering'].includes(pathname) ||
     ['/ordering/location-date', '/ordering/location-date/'].includes(pathname)
   );
-};
 
 Utils.checkEmailIsValid = email => {
-  const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return emailRegex.test(email);
 };
 
@@ -487,7 +387,7 @@ Utils.getFileExtension = file => {
   const fileNames = file.name.split('.');
   const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
 
-  return fileNameExtension ? fileNameExtension : file.type.split('/')[1];
+  return fileNameExtension || file.type.split('/')[1];
 };
 
 Utils.getContainerElementHeight = (headerEls, footerEl) => {
@@ -506,8 +406,6 @@ Utils.getContainerElementHeight = (headerEls, footerEl) => {
 
   return windowHeight - headerFooterHeight;
 };
-
-Utils.zero = num => (num < 10 ? '0' + num : num + '');
 
 Utils.getFulfillDate = (businessUTCOffset = 480) => {
   try {
@@ -534,8 +432,8 @@ Utils.getFulfillDate = (businessUTCOffset = 480) => {
 };
 
 // This function only retry when the error is ChunkLoadError, do NOT use it as a common promise retry util!
-Utils.attemptLoad = (fn, retriesLeft = 5, interval = 1500) => {
-  return new Promise((resolve, reject) => {
+Utils.attemptLoad = (fn, retriesLeft = 5, interval = 1500) =>
+  new Promise((resolve, reject) => {
     fn()
       .then(resolve)
       .catch(error => {
@@ -552,15 +450,14 @@ Utils.attemptLoad = (fn, retriesLeft = 5, interval = 1500) => {
         }, interval);
       });
   });
-};
 
 Utils.judgeClient = () => {
   let client = '';
   if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-    //判断iPhone|iPad|iPod|iOS
+    // 判断iPhone|iPad|iPod|iOS
     client = 'iOS';
   } else if (/(Android)/i.test(navigator.userAgent)) {
-    //判断Android
+    // 判断Android
     client = 'Android';
   } else if (/(Mac)/i.test(navigator.userAgent)) {
     client = 'Mac';
@@ -599,22 +496,21 @@ Utils.marginBottom = ({ footerEls = [] }) => {
   return bottom;
 };
 
-Utils.containerHeight = ({ headerEls, footerEls }) => {
-  return `${Utils.windowSize().height -
+Utils.containerHeight = ({ headerEls, footerEls }) =>
+  `${Utils.windowSize().height -
     Utils.mainTop({
       headerEls,
     }) -
     Utils.marginBottom({
       footerEls,
     })}px`;
-};
 
 Utils.formatHour = (hourString = '') => {
   const [hour, minute] = hourString ? hourString.split(':') : [];
   const hourRemainder = Number(hour) % 12;
   const localeMeridiem = Number(hour) > 11 && Number(hour) < 24 ? 'pm' : 'am';
 
-  if (isNaN(hourRemainder)) {
+  if (Number.isNaN(hourRemainder)) {
     return '';
   }
 
@@ -707,20 +603,18 @@ Utils.getRegistrationSource = () => {
 
   switch (registrationTouchPoint) {
     case REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK:
-      if (Utils.isWebview()) {
-        return REGISTRATION_SOURCE.BEEP_APP;
-      } else {
-        return REGISTRATION_SOURCE.RECEIPT;
-      }
+      return Utils.isWebview() ? REGISTRATION_SOURCE.BEEP_APP : REGISTRATION_SOURCE.RECEIPT;
 
     case REGISTRATION_TOUCH_POINT.QR_ORDER:
       if (Utils.isSharedLink()) {
         return REGISTRATION_SOURCE.SHARED_LINK;
       }
+    // eslint-disable-next-line no-fallthrough
     case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
       if (Utils.isSharedLink()) {
         return REGISTRATION_SOURCE.SHARED_LINK;
       }
+    // eslint-disable-next-line no-fallthrough
     default:
       if (Utils.isTNGMiniProgram()) {
         return REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
@@ -755,9 +649,7 @@ Utils.removeCookieVariable = UtilsV2.removeCookieVariable;
 
 Utils.isTNGMiniProgram = UtilsV2.isTNGMiniProgram;
 
-Utils.isSharedLink = () => {
-  return Utils.getSessionVariable('BeepOrderingSource') === SOURCE_TYPE.SHARED_LINK;
-};
+Utils.isSharedLink = () => Utils.getSessionVariable('BeepOrderingSource') === SOURCE_TYPE.SHARED_LINK;
 
 Utils.saveSourceUrlToSessionStorage = UtilsV2.saveSourceUrlToSessionStorage;
 

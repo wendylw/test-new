@@ -244,7 +244,7 @@ class Login extends React.Component {
     }
 
     return (
-      <section className={classList.join(' ')} data-heap-name="cashback.login.container">
+      <section className={classList.join(' ')} data-test-id="cashback.login.container">
         <PhoneViewContainer
           className="absolute-wrapper login__container padding-left-right-normal"
           title={title}

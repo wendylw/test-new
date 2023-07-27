@@ -1,13 +1,14 @@
+/* eslint-disable no-console */
 import _intersection from 'lodash/intersection';
-import Utils from './utils';
 import { captureException } from '@sentry/react';
 import { Loader } from '@googlemaps/js-api-loader';
 import { computeDistanceBetween } from 'spherical-geometry-js';
+import Utils from './utils';
 import { get, post } from './request';
 import logger from './monitoring/logger';
 import { getLocation as getLocationFromTNG } from './tng-utils';
 import { ADDRESS_INFO_SOURCE_TYPE } from '../redux/modules/address/constants';
-import config from '../../src/config';
+import config from '../config';
 
 const GOOGLE_MAPS_INVALIDATE_INTERVAL = 12 * 3600 * 1000;
 const GOOGLE_MAPS_TIMESTAMP =
@@ -80,7 +81,7 @@ export const getAutocompleteSessionToken = async () => {
 export const getPlaceAutocompleteList = async (text, { location, origin, radius, country }) => {
   try {
     const googleMapsAPI = await loadGoogleMapsAPI();
-    let originCoords = origin ? await getLatLng(origin) : undefined;
+    const originCoords = origin ? await getLatLng(origin) : undefined;
     let locationCoords = location ? await getLatLng(location) : undefined;
     let radiusNumber = radius;
     if ((locationCoords && typeof radiusNumber !== 'number') || (typeof radiusNumber === 'number' && !locationCoords)) {
@@ -152,18 +153,18 @@ export const standardizeGeoAddress = geoAddressComponent => {
 
   const street2 = [];
 
-  geoAddressComponent.forEach(({ types, short_name, long_name }) => {
+  geoAddressComponent.forEach(({ types, short_name: shortName, long_name: longName }) => {
     if (isCountry(types)) {
-      standardized.country = long_name;
-      standardized.countryCode = short_name;
+      standardized.country = longName;
+      standardized.countryCode = shortName;
     } else if (isState(types)) {
-      standardized.state = short_name;
+      standardized.state = shortName;
     } else if (isCity(types)) {
-      standardized.city = short_name;
+      standardized.city = shortName;
     } else if (isStreet2(types)) {
-      street2.push(short_name);
+      street2.push(shortName);
     } else if (isPostCode(types)) {
-      standardized.postCode = long_name;
+      standardized.postCode = longName;
     }
   });
 
@@ -172,11 +173,11 @@ export const standardizeGeoAddress = geoAddressComponent => {
   return standardized;
 };
 
-export const getDeviceCoordinates = option => {
-  return new Promise((resolve, reject) => {
+export const getDeviceCoordinates = option =>
+  new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       logger.warn('Utils_GeoUtils_GetDeviceCoordinatesFailedByUnsupportedBrowser');
-      reject('Your browser does not support location detection.');
+      reject(new Error('Your browser does not support location detection.'));
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -193,7 +194,6 @@ export const getDeviceCoordinates = option => {
       option
     );
   });
-};
 
 export const tryGetDeviceCoordinates = async () => {
   if (Utils.isTNGMiniProgram()) {
@@ -250,14 +250,87 @@ export const getPlacesFromCoordinates = async coords => {
   }
 };
 
+// dev to change the dev mode url, other wise you will see API 500 error
+export const fetchGeolocationByIp = () =>
+  fetch('https://pro.ip-api.com/json?key=5I9whkNNfV2ObFJ')
+    .then(data => data.json())
+    .catch(err => {
+      logger.error('Utils_GeoUtils_FetchGeolocationByIPFailed', {
+        message: err?.message,
+      });
+      throw err;
+    });
+
+export const getPositionInfoBySource = async (source, withCache = true) => {
+  const { IP, DEVICE } = ADDRESS_INFO_SOURCE_TYPE;
+  const sources = [IP, DEVICE];
+  if (!sources.includes(source)) throw new Error(`source must be one of ${source.json(',')}`);
+
+  const CACHE_KEY = `{${source.toUpperCase()}_POSITION_INFO}`;
+  const cachedDevicePositionInfo = Utils.getSessionVariable(CACHE_KEY);
+  if (cachedDevicePositionInfo && withCache) {
+    try {
+      return JSON.parse(cachedDevicePositionInfo);
+    } catch (error) {
+      captureException(error);
+      console.error('Common Utils getPositionInfoBySource:', error?.message || '');
+    }
+  }
+
+  let coords = null;
+
+  if (source === DEVICE) {
+    const position = await tryGetDeviceCoordinates();
+    coords = { lat: position.latitude, lng: position.longitude };
+  } else if (source === IP) {
+    const result = await fetchGeolocationByIp();
+    if (result.status === 'success') {
+      coords = { lat: result.lat, lng: result.lon };
+    }
+  }
+
+  if (!coords) {
+    // eslint-disable-next-line consistent-return
+    return;
+  }
+
+  const pickPreferredGeoCodeResult = locationList => {
+    const preferredLocation = locationList.find(
+      location => !!_intersection(location.types, ['neighborhood', 'premise', 'subpremise']).length
+    );
+    if (preferredLocation) {
+      return preferredLocation;
+    }
+    return locationList[0];
+  };
+
+  // get google address info of google position
+  const candidates = await getPlacesFromCoordinates(coords);
+
+  const place = pickPreferredGeoCodeResult(candidates);
+
+  const addressComponents = standardizeGeoAddress(place.address_components);
+  const { street1, street2, city, state, country } = addressComponents;
+
+  const result = {
+    coords,
+    name: street1 || street2 || city || state || country,
+    address: place.formatted_address,
+    addressComponents,
+    placeId: place.place_id,
+  };
+
+  Utils.setSessionVariable(CACHE_KEY, JSON.stringify(result));
+
+  return result;
+};
+
 // to @luke: a multiple source 一条龙 has been created named [getPositionInfoBySource]
 // the definition:
 // ```
 //  getPositionInfoBySource(source: "device" | "ip", withCache: Boolean = true) => Promise<PlaceInfo | null>
 // ```
-export const getDevicePositionInfo = (withCache = true) => {
-  return getPositionInfoBySource('device', withCache);
-};
+export const getDevicePositionInfo = (withCache = true) => getPositionInfoBySource('device', withCache);
 
 export const getHistoricalDeliveryAddresses = async () => {
   try {
@@ -290,41 +363,6 @@ export const computeStraightDistance = (fromCoords, toCoords) => {
 
   straightDistanceCache[key] = result;
   return result;
-};
-
-export const getPlaceInfoFromPlaceId = async (placeId, options = {}) => {
-  try {
-    const googleMapsAPI = await loadGoogleMapsAPI();
-
-    if (options.fromAutocomplete) {
-      return await getPlaceDetails(placeId, googleMapsAPI);
-    }
-
-    const geocoder = new googleMapsAPI.Geocoder();
-    return await new Promise((resolve, reject) => {
-      geocoder.geocode({ placeId }, (resp, status) => {
-        if (status === googleMapsAPI.GeocoderStatus.OK && resp.length) {
-          const place = resp[0];
-          const result = {
-            coords: place.geometry.location.toJSON(),
-            address: place.formatted_address,
-            addressComponents: standardizeGeoAddress(place.address_components),
-            placeId: place.place_id,
-          };
-          resolve(result);
-        } else {
-          logger.error('Utils_GeoUtils_GetGeocodeFromGoogleMapsAPIFailed', {
-            code: status,
-            id: placeId,
-          });
-          reject(`Failed to get location from coordinates: ${status}`);
-        }
-      });
-    });
-  } catch (e) {
-    logger.error('Utils_GeoUtils_GetPlaceInfoFromPlaceIdFailed', { message: e?.message });
-    throw e;
-  }
 };
 
 // this api is very expensive, hence we won't export it for public use for now.
@@ -371,79 +409,37 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
   return ret;
 };
 
-// dev to change the dev mode url, other wise you will see API 500 error
-export const fetchGeolocationByIp = () => {
-  return fetch('https://pro.ip-api.com/json?key=5I9whkNNfV2ObFJ')
-    .then(data => {
-      return data.json();
-    })
-    .catch(err => {
-      logger.error('Utils_GeoUtils_FetchGeolocationByIPFailed', {
-        message: err?.message,
+export const getPlaceInfoFromPlaceId = async (placeId, options = {}) => {
+  try {
+    const googleMapsAPI = await loadGoogleMapsAPI();
+
+    if (options.fromAutocomplete) {
+      return await getPlaceDetails(placeId, googleMapsAPI);
+    }
+
+    const geocoder = new googleMapsAPI.Geocoder();
+    return await new Promise((resolve, reject) => {
+      geocoder.geocode({ placeId }, (resp, status) => {
+        if (status === googleMapsAPI.GeocoderStatus.OK && resp.length) {
+          const place = resp[0];
+          const result = {
+            coords: place.geometry.location.toJSON(),
+            address: place.formatted_address,
+            addressComponents: standardizeGeoAddress(place.address_components),
+            placeId: place.place_id,
+          };
+          resolve(result);
+        } else {
+          logger.error('Utils_GeoUtils_GetGeocodeFromGoogleMapsAPIFailed', {
+            code: status,
+            id: placeId,
+          });
+          reject(new Error(`Failed to get location from coordinates: ${status}`));
+        }
       });
-      throw err;
     });
-};
-
-export const getPositionInfoBySource = async (source, withCache = true) => {
-  const { IP, DEVICE } = ADDRESS_INFO_SOURCE_TYPE;
-  const sources = [IP, DEVICE];
-  if (!sources.includes(source)) throw new Error(`source must be one of ${source.json(',')}`);
-
-  const CACHE_KEY = `{${source.toUpperCase()}_POSITION_INFO}`;
-  const cachedDevicePositionInfo = Utils.getSessionVariable(CACHE_KEY);
-  if (cachedDevicePositionInfo && withCache) {
-    try {
-      return JSON.parse(cachedDevicePositionInfo);
-    } catch (error) {
-      captureException(error);
-      console.error('Common Utils getPositionInfoBySource:', error?.message || '');
-    }
+  } catch (e) {
+    logger.error('Utils_GeoUtils_GetPlaceInfoFromPlaceIdFailed', { message: e?.message });
+    throw e;
   }
-
-  let coords = null;
-
-  if (source === DEVICE) {
-    const position = await tryGetDeviceCoordinates();
-    coords = { lat: position.latitude, lng: position.longitude };
-  } else if (source === IP) {
-    const result = await fetchGeolocationByIp();
-    if (result.status === 'success') {
-      coords = { lat: result.lat, lng: result.lon };
-    }
-  }
-
-  if (!coords) {
-    return;
-  }
-
-  const pickPreferredGeoCodeResult = locationList => {
-    const preferredLocation = locationList.find(location => {
-      return !!_intersection(location.types, ['neighborhood', 'premise', 'subpremise']).length;
-    });
-    if (preferredLocation) {
-      return preferredLocation;
-    }
-    return locationList[0];
-  };
-
-  // get google address info of google position
-  const candidates = await getPlacesFromCoordinates(coords);
-
-  const place = pickPreferredGeoCodeResult(candidates);
-
-  const addressComponents = standardizeGeoAddress(place.address_components);
-  const { street1, street2, city, state, country } = addressComponents;
-
-  const result = {
-    coords,
-    name: street1 || street2 || city || state || country,
-    address: place.formatted_address,
-    addressComponents,
-    placeId: place.place_id,
-  };
-
-  Utils.setSessionVariable(CACHE_KEY, JSON.stringify(result));
-
-  return result;
 };

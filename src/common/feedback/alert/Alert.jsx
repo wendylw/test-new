@@ -66,6 +66,7 @@ const Alert = forwardRef((props, ref) => {
               onClose();
             }}
             disabled={processing}
+            data-test-id="common.feedback.alert.close-button"
           >
             {processing ? t('Processing') : closeButtonContent || t('OK')}
           </button>
