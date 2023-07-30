@@ -12,9 +12,9 @@ import Bootstrap from './Bootstrap';
 import './index.css';
 
 try {
-  if (typeof globalThis !== 'undefined') {
+  if (typeof window.globalThis !== 'undefined') {
     // globalThis is defined, do something
-    window.globalThis = globalThis;
+    window.globalThis = globalThis();
   }
   // kick off the polyfill!
   smoothscroll.polyfill();

@@ -44,6 +44,7 @@ const StoreList = () => {
       ) : (
         <>
           <button
+            data-test-id="store-list-dropdown-button"
             className={styles.storeListDropdownButton}
             onClick={() => {
               dispatch(storeListDrawerOpened());
