@@ -6,6 +6,7 @@ export default {
   component: TopMessage,
 };
 
+// eslint-disable-next-line react/display-name, react/jsx-filename-extension, react/jsx-props-no-spreading
 const Template = args => <TopMessage {...args} />;
 
 export const TopMessageTemplate = Template.bind({});

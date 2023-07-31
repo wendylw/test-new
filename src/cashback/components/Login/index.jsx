@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
+import { withTranslation } from 'react-i18next';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
 import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
-import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
-import { withTranslation } from 'react-i18next';
 import {
   actions as appActionCreators,
   getUser,
@@ -29,29 +29,32 @@ import './LoyaltyLogin.scss';
 const { OTP_REQUEST_TYPES, RESEND_OTP_TIME } = Constants;
 
 class Login extends React.Component {
-  state = {
-    sendOtp: false,
-    shouldShowModal: false,
-  };
-
   captchaRef = React.createRef();
 
-  handleCloseOtpModal() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      sendOtp: false,
+      shouldShowModal: false,
+    };
+  }
+
+  handleCloseOtpModal = () => {
     const { appActions } = this.props;
 
     this.setState({ shouldShowModal: false }, () => appActions.resetSendOtpRequest());
-  }
+  };
 
-  handleChangeOtpCode() {
+  handleChangeOtpCode = () => {
     const { isLoginRequestFailed, appActions } = this.props;
 
     if (!isLoginRequestFailed) return;
 
     // Only update create otp status when needed
     appActions.resetSendOtpRequest();
-  }
+  };
 
-  handleUpdateUser(user) {
+  handleUpdateUser = user => {
     const { appActions, isOtpRequestFailed } = this.props;
 
     appActions.updateUser(user);
@@ -60,7 +63,7 @@ class Login extends React.Component {
     if (!isOtpRequestFailed) return;
 
     appActions.resetGetOtpRequest();
-  }
+  };
 
   async handleCompleteReCAPTCHA() {
     try {
@@ -96,7 +99,9 @@ class Login extends React.Component {
   }
 
   async handleGetOtpCode(payload) {
-    await this.props.appActions.getOtp(payload);
+    const { appActions } = this.props;
+
+    await appActions.getOtp(payload);
 
     const { t, isOtpRequestFailed, shouldShowErrorPopUp, errorPopUpI18nKeys } = this.props;
 
@@ -111,7 +116,7 @@ class Login extends React.Component {
     throw new Error('Failed to get OTP code');
   }
 
-  async handleClickContinueButton(phone, type) {
+  handleClickContinueButton = async (phone, type) => {
     const payload = { phone, type };
     this.setState({ sendOtp: false });
     logger.log('Cashback_Login_ClickContinueButton');
@@ -125,7 +130,9 @@ class Login extends React.Component {
       }
 
       // We don't need to wait this API's response, it won't block us from fetching OTP API.
-      this.props.appActions.getPhoneWhatsAppSupport(phone);
+      const { appActions } = this.props;
+
+      appActions.getPhoneWhatsAppSupport(phone);
 
       await this.handleGetOtpCode(payload);
 
@@ -133,9 +140,9 @@ class Login extends React.Component {
     } catch (e) {
       logger.error('Cashback_Login_FetchOTPCodeFailed', { message: e?.message });
     }
-  }
+  };
 
-  async handleClickResendButton(phone, type) {
+  handleClickResendButton = async (phone, type) => {
     const payload = { phone, type };
     this.setState({ sendOtp: false });
     logger.log('Cashback_Login_ClickResendButton', { type });
@@ -155,16 +162,16 @@ class Login extends React.Component {
     } catch (e) {
       logger.error('Cashback_Login_RefetchOTPFailed', { type, message: e?.message });
     }
-  }
+  };
 
-  handleCaptchaLoad() {
+  handleCaptchaLoad = () => {
     const { t } = this.props;
 
     const hasLoadSuccess = !!window.grecaptcha;
     const scriptName = 'google-recaptcha';
 
     window.newrelic?.addPageAction(`third-party-lib.load-script-${hasLoadSuccess ? 'succeeded' : 'failed'}`, {
-      scriptName: scriptName,
+      scriptName,
     });
 
     if (!hasLoadSuccess) {
@@ -172,9 +179,9 @@ class Login extends React.Component {
         title: t('NetworkErrorTitle'),
       });
     }
-  }
+  };
 
-  async handleWebLogin(otp) {
+  handleWebLogin = async otp => {
     const { appActions } = this.props;
 
     await appActions.sendOtp({ otp });
@@ -188,7 +195,7 @@ class Login extends React.Component {
         refreshToken,
       });
     }
-  }
+  };
 
   renderOtpModal() {
     const { user, shouldShowLoader, isOtpRequestPending, isLoginRequestFailed } = this.props;
@@ -199,13 +206,14 @@ class Login extends React.Component {
 
     return (
       <OtpModal
+        data-test-id="cashback.login.otp-modal"
         resendOtpTime={RESEND_OTP_TIME}
         phone={phone}
         showWhatsAppResendBtn={!noWhatsAppAccount && country === 'MY'}
-        onClose={this.handleCloseOtpModal.bind(this)}
-        onChange={this.handleChangeOtpCode.bind(this)}
-        getOtp={this.handleClickResendButton.bind(this)}
-        sendOtp={this.handleWebLogin.bind(this)}
+        onClose={this.handleCloseOtpModal}
+        onChange={this.handleChangeOtpCode}
+        getOtp={this.handleClickResendButton}
+        sendOtp={this.handleWebLogin}
         isLoading={shouldShowLoader}
         isResending={isOtpRequestPending}
         showError={isLoginRequestFailed}
@@ -225,7 +233,7 @@ class Login extends React.Component {
         sitekey={config.googleRecaptchaSiteKey}
         size="invisible"
         ref={this.captchaRef}
-        asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}
+        asyncScriptOnLoad={this.handleCaptchaLoad}
       />
     );
   }
@@ -251,13 +259,13 @@ class Login extends React.Component {
           phone={phone}
           country={country}
           buttonText={isOtpRequestPending ? t('Processing') : t('Continue')}
-          show={true}
+          show
           isProcessing={isOtpRequestPending}
           showError={isOtpErrorFieldVisible}
           errorText={t(errorTextI18nKey)}
-          updatePhoneNumber={this.handleUpdateUser.bind(this)}
-          updateCountry={this.handleUpdateUser.bind(this)}
-          onSubmit={this.handleClickContinueButton.bind(this)}
+          updatePhoneNumber={this.handleUpdateUser}
+          updateCountry={this.handleUpdateUser}
+          onSubmit={this.handleClickContinueButton}
         >
           <p className="text-center margin-top-bottom-small text-line-height-base text-opacity login__terms-privacy">
             <TermsAndPrivacy
@@ -277,9 +285,68 @@ class Login extends React.Component {
 Login.propTypes = {
   className: PropTypes.string,
   title: PropTypes.string,
+  errorTextI18nKey: PropTypes.string,
+  shouldShowLoader: PropTypes.bool,
+  isOtpRequestFailed: PropTypes.bool,
+  isOtpRequestPending: PropTypes.bool,
+  isLoginRequestFailed: PropTypes.bool,
+  shouldShowErrorPopUp: PropTypes.bool,
+  isOtpErrorFieldVisible: PropTypes.bool,
+  appActions: PropTypes.shape({
+    getOtp: PropTypes.func,
+    sendOtp: PropTypes.func,
+    loginApp: PropTypes.func,
+    updateUser: PropTypes.func,
+    resetGetOtpRequest: PropTypes.func,
+    resetSendOtpRequest: PropTypes.func,
+    getPhoneWhatsAppSupport: PropTypes.func,
+  }),
+  errorPopUpI18nKeys: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+  }),
+  user: PropTypes.shape({
+    isLogin: PropTypes.bool,
+    phone: PropTypes.string,
+    country: PropTypes.string,
+    noWhatsAppAccount: PropTypes.bool,
+    accessToken: PropTypes.string,
+    refreshToken: PropTypes.string,
+  }),
 };
 
-Login.defaultProps = {};
+Login.defaultProps = {
+  className: '',
+  title: '',
+  errorTextI18nKey: '',
+  shouldShowLoader: false,
+  isOtpRequestFailed: false,
+  isOtpRequestPending: false,
+  isLoginRequestFailed: false,
+  shouldShowErrorPopUp: false,
+  isOtpErrorFieldVisible: false,
+  appActions: {
+    getOtp: () => {},
+    sendOtp: () => {},
+    loginApp: () => {},
+    updateUser: () => {},
+    resetGetOtpRequest: () => {},
+    resetSendOtpRequest: () => {},
+    getPhoneWhatsAppSupport: () => {},
+  },
+  errorPopUpI18nKeys: {
+    title: '',
+    description: '',
+  },
+  user: {
+    isLogin: false,
+    phone: '',
+    country: '',
+    noWhatsAppAccount: true,
+    accessToken: null,
+    refreshToken: null,
+  },
+};
 
 Login.displayName = 'CashbackLogin';
 

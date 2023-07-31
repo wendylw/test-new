@@ -1,4 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
+import { withTranslation } from 'react-i18next';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
 import Image from '../../../components/Image';
 import RedeemInfo from '../../components/RedeemInfo';
@@ -7,10 +11,6 @@ import ReceiptList from './components/ReceiptList';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import DownloadBanner from '../../../components/DownloadBanner';
 import NativeHeader from '../../../components/NativeHeader';
-
-import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
-import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
 import { getCashbackHistorySummary } from '../../redux/modules/home';
 import './LoyaltyHome.scss';
@@ -47,6 +47,8 @@ class PageLoyalty extends React.Component {
           money={totalCredits || 0}
         />
         <span
+          role="button"
+          tabIndex="0"
           onClick={() => {
             history.push({ pathname: '/activities', search: window.location.search });
           }}
@@ -95,6 +97,37 @@ class PageLoyalty extends React.Component {
 }
 
 PageLoyalty.displayName = 'PageLoyalty';
+
+PageLoyalty.propTypes = {
+  businessInfo: PropTypes.shape({
+    displayBusinessName: PropTypes.string,
+    name: PropTypes.string,
+  }),
+  onlineStoreInfo: PropTypes.shape({
+    logo: PropTypes.string,
+  }),
+  // eslint-disable-next-line react/forbid-prop-types
+  cashbackHistorySummary: PropTypes.object,
+  appActions: PropTypes.shape({
+    showMessageInfo: PropTypes.func,
+    setCashbackMessage: PropTypes.func,
+  }),
+};
+
+PageLoyalty.defaultProps = {
+  businessInfo: {
+    displayBusinessName: '',
+    name: '',
+  },
+  onlineStoreInfo: {
+    logo: '',
+  },
+  cashbackHistorySummary: null,
+  appActions: {
+    showMessageInfo: () => {},
+    setCashbackMessage: () => {},
+  },
+};
 
 export default compose(
   withTranslation(['Cashback']),

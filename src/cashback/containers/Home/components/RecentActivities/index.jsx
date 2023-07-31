@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -6,7 +7,7 @@ import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { IconPending, IconChecked, IconEarned } from '../../../../../components/Icons';
 import HybridHeader from '../../../../../components/HybridHeader';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
+import { getOnlineStoreInfo, getIsUserLogin, getUserCustomerId } from '../../../../redux/modules/app';
 import { actions as homeActionCreators, getCashbackHistory } from '../../../../redux/modules/home';
 import './RecentActivities.scss';
 
@@ -19,30 +20,30 @@ const DATE_OPTIONS = {
 
 class RecentActivities extends React.Component {
   componentDidMount() {
-    const { user } = this.props;
-    const { isLogin, customerId } = user || {};
+    const { isUserLogin, userCustomerId, onModalVisibilityChanged } = this.props;
 
-    if (isLogin && customerId) {
-      this.getLoyaltyHistory(customerId);
+    if (isUserLogin && userCustomerId) {
+      this.getLoyaltyHistory(userCustomerId);
     }
-    this.props.onModalVisibilityChanged(true);
-  }
-
-  componentWillUnmount() {
-    this.props.onModalVisibilityChanged(false);
+    onModalVisibilityChanged(true);
   }
 
   componentDidUpdate(prevProps) {
-    const { isFetching, user } = this.props;
-    const { isLogin, customerId } = user || {};
+    const { userCustomerId: prevUserCustomerId } = prevProps;
+    const { userCustomerId: currUserCustomerId, isFetching, isUserLogin } = this.props;
 
-    if (isFetching || !isLogin) {
+    if (isFetching || !isUserLogin) {
       return;
     }
 
-    if (customerId && prevProps.user.customerId !== customerId) {
-      this.getLoyaltyHistory(customerId);
+    if (currUserCustomerId && prevUserCustomerId !== currUserCustomerId) {
+      this.getLoyaltyHistory(currUserCustomerId);
     }
+  }
+
+  componentWillUnmount() {
+    const { onModalVisibilityChanged } = this.props;
+    onModalVisibilityChanged(false);
   }
 
   getLoyaltyHistory(customerId) {
@@ -58,15 +59,18 @@ class RecentActivities extends React.Component {
     const TypesMap = {
       pending: {
         text: t('CashbackPending'),
+        // eslint-disable-next-line react/jsx-props-no-spreading
         icon: <IconPending {...props} />,
       },
       /* expense is same as redeemed */
       expense: {
         text: t('Redeemed'),
+        // eslint-disable-next-line react/jsx-props-no-spreading
         icon: <IconChecked {...props} />,
       },
       earned: {
         text: t('YouEarned'),
+        // eslint-disable-next-line react/jsx-props-no-spreading
         icon: <IconEarned {...props} />,
       },
     };
@@ -91,13 +95,14 @@ class RecentActivities extends React.Component {
 
           return (
             <li
+              // eslint-disable-next-line react/no-array-index-key
               key={`${i}`}
               className="recent-activities__list-item padding-normal margin-top-bottom-small flex flex-middle"
             >
               {type.icon}
               <summary className="padding-left-right-normal">
                 <h4 className="margin-top-bottom-small">
-                  <label>{type.text}&nbsp;</label>
+                  <span>{type.text}&nbsp;</span>
                   {activity.eventType !== 'pending' ? <CurrencyNumber money={Math.abs(activity.amount || 0)} /> : null}
                 </h4>
                 <time className="recent-activities__time padding-top-bottom-smaller">
@@ -120,7 +125,7 @@ class RecentActivities extends React.Component {
           data-test-id="cashback.home.recent-activities.header"
           className="flex-middle text-center"
           contentClassName="flex-middle"
-          isPage={true}
+          isPage
           title={t('CashbackHistory')}
         />
 
@@ -134,20 +139,44 @@ class RecentActivities extends React.Component {
 
 RecentActivities.displayName = 'RecentActivities';
 
+RecentActivities.propTypes = {
+  isFetching: PropTypes.bool,
+  isUserLogin: PropTypes.bool,
+  userCustomerId: PropTypes.string,
+  onModalVisibilityChanged: PropTypes.func,
+  cashbackHistory: PropTypes.arrayOf(PropTypes.object),
+  onlineStoreInfo: PropTypes.shape({
+    country: PropTypes.string,
+  }),
+  homeActions: PropTypes.shape({
+    getCashbackHistory: PropTypes.func,
+  }),
+};
+
 RecentActivities.defaultProps = {
+  isFetching: false,
+  isUserLogin: false,
+  userCustomerId: '',
   onModalVisibilityChanged: () => {},
+  cashbackHistory: [],
+  onlineStoreInfo: {
+    country: '',
+  },
+  homeActions: {
+    getCashbackHistory: () => {},
+  },
 };
 
 export default compose(
   withTranslation(['Cashback']),
   connect(
     state => ({
-      user: getUser(state),
+      isUserLogin: getIsUserLogin(state),
+      userCustomerId: getUserCustomerId(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       cashbackHistory: getCashbackHistory(state),
     }),
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )

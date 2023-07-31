@@ -13,9 +13,10 @@ const ANIMATION_TIME = 3600;
 class ClaimedMessage extends React.Component {
   animationSetTimeout = null;
 
-  state = {
-    animationGifSrc: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = { animationGifSrc: null };
+  }
 
   componentDidMount() {
     this.setState({ animationGifSrc: succeedAnimationGif });
@@ -34,7 +35,7 @@ class ClaimedMessage extends React.Component {
     return (
       <aside className="aside active" data-test-id="cashback.common.claimed-message.container">
         <div className="aside__section-content border-radius-base">
-          <Modal show={true} className="align-middle" data-test-id="cashback.common.claimed-message.modal">
+          <Modal show className="align-middle" data-test-id="cashback.common.claimed-message.modal">
             <Modal.Body className="active">
               <img src={beepRewardImage} alt="beep reward" />
               <div className="modal__detail text-center">

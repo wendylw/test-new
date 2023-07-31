@@ -32,12 +32,20 @@ class CurrencyNumber extends React.Component {
 }
 
 CurrencyNumber.propTypes = {
+  locale: PropTypes.string,
+  currency: PropTypes.string,
+  country: PropTypes.string,
   className: PropTypes.string,
   addonBefore: PropTypes.string,
   money: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 CurrencyNumber.defaultProps = {
+  locale: '',
+  currency: '',
+  country: '',
+  className: '',
+  addonBefore: '',
   money: 0,
 };
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
+import PropTypes from 'prop-types';
 import { actions as appActionCreators, getBusiness, getMessageInfo } from '../../redux/modules/app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import TopMessage from '../TopMessage';
@@ -17,14 +18,22 @@ const EARNED_STATUS = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 
 class Message extends React.Component {
   MESSAGES = {};
-  animationSetTimeout = null;
 
-  state = {
-    modalStatus: [''],
-  };
+  animationSetTimeout = null;
 
   componentDidUpdate() {
     this.initMessages();
+  }
+
+  getMessage() {
+    const { messageInfo } = this.props;
+    const { key, message } = messageInfo || {};
+
+    if (!key) {
+      return message;
+    }
+
+    return this.MESSAGES[key] || this.MESSAGES.Default;
   }
 
   initMessages() {
@@ -61,17 +70,6 @@ class Message extends React.Component {
     this.MESSAGES = messages;
   }
 
-  getMessage() {
-    const { messageInfo } = this.props;
-    const { key, message } = messageInfo || {};
-
-    if (!key) {
-      return message;
-    }
-
-    return this.MESSAGES[key] || this.MESSAGES.Default;
-  }
-
   render() {
     const { appActions, messageInfo } = this.props;
     const { show, key, message } = messageInfo || {};
@@ -93,6 +91,34 @@ class Message extends React.Component {
 }
 
 Message.displayName = 'Message';
+
+Message.propTypes = {
+  appActions: PropTypes.shape({
+    hideMessageInfo: PropTypes.func,
+  }),
+  messageInfo: PropTypes.shape({
+    show: PropTypes.bool,
+    key: PropTypes.string,
+    message: PropTypes.string,
+  }),
+  businessInfo: PropTypes.shape({
+    claimCashbackCountPerDay: PropTypes.number,
+  }),
+};
+
+Message.defaultProps = {
+  appActions: {
+    hideMessageInfo: () => {},
+  },
+  messageInfo: {
+    show: false,
+    key: null,
+    message: null,
+  },
+  businessInfo: {
+    claimCashbackCountPerDay: 0,
+  },
+};
 
 export default compose(
   withTranslation('Common'),

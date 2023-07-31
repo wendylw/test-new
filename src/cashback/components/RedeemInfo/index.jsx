@@ -1,28 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Header from '../../../components/Header';
 import { withTranslation } from 'react-i18next';
+import Header from '../../../components/Header';
 import beepQrScanImage from '../../../images/beep-qrscan.png';
 import './RedeemInfo.scss';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 
 class RedeemInfo extends React.Component {
-  state = {
-    showModal: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = { showModal: false };
+  }
 
   onHistoryBackReceived = () => {
-    if (this.state.showModal === true) {
+    const { showModal } = this.state;
+
+    if (showModal === true) {
       this.toggleModal();
     }
   };
 
-  toggleModal() {
+  toggleModal = () => {
     const { showModal } = this.state;
+    const { onModalVisibilityChanged } = this.props;
 
     this.setState({ showModal: !showModal });
-    this.props.onModalVisibilityChanged(!showModal);
-  }
+    onModalVisibilityChanged(!showModal);
+  };
 
   render() {
     const { className, buttonClassName, buttonText, t } = this.props;
@@ -42,8 +46,8 @@ class RedeemInfo extends React.Component {
             <Header
               className="flex-middle"
               contentClassName="flex-middle"
-              isPage={true}
-              navFunc={this.toggleModal.bind(this)}
+              isPage
+              navFunc={this.toggleModal}
               data-test-id="cashback.common.redeem-info.header"
             />
 
@@ -65,13 +69,17 @@ class RedeemInfo extends React.Component {
 }
 
 RedeemInfo.propTypes = {
+  className: PropTypes.string,
   buttonClassName: PropTypes.string,
   buttonText: PropTypes.string,
+  onModalVisibilityChanged: PropTypes.func,
 };
 
 RedeemInfo.defaultProps = {
+  className: '',
   buttonClassName: '',
   buttonText: '',
+  onModalVisibilityChanged: () => {},
 };
 
 RedeemInfo.displayName = 'RedeemInfo';
