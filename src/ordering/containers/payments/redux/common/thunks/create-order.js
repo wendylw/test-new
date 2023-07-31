@@ -23,6 +23,7 @@ import {
   getUserPhone,
   getIsTNGMiniProgram,
   getIsWebview,
+  getMerchantCountry,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
 import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
@@ -398,7 +399,10 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       payload.consumerId = consumerId;
     }
 
-    const { redirectURL: thankYouPageUrl, paymentUrl, paymentData, paymentId } = await initPayment(payload, dispatch);
+    const { redirectURL: thankYouPageUrl, paymentUrl, paymentData, paymentId, paymentRecordId } = await initPayment(
+      payload,
+      dispatch
+    );
 
     if (isTNGMiniProgram) {
       const { redirectionUrl } = paymentData?.actionForm || {};
@@ -414,6 +418,26 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
         source,
         isInternal,
         paymentId,
+      });
+      return;
+    }
+
+    if (paymentProvider === PAYMENT_PROVIDERS.APPLE_PAY) {
+      const country = getMerchantCountry(state);
+      const { paymentAction } = paymentData || {};
+      const { actionUrl } = paymentAction || {};
+
+      Utils.submitForm(actionUrl, {
+        amount: total,
+        receiptNumber: orderId,
+        businessName: business,
+        webhookURL,
+        paymentMethod: PAYMENT_PROVIDERS.APPLE_PAY,
+        country,
+        currency,
+        source,
+        isInternal,
+        paymentRecordId,
       });
       return;
     }

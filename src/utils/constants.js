@@ -47,11 +47,13 @@ const PAYMENT_METHOD_LABELS = {
   GCASH_PAY: 'GCash',
   LINE_PAY: 'Line',
   GETZ_PAY: 'GetzPay',
+  APPLE_PAY: 'ApplePay',
 };
 
 const PAYMENT_PROVIDERS = {
   STRIPE: 'Stripe',
   STRIPE_FPX: 'StripeFPX',
+  APPLE_PAY: 'StripeApplePay',
   TNG_ONLINE: 'TnGOnline',
   BOOST: 'Boost',
   GRAB_PAY: 'GrabPay',
