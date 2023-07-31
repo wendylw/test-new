@@ -9,8 +9,10 @@ import { connect } from 'react-redux';
 import {
   actions as appActionCreators,
   getUser,
+  getUserIsLogin,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
+  getIsFetchLoginStatusComplete,
 } from '../../../../redux/modules/app';
 import { actions as customerActionCreators } from './redux';
 import { getAddressInfo, getContactNumberInvalidErrorVisibility } from './redux/selectors';
@@ -21,6 +23,7 @@ import url from '../../../../../utils/url';
 import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
 import prefetch from '../../../../../common/utils/prefetch-assets';
+import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import _trim from 'lodash/trim';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
@@ -38,12 +41,35 @@ class AddressDetail extends Component {
     hasAnyChanges: false,
   };
 
+  gotoLoginPage = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: PATH_NAME_MAPPING.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
+  };
+
   componentDidMount = async () => {
-    const { init, location } = this.props;
+    const { init, location, isFetchLoginStatusComplete, isUserLogin } = this.props;
     const { type: actionType, selectedAddress } = location.state || {};
+
+    if (isFetchLoginStatusComplete && !isUserLogin) {
+      this.gotoLoginPage();
+    }
+
     await init({ actionType, selectedAddress });
 
     prefetch(['ORD_AL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
+  };
+
+  componentDidUpdate = prevProps => {
+    const { isFetchLoginStatusComplete: prevIsFetchLoginStatusComplete } = prevProps;
+    const { isUserLogin, isFetchLoginStatusComplete } = this.props;
+
+    if (isFetchLoginStatusComplete && !prevIsFetchLoginStatusComplete && !isUserLogin) {
+      this.gotoLoginPage();
+    }
   };
 
   handleClickBack = () => {
@@ -414,6 +440,8 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
+      isFetchLoginStatusComplete: getIsFetchLoginStatusComplete(state),
+      isUserLogin: getUserIsLogin(state),
       deliveryDetails: getDeliveryDetails(state),
       addressInfo: getAddressInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
