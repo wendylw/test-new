@@ -3,6 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
+import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 import { alert } from '../../../common/feedback';
 import { getBusinessUTCOffset } from '../modules/app';
 import { CART_SUBMISSION_STATUS } from './constants';
@@ -11,6 +12,7 @@ import {
   getCartSource,
   getCartItems,
   getIsCartSubmissionStatusQueryPollingStoppable,
+  getCartSubmissionStartPollingTimeStamp,
 } from './selectors';
 import { actions as cartActionCreators } from '.';
 import {
@@ -256,14 +258,41 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
 
 export const loadCartSubmissionStatus = createAsyncThunk(
   'ordering/app/cart/loadCartSubmissionStatus',
-  async (submissionId, { dispatch }) => {
+  async (submissionId, { dispatch, getState }) => {
     try {
-      const result = await fetchCartSubmissionStatus({ submissionId });
+      dispatch(
+        cartActionCreators.loadCartSubmissionStatusUpdated({
+          loadCartSubmissionStatusUpdated: API_REQUEST_STATUS.PENDING,
+        })
+      );
 
-      dispatch(cartActionCreators.updateCartSubmission(result));
+      const cartSubmissionStartPollingTimeStamp = getCartSubmissionStartPollingTimeStamp(getState());
+      const result = await fetchCartSubmissionStatus({ submissionId });
+      const currentTimeStamp = Date.now();
+
+      await dispatch(
+        cartActionCreators.loadCartSubmissionStatusUpdated({
+          loadCartSubmissionStatusUpdated: API_REQUEST_STATUS.FULFILLED,
+        })
+      );
+      await dispatch(
+        cartActionCreators.updateCartSubmission({
+          ...result,
+          status:
+            currentTimeStamp - cartSubmissionStartPollingTimeStamp > TIMEOUT_CART_SUBMISSION_TIME
+              ? CART_SUBMISSION_STATUS.FAILED
+              : result.status,
+        })
+      );
 
       return result;
     } catch (error) {
+      await dispatch(
+        cartActionCreators.loadCartSubmissionStatusUpdated({
+          loadCartSubmissionStatusUpdated: API_REQUEST_STATUS.REJECTED,
+          error: error?.message || '',
+        })
+      );
       logger.error('Ordering_Cart_LoadCartSubmissionStatusFailed', { message: error?.message });
 
       throw error;
@@ -271,45 +300,32 @@ export const loadCartSubmissionStatus = createAsyncThunk(
   }
 );
 
-export const queryCartSubmissionStatus = submissionId => (dispatch, getState) => {
-  logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'start', id: submissionId });
-  const targetTimestamp = Date.parse(new Date()) + TIMEOUT_CART_SUBMISSION_TIME;
-
+export const queryCartSubmissionStatus = submissionId => async (dispatch, getState) => {
   try {
-    const pollingCartSubmissionStatus = () => {
-      queryCartSubmissionStatus.timer = setTimeout(async () => {
-        if (targetTimestamp - Date.parse(new Date()) <= 0) {
-          clearTimeout(queryCartSubmissionStatus.timer);
-          logger.log('Ordering_Cart_PollCartSubmissionStatus', {
-            action: 'stop',
-            message: 'timeout',
-            id: submissionId,
-          });
-          dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
+    const isCartSubmissionStatusQueryPollingStoppable = getIsCartSubmissionStatusQueryPollingStoppable(getState());
+    if (isCartSubmissionStatusQueryPollingStoppable) {
+      dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
+      logger.log('Ordering_Cart_PollCartSubmissionStatus', {
+        action: 'stop',
+        message: 'finished',
+        id: submissionId,
+      });
 
-          return;
-        }
+      return;
+    }
 
-        await dispatch(loadCartSubmissionStatus(submissionId));
+    if (!submissionId) {
+      throw new Error('pollingCartSubmission submissionId is required');
+    }
 
-        const isCartSubmissionStatusQueryPollingStoppable = getIsCartSubmissionStatusQueryPollingStoppable(getState());
+    logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'start', id: submissionId });
+    await dispatch(loadCartSubmissionStatus(submissionId));
 
-        if (isCartSubmissionStatusQueryPollingStoppable) {
-          clearTimeout(queryCartSubmissionStatus.timer);
-          logger.log('Ordering_Cart_PollCartSubmissionStatus', {
-            action: 'stop',
-            message: 'finished',
-            id: submissionId,
-          });
-          return;
-        }
-
-        pollingCartSubmissionStatus();
-      }, CART_SUBMISSION_INTERVAL);
-    };
-
-    pollingCartSubmissionStatus();
+    setTimeout(() => {
+      dispatch(queryCartSubmissionStatus(submissionId));
+    }, CART_SUBMISSION_INTERVAL);
   } catch (error) {
+    dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
     logger.error(
       'Ordering_Cart_ViewOrderFailed',
       { message: error?.message },
@@ -325,9 +341,7 @@ export const queryCartSubmissionStatus = submissionId => (dispatch, getState) =>
   }
 };
 
-export const clearQueryCartSubmissionStatus = () => () => {
-  if (queryCartSubmissionStatus.timer) {
-    clearTimeout(queryCartSubmissionStatus.timer);
-    logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'stop', message: 'unmount' });
-  }
+export const clearQueryCartSubmissionStatus = () => async ({ dispatch }) => {
+  await dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
+  logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'stop', message: 'unmount' });
 };

@@ -3,6 +3,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
+import { CART_SUBMISSION_STATUS } from './constants';
 import {
   loadCart,
   loadCartStatus,
@@ -20,7 +21,8 @@ const CartSubmissionModel = {
   },
   status: null,
   receiptNumber: null,
-  submissionId: null,
+  submissionId: Utils.getQueryString('submissionId'),
+  startPollingTimeStamp: Date.now(),
 };
 
 const CartItemModel = {
@@ -81,7 +83,7 @@ const initialState = {
   unavailableItems: [],
   shippingType: Utils.getOrderTypeFromUrl(),
   source: Utils.getOrderSource(),
-  submission: { ...CartSubmissionModel, submissionId: Utils.getQueryString('submissionId') },
+  submission: CartSubmissionModel,
   error: {
     loadCart: null,
     loadCartStatus: null,
@@ -115,6 +117,11 @@ export const { reducer, actions } = createSlice({
     },
     updateCartSubmission(state, { payload }) {
       state.submission = { ...state.submission, ...payload };
+
+      return state;
+    },
+    loadCartSubmissionStatusUpdated(state, { payload }) {
+      state.submission.requestStatus.loadCartSubmissionStatus = payload;
 
       return state;
     },
@@ -186,7 +193,15 @@ export const { reducer, actions } = createSlice({
     [loadCartSubmissionStatus.pending.type]: state => {
       state.submission.requestStatus.loadCartSubmissionStatus = API_REQUEST_STATUS.PENDING;
     },
-    [loadCartSubmissionStatus.fulfilled.type]: state => {
+    [loadCartSubmissionStatus.fulfilled.type]: (state, { payload }) => {
+      const { isTimeout } = payload || {};
+
+      if (isTimeout) {
+        state.submission.status = CART_SUBMISSION_STATUS.FAILED;
+      } else {
+        state.submission = { ...state.submission, ...payload };
+      }
+
       state.submission.requestStatus.loadCartSubmissionStatus = API_REQUEST_STATUS.FULFILLED;
     },
     [loadCartSubmissionStatus.rejected.type]: (state, { error }) => {

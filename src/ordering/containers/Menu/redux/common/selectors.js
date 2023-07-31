@@ -43,6 +43,7 @@ import {
   getIsFromFoodCourt,
   getIsPickUpType,
   getHasSelectedStore,
+  getUserConsumerId,
 } from '../../../../redux/modules/app';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -317,7 +318,10 @@ export const getHasSaveFavoriteStoreSupport = createSelector(getIsWebview, isWeb
 export const getShouldShowFavoriteButton = createSelector(
   getIsDeliveryOrder,
   getHasSaveFavoriteStoreSupport,
-  (isDeliveryOrder, hasSaveFavoriteStoreSupport) => isDeliveryOrder && hasSaveFavoriteStoreSupport
+  getUserConsumerId,
+  getStoreId,
+  (isDeliveryOrder, hasSaveFavoriteStoreSupport, userConsumerId, storeId) =>
+    isDeliveryOrder && hasSaveFavoriteStoreSupport && userConsumerId && storeId
 );
 
 export const getHasUserLoginByBeepAppRequestFulfilled = createSelector(
