@@ -1,6 +1,6 @@
 import 'whatwg-fetch';
+import 'globalthis/auto';
 import smoothscroll from 'smoothscroll-polyfill';
-import globalThis from 'globalthis';
 import './utils/monitoring/monitor';
 import './utils/monkey-patches';
 import './utils/polyfills';
@@ -12,10 +12,6 @@ import Bootstrap from './Bootstrap';
 import './index.css';
 
 try {
-  if (typeof window.globalThis !== 'undefined') {
-    // globalThis is defined, do something
-    window.globalThis = globalThis();
-  }
   // kick off the polyfill!
   smoothscroll.polyfill();
   // eslint-disable-next-line no-useless-catch
