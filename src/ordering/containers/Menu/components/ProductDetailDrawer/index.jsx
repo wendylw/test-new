@@ -39,6 +39,7 @@ import {
   productDetailDrawerHidden,
 } from '../../redux/productDetail/thunks';
 import { PRODUCT_UNABLE_ADD_TO_CART_REASONS } from '../../constants';
+import { PRODUCT_STOCK_STATUS } from '../../../../../common/utils/constants';
 import AddSpecialNotes from '../AddSpecialNotes';
 
 const LoadingIndicator = () => {
@@ -207,7 +208,7 @@ const ProductDetailDrawer = () => {
                   }
                 }}
               />
-              {product.stockStatus === 'lowStock' && typeof product.quantityOnHand === 'number' ? (
+              {product.stockStatus === PRODUCT_STOCK_STATUS.LOW_STOCK && typeof product.quantityOnHand === 'number' ? (
                 <em className="tw-block tw-text-red tw-text-sm tw-not-italic tw-p-8px">
                   {t('XItemsLeft', { amount: product.quantityOnHand })}
                 </em>
