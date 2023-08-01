@@ -168,10 +168,6 @@ const API_URLS = {
     url: '/api/stores/collection',
     method: 'get',
   },
-  GET_ADDRESS_LIST: (consumerId, storeId) => ({
-    url: `/api/consumers/${consumerId}/store/${storeId}/address`,
-    method: 'get',
-  }),
   CREATE_ADDRESS: consumerId => ({
     url: `/api/consumers/${consumerId}/address`,
     method: 'post',
