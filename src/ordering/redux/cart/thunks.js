@@ -262,7 +262,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
     try {
       dispatch(
         cartActionCreators.loadCartSubmissionStatusUpdated({
-          loadCartSubmissionStatusUpdated: API_REQUEST_STATUS.PENDING,
+          loadCartSubmissionStatus: API_REQUEST_STATUS.PENDING,
         })
       );
 
@@ -272,7 +272,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
 
       await dispatch(
         cartActionCreators.loadCartSubmissionStatusUpdated({
-          loadCartSubmissionStatusUpdated: API_REQUEST_STATUS.FULFILLED,
+          loadCartSubmissionStatus: API_REQUEST_STATUS.FULFILLED,
         })
       );
       await dispatch(
@@ -289,7 +289,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
     } catch (error) {
       await dispatch(
         cartActionCreators.loadCartSubmissionStatusUpdated({
-          loadCartSubmissionStatusUpdated: API_REQUEST_STATUS.REJECTED,
+          loadCartSubmissionStatus: API_REQUEST_STATUS.REJECTED,
           error: error?.message || '',
         })
       );

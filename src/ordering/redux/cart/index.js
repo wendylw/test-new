@@ -3,16 +3,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
-import { CART_SUBMISSION_STATUS } from './constants';
-import {
-  loadCart,
-  loadCartStatus,
-  updateCartItems,
-  removeCartItemsById,
-  clearCart,
-  submitCart,
-  loadCartSubmissionStatus,
-} from './thunks';
+import { loadCart, loadCartStatus, updateCartItems, removeCartItemsById, clearCart, submitCart } from './thunks';
 
 const CartSubmissionModel = {
   requestStatus: {
@@ -121,7 +112,10 @@ export const { reducer, actions } = createSlice({
       return state;
     },
     loadCartSubmissionStatusUpdated(state, { payload }) {
-      state.submission.requestStatus.loadCartSubmissionStatus = payload;
+      const { loadCartSubmissionStatus, error } = payload || {};
+
+      state.submission.requestStatus.loadCartSubmissionStatus = loadCartSubmissionStatus;
+      state.submission.error = error;
 
       return state;
     },
@@ -189,24 +183,6 @@ export const { reducer, actions } = createSlice({
     [submitCart.rejected.type]: (state, { error }) => {
       state.submission.error = error;
       state.submission.requestStatus.submitCart = API_REQUEST_STATUS.REJECTED;
-    },
-    [loadCartSubmissionStatus.pending.type]: state => {
-      state.submission.requestStatus.loadCartSubmissionStatus = API_REQUEST_STATUS.PENDING;
-    },
-    [loadCartSubmissionStatus.fulfilled.type]: (state, { payload }) => {
-      const { isTimeout } = payload || {};
-
-      if (isTimeout) {
-        state.submission.status = CART_SUBMISSION_STATUS.FAILED;
-      } else {
-        state.submission = { ...state.submission, ...payload };
-      }
-
-      state.submission.requestStatus.loadCartSubmissionStatus = API_REQUEST_STATUS.FULFILLED;
-    },
-    [loadCartSubmissionStatus.rejected.type]: (state, { error }) => {
-      state.submission.error = error;
-      state.submission.requestStatus.loadCartSubmissionStatus = API_REQUEST_STATUS.REJECTED;
     },
   },
 });
