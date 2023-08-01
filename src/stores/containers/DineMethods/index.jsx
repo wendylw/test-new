@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import PropTypes from 'prop-types';
 import {
   actions as homeActionCreators,
   getStoreHashCode,
@@ -21,7 +22,7 @@ import './StoresTakingMealMethod.scss';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
-let METHODS_LIST = [
+const METHODS_LIST = [
   {
     name: DELIVERY_METHOD.DINE_IN,
     logo: DineInImage,
@@ -61,8 +62,10 @@ class DineMethods extends Component {
   };
 
   handleClickBack = () => {
-    this.props.homeActions.clearCurrentStore();
-    const queries = qs.parse(decodeURIComponent(this.props.location.search), { ignoreQueryPrefix: true });
+    const { homeActions, location } = this.props;
+
+    homeActions.clearCurrentStore();
+    const queries = qs.parse(decodeURIComponent(location.search), { ignoreQueryPrefix: true });
 
     if (queries.s && queries.from === 'home') {
       delete queries.s;
@@ -99,45 +102,93 @@ class DineMethods extends Component {
             className="flex-middle border__bottom-divider"
             contentClassName="flex-middle"
             data-test-id="stores.dine-methods.header"
-            isPage={true}
+            isPage
             title={t('SelectYourPreference')}
             navFunc={this.handleClickBack}
           />
           <ul className="delivery__list">
-            {METHODS_LIST.map(method => {
-              return (
-                <li
-                  key={method.name}
-                  className="border__bottom-divider flex flex-middle flex-space-between"
-                  onClick={() => this.handleSelectMethod(method.name)}
-                  data-test-id="stores.dine-methods.method-item"
-                >
-                  <summary className="taking-meal-method__summary">
-                    <figure className="taking-meal-method__image-container text-middle margin-normal">
-                      <img src={method.logo} alt={t(method.labelKey)}></img>
-                    </figure>
-                    <label className="text-middle text-size-big text-weight-bolder">{t(method.labelKey)}</label>
-                  </summary>
-                  <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />
-                </li>
-              );
-            })}
+            {METHODS_LIST.map(method => (
+              <li
+                key={method.name}
+                className="border__bottom-divider flex flex-middle flex-space-between"
+                onClick={() => this.handleSelectMethod(method.name)}
+                data-test-id="stores.dine-methods.method-item"
+              >
+                <summary className="taking-meal-method__summary">
+                  <figure className="taking-meal-method__image-container text-middle margin-normal">
+                    <img src={method.logo} alt={t(method.labelKey)} />
+                  </figure>
+                  <span className="text-middle text-size-big text-weight-bolder">{t(method.labelKey)}</span>
+                </summary>
+                <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />
+              </li>
+            ))}
           </ul>
         </section>
       )
     );
   }
 }
+
 DineMethods.displayName = 'DineMethods';
 
+DineMethods.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  tables: PropTypes.array,
+  hashCode: PropTypes.string,
+  currentStoreId: PropTypes.string,
+  currentOrderMethod: PropTypes.string,
+  tableActions: PropTypes.shape({
+    loadStoreTables: PropTypes.func,
+  }),
+  homeActions: PropTypes.shape({
+    setOrderMethod: PropTypes.func,
+    getStoreHashData: PropTypes.func,
+    clearCurrentStore: PropTypes.func,
+  }),
+  location: PropTypes.shape({
+    search: PropTypes.string,
+  }),
+};
+
+DineMethods.defaultProps = {
+  tables: null,
+  hashCode: '',
+  currentStoreId: '',
+  currentOrderMethod: '',
+  tableActions: {
+    loadStoreTables: () => {},
+  },
+  homeActions: {
+    setOrderMethod: () => {},
+    getStoreHashData: () => {},
+    clearCurrentStore: () => {},
+  },
+  location: {
+    search: '',
+  },
+};
+
 const DineMethodsContainer = props => {
-  if (props.currentOrderMethod === DELIVERY_METHOD.DINE_IN) {
+  const { currentOrderMethod } = props;
+
+  if (currentOrderMethod === DELIVERY_METHOD.DINE_IN) {
     return <Tables />;
   }
 
+  // eslint-disable-next-line react/jsx-props-no-spreading
   return <DineMethods {...props} />;
 };
+
 DineMethodsContainer.displayName = 'DineMethodsContainer';
+
+DineMethodsContainer.propTypes = {
+  currentOrderMethod: PropTypes.string,
+};
+
+DineMethodsContainer.defaultProps = {
+  currentOrderMethod: '',
+};
 
 export default compose(
   withTranslation(),

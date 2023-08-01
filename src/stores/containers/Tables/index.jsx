@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import Constants from '../../../utils/constants';
 import './OrderingTables.scss';
 
@@ -18,26 +19,34 @@ import HybridHeader from '../../../components/HybridHeader';
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 class Tables extends Component {
   componentDidMount() {
-    this.props.tablesActions.loadStoreTables();
+    const { tablesActions } = this.props;
+
+    tablesActions.loadStoreTables();
   }
 
   handleClickBack = () => {
-    this.props.homeActions.setOrderMethod('');
+    const { homeActions } = this.props;
+
+    homeActions.setOrderMethod('');
   };
 
   handleSelectTable = tableId => {
-    this.props.tablesActions.setTableId(tableId);
+    const { tablesActions } = this.props;
+
+    tablesActions.setTableId(tableId);
   };
 
   handleContinue = async () => {
-    await this.props.tablesActions.generatorStoreHashCode();
+    const { tablesActions } = this.props;
+
+    await tablesActions.generatorStoreHashCode();
     this.gotoOrderingPage();
   };
 
   gotoOrderingPage() {
-    window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${this.props.storeHashCode || ''}&type=${
-      DELIVERY_METHOD.DINE_IN
-    }`;
+    const { storeHashCode } = this.props;
+
+    window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${storeHashCode || ''}&type=${DELIVERY_METHOD.DINE_IN}`;
   }
 
   render() {
@@ -49,30 +58,28 @@ class Tables extends Component {
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-test-id="stores.tables.header"
-          isPage={true}
+          isPage
           title={t('SelectTableNumber')}
           navFunc={this.handleClickBack}
         />
         <div className="ordering-tables__container">
           <h2 className="padding-smaller margin-small text-size-big text-weight-bolder">{t('PleasePickOne')}</h2>
           <ul className="ordering-tables__list flex flex-middle padding-smaller margin-top-bottom-small">
-            {tables.map(table => {
-              return (
-                <li className="ordering-tables__list-item padding-small">
-                  <button
-                    onClick={() => this.handleSelectTable(table.id)}
-                    data-test-id="stores.tables.table-btn"
-                    key={table.id}
-                    className={`button button__block text-line-height-base border-radius-large ${
-                      table.id === currentTableId ? 'button__fill' : 'button__outline'
-                    }`}
-                  >
-                    <div className="ordering-tables__list-table-title">{t('Table')}</div>
-                    <div className="ordering-tables__list-table-name text-weight-bolder">{table.name}</div>
-                  </button>
-                </li>
-              );
-            })}
+            {tables.map(table => (
+              <li className="ordering-tables__list-item padding-small" key={table.id}>
+                <button
+                  onClick={() => this.handleSelectTable(table.id)}
+                  data-test-id="stores.tables.table-btn"
+                  key={table.id}
+                  className={`button button__block text-line-height-base border-radius-large ${
+                    table.id === currentTableId ? 'button__fill' : 'button__outline'
+                  }`}
+                >
+                  <div className="ordering-tables__list-table-title">{t('Table')}</div>
+                  <div className="ordering-tables__list-table-name text-weight-bolder">{table.name}</div>
+                </button>
+              </li>
+            ))}
           </ul>
         </div>
         <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
@@ -89,7 +96,41 @@ class Tables extends Component {
     );
   }
 }
+
 Tables.displayName = 'Tables';
+
+Tables.propTypes = {
+  tables: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      name: PropTypes.string,
+    })
+  ),
+  homeActions: PropTypes.shape({
+    setOrderMethod: PropTypes.func,
+  }),
+  tablesActions: PropTypes.shape({
+    setTableId: PropTypes.func,
+    loadStoreTables: PropTypes.func,
+    generatorStoreHashCode: PropTypes.func,
+  }),
+  storeHashCode: PropTypes.string,
+  currentTableId: PropTypes.string,
+};
+
+Tables.defaultProps = {
+  tables: [],
+  homeActions: {
+    setOrderMethod: () => {},
+  },
+  tablesActions: {
+    setTableId: () => {},
+    loadStoreTables: () => {},
+    generatorStoreHashCode: () => {},
+  },
+  storeHashCode: '',
+  currentTableId: '',
+};
 
 export default compose(
   withTranslation(),

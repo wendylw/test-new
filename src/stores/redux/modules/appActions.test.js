@@ -32,9 +32,7 @@ describe('src/stores/redux/modules/app.js:actions', () => {
       };
       return expect(actions.showMessageModal(reqParams)).toEqual(expectedAction);
     });
-    it('hideMessageModal', () => {
-      return expect(actions.hideMessageModal()).toEqual({ type: types.HIDE_MESSAGE_MODAL });
-    });
+    it('hideMessageModal', () => expect(actions.hideMessageModal()).toEqual({ type: types.HIDE_MESSAGE_MODAL }));
   });
 
   describe('Async Action Creators', () => {

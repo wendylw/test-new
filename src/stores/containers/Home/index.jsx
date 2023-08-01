@@ -1,19 +1,19 @@
+import qs from 'qs';
+import _get from 'lodash/get';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
+import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import { checkStoreIsOpened, getBusinessDateTime } from '../../../utils/store-utils';
-
-import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo, getError } from '../../redux/modules/app';
 import { getBusiness, getBusinessInfo, getBusinessUTCOffset } from '../../../ordering/redux/modules/app';
-import { withRouter } from 'react-router-dom';
 import { gtmSetUserProperties } from '../../../utils/gtm';
-import _get from 'lodash/get';
-import qs from 'qs';
 import * as NativeMethods from '../../../utils/native-methods';
 import './StoresHome.scss';
 
@@ -28,24 +28,36 @@ import NativeHeader from '../../../components/NativeHeader';
 
 const { ROUTER_PATHS } = Constants;
 class Home extends Component {
-  state = {
-    creatOfflineStoreOrderName: '',
-  };
-
   componentDidMount = async () => {
-    await this.props.homeActions.loadCoreStores();
-    if (Array.isArray(this.props.stores) && this.props.stores.length === 1) {
-      const defaultSelectStore = this.props.stores[0];
-      const queries = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    const { homeActions } = this.props;
+
+    await homeActions.loadCoreStores();
+
+    const { stores, location } = this.props;
+
+    if (Array.isArray(stores) && stores.length === 1) {
+      const defaultSelectStore = stores[0];
+      const queries = qs.parse(location.search, { ignoreQueryPrefix: true });
 
       if (!(queries.s && queries.from === 'home')) {
         this.selectStore(defaultSelectStore.id);
       }
     }
+  };
 
-    this.setState({
-      creatOfflineStoreOrderName: Utils.getSessionVariable('creatOfflineStoreOrderName'),
+  selectStore = storeId => {
+    const { enableDelivery } = this.props;
+    gtmSetUserProperties({
+      store: {
+        id: storeId,
+      },
     });
+
+    if (this.isDinePath() || !enableDelivery) {
+      this.gotoDine(storeId);
+    } else {
+      this.gotoDelivery(storeId);
+    }
   };
 
   async visitStore(storeId) {
@@ -89,31 +101,18 @@ class Home extends Component {
 
   gotoDine(storeId) {
     window.location.href = `${window.location.origin}${ROUTER_PATHS.DINE}${
-      window.location.search ? window.location.search + '&' : '?'
+      window.location.search ? `${window.location.search}&` : '?'
     }s=${storeId}&from=home`;
   }
 
-  selectStore = storeId => {
-    const { enableDelivery } = this.props;
-    gtmSetUserProperties({
-      store: {
-        id: storeId,
-      },
-    });
-
-    if (this.isDinePath() || !enableDelivery) {
-      this.gotoDine(storeId);
-    } else {
-      this.gotoDelivery(storeId);
-    }
-  };
-
   isDinePath() {
-    return this.props.match.path === Constants.ROUTER_PATHS.DINE;
+    const { match } = this.props;
+
+    return match.path === Constants.ROUTER_PATHS.DINE;
   }
 
   render() {
-    const { t, show, stores, onlineStoreInfo } = this.props;
+    const { t, show, stores, onlineStoreInfo, isHome } = this.props;
     const { logo, storeName } = onlineStoreInfo || {};
     const isWebView = Utils.isWebview();
 
@@ -122,11 +121,11 @@ class Home extends Component {
     }
 
     return (
-      this.props.isHome && (
+      isHome && (
         <section className="store-list__content" data-test-id="stores.home.container">
           {isWebView && (
             <NativeHeader
-              isPage={true}
+              isPage
               title={window.document.title}
               navFunc={() => {
                 NativeMethods.closeWebView();
@@ -137,8 +136,8 @@ class Home extends Component {
             className="flex-middle border__bottom-divider"
             contentClassName="flex-middle"
             data-test-id="stores.home.header"
-            isPage={true}
-            isStoreHome={true}
+            isPage
+            isStoreHome
             logo={logo}
             title={storeName}
           />
@@ -159,7 +158,54 @@ class Home extends Component {
     );
   }
 }
+
 Home.displayName = 'StoresHome';
+
+Home.propTypes = {
+  show: PropTypes.bool,
+  isHome: PropTypes.bool,
+  /* eslint-disable react/forbid-prop-types */
+  stores: PropTypes.array,
+  onlineStoreInfo: PropTypes.object,
+  businessInfo: PropTypes.object,
+  /* eslint-disable */
+  hashCode: PropTypes.string,
+  enableDelivery: PropTypes.bool,
+  businessUTCOffset: PropTypes.number,
+  location: PropTypes.shape({
+    search: PropTypes.string,
+  }),
+  match: PropTypes.shape({
+    path: PropTypes.string,
+  }),
+  homeActions: PropTypes.shape({
+    loadCoreStores: PropTypes.func,
+    getStoreHashData: PropTypes.func,
+    loadCoreBusiness: PropTypes.func,
+  }),
+};
+
+Home.defaultProps = {
+  show: false,
+  isHome: false,
+  stores: [],
+  onlineStoreInfo: {},
+  businessInfo: {},
+  hashCode: '',
+  enableDelivery: false,
+  businessUTCOffset: 480,
+  location: {
+    search: '',
+  },
+  match: {
+    path: '',
+  },
+  homeActions: {
+    loadCoreStores: () => {},
+    getStoreHashData: () => {},
+    loadCoreBusiness: () => {},
+  },
+};
 
 export default compose(
   withTranslation(),
