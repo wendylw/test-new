@@ -15,6 +15,7 @@ import {
 import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
 import Constants from '../../../../../../utils/constants';
+import { getIsApplePaySupported } from '../../../utils';
 import { getTotal, getCleverTapAttributes, getPaymentName } from '../selectors';
 import CleverTap from '../../../../../../utils/clevertap';
 import logger from '../../../../../../utils/monitoring/logger';
@@ -90,6 +91,10 @@ const PAYMENTS_MAPPING = {
   GetzPay: {
     key: 'GetzPay',
     logo: 'paymentBankingImage',
+  },
+  StripeApplePay: {
+    key: 'ApplePay',
+    logo: 'paymentApplePay',
   },
 };
 
@@ -200,38 +205,58 @@ export const loadBilling = createAsyncThunk('ordering/payments/loadBilling', asy
 export const loadPaymentOptions = createAsyncThunk(
   'ordering/payments/loadPaymentOptions',
   async (selectedPaymentMethod, { getState }) => {
-    const state = getState();
-    const total = getTotal(state);
-    const storeId = getStoreId(state);
-    const shippingType = getShippingType(state);
+    try {
+      const isApplePaySupported = getIsApplePaySupported();
+      const state = getState();
+      const total = getTotal(state);
+      const storeId = getStoreId(state);
+      const shippingType = getShippingType(state);
 
-    const result = await getPayments(storeId, Utils.getApiRequestShippingType(shippingType), total);
+      const result = await getPayments(storeId, Utils.getApiRequestShippingType(shippingType), total);
 
-    if (!result.data) {
-      throw result.error;
-    }
-
-    const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING);
-    const selectedPaymentOption = paymentOptions.find(option => {
-      const isNotSelectedOption = selectedPaymentMethod && selectedPaymentMethod !== option.key;
-      const isUnavailable = !option.available;
-      const isUnavailableAmount = option.minAmount && total < option.minAmount;
-      const isUnsupported = !option.isStoreSupported;
-
-      if (isNotSelectedOption || isUnavailable || isUnavailableAmount || isUnsupported) {
-        return false;
+      if (!result.data) {
+        throw result.error;
       }
 
-      return true;
-    });
+      const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING);
+      const selectedPaymentOption = paymentOptions.find(option => {
+        const isNotSelectedOption = selectedPaymentMethod && selectedPaymentMethod !== option.key;
+        const isUnavailable = !option.available;
+        const isUnavailableAmount = option.minAmount && total < option.minAmount;
+        const isUnsupported = !option.isStoreSupported;
 
-    const onlineBankingOption = paymentOptions.find(option => option.key === PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
+        if (isNotSelectedOption || isUnavailable || isUnavailableAmount || isUnsupported) {
+          return false;
+        }
 
-    if (onlineBankingOption) {
-      onlineBankingOption.agentCodes = preprocessOnlineBankings(onlineBankingOption.agentCodes || [], OnlineBankModel);
+        return true;
+      });
+
+      const onlineBankingOption = paymentOptions.find(
+        option => option.key === PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY
+      );
+
+      if (onlineBankingOption) {
+        onlineBankingOption.agentCodes = preprocessOnlineBankings(
+          onlineBankingOption.agentCodes || [],
+          OnlineBankModel
+        );
+      }
+
+      const applePayOption = paymentOptions.find(option => option.key === PAYMENT_METHOD_LABELS.APPLE_PAY);
+
+      if (applePayOption) {
+        applePayOption.isApplePaySupported = isApplePaySupported;
+      }
+
+      return { paymentOptions, selectedPaymentOption };
+    } catch (error) {
+      logger.error('Ordering_Payment_LoadPaymentOptionsFailed', {
+        message: error?.message,
+      });
+
+      throw error;
     }
-
-    return { paymentOptions, selectedPaymentOption };
   }
 );
 

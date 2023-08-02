@@ -1,6 +1,7 @@
 import { createSelector, createStructuredSelector } from 'reselect';
 import { tools as frontendUtilTools, data as frontendUtilData } from '@storehub/frontend-utils';
-import { PRODUCT_STOCK_STATUS, PRODUCT_VARIATION_TYPE } from '../../../constants';
+import { PRODUCT_VARIATION_TYPE } from '../../../constants';
+import { PRODUCT_STOCK_STATUS } from '../../../../../../common/utils/constants';
 
 export const formatVariationOptionPriceDiff = (priceDiff, formatCurrency) => {
   if (!priceDiff) {
