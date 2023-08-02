@@ -224,6 +224,7 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
     // new stock status error code maps to old code
     const NEW_ERROR_CODE_MAPPING = {
       393478: '54012',
+      393479: '57014',
     };
 
     if (NEW_ERROR_CODE_MAPPING[error.code]) {

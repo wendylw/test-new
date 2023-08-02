@@ -91,6 +91,8 @@
   "57011Description": "Please choose a different payment method to continue",
   "57013Title": "Unable to process order (#57013)",
   "57013Description": "The selected shipping method is not supported. Please select another shipping method and try again",
+  "57014Title": "Failed to Place Order",
+  "57014Description": "Oops! There is an invalid product in your cart that cannot be processed. Please remove the item and try again",
   "41027Title": "Online payment is not supported",
   "41027Description": "Online payment via Beep is not supported at this store.",
   "B0001Description": "An error occurred. Exit app and try again",
