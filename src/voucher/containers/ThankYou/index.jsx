@@ -1,12 +1,12 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { compose } from 'redux';
-import Utils from '../../../utils/utils';
+import { compose, bindActionCreators } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import Header from '../../../components/Header';
 import Image from '../../../components/Image';
 import Constants from '../../../utils/constants';
+import Utils from '../../../utils/utils';
 
 import {
   actions as appActionCreators,
@@ -23,11 +23,16 @@ import './VoucherThanks.scss';
 
 class ThankYou extends Component {
   componentDidMount() {
+    const { appActions } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber');
-    this.props.appActions.loadOrder(receiptNumber);
+
+    appActions.loadOrder(receiptNumber);
   }
+
   handleClickBack = () => {
-    this.props.history.push({
+    const { history } = this.props;
+
+    history.push({
       pathname: Constants.ROUTER_PATHS.VOUCHER_HOME,
     });
   };
@@ -49,7 +54,7 @@ class ThankYou extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           data-test-id="voucher.thank-you.header"
-          isPage={true}
+          isPage
           navFunc={this.handleClickBack}
         />
 
@@ -86,7 +91,7 @@ class ThankYou extends Component {
 
               <div className="text-center margin-normal">
                 <a
-                  class="voucher-thanks__button-link button button__link text-size-big text-weight-bolder"
+                  className="voucher-thanks__button-link button button__link text-size-big text-weight-bolder"
                   href={beepSiteUrl}
                   data-test-id="voucher.thank-you.visit-site-link"
                 >
@@ -101,21 +106,44 @@ class ThankYou extends Component {
     );
   }
 }
+
 ThankYou.displayName = 'VoucherThankYou';
+
+ThankYou.propTypes = {
+  beepSiteUrl: PropTypes.string,
+  voucherCode: PropTypes.string,
+  contactEmail: PropTypes.string,
+  onlineStoreLogo: PropTypes.string,
+  onlineStoreName: PropTypes.string,
+  validityPeriodDays: PropTypes.number,
+  appActions: PropTypes.shape({
+    loadOrder: PropTypes.func,
+  }),
+};
+
+ThankYou.defaultProps = {
+  beepSiteUrl: '',
+  voucherCode: '',
+  contactEmail: '',
+  onlineStoreLogo: '',
+  onlineStoreName: '',
+  validityPeriodDays: 0,
+  appActions: {
+    loadOrder: () => {},
+  },
+};
 
 export default compose(
   withTranslation(['Voucher']),
   connect(
-    state => {
-      return {
-        onlineStoreLogo: getOnlineStoreInfoLogo(state),
-        onlineStoreName: getOnlineStoreName(state),
-        beepSiteUrl: getBeepSiteUrl(state),
-        contactEmail: getOrderContactEmail(state),
-        voucherCode: getOrderVoucherCode(state),
-        validityPeriodDays: getVoucherValidityPeriodDays(state),
-      };
-    },
+    state => ({
+      onlineStoreLogo: getOnlineStoreInfoLogo(state),
+      onlineStoreName: getOnlineStoreName(state),
+      beepSiteUrl: getBeepSiteUrl(state),
+      contactEmail: getOrderContactEmail(state),
+      voucherCode: getOrderVoucherCode(state),
+      validityPeriodDays: getVoucherValidityPeriodDays(state),
+    }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
     })

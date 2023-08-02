@@ -11,7 +11,7 @@ class Sorry extends Component {
   };
 
   gotoPaymentPage = () => {
-    window.location.href = Constants.ROUTER_PATHS.VOUCHER_PAYMENT + '?type=' + Constants.DELIVERY_METHOD.DIGITAL;
+    window.location.href = `${Constants.ROUTER_PATHS.VOUCHER_PAYMENT}?type=${Constants.DELIVERY_METHOD.DIGITAL}`;
   };
 
   render() {
@@ -22,7 +22,7 @@ class Sorry extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           data-test-id="voucher.sorry.header"
-          isPage={true}
+          isPage
           navFunc={this.handleClickBack}
         />
 

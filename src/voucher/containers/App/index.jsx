@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { bindActionCreators, compose } from 'redux';
+import PropTypes from 'prop-types';
 import {
   actions as appActionCreators,
   getOnlineStoreInfoFavicon,
   getShowPageLoader,
   getPageErrorCode,
+  getBusinessInfo,
   PAGE_ERROR_CODE_LIST,
 } from '../../redux/modules/app';
 import '../../../Common.scss';
@@ -16,19 +18,13 @@ import faviconImage from '../../../images/favicon.ico';
 import PageError from '../../components/PageError';
 import PageLoader from '../../components/PageLoader';
 import config from '../../../config';
-import { getBusinessInfo } from '../../redux/modules/app';
+
 class App extends Component {
   componentDidMount() {
-    this.props.appActions.loadAppBaseData();
+    const { appActions } = this.props;
+
+    appActions.loadAppBaseData();
   }
-
-  pageReload = () => {
-    window.location.reload();
-  };
-
-  gotoHomePage = () => {
-    window.location.href = config.beepitComUrl;
-  };
 
   componentDidUpdate() {
     const { businessesInfo } = this.props;
@@ -68,8 +64,16 @@ class App extends Component {
     }
   }
 
+  pageReload = () => {
+    window.location.reload();
+  };
+
+  gotoHomePage = () => {
+    window.location.href = config.beepitComUrl;
+  };
+
   render() {
-    const { showPageLoader, pageErrorCode } = this.props;
+    const { showPageLoader, pageErrorCode, favicon } = this.props;
 
     if (showPageLoader) {
       return <PageLoader />;
@@ -77,18 +81,46 @@ class App extends Component {
 
     if (pageErrorCode) {
       const props = this.getPageErrorProps();
+      // eslint-disable-next-line react/jsx-props-no-spreading
       return <PageError {...props} />;
     }
 
     return (
       <main className="voucher fixed-wrapper fixed-wrapper__main">
         <Routes />
-        <DocumentFavicon icon={this.props.favicon || faviconImage} />
+        <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
   }
 }
+
 App.displayName = 'VoucherApp';
+
+App.propTypes = {
+  appActions: PropTypes.shape({
+    loadAppBaseData: PropTypes.func,
+  }),
+  businessesInfo: PropTypes.shape({
+    country: PropTypes.string,
+    isQROrderingEnabled: PropTypes.bool,
+  }),
+  favicon: PropTypes.string,
+  pageErrorCode: PropTypes.string,
+  showPageLoader: PropTypes.bool,
+};
+
+App.defaultProps = {
+  appActions: {
+    loadAppBaseData: () => {},
+  },
+  businessesInfo: {
+    country: '',
+    isQROrderingEnabled: false,
+  },
+  favicon: '',
+  pageErrorCode: null,
+  showPageLoader: false,
+};
 
 export default compose(
   withTranslation(),

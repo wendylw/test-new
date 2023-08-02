@@ -20,6 +20,7 @@ class Error extends React.PureComponent {
         {button ? (
           <div className="prompt-page__button-container">
             <button
+              data-test-id="voucher.page-error.btn"
               className="button button__block font-weight-bolder text-center text-uppercase border-radius-base"
               onClick={button.onClick}
             >

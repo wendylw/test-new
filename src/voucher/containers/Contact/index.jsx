@@ -1,11 +1,11 @@
+import _get from 'lodash/get';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { compose, bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 import Constants from '../../../utils/constants';
 import Header from '../../../components/Header';
-
-import { compose } from 'redux';
-import { withTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import {
   actions as appActionCreators,
   getContactEmail,
@@ -22,16 +22,21 @@ import VoucherGiftCard from '../../components/VoucherGiftCard';
 import './VoucherContact.scss';
 
 class Contact extends Component {
-  state = {
-    invalidEmail: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = { invalidEmail: false };
+  }
 
   componentDidMount() {
-    this.props.appActions.initialVoucherOrderingInfo();
+    const { appActions } = this.props;
+
+    appActions.initialVoucherOrderingInfo();
   }
 
   handleContinue = () => {
-    if (!Utils.checkEmailIsValid(this.props.contactEmail)) {
+    const { contactEmail } = this.props;
+
+    if (!Utils.checkEmailIsValid(contactEmail)) {
       this.setState({
         invalidEmail: true,
       });
@@ -39,19 +44,21 @@ class Contact extends Component {
     }
 
     updateVoucherOrderingInfoToSessionStorage({
-      contactEmail: this.props.contactEmail,
+      contactEmail,
     });
 
     this.gotoPaymentPage();
   };
 
   gotoPaymentPage = () => {
-    window.location.href = Constants.ROUTER_PATHS.VOUCHER_PAYMENT + '?type=' + Constants.DELIVERY_METHOD.DIGITAL;
+    window.location.href = `${Constants.ROUTER_PATHS.VOUCHER_PAYMENT}?type=${Constants.DELIVERY_METHOD.DIGITAL}`;
   };
 
   handleEmailChange = e => {
+    const { appActions } = this.props;
+
     const email = e.target.value.trim();
-    this.props.appActions.updateContactEmail(email);
+    appActions.updateContactEmail(email);
 
     this.setState({
       invalidEmail: false,
@@ -59,7 +66,9 @@ class Contact extends Component {
   };
 
   handleClickBack = () => {
-    this.props.history.push({
+    const { history } = this.props;
+
+    history.push({
       pathname: Constants.ROUTER_PATHS.VOUCHER_HOME,
       search: window.location.search,
     });
@@ -78,6 +87,7 @@ class Contact extends Component {
     const { invalidEmail } = this.state;
     const invalidEmailClass = invalidEmail ? 'input__error' : '';
     const storeName = onlineStoreName || businessDisplayName;
+    const price = _get(selectedVoucher, 'unitPrice', null);
 
     return (
       <section className="voucher-contact flex flex-column" data-test-id="voucher.contact.container">
@@ -85,7 +95,7 @@ class Contact extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           data-test-id="voucher.contact.header"
-          isPage={true}
+          isPage
           navFunc={this.handleClickBack}
         />
 
@@ -95,7 +105,7 @@ class Contact extends Component {
             onlineStoreLogo={onlineStoreLogo}
             storeName={storeName}
             currencySymbol={currencySymbol}
-            selectedVoucher={selectedVoucher && selectedVoucher.unitPrice ? selectedVoucher.unitPrice : null}
+            selectedVoucher={price}
           />
           <div className="padding-normal">
             <h2 className="margin-top-bottom-small text-size-big text-weight-bolder">{t('SendGiftCardTo')}</h2>
@@ -128,22 +138,49 @@ class Contact extends Component {
     );
   }
 }
+
 Contact.displayName = 'VoucherContact';
+
+Contact.propTypes = {
+  appActions: PropTypes.shape({
+    updateContactEmail: PropTypes.func,
+    initialVoucherOrderingInfo: PropTypes.func,
+  }),
+  contactEmail: PropTypes.string,
+  currencySymbol: PropTypes.string,
+  onlineStoreLogo: PropTypes.string,
+  onlineStoreName: PropTypes.string,
+  selectedVoucher: PropTypes.shape({
+    unitPrice: PropTypes.number,
+  }),
+  businessDisplayName: PropTypes.string,
+};
+
+Contact.defaultProps = {
+  appActions: {
+    updateContactEmail: () => {},
+    initialVoucherOrderingInfo: () => {},
+  },
+  contactEmail: '',
+  currencySymbol: '',
+  onlineStoreLogo: '',
+  onlineStoreName: '',
+  businessDisplayName: '',
+  selectedVoucher: null,
+};
 
 export default compose(
   withTranslation(['Voucher']),
   connect(
-    state => {
-      return {
-        contactEmail: getContactEmail(state),
-        onlineStoreLogo: getOnlineStoreInfoLogo(state),
-        onlineStoreName: getOnlineStoreName(state),
-        businessDisplayName: getBusinessDisplayName(state),
-        beepSiteUrl: getBeepSiteUrl(state),
-        selectedVoucher: getSelectedVoucher(state),
-        currencySymbol: getCurrencySymbol(state),
-      };
-    },
+    state => ({
+      contactEmail: getContactEmail(state),
+      onlineStoreLogo: getOnlineStoreInfoLogo(state),
+      onlineStoreName: getOnlineStoreName(state),
+      businessDisplayName: getBusinessDisplayName(state),
+      beepSiteUrl: getBeepSiteUrl(state),
+      selectedVoucher: getSelectedVoucher(state),
+      currencySymbol: getCurrencySymbol(state),
+    }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
     })

@@ -1,9 +1,8 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Constants from '../../../utils/constants';
-import { compose } from 'redux';
+import { compose, bindActionCreators } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import {
   actions as appActionCreators,
   getOnlineStoreInfoLogo,
@@ -18,26 +17,33 @@ import {
 import { updateVoucherOrderingInfoToSessionStorage } from '../../utils';
 import VoucherIntroduction from '../../components/VoucherIntroduction';
 import VoucherGiftCard from '../../components/VoucherGiftCard';
+import Constants from '../../../utils/constants';
 import './VoucherHome.scss';
 
 class Home extends Component {
   componentDidMount() {
-    this.props.appActions.initialVoucherOrderingInfo();
+    const { appActions } = this.props;
+
+    appActions.initialVoucherOrderingInfo();
   }
 
   handleContinue = () => {
+    const { selectedVoucher, history } = this.props;
+
     updateVoucherOrderingInfoToSessionStorage({
-      selectedVoucher: this.props.selectedVoucher,
+      selectedVoucher,
     });
 
-    this.props.history.push({
+    history.push({
       pathname: Constants.ROUTER_PATHS.VOUCHER_CONTACT,
       search: window.location.search,
     });
   };
 
   handleSelectVoucher = voucher => {
-    this.props.appActions.selectVoucher(voucher);
+    const { appActions } = this.props;
+
+    appActions.selectVoucher(voucher);
   };
 
   render() {
@@ -117,23 +123,61 @@ class Home extends Component {
     );
   }
 }
+
 Home.displayName = 'VoucherHome';
+
+Home.propTypes = {
+  appActions: PropTypes.shape({
+    selectVoucher: PropTypes.func,
+    initialVoucherOrderingInfo: PropTypes.func,
+  }),
+  selectedVoucher: PropTypes.shape({
+    id: PropTypes.string,
+    unitPrice: PropTypes.number,
+  }),
+  voucherList: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      title: PropTypes.string,
+      unitPrice: PropTypes.number,
+    })
+  ),
+  validityPeriodDays: PropTypes.number,
+  beepSiteUrl: PropTypes.string,
+  onlineStoreLogo: PropTypes.string,
+  onlineStoreName: PropTypes.string,
+  currencySymbol: PropTypes.string,
+  businessDisplayName: PropTypes.string,
+};
+
+Home.defaultProps = {
+  appActions: {
+    selectVoucher: () => {},
+    initialVoucherOrderingInfo: () => {},
+  },
+  selectedVoucher: null,
+  voucherList: [],
+  beepSiteUrl: '',
+  onlineStoreLogo: '',
+  onlineStoreName: '',
+  currencySymbol: '',
+  validityPeriodDays: 0,
+  businessDisplayName: '',
+};
 
 export default compose(
   withTranslation(['Voucher']),
   connect(
-    state => {
-      return {
-        onlineStoreLogo: getOnlineStoreInfoLogo(state),
-        onlineStoreName: getOnlineStoreName(state),
-        businessDisplayName: getBusinessDisplayName(state),
-        beepSiteUrl: getBeepSiteUrl(state),
-        voucherList: getVoucherList(state),
-        selectedVoucher: getSelectedVoucher(state),
-        currencySymbol: getCurrencySymbol(state),
-        validityPeriodDays: getVoucherValidityPeriodDays(state),
-      };
-    },
+    state => ({
+      onlineStoreLogo: getOnlineStoreInfoLogo(state),
+      onlineStoreName: getOnlineStoreName(state),
+      businessDisplayName: getBusinessDisplayName(state),
+      beepSiteUrl: getBeepSiteUrl(state),
+      voucherList: getVoucherList(state),
+      selectedVoucher: getSelectedVoucher(state),
+      currencySymbol: getCurrencySymbol(state),
+      validityPeriodDays: getVoucherValidityPeriodDays(state),
+    }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
     })

@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import _get from 'lodash/get';
@@ -53,7 +54,7 @@ export const actions = {
       dispatch(actions.selectVoucher(maxVoucher));
     }
   },
-  initialContactInfo: () => (dispatch, getState) => {
+  initialContactInfo: () => dispatch => {
     const voucherInfo = getVoucherOrderingInfoFromSessionStorage();
     const email = _get(voucherInfo, 'contactEmail', '');
 
@@ -86,15 +87,14 @@ export const actions = {
 
     dispatch(actions.togglePageLoader(false));
   },
-  togglePageLoader: visible => dispatch => {
-    return visible
+  togglePageLoader: visible => dispatch =>
+    visible
       ? dispatch({
           type: TYPES.SHOW_PAGE_LOADER,
         })
       : dispatch({
           type: TYPES.HIDE_PAGE_LOADER,
-        });
-  },
+        }),
   loadOnlineStoreInfo: () => ({
     [FETCH_GRAPHQL]: {
       types: [
@@ -126,12 +126,11 @@ export const actions = {
     type: TYPES.SELECT_VOUCHER,
     voucher,
   }),
-  updateContactEmail: email => dispatch => {
-    return dispatch({
+  updateContactEmail: email => dispatch =>
+    dispatch({
       type: TYPES.UPDATE_CONTACT_EMAIL,
-      email: email,
-    });
-  },
+      email,
+    }),
   loadOrder: orderId => ({
     [FETCH_GRAPHQL]: {
       types: [TYPES.FETCH_ORDER_REQUEST, TYPES.FETCH_ORDER_SUCCESS, TYPES.FETCH_ORDER_FAILURE],
@@ -143,6 +142,12 @@ export const actions = {
 
 const onlineStoreInfoReducer = (state = initialState.onlineStoreInfo, action) => {
   const { type, responseGql } = action;
+  const onlineStoreInfo = _get(action, 'responseGql.data.onlineStoreInfo', {});
+  const { storeName, beepBrandName } = onlineStoreInfo;
+  const newOnlineStoreInfo = {
+    ...onlineStoreInfo,
+    storeName: beepBrandName || storeName,
+  };
 
   if (!(responseGql && responseGql.data.onlineStoreInfo)) {
     return state;
@@ -150,11 +155,6 @@ const onlineStoreInfoReducer = (state = initialState.onlineStoreInfo, action) =>
 
   switch (type) {
     case TYPES.FETCH_ONLINESTOREINFO_SUCCESS:
-      const { storeName, beepBrandName } = responseGql.data.onlineStoreInfo;
-      const newOnlineStoreInfo = {
-        ...responseGql.data.onlineStoreInfo,
-        storeName: beepBrandName || storeName,
-      };
       return {
         ...state,
         ...newOnlineStoreInfo,
@@ -166,9 +166,10 @@ const onlineStoreInfoReducer = (state = initialState.onlineStoreInfo, action) =>
 
 const businessInfoReducer = (state = initialState.businessInfo, action) => {
   const { type } = action;
+  const businessInfo = _get(action, 'responseGql.data.business', {});
+
   switch (type) {
     case TYPES.FETCH_COREBUSINESS_SUCCESS:
-      const businessInfo = _get(action, 'responseGql.data.business', {});
       return {
         ...state,
         ...businessInfo,
@@ -202,9 +203,10 @@ const contactInfoReducer = (state = initialState.contactInfo, action) => {
 };
 
 const orderReducer = (state = initialState.order, action) => {
+  const { order } = _get(action, 'responseGql.data', {});
+
   switch (action.type) {
     case TYPES.FETCH_ORDER_SUCCESS:
-      const { order } = action.responseGql.data;
       return {
         ...state,
         ...order,
@@ -287,21 +289,13 @@ export function getCurrencySymbol(state) {
   return _get(state.app, 'onlineStoreInfo.currencySymbol', '');
 }
 
-export const getSelectedVoucher = state => {
-  return _get(state.app, 'selectedVoucher', null);
-};
+export const getSelectedVoucher = state => _get(state.app, 'selectedVoucher', null);
 
-export const getBeepSiteUrl = createSelector([getBusinessName], business => {
-  return config.beepOnlineStoreUrl(business);
-});
+export const getBeepSiteUrl = createSelector([getBusinessName], business => config.beepOnlineStoreUrl(business));
 
-export const getContactEmail = state => {
-  return _get(state.app, 'contactInfo.email', '');
-};
+export const getContactEmail = state => _get(state.app, 'contactInfo.email', '');
 
-export const getVoucherList = state => {
-  return _get(state.app, 'voucherList', []);
-};
+export const getVoucherList = state => _get(state.app, 'voucherList', []);
 
 export const getMaxVoucherFromVoucherList = createSelector([getVoucherList], voucherList => {
   if (voucherList.length > 0) {
@@ -314,39 +308,25 @@ export const getMaxVoucherFromVoucherList = createSelector([getVoucherList], vou
     });
 
     return maxVoucher;
-  } else {
-    return null;
   }
+
+  return null;
 });
 
-export const getVoucherListIds = createSelector([getVoucherList], voucherList => {
-  return voucherList.map(voucher => voucher.id);
-});
+export const getVoucherListIds = createSelector([getVoucherList], voucherList =>
+  voucherList.map(voucher => voucher.id)
+);
 
-export const getVoucherValidityPeriodDays = state => {
-  return VOUCHER_VALIDITY_PERIOD_DAYS;
-};
+export const getVoucherValidityPeriodDays = () => VOUCHER_VALIDITY_PERIOD_DAYS;
 
-export const getOrderReceiptNumber = state => {
-  return _get(state.app, 'order.orderId', '');
-};
+export const getOrderReceiptNumber = state => _get(state.app, 'order.orderId', '');
 
-export const getOrderVoucherCode = state => {
-  return _get(state.app, 'order.createdVoucherCodes.0', '');
-};
+export const getOrderVoucherCode = state => _get(state.app, 'order.createdVoucherCodes.0', '');
 
-export const getOrderContactEmail = state => {
-  return _get(state.app, 'order.contactDetail.email', '');
-};
+export const getOrderContactEmail = state => _get(state.app, 'order.contactDetail.email', '');
 
-export const getShowPageLoader = state => {
-  return _get(state.app, 'showPageLoader', false);
-};
+export const getShowPageLoader = state => _get(state.app, 'showPageLoader', false);
 
-export const getPageErrorCode = state => {
-  return _get(state.app, 'pageErrorCode', null);
-};
+export const getPageErrorCode = state => _get(state.app, 'pageErrorCode', null);
 
-export const getBusinessInfo = state => {
-  return _get(state.app, 'businessInfo', null);
-};
+export const getBusinessInfo = state => _get(state.app, 'businessInfo', null);
