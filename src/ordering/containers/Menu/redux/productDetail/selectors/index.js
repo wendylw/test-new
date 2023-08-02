@@ -6,7 +6,7 @@ import _isArray from 'lodash/isArray';
 import _isNumber from 'lodash/isNumber';
 import _sumBy from 'lodash/sumBy';
 import _isNil from 'lodash/isNil';
-import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
+import { API_REQUEST_STATUS, PRODUCT_STOCK_STATUS } from '../../../../../../common/utils/constants';
 import { getAllProducts, getFormatCurrencyFunction } from '../../../../../redux/modules/app';
 import {
   getIsProductListReady,
@@ -16,7 +16,7 @@ import {
   getHasSelectedProductItemInfo,
   getIsLocationConfirmModalVisible,
 } from '../../common/selectors';
-import { PRODUCT_STOCK_STATUS, PRODUCT_UNABLE_ADD_TO_CART_REASONS, PRODUCT_VARIATION_TYPE } from '../../../constants';
+import { PRODUCT_UNABLE_ADD_TO_CART_REASONS, PRODUCT_VARIATION_TYPE } from '../../../constants';
 import { variationStructuredSelector } from './variationSelector';
 import { variationOptionStructuredSelector, formatVariationOptionPriceDiff } from './variationOptionSelector';
 import { getAllCategories } from '../../../../../../redux/modules/entities/categories';

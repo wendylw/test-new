@@ -1,11 +1,5 @@
 import Constants from '../../../utils/constants';
-
-export const PRODUCT_STOCK_STATUS = {
-  NOT_TRACK_INVENTORY: 'notTrackInventory',
-  IN_STOCK: 'inStock',
-  LOW_STOCK: 'lowStock',
-  OUT_OF_STOCK: 'outOfStock',
-};
+import { PRODUCT_STOCK_STATUS } from '../../../common/utils/constants';
 
 export const PRODUCT_VARIATION_TYPE = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -21,8 +15,8 @@ export const PRODUCT_SELECTION_AMOUNT_LIMIT_TYPE = {
 };
 
 export const PRODUCT_UNABLE_ADD_TO_CART_REASONS = {
-  OUT_OF_STOCK: 'outOfStock',
-  UNAVAILABLE: 'unavailable',
+  OUT_OF_STOCK: PRODUCT_STOCK_STATUS.OUT_OF_STOCK,
+  UNAVAILABLE: PRODUCT_STOCK_STATUS.UNAVAILABLE,
   VARIATION_UNFULFILLED: 'variationUnFulfilled',
   EXCEEDED_QUANTITY_ON_HAND: 'exceededQuantityOnHand',
 };
