@@ -20,14 +20,6 @@ const API_URLS = {
     CartObj.params = params;
     return CartObj;
   },
-  GET_BRAINTREE_TOKEN: {
-    url: '/payment/initToken',
-    method: 'get',
-  },
-  GET_BANKING_LIST: {
-    url: '/payment/onlineBanking',
-    method: 'get',
-  },
   GET_SAVED_CARD: id => ({
     url: `/api/consumers/${id}/paymentMethods`,
     method: 'get',
@@ -72,10 +64,6 @@ const API_URLS = {
     url: '/api/ping',
     method: 'get',
   },
-  GET_TERMS_PRIVACY: {
-    ur: '/api/privacy',
-    method: 'get',
-  },
   POST_OTP: url => ({
     url,
     method: 'post',
@@ -89,14 +77,6 @@ const API_URLS = {
     url: '/api/v3/otp/check-phone',
     method: 'post',
   },
-  DELETE_CARTITEMS_BY_PRODUCTS: {
-    url: '/api/cart/items',
-    method: 'del',
-  },
-  GET_STORE_LIST: {
-    url: '/api/stores',
-    method: 'get',
-  },
   GET_SEARCHING_STORE_LIST: {
     url: '/api/stores/search',
     method: 'get',
@@ -104,21 +84,6 @@ const API_URLS = {
   APPLY_VOUCHER_CODE: {
     url: '/api/cart/applyVoucher',
     method: 'post',
-  },
-  GET_VOUCHER_INFO: params => {
-    const { promoCode, business, consumerId } = params;
-
-    return {
-      url: `/api/consumers/${consumerId}/vouchers`,
-      params:
-        promoCode && business
-          ? {
-              search: promoCode,
-              business,
-            }
-          : {},
-      method: 'get',
-    };
   },
   APPLY_PROMOTION_CODE: {
     url: '/api/cart/applyPromoCode',
@@ -140,10 +105,6 @@ const API_URLS = {
     url: '/api/stores/collections',
     method: 'get',
   },
-  LOGOUT: {
-    url: '/api/logout',
-    method: 'del',
-  },
   QUERY_FEED_BACK: {
     url: `/api/feedback`,
     method: 'get',
@@ -158,10 +119,6 @@ const API_URLS = {
   },
   GET_TIME_SLOT: (shippingType, fulfillDate, storeid) => ({
     url: `/api/transactions/timeslots?shippingType=${shippingType}&fulfillDate=${fulfillDate}&storeId=${storeid}`,
-    method: 'get',
-  }),
-  GET_ORDER_STATUS: ({ orderId }) => ({
-    url: `/api/transactions/${orderId}/status`,
     method: 'get',
   }),
   GET_COLLECTION: {

@@ -3,8 +3,11 @@ import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { getBusinessUTCOffset, getCartBilling } from './app';
+import { getVoucherConsumerList, getSearchPromotionInfo } from './api-request';
+import { getBusinessUTCOffset, getCartBilling, getUserConsumerId } from './app';
 import _get from 'lodash/get';
+import logger from '../../../utils/logger';
+
 const { PROMO_TYPE } = Constants;
 
 const initialState = {
@@ -123,44 +126,48 @@ export const actions = {
     type: PROMOTION_TYPES.INITIAL_PROMOTION_CODE,
   }),
   fetchConsumerVoucherList: () => async (dispatch, getState) => {
-    const state = getState();
-    const consumerId = state.app.user.consumerId;
+    try {
+      dispatch({
+        type: PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_REQUEST,
+      });
 
-    const result = await dispatch({
-      [API_REQUEST]: {
-        types: [
-          PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_REQUEST,
-          PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_SUCCESS,
-          PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_FAILURE,
-        ],
-        ...Url.API_URLS.GET_VOUCHER_INFO({
-          consumerId,
-        }),
-      },
-    });
+      const state = getState();
+      const consumerId = getUserConsumerId(state);
+      const result = await getVoucherConsumerList(consumerId);
 
-    return result;
+      await dispatch({
+        type: PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_SUCCESS,
+        response: result,
+      });
+    } catch (error) {
+      dispatch({
+        type: PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_FAILURE,
+      });
+      logger.error('Ordering_Promotion_fetchConsumerVoucherListFailed', { message: error?.message || '' });
+    }
   },
   getPromoInfo: () => async (dispatch, getState) => {
-    const state = getState();
-    const promoCode = state.promotion.promoCode;
-    const consumerId = state.app.user.consumerId;
-    const business = state.app.business;
+    try {
+      dispatch({
+        type: PROMOTION_TYPES.FETCH_PROMO_INFO_REQUEST,
+      });
 
-    await dispatch({
-      [API_REQUEST]: {
-        types: [
-          PROMOTION_TYPES.FETCH_PROMO_INFO_REQUEST,
-          PROMOTION_TYPES.FETCH_PROMO_INFO_SUCCESS,
-          PROMOTION_TYPES.FETCH_PROMO_INFO_FAILURE,
-        ],
-        ...Url.API_URLS.GET_VOUCHER_INFO({
-          promoCode,
-          consumerId,
-          business,
-        }),
-      },
-    });
+      const state = getState();
+      const promoCode = state.promotion.promoCode;
+      const consumerId = state.app.user.consumerId;
+      const business = state.app.business;
+      const result = await getSearchPromotionInfo({ promoCode, consumerId, business });
+
+      await dispatch({
+        type: PROMOTION_TYPES.FETCH_PROMO_INFO_SUCCESS,
+        response: result,
+      });
+    } catch (error) {
+      await dispatch({
+        type: PROMOTION_TYPES.FETCH_PROMO_INFO_FAILURE,
+      });
+      logger.error('Ordering_Promotion_getPromoInfo', { message: error?.message || '' });
+    }
   },
   setSearchMode: isSearchingMode => async (dispatch, getState) => {
     await dispatch({

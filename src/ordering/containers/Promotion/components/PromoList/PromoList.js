@@ -23,7 +23,19 @@ import CleverTap from '../../../../../utils/clevertap';
 
 class PromoList extends Component {
   componentDidMount() {
-    this.props.promotionActions.fetchConsumerVoucherList();
+    const { promotionActions, userConsumerId } = this.props;
+
+    if (userConsumerId) {
+      promotionActions.fetchConsumerVoucherList();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const { userConsumerId, promotionActions } = this.props;
+
+    if (userConsumerId && userConsumerId !== prevProps.userConsumerId) {
+      promotionActions.fetchConsumerVoucherList();
+    }
   }
 
   renderPromoList = (promoList, title) => {

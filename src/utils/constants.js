@@ -363,6 +363,13 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:OK',
     showModal: true,
   },
+  80002: {
+    title: 'ApiError:80002Title',
+    desc: 'ApiError:80002Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
   41016: {
     title: 'ApiError:41016Title',
     desc: 'ApiError:41016Description',
