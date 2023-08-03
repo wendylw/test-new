@@ -2,11 +2,11 @@ import { PROMOTION_TYPES } from '../types';
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
+import logger from '../../../utils/monitoring/logger';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getVoucherConsumerList, getSearchPromotionInfo } from './api-request';
 import { getBusinessUTCOffset, getCartBilling, getUserConsumerId } from './app';
 import _get from 'lodash/get';
-import logger from '../../../utils/logger';
 
 const { PROMO_TYPE } = Constants;
 

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import _debounce from 'lodash/debounce';
+import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 import { IconWrappedClose } from '../../../components/Icons';
 import HybridHeader from '../../../components/HybridHeader';
 import PromoList from './components/PromoList/PromoList';
 import { bindActionCreators, compose } from 'redux';
+import { getIsFetchLoginStatusComplete } from '../../redux/modules/app';
 import {
   actions as promotionActionCreators,
   getPromoCode,
@@ -54,9 +56,34 @@ class Promotion extends Component {
     };
   }
 
+  gotoLoginPage = () => {
+    const { history } = this.props;
+
+    history.push({
+      pathname: PATH_NAME_MAPPING.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
+  };
+
   componentDidMount() {
+    const { isFetchLoginStatusComplete, isUserLogin } = this.props;
+
     this.addResizeEventHandler();
+
+    if (isFetchLoginStatusComplete && !isUserLogin) {
+      this.gotoLoginPage();
+    }
   }
+
+  componentDidUpdate = prevProps => {
+    const { isFetchLoginStatusComplete: prevIsFetchLoginStatusComplete } = prevProps;
+    const { isUserLogin, isFetchLoginStatusComplete } = this.props;
+
+    if (isFetchLoginStatusComplete && !prevIsFetchLoginStatusComplete && !isUserLogin) {
+      this.gotoLoginPage();
+    }
+  };
 
   componentWillUnmount() {
     this.props.promotionActions.resetPromotion();
@@ -270,6 +297,7 @@ export default compose(
         inProcess: isInProcess(state),
         voucherList: getVoucherList(state),
         user: getUser(state),
+        isUserLogin: getUser(state).isLogin,
         foundPromo: getFoundPromotion(state),
         searchMode: isPromoSearchMode(state),
         hasSearchedForPromo: userHasSearchedForPromo(state),
@@ -281,6 +309,7 @@ export default compose(
         promoErrorCodePayLater: getPromoErrorCodePayLater(state),
         selectPromoOrVoucherPayLater: getSelectPromoOrVoucherPayLater(state),
         applyPromoOrVoucherPendingStatus: getApplyPromoOrVoucherPendingStatus(state),
+        isFetchLoginStatusComplete: getIsFetchLoginStatusComplete(state),
       };
     },
     dispatch => ({
