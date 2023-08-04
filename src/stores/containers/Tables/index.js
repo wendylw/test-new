@@ -58,7 +58,7 @@ class Tables extends Component {
           <ul className="ordering-tables__list flex flex-middle padding-smaller margin-top-bottom-small">
             {tables.map(table => {
               return (
-                <li className="ordering-tables__list-item padding-small" key={table.id}>
+                <li className="ordering-tables__list-item padding-small">
                   <button
                     onClick={() => this.handleSelectTable(table.id)}
                     data-test-id="stores.tables.table-btn"
