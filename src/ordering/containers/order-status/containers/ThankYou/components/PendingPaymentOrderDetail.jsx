@@ -46,7 +46,7 @@ const OrderDetails = ({ items, shippingType }) => {
               key={id}
               item={item}
               shippingType={shippingType}
-              data-heap-name="ordering.order-status.thank-you.cart-item"
+              data-test-id="ordering.order-status.thank-you.cart-item"
             />
           );
         })}

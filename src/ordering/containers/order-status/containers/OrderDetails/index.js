@@ -219,7 +219,7 @@ export class OrderDetails extends Component {
                 key={id}
                 item={item}
                 shippingType={shippingType}
-                data-heap-name="ordering.order-status.order-details.cart-item"
+                data-test-id="ordering.order-status.order-details.cart-item"
               />
             );
           })}

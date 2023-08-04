@@ -35,7 +35,7 @@ const TakeawayVariation = () => {
       value="takeawayVariation"
       checked={isTakeawayOptionChecked}
       onChange={handleToggleTakeawayVariant}
-      data-heap-name="ordering.product-detail.takeaway-variation.checkbox-btn"
+      data-test-id="ordering.product-detail.takeaway-variation.checkbox-btn"
     >
       <div className={styles.variationOptionItemLabel}>
         <div className={styles.takeawayVariationItemName}>{t('TakeAway')}</div>
