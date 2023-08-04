@@ -34,6 +34,7 @@ const Button = props => {
         block ? ' tw-w-full' : ''
       } ${className}`}
       style={style}
+      data-test-id="common.button.btn"
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...rest}
     >

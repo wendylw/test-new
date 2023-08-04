@@ -49,8 +49,8 @@ export const loadStockStatus = createAsyncThunk('ordering/cart/common/fetchStock
         closeButtonContent: i18next.t(buttonText),
         onClose: () => {
           if (redirectUrl) {
-            const h = Utils.getQueryVariable('h');
-            const type = Utils.getQueryVariable('type');
+            const h = Utils.getQueryString('h');
+            const type = Utils.getQueryString('type');
 
             window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}`;
           }

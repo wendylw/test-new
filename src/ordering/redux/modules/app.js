@@ -40,7 +40,7 @@ import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import logger from '../../../utils/monitoring/logger';
-import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt } from '../../../common/utils';
+import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt, isProductSoldOut } from '../../../common/utils';
 import { replace } from 'connected-react-router';
 import { toast } from '../../../common/utils/feedback';
 import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
@@ -119,6 +119,7 @@ export const initialState = {
     noWhatsAppAccount: true,
     loginRequestStatus: null,
     loginByBeepAppStatus: null,
+    fetchLoginRequestStatus: null,
     profile: {
       id: '',
       phone: '',
@@ -870,7 +871,7 @@ const user = (state = initialState.user, action) => {
     case types.RESET_CREATE_OTP_REQUEST:
       return { ...state, isFetching: false, isError: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
-      return { ...state, isFetching: true };
+      return { ...state, isFetching: true, fetchLoginRequestStatus: API_REQUEST_STATUS.PENDING };
     case types.CREATE_OTP_REQUEST:
       return { ...state, isFetching: true, isError: false };
     case types.CREATE_LOGIN_REQUEST:
@@ -881,7 +882,7 @@ const user = (state = initialState.user, action) => {
         loginByBeepAppStatus: isFromBeepApp ? API_REQUEST_STATUS.PENDING : null,
       };
     case types.FETCH_LOGIN_STATUS_FAILURE:
-      return { ...state, isFetching: false };
+      return { ...state, isFetching: false, fetchLoginRequestStatus: API_REQUEST_STATUS.REJECTED };
     case types.GET_OTP_FAILURE:
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
     case types.CREATE_OTP_FAILURE:
@@ -948,6 +949,7 @@ const user = (state = initialState.user, action) => {
         consumerId,
         isFetching: false,
         isExpired: false,
+        fetchLoginRequestStatus: API_REQUEST_STATUS.FULFILLED,
       };
     case types.CREATE_LOGIN_FAILURE:
       CleverTap.pushEvent('Login - login failed');
@@ -1341,6 +1343,24 @@ export const getError = state => state.app.error;
 
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
+export const getFetchLoginRequestStatus = createSelector(getUser, user => user.fetchLoginRequestStatus || null);
+
+export const getIsFetchLoginStatusFulfilled = createSelector(
+  getFetchLoginRequestStatus,
+  fetchLoginRequestStatus => fetchLoginRequestStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsFetchLoginStatusRejected = createSelector(
+  getFetchLoginRequestStatus,
+  fetchLoginRequestStatus => fetchLoginRequestStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getIsFetchLoginStatusComplete = createSelector(
+  getIsFetchLoginStatusFulfilled,
+  getIsFetchLoginStatusRejected,
+  (isFetchLoginStatusFulfilled, isFetchLoginStatusRejected) => isFetchLoginStatusFulfilled || isFetchLoginStatusRejected
+);
+
 export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
 
 export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
@@ -1710,7 +1730,7 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
 
     products.forEach(function(product) {
       product.variations = product.variations || [];
-      product.soldOut = Utils.isProductSoldOut(product || {});
+      product.soldOut = isProductSoldOut(product || {});
       product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
       product.cartQuantity = 0;
 

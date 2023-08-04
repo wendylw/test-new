@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {
   add,
   getAmountOfMinutes,
@@ -22,7 +23,6 @@ import {
   padZero,
   formatTime,
 } from './time-lib';
-import dayjs from 'dayjs';
 
 describe('test add function', () => {
   test.each`

@@ -1,17 +1,14 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
-import { IconPending, IconChecked, IconEarned } from '../../../../../components/Icons';
-import Header from '../../../../../components/Header';
-import Constants from '../../../../../utils/constants';
-
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import { toLocaleDateString } from '../../../../../utils/datetime-lib';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import { IconPending, IconChecked, IconEarned } from '../../../../../components/Icons';
+import HybridHeader from '../../../../../components/HybridHeader';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import { actions as homeActionCreators, getCashbackHistory } from '../../../../redux/modules/home';
-import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import './RecentActivities.scss';
-import { withBackButtonSupport } from '../../../../../utils/modal-back-button-support';
 
 const DATE_OPTIONS = {
   weekday: 'short',
@@ -47,10 +44,6 @@ class RecentActivities extends React.Component {
       this.getLoyaltyHistory(customerId);
     }
   }
-
-  onHistoryBackReceived = () => {
-    this.props.closeActivity();
-  };
 
   getLoyaltyHistory(customerId) {
     const { homeActions } = this.props;
@@ -119,35 +112,31 @@ class RecentActivities extends React.Component {
   }
 
   render() {
-    const { t, closeActivity } = this.props;
+    const { t } = this.props;
 
     return (
-      <section
-        className="recent-activities"
-        style={
-          {
-            // backgroundImage: `url(${theImage})`,
-          }
-        }
-        data-heap-name="cashback.home.recent-activities.container"
-      >
-        <Header
+      <>
+        <HybridHeader
+          data-test-id="cashback.home.recent-activities.header"
           className="flex-middle text-center"
           contentClassName="flex-middle"
-          data-heap-name="cashback.home.recent-activities.header"
-          title={t('CashbackHistory')}
           isPage={true}
-          navFunc={() => {
-            closeActivity();
-          }}
+          title={t('CashbackHistory')}
         />
-        <article className="flex__shrink-fixed">{this.renderLogList()}</article>
-      </section>
+
+        <section className="recent-activities" data-test-id="cashback.home.recent-activities.container">
+          <article className="flex__shrink-fixed">{this.renderLogList()}</article>
+        </section>
+      </>
     );
   }
 }
 
 RecentActivities.displayName = 'RecentActivities';
+
+RecentActivities.defaultProps = {
+  onModalVisibilityChanged: () => {},
+};
 
 export default compose(
   withTranslation(['Cashback']),
@@ -161,6 +150,5 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
-  ),
-  withBackButtonSupport
+  )
 )(RecentActivities);

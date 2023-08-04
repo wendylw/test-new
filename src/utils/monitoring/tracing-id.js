@@ -7,7 +7,7 @@ const tids = {};
 try {
   cookieArray.forEach(cookieEntry => {
     tidKeys.forEach(tidKey => {
-      if (new RegExp('^' + tidKey + '=').test(cookieEntry)) {
+      if (new RegExp(`^${tidKey}=`).test(cookieEntry)) {
         const tid = cookieEntry.split('=')[1];
         if (tid) {
           tids[tidKey] = tid;
@@ -16,6 +16,7 @@ try {
     });
   });
 } catch (e) {
+  // eslint-disable-next-line no-console
   console.log(e);
 }
 

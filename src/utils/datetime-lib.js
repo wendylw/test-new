@@ -1,8 +1,9 @@
-import CONSTANTS from './constants';
+/* eslint-disable no-console */
 import i18next from 'i18next';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import invariant from 'invariant';
+import CONSTANTS from './constants';
 import * as timeLib from './time-lib';
 import logger from './monitoring/logger';
 
@@ -26,9 +27,8 @@ export const formatTimeToDateString = (countryCode, time) => {
   return new Intl.DateTimeFormat(standardizeLocale(countryCode), options).format(new Date(time));
 };
 
-export const getDateTimeFormatter = (countryCode, options) => {
-  return new Intl.DateTimeFormat(standardizeLocale(countryCode), options);
-};
+export const getDateTimeFormatter = (countryCode, options) =>
+  new Intl.DateTimeFormat(standardizeLocale(countryCode), options);
 
 export const padZero = num => {
   const str = num.toString();
@@ -41,17 +41,17 @@ export const padZero = num => {
 export const isValidDate = date => {
   if (date instanceof Date) {
     return date.toString() !== 'Invalid Date';
-  } else {
-    return false;
   }
+
+  return false;
 };
 
 // An imperfect fallback in case Intl.DateTimeFormat doesn't work
 // Will display numeric date and time ignoring countryCode for now.
 const toLocaleStringFallback = (date, countryCode, options) => {
-  let weekdayString = options.weekday ? CONSTANTS.WEEK_DAYS_I18N_KEYS[date.getDay()] : '';
-  let dateArray = [];
-  let timeArray = [];
+  const weekdayString = options.weekday ? CONSTANTS.WEEK_DAYS_I18N_KEYS[date.getDay()] : '';
+  const dateArray = [];
+  const timeArray = [];
   let dateString = '';
   let timeString = '';
   const dateOptions = {
@@ -127,30 +127,25 @@ export const toLocaleString = (date, countryCode, options) => {
   }
   if (formatter.format) {
     return formatter.format(dateObj);
-  } else if (formatter.formatToParts) {
+  }
+  if (formatter.formatToParts) {
     return formatter
       .formatToParts(dateObj)
       .map(part => part.value)
       .join('');
-  } else {
-    console.error('Intl.DateTimeFormat does not support format or formatToParts');
-    return toLocaleStringFallback(date, countryCode, options);
   }
+  console.error('Intl.DateTimeFormat does not support format or formatToParts');
+  return toLocaleStringFallback(date, countryCode, options);
 };
 
 // only alias of toLocaleString
-export const toLocaleDateString = (date, countryCode, options) => {
-  return toLocaleString(date, countryCode, options);
-};
+export const toLocaleDateString = (date, countryCode, options) => toLocaleString(date, countryCode, options);
 
 // only alias of toLocaleString
-export const toLocaleTimeString = (date, countryCode, options) => {
-  return toLocaleString(date, countryCode, options);
-};
+export const toLocaleTimeString = (date, countryCode, options) => toLocaleString(date, countryCode, options);
 
-export const toNumericTime = (date, locale = 'MY') => {
-  return toLocaleTimeString(date, locale, { hour: '2-digit', minute: '2-digit' });
-};
+export const toNumericTime = (date, locale = 'MY') =>
+  toLocaleTimeString(date, locale, { hour: '2-digit', minute: '2-digit' });
 
 export const toNumericTimeRange = (date1, date2, locale = 'MY') =>
   `${toNumericTime(date1, locale)} - ${toNumericTime(date2, locale)}`;
@@ -169,7 +164,7 @@ export const toISODateString = date => {
   return `${dateObj.getFullYear()}-${padZero(dateObj.getMonth() + 1)}-${padZero(dateObj.getDate())}`;
 };
 
-export const formatToDeliveryTime = ({ date, hour, businessUTCOffset = 480, locale = 'MY', separator = ',' }) => {
+export const formatToDeliveryTime = ({ date, hour, businessUTCOffset = 480, separator = ',' }) => {
   const { from, to } = hour || {};
 
   if (from === CONSTANTS.TIME_SLOT_NOW) return i18next.t('DeliverNow', { separator });
@@ -197,7 +192,7 @@ export const formatToDeliveryTime = ({ date, hour, businessUTCOffset = 480, loca
   return `${dateString}${separator} ${timeString}`;
 };
 
-export const formatPickupTime = ({ date, locale, businessUTCOffset = 480, separator = ', ' }) => {
+export const formatPickupTime = ({ date, businessUTCOffset = 480, separator = ', ' }) => {
   const dateDayjs = dayjs(date).utcOffset(businessUTCOffset);
   const currentDayjs = dayjs().utcOffset(businessUTCOffset);
   const isToday = currentDayjs.isSame(dateDayjs, 'day');

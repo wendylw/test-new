@@ -393,12 +393,12 @@ class CustomerInfo extends Component {
     }
 
     return (
-      <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
+      <section className="ordering-customer flex flex-column" data-test-id="ordering.customer.container">
         <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle text-center"
           contentClassName="flex-middle"
-          data-heap-name="ordering.customer.header"
+          data-test-id="ordering.customer.header"
           isPage={true}
           title={Utils.isDeliveryType() ? t('DeliveryCustomerPageTitle') : pageTitle}
           navFunc={() => {
@@ -478,7 +478,7 @@ class CustomerInfo extends Component {
         >
           <button
             className="ordering-customer__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
-            data-heap-name="ordering.customer.back-btn"
+            data-test-id="ordering.customer.back-btn"
             onClick={() => {
               history.push({
                 pathname: ROUTER_PATHS.ORDERING_CART,
@@ -492,7 +492,7 @@ class CustomerInfo extends Component {
             className="padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase"
             history={history}
             data-testid="customerContinue"
-            data-heap-name="ordering.customer.continue-btn"
+            data-test-id="ordering.customer.continue-btn"
             disabled={processing}
             validCreateOrder={(isTNGMiniProgram || !total) && !this.validateFields().show}
             beforeCreateOrder={() => {

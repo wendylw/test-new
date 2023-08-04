@@ -1,5 +1,5 @@
-import { get, post, put } from './request';
 import fetch from 'jest-fetch-mock';
+import { get, post, put } from './request';
 
 describe('utils/request', () => {
   let originalFetch;
@@ -37,15 +37,13 @@ describe('utils/request', () => {
   });
 
   it('get: should reject when encountered http error code', async () => {
-    fetch.mockResponseOnce(async () => {
-      return {
-        body: '{"ok":false}',
-        init: {
-          headers: { 'Content-Type': 'application/json' },
-          status: 404,
-        },
-      };
-    });
+    fetch.mockResponseOnce(async () => ({
+      body: '{"ok":false}',
+      init: {
+        headers: { 'Content-Type': 'application/json' },
+        status: 404,
+      },
+    }));
 
     let error;
     try {
@@ -84,15 +82,13 @@ describe('utils/request', () => {
   });
 
   it('post: should reject when encountered http error code', async () => {
-    fetch.mockResponseOnce(async () => {
-      return {
-        body: '{"ok":false}',
-        init: {
-          headers: { 'Content-Type': 'application/json' },
-          status: 404,
-        },
-      };
-    });
+    fetch.mockResponseOnce(async () => ({
+      body: '{"ok":false}',
+      init: {
+        headers: { 'Content-Type': 'application/json' },
+        status: 404,
+      },
+    }));
 
     let error;
     try {
@@ -131,15 +127,13 @@ describe('utils/request', () => {
   });
 
   it('put: should reject when encountered http error code', async () => {
-    fetch.mockResponseOnce(async () => {
-      return {
-        body: '{"ok":false}',
-        init: {
-          headers: { 'Content-Type': 'application/json' },
-          status: 404,
-        },
-      };
-    });
+    fetch.mockResponseOnce(async () => ({
+      body: '{"ok":false}',
+      init: {
+        headers: { 'Content-Type': 'application/json' },
+        status: 404,
+      },
+    }));
 
     let error;
     try {

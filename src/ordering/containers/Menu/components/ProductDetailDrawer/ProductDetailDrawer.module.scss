@@ -1,3 +1,5 @@
+@import "../../../../../common/styles/variables.scss";
+
 // basic layout
 .productDetailDrawer {
   @apply tw-p-0;
@@ -67,6 +69,13 @@
 .itemNoteSection {
   @extend .fullBleedDivider;
   @apply tw-flex-1 tw-pb-16px;
+}
+
+.productTitle {
+  @apply tw-font-bold tw-flex-1 tw-text-xl tw-leading-normal;
+
+  word-break: break-word;
+  hyphens: none;
 }
 
 .quantitySection {

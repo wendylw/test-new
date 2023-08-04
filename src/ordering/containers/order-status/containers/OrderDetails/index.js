@@ -366,13 +366,13 @@ export class OrderDetails extends Component {
     const isTakeAwayType = shippingType === DELIVERY_METHOD.TAKE_AWAY;
 
     return (
-      <section className="ordering-details flex flex-column" data-heap-name="ordering.order-detail.container">
+      <section className="ordering-details flex flex-column" data-test-id="ordering.order-detail.container">
         <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           isPage={true}
           contentClassName="flex-middle"
-          data-heap-name="ordering.order-detail.header"
+          data-test-id="ordering.order-detail.header"
           title={t('OrderDetails')}
           navFunc={this.handleHeaderNavFunc}
           rightContent={this.getRightContentOfHeader()}
@@ -435,7 +435,7 @@ export class OrderDetails extends Component {
                 disabled={this.isReportUnsafeDriverButtonDisabled()}
                 onClick={this.handleReportUnsafeDriver}
                 className="ordering-details__report-issue-button button button__block flex flex-middle flex-space-between padding-small"
-                data-heap-name="ordering.contact-details.report-driver-btn"
+                data-test-id="ordering.contact-details.report-driver-btn"
               >
                 <span className="text-weight-bolder text-left text-size-big flex__fluid-content padding-left-right-smaller">
                   {t('ReportIssue')}

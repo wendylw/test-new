@@ -47,11 +47,11 @@ export class MerchantInfo extends Component {
     const isWebView = Utils.isWebview();
 
     return (
-      <section className="ordering-merchant-info flex flex-column" data-heap-name="ordering.need-help.container">
+      <section className="ordering-merchant-info flex flex-column" data-test-id="ordering.need-help.container">
         <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
-          data-heap-name="ordering.need-help.header"
+          data-test-id="ordering.need-help.header"
           isPage={true}
           title={t('ContactUs')}
           navFunc={() => {
@@ -103,7 +103,7 @@ export class MerchantInfo extends Component {
                 disabled={this.isReportUnsafeDriverButtonDisabled()}
                 onClick={this.handleReportUnsafeDriver}
                 className="button button__block flex flex-middle flex-space-between padding-small"
-                data-heap-name="ordering.need-help.report-driver-btn"
+                data-test-id="ordering.need-help.report-driver-btn"
               >
                 <span className="text-size-big text-weight-bolder padding-left-right-small">{t('ReportDriver')}</span>
                 <IconNext className="icon icon__small" />

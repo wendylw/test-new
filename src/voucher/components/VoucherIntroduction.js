@@ -6,7 +6,7 @@ class VoucherIntroduction extends Component {
   render() {
     const { t, onlineStoreName, validityPeriodDays } = this.props;
     return (
-      <div className="voucher-introduction" data-heap-name="voucher.common.voucher-about-content.container">
+      <div className="voucher-introduction" data-test-id="voucher.common.voucher-about-content.container">
         <div className="padding-normal">
           <h2 className="margin-top-bottom-small text-size-big">{t('GiftCardAbout')}</h2>
           <ul className="voucher-introduction__list padding-top-bottom-small">

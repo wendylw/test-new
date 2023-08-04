@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Utils from './utils';
 import config from '../config';
 import debug from './debug';
@@ -20,7 +21,7 @@ const pushEvent = (eventName, attributes) => {
               'account name': businessName,
               Source: 'Mobile',
             },
-            items: items,
+            items,
           });
         } else {
           window.webkit?.messageHandlers?.clevertap?.postMessage({

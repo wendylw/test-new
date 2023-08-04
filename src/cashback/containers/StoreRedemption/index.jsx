@@ -5,7 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
-import { getUserStoreCashback } from '../../redux/modules/app';
+import CleverTap from '../../../utils/clevertap';
+import { closeWebView } from '../../../utils/native-methods';
+import { getUserStoreCashback, getUserCountry, getIsUserLogin } from '../../redux/modules/app';
 import {
   getStoreDisplayTitle,
   getIsDisplayStoreRedemptionContent,
@@ -16,6 +18,7 @@ import { mounted, confirmToShareConsumerInfoRequests } from './redux/thunks';
 import Loader from '../../../common/components/Loader';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
+import NativeHeader from '../../../components/NativeHeader';
 import PowerByStoreHubLogo from '../../../images/power-by-storehub-logo.svg';
 import BeepAppLogo from '../../../images/app-beep-logo.svg';
 import TNGAppLogo from '../../../images/app-tng-logo.svg';
@@ -30,60 +33,70 @@ const StoreRedemptionNative = () => {
   // get is display store redemption content
   const isDisplayStoreRedemptionContent = useSelector(getIsDisplayStoreRedemptionContent);
   const userStoreCashback = useSelector(getUserStoreCashback);
-  const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
+  const userCountry = useSelector(getUserCountry);
   const isAvailableToShareConsumerInfo = useSelector(getIsAvailableToShareConsumerInfo);
 
-  useEffect(() => {
-    if (isLoadStoreRedemptionDataCompleted) {
-      alert(
-        <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
-          {userStoreCashback > 0
-            ? t('StoreRedemptionCashRedeemAlert')
-            : t('StoreRedemptionNoCashbackAlert', { storeDisplayTitle })}
-        </p>,
-        {
-          id: 'StoreRedemptionInitialAlert',
-        }
-      );
-    }
-  }, [userStoreCashback, isLoadStoreRedemptionDataCompleted, storeDisplayTitle, t]);
+  useMount(() => {
+    CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
+      country: userCountry,
+      page: userStoreCashback > 0 ? 'With Cashback' : 'Without Cashback',
+    });
+
+    alert(
+      <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
+        {userStoreCashback > 0
+          ? t('StoreRedemptionCashRedeemAlert')
+          : t('StoreRedemptionNoCashbackAlert', { storeDisplayTitle })}
+      </p>,
+      {
+        id: 'StoreRedemptionInitialAlert',
+        onClose: () => {
+          CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
+            country: userCountry,
+          });
+        },
+      }
+    );
+  });
 
   useEffect(() => {
     if (isAvailableToShareConsumerInfo) {
       dispatch(confirmToShareConsumerInfoRequests());
     }
-  }, [dispatch, isAvailableToShareConsumerInfo]);
-
-  useMount(async () => {
-    await dispatch(mounted());
-  });
+  }, [isAvailableToShareConsumerInfo]);
 
   return (
-    <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>
-      {isLoadStoreRedemptionDataCompleted ? (
-        <>
-          <RedemptionStoreInfo />
-          {isDisplayStoreRedemptionContent ? (
-            <section
-              className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}
-            >
-              <CashbackBlock />
-            </section>
-          ) : null}
-        </>
-      ) : (
-        <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center">
-          <Loader className="tw-text-3xl tw-text-orange" weight="bold" />
-        </div>
-      )}
-    </div>
+    <>
+      <RedemptionStoreInfo />
+      {isDisplayStoreRedemptionContent ? (
+        <section
+          className={`${styles.StoreRedemptionContent} tw-px-16 sm:tw-px-16px tw--mt-24 sm:tw--mt-24px tw-flex-1`}
+        >
+          <CashbackBlock />
+        </section>
+      ) : null}
+    </>
   );
 };
 
 StoreRedemptionNative.displayName = 'StoreRedemptionNative';
 
 const StoreRedemption = () => {
+  const dispatch = useDispatch();
+  const userCountry = useSelector(getUserCountry);
+  const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
+
+  useMount(async () => {
+    if (isDisplayWebResult) {
+      CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
+        country: userCountry,
+        page: 'When users scan QR with phone camera',
+      });
+    } else {
+      await dispatch(mounted());
+    }
+  });
 
   if (isDisplayWebResult) {
     // Use createPortal to load the page because the Login Modal in App/index level DOM needs to be covered
@@ -109,7 +122,30 @@ const StoreRedemption = () => {
     );
   }
 
-  return <StoreRedemptionNative />;
+  return (
+    <>
+      {isWebview() && (
+        <NativeHeader
+          navFunc={() => {
+            CleverTap.pushEvent('POS Redemption Landing Page - Click Back', {
+              country: userCountry,
+            });
+
+            closeWebView();
+          }}
+        />
+      )}
+      <div className={`${styles.StoreRedemption} tw-flex tw-flex-col`}>
+        {isLoadStoreRedemptionDataCompleted ? (
+          <StoreRedemptionNative />
+        ) : (
+          <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center">
+            <Loader className="tw-text-3xl tw-text-orange" weight="bold" />
+          </div>
+        )}
+      </div>
+    </>
+  );
 };
 
 StoreRedemption.displayName = 'StoreRedemption';

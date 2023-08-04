@@ -5,10 +5,11 @@ import { compose } from 'redux';
 import PropTypes from 'prop-types';
 import _values from 'lodash/values';
 import _every from 'lodash/every';
-
+import { NEW_PAYMENT_METHODS } from '../containers/Payment/constants';
 import { getSelectedPaymentOption } from '../redux/common/selectors';
 import { actions as paymentCommonActions } from '../redux/common/index';
 import PaymentLogo from './PaymentLogo';
+import Tag from '../../../../common/components/Tag';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Radio from '../../../../components/Radio';
 
@@ -81,8 +82,7 @@ class PaymentItem extends Component {
         id={`paymentItem-${key}`}
         className={classList.join(' ')}
         data-testid="paymentSelector"
-        data-heap-name="ordering.payment.payment-item"
-        data-heap-payment-name={key}
+        data-test-id="ordering.payment.payment-item"
         onClick={() => this.handleSelectPaymentOption(option, currentPaymentOption)}
       >
         <div className="ordering-payment__item-content">
@@ -99,6 +99,11 @@ class PaymentItem extends Component {
             {this.renderDescription()}
           </div>
         </div>
+        {NEW_PAYMENT_METHODS.includes(paymentProvider) && (
+          <Tag className="ordering-payment__tag-new" color="red">
+            {t('New')}
+          </Tag>
+        )}
         <Radio className="margin-left-right-small" checked={selectedOption} />
       </li>
     );

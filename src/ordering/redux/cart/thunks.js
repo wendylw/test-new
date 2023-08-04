@@ -241,8 +241,8 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
         closeButtonContent: i18next.t(buttonTextKey),
         onClose: () => {
           if (redirectUrl) {
-            const h = Utils.getQueryVariable('h');
-            const type = Utils.getQueryVariable('type');
+            const h = Utils.getQueryString('h');
+            const type = Utils.getQueryString('type');
 
             window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}`;
           }

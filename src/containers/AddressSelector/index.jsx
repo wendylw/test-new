@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import _trim from 'lodash/trim';
@@ -151,7 +150,12 @@ const AddressSelector = ({ placeInfo, addressList, addressPickerEnabled, onSelec
 
   return (
     <>
-      <PlaceSearchBox placeInfo={placeInfo} onChange={changeSearchTextHandler} onClear={clearSearchTextHandler} />
+      <PlaceSearchBox
+        placeInfo={placeInfo}
+        onChange={changeSearchTextHandler}
+        onClear={clearSearchTextHandler}
+        data-test-id="common.address-selector.search-btn"
+      />
       <div className="address-selector__container">
         {shouldShowAddressPicker ? (
           <AddressPicker addressList={addressList} onSelect={selectSavedAddressHandler} />
@@ -168,8 +172,10 @@ const AddressSelector = ({ placeInfo, addressList, addressPickerEnabled, onSelec
 };
 
 AddressSelector.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
   placeInfo: PropTypes.object,
   addressList: PropTypes.array,
+  /* eslint-disable */
   addressPickerEnabled: PropTypes.bool,
   onSelect: PropTypes.func,
 };

@@ -1,4 +1,5 @@
 import Utils from './utils';
+
 const API_URLS = {
   GET_CART_TYPE: (isDeliveryType, deliveryCoords, fulfillDate) => {
     const CartObj = {
@@ -155,12 +156,10 @@ const API_URLS = {
     url: '/api/products/vouchers',
     method: 'get',
   },
-  GET_TIME_SLOT: (shippingType, fulfillDate, storeid) => {
-    return {
-      url: `/api/transactions/timeslots?shippingType=${shippingType}&fulfillDate=${fulfillDate}&storeId=${storeid}`,
-      method: 'get',
-    };
-  },
+  GET_TIME_SLOT: (shippingType, fulfillDate, storeid) => ({
+    url: `/api/transactions/timeslots?shippingType=${shippingType}&fulfillDate=${fulfillDate}&storeId=${storeid}`,
+    method: 'get',
+  }),
   GET_ORDER_STATUS: ({ orderId }) => ({
     url: `/api/transactions/${orderId}/status`,
     method: 'get',

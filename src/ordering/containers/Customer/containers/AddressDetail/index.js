@@ -9,8 +9,10 @@ import { connect } from 'react-redux';
 import {
   actions as appActionCreators,
   getUser,
+  getUserIsLogin,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
+  getIsFetchLoginStatusComplete,
 } from '../../../../redux/modules/app';
 import { actions as customerActionCreators } from './redux';
 import { getAddressInfo, getContactNumberInvalidErrorVisibility } from './redux/selectors';
@@ -21,6 +23,7 @@ import url from '../../../../../utils/url';
 import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
 import prefetch from '../../../../../common/utils/prefetch-assets';
+import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import _trim from 'lodash/trim';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
@@ -38,12 +41,35 @@ class AddressDetail extends Component {
     hasAnyChanges: false,
   };
 
+  gotoLoginPage = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: PATH_NAME_MAPPING.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
+  };
+
   componentDidMount = async () => {
-    const { init, location } = this.props;
+    const { init, location, isFetchLoginStatusComplete, isUserLogin } = this.props;
     const { type: actionType, selectedAddress } = location.state || {};
+
+    if (isFetchLoginStatusComplete && !isUserLogin) {
+      this.gotoLoginPage();
+    }
+
     await init({ actionType, selectedAddress });
 
     prefetch(['ORD_AL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
+  };
+
+  componentDidUpdate = prevProps => {
+    const { isFetchLoginStatusComplete: prevIsFetchLoginStatusComplete } = prevProps;
+    const { isUserLogin, isFetchLoginStatusComplete } = this.props;
+
+    if (isFetchLoginStatusComplete && !prevIsFetchLoginStatusComplete && !isUserLogin) {
+      this.gotoLoginPage();
+    }
   };
 
   handleClickBack = () => {
@@ -266,7 +292,7 @@ class AddressDetail extends Component {
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big text-line-height-base"
-                  data-heap-name="ordering.customer.delivery-address-name"
+                  data-test-id="ordering.customer.delivery-address-name"
                   type="text"
                   maxLength="140"
                   value={contactName}
@@ -292,7 +318,7 @@ class AddressDetail extends Component {
                   <PhoneInput
                     international // If input want to show country code when phone number is empty, pls add international on props
                     smartCaret={false}
-                    data-heap-name="ordering.contact-details.phone-input"
+                    data-test-id="ordering.contact-details.phone-input"
                     placeholder={t('EnterPhoneNumber')}
                     value={formatPhoneNumberIntl(contactNumber)}
                     country={country}
@@ -322,7 +348,7 @@ class AddressDetail extends Component {
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big text-line-height-base"
-                  data-heap-name="ordering.customer.delivery-address-name"
+                  data-test-id="ordering.customer.delivery-address-name"
                   type="text"
                   maxLength="140"
                   value={name}
@@ -343,7 +369,7 @@ class AddressDetail extends Component {
                 <div className="address-detail__title required">
                   <span className="text-size-small text-top">{t('AddressDetails')}</span>
                 </div>
-                <div data-heap-name="ordering.customer.delivery-address">
+                <div data-test-id="ordering.customer.delivery-address">
                   <p className="address-detail__detail-content text-size-big text-line-height-base">{address}</p>
                 </div>
               </div>
@@ -359,7 +385,7 @@ class AddressDetail extends Component {
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big text-line-height-base"
-                  data-heap-name="ordering.customer.delivery-address-detail"
+                  data-test-id="ordering.customer.delivery-address-detail"
                   type="text"
                   maxLength="140"
                   value={details}
@@ -379,7 +405,7 @@ class AddressDetail extends Component {
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big"
-                  data-heap-name="ordering.customer.delivery-note"
+                  data-test-id="ordering.customer.delivery-note"
                   type="text"
                   maxLength="140"
                   value={comments}
@@ -414,6 +440,8 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
+      isFetchLoginStatusComplete: getIsFetchLoginStatusComplete(state),
+      isUserLogin: getUserIsLogin(state),
       deliveryDetails: getDeliveryDetails(state),
       addressInfo: getAddressInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),

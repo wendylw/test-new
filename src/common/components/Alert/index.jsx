@@ -50,6 +50,7 @@ const Alert = props => {
           className={`${styles.alertFooterButton}${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
           onClick={onClose}
           style={closeButtonStyle}
+          data-test-id="common.alert.close-btn"
         >
           {closeButtonContent || t('OKay')}
         </Button>

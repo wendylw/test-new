@@ -57,7 +57,12 @@ const Modal = props => {
   const modalContent = (
     <FullScreenFrame className="modal-animation" zIndex={zIndex}>
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div className={`modal-animation__backdrop ${styles.backdrop}`} onClick={onBackdropClick} ref={ref}>
+      <div
+        className={`modal-animation__backdrop ${styles.backdrop}`}
+        onClick={onBackdropClick}
+        ref={ref}
+        data-test-id="common.modal.backdrop"
+      >
         <div className={`modal-animation__content ${styles.container} ${className}`}>{children}</div>
       </div>
     </FullScreenFrame>

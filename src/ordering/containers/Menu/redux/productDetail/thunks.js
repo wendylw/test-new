@@ -34,7 +34,7 @@ import {
 import Clevertap from '../../../../../utils/clevertap';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
-import { PRODUCT_STOCK_STATUS } from '../../constants';
+import { PRODUCT_STOCK_STATUS } from '../../../../../common/utils/constants';
 import { toast } from '../../../../../common/utils/feedback/toast';
 import { gtmEventTracking, GTM_TRACKING_EVENTS, STOCK_STATUS_MAPPING } from '../../../../../utils/gtm';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';

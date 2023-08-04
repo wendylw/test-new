@@ -16,14 +16,14 @@ export const getErrorTypeFromHint = ({ originalException }) => {
 };
 
 export const getIsErrorExceptionValueFromEvent = (event, value) => {
-  const values = event.exception.values;
+  const { values } = event.exception;
   const exceptionValue = values.find(valueItem => valueItem.value === value);
 
   return !!exceptionValue;
 };
 
 export const getErrorStacktraceFrames = event => {
-  const values = event.exception.values;
+  const { values } = event.exception;
   const frames = event.stacktrace?.frames || [];
 
   if (values && values.length > 0) {
@@ -33,7 +33,7 @@ export const getErrorStacktraceFrames = event => {
   return frames;
 };
 
-const isInfiniteScrollerBug = (event, hint) => {
+const isInfiniteScrollerBug = event => {
   // This error happens when the user make a fast slide and navigate to another page before the animation
   // stops. This seems to be a bug on ios safari. And it won't affect real user.
   try {
@@ -49,7 +49,7 @@ const isInfiniteScrollerBug = (event, hint) => {
   }
 };
 
-const isPromiseAllBug = (event, hint) => {
+const isPromiseAllBug = event => {
   // we are keeping receiving this Promise.all is not a function, but it seems that the clients are
   // very likely spiders (mostly from United States and Ireland). So just ignore the error.
   try {
@@ -60,7 +60,7 @@ const isPromiseAllBug = (event, hint) => {
   }
 };
 
-const isBlockFrameBug = (event, hint) => {
+const isBlockFrameBug = event => {
   // Facebook browser seems not supporting cross storage. We will abandon cross storage anyway. We
   // turn off the log to prevent it taking the sentry quota.
   try {
@@ -71,7 +71,7 @@ const isBlockFrameBug = (event, hint) => {
   }
 };
 
-const isSelectedDebugHandlerError = (event, hint) => {
+const isSelectedDebugHandlerError = event => {
   // Sometimes this error happens on some safari browser:
   // undefined is not an object (evaluating 'window.webkit.messageHandlers.selectedDebugHandler.postMessage')
   // It's not related to our code. And we didn't find too much clue, but it seems the user can keep operating
@@ -146,7 +146,7 @@ const isTikTokIssues = (event, hint) => {
     const chunkLoadFailed = tiktokRegex.test(message) && /Loading chunk/.test(message);
     // If abs_path or filename of stacktrace includes tiktok i18n events path, exception will response `ePageWillLeave=function(){var t,n;Object.keys(this.context.methods.getUserInfo())` on /i18n/pixel/events.js
     const contextNoMethodFuncIssue = getErrorStacktraceFrames(event).some(
-      ({ filename, abs_path }) => tiktokRegex.test(filename) || tiktokRegex.test(abs_path)
+      ({ filename, abs_path: absPath }) => tiktokRegex.test(filename) || tiktokRegex.test(absPath)
     );
 
     return monitorIssue || chunkLoadFailed || contextNoMethodFuncIssue;
@@ -177,6 +177,23 @@ const isReCAPTCHAIssues = (event, hint) => {
   }
 };
 
+const isReadGoogleMapsPropertiesFromNullIssues = (event, hint) => {
+  try {
+    const message = getErrorMessageFromHint(hint);
+    const readGoogleMapsPropertiesFromNullIssues = [
+      /Cannot read property 'LatLng' of null/,
+      /Cannot read properties of null \(reading 'LatLng'\)/,
+      /null is not an object \(evaluating 'new \w\.LatLng'\)/,
+      /Cannot read property 'places' of null/,
+      /Cannot read properties of null \(reading 'places'\)/,
+      /null is not an object \(evaluating 'new \w\.places'\)/,
+    ];
+    return readGoogleMapsPropertiesFromNullIssues.some(issue => issue.test(message));
+  } catch {
+    return false;
+  }
+};
+
 const isGoogleMapsIssues = (event, hint) => {
   // These issues cause by Google Maps script.
   try {
@@ -196,7 +213,7 @@ const isGoogleMapsIssues = (event, hint) => {
   }
 };
 
-const isCleverTapIssues = (event, hint) => {
+const isCleverTapIssues = event => {
   // These issues are raised by CleverTap script.
   try {
     // WB-5086 & WB-5087: The errors thrown directly from CleverTap script should be ignored.
@@ -206,6 +223,47 @@ const isCleverTapIssues = (event, hint) => {
     const isScriptIssue = getErrorStacktraceFrames(event).some(({ filename }) => cleverTapRegex.test(filename));
 
     return isScriptIssue;
+  } catch {
+    return false;
+  }
+};
+
+const isClarityIssues = event => {
+  // These issues are raised by Clarity script.
+  try {
+    // WB-5720 & WB-5722: The errors thrown directly from Clarity script should be ignored.
+    // Reasons: Nothing can be done on our side and it also won't block users to make orders.
+    // Refer to: https://github.com/microsoft/clarity/issues/421
+    const clarityRegex = /\/clarity.js/;
+    const isScriptIssue = getErrorStacktraceFrames(event).some(({ filename }) => clarityRegex.test(filename));
+
+    return isScriptIssue;
+  } catch {
+    return false;
+  }
+};
+
+const isEdgeBrowserIssues = (event, hint) => {
+  // These issues are raised by the Edge browser.
+  try {
+    // WB-5721: The errors thrown directly from Edge browser should be ignored.
+    // Reasons: Nothing can be done on our side and it also won't block users to make orders.
+    // Refer to: https://github.com/getsentry/sentry-javascript/issues/8444#issuecomment-1632171546
+    const message = getErrorMessageFromHint(hint);
+    return message.includes('msDiscoverChatAvailable');
+  } catch {
+    return false;
+  }
+};
+
+const isWKWebViewIssues = (event, hint) => {
+  // These issues are raised only in WKWebView environments.
+  try {
+    // WB-5723: The errors thrown directly from Edge browser should be ignored.
+    // Reasons: Nothing can be done on our side and it also won't block users to make orders.
+    // Refer to: https://github.com/getsentry/sentry-javascript/issues/3040#issuecomment-913549441
+    const message = getErrorMessageFromHint(hint);
+    return message.includes('window.webkit.messageHandlers');
   } catch {
     return false;
   }
@@ -290,23 +348,6 @@ const isNetworkIssues = (event, hint) => {
   }
 };
 
-const isReadGoogleMapsPropertiesFromNullIssues = (event, hint) => {
-  try {
-    const message = getErrorMessageFromHint(hint);
-    const readGoogleMapsPropertiesFromNullIssues = [
-      /Cannot read property 'LatLng' of null/,
-      /Cannot read properties of null \(reading 'LatLng'\)/,
-      /null is not an object \(evaluating 'new \w\.LatLng'\)/,
-      /Cannot read property 'places' of null/,
-      /Cannot read properties of null \(reading 'places'\)/,
-      /null is not an object \(evaluating 'new \w\.places'\)/,
-    ];
-    return readGoogleMapsPropertiesFromNullIssues.some(issue => issue.test(message));
-  } catch {
-    return false;
-  }
-};
-
 const isDuplicateAlert = hint => {
   // alert duplicate is expectation issue
   // so we can ignore it.
@@ -343,8 +384,11 @@ const shouldFilter = (event, hint) => {
       isReCAPTCHAIssues(event, hint) ||
       isGoogleMapsIssues(event, hint) ||
       isCleverTapIssues(event, hint) ||
+      isClarityIssues(event, hint) ||
+      isWKWebViewIssues(event, hint) ||
       isOppoBrowserIssues(event, hint) ||
       isVivoBrowserIssues(event, hint) ||
+      isEdgeBrowserIssues(event, hint) ||
       isNetworkIssues(event, hint) ||
       isDuplicateAlert(hint) ||
       isResizeObserverLoopLimitExceeded(event)

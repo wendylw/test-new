@@ -30,22 +30,26 @@ if (typeof Node === 'function' && Node.prototype) {
       return '';
     }
   };
+  // eslint-disable-next-line func-names
   Node.prototype.removeChild = function(child) {
     if (child.parentNode !== this) {
       // If you see this error on logger, please refer to above comment.
       logger.error('Common_Utils_RemoveChildNodeFailed', { message: getText(child) });
       return child;
     }
+    // eslint-disable-next-line prefer-rest-params
     return originalRemoveChild.apply(this, arguments);
   };
 
   const originalInsertBefore = Node.prototype.insertBefore;
+  // eslint-disable-next-line func-names
   Node.prototype.insertBefore = function(newNode, referenceNode) {
     if (referenceNode && referenceNode.parentNode !== this) {
       // If you see this error on logger, please refer to above comment.
       logger.error('Common_Utils_InsertNodeFailed', { message: getText(referenceNode) });
       return newNode;
     }
+    // eslint-disable-next-line prefer-rest-params
     return originalInsertBefore.apply(this, arguments);
   };
 }
