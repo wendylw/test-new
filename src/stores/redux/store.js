@@ -4,19 +4,17 @@ import rootReducer from './modules';
 import apiGql from '../../redux/middlewares/apiGql';
 import api from '../../redux/middlewares/api';
 
-let store;
+const store = (() => {
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    // eslint-disable-next-line no-underscore-dangle
+    window.__REDUX_DEVTOOLS_EXTENSION__
+  ) {
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+    return createStore(rootReducer, composeEnhancers(applyMiddleware(thunk, apiGql, api)));
+  }
 
-if (
-  process.env.NODE_ENV !== 'production' &&
-  window.__REDUX_DEVTOOLS_EXTENSION__
-) {
-  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
-  store = createStore(
-    rootReducer,
-    composeEnhancers(applyMiddleware(thunk, apiGql, api))
-  );
-} else {
-  store = createStore(rootReducer, applyMiddleware(thunk, apiGql, api));
-}
+  return createStore(rootReducer, applyMiddleware(thunk, apiGql, api));
+})();
 
 export default store;

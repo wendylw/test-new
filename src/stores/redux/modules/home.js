@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import Url from '../../../utils/url';
 import config from '../../../config';
 
@@ -133,13 +134,9 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 
-export const getAllStores = state => {
-  return state.home.storeIds.map(id => getStoreById(state, id));
-};
+export const getAllStores = state => state.home.storeIds.map(id => getStoreById(state, id));
 
-export const getOneStoreInfo = (state, storeId) => {
-  return getStoreById(state, storeId);
-};
+export const getOneStoreInfo = (state, storeId) => getStoreById(state, storeId);
 
 export const getDeliveryStatus = state => state.home.enableDelivery;
 export const getCurrentStoreId = state => state.home.currentStoreId;
