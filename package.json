@@ -34,6 +34,7 @@
   "dependencies": {
     "@craco/craco": "^6.4.3",
     "@googlemaps/js-api-loader": "^1.14.0",
+    "@growthbook/growthbook": "^0.27.0",
     "@reduxjs/toolkit": "^1.6.2",
     "@sentry/integrations": "^7.18.0",
     "@sentry/react": "^7.18.0",

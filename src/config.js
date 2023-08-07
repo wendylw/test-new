@@ -49,6 +49,9 @@ const config = {
   beepitComUrl: `https://${(process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',')[0]}`,
   qrScanPageUrl: `https://${(process.env.REACT_APP_QR_SCAN_DOMAINS || '').split(',')[0]}/qrscan`,
   removePickupMerchantList: (process.env.REACT_APP_REMOVE_PICKUP_MERCHANT_LIST || '').split(','),
+  growthBookAPIHost: process.env.REACT_APP_GROWTHBOOK_API_HOST,
+  growthBookClientKey: process.env.REACT_APP_GROWTHBOOK_CLIENT_KEY,
+  growthBookEnabled: process.env.REACT_APP_GROWTHBOOK_ENABLED === 'true',
   h() {
     try {
       return document.cookie
