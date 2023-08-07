@@ -1,3 +1,4 @@
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../utils/constants';
 
@@ -19,7 +20,9 @@ export const getFeatureKey = (_, fgKey) => fgKey;
  * @example
  * const isFeatureEnabled = useSelector(state => getIsFeatureEnabled(state, FEATURE_KEY));
  */
-export const getIsFeatureEnabled = createSelector([getFeatureFlagResults, getFeatureKey], (data, key) => data[key]);
+export const getIsFeatureEnabled = createSelector([getFeatureFlagResults, getFeatureKey], (data, key) =>
+  _get(data, key, false)
+);
 
 export const getIsLoadFeatureRequestFulfilled = createSelector(
   getLoadFeatureFlagRequest,
