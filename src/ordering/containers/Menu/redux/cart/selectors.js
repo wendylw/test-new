@@ -193,7 +193,9 @@ export const getCartItems = createSelector(
 
     return sortedCartItems.map(cartItem => {
       const { quantity, quantityOnHand, stockStatus } = cartItem;
-      const isItemUntracked = stockStatus === PRODUCT_STOCK_STATUS.NOT_TRACK_INVENTORY;
+      // WB-5927: if it is pre-order item, quantityOnHand will be undefined but we should allow user to add items to cart.
+      const isInfiniteInventory = _isNil(quantityOnHand);
+      const isItemUntracked = stockStatus === PRODUCT_STOCK_STATUS.NOT_TRACK_INVENTORY || isInfiniteInventory;
       const isItemOutOfStock = [PRODUCT_STOCK_STATUS.OUT_OF_STOCK, PRODUCT_STOCK_STATUS.UNAVAILABLE].includes(
         stockStatus
       );

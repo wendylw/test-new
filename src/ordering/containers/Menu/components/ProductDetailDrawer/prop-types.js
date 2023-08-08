@@ -28,24 +28,3 @@ export const VariationShape = PropTypes.shape({
   formattedPriceDiff: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(VariationOptionShape),
 });
-
-export const ProductShape = PropTypes.shape({
-  id: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-  images: PropTypes.arrayOf(PropTypes.string).isRequired,
-  formattedDisplayPrice: PropTypes.string.isRequired,
-  formattedOriginalDisplayPrice: PropTypes.string.isRequired,
-  quantity: PropTypes.number.isRequired,
-  formattedTotalPrice: PropTypes.string.isRequired,
-  stockStatus: PropTypes.oneOf([
-    PRODUCT_STOCK_STATUS.IN_STOCK,
-    PRODUCT_STOCK_STATUS.LOW_STOCK,
-    PRODUCT_STOCK_STATUS.OUT_OF_STOCK,
-  ]).isRequired,
-  quantityOnHand: PropTypes.number.isRequired,
-  isBestSeller: PropTypes.bool.isRequired,
-  isAbleToDecreaseQuantity: PropTypes.bool.isRequired,
-  isAbleToIncreaseQuantity: PropTypes.bool.isRequired,
-  variations: PropTypes.arrayOf(VariationShape).isRequired,
-});
