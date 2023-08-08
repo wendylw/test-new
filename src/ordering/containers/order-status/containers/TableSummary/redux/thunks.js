@@ -137,7 +137,7 @@ export const gotoPayment = createAsyncThunk(
 
     try {
       // Special case for free charge
-      if (total === 0) {
+      if (total === 0 && receiptNumber) {
         await dispatch(payByCoupons()).unwrap();
         return;
       }
