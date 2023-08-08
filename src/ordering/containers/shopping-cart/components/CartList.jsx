@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _isNil from 'lodash/isNil';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -76,7 +77,9 @@ class CartList extends Component {
   renderProductItemRightController(cartItem) {
     const { t, onIncreaseCartItem, onDecreaseCartItem, onRemoveCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
-    const isItemUntracked = stockStatus === PRODUCT_STOCK_STATUS.NOT_TRACK_INVENTORY;
+    // WB-5927: if it is pre-order item, quantityOnHand will be undefined but we should allow user to add items to cart.
+    const isInfiniteInventory = _isNil(quantityOnHand);
+    const isItemUntracked = stockStatus === PRODUCT_STOCK_STATUS.NOT_TRACK_INVENTORY || isInfiniteInventory;
     const isItemLowStock = stockStatus === PRODUCT_STOCK_STATUS.LOW_STOCK;
     const isAbleToIncreaseQuantity = isItemUntracked || quantity < quantityOnHand;
     const isItemQuantityExceedStockOnHand = !isItemUntracked && quantity > quantityOnHand;

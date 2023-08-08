@@ -45,11 +45,11 @@ export const actions = {
 
 // reducer
 const reducer = (state = initialState, action) => {
+  const { response } = action;
+  const { totalCredits, list = [] } = response || {};
+
   switch (action.type) {
     case types.GET_CASHBACK_HISTORIES_SUCCESS: {
-      const { response } = action;
-      const { totalCredits } = response || {};
-
       return {
         ...state,
         cashbackHistorySummary: {
@@ -59,12 +59,10 @@ const reducer = (state = initialState, action) => {
       };
     }
     case types.FETCH_RECEIPT_LIST_SUCCESS: {
-      const { response } = action;
-      let { list = [] } = response || {};
       return {
         ...state,
         receiptList: state.receiptList.concat(list),
-        fetchState: list.length === 0 ? false : true,
+        fetchState: list.length !== 0,
       };
     }
     default:
