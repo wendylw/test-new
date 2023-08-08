@@ -124,7 +124,7 @@ export const loadOrderStoreReview = createAsyncThunk(
       const orderId = getReceiptNumber(getState());
 
       if (!orderId) {
-        return null;
+        return new Error('loadOrderStoreReview Order Id is not found');
       }
 
       const { data } = await getOrderStoreReview(orderId, offline);
