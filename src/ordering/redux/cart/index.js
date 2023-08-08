@@ -119,6 +119,9 @@ export const { reducer, actions } = createSlice({
 
       return state;
     },
+    startPollingTimeStampSet(state, { payload }) {
+      state.submission.startPollingTimeStamp = payload;
+    },
   },
   extraReducers: {
     [loadCart.pending.type]: state => {

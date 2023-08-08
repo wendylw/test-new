@@ -300,7 +300,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
   }
 );
 
-export const queryCartSubmissionStatus = submissionId => async (dispatch, getState) => {
+export const queryCartSubmissionStatus = (submissionId, startPollingTimeStamp) => async (dispatch, getState) => {
   try {
     const isCartSubmissionStatusQueryPollingStoppable = getIsCartSubmissionStatusQueryPollingStoppable(getState());
     if (isCartSubmissionStatusQueryPollingStoppable) {
@@ -319,6 +319,11 @@ export const queryCartSubmissionStatus = submissionId => async (dispatch, getSta
     }
 
     logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'start', id: submissionId });
+
+    if (startPollingTimeStamp) {
+      await dispatch(cartActionCreators.startPollingTimeStamp(startPollingTimeStamp));
+    }
+
     await dispatch(loadCartSubmissionStatus(submissionId));
 
     setTimeout(() => {

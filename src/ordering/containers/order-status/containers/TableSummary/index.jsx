@@ -22,7 +22,7 @@ import {
 } from '../../../../redux/modules/app';
 import logger from '../../../../../utils/monitoring/logger';
 import prefetch from '../../../../../common/utils/prefetch-assets';
-import { actions as resetCartSubmissionActions } from '../../../../redux/cart/index';
+import { actions as cartSubmissionActions } from '../../../../redux/cart/index';
 import {
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
@@ -955,7 +955,7 @@ export default compose(
     {
       queryOrdersAndStatus: queryOrdersAndStatusThunk,
       clearQueryOrdersAndStatus: clearQueryOrdersAndStatusThunk,
-      resetCartSubmission: resetCartSubmissionActions.resetCartSubmission,
+      resetCartSubmission: cartSubmissionActions.resetCartSubmission,
       loadOrders: loadOrdersThunk,
       removePromo: removePromoThunk,
       removeVoucherPayLater: removeVoucherPayLaterThunk,
