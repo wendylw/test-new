@@ -18,22 +18,23 @@ import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getStoreInfoForCleverTap,
+  getUserIsLogin,
 } from '../../../../redux/modules/app';
 import CleverTap from '../../../../../utils/clevertap';
 
 class PromoList extends Component {
   componentDidMount() {
-    const { promotionActions, userConsumerId } = this.props;
+    const { promotionActions, isUserLogin } = this.props;
 
-    if (userConsumerId) {
+    if (isUserLogin) {
       promotionActions.fetchConsumerVoucherList();
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { userConsumerId, promotionActions } = this.props;
+    const { isUserLogin, promotionActions } = this.props;
 
-    if (userConsumerId && userConsumerId !== prevProps.userConsumerId) {
+    if (isUserLogin && isUserLogin !== prevProps.isUserLogin) {
       promotionActions.fetchConsumerVoucherList();
     }
   }
@@ -146,6 +147,7 @@ export default compose(
         selectedPromo: getSelectedPromo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        isUserLogin: getUserIsLogin(state),
       };
     },
     dispatch => ({
