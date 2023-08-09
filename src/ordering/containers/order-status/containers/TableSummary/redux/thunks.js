@@ -1,8 +1,11 @@
 /* eslint-disable import/no-cycle */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push } from 'connected-react-router';
+import i18next from 'i18next';
 import { applyCashback, unapplyCashback } from './api-request';
 import logger from '../../../../../../utils/monitoring/logger';
+import { getFilteredQueryString } from '../../../../../../common/utils';
+import { alert } from '../../../../../../common/utils/feedback';
 import {
   getOrderReceiptNumber,
   getOrderCashback,
@@ -91,6 +94,23 @@ export const payByCoupons = createAsyncThunk(
       promotionId,
       voucherCode,
     };
+    const removeReceiptNumberUrl = getFilteredQueryString('receiptNumber');
+
+    if (!receiptNumber) {
+      alert(i18next.t('SorryDescription'), {
+        title: i18next.t('SorryEmo'),
+        closeButtonContent: i18next.t('BackToMenu'),
+        onClose: () =>
+          dispatch(
+            push({
+              pathname: PATH_NAME_MAPPING.ORDERING_HOME,
+              search: removeReceiptNumberUrl,
+            })
+          ),
+      });
+
+      return;
+    }
 
     try {
       await dispatch(showProcessingLoader());
@@ -137,7 +157,7 @@ export const gotoPayment = createAsyncThunk(
 
     try {
       // Special case for free charge
-      if (total === 0 && receiptNumber) {
+      if (total === 0) {
         await dispatch(payByCoupons()).unwrap();
         return;
       }
