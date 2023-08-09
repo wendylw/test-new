@@ -53,11 +53,6 @@ const pollingOrderStatus = (callback, orderId, timeout) => {
     order => {
       const { status } = order;
 
-      if (!orderId) {
-        callback({ code: '80002' }, null);
-        return;
-      }
-
       if (status && status === 'created') {
         setTimeout(() => pollingOrderStatus(callback, orderId, timeout - POLLING_INTERVAL), POLLING_INTERVAL);
       } else {
