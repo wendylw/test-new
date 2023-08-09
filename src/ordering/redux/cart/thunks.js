@@ -305,7 +305,6 @@ export const queryCartSubmissionStatus = (submissionId, startPollingTimeStamp) =
     const isCartSubmissionStatusQueryPollingStoppable = getIsCartSubmissionStatusQueryPollingStoppable(getState());
 
     if (isCartSubmissionStatusQueryPollingStoppable) {
-      dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
       logger.log('Ordering_Cart_PollCartSubmissionStatus', {
         action: 'stop',
         message: 'finished',

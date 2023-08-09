@@ -8,7 +8,7 @@ import { loadCart, loadCartStatus, updateCartItems, removeCartItemsById, clearCa
 const CartSubmissionModel = {
   requestStatus: {
     submitCart: API_REQUEST_STATUS.FULFILLED,
-    loadCartSubmissionStatus: API_REQUEST_STATUS.FULFILLED,
+    loadCartSubmissionStatus: null,
   },
   status: null,
   receiptNumber: null,
