@@ -57,6 +57,7 @@ class Promotion extends Component {
   }
 
   gotoLoginPage = () => {
+    // TODO: will update login to HOC or hook
     const { history } = this.props;
 
     history.push({
