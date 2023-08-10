@@ -152,7 +152,8 @@ export const actions = {
         type: PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_FAILURE,
         error: error?.message,
       });
-      logger.error('Ordering_Promotion_fetchConsumerVoucherListFailed', { message: error?.message });
+
+      throw error;
     }
   },
   getPromoInfo: () => async (dispatch, getState) => {
@@ -176,7 +177,8 @@ export const actions = {
         type: PROMOTION_TYPES.FETCH_PROMO_INFO_FAILURE,
         error: error?.message,
       });
-      logger.error('Ordering_Promotion_getPromoInfo', { message: error?.message });
+
+      throw error;
     }
   },
   setSearchMode: isSearchingMode => async (dispatch, getState) => {
