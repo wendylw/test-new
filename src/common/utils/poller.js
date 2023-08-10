@@ -20,6 +20,8 @@ class Poller {
       logger.error('Common_Utils_Poller_constructorFailed', {
         message: error?.message,
       });
+
+      throw error;
     }
   }
 
@@ -28,9 +30,10 @@ class Poller {
       try {
         const result = await this.fetchData.call(null);
 
-        this.onData(result);
+        this.onData?.(result);
       } catch (error) {
-        this.onError();
+        this.onError(error);
+
         logger.error('Common_Utils_Poller_fetchDataFailed', {
           message: error?.message,
         });
