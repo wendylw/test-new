@@ -122,17 +122,10 @@ export const loadOrderStoreReview = createAsyncThunk(
     try {
       const offline = getOffline(getState());
       const orderId = getReceiptNumber(getState());
-
-      if (!orderId) {
-        return new Error('loadOrderStoreReview Order Id is not found');
-      }
-
       const { data } = await getOrderStoreReview(orderId, offline);
 
       return data;
     } catch (error) {
-      logger.error('Ordering_OrderStatus_loadOrderStoreReviewFailed', { message: error?.message || '' });
-
       throw error;
     }
   }
