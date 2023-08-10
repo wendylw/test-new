@@ -7,7 +7,7 @@ class Poller {
     this.onTimeout = options.onTimeout;
     // timeout and interval are in seconds
     this.timeout = options.timeout || null;
-    this.interval = options.interval || 5;
+    this.interval = options.interval || 5 * 1000;
     this.clearTimeoutTimerOnStop = options.clearTimeoutTimerOnStop || false;
     this.intervalTimer = null;
     this.timeOutTimer = null;
@@ -33,13 +33,13 @@ class Poller {
 
     fetchData(); // fetch data immediately
 
-    this.intervalTimer = setInterval(fetchData, this.interval * 1000);
+    this.intervalTimer = setInterval(fetchData, this.interval);
 
     if (this.timeout) {
       this.timeOutTimer = setTimeout(() => {
         this.stop();
         this.onTimeout();
-      }, this.timeout * 1000);
+      }, this.timeout);
     }
   }
 

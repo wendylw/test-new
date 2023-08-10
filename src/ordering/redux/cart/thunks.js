@@ -407,8 +407,8 @@ export const queryCartSubmissionStatus = submissionId => async dispatch => {
       });
     },
     clearTimeoutTimerOnStop: true,
-    timeout: 30,
-    interval: 2,
+    timeout: 30 * 1000,
+    interval: 2 * 1000,
   });
 
   poller.start();
