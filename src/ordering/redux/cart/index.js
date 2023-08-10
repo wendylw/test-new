@@ -13,7 +13,6 @@ const CartSubmissionModel = {
   status: null,
   receiptNumber: null,
   submissionId: Utils.getQueryString('submissionId'),
-  startPollingTimeStamp: Date.now(),
 };
 
 const CartItemModel = {
@@ -118,9 +117,6 @@ export const { reducer, actions } = createSlice({
       state.submission.error = error;
 
       return state;
-    },
-    startPollingTimeStampSet(state, { payload }) {
-      state.submission.startPollingTimeStamp = payload;
     },
   },
   extraReducers: {
