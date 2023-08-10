@@ -346,72 +346,81 @@ export const queryCartSubmissionStatus = submissionId => async dispatch => {
   //   throw error;
   // }
 
-  const poller = new Poller({
-    fetchData: async () => {
-      try {
-        if (!submissionId) {
-          throw new Error('pollingCartSubmission submissionId is required');
-        }
+  try {
+    if (!submissionId) {
+      throw new Error('pollingCartSubmission submissionId is required');
+    }
 
-        dispatch(
-          cartActionCreators.loadCartSubmissionStatusUpdated({
-            loadCartSubmissionStatus: API_REQUEST_STATUS.PENDING,
-          })
-        );
+    dispatch(
+      cartActionCreators.loadCartSubmissionStatusUpdated({
+        loadCartSubmissionStatus: API_REQUEST_STATUS.PENDING,
+      })
+    );
 
+    const poller = new Poller({
+      fetchData: async () => {
         const result = await fetchCartSubmissionStatus({ submissionId });
 
         return result;
-      } catch (error) {
+      },
+      onData: async result => {
+        await dispatch(
+          cartActionCreators.loadCartSubmissionStatusUpdated({
+            loadCartSubmissionStatus: API_REQUEST_STATUS.FULFILLED,
+          })
+        );
+        await dispatch(cartActionCreators.updateCartSubmission(result));
+
+        const { status } = result || {};
+
+        if ([CART_SUBMISSION_STATUS.COMPLETED, CART_SUBMISSION_STATUS.FAILED].includes(status)) {
+          poller.stop();
+        }
+      },
+      onTimeout: () => {
+        dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
+
+        logger.log('Ordering_Cart_PollCartSubmissionStatus', {
+          action: 'stop',
+          message: 'finished',
+          id: submissionId,
+        });
+      },
+      onError: async error => {
+        poller.stop();
         await dispatch(
           cartActionCreators.loadCartSubmissionStatusUpdated({
             loadCartSubmissionStatus: API_REQUEST_STATUS.REJECTED,
-            error: error?.message || '',
+            error: error?.message,
           })
         );
-        logger.error(
-          'Ordering_Cart_ViewOrderFailed',
-          { message: error?.message },
-          {
-            bizFlow: {
-              flow: KEY_EVENTS_FLOWS.PAYMENT,
-              step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].VIEW_ORDER,
-            },
-          }
-        );
+      },
+      clearTimeoutTimerOnStop: true,
+      timeout: 30 * 1000,
+      interval: 2 * 1000,
+    });
 
-        throw error;
+    poller.start();
+  } catch (error) {
+    await dispatch(
+      cartActionCreators.loadCartSubmissionStatusUpdated({
+        loadCartSubmissionStatus: API_REQUEST_STATUS.REJECTED,
+        error: error?.message,
+      })
+    );
+    logger.error(
+      'Ordering_Cart_ViewOrderFailed',
+      { message: error?.message },
+      {
+        bizFlow: {
+          flow: KEY_EVENTS_FLOWS.PAYMENT,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].VIEW_ORDER,
+        },
       }
-    },
-    onData: async result => {
-      await dispatch(
-        cartActionCreators.loadCartSubmissionStatusUpdated({
-          loadCartSubmissionStatus: API_REQUEST_STATUS.FULFILLED,
-        })
-      );
-      await dispatch(cartActionCreators.updateCartSubmission(result));
+    );
 
-      const { status } = result || {};
-
-      if ([CART_SUBMISSION_STATUS.COMPLETED, CART_SUBMISSION_STATUS.FAILED].includes(status)) {
-        poller.stop();
-      }
-    },
-    onTimeout: () => {
-      dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
-
-      logger.log('Ordering_Cart_PollCartSubmissionStatus', {
-        action: 'stop',
-        message: 'finished',
-        id: submissionId,
-      });
-    },
-    clearTimeoutTimerOnStop: true,
-    timeout: 30 * 1000,
-    interval: 2 * 1000,
-  });
-
-  poller.start();
+    throw error;
+  }
 };
 
 export const clearQueryCartSubmissionStatus = () => async dispatch => {
