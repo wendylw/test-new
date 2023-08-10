@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getUserConsumerId, getStoreId } from '../app';
-import { fetchWithStoreDistanceStatusAddressList } from './api-request';
+import { fetchAddressList } from './api-request';
 import logger from '../../../../utils/monitoring/logger';
 
 export const loadAddressList = createAsyncThunk('ordering/addressList/loadAddressList', async (_, { getState }) => {
@@ -13,7 +13,7 @@ export const loadAddressList = createAsyncThunk('ordering/addressList/loadAddres
       throw new Error('loadAddressList Store Id is not found');
     }
 
-    return fetchWithStoreDistanceStatusAddressList(consumerId, storeId);
+    return fetchAddressList(consumerId, storeId);
   } catch (error) {
     logger.error('Ordering_AddressList_loadAddressListFailed', { message: error?.message || '' });
 

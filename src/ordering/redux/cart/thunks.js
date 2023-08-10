@@ -388,6 +388,7 @@ export const queryCartSubmissionStatus = submissionId => async dispatch => {
       },
       onError: async error => {
         poller.stop();
+
         await dispatch(
           cartActionCreators.loadCartSubmissionStatusUpdated({
             loadCartSubmissionStatus: API_REQUEST_STATUS.REJECTED,
