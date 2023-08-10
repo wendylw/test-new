@@ -32,7 +32,7 @@ class Poller {
 
         this.onData?.(result);
       } catch (error) {
-        this.onError(error);
+        this.onError?.(error);
 
         logger.error('Common_Utils_Poller_fetchDataFailed', {
           message: error?.message,
@@ -47,7 +47,7 @@ class Poller {
     if (this.timeout) {
       this.timeOutTimer = setTimeout(() => {
         this.stop();
-        this.onTimeout();
+        this.onTimeout?.();
       }, this.timeout);
     }
   }
