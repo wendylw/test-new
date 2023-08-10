@@ -3,8 +3,8 @@ import logger from '../../utils/monitoring/logger';
 class Poller {
   constructor(options) {
     try {
-      if (typeof this.fetchData !== 'function') {
-        throw new Error('apiFetch is not a function');
+      if (typeof options.fetchData !== 'function') {
+        throw new Error('fetchData is not a function');
       }
 
       this.fetchData = options.fetchData;
