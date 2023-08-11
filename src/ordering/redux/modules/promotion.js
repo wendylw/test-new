@@ -175,8 +175,6 @@ export const actions = {
         type: PROMOTION_TYPES.FETCH_PROMO_INFO_FAILURE,
         error: error?.message,
       });
-
-      throw error;
     }
   },
   setSearchMode: isSearchingMode => async (dispatch, getState) => {
