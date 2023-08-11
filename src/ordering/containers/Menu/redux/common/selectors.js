@@ -43,7 +43,6 @@ import {
   getIsFromFoodCourt,
   getIsPickUpType,
   getHasSelectedStore,
-  getUserConsumerId,
 } from '../../../../redux/modules/app';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
