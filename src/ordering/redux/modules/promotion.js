@@ -152,8 +152,6 @@ export const actions = {
         type: PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_FAILURE,
         error: error?.message,
       });
-
-      throw error;
     }
   },
   getPromoInfo: () => async (dispatch, getState) => {
