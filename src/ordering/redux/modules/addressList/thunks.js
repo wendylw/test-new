@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getUserConsumerId, getStoreId } from '../app';
 import { fetchAddressList } from './api-request';
-import logger from '../../../../utils/monitoring/logger';
 
 export const loadAddressList = createAsyncThunk('ordering/addressList/loadAddressList', async (_, { getState }) => {
   const state = getState();
