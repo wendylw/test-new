@@ -17,8 +17,8 @@ const RedemptionStoreInfo = () => {
       className={`tw-flex ${
         isDisplayStoreRedemptionContent
           ? `${styles.StoreRedemptionContentExist} tw-bg-gray-200`
-          : `${styles.StoreRedemptionContentNoExist} tw-flex-1`
-      } tw-flex-col tw-items-center tw-justify-center tw-flex-shrink-0 tw-px-16 sm:tw-px-16px tw-pt-24 sm:tw-pt-24px tw-bg-gray-200`}
+          : styles.StoreRedemptionContentNoExist
+      } tw-flex-col tw-items-center tw-justify-center tw-flex-shrink-0 tw-px-16 sm:tw-px-16px tw-pt-24 sm:tw-pt-24px`}
     >
       <ObjectFitImage className={styles.StoreRedemptionStoreLogo} src={storeLogo} />
       <h1 className={styles.StoreRedemptionStoreName}>{storeDisplayTitle}</h1>
