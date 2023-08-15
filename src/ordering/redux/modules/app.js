@@ -1375,9 +1375,21 @@ export const getUserIsExpired = state => state.app.user.isExpired;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
 
-export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
-
 export const getIsGuestMode = createSelector(getUser, user => _get(user, 'guestModeRequest.isGuestMode', false));
+
+export const getIsGuestModeRequestStatus = createSelector(getUser, user => _get(user, 'guestModeRequest.status', null));
+
+export const getIsGuestModeRequestFulfilled = createSelector(
+  getIsGuestModeRequestStatus,
+  status => status === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsGuestModeRequestRejected = createSelector(
+  getIsGuestModeRequestStatus,
+  status => status === API_REQUEST_STATUS.REJECTED
+);
+
+export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
 export const getFetchLoginRequestStatus = createSelector(getUser, user => user.fetchLoginRequestStatus || null);
 
