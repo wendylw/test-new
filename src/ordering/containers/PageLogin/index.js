@@ -26,6 +26,7 @@ import {
 } from './redux/selectors';
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
+import GuestModeButton from './components/GuestModeButton';
 import './OrderingPageLogin.scss';
 import config from '../../../config';
 import prefetch from '../../../common/utils/prefetch-assets';
@@ -302,6 +303,21 @@ class PageLogin extends React.Component {
     }
   }
 
+  async handleClickContinueAsGuestButton() {
+    const { appActions } = this.props;
+
+    try {
+      await appActions.setConsumerAsGuest();
+
+      this.visitNextPage();
+    } catch (error) {
+      // NOTE: No need to throw an error, the error is used to log an event only.
+      logger.error('Ordering_PageLogin_LoginAsGuestFailed', {
+        message: error?.message,
+      });
+    }
+  }
+
   goBack = () => {
     const { history, location } = this.props;
     const { shouldGoBack } = location.state || {};
@@ -443,6 +459,8 @@ class PageLogin extends React.Component {
               <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
                 <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
               </p>
+
+              <GuestModeButton onContinueAsGuest={this.handleClickContinueAsGuestButton.bind(this)} />
             </PhoneViewContainer>
           </div>
         </section>
