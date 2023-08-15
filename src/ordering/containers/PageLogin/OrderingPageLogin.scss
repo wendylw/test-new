@@ -25,4 +25,19 @@
   &__icon--hide {
     display: none;
   }
+
+  &.qr-ordering &__container {
+    padding-bottom: 50px;
+    overflow: auto;
+  }
+
+  &.qr-ordering &__image-container {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    height: 56%;
+  }
 }

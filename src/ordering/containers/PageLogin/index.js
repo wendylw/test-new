@@ -401,6 +401,7 @@ class PageLogin extends React.Component {
       isRequestSucceed,
       isOtpRequestPending,
       isOtpErrorFieldVisible,
+      isQrOrderingShippingType,
     } = this.props;
     const { isPhoneNumberValid } = this.state;
     const { isLogin, phone, country } = user || {};
@@ -420,6 +421,10 @@ class PageLogin extends React.Component {
 
     if (isRequestSucceed) {
       classList.push('active');
+    }
+
+    if (isQrOrderingShippingType) {
+      classList.push('qr-ordering');
     }
 
     return (
@@ -501,6 +506,7 @@ export default compose(
       isOtpRequestFailed: getIsOtpRequestStatusRejected(state),
       isOtpErrorFieldVisible: getIsOtpErrorFieldVisible(state),
       isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
+      isQrOrderingShippingType: getIsQrOrderingShippingType(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
