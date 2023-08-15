@@ -18,10 +18,10 @@ const getShoppingCartTemplateObject = voucher => {
     loyaltyDiscounts: [],
     items: [
       {
-        id: id,
+        id,
         productId: id,
         parentProductId: null,
-        title: title,
+        title,
         variationTexts: [],
         variations: [],
         markedSoldOut: false,
@@ -38,7 +38,7 @@ const getShoppingCartTemplateObject = voucher => {
 };
 
 export const generatorVirtualShoppingCart = voucher => {
-  let shoppingCart = getShoppingCartTemplateObject(voucher);
+  const shoppingCart = getShoppingCartTemplateObject(voucher);
   return shoppingCart;
 };
 

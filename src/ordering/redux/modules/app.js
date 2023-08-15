@@ -63,7 +63,6 @@ const CartItemModel = {
   image: null,
   stockStatus: '',
   quantity: 0,
-  quantityOnHand: 0,
 };
 
 const CartModel = {

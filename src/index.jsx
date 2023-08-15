@@ -1,4 +1,5 @@
 import 'whatwg-fetch';
+import 'globalthis/auto';
 import smoothscroll from 'smoothscroll-polyfill';
 import './utils/monitoring/monitor';
 import './utils/monkey-patches';

@@ -1,10 +1,19 @@
+/* eslint-disable no-use-before-define */
 import _get from 'lodash/get';
 import _cloneDeep from 'lodash/cloneDeep';
 import _isEmpty from 'lodash/isEmpty';
 import i18next from 'i18next';
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
-import Constants from '../../../utils/constants';
+import Constants, {
+  API_REQUEST_STATUS,
+  OTP_BFF_ERROR_CODES,
+  OTP_API_ERROR_CODES,
+  SMS_API_ERROR_CODES,
+  OTP_COMMON_ERROR_TYPES,
+  OTP_SERVER_ERROR_I18N_KEYS,
+  OTP_ERROR_POPUP_I18N_KEYS,
+} from '../../../utils/constants';
 import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
@@ -27,18 +36,7 @@ import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
-const {
-  AUTH_INFO,
-  OTP_REQUEST_PLATFORM,
-  API_REQUEST_STATUS,
-  OTP_REQUEST_TYPES,
-  OTP_BFF_ERROR_CODES,
-  OTP_API_ERROR_CODES,
-  SMS_API_ERROR_CODES,
-  OTP_COMMON_ERROR_TYPES,
-  OTP_SERVER_ERROR_I18N_KEYS,
-  OTP_ERROR_POPUP_I18N_KEYS,
-} = Constants;
+const { AUTH_INFO, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 
 export const initialState = {
   user: {
@@ -101,7 +99,7 @@ export const initialState = {
 
 export const types = APP_TYPES;
 
-//action creators
+// action creators
 export const actions = {
   showLoginModal: () => ({
     type: types.SHOW_LOGIN_MODAL,
@@ -130,7 +128,7 @@ export const actions = {
     } catch (error) {
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
-        error: error,
+        error,
       });
     }
   },
@@ -302,10 +300,15 @@ export const actions = {
       const isTokenExpired = getIsUserExpired(getState());
 
       if (isTokenExpired) {
-        const tokens = await NativeMethods.tokenExpiredAsync();
-        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+        const validTokens = await NativeMethods.tokenExpiredAsync();
 
-        await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+        await dispatch(
+          actions.loginApp({
+            accessToken: validTokens.access_token,
+            refreshToken: validTokens.refresh_token,
+            source,
+          })
+        );
       }
     } catch (e) {
       if (e?.code === 'B0001') {
@@ -340,11 +343,11 @@ export const actions = {
     try {
       const business = getBusiness(getState());
 
-      const tokens = await TngUtils.getAccessToken({ business: business });
+      const tokens = await TngUtils.getAccessToken({ business });
 
-      const { access_token, refresh_token } = tokens;
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
-      await dispatch(actions.loginApp({ accessToken: access_token, refreshToken: refresh_token }));
+      await dispatch(actions.loginApp({ accessToken, refreshToken }));
     } catch (error) {
       logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
 
@@ -439,8 +442,18 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response, responseGql, prompt, error, payload } = action || {};
-  const { login, consumerId, supportWhatsApp, storeCreditInfo, customerId } = response || {};
+  const {
+    login,
+    consumerId,
+    supportWhatsApp,
+    storeCreditInfo,
+    customerId,
+    access_token: accessToken,
+    refresh_token: refreshToken,
+  } = response || {};
   const { storeCreditsBalance } = storeCreditInfo || {};
+  const { data } = responseGql || {};
+  const { business, onlineStoreInfo } = data || {};
   const otpType = _get(payload, 'otpType', null);
 
   switch (type) {
@@ -467,13 +480,11 @@ const user = (state = initialState.user, action) => {
     case types.CREATE_OTP_FAILURE:
       return { ...state, isFetching: false, isError: true };
     case types.CREATE_OTP_SUCCESS:
-      const { access_token, refresh_token } = response;
-
       return {
         ...state,
         isFetching: false,
-        accessToken: access_token,
-        refreshToken: refresh_token,
+        accessToken,
+        refreshToken,
       };
     case types.RESET_CREATE_OTP_REQUEST:
       return { ...state, isFetching: false, isError: false };
@@ -571,18 +582,17 @@ const user = (state = initialState.user, action) => {
     // fetch online store info success
     // fetch core business success
     case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
-      const { data } = responseGql;
-      const { business, onlineStoreInfo } = data || {};
-
       if (!state.phone && business && business.country) {
         return { ...state, country: business.country };
-      } else if (!state.phone && onlineStoreInfo && onlineStoreInfo.country) {
-        return { ...state, country: onlineStoreInfo.country };
-      } else {
-        return state;
       }
+
+      if (!state.phone && onlineStoreInfo && onlineStoreInfo.country) {
+        return { ...state, country: onlineStoreInfo.country };
+      }
+
+      return state;
     case types.UPDATE_USER:
-      return Object.assign({}, state, action.user);
+      return { ...state, ...action.user };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
     case types.SHOW_LOGIN_MODAL:
@@ -599,7 +609,9 @@ const error = (state = initialState.error, action) => {
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (code && code !== 401) {
+  }
+
+  if (code && code !== 401) {
     if (type === types.CREATE_OTP_FAILURE) return null;
 
     return {
@@ -614,10 +626,10 @@ const error = (state = initialState.error, action) => {
 
 const business = (state = initialState.business, action) => {
   const { type, response } = action;
+  const { name } = response || {};
 
   switch (type) {
     case types.FETCH_CASHBACK_BUSINESS_SUCCESS:
-      const { name } = response || {};
       return name;
     default:
       return state;
@@ -627,9 +639,9 @@ const business = (state = initialState.business, action) => {
 const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   const { type, responseGql } = action;
   const { data } = responseGql || {};
-  const { onlineStoreInfo } = data || {};
+  const { onlineStoreInfo: info } = data || {};
 
-  if (!(responseGql && onlineStoreInfo)) {
+  if (!(responseGql && info)) {
     return state;
   }
 
@@ -640,7 +652,7 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
       return {
         ...state,
         isFetching: false,
-        id: onlineStoreInfo.id || '',
+        id: info.id || '',
         loadOnlineStoreInfoStatus: API_REQUEST_STATUS.FULFILLED,
       };
     case types.FETCH_ONLINE_STORE_INFO_FAILURE:
@@ -691,7 +703,7 @@ const messageInfo = (state = initialState.messageInfo, action) => {
   }
 };
 
-const requestInfo = (state = initialState.requestInfo, action) => state;
+const requestInfo = (state = initialState.requestInfo) => state;
 
 export default combineReducers({
   user,
@@ -715,9 +727,7 @@ export const getCoreBusiness = state => state.app.coreBusiness;
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageInfo = state => state.app.messageInfo;
 
-export const getOnlineStoreInfoFavicon = createSelector(getOnlineStoreInfo, onlineStoreInfo =>
-  _get(onlineStoreInfo, 'favicon', null)
-);
+export const getOnlineStoreInfoFavicon = createSelector(getOnlineStoreInfo, info => _get(info, 'favicon', null));
 
 export const getLoadOnlineStoreInfoStatus = state => _get(state.app.onlineStoreInfo, 'loadOnlineStoreInfoStatus', null);
 
@@ -735,8 +745,8 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
   _get(businessInfo, 'timezoneOffset', 480)
 );
 
-export const getLoadCoreBusinessStatus = createSelector(getCoreBusiness, coreBusiness =>
-  _get(coreBusiness, 'loadCoreBusinessStatus', null)
+export const getLoadCoreBusinessStatus = createSelector(getCoreBusiness, coreBusinessInfo =>
+  _get(coreBusinessInfo, 'loadCoreBusinessStatus', null)
 );
 
 export const getIsCoreBusinessLoaded = createSelector(
@@ -749,33 +759,33 @@ export const getIsLoadCoreBusinessFailed = createSelector(
   loadCoreBusinessStatus => loadCoreBusinessStatus === API_REQUEST_STATUS.REJECTED
 );
 
-export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, coreBusiness =>
-  _get(coreBusiness, 'enableCashback', false)
+export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, coreBusinessInfo =>
+  _get(coreBusinessInfo, 'enableCashback', false)
 );
 
 // TODO: Will remove from reducer, prompt should in component
-export const getLoginBannerPrompt = createSelector(getUser, user => _get(user, 'prompt', null));
+export const getLoginBannerPrompt = createSelector(getUser, userInfo => _get(userInfo, 'prompt', null));
 
-export const getIsUserLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+export const getIsUserLogin = createSelector(getUser, userInfo => _get(userInfo, 'isLogin', false));
 
-export const getUserCountry = createSelector(getUser, user => _get(user, 'country', false));
+export const getUserCountry = createSelector(getUser, userInfo => _get(userInfo, 'country', false));
 
-export const getIsUserExpired = createSelector(getUser, user => _get(user, 'isExpired', false));
+export const getIsUserExpired = createSelector(getUser, userInfo => _get(userInfo, 'isExpired', false));
 
-export const getIsLoginModalShown = createSelector(getUser, user => _get(user, 'showLoginModal', false));
+export const getIsLoginModalShown = createSelector(getUser, userInfo => _get(userInfo, 'showLoginModal', false));
 
-export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', null));
+export const getUserConsumerId = createSelector(getUser, userInfo => _get(userInfo, 'consumerId', null));
 
-export const getUserCustomerId = createSelector(getUser, user => _get(user, 'customerId', null));
+export const getUserCustomerId = createSelector(getUser, userInfo => _get(userInfo, 'customerId', null));
 
-export const getUserStoreCashback = createSelector(getUser, user => _get(user, 'storeCreditsBalance', 0));
+export const getUserStoreCashback = createSelector(getUser, userInfo => _get(userInfo, 'storeCreditsBalance', 0));
 
-export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
+export const getIsLoginRequestFailed = createSelector(getUser, userInfo => _get(userInfo, 'isError', false));
 
-export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
+export const getIsLoginRequestStatusPending = createSelector(getUser, userInfo => _get(userInfo, 'isFetching', false));
 
-export const getLoadConsumerCustomerStatus = createSelector(getUser, user =>
-  _get(user, 'loadConsumerCustomerStatus', null)
+export const getLoadConsumerCustomerStatus = createSelector(getUser, userInfo =>
+  _get(userInfo, 'loadConsumerCustomerStatus', null)
 );
 
 export const getIsConsumerCustomerLoaded = createSelector(
@@ -794,9 +804,9 @@ export const getOtpRequestError = createSelector(getOtpRequest, otp => otp.error
 
 export const getOtpType = createSelector(getOtpRequest, otp => _get(otp, 'data.type', null));
 
-export const getOtpErrorCode = createSelector(getOtpRequestError, error => _get(error, 'code', null));
+export const getOtpErrorCode = createSelector(getOtpRequestError, otpErrorInfo => _get(otpErrorInfo, 'code', null));
 
-export const getOtpErrorName = createSelector(getOtpRequestError, error => _get(error, 'name', null));
+export const getOtpErrorName = createSelector(getOtpRequestError, otpErrorInfo => _get(otpErrorInfo, 'name', null));
 
 export const getIsOtpRequestStatusPending = createSelector(
   getOtpRequestStatus,
