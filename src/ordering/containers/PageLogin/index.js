@@ -12,7 +12,12 @@ import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import ApiFetchError from '../../../utils/api/api-fetch-error';
-import { actions as appActionCreators, getUser, getIsLoginRequestFailed } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getUser,
+  getIsLoginRequestFailed,
+  getIsQrOrderingShippingType,
+} from '../../redux/modules/app';
 import {
   getOtpRequestError,
   getShouldShowLoader,
