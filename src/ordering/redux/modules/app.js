@@ -902,7 +902,12 @@ const user = (state = initialState.user, action) => {
     case types.SET_CONSUMER_AS_GUEST_FAILURE:
       return {
         ...state,
-        getGuestModeRequest: { ...state.getGuestModeRequest, isGuestMode: false, status: API_REQUEST_STATUS.REJECTED },
+        getGuestModeRequest: {
+          ...state.getGuestModeRequest,
+          isGuestMode: false,
+          status: API_REQUEST_STATUS.REJECTED,
+          error,
+        },
       };
     case types.FETCH_LOGIN_STATUS_REQUEST:
       return { ...state, isFetching: true, fetchLoginRequestStatus: API_REQUEST_STATUS.PENDING };
