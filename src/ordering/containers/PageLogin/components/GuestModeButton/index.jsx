@@ -1,18 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { getIsQrOrderingShippingType } from '../../../../redux/modules/app';
 import Button from '../../../../../common/components/Button';
 import styles from './GuestModeButton.module.scss';
 
 const GuestModeButton = ({ onContinueAsGuest }) => {
   const { t } = useTranslation();
-  const isQrOrderingShippingType = useSelector(getIsQrOrderingShippingType);
-
-  if (!isQrOrderingShippingType) {
-    return null;
-  }
 
   return (
     <section className={`${styles.GuestModeButtonContainer} page-login__login-as-guest-button`}>

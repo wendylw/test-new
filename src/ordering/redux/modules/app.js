@@ -394,11 +394,11 @@ export const actions = {
     });
 
     try {
-      await postLoginGuest();
-
       dispatch({
         type: types.SET_CONSUMER_AS_GUEST_SUCCESS,
       });
+
+      await postLoginGuest();
     } catch (error) {
       dispatch({
         type: types.SET_CONSUMER_AS_GUEST_FAILURE,

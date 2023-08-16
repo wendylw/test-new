@@ -489,7 +489,9 @@ class PageLogin extends React.Component {
                 <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
               </p>
 
-              <GuestModeButton onContinueAsGuest={this.handleClickContinueAsGuestButton.bind(this)} />
+              {isQrOrderingShippingType && (
+                <GuestModeButton onContinueAsGuest={this.handleClickContinueAsGuestButton.bind(this)} />
+              )}
             </PhoneViewContainer>
           </div>
         </section>
