@@ -38,6 +38,7 @@ import prefetch from '../../../common/utils/prefetch-assets';
 import logger from '../../../utils/monitoring/logger';
 import Utils from '../../../utils/utils';
 import { alert } from '../../../common/utils/feedback';
+import { getImageHeight } from './utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 
 const { ROUTER_PATHS, OTP_REQUEST_TYPES, RESEND_OTP_TIME } = Constants;
@@ -47,25 +48,40 @@ class PageLogin extends React.Component {
     sendOtp: false,
     shouldShowModal: false,
     isPhoneNumberValid: false,
+    imageStyle: {},
   };
 
   captchaRef = React.createRef();
 
   componentDidMount() {
+    const { isQrOrderingShippingType } = this.props;
+
     if (Utils.isTNGMiniProgram()) {
       this.loginInTngMiniProgram();
+    }
+
+    if (isQrOrderingShippingType) {
+      this.setState({ imageStyle: { height: `${getImageHeight()}px` } });
     }
 
     prefetch(['ORD_MNU'], ['OrderingDelivery']);
   }
 
   componentDidUpdate(prevProps) {
-    const { user } = prevProps;
+    const { user, imageStyle: prevImageStyle } = prevProps;
+    const { isQrOrderingShippingType, imageStyle } = this.props;
     const { isLogin } = user || {};
     const { sendOtp } = this.state;
+    const imageHeight = getImageHeight();
 
     if (sendOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitNextPage();
+    }
+
+    if (isQrOrderingShippingType && imageStyle?.height && prevImageStyle?.height !== imageHeight) {
+      this.setState({
+        imageStyle: { height: `${getImageHeight()}px` },
+      });
     }
   }
 
@@ -403,7 +419,7 @@ class PageLogin extends React.Component {
       isOtpErrorFieldVisible,
       isQrOrderingShippingType,
     } = this.props;
-    const { isPhoneNumberValid } = this.state;
+    const { isPhoneNumberValid, imageStyle } = this.state;
     const { isLogin, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
 
@@ -439,7 +455,10 @@ class PageLogin extends React.Component {
             navFunc={this.goBack}
           />
           <div className="page-login__container">
-            <figure className="page-login__image-container padding-top-bottom-normal margin-top-bottom-small">
+            <figure
+              className="page-login__image-container padding-top-bottom-normal margin-top-bottom-small"
+              style={imageStyle}
+            >
               <img
                 src={beepLoginActive}
                 alt="otp active"
@@ -466,7 +485,7 @@ class PageLogin extends React.Component {
               onValidate={this.handleUpdatePhoneNumberValidation}
               onSubmit={this.handleClickContinueButton.bind(this)}
             >
-              <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
+              <p className="page-login__terms-privacy text-center margin-top-bottom-small text-line-height-base text-opacity">
                 <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
               </p>
 

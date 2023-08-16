@@ -15,7 +15,7 @@ const GuestModeButton = ({ onContinueAsGuest }) => {
   }
 
   return (
-    <section className={styles.GuestModeButtonContainer}>
+    <section className={`${styles.GuestModeButtonContainer} page-login__login-as-guest-button`}>
       <Button type="text" data-test-id="ordering.login.guest-mode-button" onClick={onContinueAsGuest}>
         {t('ContinueAsGuest')}
       </Button>
