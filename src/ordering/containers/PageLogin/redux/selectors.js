@@ -2,7 +2,9 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import Constants from '../../../../utils/constants';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { getOtpRequest, getIsLoginRequestStatusPending } from '../../../redux/modules/app';
+import { getOtpRequest, getIsLoginRequestStatusPending, getIsQrOrderingShippingType } from '../../../redux/modules/app';
+import { getIsFeatureEnabled } from '../../../../redux/modules/growthbook/selectors';
+import { FEATURE_KEYS } from '../../../../redux/modules/growthbook/constants';
 import { ERROR_TYPES } from '../../../../utils/api/constants';
 
 const {
@@ -118,4 +120,12 @@ export const getShouldShowLoader = createSelector(
   getIsOtpRequestStatusPending,
   getIsLoginRequestStatusPending,
   (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
+);
+
+export const getIsGuestCheckoutEnabled = state => getIsFeatureEnabled(state, FEATURE_KEYS.GUEST_CHECKOUT);
+
+export const getShouldShowGuestOption = createSelector(
+  getIsGuestCheckoutEnabled,
+  getIsQrOrderingShippingType,
+  (isGuestCheckoutEnabled, isQrOrderingShippingType) => isQrOrderingShippingType && isGuestCheckoutEnabled
 );
