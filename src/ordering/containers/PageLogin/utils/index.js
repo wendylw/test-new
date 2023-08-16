@@ -1,3 +1,4 @@
+// WB-6015: Don't modify this code lightly, but delete it if you have a chance, because it was added because of the special UI of Boss
 export const getWebQRImageHeight = () => {
   const windowInnerHeight = window.innerHeight;
   const headerHeight = document.querySelector('.header')?.clientHeight || 0;
