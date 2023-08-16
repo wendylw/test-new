@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation, Trans } from 'react-i18next';
-import _get from 'lodash/get';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
 import _isNil from 'lodash/isNil';
@@ -28,7 +27,7 @@ import {
   getHasLoginGuardPassed,
   getCartBilling,
   getStoreInfoForCleverTap,
-  getShippingType,
+  getIsDineType,
   getValidBillingTotal,
   getIsValidCreateOrder,
   getIsBillingTotalInvalid,
@@ -276,7 +275,7 @@ class PayFirst extends Component {
     });
   };
 
-  getUpdateShoppingCartItemData = ({ productId, comments, variations }, currentQuantity) => ({
+  getUpdateShoppingCartItemData = ({ productId, comments, variations, isTakeaway }, currentQuantity) => ({
     action: 'edit',
     productId,
     quantity: currentQuantity,
@@ -286,6 +285,7 @@ class PayFirst extends Component {
       optionId,
       quantity,
     })),
+    isTakeaway,
   });
 
   handleIncreaseCartItem = cartItem => {
@@ -319,13 +319,14 @@ class PayFirst extends Component {
     const { appActions } = this.props;
 
     logger.log('Ordering_PayFirstCart_AdjustItemQuantity', { action: 'remove' });
-    const { productId, comments, variations } = cartItem;
+    const { productId, comments, variations, isTakeaway } = cartItem;
 
     appActions
       .removeShoppingCartItem({
         productId,
         comments,
         variations,
+        isTakeaway,
       })
       .then(() => {
         appActions.loadShoppingCart();
@@ -715,7 +716,7 @@ class PayFirst extends Component {
   }
 
   renderCartList = () => {
-    const { shoppingCart } = this.props;
+    const { shoppingCart, isDineType } = this.props;
     const { productsContainerHeight } = this.state;
     return (
       <div
@@ -726,6 +727,7 @@ class PayFirst extends Component {
       >
         <CartList
           items={shoppingCart?.items}
+          isDineType={isDineType}
           unavailableItems={shoppingCart?.unavailableItems}
           onIncreaseCartItem={this.handleIncreaseCartItem}
           onDecreaseCartItem={this.handleDecreaseCartItem}
@@ -743,13 +745,13 @@ class PayFirst extends Component {
       shoppingCart,
       businessInfo,
       storeInfoForCleverTap,
-      shippingType,
+      isDineType,
       serviceChargeRate,
       shouldShowProcessingLoader,
     } = this.props;
     const { cartContainerHeight, shouldShowRedirectLoader } = this.state;
     const { items } = shoppingCart || {};
-    const { count, subtotal, takeawayCharges, total, tax, serviceCharge, cashback, shippingFee } = cartBilling || {};
+    const { count, subtotal, takeawayCharges, total, tax, serviceCharge, shippingFee } = cartBilling || {};
 
     if (!(cartBilling && items)) {
       return null;
@@ -795,7 +797,7 @@ class PayFirst extends Component {
             height: cartContainerHeight,
           }}
         >
-          {shippingType === Constants.DELIVERY_METHOD.DINE_IN ? (
+          {isDineType ? (
             <div className="ordering-cart__warning padding-small flex flex-middle flex-center">
               <IconError className="icon icon__primary icon__smaller" />
               <span>{t('PayNowToPlaceYourOrder')}</span>
@@ -871,7 +873,7 @@ PayFirst.propTypes = {
   shoppingCart: PropTypes.object,
   // eslint-disable-next-line react/forbid-prop-types
   businessInfo: PropTypes.object,
-  shippingType: PropTypes.string,
+  isDineType: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   storeInfoForCleverTap: PropTypes.object,
   isValidCreateOrder: PropTypes.bool,
@@ -919,7 +921,7 @@ PayFirst.defaultProps = {
   cartBilling: {},
   shoppingCart: {},
   businessInfo: {},
-  shippingType: null,
+  isDineType: false,
   storeInfoForCleverTap: {},
   isValidCreateOrder: false,
   shouldDisablePayButton: false,
@@ -955,7 +957,7 @@ export default compose(
       shoppingCart: getShoppingCart(state),
       serviceChargeRate: getServiceChargeRate(state),
       businessInfo: getBusinessInfo(state),
-      shippingType: getShippingType(state),
+      isDineType: getIsDineType(state),
       validBillingTotal: getValidBillingTotal(state),
       isFreeOrder: getIsFreeOrder(state),
       isValidCreateOrder: getIsValidCreateOrder(state),

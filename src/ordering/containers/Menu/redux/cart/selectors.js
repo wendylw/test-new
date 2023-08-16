@@ -217,6 +217,7 @@ export const getCartItems = createSelector(
         title: cartItem.title,
         image: cartItem.image,
         variationTitles: cartItem.variationTexts,
+        isTakeaway: cartItem.isTakeaway,
         formattedDisplayPrice,
         formattedOriginalDisplayPrice,
         quantity: cartItem.quantity,

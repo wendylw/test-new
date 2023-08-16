@@ -18,7 +18,7 @@ class ProductItem extends Component {
   }
 
   renderContent() {
-    const { summaryTag, title, variation, details } = this.props;
+    const { t, summaryTag, title, variation, details, shouldShowTakeawayVariant } = this.props;
 
     return (
       <div
@@ -32,11 +32,16 @@ class ProductItem extends Component {
           </h3>
           {variation ? (
             <p
-              className="product-item__description margin-top-bottom-small text-omit__multiple-line"
+              className="product-item__description margin-top-bottom-smaller text-omit__multiple-line"
               data-testid="itemDetailSummary"
             >
               {variation}
             </p>
+          ) : null}
+          {shouldShowTakeawayVariant ? (
+            <div className="margin-top-bottom-smaller">
+              <span className="product-item__takeaway-variant">{t('TakeAway')}</span>
+            </div>
           ) : null}
         </div>
         {details}
@@ -67,6 +72,7 @@ ProductItem.propTypes = {
   title: PropTypes.string,
   variation: PropTypes.string,
   details: PropTypes.element,
+  shouldShowTakeawayVariant: PropTypes.bool,
   handleClickItem: PropTypes.func,
 };
 
@@ -77,6 +83,7 @@ ProductItem.defaultProps = {
   title: '',
   variation: '',
   details: null,
+  shouldShowTakeawayVariant: false,
   handleClickItem: () => {},
 };
 

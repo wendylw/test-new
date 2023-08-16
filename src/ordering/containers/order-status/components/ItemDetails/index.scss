@@ -1,0 +1,18 @@
+@import "../../../../../Variables.scss";
+
+.item-details {
+  &__title {
+    width: 100%;
+    word-break: break-word;
+    hyphens: none;
+  }
+
+  &__product-variations {
+    color: $theme-color;
+  }
+
+  &__takeaway-variant {
+    color: $status-primary-basic;
+    font-weight: 700;
+  }
+}

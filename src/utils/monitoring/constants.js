@@ -34,6 +34,8 @@ export const API_REQUEST_URL_PATTERNS = {
   '/api/v3/transactions/*/change-shipping-type': /^\/api\/v3\/transactions\/\w+\/change-shipping-type$/,
 };
 
+export const API_URL_WARNING_BYPASS_LIST = ['/api/gql/AddOrUpdateShoppingCartItem'];
+
 /**
  * Flow & Step for key event logs
  * Please don't touch it if you don't understand what it stands for
