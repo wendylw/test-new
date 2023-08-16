@@ -893,11 +893,19 @@ const user = (state = initialState.user, action) => {
     case types.RESET_CREATE_OTP_REQUEST:
       return { ...state, isFetching: false, isError: false };
     case types.SET_CONSUMER_AS_GUEST_REQUEST:
-      return { ...state, getGuestModeRequest: { ...state.getGuestModeRequest, status: API_REQUEST_STATUS.PENDING } };
+      return {
+        ...state,
+        getGuestModeRequest: { ...state.getGuestModeRequest, status: API_REQUEST_STATUS.PENDING, error: null },
+      };
     case types.SET_CONSUMER_AS_GUEST_SUCCESS:
       return {
         ...state,
-        getGuestModeRequest: { ...state.getGuestModeRequest, isGuestMode: true, status: API_REQUEST_STATUS.FULFILLED },
+        getGuestModeRequest: {
+          ...state.getGuestModeRequest,
+          isGuestMode: true,
+          status: API_REQUEST_STATUS.FULFILLED,
+          error: null,
+        },
       };
     case types.SET_CONSUMER_AS_GUEST_FAILURE:
       return {
