@@ -37,7 +37,7 @@ const StoreRedemptionNative = () => {
   const isStoreRedemptionNewCustomer = useSelector(getIsStoreRedemptionNewCustomer);
 
   useMount(() => {
-    if (isDisplayStoreRedemptionContent > 0) {
+    if (isDisplayStoreRedemptionContent) {
       CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
         country: userCountry,
         page: 'With Cashback',

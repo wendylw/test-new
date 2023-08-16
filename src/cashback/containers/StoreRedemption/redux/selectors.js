@@ -26,7 +26,7 @@ export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 
  * @returns boolean | null
  */
 export const getIsStoreRedemptionNewCustomer = state =>
-  _get(state.storeRedemption, 'sharedInfoData.isNewCustomer', null);
+  _get(state.storeRedemption, 'sharedInfoData.isNewCustomer', false);
 
 /**
  * get consumer share info available status

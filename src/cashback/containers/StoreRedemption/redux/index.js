@@ -17,7 +17,7 @@ const initialState = {
     consumerId: '',
     customerId: '',
     sharedInfoDate: '',
-    isNewCustomer: null,
+    isNewCustomer: false,
   },
   updateSharingConsumerInfo: {
     status: null,
