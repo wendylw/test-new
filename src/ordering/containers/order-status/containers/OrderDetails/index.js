@@ -11,6 +11,7 @@ import CleverTap from '../../../../../utils/clevertap';
 import Constants from '../../../../../utils/constants';
 import { ORDER_PAYMENT_METHODS } from '../../constants';
 import Utils, { copyDataToClipboard } from '../../../../../utils/utils';
+import ItemDetails from '../../components/ItemDetails';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
 import { loadOrder } from '../../redux/thunks';
@@ -199,14 +200,14 @@ export class OrderDetails extends Component {
 
   renderOrderDetails() {
     const { t, order } = this.props;
-    const { items } = order || {};
+    const { items, shippingType } = order || {};
 
     return (
       <React.Fragment>
         <span className="ordering-details__items">{t('Items')}</span>
         <ul>
-          {(items || []).map((value, index) => {
-            const { title, displayPrice, quantity, variationTexts, itemType } = value;
+          {(items || []).map(item => {
+            const { itemType, id } = item;
 
             // remove items whose itemType is not null
             if (itemType) {
@@ -214,23 +215,12 @@ export class OrderDetails extends Component {
             }
 
             return (
-              <li key={`title-${index}`} className="flex flex-middle flex-space-between">
-                <div className="flex flex-top">
-                  <span className="padding-top-bottom-small flex__shrink-fixed text-opacity">{quantity} x</span>
-                  <div className="padding-small">
-                    <span className="ordering-details__item-title text-opacity">{title}</span>
-                    <p>
-                      {variationTexts && variationTexts[0] ? (
-                        <span className="ordering-details__item-variations">{variationTexts.join(', ')}</span>
-                      ) : null}
-                    </p>
-                  </div>
-                </div>
-                <CurrencyNumber
-                  className="padding-top-bottom-small flex__shrink-fixed text-opacity"
-                  money={displayPrice * quantity}
-                />
-              </li>
+              <ItemDetails
+                key={id}
+                item={item}
+                shippingType={shippingType}
+                data-test-id="ordering.order-status.order-details.cart-item"
+              />
             );
           })}
         </ul>

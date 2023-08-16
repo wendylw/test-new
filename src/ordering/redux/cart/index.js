@@ -35,6 +35,7 @@ const CartItemModel = {
   inventory: 0,
   inventoryStatus: null,
   quantity: 0,
+  isTakeaway: false,
 };
 
 const PromotionItemModel = {

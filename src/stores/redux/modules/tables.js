@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import _get from 'lodash/get';
@@ -48,8 +49,8 @@ export const actions = {
       },
     });
   },
-  loadStoreTables: () => (dispatch, getState) => {
-    return dispatch({
+  loadStoreTables: () => (dispatch, getState) =>
+    dispatch({
       [FETCH_GRAPHQL]: {
         types: [types.FETCH_STORE_TABLES_REQUEST, types.FETCH_STORE_TABLES_SUCCESS, types.FETCH_STORE_TABLES_FAILURE],
         variables: {
@@ -58,26 +59,24 @@ export const actions = {
         },
         endpoint: Url.apiGql('Tables'),
       },
-    });
-  },
+    }),
 
   setTableId: tableId => ({
     type: types.SET_TABLE_ID,
-    tableId: tableId,
+    tableId,
   }),
 };
 
 const tablesReducer = (state = initialState.tables, action) => {
+  const tables = _get(action, 'responseGql.data.tables', []);
+  const stateTables = tables.map(table => ({
+    id: table.id,
+    name: table.tableName,
+    seatingCapacity: table.seatingCapacity,
+  }));
+
   switch (action.type) {
     case types.FETCH_STORE_TABLES_SUCCESS:
-      const { tables } = action.responseGql.data;
-      const stateTables = tables.map(table => {
-        return {
-          id: table.id,
-          name: table.tableName,
-          seatingCapacity: table.seatingCapacity,
-        };
-      });
       return stateTables;
 
     default:
@@ -109,16 +108,12 @@ export default combineReducers({
   storeHashCode: storeHashCodeReducer,
 });
 
-export const getTables = state => {
-  return state.tables.tables;
-};
+export const getTables = state => state.tables.tables;
 
 export const getCurrentTableId = state => state.tables.currentTableId;
 
 export const getStoreHashCode = state => state.tables.storeHashCode;
 
-export const getCurrentTable = createSelector([getTables, getCurrentTableId], (tables, currentTableId) => {
-  return tables.find(table => {
-    return table.id === currentTableId;
-  });
-});
+export const getCurrentTable = createSelector([getTables, getCurrentTableId], (tables, currentTableId) =>
+  tables.find(table => table.id === currentTableId)
+);

@@ -57,12 +57,12 @@ const CartItemModel = {
   productId: null,
   title: '',
   variationTexts: [],
+  isTakeaway: false,
   displayPrice: 0,
   originalDisplayPrice: 0,
   image: null,
   stockStatus: '',
   quantity: 0,
-  quantityOnHand: 0,
 };
 
 const CartModel = {
@@ -1648,6 +1648,14 @@ export const getEnableCashback = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'enableCashback', null)
 );
 
+export const getEnableTakeaway = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'enableTakeaway', false)
+);
+
+export const getTakeawayCharge = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'takeawayCharge', 0)
+);
+
 export const getQROrderingSettings = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'qrOrderingSettings', null)
 );
@@ -1800,6 +1808,19 @@ export const getIsDeliveryType = createSelector(
  * Is pickup shipping type
  */
 export const getIsPickUpType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.PICKUP);
+
+/**
+ * Is dine shipping type
+ */
+export const getIsDineType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.DINE_IN);
+
+/**
+ * Is Takeaway type
+ */
+export const getIsTakeawayType = createSelector(
+  getShippingType,
+  shippingType => shippingType === DELIVERY_METHOD.TAKE_AWAY
+);
 
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)

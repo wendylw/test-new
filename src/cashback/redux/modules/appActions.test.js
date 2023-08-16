@@ -11,7 +11,8 @@ import {
   mockErrorMsg,
   mockErrorCode,
 } from '../../../utils/testHelper';
-import { RequestError } from '../../../utils/request';
+import RequestError from '../../../utils/api/request-error';
+
 const cashbackStore = rootReducer(undefined, {});
 
 describe('src/cashback/redux/modules/app.js:actions', () => {
@@ -141,7 +142,7 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
           },
           {
             type: types.FETCH_LOGIN_STATUS_FAILURE,
-            error: new RequestError(mockErrorMsg, mockErrorCode),
+            error: new RequestError(mockErrorMsg, { code: mockErrorCode }),
           },
         ];
         return expectedActionsCheck(actions.getLoginStatus(), expectedActions);

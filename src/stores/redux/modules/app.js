@@ -1,11 +1,10 @@
 import { combineReducers } from 'redux';
 import _get from 'lodash/get';
+import { createSelector } from 'reselect';
 import config from '../../../config';
 import Url from '../../../utils/url';
-import Constants from '../../../utils/constants';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { createSelector } from 'reselect';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import Utils from '../../../utils/utils';
 
@@ -41,7 +40,7 @@ export const types = {
   HIDE_MESSAGE_MODAL: 'STORES/APP/HIDE_MESSAGE_MODAL',
 };
 
-//action creators
+// action creators
 export const actions = {
   clearError: () => ({
     type: types.CLEAR_ERROR,
@@ -73,7 +72,9 @@ const error = (state = initialState.error, action) => {
   const { type, code, message } = action;
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (code && code !== 401 && code < 40000) {
+  }
+
+  if (code && code !== 401 && code < 40000) {
     return {
       ...state,
       code,
@@ -84,8 +85,8 @@ const error = (state = initialState.error, action) => {
   return state;
 };
 
-const business = (state = initialState.business, action) => state;
-const removePickUpMerchantList = (state = initialState.removePickUpMerchantList, action) => state;
+const business = (state = initialState.business) => state;
+const removePickUpMerchantList = (state = initialState.removePickUpMerchantList) => state;
 
 const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   const { type, responseGql } = action;
@@ -120,7 +121,7 @@ const messageModal = (state = initialState.messageModal, action) => {
   }
 };
 
-const requestInfo = (state = initialState.requestInfo, action) => state;
+const requestInfo = (state = initialState.requestInfo) => state;
 
 export default combineReducers({
   error,
@@ -136,25 +137,23 @@ export const getBusiness = state => state.app.business;
 
 export const getRemovedPickUpMerchantList = state => state.app.removePickUpMerchantList;
 export const getError = state => state.app.error;
-export const getOnlineStoreInfo = state => {
-  return state.entities.onlineStores[state.app.onlineStoreInfo.id];
-};
+export const getOnlineStoreInfo = state => state.entities.onlineStores[state.app.onlineStoreInfo.id];
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageModal = state => state.app.messageModal;
 
 export const getBusinessInfo = state => {
-  const business = getBusiness(state);
+  const name = getBusiness(state);
 
-  return getBusinessByName(state, business) || {};
+  return getBusinessByName(state, name) || {};
 };
 
-export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
-  // default is UTC+8 offset
-  return _get(businessInfo, 'timezoneOffset', 480);
-});
+// default is UTC+8 offset
+export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'timezoneOffset', 480)
+);
 
-export const getBusinessDeliveryRadius = createSelector(getBusinessInfo, businessInfo => {
-  return _get(businessInfo, 'qrOrderingSettings.deliveryRadius', 0);
-});
+export const getBusinessDeliveryRadius = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'qrOrderingSettings.deliveryRadius', 0)
+);
 
 export const getDeliveryInfo = createSelector(getBusinessInfo, businessInfo => Utils.getDeliveryInfo(businessInfo));
