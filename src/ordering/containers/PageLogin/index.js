@@ -17,6 +17,7 @@ import {
   getUser,
   getIsLoginRequestFailed,
   getIsQrOrderingShippingType,
+  getStoreInfoForCleverTap,
 } from '../../redux/modules/app';
 import {
   getOtpRequestError,
@@ -40,6 +41,7 @@ import Utils from '../../../utils/utils';
 import { alert } from '../../../common/utils/feedback';
 import { getWebQRImageHeight } from './utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
+import CleverTap from '../../../utils/clevertap';
 
 const { ROUTER_PATHS, OTP_REQUEST_TYPES, RESEND_OTP_TIME } = Constants;
 
@@ -190,9 +192,12 @@ class PageLogin extends React.Component {
   }
 
   async handleClickContinueButton(phone, type) {
+    const { storeInfoForCleverTap } = this.props;
     const payload = { phone, type };
+
     this.setState({ sendOtp: false });
     logger.log('Ordering_PageLogin_ClickContinueButton');
+    CleverTap.pushEvent('Login - Continue', storeInfoForCleverTap);
 
     try {
       const shouldSkipReCAPTCHACheck = !config.recaptchaEnabled;
@@ -325,7 +330,9 @@ class PageLogin extends React.Component {
   }
 
   async handleClickContinueAsGuestButton() {
-    const { appActions } = this.props;
+    const { appActions, storeInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent('Login - Continue as Guest', storeInfoForCleverTap);
 
     try {
       await appActions.setConsumerAsGuest();
@@ -528,6 +535,7 @@ export default compose(
       isOtpErrorFieldVisible: getIsOtpErrorFieldVisible(state),
       isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
       isQrOrderingShippingType: getIsQrOrderingShippingType(state),
+      storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
