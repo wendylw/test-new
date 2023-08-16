@@ -38,7 +38,7 @@ import prefetch from '../../../common/utils/prefetch-assets';
 import logger from '../../../utils/monitoring/logger';
 import Utils from '../../../utils/utils';
 import { alert } from '../../../common/utils/feedback';
-import { getImageHeight } from './utils';
+import { getWebQRImageHeight } from './utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 
 const { ROUTER_PATHS, OTP_REQUEST_TYPES, RESEND_OTP_TIME } = Constants;
@@ -61,7 +61,7 @@ class PageLogin extends React.Component {
     }
 
     if (isQrOrderingShippingType) {
-      this.setState({ imageStyle: { height: `${getImageHeight()}px` } });
+      this.setState({ imageStyle: { height: `${getWebQRImageHeight()}px` } });
     }
 
     prefetch(['ORD_MNU'], ['OrderingDelivery']);
@@ -72,7 +72,7 @@ class PageLogin extends React.Component {
     const { isQrOrderingShippingType, imageStyle } = this.props;
     const { isLogin } = user || {};
     const { sendOtp } = this.state;
-    const imageHeight = getImageHeight();
+    const imageHeight = getWebQRImageHeight();
 
     if (sendOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitNextPage();
@@ -80,7 +80,7 @@ class PageLogin extends React.Component {
 
     if (isQrOrderingShippingType && imageStyle?.height && prevImageStyle?.height !== imageHeight) {
       this.setState({
-        imageStyle: { height: `${getImageHeight()}px` },
+        imageStyle: { height: `${imageHeight}px` },
       });
     }
   }

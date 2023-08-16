@@ -1,4 +1,4 @@
-export const getImageHeight = () => {
+export const getWebQRImageHeight = () => {
   const windowInnerHeight = window.innerHeight;
   const headerHeight = document.querySelector('.header')?.clientHeight || 0;
   const imageElement = document.querySelector('.page-login__image-container') || null;
