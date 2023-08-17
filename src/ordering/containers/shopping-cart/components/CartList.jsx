@@ -49,7 +49,7 @@ class CartList extends Component {
 
   renderProductItemPrice(price, originalDisplayPrice) {
     return (
-      <div>
+      <div className="margin-top-bottom-smaller">
         {originalDisplayPrice ? (
           <CurrencyNumber
             className="cart-item__price text-size-small text-line-through"
@@ -119,7 +119,7 @@ class CartList extends Component {
   }
 
   render() {
-    const { items = [], unavailableItems = [], style } = this.props;
+    const { items = [], unavailableItems = [], style, isDineType } = this.props;
 
     const sortFn = (l, r) => {
       if (l.id < r.id) return -1;
@@ -135,6 +135,7 @@ class CartList extends Component {
             id,
             title,
             variationTexts,
+            isTakeaway,
             displayPrice,
             image,
             originalDisplayPrice,
@@ -142,6 +143,7 @@ class CartList extends Component {
             comments,
           } = cartItem;
           const commentsEl = this.renderCartItemComments(comments);
+          const shouldShowTakeawayVariant = isDineType && isTakeaway;
           const detailsEl = commentsEl ? (
             <>
               {this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
@@ -160,6 +162,7 @@ class CartList extends Component {
                 imageCover={this.renderImageCover(stockStatus)}
                 title={title}
                 variation={(variationTexts || []).join(', ')}
+                shouldShowTakeawayVariant={shouldShowTakeawayVariant}
                 details={detailsEl}
               >
                 {this.renderProductItemRightController(cartItem)}
@@ -179,6 +182,7 @@ CartList.propTypes = {
   style: PropTypes.object,
   // eslint-disable-next-line react/forbid-prop-types
   items: PropTypes.array,
+  isDineType: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   unavailableItems: PropTypes.array,
   onIncreaseCartItem: PropTypes.func,
@@ -190,6 +194,7 @@ CartList.defaultProps = {
   style: {},
   items: [],
   unavailableItems: [],
+  isDineType: false,
   onIncreaseCartItem: () => {},
   onDecreaseCartItem: () => {},
   onRemoveCartItem: () => {},

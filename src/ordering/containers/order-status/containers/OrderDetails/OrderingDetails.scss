@@ -19,16 +19,6 @@
     display: block;
   }
 
-  &__item-title {
-    width: 100%;
-    word-break: break-word;
-    hyphens: none;
-  }
-
-  &__item-variations {
-    color: $theme-color;
-  }
-
   &__billing-container {
     margin-top: 3.8vw;
   }

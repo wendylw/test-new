@@ -15,6 +15,7 @@ import address from '../../../redux/modules/address';
 import menu from '../../containers/Menu/redux';
 import promoPayLater from '../../containers/Promotion/redux';
 import foodCourt from '../../containers/food-court/redux';
+import growthbook from '../../../redux/modules/growthbook';
 
 const rootReducer = history =>
   combineReducers({
@@ -34,6 +35,7 @@ const rootReducer = history =>
     menu,
     promoPayLater,
     foodCourt,
+    growthbook,
   });
 
 export default rootReducer;

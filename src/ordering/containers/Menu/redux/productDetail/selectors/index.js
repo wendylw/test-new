@@ -7,7 +7,14 @@ import _isNumber from 'lodash/isNumber';
 import _sumBy from 'lodash/sumBy';
 import _isNil from 'lodash/isNil';
 import { API_REQUEST_STATUS, PRODUCT_STOCK_STATUS } from '../../../../../../common/utils/constants';
-import { getAllProducts, getFormatCurrencyFunction } from '../../../../../redux/modules/app';
+import {
+  getAllProducts,
+  getFormatCurrencyFunction,
+  getIsDineType,
+  getIsTakeawayType,
+  getEnableTakeaway,
+  getTakeawayCharge,
+} from '../../../../../redux/modules/app';
 import {
   getIsProductListReady,
   getTimeSlotDrawerVisible,
@@ -16,11 +23,15 @@ import {
   getHasSelectedProductItemInfo,
   getIsLocationConfirmModalVisible,
 } from '../../common/selectors';
+import { getIsFeatureEnabled } from '../../../../../../redux/modules/growthbook/selectors';
+import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { PRODUCT_UNABLE_ADD_TO_CART_REASONS, PRODUCT_VARIATION_TYPE } from '../../../constants';
 import { variationStructuredSelector } from './variationSelector';
 import { variationOptionStructuredSelector, formatVariationOptionPriceDiff } from './variationOptionSelector';
 import { getAllCategories } from '../../../../../../redux/modules/entities/categories';
 import { STOCK_STATUS_MAPPING } from '../../../../../../utils/gtm';
+
+export { getTakeawayCharge } from '../../../../../redux/modules/app';
 
 export const getProductDetailState = state => state.menu.productDetail;
 
@@ -257,6 +268,45 @@ export const getIsProductVariationFulfilled = createSelector(getProductVariation
 );
 
 /**
+ * Beep QR Takeaway from Table QR
+ */
+export const getHasExtraTakeawayCharge = createSelector(getTakeawayCharge, takeawayCharge => takeawayCharge > 0);
+
+export const getIsTakeawayOptionChecked = createSelector(getProductDetailState, state => state.isTakeawayOptionChecked);
+
+export const getFormattedTakeawayCharge = createSelector(
+  getTakeawayCharge,
+  getFormatCurrencyFunction,
+  (takeawayCharge, formatCurrency) =>
+    _isNil(takeawayCharge) ? '' : formatCurrency(takeawayCharge, { hiddenCurrency: true })
+);
+
+export const getIsQRTakeawayFeatureEnabled = state => getIsFeatureEnabled(state, FEATURE_KEYS.QR_TAKEAWAY);
+
+export const getIsTakeawayVariantAvailable = createSelector(
+  getIsDineType,
+  getEnableTakeaway,
+  getIsQRTakeawayFeatureEnabled,
+  (isDineType, enableTakeaway, isQRTakeawayFeatureEnabled) => isDineType && enableTakeaway && isQRTakeawayFeatureEnabled
+);
+
+export const getShouldIncludeTakeawayCharge = createSelector(
+  getHasExtraTakeawayCharge,
+  getIsTakeawayOptionChecked,
+  getIsTakeawayVariantAvailable,
+  (hasExtraTakeawayCharge, isTakeawayOptionChecked, isTakeawayVariantAvailable) =>
+    isTakeawayVariantAvailable && isTakeawayOptionChecked && hasExtraTakeawayCharge
+);
+
+// WB-5784: This is for the backward compatibility sake,
+// If the shipping type is takeaway, `isTakeaway` should always be true.
+export const getIsTakeawayProduct = createSelector(
+  getIsTakeawayType,
+  getIsTakeawayOptionChecked,
+  (isTakeawayType, isTakeawayOptionChecked) => isTakeawayType || isTakeawayOptionChecked
+);
+
+/**
  * is product detail ready
  */
 export const getIsProductDetailLoading = createSelector(
@@ -284,21 +334,35 @@ export const getSingleSelectedOptionsNotChildMapTotalPriceDiff = createSelector(
 );
 
 export const getSelectedOptionsTotalPriceDiff = createSelector(
+  getTakeawayCharge,
   getHasChildProduct,
+  getShouldIncludeTakeawayCharge,
   getAllSelectedOptionsTotalPriceDiff,
   getMultipleSelectedOptionsTotalPriceDiff,
   getSingleSelectedOptionsNotChildMapTotalPriceDiff,
   (
+    takeawayCharge,
     hasChildProduct,
+    shouldIncludeTakeawayCharge,
     allSelectedOptionsPriceDiff,
     multipleSelectedOptionsTotalPriceDiff,
     singleSelectedOptionsNotChildMapTotalPriceDiff
   ) => {
-    // if has child product, exclude the price diff of single choice options
-    if (hasChildProduct) {
-      return multipleSelectedOptionsTotalPriceDiff + singleSelectedOptionsNotChildMapTotalPriceDiff;
+    const getProductOptionsPriceDiff = () => {
+      // if has child product, exclude the price diff of single choice options
+      if (hasChildProduct) {
+        return multipleSelectedOptionsTotalPriceDiff + singleSelectedOptionsNotChildMapTotalPriceDiff;
+      }
+      return allSelectedOptionsPriceDiff;
+    };
+
+    const productOptionsPriceDiff = getProductOptionsPriceDiff();
+
+    if (shouldIncludeTakeawayCharge) {
+      return productOptionsPriceDiff + takeawayCharge;
     }
-    return allSelectedOptionsPriceDiff;
+
+    return productOptionsPriceDiff;
   }
 );
 
@@ -477,9 +541,9 @@ export const getNotesContents = state => state?.menu.productDetail.comments;
 
 export const getIfCommentsShowStatus = state => state.menu.productDetail.showComments;
 
-export const getIfShowVariations = createSelector(
+export const getShouldShowProductVariations = createSelector(
   getProductDetailData,
-  productDetailData => productDetailData.variations.length
+  productDetailData => productDetailData.variations.length > 0
 );
 
 export const getCouldShowProductDetailDrawer = createSelector(

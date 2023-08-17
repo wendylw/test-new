@@ -1,6 +1,6 @@
 import _isEmpty from 'lodash/isEmpty';
 import { isTNGMiniProgram, isAndroidWebview, isIOSWebview } from '../../common/utils';
-import { API_REQUEST_URL_PATTERNS } from './constants';
+import { API_REQUEST_URL_PATTERNS, API_URL_WARNING_BYPASS_LIST } from './constants';
 
 export const getIsDebugMode = () => process.env.NODE_ENV === 'development';
 
@@ -27,6 +27,12 @@ export const getAPIRequestRelativePath = path => {
     // eslint-disable-next-line no-unused-vars
     const [wildcardPath, _] = entry;
     return wildcardPath;
+  }
+
+  const isInBypassList = API_URL_WARNING_BYPASS_LIST.includes(filteredQueryPath);
+
+  if (isInBypassList) {
+    return filteredQueryPath;
   }
 
   // If we detect the path that matches known dynamic field patterns, remind devs to add the rule to API_REQUEST_URL_PATTERNS.
