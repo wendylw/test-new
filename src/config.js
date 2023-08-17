@@ -40,10 +40,12 @@ const getConsumerId = () => {
 
 const getIsGuest = () => {
   try {
-    return document.cookie
+    const isGuest = document.cookie
       .split(';')
       .find(s => s.includes('__sh_is_guest'))
       .split('=')[1];
+
+    return isGuest === 'true';
   } catch (e) {
     return null;
   }
