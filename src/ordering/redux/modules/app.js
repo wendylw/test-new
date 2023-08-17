@@ -398,9 +398,6 @@ export const actions = {
       dispatch({
         type: types.SET_CONSUMER_AS_GUEST_SUCCESS,
       });
-      console.log(111);
-
-      debugger;
 
       await postLoginGuest();
     } catch (error) {
