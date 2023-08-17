@@ -896,13 +896,13 @@ const user = (state = initialState.user, action) => {
     case types.SET_CONSUMER_AS_GUEST_REQUEST:
       return {
         ...state,
-        getGuestModeRequest: { ...state.getGuestModeRequest, status: API_REQUEST_STATUS.PENDING, error: null },
+        guestModeRequest: { ...state.guestModeRequest, status: API_REQUEST_STATUS.PENDING, error: null },
       };
     case types.SET_CONSUMER_AS_GUEST_SUCCESS:
       return {
         ...state,
-        getGuestModeRequest: {
-          ...state.getGuestModeRequest,
+        guestModeRequest: {
+          ...state.guestModeRequest,
           isGuestMode: true,
           status: API_REQUEST_STATUS.FULFILLED,
           error: null,
@@ -911,8 +911,8 @@ const user = (state = initialState.user, action) => {
     case types.SET_CONSUMER_AS_GUEST_FAILURE:
       return {
         ...state,
-        getGuestModeRequest: {
-          ...state.getGuestModeRequest,
+        guestModeRequest: {
+          ...state.guestModeRequest,
           isGuestMode: false,
           status: API_REQUEST_STATUS.REJECTED,
           error,
