@@ -398,6 +398,9 @@ export const actions = {
       dispatch({
         type: types.SET_CONSUMER_AS_GUEST_SUCCESS,
       });
+      console.log(111);
+
+      debugger;
 
       await postLoginGuest();
     } catch (error) {
@@ -896,12 +899,12 @@ const user = (state = initialState.user, action) => {
     case types.SET_CONSUMER_AS_GUEST_REQUEST:
       return {
         ...state,
-        getGuestModeRequest: { ...state.getGuestModeRequest, status: API_REQUEST_STATUS.PENDING, error: null },
+        guestModeRequest: { ...state.getGuestModeRequest, status: API_REQUEST_STATUS.PENDING, error: null },
       };
     case types.SET_CONSUMER_AS_GUEST_SUCCESS:
       return {
         ...state,
-        getGuestModeRequest: {
+        guestModeRequest: {
           ...state.getGuestModeRequest,
           isGuestMode: true,
           status: API_REQUEST_STATUS.FULFILLED,
@@ -911,7 +914,7 @@ const user = (state = initialState.user, action) => {
     case types.SET_CONSUMER_AS_GUEST_FAILURE:
       return {
         ...state,
-        getGuestModeRequest: {
+        guestModeRequest: {
           ...state.getGuestModeRequest,
           isGuestMode: false,
           status: API_REQUEST_STATUS.REJECTED,
