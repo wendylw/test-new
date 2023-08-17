@@ -16,7 +16,6 @@ import {
   actions as appActionCreators,
   getUser,
   getIsLoginRequestFailed,
-  getIsQrOrderingShippingType,
   getStoreInfoForCleverTap,
 } from '../../redux/modules/app';
 import {
@@ -24,6 +23,7 @@ import {
   getShouldShowLoader,
   getOtpErrorTextI18nKey,
   getShouldShowErrorPopUp,
+  getShouldShowGuestOption,
   getOtpErrorPopUpI18nKeys,
   getIsOtpErrorFieldVisible,
   getIsOtpInitialRequestFailed,
@@ -56,13 +56,13 @@ class PageLogin extends React.Component {
   captchaRef = React.createRef();
 
   componentDidMount() {
-    const { isQrOrderingShippingType } = this.props;
+    const { shouldShowGuestOption } = this.props;
 
     if (Utils.isTNGMiniProgram()) {
       this.loginInTngMiniProgram();
     }
 
-    if (isQrOrderingShippingType) {
+    if (shouldShowGuestOption) {
       this.setState({ imageStyle: { height: `${getWebQRImageHeight()}px` } });
     }
 
@@ -71,7 +71,7 @@ class PageLogin extends React.Component {
 
   componentDidUpdate(prevProps) {
     const { user, imageStyle: prevImageStyle } = prevProps;
-    const { isQrOrderingShippingType, imageStyle } = this.props;
+    const { shouldShowGuestOption, imageStyle } = this.props;
     const { isLogin } = user || {};
     const { sendOtp } = this.state;
     const imageHeight = getWebQRImageHeight();
@@ -80,7 +80,7 @@ class PageLogin extends React.Component {
       this.visitNextPage();
     }
 
-    if (isQrOrderingShippingType && imageStyle?.height && prevImageStyle?.height !== imageHeight) {
+    if (shouldShowGuestOption && imageStyle?.height && prevImageStyle?.height !== imageHeight) {
       this.setState({
         imageStyle: { height: `${imageHeight}px` },
       });
@@ -424,7 +424,7 @@ class PageLogin extends React.Component {
       isRequestSucceed,
       isOtpRequestPending,
       isOtpErrorFieldVisible,
-      isQrOrderingShippingType,
+      shouldShowGuestOption,
     } = this.props;
     const { isPhoneNumberValid, imageStyle } = this.state;
     const { isLogin, phone, country } = user || {};
@@ -446,7 +446,7 @@ class PageLogin extends React.Component {
       classList.push('active');
     }
 
-    if (isQrOrderingShippingType) {
+    if (shouldShowGuestOption) {
       classList.push('qr-ordering');
     }
 
@@ -496,7 +496,7 @@ class PageLogin extends React.Component {
                 <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
               </p>
 
-              {isQrOrderingShippingType && (
+              {shouldShowGuestOption && (
                 <GuestModeButton onContinueAsGuest={this.handleClickContinueAsGuestButton.bind(this)} />
               )}
             </PhoneViewContainer>
@@ -534,7 +534,7 @@ export default compose(
       isOtpRequestFailed: getIsOtpRequestStatusRejected(state),
       isOtpErrorFieldVisible: getIsOtpErrorFieldVisible(state),
       isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
-      isQrOrderingShippingType: getIsQrOrderingShippingType(state),
+      shouldShowGuestOption: getShouldShowGuestOption(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
