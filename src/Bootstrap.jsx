@@ -13,6 +13,7 @@ import * as NativeMethods from './utils/native-methods';
 import logger from './utils/monitoring/logger';
 import { initDevTools } from './utils/dev-tools';
 import { isRequiredDevTools } from './utils/tng-utils';
+import './utils/growthbook/setup';
 
 const AsyncStoresApp = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "STO" */ './stores')));
 

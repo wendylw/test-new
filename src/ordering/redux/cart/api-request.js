@@ -28,10 +28,11 @@ export const postCartItems = ({
   quantityChange,
   comments,
   variations: selectedOptions = [],
+  isTakeaway,
   shippingType,
   fulfillDate,
 }) => {
-  const payload = { productId, comments, quantityChange, selectedOptions };
+  const payload = { productId, comments, quantityChange, selectedOptions, isTakeaway };
   const queryParams = { shippingType };
 
   if (fulfillDate) {

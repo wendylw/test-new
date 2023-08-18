@@ -240,6 +240,7 @@ class PayLater extends Component {
         <CartList
           isLazyLoad
           items={cartItems}
+          isDineType
           unavailableItems={unavailableCartItems}
           onIncreaseCartItem={this.handleIncreaseCartItem}
           onDecreaseCartItem={this.handleDecreaseCartItem}
@@ -262,7 +263,7 @@ class PayLater extends Component {
     }, 300);
   };
 
-  getUpdateShoppingCartItemData = ({ productId, comments, variations }, quantityChange) => ({
+  getUpdateShoppingCartItemData = ({ productId, comments, variations, isTakeaway }, quantityChange) => ({
     productId,
     quantityChange,
     comments,
@@ -271,6 +272,7 @@ class PayLater extends Component {
       optionId,
       quantity,
     })),
+    isTakeaway,
   });
 
   goToTableSummaryPage = () => {

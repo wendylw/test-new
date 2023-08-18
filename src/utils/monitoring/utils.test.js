@@ -300,6 +300,20 @@ describe('utils/monitoring/utils', () => {
         });
       });
 
+      // Hide warning even if the path not in the pattern list but is in the bypass list
+      describe('hide warning in debug mode (for API URL bypass list)', () => {
+        beforeEach(() => {
+          process.env.NODE_ENV = 'development';
+          console.warn = jest.fn();
+        });
+
+        test('return original path even it is not in the pattern list', () => {
+          const postUrl = '/api/gql/AddOrUpdateShoppingCartItem';
+          expect(getAPIRequestRelativePath(postUrl)).toBe('/api/gql/AddOrUpdateShoppingCartItem');
+          expect(console.warn).toHaveBeenCalledTimes(0);
+        });
+      });
+
       // Hide warning even if the path matches the wildcard patterns but is not in the pattern list
       describe('hide warning in production mode', () => {
         beforeEach(() => {
