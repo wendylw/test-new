@@ -21,6 +21,14 @@ import {
 export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 'requestId', null);
 
 /**
+ * get store redemption is new customer
+ * @param {*} state
+ * @returns boolean | null
+ */
+export const getIsStoreRedemptionNewCustomer = state =>
+  _get(state.storeRedemption, 'sharedInfoData.isNewCustomer', false);
+
+/**
  * get consumer share info available status
  * @param {*} state
  * @returns boolean
