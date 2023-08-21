@@ -53,6 +53,10 @@ export const initialState = {
       status: null,
       error: null,
     },
+    loginTngRequest: {
+      status: null,
+      error: null,
+    },
     country: Utils.getCountry(localePhoneNumber, navigator.language, AVAILABLE_COUNTRIES, 'MY'),
     phone: localePhoneNumber,
     prompt: null,
@@ -336,6 +340,10 @@ export const actions = {
   },
 
   loginByTngMiniProgram: () => async (dispatch, getState) => {
+    dispatch({
+      type: types.CREATE_LOGIN_TNGD_REQUEST,
+    });
+
     if (!isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
     }
@@ -348,7 +356,16 @@ export const actions = {
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
       await dispatch(actions.loginApp({ accessToken, refreshToken }));
+
+      dispatch({
+        type: types.CREATE_LOGIN_TNGD_SUCCESS,
+      });
     } catch (error) {
+      dispatch({
+        type: types.CREATE_LOGIN_TNGD_FAILURE,
+        error,
+      });
+
       logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
 
       return false;
@@ -599,6 +616,30 @@ const user = (state = initialState.user, action) => {
       return { ...state, showLoginModal: true };
     case types.HIDE_LOGIN_MODAL:
       return { ...state, showLoginModal: false };
+    case types.CREATE_LOGIN_TNGD_REQUEST:
+      return {
+        ...state,
+        loginTngRequest: {
+          status: API_REQUEST_STATUS.PENDING,
+          error: null,
+        },
+      };
+    case types.CREATE_LOGIN_TNGD_SUCCESS:
+      return {
+        ...state,
+        loginTngRequest: {
+          status: API_REQUEST_STATUS.FULFILLED,
+          error: null,
+        },
+      };
+    case types.CREATE_LOGIN_TNGD_FAILURE:
+      return {
+        ...state,
+        loginTngRequest: {
+          status: API_REQUEST_STATUS.REJECTED,
+          error,
+        },
+      };
     default:
       return state;
   }

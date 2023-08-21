@@ -40,15 +40,9 @@ import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import logger from '../../../utils/monitoring/logger';
-import {
-  isFromBeepSite,
-  isFromBeepSiteOrderHistory,
-  isFromFoodCourt,
-  isProductSoldOut,
-  isJSONString,
-} from '../../../common/utils';
+import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt, isProductSoldOut } from '../../../common/utils';
 import { replace } from 'connected-react-router';
-import { confirm, toast } from '../../../common/utils/feedback';
+import { toast } from '../../../common/utils/feedback';
 import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 
 const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
@@ -762,24 +756,6 @@ export const actions = {
         payload: result,
       });
     } catch (error) {
-      if (error?.message && isJSONString(error.message)) {
-        const { code } = JSON.parse(error.message);
-
-        code === 10 &&
-          confirm(i18next.t('ApiError:LoginByTngMiniProgramFailed'), {
-            closeByBackButton: false,
-            closeByBackDrop: false,
-            confirmButtonContent: i18next.t('Common:TryAgain'),
-            onSelection: async status => {
-              if (status) {
-                // try again
-              } else {
-                // cancel
-              }
-            },
-          });
-      }
-
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
         error,
