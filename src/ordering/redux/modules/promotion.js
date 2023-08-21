@@ -2,10 +2,13 @@ import { PROMOTION_TYPES } from '../types';
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
+import logger from '../../../utils/monitoring/logger';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { getBusinessUTCOffset, getCartBilling } from './app';
+import { getVoucherConsumerList, getSearchPromotionInfo } from './api-request';
+import { getBusinessUTCOffset, getCartBilling, getUserConsumerId } from './app';
 import _get from 'lodash/get';
-const { PROMO_TYPE } = Constants;
+
+const { PROMO_TYPE, API_REQUEST_STATUS } = Constants;
 
 const initialState = {
   promoCode: '',
@@ -16,6 +19,14 @@ const initialState = {
   foundPromo: {},
   hasSearchedForPromo: false,
   selectedPromo: {},
+  fetchVoucherListRequest: {
+    status: null,
+    error: null,
+  },
+  fetchPromoInfoRequest: {
+    status: null,
+    error: null,
+  },
 };
 
 export const actions = {
@@ -123,44 +134,48 @@ export const actions = {
     type: PROMOTION_TYPES.INITIAL_PROMOTION_CODE,
   }),
   fetchConsumerVoucherList: () => async (dispatch, getState) => {
-    const state = getState();
-    const consumerId = state.app.user.consumerId;
+    try {
+      dispatch({
+        type: PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_REQUEST,
+      });
 
-    const result = await dispatch({
-      [API_REQUEST]: {
-        types: [
-          PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_REQUEST,
-          PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_SUCCESS,
-          PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_FAILURE,
-        ],
-        ...Url.API_URLS.GET_VOUCHER_INFO({
-          consumerId,
-        }),
-      },
-    });
+      const state = getState();
+      const consumerId = getUserConsumerId(state);
+      const result = await getVoucherConsumerList(consumerId);
 
-    return result;
+      await dispatch({
+        type: PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_SUCCESS,
+        response: result,
+      });
+    } catch (error) {
+      dispatch({
+        type: PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_FAILURE,
+        error: error?.message,
+      });
+    }
   },
   getPromoInfo: () => async (dispatch, getState) => {
-    const state = getState();
-    const promoCode = state.promotion.promoCode;
-    const consumerId = state.app.user.consumerId;
-    const business = state.app.business;
+    try {
+      dispatch({
+        type: PROMOTION_TYPES.FETCH_PROMO_INFO_REQUEST,
+      });
 
-    await dispatch({
-      [API_REQUEST]: {
-        types: [
-          PROMOTION_TYPES.FETCH_PROMO_INFO_REQUEST,
-          PROMOTION_TYPES.FETCH_PROMO_INFO_SUCCESS,
-          PROMOTION_TYPES.FETCH_PROMO_INFO_FAILURE,
-        ],
-        ...Url.API_URLS.GET_VOUCHER_INFO({
-          promoCode,
-          consumerId,
-          business,
-        }),
-      },
-    });
+      const state = getState();
+      const promoCode = state.promotion.promoCode;
+      const consumerId = state.app.user.consumerId;
+      const business = state.app.business;
+      const result = await getSearchPromotionInfo({ promoCode, consumerId, business });
+
+      await dispatch({
+        type: PROMOTION_TYPES.FETCH_PROMO_INFO_SUCCESS,
+        response: result,
+      });
+    } catch (error) {
+      await dispatch({
+        type: PROMOTION_TYPES.FETCH_PROMO_INFO_FAILURE,
+        error: error?.message,
+      });
+    }
   },
   setSearchMode: isSearchingMode => async (dispatch, getState) => {
     await dispatch({
@@ -238,6 +253,14 @@ const reducer = (state = initialState, action) => {
         ...state,
         ...initialState,
       };
+    case PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_REQUEST:
+      return {
+        ...state,
+        fetchVoucherListRequest: {
+          status: API_REQUEST_STATUS.PENDING,
+          error: null,
+        },
+      };
     case PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_SUCCESS:
       const vouchers = action.response;
       const voucherList = {
@@ -249,6 +272,26 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         voucherList,
+        fetchVoucherListRequest: {
+          status: API_REQUEST_STATUS.FULFILLED,
+          error: null,
+        },
+      };
+    case PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_FAILURE:
+      return {
+        ...state,
+        fetchVoucherListRequest: {
+          status: API_REQUEST_STATUS.REJECTED,
+          error: action.error,
+        },
+      };
+    case PROMOTION_TYPES.FETCH_PROMO_INFO_REQUEST:
+      return {
+        ...state,
+        fetchPromoInfoRequest: {
+          status: API_REQUEST_STATUS.PENDING,
+          error: null,
+        },
       };
     case PROMOTION_TYPES.FETCH_PROMO_INFO_SUCCESS:
       const promo = action.response;
@@ -262,6 +305,18 @@ const reducer = (state = initialState, action) => {
         ...state,
         foundPromo,
         hasSearchedForPromo: true,
+        fetchPromoInfoRequest: {
+          status: API_REQUEST_STATUS.FULFILLED,
+          error: null,
+        },
+      };
+    case PROMOTION_TYPES.FETCH_PROMO_INFO_FAILURE:
+      return {
+        ...state,
+        fetchPromoInfoRequest: {
+          status: API_REQUEST_STATUS.REJECTED,
+          error: action.error,
+        },
       };
     case PROMOTION_TYPES.UPDATE_SEARCH_MODE:
       return {

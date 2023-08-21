@@ -319,7 +319,8 @@ export const getHasSaveFavoriteStoreSupport = createSelector(getIsWebview, isWeb
 export const getShouldShowFavoriteButton = createSelector(
   getIsDeliveryOrder,
   getHasSaveFavoriteStoreSupport,
-  (isDeliveryOrder, hasSaveFavoriteStoreSupport) => isDeliveryOrder && hasSaveFavoriteStoreSupport
+  getStoreId,
+  (isDeliveryOrder, hasSaveFavoriteStoreSupport, storeId) => isDeliveryOrder && hasSaveFavoriteStoreSupport && !!storeId
 );
 
 export const getHasUserLoginByBeepAppRequestFulfilled = createSelector(

@@ -13,3 +13,5 @@ export const getPayments = (storeId, shippingType, amount) =>
 
 // API for submit order and initPayment for all payment
 export const initPaymentWithOrder = data => post('/payment/init-with-order', data);
+
+export const createOrderStatusRequest = orderId => get(`/api/transactions/${orderId}/status`);
