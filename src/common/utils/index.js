@@ -385,3 +385,15 @@ export const extractDataAttributes = (props = {}) => {
   });
   return dataAttributes;
 };
+
+export const isJSONString = value => {
+  let isValidJSON = true;
+
+  try {
+    JSON.parse(value);
+  } catch (error) {
+    isValidJSON = false;
+  }
+
+  return isValidJSON;
+};
