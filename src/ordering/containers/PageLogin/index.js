@@ -492,7 +492,7 @@ class PageLogin extends React.Component {
               onValidate={this.handleUpdatePhoneNumberValidation}
               onSubmit={this.handleClickContinueButton.bind(this)}
             >
-              <p className="page-login__terms-privacy text-center margin-top-bottom-small text-line-height-base text-opacity">
+              <p className="page-login__terms-privacy text-center margin-top-bottom-small text-line-height-base">
                 <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
               </p>
 

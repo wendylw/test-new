@@ -26,6 +26,10 @@
     display: none;
   }
 
+  &__terms-privacy {
+    color: $gray-3;
+  }
+
   &.qr-ordering {
     position: absolute;
     display: -ms-flexbox;
