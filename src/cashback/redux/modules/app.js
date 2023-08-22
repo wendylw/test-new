@@ -31,7 +31,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo, getCoreBusinessInfo } from './api-request';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
-import { isTNGMiniProgram } from '../../../common/utils';
+import { isJSONString, isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
@@ -363,7 +363,7 @@ export const actions = {
     } catch (error) {
       dispatch({
         type: types.CREATE_LOGIN_TNGD_FAILURE,
-        error,
+        error: isJSONString(error) ? JSON.parse(error) : error,
       });
 
       logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
@@ -759,6 +759,7 @@ export default combineReducers({
 // selectors
 export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
+export const getLoginTngRequest = state => state.app.user.loginTngRequest;
 export const getUserProfile = state => state.app.user.profile;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
@@ -943,3 +944,11 @@ export const getShouldShowLoader = createSelector(
   getIsLoginRequestStatusPending,
   (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
 );
+
+export const getLoginTngRequestError = createSelector(getLoginTngRequest, loginTngRequest => loginTngRequest.error);
+
+export const getIsTngAuthorizationError = createSelector(getLoginTngRequestError, loginTngRequestError => {
+  const { code } = loginTngRequestError || {};
+
+  return code === 10;
+});

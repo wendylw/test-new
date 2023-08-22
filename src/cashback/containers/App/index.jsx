@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import {
   actions as appActionCreators,
+  getUserCountry,
   getError,
   getLoginBannerPrompt,
   getIsUserLogin,
@@ -12,6 +13,7 @@ import {
   getOnlineStoreInfoFavicon,
   getIsLoginModalShown,
   getUserConsumerId,
+  getIsTngAuthorizationError,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
@@ -23,12 +25,14 @@ import Routes from '../Routes';
 import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
+import { confirm } from '../../../common/utils/feedback';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import logger from '../../../utils/monitoring/logger';
+import Clevertap from '../../../utils/clevertap';
 
 class App extends Component {
   async componentDidMount() {
-    const { appActions } = this.props;
+    const { t, appActions, userCountry } = this.props;
 
     this.visitErrorPage();
 
@@ -45,6 +49,32 @@ class App extends Component {
       if (isTNGMiniProgram()) {
         // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
         await appActions.loginByTngMiniProgram();
+
+        const { isTngAuthorizationError } = this.props;
+
+        if (isTngAuthorizationError) {
+          confirm(t('LoginByTngMiniProgramFailed'), {
+            closeByBackButton: false,
+            closeByBackDrop: false,
+            confirmButtonContent: t('TryAgain'),
+            onSelection: async status => {
+              if (status) {
+                // try again
+                Clevertap.pushEvent('POS Redemption Landing Page (Error Pop-up) - Click Try Again', {
+                  country: userCountry,
+                });
+                await appActions.loginByTngMiniProgram();
+              } else {
+                // cancel
+                Clevertap.pushEvent('POS Redemption Landing Page (Error Pop-up) - Click Cancel', {
+                  country: userCountry,
+                });
+              }
+            },
+          });
+
+          return;
+        }
       }
 
       await appActions.loadConsumerLoginStatus();
@@ -137,6 +167,7 @@ class App extends Component {
 App.displayName = 'CashbackApp';
 
 App.propTypes = {
+  userCountry: PropTypes.string,
   loginBannerPrompt: PropTypes.string,
   isUserLogin: PropTypes.bool,
   userConsumerId: PropTypes.string,
@@ -147,6 +178,7 @@ App.propTypes = {
   pageError: PropTypes.shape({
     code: PropTypes.number,
   }),
+  isTngAuthorizationError: PropTypes.bool,
   isLoginModalShown: PropTypes.bool,
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
@@ -166,12 +198,14 @@ App.propTypes = {
 };
 
 App.defaultProps = {
+  userCountry: null,
   loginBannerPrompt: null,
   isUserLogin: false,
   userConsumerId: null,
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
+  isTngAuthorizationError: false,
   isLoginModalShown: false,
   appActions: {},
 };
@@ -188,6 +222,8 @@ export default compose(
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
       pageError: getPageError(state),
+      isTngAuthorizationError: getIsTngAuthorizationError(state),
+      userCountry: getUserCountry(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
