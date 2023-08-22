@@ -8,6 +8,6 @@ export const getSearchPromotionInfo = ({ consumerId, business, promoCode }) =>
   get(`/api/consumers/${consumerId}/vouchers`, {
     queryParams: {
       business,
-      promoCode,
+      search: promoCode,
     },
   });
