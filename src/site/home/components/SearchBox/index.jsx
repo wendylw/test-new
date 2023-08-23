@@ -9,12 +9,7 @@ const SearchBox = ({ onClick }) => {
 
   return (
     <div className="sm:tw-mt-16px tw-mt-16 sm:tw-mb-8px tw-mb-8">
-      <button
-        className={styles.SearchBoxContainer}
-        data-testid="searchStore"
-        data-test-id="site.home.search-box"
-        onClick={onClick}
-      >
+      <button className={styles.SearchBoxContainer} data-test-id="site.home.search-box" onClick={onClick}>
         <MagnifyingGlass className={styles.SearchBoxIcon} weight="light" />
         <span className={styles.SearchBoxContent}>{t('SearchRestaurantPlaceholder')}</span>
       </button>
