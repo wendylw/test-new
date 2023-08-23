@@ -12,12 +12,18 @@ import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import ApiFetchError from '../../../utils/api/api-fetch-error';
-import { actions as appActionCreators, getUser, getIsLoginRequestFailed } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getUser,
+  getIsLoginRequestFailed,
+  getStoreInfoForCleverTap,
+} from '../../redux/modules/app';
 import {
   getOtpRequestError,
   getShouldShowLoader,
   getOtpErrorTextI18nKey,
   getShouldShowErrorPopUp,
+  getShouldShowGuestOption,
   getOtpErrorPopUpI18nKeys,
   getIsOtpErrorFieldVisible,
   getIsOtpInitialRequestFailed,
@@ -26,13 +32,16 @@ import {
 } from './redux/selectors';
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
+import GuestModeButton from './components/GuestModeButton';
 import './OrderingPageLogin.scss';
 import config from '../../../config';
 import prefetch from '../../../common/utils/prefetch-assets';
 import logger from '../../../utils/monitoring/logger';
 import Utils from '../../../utils/utils';
 import { alert } from '../../../common/utils/feedback';
+import { getWebQRImageHeight } from './utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
+import CleverTap from '../../../utils/clevertap';
 
 const { ROUTER_PATHS, OTP_REQUEST_TYPES, RESEND_OTP_TIME } = Constants;
 
@@ -41,25 +50,40 @@ class PageLogin extends React.Component {
     sendOtp: false,
     shouldShowModal: false,
     isPhoneNumberValid: false,
+    imageStyle: {},
   };
 
   captchaRef = React.createRef();
 
   componentDidMount() {
+    const { shouldShowGuestOption } = this.props;
+
     if (Utils.isTNGMiniProgram()) {
       this.loginInTngMiniProgram();
+    }
+
+    if (shouldShowGuestOption) {
+      this.setState({ imageStyle: { height: `${getWebQRImageHeight()}px` } });
     }
 
     prefetch(['ORD_MNU'], ['OrderingDelivery']);
   }
 
   componentDidUpdate(prevProps) {
-    const { user } = prevProps;
+    const { user, imageStyle: prevImageStyle } = prevProps;
+    const { shouldShowGuestOption, imageStyle } = this.props;
     const { isLogin } = user || {};
     const { sendOtp } = this.state;
+    const imageHeight = getWebQRImageHeight();
 
     if (sendOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitNextPage();
+    }
+
+    if (shouldShowGuestOption && imageStyle?.height && prevImageStyle?.height !== imageHeight) {
+      this.setState({
+        imageStyle: { height: `${imageHeight}px` },
+      });
     }
   }
 
@@ -168,9 +192,12 @@ class PageLogin extends React.Component {
   }
 
   async handleClickContinueButton(phone, type) {
+    const { storeInfoForCleverTap } = this.props;
     const payload = { phone, type };
+
     this.setState({ sendOtp: false });
     logger.log('Ordering_PageLogin_ClickContinueButton');
+    CleverTap.pushEvent('Login - Continue', storeInfoForCleverTap);
 
     try {
       const shouldSkipReCAPTCHACheck = !config.recaptchaEnabled;
@@ -302,6 +329,23 @@ class PageLogin extends React.Component {
     }
   }
 
+  async handleClickContinueAsGuestButton() {
+    const { appActions, storeInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent('Login - Continue as Guest', storeInfoForCleverTap);
+
+    try {
+      await appActions.setConsumerAsGuest();
+
+      this.visitNextPage();
+    } catch (error) {
+      // NOTE: No need to throw an error, the error is used to log an event only.
+      logger.error('Ordering_PageLogin_LoginAsGuestFailed', {
+        message: error?.message,
+      });
+    }
+  }
+
   goBack = () => {
     const { history, location } = this.props;
     const { shouldGoBack } = location.state || {};
@@ -380,8 +424,9 @@ class PageLogin extends React.Component {
       isRequestSucceed,
       isOtpRequestPending,
       isOtpErrorFieldVisible,
+      shouldShowGuestOption,
     } = this.props;
-    const { isPhoneNumberValid } = this.state;
+    const { isPhoneNumberValid, imageStyle } = this.state;
     const { isLogin, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
 
@@ -401,6 +446,10 @@ class PageLogin extends React.Component {
       classList.push('active');
     }
 
+    if (shouldShowGuestOption) {
+      classList.push('qr-ordering');
+    }
+
     return (
       <React.Fragment>
         <section className={classList.join(' ')} data-test-id="ordering.login.container">
@@ -413,7 +462,10 @@ class PageLogin extends React.Component {
             navFunc={this.goBack}
           />
           <div className="page-login__container">
-            <figure className="page-login__image-container padding-top-bottom-normal margin-top-bottom-small">
+            <figure
+              className="page-login__image-container padding-top-bottom-normal margin-top-bottom-small"
+              style={imageStyle}
+            >
               <img
                 src={beepLoginActive}
                 alt="otp active"
@@ -440,9 +492,13 @@ class PageLogin extends React.Component {
               onValidate={this.handleUpdatePhoneNumberValidation}
               onSubmit={this.handleClickContinueButton.bind(this)}
             >
-              <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
+              <p className="page-login__terms-privacy text-center margin-top-bottom-small text-line-height-base">
                 <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
               </p>
+
+              {shouldShowGuestOption && (
+                <GuestModeButton onContinueAsGuest={this.handleClickContinueAsGuestButton.bind(this)} />
+              )}
             </PhoneViewContainer>
           </div>
         </section>
@@ -478,6 +534,8 @@ export default compose(
       isOtpRequestFailed: getIsOtpRequestStatusRejected(state),
       isOtpErrorFieldVisible: getIsOtpErrorFieldVisible(state),
       isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
+      shouldShowGuestOption: getShouldShowGuestOption(state),
+      storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
