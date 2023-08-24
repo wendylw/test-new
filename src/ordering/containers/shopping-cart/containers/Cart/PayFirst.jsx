@@ -449,7 +449,7 @@ class PayFirst extends Component {
       history.push({
         pathname,
         search: window.location.search,
-        state: { shouldGoBack: true },
+        state: { shouldGoBack: true, from: ROUTER_PATHS.ORDERING_CART },
       });
     });
 

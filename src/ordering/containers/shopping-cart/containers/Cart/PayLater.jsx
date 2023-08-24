@@ -149,7 +149,7 @@ class PayLater extends Component {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
-        state: { shouldGoBack: true },
+        state: { shouldGoBack: true, from: Constants.ROUTER_PATHS.ORDERING_CART },
       });
 
       return;
