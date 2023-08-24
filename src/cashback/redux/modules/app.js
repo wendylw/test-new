@@ -363,7 +363,7 @@ export const actions = {
     } catch (error) {
       dispatch({
         type: types.CREATE_LOGIN_TNGD_FAILURE,
-        error: isJSONString(error) ? JSON.parse(error) : error,
+        error: isJSONString(error?.message) ? JSON.parse(error.message) : error,
       });
 
       logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
