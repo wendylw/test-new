@@ -38,6 +38,19 @@ const getConsumerId = () => {
   }
 };
 
+const getIsGuest = () => {
+  try {
+    const isGuest = document.cookie
+      .split(';')
+      .find(s => s.includes('__sh_is_guest'))
+      .split('=')[1];
+
+    return isGuest === 'true';
+  } catch (e) {
+    return null;
+  }
+};
+
 const config = {
   beepOnlineStoreUrl: business => (process.env.REACT_APP_MERCHANT_STORE_URL || '').replace('%business%', business),
   storehubPaymentResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_RESPONSE_URL,
@@ -66,6 +79,7 @@ const config = {
   table: getTableId(),
   storeId: getStoreId(),
   consumerId: getConsumerId(),
+  isGuest: getIsGuest(),
   PUBLIC_URL: process.env.PUBLIC_URL || '',
   googleMapsAPIKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
   googleRecaptchaSiteKey: process.env.REACT_APP_GOOGLE_RECAPTCHA_SITE_KEY,

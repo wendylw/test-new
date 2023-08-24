@@ -33,7 +33,7 @@ import {
 } from '../../../redux/modules/address/selectors';
 import cartReducer from '../cart';
 import { getCartItems as getNewCartItems } from '../cart/selectors';
-import { getProfileInfo } from './api-request';
+import { getProfileInfo, postLoginGuest } from './api-request';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
@@ -100,6 +100,11 @@ const CartModel = {
 export const initialState = {
   user: {
     isWebview: Utils.isWebview(),
+    guestModeRequest: {
+      isGuestMode: config.isGuest,
+      status: null,
+      error: null,
+    },
     isLogin: false,
     isExpired: false,
     consumerId: config.consumerId,
@@ -383,6 +388,25 @@ export const actions = {
       },
     },
   }),
+
+  setConsumerAsGuest: () => async dispatch => {
+    dispatch({
+      type: types.SET_CONSUMER_AS_GUEST_REQUEST,
+    });
+
+    try {
+      dispatch({
+        type: types.SET_CONSUMER_AS_GUEST_SUCCESS,
+      });
+
+      await postLoginGuest();
+    } catch (error) {
+      dispatch({
+        type: types.SET_CONSUMER_AS_GUEST_FAILURE,
+        error,
+      });
+    }
+  },
 
   syncLoginFromNative: () => async (dispatch, getState) => {
     try {
@@ -869,6 +893,31 @@ const user = (state = initialState.user, action) => {
   switch (type) {
     case types.RESET_CREATE_OTP_REQUEST:
       return { ...state, isFetching: false, isError: false };
+    case types.SET_CONSUMER_AS_GUEST_REQUEST:
+      return {
+        ...state,
+        guestModeRequest: { ...state.guestModeRequest, status: API_REQUEST_STATUS.PENDING, error: null },
+      };
+    case types.SET_CONSUMER_AS_GUEST_SUCCESS:
+      return {
+        ...state,
+        guestModeRequest: {
+          ...state.guestModeRequest,
+          isGuestMode: true,
+          status: API_REQUEST_STATUS.FULFILLED,
+          error: null,
+        },
+      };
+    case types.SET_CONSUMER_AS_GUEST_FAILURE:
+      return {
+        ...state,
+        guestModeRequest: {
+          ...state.guestModeRequest,
+          isGuestMode: false,
+          status: API_REQUEST_STATUS.REJECTED,
+          error,
+        },
+      };
     case types.FETCH_LOGIN_STATUS_REQUEST:
       return { ...state, isFetching: true, fetchLoginRequestStatus: API_REQUEST_STATUS.PENDING };
     case types.CREATE_OTP_REQUEST:
@@ -1339,6 +1388,20 @@ export const getOtpRequest = state => state.app.user.otpRequest;
 export const getUserIsExpired = state => state.app.user.isExpired;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
+
+export const getIsGuestMode = createSelector(getUser, user => _get(user, 'guestModeRequest.isGuestMode', false));
+
+export const getIsGuestModeRequestStatus = createSelector(getUser, user => _get(user, 'guestModeRequest.status', null));
+
+export const getIsGuestModeRequestFulfilled = createSelector(
+  getIsGuestModeRequestStatus,
+  status => status === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsGuestModeRequestRejected = createSelector(
+  getIsGuestModeRequestStatus,
+  status => status === API_REQUEST_STATUS.REJECTED
+);
 
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
@@ -1829,8 +1892,8 @@ export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, busin
 export const getIsQROrderingLoginFree = createSelector(
   getAllowAnonymousQROrdering,
   getIsQROrder,
-  getEnablePayLater,
-  (allowAnonymousQROrdering, isQROrder) => isQROrder && allowAnonymousQROrdering
+  getIsGuestMode,
+  (allowAnonymousQROrdering, isQROrder, isGuestMode) => isQROrder && (allowAnonymousQROrdering || isGuestMode)
 );
 
 export const getIsLoginFree = createSelector(
