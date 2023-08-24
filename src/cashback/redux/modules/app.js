@@ -947,8 +947,7 @@ export const getShouldShowLoader = createSelector(
 
 export const getLoginTngRequestError = createSelector(getLoginTngRequest, loginTngRequest => loginTngRequest.error);
 
-export const getIsTngAuthorizationError = createSelector(getLoginTngRequestError, loginTngRequestError => {
-  const { code } = loginTngRequestError || {};
-
-  return code === 10;
-});
+export const getIsTngAuthorizationError = createSelector(
+  getLoginTngRequestError,
+  loginTngRequestError => (loginTngRequestError?.error || null) === 10
+);
