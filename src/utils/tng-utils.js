@@ -91,15 +91,7 @@ export const getLocation = () =>
     }
   });
 
-export const getAccessToken = data => {
-  const messagePortal = callMessagePortal('getAccessToken', data);
-
-  return new Error(
-    '{"error":10,"errorMessage":"native node is null","message":"native node is null","startTime":695069893}'
-  );
-
-  // callMessagePortal('getAccessToken', data);
-};
+export const getAccessToken = data => callMessagePortal('getAccessToken', data);
 
 export const getEnv = async () => {
   const messagePortal = getMessagePortal();
