@@ -80,7 +80,7 @@ class PayFirst extends Component {
     const from = Utils.getCookieVariable('__pl_cp_source');
     Utils.removeCookieVariable('__pl_cp_source');
 
-    if (hasLoginGuardPassed && from === ROUTER_PATHS.LOGIN) {
+    if (hasLoginGuardPassed && from === ROUTER_PATHS.ORDERING_LOGIN) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
