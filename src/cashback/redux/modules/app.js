@@ -367,7 +367,6 @@ export const actions = {
         type: types.CREATE_LOGIN_TNGD_SUCCESS,
       });
     } catch (error) {
-      console.log(error?.message);
       console.log(JSON.parse(error.message));
 
       dispatch({
@@ -642,6 +641,7 @@ const user = (state = initialState.user, action) => {
         },
       };
     case types.CREATE_LOGIN_TNGD_FAILURE:
+      console.log(error);
       return {
         ...state,
         loginTngRequest: {
