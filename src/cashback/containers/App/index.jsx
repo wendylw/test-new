@@ -53,12 +53,12 @@ class App extends Component {
         const { isTngAuthorizationError } = this.props;
 
         if (isTngAuthorizationError) {
-          confirm(t('LoginByTngMiniProgramFailed'), {
+          confirm(t('UnexpectedErrorOccurred'), {
             closeByBackButton: false,
             closeByBackDrop: false,
             confirmButtonContent: t('TryAgain'),
-            onSelection: async status => {
-              if (status) {
+            onSelection: async confirmStatus => {
+              if (confirmStatus) {
                 // try again
                 Clevertap.pushEvent('POS Redemption Landing Page (Error Pop-up) - Click Try Again', {
                   country: userCountry,

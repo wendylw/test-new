@@ -386,14 +386,12 @@ export const extractDataAttributes = (props = {}) => {
   return dataAttributes;
 };
 
-export const isJSONString = value => {
-  let isValidJSON = true;
-
+export const isJSON = value => {
   try {
     JSON.parse(value);
-  } catch (error) {
-    isValidJSON = false;
-  }
 
-  return isValidJSON;
+    return true;
+  } catch (error) {
+    return false;
+  }
 };

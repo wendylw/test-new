@@ -31,7 +31,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo, getCoreBusinessInfo } from './api-request';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
-import { isJSONString, isTNGMiniProgram } from '../../../common/utils';
+import { isJSON, isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
@@ -363,7 +363,7 @@ export const actions = {
     } catch (error) {
       dispatch({
         type: types.CREATE_LOGIN_TNGD_FAILURE,
-        error: isJSONString(error?.message) ? JSON.parse(error.message) : error,
+        error: isJSON(error?.message) ? JSON.parse(error.message) : error,
       });
 
       logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
