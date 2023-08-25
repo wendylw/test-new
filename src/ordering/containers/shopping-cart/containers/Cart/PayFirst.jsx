@@ -41,6 +41,7 @@ import {
   getShouldShowCashbackSwitchButton,
   getUserIsLogin,
   getIsFreeOrder,
+  getIsGuestCheckout,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import {
@@ -76,11 +77,11 @@ class PayFirst extends Component {
   }
 
   async componentDidMount() {
-    const { history, appActions, storeInfoForCleverTap, hasLoginGuardPassed } = this.props;
+    const { history, appActions, storeInfoForCleverTap, isGuestCheckout } = this.props;
     const from = Utils.getCookieVariable('__pl_cp_source');
     Utils.removeCookieVariable('__pl_cp_source');
 
-    if (hasLoginGuardPassed && from === ROUTER_PATHS.ORDERING_LOGIN) {
+    if (isGuestCheckout && from === ROUTER_PATHS.ORDERING_LOGIN) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
@@ -894,6 +895,7 @@ PayFirst.propTypes = {
   isValidCreateOrder: PropTypes.bool,
   shouldDisablePayButton: PropTypes.bool,
   hasLoginGuardPassed: PropTypes.bool,
+  isGuestCheckout: PropTypes.bool,
   isBillingTotalInvalid: PropTypes.bool,
   validBillingTotal: PropTypes.number,
   isFreeOrder: PropTypes.bool,
@@ -941,6 +943,7 @@ PayFirst.defaultProps = {
   isValidCreateOrder: false,
   shouldDisablePayButton: false,
   hasLoginGuardPassed: false,
+  isGuestCheckout: false,
   isBillingTotalInvalid: false,
   isFreeOrder: false,
   validBillingTotal: 0,
@@ -978,6 +981,7 @@ export default compose(
       isValidCreateOrder: getIsValidCreateOrder(state),
       shouldDisablePayButton: getShouldDisablePayButton(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
+      isGuestCheckout: getIsGuestCheckout(state),
       isBillingTotalInvalid: getIsBillingTotalInvalid(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       deliveryDetails: getDeliveryDetails(state),

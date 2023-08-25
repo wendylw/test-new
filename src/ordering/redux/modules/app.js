@@ -1889,6 +1889,12 @@ export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, busin
   _get(businessInfo, 'allowAnonymousQROrdering', false)
 );
 
+export const getIsGuestCheckout = createSelector(
+  getIsQROrder,
+  getIsGuestMode,
+  (isQROrder, isGuestMode) => isQROrder && isGuestMode
+);
+
 export const getIsQROrderingLoginFree = createSelector(
   getAllowAnonymousQROrdering,
   getIsQROrder,
