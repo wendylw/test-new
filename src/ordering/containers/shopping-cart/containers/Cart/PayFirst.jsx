@@ -76,7 +76,16 @@ class PayFirst extends Component {
   }
 
   async componentDidMount() {
-    const { appActions, storeInfoForCleverTap } = this.props;
+    const { history, appActions, storeInfoForCleverTap, hasLoginGuardPassed } = this.props;
+    const from = Utils.getCookieVariable('__pl_cp_source');
+    Utils.removeCookieVariable('__pl_cp_source');
+
+    if (hasLoginGuardPassed && from === ROUTER_PATHS.LOGIN) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+        search: window.location.search,
+      });
+    }
 
     await appActions.loadShoppingCart();
 
@@ -446,10 +455,16 @@ class PayFirst extends Component {
     this.handleClickPayButtonEventTracking();
     this.handleGtmEventTracking(() => {
       if (isValidCreateOrder) return;
+
+      if (pathname === ROUTER_PATHS.ORDERING_LOGIN) {
+        // WB-6075: If users are not logged in, we need to set the referrer source to the login page.
+        Utils.setCookieVariable('__pl_cp_source', ROUTER_PATHS.LOGIN);
+      }
+
       history.push({
         pathname,
         search: window.location.search,
-        state: { shouldGoBack: true, from: ROUTER_PATHS.ORDERING_CART },
+        state: { shouldGoBack: true },
       });
     });
 

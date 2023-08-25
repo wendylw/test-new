@@ -17,7 +17,6 @@ import {
   getUser,
   getIsLoginRequestFailed,
   getStoreInfoForCleverTap,
-  getIsGuestMode,
 } from '../../redux/modules/app';
 import {
   getOtpRequestError,
@@ -89,17 +88,10 @@ class PageLogin extends React.Component {
   }
 
   visitNextPage = async () => {
-    const { history, location, isGuestMode } = this.props;
-    const { redirectLocation, isRedirect, from } = location.state || {};
+    const { history, location } = this.props;
+    const { redirectLocation, isRedirect } = location.state || {};
 
-    if (isGuestMode && from === ROUTER_PATHS.ORDERING_CART) {
-      history.replace({
-        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-        search: window.location.search,
-      });
-
-      return;
-    } else if (redirectLocation && !isRedirect) {
+    if (redirectLocation && !isRedirect) {
       history.replace(redirectLocation);
 
       return;
@@ -544,7 +536,6 @@ export default compose(
       isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
       shouldShowGuestOption: getShouldShowGuestOption(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-      isGuestMode: getIsGuestMode(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

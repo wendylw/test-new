@@ -48,11 +48,11 @@ class PayLater extends Component {
   }
 
   componentDidMount = async () => {
-    const { queryCartAndStatus, userIsLogin } = this.props;
+    const { queryCartAndStatus, userIsLogin, hasLoginGuardPassed } = this.props;
     const from = Utils.getCookieVariable('__pl_cp_source');
     Utils.removeCookieVariable('__pl_cp_source');
 
-    if (userIsLogin && from === REFERRER_SOURCE_TYPES.LOGIN) {
+    if ((userIsLogin || hasLoginGuardPassed) && from === REFERRER_SOURCE_TYPES.LOGIN) {
       await this.handleSubmitCart();
     }
 
@@ -149,7 +149,7 @@ class PayLater extends Component {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
-        state: { shouldGoBack: true, from: Constants.ROUTER_PATHS.ORDERING_CART },
+        state: { shouldGoBack: true },
       });
 
       return;
