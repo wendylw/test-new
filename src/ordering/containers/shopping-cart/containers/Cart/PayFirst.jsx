@@ -61,7 +61,7 @@ import logger from '../../../../../utils/monitoring/logger';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
-const { ROUTER_PATHS } = Constants;
+const { ROUTER_PATHS, REFERRER_SOURCE_TYPES } = Constants;
 
 class PayFirst extends Component {
   constructor(props) {
@@ -81,7 +81,7 @@ class PayFirst extends Component {
     const from = Utils.getCookieVariable('__pl_cp_source');
     Utils.removeCookieVariable('__pl_cp_source');
 
-    if (isGuestCheckout && from === ROUTER_PATHS.ORDERING_LOGIN) {
+    if (isGuestCheckout && from === REFERRER_SOURCE_TYPES.LOGIN) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
@@ -457,9 +457,11 @@ class PayFirst extends Component {
     this.handleGtmEventTracking(() => {
       if (isValidCreateOrder) return;
 
+      console.log(pathname);
+
       if (pathname === ROUTER_PATHS.ORDERING_LOGIN) {
         // WB-6075: If users are not logged in, we need to set the referrer source to the login page.
-        Utils.setCookieVariable('__pl_cp_source', ROUTER_PATHS.LOGIN);
+        Utils.setCookieVariable('__pl_cp_source', REFERRER_SOURCE_TYPES.LOGIN);
       }
 
       history.push({
