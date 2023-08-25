@@ -367,6 +367,9 @@ export const actions = {
         type: types.CREATE_LOGIN_TNGD_SUCCESS,
       });
     } catch (error) {
+      console.log(error?.message);
+      console.log(JSON.parse(error.message));
+
       dispatch({
         type: types.CREATE_LOGIN_TNGD_FAILURE,
         error: isJSON(error?.message) ? JSON.parse(error.message) : error,
