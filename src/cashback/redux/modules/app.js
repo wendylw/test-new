@@ -348,7 +348,7 @@ export const actions = {
       throw new Error('Not in tng mini program');
     }
 
-    if (tryAgain) {
+    if (!tryAgain) {
       throw new Error(
         '{"error":10,"errorMessage":"native node is null","message":"native node is null","startTime":695069893}'
       );
