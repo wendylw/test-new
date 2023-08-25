@@ -131,10 +131,12 @@ export class ThankYou extends PureComponent {
     const { user, loadCashbackInfo, loadOrderStoreReview, initProfilePage, updateRedirectFrom } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
-    loadCashbackInfo(receiptNumber);
+    if (receiptNumber) {
+      loadCashbackInfo(receiptNumber);
 
-    // BEEP-3035: we don't need to wait for the API response, just dispatch the API silently
-    loadOrderStoreReview();
+      // BEEP-3035: we don't need to wait for the API response, just dispatch the API silently
+      loadOrderStoreReview();
+    }
 
     await updateRedirectFrom();
 
@@ -322,6 +324,10 @@ export class ThankYou extends PureComponent {
 
   loadOrder = async () => {
     const { loadOrder, loadOrderStatus, receiptNumber } = this.props;
+
+    if (!receiptNumber) {
+      return;
+    }
 
     await loadOrder(receiptNumber);
 

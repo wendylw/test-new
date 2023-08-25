@@ -9,6 +9,7 @@ import { Info } from 'phosphor-react';
 import Utils from '../../../../../utils/utils';
 import { getLocaleTimeTo24hour } from '../../../../../utils/time-lib';
 import Constants from '../../../../../utils/constants';
+import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import {
   actions as appActions,
   getUserIsLogin,
@@ -22,7 +23,7 @@ import {
 } from '../../../../redux/modules/app';
 import logger from '../../../../../utils/monitoring/logger';
 import prefetch from '../../../../../common/utils/prefetch-assets';
-import { actions as resetCartSubmissionActions } from '../../../../redux/cart/index';
+import { actions as cartSubmissionActions } from '../../../../redux/cart/index';
 import {
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
@@ -363,7 +364,24 @@ export class TableSummary extends React.Component {
   };
 
   handleClickPayButton = async () => {
-    const { gotoPayment, hasLoginGuardPassed, cleverTapAttributes } = this.props;
+    const receiptNumber = Utils.getQueryString('receiptNumber');
+    const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
+    const { t, history, gotoPayment, hasLoginGuardPassed, cleverTapAttributes } = this.props;
+
+    if (!receiptNumber) {
+      alert(t('SorryDescription'), {
+        title: t('SorryEmo'),
+        closeButtonContent: t('BackToMenu'),
+        onClose: () => {
+          history.push({
+            pathname: PATH_NAME_MAPPING.ORDERING_HOME,
+            search: removeReceiptNumberUrl,
+          });
+        },
+      });
+
+      return;
+    }
 
     CleverTap.pushEvent('Table Summary - Pay now', cleverTapAttributes);
 
@@ -970,7 +988,7 @@ export default compose(
     {
       queryOrdersAndStatus: queryOrdersAndStatusThunk,
       clearQueryOrdersAndStatus: clearQueryOrdersAndStatusThunk,
-      resetCartSubmission: resetCartSubmissionActions.resetCartSubmission,
+      resetCartSubmission: cartSubmissionActions.resetCartSubmission,
       loadOrders: loadOrdersThunk,
       removePromo: removePromoThunk,
       removeVoucherPayLater: removeVoucherPayLaterThunk,
