@@ -1,10 +1,10 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { post } from '../../utils/request';
 
-//Deal with every single action that has FETCH_GRAPHQL field.
+// Deal with every single action that has FETCH_GRAPHQL field.
 export const FETCH_GRAPHQL = 'FETCH GRAPHQL';
 
-export default store => next => action => {
+export default () => next => action => {
   const callAPI = action[FETCH_GRAPHQL];
 
   if (!callAPI) {
@@ -55,12 +55,12 @@ export default store => next => action => {
         })
       );
     })
-    .catch(error => {
-      return next(
+    .catch(error =>
+      next(
         actionWith({
           type: failureType,
           ...error,
         })
-      );
-    });
+      )
+    );
 };

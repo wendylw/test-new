@@ -1,4 +1,3 @@
-import { createSelector } from 'reselect';
 import { APP_TYPES } from '../../../ordering/redux/types';
 
 const initialState = {};
@@ -32,7 +31,9 @@ const reducer = (state = initialState, action) => {
       });
 
       return { ...state, ...kvData };
-    } else if (data.product) {
+    }
+
+    if (data.product) {
       const { product } = data;
       mergedProduct = product;
 
@@ -44,6 +45,7 @@ const reducer = (state = initialState, action) => {
         };
       } else {
         // FB-4011: Mark selected product as not found if the product is not in the product list
+        // eslint-disable-next-line no-underscore-dangle
         mergedProduct._exists = false;
       }
 
