@@ -121,7 +121,6 @@ export class TableSummary extends React.Component {
           }),
       });
     }
-
     const { cleverTapAttributes } = this.props;
     // Can record CT only after coreBusiness Loaded. I use one attribute country to trace that.
     if (cleverTapAttributes.country) {
