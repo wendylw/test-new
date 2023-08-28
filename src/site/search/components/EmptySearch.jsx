@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -22,6 +23,8 @@ class EmptySearch extends Component {
 
             return (
               <span
+                role="button"
+                tabIndex="0"
                 key={urlPath}
                 className={styles.EmptySearchPopularCategoryContent}
                 onClick={() => {
@@ -82,7 +85,7 @@ class EmptySearch extends Component {
             <InfiniteScroll
               className="store-card-list"
               element="ul"
-              loader={<div key={'loading-0'} className="store-card-list__loader loader theme text-size-biggest" />}
+              loader={<div key="loading-0" className="store-card-list__loader loader theme text-size-biggest" />}
               pageStart={0}
               initialLoad={false}
               hasMore={hasMore}
@@ -108,6 +111,25 @@ class EmptySearch extends Component {
     );
   }
 }
+
 EmptySearch.displayName = 'EmptySearch';
+
+EmptySearch.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  populars: PropTypes.array,
+  others: PropTypes.array,
+  /* eslint-enable */
+  hasMore: PropTypes.bool,
+  getScrollParent: PropTypes.func,
+  loadCollections: PropTypes.func,
+};
+
+EmptySearch.defaultProps = {
+  populars: [],
+  others: [],
+  hasMore: false,
+  getScrollParent: () => {},
+  loadCollections: () => {},
+};
 
 export default withRouter(withTranslation('SiteHome')(EmptySearch));

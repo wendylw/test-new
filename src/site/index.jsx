@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
@@ -16,7 +17,7 @@ class Site extends Component {
     super(props);
     const { ROUTER_PATHS } = Constants;
     const { pathname } = window.location;
-    const browser = Utils.getUserAgentInfo().browser;
+    const { browser } = Utils.getUserAgentInfo();
     const isTermsOfUsePage = pathname.includes(ROUTER_PATHS.TERMS_OF_USE);
     const isPrivacyPolicyPage = pathname.includes(ROUTER_PATHS.PRIVACY);
 
@@ -27,6 +28,7 @@ class Site extends Component {
       document.body.style.overflow = 'hidden';
     }
   }
+
   render() {
     const { t, location } = this.props;
     const isOrderHistoryPage = location.pathname === Constants.ROUTER_PATHS.ORDER_HISTORY;
@@ -44,6 +46,19 @@ class Site extends Component {
     );
   }
 }
+
 Site.displayName = 'Site';
+
+Site.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }),
+};
+
+Site.defaultProps = {
+  location: {
+    pathname: '',
+  },
+};
 
 export default withRouter(withTranslation()(Site));

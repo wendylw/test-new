@@ -1,10 +1,12 @@
+/* eslint-disable no-use-before-define */
+import { combineReducers } from 'redux';
+import _get from 'lodash/get';
 import { get } from '../../../../utils/request';
 import Url from '../../../../utils/url';
-import { combineReducers } from 'redux';
-import constants from '../../../../utils/constants';
+import constants, { API_REQUEST_STATUS } from '../../../../utils/constants';
 import { getAddressCoords, getAddressCountryCode } from '../../../../redux/modules/address/selectors';
 
-const { COLLECTIONS_TYPE, API_REQUEST_STATUS } = constants;
+const { COLLECTIONS_TYPE } = constants;
 
 const initialState = {
   pageInfo: {
@@ -36,6 +38,7 @@ const types = {
   GET_CURRENT_COLLECTION_FAILURE: 'SITE/ENTITIES/GET_CURRENT_COLLECTION_FAILURE',
 };
 
+/* eslint-disable */
 function getRequestUrl(url, params) {
   const paramsStr = params
     ? '?' +
@@ -45,6 +48,7 @@ function getRequestUrl(url, params) {
     : '';
   return `${url}` + paramsStr;
 }
+/* eslint-enable */
 
 // @actions
 const actions = {
@@ -61,6 +65,7 @@ const actions = {
   },
   getCollections: type => (dispatch, getState) => {
     const countryCode = getAddressCountryCode(getState()) || 'MY';
+    // eslint-disable-next-line no-use-before-define
     const { page, pageSize } = getStorePageInfo(getState());
     const coords = getAddressCoords(getState()) || { lat: 0, lng: 0 };
 
@@ -69,15 +74,15 @@ const actions = {
         ? {
             lat: coords.lat,
             lng: coords.lng,
-            countryCode: countryCode,
-            page: page,
+            countryCode,
+            page,
             pagesize: pageSize,
             displayType: type,
           }
         : {
             lat: coords.lat,
             lng: coords.lng,
-            countryCode: countryCode,
+            countryCode,
             displayType: type,
           };
     const requestUrl = getRequestUrl(Url.API_URLS.GET_COLLECTIONS.url, params);
@@ -91,17 +96,16 @@ const actions = {
 
 // @reducers
 const collections = (state = initialState.collections, action) => {
+  const collectionList = _get(action, 'response.collections', {});
+  const type = _get(action, 'context.type', '');
+
   switch (action.type) {
     case types.GET_COLLECTIONS_SUCCESS:
-      const { collections } = action.response;
-      const { type } = action.context;
-
       if (type === 'SearchOthers') {
-        return { ...state, SearchOthers: state.SearchOthers.concat(collections[type]) };
-      } else {
-        return { ...state, [type]: collections[type] };
+        return { ...state, SearchOthers: state.SearchOthers.concat(collectionList[type]) };
       }
 
+      return { ...state, [type]: collectionList[type] };
     default:
       return state;
   }
@@ -109,20 +113,21 @@ const collections = (state = initialState.collections, action) => {
 
 const pageInfo = (state = initialState.pageInfo.SearchOthers, action) => {
   if (action.context && action.context.type === 'SearchOthers') {
+    const collectionList = _get(action, 'response.collections', {});
+
     switch (action.type) {
       case types.GET_COLLECTIONS_REQUEST:
-        const newState = { ...state, page: state.page + 1 };
         if (action.context.page === 0) {
-          Object.assign(newState, { hasMore: true });
+          return { ...state, page: state.page + 1, hasMore: true };
         }
-        return { ...newState };
+        return { ...state, page: state.page + 1 };
       case types.GET_COLLECTIONS_SUCCESS:
-        const { collections } = action.response;
-
-        if (!collections['SearchOthers'] || !collections['SearchOthers'].length) {
+        // eslint-disable-next-line dot-notation
+        if (!collectionList['SearchOthers'] || !collectionList['SearchOthers'].length) {
           return { ...state, hasMore: false };
         }
 
+        // eslint-disable-next-line dot-notation
         if (state.pageSize > collections['SearchOthers'].length) {
           return { ...state, hasMore: false };
         }
@@ -136,6 +141,8 @@ const pageInfo = (state = initialState.pageInfo.SearchOthers, action) => {
 };
 
 const currentCollection = (state = initialState.currentCollection, action) => {
+  const { response } = action;
+
   switch (action.type) {
     case types.GET_CURRENT_COLLECTION_REQUEST:
       return {
@@ -143,7 +150,6 @@ const currentCollection = (state = initialState.currentCollection, action) => {
         status: API_REQUEST_STATUS.PENDING,
       };
     case types.GET_CURRENT_COLLECTION_SUCCESS:
-      const { response } = action;
       return {
         ...state,
         data: response,
