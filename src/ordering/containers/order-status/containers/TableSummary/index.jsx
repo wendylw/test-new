@@ -87,7 +87,7 @@ import PageProcessingLoader from '../../../../components/PageProcessingLoader';
 import { toast, alert } from '../../../../../common/utils/feedback';
 import './TableSummary.scss';
 
-const { DELIVERY_METHOD, REFERRER_SOURCE_TYPES } = Constants;
+const { DELIVERY_METHOD } = Constants;
 
 export class TableSummary extends React.Component {
   constructor(props) {
