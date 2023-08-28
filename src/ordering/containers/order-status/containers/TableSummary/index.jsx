@@ -99,17 +99,14 @@ export class TableSummary extends React.Component {
   }
 
   async componentDidMount() {
-    const { t, history, queryOrdersAndStatus, isGuestCheckout } = this.props;
+    const { t, history, queryOrdersAndStatus, isGuestCheckout, gotoPayment } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber');
     const emptyString = ['null', 'undefined', ''];
     const from = Utils.getCookieVariable('__pl_cp_source');
     Utils.removeCookieVariable('__pl_cp_source');
 
     if (isGuestCheckout && from === REFERRER_SOURCE_TYPES.LOGIN) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-        search: window.location.search,
-      });
+      await gotoPayment();
     }
 
     window.scrollTo(0, 0);
