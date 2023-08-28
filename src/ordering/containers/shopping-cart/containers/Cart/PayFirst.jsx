@@ -457,8 +457,6 @@ class PayFirst extends Component {
     this.handleGtmEventTracking(() => {
       if (isValidCreateOrder) return;
 
-      console.log(pathname);
-
       if (pathname === ROUTER_PATHS.ORDERING_LOGIN) {
         // WB-6075: If users are not logged in, we need to set the referrer source to the login page.
         Utils.setCookieVariable('__pl_cp_source', REFERRER_SOURCE_TYPES.LOGIN);

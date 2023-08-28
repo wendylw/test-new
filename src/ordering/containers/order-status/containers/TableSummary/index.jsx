@@ -19,6 +19,7 @@ import {
   getIsWebview,
   getIsTNGMiniProgram,
   getHasLoginGuardPassed,
+  getIsGuestCheckout,
   getEnableCashback,
 } from '../../../../redux/modules/app';
 import logger from '../../../../../utils/monitoring/logger';
@@ -87,7 +88,7 @@ import PageProcessingLoader from '../../../../components/PageProcessingLoader';
 import { toast, alert } from '../../../../../common/utils/feedback';
 import './TableSummary.scss';
 
-const { DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD, REFERRER_SOURCE_TYPES, ROUTER_PATHS } = Constants;
 
 export class TableSummary extends React.Component {
   constructor(props) {
@@ -98,9 +99,18 @@ export class TableSummary extends React.Component {
   }
 
   async componentDidMount() {
-    const { t, history, queryOrdersAndStatus } = this.props;
+    const { t, history, queryOrdersAndStatus, isGuestCheckout } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber');
     const emptyString = ['null', 'undefined', ''];
+    const from = Utils.getCookieVariable('__pl_cp_source');
+    Utils.removeCookieVariable('__pl_cp_source');
+
+    if (isGuestCheckout && from === REFERRER_SOURCE_TYPES.LOGIN) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+        search: window.location.search,
+      });
+    }
 
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
@@ -355,6 +365,9 @@ export class TableSummary extends React.Component {
       await hideProcessingLoader();
       return;
     }
+
+    // WB-6075: If users are not logged in, we need to set the referrer source to the login page.
+    Utils.setCookieVariable('__pl_cp_source', REFERRER_SOURCE_TYPES.LOGIN);
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
@@ -864,6 +877,7 @@ TableSummary.propTypes = {
   showProcessingLoader: PropTypes.func,
   hideProcessingLoader: PropTypes.func,
   hasLoginGuardPassed: PropTypes.bool,
+  isGuestCheckout: PropTypes.bool,
   shouldShowRedirectLoader: PropTypes.bool,
   shouldShowProcessingLoader: PropTypes.bool,
   shouldShowLoadingText: PropTypes.bool,
@@ -922,6 +936,7 @@ TableSummary.defaultProps = {
   showProcessingLoader: () => {},
   hideProcessingLoader: () => {},
   hasLoginGuardPassed: false,
+  isGuestCheckout: false,
   shouldShowRedirectLoader: false,
   shouldShowProcessingLoader: false,
   shouldShowLoadingText: false,
@@ -970,6 +985,7 @@ export default compose(
       isWebview: getIsWebview(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
+      isGuestCheckout: getIsGuestCheckout(state),
       shouldShowRedirectLoader: getShouldShowRedirectLoader(state),
       shouldShowPayNowButton: getShouldShowPayNowButton(state),
       isStorePayByCashOnly: getIsStorePayByCashOnly(state),
