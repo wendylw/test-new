@@ -339,19 +339,13 @@ export const actions = {
     }
   },
 
-  loginByTngMiniProgram: tryAgain => async (dispatch, getState) => {
+  loginByTngMiniProgram: () => async (dispatch, getState) => {
     dispatch({
       type: types.CREATE_LOGIN_TNGD_REQUEST,
     });
 
     if (!isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
-    }
-
-    if (!tryAgain) {
-      throw new Error(
-        '{"error":10,"errorMessage":"native node is null","message":"native node is null","startTime":695069893}'
-      );
     }
 
     try {
