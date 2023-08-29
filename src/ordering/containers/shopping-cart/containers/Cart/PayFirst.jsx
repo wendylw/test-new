@@ -41,6 +41,7 @@ import {
   getShouldShowCashbackSwitchButton,
   getUserIsLogin,
   getIsFreeOrder,
+  getIsGuestCheckout,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import {
@@ -60,7 +61,7 @@ import logger from '../../../../../utils/monitoring/logger';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
-const { ROUTER_PATHS } = Constants;
+const { ROUTER_PATHS, REFERRER_SOURCE_TYPES } = Constants;
 
 class PayFirst extends Component {
   constructor(props) {
@@ -76,7 +77,16 @@ class PayFirst extends Component {
   }
 
   async componentDidMount() {
-    const { appActions, storeInfoForCleverTap } = this.props;
+    const { history, appActions, storeInfoForCleverTap, isGuestCheckout } = this.props;
+    const from = Utils.getCookieVariable('__pl_cp_source');
+    Utils.removeCookieVariable('__pl_cp_source');
+
+    if (isGuestCheckout && from === REFERRER_SOURCE_TYPES.LOGIN) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+        search: window.location.search,
+      });
+    }
 
     await appActions.loadShoppingCart();
 
@@ -446,6 +456,12 @@ class PayFirst extends Component {
     this.handleClickPayButtonEventTracking();
     this.handleGtmEventTracking(() => {
       if (isValidCreateOrder) return;
+
+      if (pathname === ROUTER_PATHS.ORDERING_LOGIN) {
+        // WB-6075: If users are not logged in, we need to set the referrer source to the login page.
+        Utils.setCookieVariable('__pl_cp_source', REFERRER_SOURCE_TYPES.LOGIN);
+      }
+
       history.push({
         pathname,
         search: window.location.search,
@@ -879,6 +895,7 @@ PayFirst.propTypes = {
   isValidCreateOrder: PropTypes.bool,
   shouldDisablePayButton: PropTypes.bool,
   hasLoginGuardPassed: PropTypes.bool,
+  isGuestCheckout: PropTypes.bool,
   isBillingTotalInvalid: PropTypes.bool,
   validBillingTotal: PropTypes.number,
   isFreeOrder: PropTypes.bool,
@@ -926,6 +943,7 @@ PayFirst.defaultProps = {
   isValidCreateOrder: false,
   shouldDisablePayButton: false,
   hasLoginGuardPassed: false,
+  isGuestCheckout: false,
   isBillingTotalInvalid: false,
   isFreeOrder: false,
   validBillingTotal: 0,
@@ -963,6 +981,7 @@ export default compose(
       isValidCreateOrder: getIsValidCreateOrder(state),
       shouldDisablePayButton: getShouldDisablePayButton(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
+      isGuestCheckout: getIsGuestCheckout(state),
       isBillingTotalInvalid: getIsBillingTotalInvalid(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       deliveryDetails: getDeliveryDetails(state),

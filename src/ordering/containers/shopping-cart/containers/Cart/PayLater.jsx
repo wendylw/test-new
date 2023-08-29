@@ -25,7 +25,7 @@ import {
   getCartSubmissionRequestingStatus,
   getCartReceiptNumber,
 } from '../../../../redux/cart/selectors';
-import { getUserIsLogin, getHasLoginGuardPassed } from '../../../../redux/modules/app';
+import { getUserIsLogin, getHasLoginGuardPassed, getIsGuestCheckout } from '../../../../redux/modules/app';
 import { IconClose, IconError } from '../../../../../components/Icons';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
 import Utils from '../../../../../utils/utils';
@@ -48,11 +48,11 @@ class PayLater extends Component {
   }
 
   componentDidMount = async () => {
-    const { queryCartAndStatus, userIsLogin } = this.props;
+    const { queryCartAndStatus, userIsLogin, isGuestCheckout } = this.props;
     const from = Utils.getCookieVariable('__pl_cp_source');
     Utils.removeCookieVariable('__pl_cp_source');
 
-    if (userIsLogin && from === REFERRER_SOURCE_TYPES.LOGIN) {
+    if ((userIsLogin || isGuestCheckout) && from === REFERRER_SOURCE_TYPES.LOGIN) {
       await this.handleSubmitCart();
     }
 
@@ -481,6 +481,7 @@ PayLater.propTypes = {
   cartNotSubmittedAndEmpty: PropTypes.bool,
   cartSubmissionRequesting: PropTypes.bool,
   hasLoginGuardPassed: PropTypes.bool,
+  isGuestCheckout: PropTypes.bool,
 };
 
 PayLater.defaultProps = {
@@ -492,6 +493,7 @@ PayLater.defaultProps = {
   cartNotSubmittedAndEmpty: false,
   cartSubmissionRequesting: false,
   hasLoginGuardPassed: false,
+  isGuestCheckout: false,
   receiptNumber: null,
   queryCartAndStatus: () => {},
   loadCartStatus: () => {},
@@ -515,6 +517,7 @@ export default compose(
       cartSubmissionRequesting: getCartSubmissionRequestingStatus(state),
       receiptNumber: getCartReceiptNumber(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
+      isGuestCheckout: getIsGuestCheckout(state),
     }),
     {
       removeCartItemsById: removeCartItemsByIdThunk,
