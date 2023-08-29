@@ -340,11 +340,11 @@ export const actions = {
   },
 
   loginByTngMiniProgram: tryAgain => async (dispatch, getState) => {
-    dispatch({
-      type: types.CREATE_LOGIN_TNGD_REQUEST,
-    });
-
     try {
+      dispatch({
+        type: types.CREATE_LOGIN_TNGD_REQUEST,
+      });
+
       if (!isTNGMiniProgram()) {
         throw new Error('Not in tng mini program');
       }
