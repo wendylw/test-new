@@ -343,6 +343,13 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:OK',
     showModal: true,
   },
+  57014: {
+    title: 'ApiError:57014Title',
+    desc: 'ApiError:57014Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:OKay',
+    showModal: true,
+  },
   // pay later and pay at counter only, TNG mini program can not place an order
   41027: {
     title: 'ApiError:41027Title',

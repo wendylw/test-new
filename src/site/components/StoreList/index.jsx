@@ -14,7 +14,7 @@ class StoreList extends Component {
     return (
       <>
         {(stores || []).map((store, index) => {
-          const { id, name } = store || {};
+          const { id } = store || {};
 
           return (
             <div key={id} className={styles.StoreListItemWrapper}>

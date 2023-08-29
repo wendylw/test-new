@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation, Trans } from 'react-i18next';
@@ -23,15 +24,14 @@ import {
   resetStoreList as resetStoreListThunkCreator,
 } from '../redux/modules/collections/thunks';
 import { submitStoreMenu } from '../home/utils';
-import { rootActionCreators } from '../redux/modules';
+import { rootActionCreators, checkStateRestoreStatus } from '../redux/modules';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import { appActionCreators } from '../redux/modules/app';
 import { getAddressInfo, getAddressCoords } from '../../redux/modules/address/selectors';
-import { getAddressInfo as fetchAddressInfo } from '../../redux/modules/address/thunks';
+import { getAddressInfo as fetchAddressInfoThunk } from '../../redux/modules/address/thunks';
 import '../home/index.scss';
 import './CollectionPage.scss';
 import { withAddressInfo } from '../ordering/containers/Location/withAddressInfo';
-import { checkStateRestoreStatus } from '../redux/modules/index';
 import {
   collectionCardActionCreators,
   getCurrentCollection,
@@ -62,22 +62,28 @@ import Button from '../../common/components/Button';
 import SingleChoiceSelector from '../components/OptionSelectors/SingleChoiceSelector';
 import MultipleChoiceSelector from '../components/OptionSelectors/MultipleChoiceSelector';
 import ErrorComponent from '../../components/Error';
-import PageLoader from '../../../src/components/PageLoader';
+import PageLoader from '../../components/PageLoader';
 import BeepNotResultImage from '../../images/beep-no-results.svg';
 import styles from './CollectionPage.module.scss';
 
 class CollectionPage extends React.Component {
   renderId = `${Date.now()}`;
+
   scrollTop = 0;
+
   sectionRef = React.createRef();
 
-  state = {
-    drawerInfo: { category: null },
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      drawerInfo: { category: null },
+    };
+  }
 
   componentDidMount = async () => {
-    const { collectionCardActions, fetchAddressInfo, loadSearchOptionList, loadStoreList } = this.props;
-    await collectionCardActions.getCurrentCollection(this.props.match.params.urlPath);
+    const { collectionCardActions, fetchAddressInfo, loadSearchOptionList, loadStoreList, match } = this.props;
+    const matchUrlPath = match.params.urlPath;
+    await collectionCardActions.getCurrentCollection(matchUrlPath);
 
     const hasReduxCache = checkStateRestoreStatus();
 
@@ -89,11 +95,12 @@ class CollectionPage extends React.Component {
       await loadSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
     }
 
-    if (!this.props.currentCollection) {
+    const { currentCollection } = this.props;
+
+    if (!currentCollection) {
       return;
     }
 
-    const { currentCollection } = this.props;
     const { urlPath, name, beepCollectionId } = currentCollection;
     if (!hasReduxCache) {
       await this.resetCollectionData();
@@ -132,8 +139,10 @@ class CollectionPage extends React.Component {
       }
     }
 
+    const { backUpSelectedOptionList } = this.props;
+
     if (hasSelectedOptionListChanged) {
-      this.props.backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
+      backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
     }
   };
 
@@ -142,7 +151,9 @@ class CollectionPage extends React.Component {
     // 1. User directly clicks the back button from browser
     // 2. User directly clicks the back button from the collection page
 
-    this.props.resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
+    const { resetSelectedOptionList } = this.props;
+
+    resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
   };
 
   resetCollectionData = async () => {
@@ -184,7 +195,8 @@ class CollectionPage extends React.Component {
   };
 
   backupState = () => {
-    this.props.rootActions.backup();
+    const { rootActions } = this.props;
+    rootActions.backup();
   };
 
   backLeftPosition = async store => {
@@ -193,7 +205,7 @@ class CollectionPage extends React.Component {
     this.backupState();
     await submitStoreMenu({
       deliveryAddress: addressInfo,
-      store: store,
+      store,
       source: document.location.href,
       shippingType,
     });
@@ -232,7 +244,9 @@ class CollectionPage extends React.Component {
         <StoreListAutoScroll
           getScrollParent={() => this.sectionRef.current}
           defaultScrollTop={scrollTop}
-          onScroll={scrollTop => (this.scrollTop = scrollTop)}
+          onScroll={top => {
+            this.scrollTop = top;
+          }}
         >
           <StoreList
             key={`store-list-${this.renderId}`}
@@ -259,27 +273,10 @@ class CollectionPage extends React.Component {
       </div>
     );
   };
+
   handleErrorScreenBackToHomeButtonClick = () => {
     document.location.href = '/';
   };
-
-  renderError() {
-    const { t } = this.props;
-    return (
-      <main className="fixed-wrapper fixed-wrapper__main collection-page__render-error">
-        <ErrorComponent title={t('CollectionNotFoundErrorTitle')} description={t('CollectionNotFoundErrorContent')}>
-          <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
-            <button
-              className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
-              onClick={this.handleErrorScreenBackToHomeButtonClick}
-            >
-              {t('SatisfyYourCravingsHere')}
-            </button>
-          </footer>
-        </ErrorComponent>
-      </main>
-    );
-  }
 
   handleClickCategoryButton = category => {
     const { id, name, type, selected } = category;
@@ -297,7 +294,7 @@ class CollectionPage extends React.Component {
       CleverTap.pushEvent('Collection Page - Click quick filter button', attributes);
     }
 
-    const { setShippingType } = this.props;
+    const { setShippingType, toggleCategorySelectStatus } = this.props;
 
     if (id === IDS.PICK_UP) {
       setShippingType({ shippingType: selected ? SHIPPING_TYPES.DELIVERY : SHIPPING_TYPES.PICKUP });
@@ -306,7 +303,7 @@ class CollectionPage extends React.Component {
     if (FILTER_DRAWER_SUPPORT_TYPES.includes(type)) {
       this.setState({ drawerInfo: { category } });
     } else {
-      this.props.toggleCategorySelectStatus({ categoryId: id });
+      toggleCategorySelectStatus({ categoryId: id });
     }
   };
 
@@ -331,7 +328,9 @@ class CollectionPage extends React.Component {
       });
     }
 
-    this.props.updateCategoryOptionSelectStatus({ categoryId, optionIds: [optionId] });
+    const { updateCategoryOptionSelectStatus } = this.props;
+
+    updateCategoryOptionSelectStatus({ categoryId, optionIds: [optionId] });
     this.handleCloseDrawer();
   };
 
@@ -342,7 +341,9 @@ class CollectionPage extends React.Component {
       'type of filter': filterName,
     });
 
-    this.props.resetCategoryAllOptionSelectStatus({ categoryId });
+    const { resetCategoryAllOptionSelectStatus } = this.props;
+
+    resetCategoryAllOptionSelectStatus({ categoryId });
     this.handleCloseDrawer();
   };
 
@@ -359,9 +360,30 @@ class CollectionPage extends React.Component {
       'filter options': optionNames,
     });
 
-    this.props.updateCategoryOptionSelectStatus({ categoryId, optionIds });
+    const { updateCategoryOptionSelectStatus } = this.props;
+
+    updateCategoryOptionSelectStatus({ categoryId, optionIds });
     this.handleCloseDrawer();
   };
+
+  renderError() {
+    const { t } = this.props;
+    return (
+      <main className="fixed-wrapper fixed-wrapper__main collection-page__render-error">
+        <ErrorComponent title={t('CollectionNotFoundErrorTitle')} description={t('CollectionNotFoundErrorContent')}>
+          <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+            <button
+              data-test-id="site.collection.back-to-home-btn"
+              className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+              onClick={this.handleErrorScreenBackToHomeButtonClick}
+            >
+              {t('SatisfyYourCravingsHere')}
+            </button>
+          </footer>
+        </ErrorComponent>
+      </main>
+    );
+  }
 
   renderDrawer = () => {
     const {
@@ -385,6 +407,7 @@ class CollectionPage extends React.Component {
               <Button
                 type="text"
                 theme="ghost"
+                data-test-id="site.collection.drawer.close-btn"
                 className={styles.CollectionPageCategoryDrawerHeaderButton}
                 contentClassName={styles.CollectionPageCategoryDrawerHeaderButtonContent}
                 onClick={this.handleCloseDrawer}
@@ -398,7 +421,11 @@ class CollectionPage extends React.Component {
         }
       >
         {shouldShowSingleChoiceSelector ? (
-          <SingleChoiceSelector category={category} onClick={this.handleClickSingleChoiceOptionItem} />
+          <SingleChoiceSelector
+            category={category}
+            onClick={this.handleClickSingleChoiceOptionItem}
+            data-test-id="site.collection.drawer.option-selector.apply-btn"
+          />
         ) : shouldShowMultipleChoiceSelector ? (
           <MultipleChoiceSelector
             category={category}
@@ -455,6 +482,96 @@ class CollectionPage extends React.Component {
     );
   }
 }
+
+CollectionPage.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      urlPath: PropTypes.string,
+    }),
+  }),
+  addressCoords: PropTypes.shape({
+    lat: PropTypes.number,
+    lng: PropTypes.number,
+  }),
+  shippingType: PropTypes.string,
+  /* eslint-disable react/forbid-prop-types */
+  location: PropTypes.shape({
+    state: PropTypes.object,
+  }),
+  stores: PropTypes.array,
+  pageInfo: PropTypes.object,
+  addressInfo: PropTypes.object,
+  currentCollection: PropTypes.object,
+  selectedOptionList: PropTypes.object,
+  categoryFilterList: PropTypes.array,
+  /* eslint-enable */
+  setPageInfo: PropTypes.func,
+  resetPageInfo: PropTypes.func,
+  loadStoreList: PropTypes.func,
+  resetStoreList: PropTypes.func,
+  setShippingType: PropTypes.func,
+  fetchAddressInfo: PropTypes.func,
+  resetShippingType: PropTypes.func,
+  loadSearchOptionList: PropTypes.func,
+  rootActions: PropTypes.shape({
+    backup: PropTypes.func,
+  }),
+  collectionCardActions: PropTypes.shape({
+    getCurrentCollection: PropTypes.func,
+  }),
+  backUpSelectedOptionList: PropTypes.func,
+  resetSelectedOptionList: PropTypes.func,
+  toggleCategorySelectStatus: PropTypes.func,
+  updateCategoryOptionSelectStatus: PropTypes.func,
+  resetCategoryAllOptionSelectStatus: PropTypes.func,
+  shouldShowPageLoader: PropTypes.bool,
+  shouldShowResetButton: PropTypes.bool,
+  shouldShowStoreListLoader: PropTypes.bool,
+  shouldShowNoFilteredResultPage: PropTypes.bool,
+};
+
+CollectionPage.defaultProps = {
+  match: {
+    params: {
+      urlPath: '',
+    },
+  },
+  location: {
+    state: null,
+  },
+  stores: [],
+  shippingType: '',
+  pageInfo: null,
+  addressInfo: null,
+  currentCollection: null,
+  addressCoords: null,
+  selectedOptionList: null,
+  categoryFilterList: [],
+  setPageInfo: () => {},
+  resetPageInfo: () => {},
+  loadStoreList: () => {},
+  resetStoreList: () => {},
+  setShippingType: () => {},
+  fetchAddressInfo: () => {},
+  resetShippingType: () => {},
+  loadSearchOptionList: () => {},
+  rootActions: {
+    backup: () => {},
+  },
+  collectionCardActions: PropTypes.shape({
+    getCurrentCollection: () => {},
+  }),
+  backUpSelectedOptionList: () => {},
+  resetSelectedOptionList: () => {},
+  toggleCategorySelectStatus: () => {},
+  updateCategoryOptionSelectStatus: () => {},
+  resetCategoryAllOptionSelectStatus: () => {},
+  shouldShowPageLoader: false,
+  shouldShowResetButton: false,
+  shouldShowStoreListLoader: false,
+  shouldShowNoFilteredResultPage: false,
+};
+
 CollectionPage.displayName = 'CollectionPage';
 
 export default compose(
@@ -484,7 +601,7 @@ export default compose(
       resetShippingType: bindActionCreators(resetShippingTypeThunkCreator, dispatch),
       loadStoreList: bindActionCreators(loadStoreListThunkCreator, dispatch),
       resetStoreList: bindActionCreators(resetStoreListThunkCreator, dispatch),
-      fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
+      fetchAddressInfo: bindActionCreators(fetchAddressInfoThunk, dispatch),
       loadSearchOptionList: bindActionCreators(loadSearchOptionListThunkCreator, dispatch),
       backUpSelectedOptionList: bindActionCreators(backUpSelectedOptionListThunkCreator, dispatch),
       resetSelectedOptionList: bindActionCreators(resetSelectedOptionListThunkCreator, dispatch),

@@ -32,6 +32,7 @@ const FilterBar = ({ className, categories, shouldShowResetButton, onResetButton
           {categories.map(category => (
             <div key={category.id} className={styles.FilterBarSwiperSlideWrapper}>
               <ChipSelector
+                data-test-id="site.common.filter.selector-btn"
                 category={category}
                 left={
                   category.displayInfo.icons.includes(DISPLAY_ICON_TYPES.FUNNEL_SIMPLE) && (

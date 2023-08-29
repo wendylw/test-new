@@ -34,7 +34,7 @@ import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
 import { alert } from '../../../../../../common/feedback';
 import { alert as alertV2 } from '../../../../../../common/utils/feedback';
-import { initPaymentWithOrder } from './api-info';
+import { initPaymentWithOrder, createOrderStatusRequest } from './api-info';
 import { push } from 'connected-react-router';
 import logger from '../../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../../utils/monitoring/constants';
@@ -65,12 +65,12 @@ const pollingOrderStatus = (callback, orderId, timeout) => {
         }
       }
     },
-    e => {
-      if (typeof e !== 'object' || !e.code) {
+    error => {
+      if (typeof error !== 'object' || !error.code) {
         callback({ code: '80000' }, null);
         return;
       } else {
-        callback(e, null);
+        callback(error, null);
         return;
       }
     }
@@ -314,10 +314,6 @@ const createVoucherOrderRequest = async payload => {
 const createOrderRequest = async payload => {
   const endpoint = Url.apiGql('CreateOrder');
   return post(endpoint, payload);
-};
-
-const createOrderStatusRequest = async orderId => {
-  return get(Url.API_URLS.GET_ORDER_STATUS({ orderId }).url);
 };
 
 const initPayment = async (data, dispatch) => {

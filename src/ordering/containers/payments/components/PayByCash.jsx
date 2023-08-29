@@ -35,7 +35,10 @@ function PayByCash({ modalDisplay, updatePayByCashPromptDisplayStatus, onPayWith
           </button>
           <button
             className="payment-item-prompt__fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
-            onClick={onPayWithCash}
+            onClick={() => {
+              handleToggleModal(false);
+              onPayWithCash();
+            }}
           >
             {t('PayByCashPromptConfirmedText')}
           </button>

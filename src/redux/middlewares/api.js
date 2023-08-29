@@ -1,10 +1,17 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { get, post, del, put } from '../../utils/request';
 
-//Deal with every single action that has API_REQUEST field.
+// Deal with every single action that has API_REQUEST field.
 export const API_REQUEST = 'API REQUEST';
 
-export default store => next => action => {
+const methodMapToRequest = {
+  get: url => get(url),
+  post: (url, payload, options) => post(url, payload, options),
+  del: (url, payload, options) => del(url, payload, options),
+  put: (url, payload, options) => put(url, payload, options),
+};
+
+export default () => next => action => {
   const callAPI = action[API_REQUEST];
 
   if (!callAPI) {
@@ -13,10 +20,9 @@ export default store => next => action => {
 
   const { url, method, mode, types, params, payload } = callAPI;
   const requestParamsStr = params
-    ? '?' +
-      Object.keys(params)
+    ? `?${Object.keys(params)
         .map(key => `${key}=${params[key]}`)
-        .join('&')
+        .join('&')}`
     : '';
   const requestUrl = `${url}${requestParamsStr}`;
 
@@ -40,13 +46,6 @@ export default store => next => action => {
   const [requestType, successType, failureType] = types;
 
   next(actionWith({ type: requestType }));
-
-  const methodMapToRequest = {
-    get: url => get(url),
-    post: (url, payload, options) => post(url, payload, options),
-    del: (url, payload, options) => del(url, payload, options),
-    put: (url, payload, options) => put(url, payload, options),
-  };
 
   return methodMapToRequest[method](requestUrl, payload, { mode })
     .then(response => {
@@ -73,12 +72,12 @@ export default store => next => action => {
         })
       );
     })
-    .catch(error => {
-      return next(
+    .catch(error =>
+      next(
         actionWith({
           type: failureType,
           ...error,
         })
-      );
-    });
+      )
+    );
 };

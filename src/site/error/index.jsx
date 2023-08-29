@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Trans, withTranslation } from 'react-i18next';
 import { IconLeftArrow } from '../../components/Icons';
 import prefetch from '../../common/utils/prefetch-assets';
@@ -86,6 +87,30 @@ class Error extends Component {
     );
   }
 }
+
 Error.displayName = 'SiteError';
+
+Error.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      urlPath: PropTypes.string,
+    }),
+  }),
+  location: PropTypes.shape({
+    // eslint-disable-next-line react/forbid-prop-types
+    state: PropTypes.object,
+  }),
+};
+
+Error.defaultProps = {
+  match: {
+    params: {
+      urlPath: '',
+    },
+  },
+  location: {
+    state: null,
+  },
+};
 
 export default withTranslation(['Scanner'])(Error);
