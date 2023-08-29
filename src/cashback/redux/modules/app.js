@@ -344,17 +344,19 @@ export const actions = {
       type: types.CREATE_LOGIN_TNGD_REQUEST,
     });
 
-    if (!isTNGMiniProgram()) {
-      throw new Error('Not in tng mini program');
-    }
-
-    if (!tryAgain) {
-      throw new Error(
-        '{"error":10,"errorMessage":"native node is null","message":"native node is null","startTime":695069893}'
-      );
-    }
-
     try {
+      if (!isTNGMiniProgram()) {
+        throw new Error('Not in tng mini program');
+      }
+
+      if (!tryAgain) {
+        console.log(111);
+
+        throw new Error(
+          '{"error":10,"errorMessage":"native node is null","message":"native node is null","startTime":695069893}'
+        );
+      }
+
       const business = getBusiness(getState());
 
       const tokens = await TngUtils.getAccessToken({ business });
