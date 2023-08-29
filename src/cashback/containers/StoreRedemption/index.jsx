@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
@@ -77,7 +77,15 @@ const StoreRedemptionNative = () => {
           <h2
             className={`${styles.StoreRedemptionGreetings} tw-flex-1 tw-flex tw-items-center tw-text-center tw-text-xl tw-leading-normal tw-font-bold`}
           >
-            {isStoreRedemptionNewCustomer ? t('StoreRedemptionNewUserGreetings') : t('StoreRedemptionUserGreetings')}
+            {isStoreRedemptionNewCustomer ? (
+              t('StoreRedemptionNewUserGreetings')
+            ) : (
+              <Trans i18nKey="StoreRedemptionUserGreetings">
+                Thanks for visiting our store.
+                <br />
+                See you again!
+              </Trans>
+            )}
           </h2>
           <ObjectFitImage
             noCompression
