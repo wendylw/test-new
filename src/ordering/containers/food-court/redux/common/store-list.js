@@ -44,6 +44,7 @@ import JomTarikImage from '../../../../../images/food-court-temp/merchant-Jom-Ta
 import ClassicBowlImage from '../../../../../images/food-court-temp/merchant-Classic-Bowl.png';
 import XOXOCoffeeImage from '../../../../../images/food-court-temp/merchant-XOXO-Coffee.png';
 import TintoCafeImage from '../../../../../images/food-court-temp/merchant-Tinto-Cafe.png';
+import BillyBoysKopitiamImage from '../../../../../images/food-court-temp/merchant-Billy-Boys-Kopitiam.jpg';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -285,6 +286,12 @@ export const AllFoodCourtStoreList = {
       validTimeFrom: '10:00',
       validTimeTo: '20:00',
     },
+  },
+  '64dd8370c7e60200074f6f6f': {
+    id: '64dd8370c7e60200074f6f6f',
+    imageNoCompression: BillyBoysKopitiamImage,
+    title: `Billy Boy's Kopitiam`,
+    tags: ['Fusion', 'Asian', 'Western'],
   },
   '61b93058cef3c900060ca990': {
     id: '61b93058cef3c900060ca990',
