@@ -956,5 +956,6 @@ export const getLoginTngRequestError = createSelector(getLoginTngRequest, loginT
 
 export const getIsTngAuthorizationError = createSelector(
   getLoginTngRequestError,
+  // If error code is 10, it means user has not authorized the mini program. This error from TNGD Mini Program, Aplipay will response 10 error, get access token in mounted.
   loginTngRequestError => (loginTngRequestError?.error || null) === 10
 );
