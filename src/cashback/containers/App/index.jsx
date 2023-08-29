@@ -212,7 +212,7 @@ App.defaultProps = {
 };
 
 export default compose(
-  withTranslation(['ApiError', 'Cashback']),
+  withTranslation(['Cashback']),
   connect(
     state => ({
       loginBannerPrompt: getLoginBannerPrompt(state),
