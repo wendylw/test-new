@@ -28,7 +28,7 @@ const actions = {
       STORAGE_KEY_ROOT_BACKUP,
       JSON.stringify({
         url: document.location.href,
-        state: state,
+        state,
       })
     );
   },

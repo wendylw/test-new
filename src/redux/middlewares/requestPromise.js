@@ -1,8 +1,8 @@
 /* eslint-disable import/no-anonymous-default-export */
 import logger from '../../utils/monitoring/logger';
 
-//Deal with every single action that has FETCH_REQUEST field.
-export default store => next => action => {
+// Deal with every single action that has FETCH_REQUEST field.
+export default () => next => action => {
   const {
     types,
     requestPromise, // very important field
@@ -19,8 +19,6 @@ export default store => next => action => {
     throw new Error('requestPromise must be a request promise');
   }
 
-  console.debug('[redux/middleware/request] types =', types);
-
   const [requestType, successType, failureType, cancelType] = types;
   next({ ...other, type: requestType });
   return requestPromise
@@ -32,7 +30,6 @@ export default store => next => action => {
       }
 
       if (!response) {
-        console.warn('requestPromise returns nothing in promise.then() when types =', types);
         logger.warn('Common_RequestPromise', {
           message: `requestPromise returns nothing in promise.then() when types = ${types}`,
         });

@@ -15,6 +15,7 @@ function RequireLoginPage({ title, onLoginButtonClick, buttonText }) {
       <img alt="Lock Screen" src={LockScreenImage} />
       <p className="text-weight-bolder text-center text-line-height-higher text-size-bigger padding-small">{title}</p>
       <button
+        data-test-id="site.order-history.login-btn"
         style={{ minWidth: '180px' }}
         className="button button__fill margin-top-bottom-small text-weight-bolder text-uppercase"
         onClick={onLoginButtonClick}
