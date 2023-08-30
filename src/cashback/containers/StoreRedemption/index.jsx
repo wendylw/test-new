@@ -37,12 +37,14 @@ const StoreRedemptionNative = () => {
   const isStoreRedemptionNewCustomer = useSelector(getIsStoreRedemptionNewCustomer);
 
   useMount(() => {
-    if (isDisplayStoreRedemptionContent) {
-      CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
-        country: userCountry,
-        page: 'With Cashback',
-      });
+    CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
+      country: userCountry,
+      page: isDisplayStoreRedemptionContent
+        ? 'With Cashback'
+        : `Without Cashback (${isStoreRedemptionNewCustomer ? 'New' : 'Returning'} Customer)`,
+    });
 
+    if (isDisplayStoreRedemptionContent) {
       alert(
         <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">{t('StoreRedemptionCashRedeemAlert')}</p>,
         {
@@ -111,7 +113,7 @@ const StoreRedemption = () => {
     if (isDisplayWebResult) {
       CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
         country: userCountry,
-        page: 'When users scan QR with phone camera',
+        page: 'When users scan QR with phone camera (web)',
       });
     } else {
       await dispatch(mounted());
