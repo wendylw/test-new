@@ -339,7 +339,7 @@ export const actions = {
     }
   },
 
-  loginByTngMiniProgram: tryAgain => async (dispatch, getState) => {
+  loginByTngMiniProgram: () => async (dispatch, getState) => {
     try {
       dispatch({
         type: types.CREATE_LOGIN_TNGD_REQUEST,
@@ -349,23 +349,17 @@ export const actions = {
         throw new Error('Not in tng mini program');
       }
 
-      if (!tryAgain) {
-        throw new Error(
-          '{"error":10,"errorMessage":"native node is null","message":"native node is null","startTime":695069893}'
-        );
-      } else {
-        const business = getBusiness(getState());
+      const business = getBusiness(getState());
 
-        const tokens = await TngUtils.getAccessToken({ business });
+      const tokens = await TngUtils.getAccessToken({ business });
 
-        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
-        await dispatch(actions.loginApp({ accessToken, refreshToken }));
+      await dispatch(actions.loginApp({ accessToken, refreshToken }));
 
-        dispatch({
-          type: types.CREATE_LOGIN_TNGD_SUCCESS,
-        });
-      }
+      dispatch({
+        type: types.CREATE_LOGIN_TNGD_SUCCESS,
+      });
     } catch (error) {
       dispatch({
         type: types.CREATE_LOGIN_TNGD_FAILURE,

@@ -64,7 +64,7 @@ class App extends Component {
                 Clevertap.pushEvent('POS Redemption Landing Page (Error Pop-up) - Click Try Again', {
                   country: userCountry,
                 });
-                await appActions.loginByTngMiniProgram(true);
+                await appActions.loginByTngMiniProgram();
               } else {
                 // cancel
                 if (window.my.exitMiniProgram) {
