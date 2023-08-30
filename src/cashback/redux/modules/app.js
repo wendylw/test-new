@@ -353,19 +353,19 @@ export const actions = {
         throw new Error(
           '{"error":10,"errorMessage":"native node is null","message":"native node is null","startTime":695069893}'
         );
+      } else {
+        const business = getBusiness(getState());
+
+        const tokens = await TngUtils.getAccessToken({ business });
+
+        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+        await dispatch(actions.loginApp({ accessToken, refreshToken }));
+
+        dispatch({
+          type: types.CREATE_LOGIN_TNGD_SUCCESS,
+        });
       }
-
-      const business = getBusiness(getState());
-
-      const tokens = await TngUtils.getAccessToken({ business });
-
-      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
-
-      await dispatch(actions.loginApp({ accessToken, refreshToken }));
-
-      dispatch({
-        type: types.CREATE_LOGIN_TNGD_SUCCESS,
-      });
     } catch (error) {
       dispatch({
         type: types.CREATE_LOGIN_TNGD_FAILURE,
