@@ -56,6 +56,7 @@ class App extends Component {
           confirm(t('UnexpectedErrorOccurred'), {
             closeByBackButton: false,
             closeByBackDrop: false,
+            cancelButtonContent: t('Cancel'),
             confirmButtonContent: t('TryAgain'),
             onSelection: async confirmStatus => {
               if (confirmStatus) {
