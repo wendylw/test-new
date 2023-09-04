@@ -46,6 +46,9 @@ class CurrencyNumber extends React.Component {
 CurrencyNumber.displayName = 'OrderingCurrencyNumber';
 
 CurrencyNumber.propTypes = {
+  locale: PropTypes.string,
+  currency: PropTypes.string,
+  country: PropTypes.string,
   className: PropTypes.string,
   addonBefore: PropTypes.string,
   money: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -54,6 +57,11 @@ CurrencyNumber.propTypes = {
 
 CurrencyNumber.defaultProps = {
   money: 0,
+  locale: '',
+  currency: '',
+  country: '',
+  className: '',
+  addonBefore: '',
   numberOnly: false,
 };
 

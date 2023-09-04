@@ -3,12 +3,6 @@ rulesDirPlugin.RULES_DIR = 'scripts/eslint-rules';
 
 // We will progressively remove files from this list
 const legacyFiles = [
-  'src/ordering/components/Billing/index.js',
-  'src/ordering/components/CreateOrderButton/index.js',
-  'src/ordering/components/CurrencyNumber/index.js',
-  'src/ordering/components/Item.stories.js',
-  'src/ordering/components/MessageModal/index.js',
-  'src/ordering/components/ProductItem.jsx',
   'src/ordering/containers/App/index.js',
   'src/ordering/containers/Customer/components/AddressChangeModal/index.js',
   'src/ordering/containers/Customer/containers/AddressDetail/index.js',
@@ -104,7 +98,6 @@ const legacyFiles = [
   'src/ordering/redux/store.js',
   'src/ordering/redux/store.test.js',
   'src/ordering/redux/types.js',
-  'src/ordering/components/PageProcessingLoader.jsx',
   'src/ordering/containers/order-status/containers/ThankYou/components/SelfPickup.jsx',
   'src/ordering/containers/order-status/containers/ThankYou/utils.js',
   'src/ordering/containers/order-status/redux/api-info.js',

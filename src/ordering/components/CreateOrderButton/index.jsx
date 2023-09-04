@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import qs from 'qs';
+import i18next from 'i18next';
 import Utils from '../../../utils/utils';
 import {
   getRequestInfo,
@@ -12,22 +13,28 @@ import {
   getHasLoginGuardPassed,
   getIsCoreBusinessAPIFulfilled,
 } from '../../redux/modules/app';
-import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
-import PageProcessingLoader from '../../components/PageProcessingLoader';
-import Constants from '../../../utils/constants';
+import {
+  createOrder as createOrderThunk,
+  gotoPayment as gotoPaymentThunk,
+} from '../../containers/payments/redux/common/thunks';
+import PageProcessingLoader from '../PageProcessingLoader';
+import Constants, { REFERRER_SOURCE_TYPES } from '../../../utils/constants';
 import logger from '../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 import { fetchOrder } from '../../../utils/api-request';
-import i18next from 'i18next';
-import { alert } from '../../../common/feedback/';
+import { alert } from '../../../common/feedback';
 import { extractDataAttributes } from '../../../common/utils';
 
-const { ROUTER_PATHS, REFERRER_SOURCE_TYPES, PAYMENT_PROVIDERS, ORDER_STATUS } = Constants;
+const { ROUTER_PATHS, PAYMENT_PROVIDERS, ORDER_STATUS } = Constants;
 
 class CreateOrderButton extends React.Component {
-  state = {
-    isLoadingCreatedOrder: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoadingCreatedOrder: false,
+    };
+  }
+
   componentDidMount = async () => {
     if (this.shouldAskUserLogin()) {
       this.gotoLoginPage();
@@ -35,15 +42,12 @@ class CreateOrderButton extends React.Component {
   };
 
   componentDidUpdate = prevProps => {
-    const { user: prevUser } = prevProps;
-    const { user: currentUser } = this.props;
+    const { user: prevUser, isCoreBusinessFulfilled: prevIsCoreBusinessFulfilled } = prevProps;
+    const { user: currUser, isCoreBusinessFulfilled: currIsCoreBusinessFulfilled } = this.props;
     const { isFetching: isPrevFetching } = prevUser || {};
-    const { isFetching: isCurrentFetching } = currentUser || {};
+    const { isFetching: isCurrentFetching } = currUser || {};
 
-    if (
-      isPrevFetching !== isCurrentFetching ||
-      prevProps.isCoreBusinessFulfilled !== this.props.isCoreBusinessFulfilled
-    ) {
+    if (isPrevFetching !== isCurrentFetching || prevIsCoreBusinessFulfilled !== currIsCoreBusinessFulfilled) {
       if (this.shouldAskUserLogin()) {
         this.gotoLoginPage();
       }
@@ -86,7 +90,7 @@ class CreateOrderButton extends React.Component {
     try {
       await this.handleCreateOrder();
     } catch (error) {
-      const { paymentName } = this.props;
+      const { paymentName, afterCreateOrder } = this.props;
 
       logger.error(
         'Ordering_CreateOrderButton_CreateOrderFailed',
@@ -103,7 +107,7 @@ class CreateOrderButton extends React.Component {
         }
       );
 
-      this.props.afterCreateOrder && this.props.afterCreateOrder();
+      afterCreateOrder && afterCreateOrder();
     }
   };
 
@@ -140,8 +144,8 @@ class CreateOrderButton extends React.Component {
     const { tableId } = requestInfo;
     const { totalCashback } = cartBilling || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    let orderId = createdOrderId,
-      total = createdOrderTotal;
+    let orderId = createdOrderId;
+    let total = createdOrderTotal;
 
     if (beforeCreateOrder) {
       await beforeCreateOrder();
@@ -233,9 +237,10 @@ class CreateOrderButton extends React.Component {
     }
 
     if (orderId) {
+      const { paymentExtraData } = this.props;
       // NOTE: We MUST access paymentExtraData here instead of the beginning of the function, because the value of
       // paymentExtraData could be changed after beforeCreateOrder is executed.
-      await gotoPayment({ orderId, total }, this.props.paymentExtraData);
+      await gotoPayment({ orderId, total }, paymentExtraData);
     }
   };
 
@@ -255,6 +260,8 @@ class CreateOrderButton extends React.Component {
           type={buttonType}
           disabled={disabled || isLoadingCreatedOrder}
           onClick={this.handleCreateOrderSafety}
+          data-test-id="ordering.create-order-button.continue-btn"
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...extractDataAttributes(this.props)}
         >
           {isLoadingCreatedOrder ? loaderText : children}
@@ -268,51 +275,78 @@ class CreateOrderButton extends React.Component {
 CreateOrderButton.displayName = 'CreateOrderButton';
 
 CreateOrderButton.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
   user: PropTypes.object,
-  history: PropTypes.object,
+  paymentExtraData: PropTypes.object,
+  /* eslint-enable */
+  requestInfo: PropTypes.shape({
+    tableId: PropTypes.string,
+  }),
+  cartBilling: PropTypes.shape({
+    totalCashback: PropTypes.number,
+  }),
+  children: PropTypes.node,
+  total: PropTypes.number,
+  orderId: PropTypes.string,
   className: PropTypes.string,
   buttonType: PropTypes.string,
   validCreateOrder: PropTypes.bool,
   sentOtp: PropTypes.bool,
   disabled: PropTypes.bool,
+  createOrder: PropTypes.func,
+  gotoPayment: PropTypes.func,
   beforeCreateOrder: PropTypes.func,
   afterCreateOrder: PropTypes.func,
   paymentName: PropTypes.string,
-  paymentExtraData: PropTypes.object,
   processing: PropTypes.bool,
   loaderText: PropTypes.string,
-  cartBilling: PropTypes.object,
+  hasLoginGuardPassed: PropTypes.bool,
+  isCoreBusinessFulfilled: PropTypes.bool,
   getHasLoginGuardPassed: PropTypes.bool,
 };
 
 CreateOrderButton.defaultProps = {
+  user: {},
+  requestInfo: {
+    tableId: '',
+  },
+  cartBilling: {
+    totalCashback: 0,
+  },
+  paymentExtraData: {},
   buttonType: 'button',
+  total: null,
+  orderId: null,
+  children: null,
+  className: '',
+  loaderText: '',
+  paymentName: '',
   validCreateOrder: true,
-  isPromotionValid: true,
   disabled: true,
   sentOtp: false,
   processing: false,
-  cartBilling: {},
+  hasLoginGuardPassed: false,
+  isCoreBusinessFulfilled: false,
   getHasLoginGuardPassed: false,
+  createOrder: () => {},
+  gotoPayment: () => {},
   beforeCreateOrder: () => {},
   afterCreateOrder: () => {},
 };
 
 export default compose(
   connect(
-    state => {
-      return {
-        user: getUser(state),
-        error: getError(state),
-        requestInfo: getRequestInfo(state),
-        cartBilling: getCartBilling(state),
-        hasLoginGuardPassed: getHasLoginGuardPassed(state),
-        isCoreBusinessFulfilled: getIsCoreBusinessAPIFulfilled(state),
-      };
-    },
+    state => ({
+      user: getUser(state),
+      error: getError(state),
+      requestInfo: getRequestInfo(state),
+      cartBilling: getCartBilling(state),
+      hasLoginGuardPassed: getHasLoginGuardPassed(state),
+      isCoreBusinessFulfilled: getIsCoreBusinessAPIFulfilled(state),
+    }),
     {
-      createOrder,
-      gotoPayment,
+      createOrder: createOrderThunk,
+      gotoPayment: gotoPaymentThunk,
     }
   )
 )(CreateOrderButton);

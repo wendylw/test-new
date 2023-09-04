@@ -44,7 +44,14 @@ const TimeSlotDrawer = ({
       show={timeSlotDrawerVisible}
       header={
         <DrawerHeader
-          left={<X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" onClick={onClose} />}
+          left={
+            <X
+              weight="light"
+              className="tw-flex-shrink-0 tw-text-2xl tw-text-gray"
+              onClick={onClose}
+              data-test-id="ordering.time-slot-drawer.close-btn"
+            />
+          }
         >
           <span className="tw-font-bold tw-text-lg tw-leading-relaxed">
             {isOnlyPreOrder ? t('SelectNextAvailableTime') : t('SelectTimeSlot')}
@@ -66,6 +73,7 @@ const TimeSlotDrawer = ({
                     disabled={!available}
                     className={`${styles.switchButton}${selected ? ' active' : ''}`}
                     onClick={() => changeShippingType(value)}
+                    data-test-id="ordering.time-slot-drawer.shipping-type-btn"
                   >
                     {`${t(SHIPPING_TYPE_MAPPING[value])}${available ? '' : ` (${t('Unavailable')})`}`}
                   </button>
@@ -100,6 +108,7 @@ const TimeSlotDrawer = ({
                         key={value}
                         className={classNameList.join(' ')}
                         onClick={() => (available ? changeDate(value) : {})}
+                        data-test-id="ordering.time-slot-drawer.date-btn"
                       >
                         {dateContentList.map(content => (
                           <span key={content} className={styles.timeSlotDateItemText}>
@@ -128,6 +137,7 @@ const TimeSlotDrawer = ({
                         disabled={!available}
                         className={`${styles.timeSlotTimeButton} ${selected ? 'active' : ''}`}
                         onClick={() => changeTimeSlot(value)}
+                        data-test-id="ordering.time-slot-drawer.time-btn"
                       >
                         {from === 'Immediate' ? t('Immediate') : timeContentList.join(' - ')}
                         {!available ? ` (${t('TimeSlotUnavailable')})` : ''}
@@ -147,6 +157,7 @@ const TimeSlotDrawer = ({
               loading={isSaveButtonLoaderVisible}
               onClick={save}
               className="tw-uppercase"
+              data-test-id="ordering.time-slot-drawer.continue-btn"
             >
               {t('Continue')}
             </Button>

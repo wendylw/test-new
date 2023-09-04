@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import Modal from '../../../components/Modal';
 import './MessageModal.scss';
 
 class MessageModal extends Component {
   handleClickOK = () => {
-    this.props.onHide();
+    const { onHide } = this.props;
+    onHide();
   };
 
   render() {
@@ -13,7 +15,7 @@ class MessageModal extends Component {
     const { message, description, buttonText } = data;
 
     return (
-      <Modal data-test-id="ordering.common.message-modal.container" className="message-modal" show={true}>
+      <Modal data-test-id="ordering.common.message-modal.container" className="message-modal" show>
         <Modal.Body className="text-center">
           <h4 className="padding-small text-size-biggest text-weight-bolder">{message}</h4>
           <p className="modal__text  padding-top-bottom-small">{description}</p>
@@ -31,6 +33,25 @@ class MessageModal extends Component {
     );
   }
 }
+
 MessageModal.displayName = 'MessageModal';
+
+MessageModal.propTypes = {
+  onHide: PropTypes.func,
+  data: PropTypes.shape({
+    message: PropTypes.string,
+    description: PropTypes.string,
+    buttonText: PropTypes.string,
+  }),
+};
+
+MessageModal.defaultProps = {
+  onHide: PropTypes.func,
+  data: {
+    message: '',
+    description: '',
+    buttonText: '',
+  },
+};
 
 export default withTranslation()(MessageModal);
