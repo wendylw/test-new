@@ -1,4 +1,7 @@
-import React, { Component, Fragment } from 'react';
+import dayjs from 'dayjs';
+import _get from 'lodash/get';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import qs from 'qs';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -7,7 +10,6 @@ import HybridHeader from '../../../components/HybridHeader';
 import PageLoader from '../../../components/PageLoader';
 import beepLocationdateHint from '../../../images/beep-locationdate-hint.png';
 import { IconNext, IconSearch } from '../../../components/Icons';
-import _get from 'lodash/get';
 import {
   actions as locationAndDateActionCreator,
   getDeliveryType,
@@ -38,9 +40,8 @@ import {
   getStoreId as getSavedStoreId,
 } from '../../redux/modules/app';
 import { getAddressInfo as getSavedAddressInfo } from '../../../redux/modules/address/selectors';
-import { setAddressInfo } from '../../../redux/modules/address/thunks';
+import { setAddressInfo as setAddressInfoThunk } from '../../../redux/modules/address/thunks';
 import { withAddressInfo } from '../Location/withAddressInfo';
-import dayjs from 'dayjs';
 import CleverTap from '../../../utils/clevertap';
 import logger from '../../../utils/monitoring/logger';
 import prefetch from '../../../common/utils/prefetch-assets';
@@ -50,15 +51,17 @@ const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW, ADDRE
 
 class LocationAndDate extends Component {
   headerEl = null;
+
   footerEl = null;
+
   resetWhenWillUnmount = false;
 
   componentDidMount = async () => {
     const { actions, location, savedAddressInfo, cachedAddressInfo, savedStoreId } = this.props;
     const { selectedAddress: selectedAddressInfo = null } = location.state || {};
 
-    const deliveryType = (this.query.type || '').toLowerCase();
-    this.ensureDeliveryType(deliveryType);
+    const queryDeliveryType = (this.query.type || '').toLowerCase();
+    this.ensureDeliveryType(queryDeliveryType);
     const expectedDeliveryDate = Utils.getExpectedDeliveryDateFromSession();
 
     const expectedDay = _get(expectedDeliveryDate, 'date.date', null);
@@ -66,38 +69,47 @@ class LocationAndDate extends Component {
     // if delivery address updated from location page, should trigger `initial action` find nearest store
     const storeId = selectedAddressInfo ? null : savedStoreId;
 
+    const { storeid } = this.query;
+    const { selectedDay, selectedFromTime, deliveryType, originalDeliveryType } = this.props;
+
     await actions.initial({
       currentDate: new Date(),
-      deliveryType: this.props.deliveryType || deliveryType,
-      storeId: this.query.storeid || storeId,
+      deliveryType: deliveryType || queryDeliveryType,
+      storeId: storeid || storeId,
       addressInfo: selectedAddressInfo || cachedAddressInfo || savedAddressInfo,
-      expectedDay: this.props.selectedDay || expectedDay,
-      expectedFromTime: this.props.selectedFromTime || expectedFromTime,
-      originalDeliveryType: this.props.originalDeliveryType ?? deliveryType,
+      expectedDay: selectedDay || expectedDay,
+      expectedFromTime: selectedFromTime || expectedFromTime,
+      originalDeliveryType: originalDeliveryType ?? queryDeliveryType,
     });
+
+    const { cachedStoreId, cachedAddressInfo: latestCachedAddressInfo } = this.props;
 
     if (deliveryType === DELIVERY_METHOD.DELIVERY) {
       CleverTap.pushEvent(
-        `Shipping Details${this.props.cachedAddressInfo ? '' : ' (missing delivery address)'} - View Page`
+        `Shipping Details${latestCachedAddressInfo ? '' : ' (missing delivery address)'} - View Page`
       );
     }
 
-    if (!this.props.cachedStoreId && deliveryType === DELIVERY_METHOD.PICKUP) {
-      this.gotoStoreList(DELIVERY_METHOD.PICKUP, this.query.storeid || savedStoreId);
+    if (!cachedStoreId && deliveryType === DELIVERY_METHOD.PICKUP) {
+      this.gotoStoreList(DELIVERY_METHOD.PICKUP, storeid || savedStoreId);
     }
 
     prefetch(['ORD_SL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
   };
 
   componentWillUnmount() {
+    const { actions } = this.props;
+
     if (this.resetWhenWillUnmount) {
-      this.props.actions.reset();
+      actions.reset();
       this.resetWhenWillUnmount = false;
     }
   }
 
   get query() {
-    return qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+    const { history } = this.props;
+
+    return qs.parse(history.location.search, { ignoreQueryPrefix: true });
   }
 
   get isDelivery() {
@@ -156,7 +168,7 @@ class LocationAndDate extends Component {
   handleBackClicked = () => {
     const { history, location } = this.props;
     const stateFrom = _get(location, 'state.from', null);
-    const callbackUrl = this.query.callbackUrl;
+    const { callbackUrl } = this.query;
     const from = stateFrom || this.query.from;
     // reset redux store data when will unmount
     this.resetWhenWillUnmount = true;
@@ -212,9 +224,7 @@ class LocationAndDate extends Component {
       return true;
     }
 
-    const isInTimeList = availableTimeSlotList.some(time => {
-      return timeLib.isSame(time.from, selectedTime.from);
-    });
+    const isInTimeList = availableTimeSlotList.some(time => timeLib.isSame(time.from, selectedTime.from));
 
     if (!isInTimeList) {
       return true;
@@ -265,7 +275,9 @@ class LocationAndDate extends Component {
     }
 
     await appActions.getStoreHashData(cachedStoreId);
-    const h = decodeURIComponent(this.props.storeHashCode);
+
+    const { storeHashCode } = this.props;
+    const h = decodeURIComponent(storeHashCode);
     const from = _get(location, 'state.from', null);
 
     if (originalDeliveryType && originalDeliveryType !== deliveryType) {
@@ -307,7 +319,7 @@ class LocationAndDate extends Component {
       return;
     }
 
-    return history.go(-1);
+    history.go(-1);
   };
 
   gotoOrderingHomePage = (type, h) => {
@@ -343,7 +355,9 @@ class LocationAndDate extends Component {
 
     return (
       <footer
-        ref={ref => (this.footerEl = ref)}
+        ref={ref => {
+          this.footerEl = ref;
+        }}
         className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
       >
         <button
@@ -389,8 +403,10 @@ class LocationAndDate extends Component {
     const { actions } = this.props;
     await actions.deliveryTypeChanged(deliveryType);
 
-    if (deliveryType === DELIVERY_METHOD.PICKUP && !this.props.store) {
-      return this.gotoStoreList(DELIVERY_METHOD.PICKUP, null);
+    const { store } = this.props;
+
+    if (deliveryType === DELIVERY_METHOD.PICKUP && !store) {
+      this.gotoStoreList(DELIVERY_METHOD.PICKUP, null);
     }
   };
 
@@ -434,17 +450,18 @@ class LocationAndDate extends Component {
 
     return (
       <div className="padding-normal">
-        <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
+        <span className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
           {t('DeliverTo')}
-        </label>
+        </span>
         <div
           className="form__group flex flex-middle flex-space-between"
           onClick={() => {
             CleverTap.pushEvent('Shipping Details - click deliver to', storeInfoForCleverTap);
             this.gotoLocationSearch();
           }}
+          role="button"
+          tabIndex="0"
           data-test-id="ordering.location-and-date.deliver-to"
-          data-testid="deliverTo"
         >
           {!addressName && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
           <p
@@ -467,16 +484,17 @@ class LocationAndDate extends Component {
     return (
       <div
         className="padding-normal"
-        data-testid="deliverTo"
         onClick={() => {
           CleverTap.pushEvent('Shipping Details - click selected store', storeInfoForCleverTap);
           this.handleGotoStoreListClick();
         }}
+        role="button"
+        tabIndex="0"
         data-test-id="ordering.location-and-date.selected-store"
       >
-        <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
+        <span className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
           {t('SelectedStore')}
-        </label>
+        </span>
         <div className="form__group flex flex-middle flex-space-between">
           <p className="location-date__input padding-normal text-size-big text-line-height-base text-omit__single-line">
             {storeName}
@@ -500,9 +518,9 @@ class LocationAndDate extends Component {
     const dateDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, orderDate.date);
 
     const isSelected = selectedOrderDate ? dateDayjs.isSame(selectedOrderDate.date) : false;
-    const isToday = orderDate.isToday;
+    const { isToday } = orderDate;
     const isTomorrow = dateDayjs.isSame(currentDateDayjs.add(1, 'day'), 'day');
-    const isOpen = orderDate.isOpen;
+    const { isOpen } = orderDate;
     const dayOfWeek = dateDayjs.day();
     const dateOfMonth = dateDayjs.date();
 
@@ -526,12 +544,12 @@ class LocationAndDate extends Component {
           ) : isTomorrow ? (
             t('Tomorrow')
           ) : (
-            <Fragment>
+            <>
               <span className="location-date__date-weekday text-weight-bolder">
                 {t(WEEK_DAYS_I18N_KEYS[dayOfWeek])}
               </span>
               <time className="text-size-big">{dateOfMonth}</time>
-            </Fragment>
+            </>
           )}
         </button>
       </li>
@@ -543,10 +561,10 @@ class LocationAndDate extends Component {
 
     return (
       <div className="padding-small">
-        <label className="location-date__label padding-left-right-small margin-top-bottom-small text-size-big text-weight-bolder">
+        <span className="location-date__label padding-left-right-small margin-top-bottom-small text-size-big text-weight-bolder">
           {this.isDelivery && <span key="deliver-on">{t('DeliverOn')}</span>}
           {this.isPickup && <span key="pickup-on">{t('PickUpOn')}</span>}
-        </label>
+        </span>
         <ul className="location-date__date flex flex-middle flex-space-between">
           {orderDateList.map(orderDate => this.renderDeliveryDateItem(orderDate))}
         </ul>
@@ -585,7 +603,6 @@ class LocationAndDate extends Component {
 
   renderDeliveryHourTimeItem = timeItem => {
     const { t, selectedTime, storeInfoForCleverTap } = this.props;
-    const isImmediate = timeItem.from === TIME_SLOT_NOW;
     const isSelected = selectedTime && selectedTime.from === timeItem.from;
     const isSoldOut = timeItem.soldOut;
 
@@ -615,9 +632,9 @@ class LocationAndDate extends Component {
 
     return (
       <div className="padding-top-bottom-normal">
-        <label className="location-date__label padding-left-right-normal margin-top-bottom-small text-size-big text-weight-bolder">
+        <span className="location-date__label padding-left-right-normal margin-top-bottom-small text-size-big text-weight-bolder">
           {this.isDelivery ? t('DeliveryTime') : t('PickupTime')}
-        </label>
+        </span>
         <ul className="location-date__hour">
           {availableTimeSlotList.map(timeItem => this.renderDeliveryHourTimeItem(timeItem))}
         </ul>
@@ -645,9 +662,9 @@ class LocationAndDate extends Component {
 
     return (
       <div className="padding-normal">
-        <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
+        <span className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
           {t('PickupAt')}
-        </label>
+        </span>
         <p className="text-line-height-base">{pickUpAddress}</p>
       </div>
     );
@@ -656,32 +673,30 @@ class LocationAndDate extends Component {
   renderDeliveryContainer = () => {
     const { addressName } = this.props;
     return (
-      <Fragment>
+      <>
         {this.renderDeliveryTo()}
 
-        {addressName ? (
-          <Fragment>
+        {!addressName ? (
+          this.renderDeliveryHelpText()
+        ) : (
+          <>
             {this.renderSelectedStore()}
             {this.renderDeliveryDateSelector()}
             {this.renderDeliveryHourTimeSelector()}
-          </Fragment>
-        ) : (
-          this.renderDeliveryHelpText()
+          </>
         )}
-      </Fragment>
+      </>
     );
   };
 
-  renderPickupContainer = () => {
-    return (
-      <Fragment>
-        {this.renderSelectedStore()}
-        {this.renderPickAt()}
-        {this.renderDeliveryDateSelector()}
-        {this.renderDeliveryHourTimeSelector()}
-      </Fragment>
-    );
-  };
+  renderPickupContainer = () => (
+    <>
+      {this.renderSelectedStore()}
+      {this.renderPickAt()}
+      {this.renderDeliveryDateSelector()}
+      {this.renderDeliveryHourTimeSelector()}
+    </>
+  );
 
   render() {
     const { businessDeliveryTypes, showLoading } = this.props;
@@ -689,11 +704,13 @@ class LocationAndDate extends Component {
     return (
       <section className="location-date flex flex-column" data-test-id="ordering.location-and-date.container">
         <HybridHeader
-          headerRef={ref => (this.headerEl = ref)}
+          headerRef={ref => {
+            this.headerEl = ref;
+          }}
           className="flex-middle"
           contentClassName="flex-middle"
           data-test-id="ordering.location-and-date.header"
-          isPage={true}
+          isPage
           title={this.getLocationDisplayTitle()}
           navFunc={() => {
             CleverTap.pushEvent('Shipping Details - click back arrow');
@@ -715,12 +732,12 @@ class LocationAndDate extends Component {
           {showLoading ? (
             <PageLoader />
           ) : (
-            <Fragment>
+            <>
               {businessDeliveryTypes.length > 1 && this.renderDeliveryTypesSelector()}
 
               {this.isDelivery && this.renderDeliveryContainer()}
               {this.isPickup && this.renderPickupContainer()}
-            </Fragment>
+            </>
           )}
         </div>
         {this.renderContinueButton()}
@@ -728,7 +745,80 @@ class LocationAndDate extends Component {
     );
   }
 }
+
 LocationAndDate.displayName = 'LocationAndDate';
+
+LocationAndDate.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  store: PropTypes.object,
+  location: PropTypes.object,
+  currentDate: PropTypes.object,
+  selectedDay: PropTypes.object,
+  selectedTime: PropTypes.object,
+  orderDateList: PropTypes.array,
+  savedAddressInfo: PropTypes.object,
+  businessUTCOffset: PropTypes.number,
+  cachedAddressInfo: PropTypes.object,
+  selectedOrderDate: PropTypes.object,
+  availableTimeSlotList: PropTypes.array,
+  businessDeliveryTypes: PropTypes.array,
+  storeInfoForCleverTap: PropTypes.object,
+  /* eslint-enable */
+  showLoading: PropTypes.bool,
+  addressName: PropTypes.string,
+  deliveryType: PropTypes.string,
+  savedStoreId: PropTypes.string,
+  cachedStoreId: PropTypes.string,
+  storeHashCode: PropTypes.string,
+  selectedFromTime: PropTypes.string,
+  originalDeliveryType: PropTypes.string,
+  setAddressInfo: PropTypes.func,
+  actions: PropTypes.shape({
+    reset: PropTypes.func,
+    initial: PropTypes.func,
+    selectedDayChanged: PropTypes.func,
+    deliveryTypeChanged: PropTypes.func,
+    selectedFromTimeChanged: PropTypes.func,
+  }),
+  appActions: PropTypes.shape({
+    getStoreHashData: PropTypes.func,
+  }),
+};
+
+LocationAndDate.defaultProps = {
+  store: null,
+  location: null,
+  currentDate: null,
+  savedStoreId: null,
+  cachedStoreId: null,
+  selectedDay: null,
+  selectedTime: null,
+  storeHashCode: null,
+  savedAddressInfo: null,
+  cachedAddressInfo: null,
+  selectedOrderDate: null,
+  businessUTCOffset: 480,
+  originalDeliveryType: null,
+  storeInfoForCleverTap: null,
+  setAddressInfo: () => {},
+  actions: {
+    reset: () => {},
+    initial: () => {},
+    selectedDayChanged: () => {},
+    deliveryTypeChanged: () => {},
+    selectedFromTimeChanged: () => {},
+  },
+  appActions: {
+    getStoreHashData: () => {},
+  },
+  showLoading: false,
+  addressName: '',
+  deliveryType: '',
+  selectedFromTime: '',
+  orderDateList: [],
+  businessDeliveryTypes: [],
+  availableTimeSlotList: [],
+};
 
 export default compose(
   withAddressInfo(),
@@ -758,7 +848,7 @@ export default compose(
     }),
 
     dispatch => ({
-      setAddressInfo: bindActionCreators(setAddressInfo, dispatch),
+      setAddressInfo: bindActionCreators(setAddressInfoThunk, dispatch),
       actions: bindActionCreators(locationAndDateActionCreator, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })

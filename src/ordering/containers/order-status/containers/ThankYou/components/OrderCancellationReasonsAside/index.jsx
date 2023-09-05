@@ -1,10 +1,11 @@
+import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import _isFunction from 'lodash/isFunction';
+import { useSelector } from 'react-redux';
 import Radio from '../../../../../../../components/Radio';
 import { ORDER_CANCELLATION_REASONS } from '../../constants';
-import _isFunction from 'lodash/isFunction';
 import '../OrderCancellationReasonsAside.scss';
-import { useSelector } from 'react-redux';
 import { getCancelOrderStatus } from '../../redux/selector';
 
 const orderCancellationReasons = [
@@ -95,7 +96,11 @@ function OrderCancellationReasonsAside({ show, onHide, onCancelOrder }) {
   }, [onCancelOrder, orderCancellationProcessing, requireSpecifyReason, selectedReason, specifyReason]);
 
   return (
-    <aside className={`order-cancellation-reasons aside fixed-wrapper ${show ? 'active' : ''}`} onClick={handleOnHide}>
+    <aside
+      className={`order-cancellation-reasons aside fixed-wrapper ${show ? 'active' : ''}`}
+      data-test-id="ordering.order-status.thank-you.aside.hide-btn"
+      onClick={handleOnHide}
+    >
       <div className="order-cancellation-reasons__container aside__content absolute-wrapper">
         <div className="order-cancellation-reasons__title text-size-big padding-normal">
           {t('PleaseSelectCancellationReason')}
@@ -106,6 +111,7 @@ function OrderCancellationReasonsAside({ show, onHide, onCancelOrder }) {
               <li
                 onClick={() => handleReasonChange(reason)}
                 className="flex flex-space-between flex-middle padding-small"
+                data-test-id="ordering.order-status.thank-you.aside.reason-item"
                 key={reason.value}
               >
                 <div>{t(reason.displayNameTransKey)}</div>
@@ -124,11 +130,12 @@ function OrderCancellationReasonsAside({ show, onHide, onCancelOrder }) {
                 value={specifyReason}
                 onChange={handleSpecifyReasonInput}
                 className="form__textarea padding-small"
+                data-test-id="ordering.order-status.thank-you.aside.input"
                 placeholder={t('PleaseSpecifyReason')}
                 row={5}
                 maxLength={SPECIFY_REASON_MAX_LENGTH}
                 readOnly={orderCancellationProcessing}
-              ></textarea>
+              />
 
               <p className="text-size-small text-right padding-small text-opacity">
                 {t('LimitCharacters', { inputLength: specifyReason.length, maxLength: SPECIFY_REASON_MAX_LENGTH })}
@@ -142,6 +149,7 @@ function OrderCancellationReasonsAside({ show, onHide, onCancelOrder }) {
             onClick={handleOrderCancellation}
             disabled={cancelButtonDisabled}
             className="button button__fill button__block text-weight-bolder text-uppercase"
+            data-test-id="ordering.order-status.thank-you.aside.cancel-btn"
           >
             {orderCancellationProcessing ? t('Processing') : t('CancelOrder')}
           </button>
@@ -150,6 +158,19 @@ function OrderCancellationReasonsAside({ show, onHide, onCancelOrder }) {
     </aside>
   );
 }
+
 OrderCancellationReasonsAside.displayName = 'OrderCancellationReasonsAside';
+
+OrderCancellationReasonsAside.propTypes = {
+  show: PropTypes.bool,
+  onHide: PropTypes.func,
+  onCancelOrder: PropTypes.func,
+};
+
+OrderCancellationReasonsAside.defaultProps = {
+  show: false,
+  onHide: () => {},
+  onCancelOrder: () => {},
+};
 
 export default OrderCancellationReasonsAside;

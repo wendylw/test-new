@@ -1,4 +1,5 @@
 import qs from 'qs';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -8,13 +9,17 @@ import { IconNext } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
 import Tag from '../../../../../components/Tag';
 import CleverTap from '../../../../../utils/clevertap';
-import Constants from '../../../../../utils/constants';
+import Constants, {
+  LIVE_CHAT_SOURCE_TYPES,
+  AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
+  ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
+} from '../../../../../utils/constants';
 import { ORDER_PAYMENT_METHODS } from '../../constants';
 import Utils, { copyDataToClipboard } from '../../../../../utils/utils';
 import ItemDetails from '../../components/ItemDetails';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
-import { loadOrder } from '../../redux/thunks';
+import { loadOrder as loadOrderThunk } from '../../redux/thunks';
 import {
   getIsUseStorehubLogistics,
   getIsShowReorderButton,
@@ -25,7 +30,6 @@ import {
   getServiceCharge,
   getProductsManualDiscount,
   getOrderShippingType,
-  getIsPayLater,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -33,16 +37,9 @@ import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
 import { ICON_RES } from '../../../../../components/NativeHeader';
 
-const {
-  AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
-  ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
-  DELIVERY_METHOD,
-  LIVE_CHAT_SOURCE_TYPES,
-} = Constants;
+const { DELIVERY_METHOD } = Constants;
 
 export class OrderDetails extends Component {
-  state = {};
-
   componentDidMount() {
     const { loadOrder } = this.props;
 
@@ -65,33 +62,29 @@ export class OrderDetails extends Component {
     });
   };
 
-  isReportUnsafeDriverButtonDisabled = () => {
-    const { orderStatus } = this.props;
-
-    return !AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus);
-  };
-
   handleReportUnsafeDriver = () => {
+    const { receiptNumber, history } = this.props;
+
     const queryParams = {
-      receiptNumber: this.props.receiptNumber,
+      receiptNumber,
       from: 'orderDetails',
     };
 
     this.pushCleverTapEvent('Order Details - click report issue');
 
-    this.props.history.push({
+    history.push({
       pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
       search: qs.stringify(queryParams, { addQueryPrefix: true }),
     });
   };
 
   handleReorder = () => {
-    const { shippingType } = this.props;
+    const { shippingType, history } = this.props;
     const h = Utils.getQueryString('h');
 
     this.pushCleverTapEvent('Order details - Click reorder');
 
-    this.props.history.push({
+    history.push({
       pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
       search: `type=${shippingType}&h=${h}`,
     });
@@ -104,9 +97,106 @@ export class OrderDetails extends Component {
 
     items.forEach(item => {
       const { quantity, itemType } = item || {};
-      count = !!itemType ? count : count + quantity;
+      count = !itemType ? count + quantity : count;
     });
     return count;
+  };
+
+  getRightContentOfHeader() {
+    const { order, t } = this.props;
+    const isWebview = Utils.isWebview();
+    const orderId = _get(order, 'orderId', '');
+    const orderStoreName = _get(order, 'storeInfo.name', '');
+    const eventName = 'Order Details - click contact us';
+
+    if (!order) {
+      return null;
+    }
+
+    if (isWebview) {
+      const rightContentOfNativeLiveChat = {
+        style: {
+          color: '#00b0ff',
+        },
+        onClick: () => {
+          this.pushCleverTapEvent(eventName);
+
+          NativeMethods.startChat({
+            orderId,
+            storeName: orderStoreName,
+            source: LIVE_CHAT_SOURCE_TYPES.ORDER_DETAILS,
+          });
+        },
+      };
+
+      if (NativeMethods.hasIconResInNative(ICON_RES.SUPPORT_AGENT)) {
+        rightContentOfNativeLiveChat.text = t('Help');
+        rightContentOfNativeLiveChat.iconRes = ICON_RES.SUPPORT_AGENT;
+      } else {
+        // For back-compatibility sake, we remain the same UI for old versions of the app
+        rightContentOfNativeLiveChat.text = `${t('NeedHelp')}?`;
+      }
+
+      const rightContentOfContactUs = {
+        text: t('ContactUs'),
+        style: {
+          color: '#00b0ff',
+        },
+        onClick: () => {
+          this.pushCleverTapEvent(eventName);
+
+          this.handleVisitMerchantInfoPage();
+        },
+      };
+
+      return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
+    }
+
+    return (
+      <LiveChat
+        data-test-id="ordering.order-status.order-details.live-chat"
+        onClick={() => {
+          this.pushCleverTapEvent(eventName);
+        }}
+        orderId={orderId}
+        storeName={orderStoreName}
+      />
+    );
+  }
+
+  isReportUnsafeDriverButtonDisabled = () => {
+    const { orderStatus } = this.props;
+
+    return !AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus);
+  };
+
+  pushCleverTapEvent = eventName => {
+    const { storeInfoForCleverTap, order, businessInfo } = this.props;
+    const subtotal = _get(order, 'subtotal', 0);
+    const minimumConsumption = _get(businessInfo, 'qrOrderingSettings.minimumConsumption', 0);
+    const paymentName = _get(order, 'paymentNames.0', null);
+
+    CleverTap.pushEvent(eventName, {
+      ...storeInfoForCleverTap,
+      'cart items quantity': this.getCartItemsQuantity(),
+      'cart amount': subtotal,
+      'has met minimum order value': subtotal >= minimumConsumption,
+      'payment method': paymentName,
+    });
+  };
+
+  handleHeaderNavFunc = () => {
+    const { history } = this.props;
+    const isWebview = Utils.isWebview();
+
+    CleverTap.pushEvent('Order details - click back arrow');
+
+    if (isWebview) {
+      NativeMethods.goBack();
+      return;
+    }
+
+    history.goBack();
   };
 
   renderReceiptInfo() {
@@ -119,7 +209,7 @@ export class OrderDetails extends Component {
           <div className="margin-top-bottom-small">
             <summary className="ordering-details__receipt-info flex flex-column">
               <span className="ordering-details__subtitle padding-top-bottom-small">
-                {t('ReceiptInfoForPickupId') + ' #'}
+                {`${t('ReceiptInfoForPickupId')} #`}
               </span>
               <span>{pickUpId}</span>
             </summary>
@@ -128,12 +218,13 @@ export class OrderDetails extends Component {
         <div className="flex flex-space-between margin-top-bottom-small">
           <summary className="ordering-details__receipt-info flex flex-column">
             <div className="ordering-details__subtitle padding-top-bottom-small">
-              {t('ReceiptInfoForOrderId') + ' #'}
+              {`${t('ReceiptInfoForOrderId')} #`}
             </div>
             <div className="flex flex-space-between flex-middle">
               <span>{orderId}</span>
               <button
                 className="ordering-details__copy-button button button__outline text-size-small text-uppercase padding-left-right-normal"
+                data-test-id="ordering.order-status.order-details.copy-btn"
                 onClick={() => copyDataToClipboard(orderId)}
               >
                 {t('Copy')}
@@ -203,7 +294,7 @@ export class OrderDetails extends Component {
     const { items, shippingType } = order || {};
 
     return (
-      <React.Fragment>
+      <>
         <span className="ordering-details__items">{t('Items')}</span>
         <ul>
           {(items || []).map(item => {
@@ -224,7 +315,7 @@ export class OrderDetails extends Component {
             );
           })}
         </ul>
-      </React.Fragment>
+      </>
     );
   }
 
@@ -260,106 +351,8 @@ export class OrderDetails extends Component {
     );
   }
 
-  getRightContentOfHeader() {
-    const { order, t } = this.props;
-    const isWebview = Utils.isWebview();
-    const orderId = _get(order, 'orderId', '');
-    const orderStoreName = _get(order, 'storeInfo.name', '');
-    const eventName = 'Order Details - click contact us';
-
-    if (!order) {
-      return null;
-    }
-
-    if (isWebview) {
-      const rightContentOfNativeLiveChat = {
-        style: {
-          color: '#00b0ff',
-        },
-        onClick: () => {
-          this.pushCleverTapEvent(eventName);
-
-          NativeMethods.startChat({
-            orderId,
-            storeName: orderStoreName,
-            source: LIVE_CHAT_SOURCE_TYPES.ORDER_DETAILS,
-          });
-        },
-      };
-
-      if (NativeMethods.hasIconResInNative(ICON_RES.SUPPORT_AGENT)) {
-        rightContentOfNativeLiveChat['text'] = t('Help');
-        rightContentOfNativeLiveChat['iconRes'] = ICON_RES.SUPPORT_AGENT;
-      } else {
-        // For back-compatibility sake, we remain the same UI for old versions of the app
-        rightContentOfNativeLiveChat['text'] = `${t('NeedHelp')}?`;
-      }
-
-      const rightContentOfContactUs = {
-        text: t('ContactUs'),
-        style: {
-          color: '#00b0ff',
-        },
-        onClick: () => {
-          this.pushCleverTapEvent(eventName);
-
-          this.handleVisitMerchantInfoPage();
-        },
-      };
-
-      return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
-    }
-
-    return (
-      <LiveChat
-        onClick={() => {
-          this.pushCleverTapEvent(eventName);
-        }}
-        orderId={orderId}
-        storeName={orderStoreName}
-      />
-    );
-  }
-
-  pushCleverTapEvent = eventName => {
-    const { storeInfoForCleverTap, order, businessInfo } = this.props;
-    const subtotal = _get(order, 'subtotal', 0);
-    const minimumConsumption = _get(businessInfo, 'qrOrderingSettings.minimumConsumption', 0);
-    const paymentName = _get(order, 'paymentNames.0', null);
-
-    CleverTap.pushEvent(eventName, {
-      ...storeInfoForCleverTap,
-      'cart items quantity': this.getCartItemsQuantity(),
-      'cart amount': subtotal,
-      'has met minimum order value': subtotal >= minimumConsumption ? true : false,
-      'payment method': paymentName,
-    });
-  };
-
-  handleHeaderNavFunc = () => {
-    const isWebview = Utils.isWebview();
-
-    CleverTap.pushEvent('Order details - click back arrow');
-
-    if (isWebview) {
-      NativeMethods.goBack();
-      return;
-    }
-
-    this.props.history.goBack();
-    return;
-  };
-
   render() {
-    const {
-      order,
-      t,
-      isUseStorehubLogistics,
-      serviceCharge,
-      isShowReorderButton,
-      shippingType,
-      isPayLater,
-    } = this.props;
+    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton, shippingType } = this.props;
     const { shippingFee, takeawayCharges, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } =
       order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
@@ -368,9 +361,11 @@ export class OrderDetails extends Component {
     return (
       <section className="ordering-details flex flex-column" data-test-id="ordering.order-detail.container">
         <HybridHeader
-          headerRef={ref => (this.headerEl = ref)}
+          headerRef={ref => {
+            this.headerEl = ref;
+          }}
           className="flex-middle"
-          isPage={true}
+          isPage
           contentClassName="flex-middle"
           data-test-id="ordering.order-detail.header"
           title={t('OrderDetails')}
@@ -420,7 +415,7 @@ export class OrderDetails extends Component {
               ) : null}
               {this.renderPromotion()}
               <li className="flex flex-space-between flex-middle">
-                <label className="padding-top-bottom-normal text-size-big text-weight-bolder">{t('Total')}</label>
+                <span className="padding-top-bottom-normal text-size-big text-weight-bolder">{t('Total')}</span>
                 <CurrencyNumber
                   className="padding-top-bottom-normal text-size-big text-weight-bolder"
                   money={total || 0}
@@ -451,6 +446,7 @@ export class OrderDetails extends Component {
             <button
               onClick={this.handleReorder}
               className="button button__block button__fill padding-normal margin-top-bottom-smaller"
+              data-test-id="ordering.order-status.order-details.reorder-btn"
             >
               <span className="text-weight-bolder text-size-big text-uppercase">{t('Reorder')}</span>
             </button>
@@ -460,7 +456,44 @@ export class OrderDetails extends Component {
     );
   }
 }
+
 OrderDetails.displayName = 'OrderDetails';
+
+OrderDetails.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  order: PropTypes.object,
+  businessInfo: PropTypes.object,
+  storeInfoForCleverTap: PropTypes.object,
+  /* eslint-enable */
+  promotion: PropTypes.shape({
+    promoCode: PropTypes.string,
+    discount: PropTypes.number,
+    promoType: PropTypes.string,
+  }),
+  orderStatus: PropTypes.string,
+  shippingType: PropTypes.string,
+  receiptNumber: PropTypes.string,
+  serviceCharge: PropTypes.number,
+  productsManualDiscount: PropTypes.number,
+  isShowReorderButton: PropTypes.bool,
+  isUseStorehubLogistics: PropTypes.bool,
+  loadOrder: PropTypes.func,
+};
+
+OrderDetails.defaultProps = {
+  order: {},
+  promotion: null,
+  orderStatus: null,
+  shippingType: null,
+  receiptNumber: null,
+  businessInfo: {},
+  serviceCharge: null,
+  storeInfoForCleverTap: null,
+  productsManualDiscount: 0,
+  isShowReorderButton: false,
+  isUseStorehubLogistics: false,
+  loadOrder: () => {},
+};
 
 export default compose(
   withTranslation(['OrderingDelivery']),
@@ -478,10 +511,9 @@ export default compose(
       isShowReorderButton: getIsShowReorderButton(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-      isPayLater: getIsPayLater(state),
     }),
     {
-      loadOrder,
+      loadOrder: loadOrderThunk,
     }
   )
 )(OrderDetails);

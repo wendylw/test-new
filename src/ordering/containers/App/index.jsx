@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
@@ -10,7 +11,10 @@ import {
   getApiError,
   getBusinessInfo,
 } from '../../redux/modules/app';
-import { getAddressInfo, setAddressInfo } from '../../../redux/modules/address/thunks';
+import {
+  getAddressInfo as getAddressInfoThunk,
+  setAddressInfo as setAddressInfoThunk,
+} from '../../../redux/modules/address/thunks';
 import { getIfAddressInfoExists } from '../../../redux/modules/address/selectors';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
@@ -56,7 +60,74 @@ class App extends Component {
     }
   }
 
-  state = {};
+  async componentDidMount() {
+    const { appActions } = this.props;
+    const { pathname } = window.location;
+    const isThankYouPage = pathname.includes(`${ROUTER_PATHS.THANK_YOU}`);
+    const isOrderDetailPage = pathname.includes(`${ROUTER_PATHS.ORDER_DETAILS}`);
+    const isMerchantInfPage = pathname.includes(`${ROUTER_PATHS.MERCHANT_INFO}`);
+    const isReportIssuePage = pathname.includes(`${ROUTER_PATHS.REPORT_DRIVER}`);
+    const { browser } = Utils.getUserAgentInfo();
+
+    if (
+      !(isThankYouPage || isOrderDetailPage || isMerchantInfPage || isReportIssuePage) &&
+      (browser.includes('Safari') || browser.includes('AppleWebKit') || Utils.isIOSWebview())
+    ) {
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+    }
+
+    this.visitErrorPage();
+
+    try {
+      const initRequests = [this.initAddressInfo(), appActions.getLoginStatus(), appActions.fetchOnlineStoreInfo()];
+
+      if (Utils.notHomeOrLocationPath(window.location.pathname)) {
+        initRequests.push(appActions.loadCoreBusiness());
+      }
+
+      await Promise.all(initRequests);
+
+      // Must go after getLoginStatus finishes
+      // Potentially change consumerId through CREATE_LOGIN_SUCCESS, so go before initDeliveryDetails
+      if (Utils.isWebview()) {
+        await appActions.syncLoginFromNative();
+      }
+
+      // Must go after initAddressInfo & getLoginStatus & syncLoginFromNative finish
+      await appActions.initDeliveryDetails();
+
+      const { user, businessInfo, onlineStoreInfo } = this.props;
+
+      const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
+
+      if (window.location.pathname !== thankYouPageUrl) {
+        this.setGtmData({
+          onlineStoreInfo,
+          userInfo: user,
+          businessInfo,
+        });
+      }
+    } catch (e) {
+      // we don't need extra actions for exceptions, the state is already in redux.
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const { user, pageError } = this.props;
+    const { isExpired, isWebview } = user || {};
+    const { code } = prevProps.pageError || {};
+
+    if (pageError.code && pageError.code !== code) {
+      this.visitErrorPage();
+    }
+
+    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
+      // this.postAppMessage(user);
+    }
+  }
 
   initAddressInfo = async () => {
     const { getAddressInfo, setAddressInfo } = this.props;
@@ -110,62 +181,6 @@ class App extends Component {
     }
   };
 
-  async componentDidMount() {
-    const { appActions } = this.props;
-    const { pathname } = window.location;
-    const isThankYouPage = pathname.includes(`${ROUTER_PATHS.THANK_YOU}`);
-    const isOrderDetailPage = pathname.includes(`${ROUTER_PATHS.ORDER_DETAILS}`);
-    const isMerchantInfPage = pathname.includes(`${ROUTER_PATHS.MERCHANT_INFO}`);
-    const isReportIssuePage = pathname.includes(`${ROUTER_PATHS.REPORT_DRIVER}`);
-    const browser = Utils.getUserAgentInfo().browser;
-
-    if (
-      !(isThankYouPage || isOrderDetailPage || isMerchantInfPage || isReportIssuePage) &&
-      (browser.includes('Safari') || browser.includes('AppleWebKit') || Utils.isIOSWebview())
-    ) {
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      document.body.style.overflow = 'hidden';
-    }
-
-    this.visitErrorPage();
-
-    try {
-      const initRequests = [this.initAddressInfo(), appActions.getLoginStatus(), appActions.fetchOnlineStoreInfo()];
-
-      if (Utils.notHomeOrLocationPath(window.location.pathname)) {
-        initRequests.push(appActions.loadCoreBusiness());
-      }
-
-      await Promise.all(initRequests);
-
-      // Must go after getLoginStatus finishes
-      // Potentially change consumerId through CREATE_LOGIN_SUCCESS, so go before initDeliveryDetails
-      if (Utils.isWebview()) {
-        await appActions.syncLoginFromNative();
-      }
-
-      // Must go after initAddressInfo & getLoginStatus & syncLoginFromNative finish
-      await appActions.initDeliveryDetails();
-
-      const { user, businessInfo, onlineStoreInfo } = this.props;
-
-      const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
-
-      if (window.location.pathname !== thankYouPageUrl) {
-        this.setGtmData({
-          onlineStoreInfo,
-          userInfo: user,
-          businessInfo,
-        });
-      }
-    } catch (e) {
-      // we don't need extra actions for exceptions, the state is already in redux.
-      console.log(e);
-    }
-  }
-
   setGtmData = ({ onlineStoreInfo, userInfo, businessInfo }) => {
     const userProperties = { onlineStoreInfo, userInfo };
 
@@ -178,19 +193,31 @@ class App extends Component {
     gtmSetUserProperties(userProperties);
   };
 
-  componentDidUpdate(prevProps) {
-    const { user, pageError } = this.props;
-    const { isExpired, isWebview } = user || {};
-    const { code } = prevProps.pageError || {};
+  handleCloseMessageModal = () => {
+    const { appActions } = this.props;
+    appActions.hideMessageModal();
+  };
 
-    if (pageError.code && pageError.code !== code) {
-      this.visitErrorPage();
-    }
+  handleApiErrorHide = apiError => {
+    const { appActions } = this.props;
+    const { redirectUrl } = apiError;
+    const { ORDERING_BASE, ORDERING_LOCATION_AND_DATE, ORDERING_HOME } = ROUTER_PATHS;
+    const h = Utils.getQueryString('h');
+    const type = Utils.getQueryString('type');
 
-    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      // this.postAppMessage(user);
+    appActions.hideApiMessageModal();
+    if (redirectUrl && window.location.pathname !== redirectUrl) {
+      switch (redirectUrl) {
+        case ORDERING_BASE + ORDERING_LOCATION_AND_DATE:
+          window.location.href = `${
+            window.location.origin
+          }${redirectUrl}?h=${h}&type=${type}&callbackUrl=${encodeURIComponent(ORDERING_HOME)}`;
+          break;
+        default:
+          window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}`;
+      }
     }
-  }
+  };
 
   visitErrorPage() {
     const { pageError } = this.props;
@@ -203,38 +230,12 @@ class App extends Component {
     if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
       Utils.setSessionVariable('errorMessage', pageError.message);
 
-      return (window.location.href = errorPageUrl);
+      window.location.href = errorPageUrl;
     }
   }
 
-  handleCloseMessageModal = () => {
-    this.props.appActions.hideMessageModal();
-  };
-
-  handleApiErrorHide = apiErrorMessage => {
-    const { appActions } = this.props;
-    const { redirectUrl } = apiErrorMessage;
-    const { ROUTER_PATHS } = Constants;
-    const { ORDERING_BASE, ORDERING_LOCATION_AND_DATE, ORDERING_HOME } = ROUTER_PATHS;
-    const h = Utils.getQueryString('h');
-    const type = Utils.getQueryString('type');
-    let callback_url;
-
-    appActions.hideApiMessageModal();
-    if (redirectUrl && window.location.pathname !== redirectUrl) {
-      switch (redirectUrl) {
-        case ORDERING_BASE + ORDERING_LOCATION_AND_DATE:
-          callback_url = encodeURIComponent(ORDERING_HOME);
-          window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}&callbackUrl=${callback_url}`;
-          break;
-        default:
-          window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}`;
-      }
-    }
-  };
-
   render() {
-    let { onlineStoreInfo, apiErrorMessage } = this.props;
+    const { onlineStoreInfo, apiError } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
@@ -243,11 +244,11 @@ class App extends Component {
         className="table-ordering fixed-wrapper fixed-wrapper__main"
         data-test-id="ordering.app.container"
       >
-        {apiErrorMessage.show ? (
+        {apiError.show ? (
           <MessageModal
-            data={apiErrorMessage}
+            data={apiError}
             onHide={() => {
-              this.handleApiErrorHide(apiErrorMessage);
+              this.handleApiErrorHide(apiError);
             }}
           />
         ) : null}
@@ -257,25 +258,84 @@ class App extends Component {
     );
   }
 }
+
 App.displayName = 'OrderingApp';
+
+App.propTypes = {
+  user: PropTypes.shape({
+    isExpired: PropTypes.bool,
+    isWebview: PropTypes.bool,
+  }),
+  pageError: PropTypes.shape({
+    code: PropTypes.string,
+    message: PropTypes.string,
+  }),
+  apiError: PropTypes.shape({
+    show: PropTypes.bool,
+    redirectUrl: PropTypes.string,
+  }),
+  appActions: PropTypes.shape({
+    getLoginStatus: PropTypes.func,
+    loadCoreBusiness: PropTypes.func,
+    syncLoginFromNative: PropTypes.func,
+    initDeliveryDetails: PropTypes.func,
+    fetchOnlineStoreInfo: PropTypes.func,
+    hideMessageModal: PropTypes.func,
+    hideApiMessageModal: PropTypes.func,
+  }),
+  /* eslint-disable react/forbid-prop-types */
+  businessInfo: PropTypes.object,
+  onlineStoreInfo: PropTypes.object,
+  /* eslint-disable */
+  ifAddressInfoExists: PropTypes.bool,
+  getAddressInfo: PropTypes.func,
+  setAddressInfo: PropTypes.func,
+};
+
+App.defaultProps = {
+  user: {
+    isExpired: false,
+    isWebview: false,
+  },
+  pageError: {
+    code: '',
+    message: '',
+  },
+  apiError: {
+    show: false,
+    redirectUrl: '',
+  },
+  appActions: {
+    getLoginStatus: () => {},
+    loadCoreBusiness: () => {},
+    syncLoginFromNative: () => {},
+    initDeliveryDetails: () => {},
+    fetchOnlineStoreInfo: () => {},
+    hideMessageModal: () => {},
+    hideApiMessageModal: () => {},
+  },
+  businessInfo: {},
+  onlineStoreInfo: {},
+  ifAddressInfoExists: false,
+  getAddressInfo: () => {},
+  setAddressInfo: () => {},
+};
 
 export default compose(
   withTranslation(['ApiError', 'Common']),
   connect(
-    state => {
-      return {
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        businessInfo: getBusinessInfo(state),
-        user: getUser(state),
-        error: getError(state),
-        pageError: getPageError(state),
-        apiErrorMessage: getApiError(state),
-        ifAddressInfoExists: getIfAddressInfoExists(state),
-      };
-    },
+    state => ({
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      businessInfo: getBusinessInfo(state),
+      user: getUser(state),
+      error: getError(state),
+      pageError: getPageError(state),
+      apiError: getApiError(state),
+      ifAddressInfoExists: getIfAddressInfoExists(state),
+    }),
     dispatch => ({
-      getAddressInfo: bindActionCreators(getAddressInfo, dispatch),
-      setAddressInfo: bindActionCreators(setAddressInfo, dispatch),
+      getAddressInfo: bindActionCreators(getAddressInfoThunk, dispatch),
+      setAddressInfo: bindActionCreators(setAddressInfoThunk, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )

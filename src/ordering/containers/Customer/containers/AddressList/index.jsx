@@ -1,16 +1,17 @@
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
-import HybridHeader from '../../../../../components/HybridHeader';
 import { withTranslation } from 'react-i18next';
+import { bindActionCreators, compose } from 'redux';
+import HybridHeader from '../../../../../components/HybridHeader';
 import { IconAddAddress } from '../../../../../components/Icons';
 import AddressPicker from '../../../../../components/AddressPicker';
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
 import {
   actions as appActionCreators,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
-import { loadAddressList } from '../../../../redux/modules/addressList/thunks';
+import { loadAddressList as loadAddressListThunk } from '../../../../redux/modules/addressList/thunks';
 import { getAddressList } from '../../../../redux/modules/addressList/selectors';
 import Utils from '../../../../../utils/utils';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -92,10 +93,12 @@ class AddressList extends Component {
     return (
       <div>
         <HybridHeader
-          headerRef={ref => (this.headerEl = ref)}
+          headerRef={ref => {
+            this.headerEl = ref;
+          }}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
-          isPage={true}
+          isPage
           title={t('DeliverTo')}
           navFunc={() => {
             CleverTap.pushEvent('Address list - click back arrow');
@@ -116,6 +119,9 @@ class AddressList extends Component {
         >
           <div
             className="flex flex-middle padding-normal"
+            data-test-id="ordering.customer.addressList.add-btn"
+            role="button"
+            tabIndex="0"
             onClick={() => {
               this.addNewAddress();
             }}
@@ -133,7 +139,32 @@ class AddressList extends Component {
     );
   }
 }
+
 AddressList.displayName = 'AddressList';
+
+AddressList.propTypes = {
+  loadAddressList: PropTypes.func,
+  updateDeliveryDetails: PropTypes.func,
+  deliveryDetails: PropTypes.shape({
+    username: PropTypes.string,
+    phone: PropTypes.string,
+  }),
+  /* eslint-disable react/forbid-prop-types */
+  storeInfoForCleverTap: PropTypes.object,
+  addressList: PropTypes.arrayOf(PropTypes.object),
+  /* eslint-enable */
+};
+
+AddressList.defaultProps = {
+  addressList: [],
+  loadAddressList: () => {},
+  updateDeliveryDetails: () => {},
+  deliveryDetails: {
+    username: '',
+    phone: '',
+  },
+  storeInfoForCleverTap: null,
+};
 
 export default compose(
   withTranslation(),
@@ -144,7 +175,7 @@ export default compose(
       deliveryDetails: getDeliveryDetails(state),
     }),
     dispatch => ({
-      loadAddressList: bindActionCreators(loadAddressList, dispatch),
+      loadAddressList: bindActionCreators(loadAddressListThunk, dispatch),
       updateDeliveryDetails: bindActionCreators(appActionCreators.updateDeliveryDetails, dispatch),
     })
   )

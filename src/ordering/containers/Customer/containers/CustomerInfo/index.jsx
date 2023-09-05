@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import _isEmpty from 'lodash/isEmpty';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
@@ -45,10 +46,13 @@ import prefetch from '../../../../../common/utils/prefetch-assets';
 const { ADDRESS_RANGE, ROUTER_PATHS } = Constants;
 
 class CustomerInfo extends Component {
-  state = {
-    addressChange: false,
-    processing: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      addressChange: false,
+      processing: false,
+    };
+  }
 
   async componentDidMount() {
     const { user, deliveryDetails, appActions } = this.props;
@@ -73,13 +77,48 @@ class CustomerInfo extends Component {
     const { shippingFee } = cartBilling || {};
 
     if (shippingFee && prevCartBilling.shippingFee && shippingFee !== prevCartBilling.shippingFee) {
-      this.setState({ addressChange: true });
+      this.showAddressChangeModal();
     }
   }
 
   componentWillUnmount() {
     this.setState({ processing: false });
   }
+
+  handleBeforeCreateOrder = () => {
+    logger.log('Ordering_CustomerInfo_CreateOrder');
+
+    const { customerInfoActions } = this.props;
+    const error = this.validateFields();
+
+    if (error.show) {
+      customerInfoActions.setCustomerError(error);
+      logger.log(
+        'Ordering_CustomerInfo_CreateOrderFailed',
+        {
+          message: error.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SUBMIT_ORDER,
+          },
+        }
+      );
+    } else {
+      this.setState({ processing: true });
+    }
+  };
+
+  handleErrorHide() {
+    const { customerInfoActions } = this.props;
+
+    customerInfoActions.clearCustomerError();
+  }
+
+  showAddressChangeModal = () => {
+    this.setState({ addressChange: true });
+  };
 
   cleverTapViewPageEvent = eventName => {
     const { cartCount, cartSubtotal, minimumConsumption, storeInfoForCleverTap } = this.props;
@@ -121,70 +160,6 @@ class CustomerInfo extends Component {
 
     return date && date.date && formatToDeliveryTime({ date, hour, locale });
   };
-
-  validateFields() {
-    const { deliveryDetails, t } = this.props;
-    const { username, addressName } = deliveryDetails || {};
-    const isDeliveryType = Utils.isDeliveryType();
-    const shippingInfo = isDeliveryType ? this.getDeliveryTime() : this.getPickupTime();
-    let error = {};
-
-    if (!Boolean(addressName) && isDeliveryType) {
-      error = {
-        show: true,
-        message: t('DeliveryAddressEmptyTitle'),
-        description: t('DeliveryAddressEmptyDescription'),
-        buttonText: t('OK'),
-      };
-    } else if (_isEmpty(shippingInfo)) {
-      error = {
-        show: true,
-        message: t('ShippingTimeEmptyTitle'),
-        description: t('DeliveryAddressEmptyDescription'),
-        buttonText: t('OK'),
-      };
-    } else if (!Boolean(username)) {
-      error = {
-        show: true,
-        message: t('ContactEmptyTitle'),
-        description: t('ContactEmptyDescription'),
-        buttonText: t('OK'),
-      };
-    }
-
-    return error;
-  }
-
-  handleBeforeCreateOrder = () => {
-    logger.log('Ordering_CustomerInfo_CreateOrder');
-
-    const { customerInfoActions } = this.props;
-    const error = this.validateFields();
-
-    if (error.show) {
-      customerInfoActions.setCustomerError(error);
-      logger.log(
-        'Ordering_CustomerInfo_CreateOrderFailed',
-        {
-          message: error.message,
-        },
-        {
-          bizFlow: {
-            flow: KEY_EVENTS_FLOWS.CHECKOUT,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SUBMIT_ORDER,
-          },
-        }
-      );
-    } else {
-      this.setState({ processing: true });
-    }
-  };
-
-  handleErrorHide() {
-    const { customerInfoActions } = this.props;
-
-    customerInfoActions.clearCustomerError();
-  }
 
   visitPaymentPage = () => {
     const { history, cartBilling } = this.props;
@@ -230,8 +205,40 @@ class CustomerInfo extends Component {
       pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`,
       search: window.location.search,
     });
-    return;
   };
+
+  validateFields() {
+    const { deliveryDetails, t } = this.props;
+    const { username, addressName } = deliveryDetails || {};
+    const isDeliveryType = Utils.isDeliveryType();
+    const shippingInfo = isDeliveryType ? this.getDeliveryTime() : this.getPickupTime();
+    let error = {};
+
+    if (!addressName && isDeliveryType) {
+      error = {
+        show: true,
+        message: t('DeliveryAddressEmptyTitle'),
+        description: t('DeliveryAddressEmptyDescription'),
+        buttonText: t('OK'),
+      };
+    } else if (_isEmpty(shippingInfo)) {
+      error = {
+        show: true,
+        message: t('ShippingTimeEmptyTitle'),
+        description: t('DeliveryAddressEmptyDescription'),
+        buttonText: t('OK'),
+      };
+    } else if (!username) {
+      error = {
+        show: true,
+        message: t('ContactEmptyTitle'),
+        description: t('ContactEmptyDescription'),
+        buttonText: t('OK'),
+      };
+    }
+
+    return error;
+  }
 
   renderDeliveryPickupDetail() {
     if (Utils.isDineInType() || Utils.isTakeAwayType()) {
@@ -270,18 +277,17 @@ class CustomerInfo extends Component {
                     this.handleAddressClick();
                   }}
                   className="ordering-customer__address-button button button__link text-left"
+                  data-test-id="ordering.customer.customer-info.change-address-btn"
                 >
-                  {Boolean(addressName) ? (
-                    <React.Fragment>
+                  {!addressName ? (
+                    <h5 className="ordering-customer__title padding-top-bottom-smaller text-weight-bolder text-size-big text-capitalize">
+                      {t('DeliveryLocationDescription')}
+                    </h5>
+                  ) : (
+                    <>
                       <h3 className="padding-top-bottom-smaller text-size-big text-weight-bolder">{addressName}</h3>
                       <address className="padding-top-bottom-smaller">{deliveryToAddress}</address>
-                    </React.Fragment>
-                  ) : (
-                    <React.Fragment>
-                      <h5 className="ordering-customer__title padding-top-bottom-smaller text-weight-bolder text-size-big text-capitalize">
-                        {t('DeliveryLocationDescription')}
-                      </h5>
-                    </React.Fragment>
+                    </>
                   )}
                 </button>
               ) : (
@@ -318,6 +324,7 @@ class CustomerInfo extends Component {
                 },
               }}
               className="ordering-customer__address-detail-container button__link flex flex-start padding-top-bottom-smaller padding-left-right-small"
+              data-test-id="ordering.customer.customer-info.edit-address-btn"
             >
               <article className="ordering-customer__address-detail flex flex-middle flex-space-between padding-smaller border-radius-base">
                 <div className="ordering-customer__address-content">
@@ -345,14 +352,15 @@ class CustomerInfo extends Component {
             },
           }}
           className="ordering-customer__time ordering-customer__detail button__link padding-left-right-smaller"
+          data-test-id="ordering.customer.customer-info.change-shipping-type-btn"
         >
           <div className="flex flex-middle">
             <IconMotorcycle className="icon icon__small icon__default margin-small" />
             <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-small">
               <div className="padding-top-bottom-smaller">
-                <label className="text-size-big padding-top-bottom-smaller text-weight-bolder">
+                <span className="text-size-big padding-top-bottom-smaller text-weight-bolder">
                   {isDeliveryType ? t('Delivery') : t('PickupTime')}
-                </label>
+                </span>
                 <p className="padding-top-bottom-smaller">
                   {isDeliveryType ? this.getDeliveryTime() : this.getPickupTime()}
                 </p>
@@ -395,11 +403,13 @@ class CustomerInfo extends Component {
     return (
       <section className="ordering-customer flex flex-column" data-test-id="ordering.customer.container">
         <HybridHeader
-          headerRef={ref => (this.headerEl = ref)}
+          headerRef={ref => {
+            this.headerEl = ref;
+          }}
           className="flex-middle text-center"
           contentClassName="flex-middle"
           data-test-id="ordering.customer.header"
-          isPage={true}
+          isPage
           title={Utils.isDeliveryType() ? t('DeliveryCustomerPageTitle') : pageTitle}
           navFunc={() => {
             CleverTap.pushEvent('Checkout page - click back arrow');
@@ -408,7 +418,7 @@ class CustomerInfo extends Component {
               search: window.location.search,
             });
           }}
-        ></HybridHeader>
+        />
         <div
           className="ordering-customer__container"
           style={{
@@ -439,6 +449,7 @@ class CustomerInfo extends Component {
                   search: window.location.search,
                 }}
                 className="ordering-customer__detail button__link flex flex-middle padding-left-right-smaller"
+                data-test-id="ordering.customer.customer-info.change-contact-details-btn"
               >
                 <IconAccountCircle className="icon icon__small icon__default margin-small" />
                 <div className="ordering-customer__summary flex flex-middle flex-space-between padding-top-bottom-normal padding-left-right-small">
@@ -447,11 +458,11 @@ class CustomerInfo extends Component {
                       {username ? (
                         <span className="text-size-big">{username}</span>
                       ) : (
-                        <React.Fragment>
-                          <label className="text-size-big text-opacity">{t('NameReplaceHolder')}</label>
+                        <>
+                          <span className="text-size-big text-opacity">{t('NameReplaceHolder')}</span>
                           <span className="text-size-big text-error"> - *</span>
                           <span className="text-size-big text-error text-lowercase">{t('Required')}</span>
-                        </React.Fragment>
+                        </>
                       )}
                     </p>
                     {phone ? (
@@ -473,7 +484,9 @@ class CustomerInfo extends Component {
           </ul>
         </div>
         <footer
-          ref={ref => (this.footerEl = ref)}
+          ref={ref => {
+            this.footerEl = ref;
+          }}
           className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
         >
           <button
@@ -519,7 +532,96 @@ class CustomerInfo extends Component {
     );
   }
 }
+
 CustomerInfo.displayName = 'CustomerInfo';
+
+CustomerInfo.propTypes = {
+  cartCount: PropTypes.number,
+  cartSubtotal: PropTypes.number,
+  businessUTCOffset: PropTypes.number,
+  minimumConsumption: PropTypes.number,
+  user: PropTypes.shape({
+    consumerId: PropTypes.string,
+  }),
+  userProfile: PropTypes.shape({
+    name: PropTypes.string,
+    phone: PropTypes.string,
+  }),
+  cartBilling: PropTypes.shape({
+    total: PropTypes.number,
+    shippingFee: PropTypes.number,
+  }),
+  customerError: PropTypes.shape({
+    show: PropTypes.bool,
+  }),
+  /* eslint-disable react/forbid-prop-types */
+  businessInfo: PropTypes.object,
+  storeInfoForCleverTap: PropTypes.object,
+  /* eslint-enable */
+  isTNGMiniProgram: PropTypes.bool,
+  shouldGoToAddNewAddressPage: PropTypes.bool,
+  deliveryDetails: PropTypes.shape({
+    username: PropTypes.string,
+    phone: PropTypes.string,
+    addressName: PropTypes.string,
+    deliveryToAddress: PropTypes.string,
+    addressDetails: PropTypes.string,
+    deliveryComments: PropTypes.string,
+    deliveryToCity: PropTypes.string,
+  }),
+  appActions: PropTypes.shape({
+    loadProfileInfo: PropTypes.func,
+    loadShoppingCart: PropTypes.func,
+    updateDeliveryDetails: PropTypes.func,
+  }),
+  customerInfoActions: PropTypes.shape({
+    setCustomerError: PropTypes.func,
+    clearCustomerError: PropTypes.func,
+  }),
+};
+
+CustomerInfo.defaultProps = {
+  cartCount: 0,
+  cartSubtotal: null,
+  minimumConsumption: 0,
+  businessUTCOffset: 480,
+  user: {
+    consumerId: '',
+  },
+  userProfile: {
+    name: '',
+    phone: '',
+  },
+  cartBilling: {
+    total: 0,
+    shippingFee: 0,
+  },
+  customerError: {
+    show: false,
+  },
+  businessInfo: {},
+  storeInfoForCleverTap: null,
+  isTNGMiniProgram: false,
+  shouldGoToAddNewAddressPage: false,
+  deliveryDetails: {
+    username: '',
+    phone: '',
+    addressName: '',
+    deliveryToAddress: '',
+    addressDetails: '',
+    deliveryComments: '',
+    deliveryToCity: '',
+  },
+  appActions: {
+    loadProfileInfo: () => {},
+    loadShoppingCart: () => {},
+    updateDeliveryDetails: () => {},
+  },
+  customerInfoActions: {
+    setCustomerError: () => {},
+    clearCustomerError: () => {},
+  },
+};
 
 export default compose(
   withTranslation(['OrderingCustomer']),

@@ -1,11 +1,15 @@
-import React, { Component } from 'react';
+import qs from 'qs';
 import _get from 'lodash/get';
+import _trim from 'lodash/trim';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
+import { bindActionCreators, compose } from 'redux';
+import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
-import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../../../components/HybridHeader';
-import { bindActionCreators, compose } from 'redux';
-import { connect } from 'react-redux';
 import {
   actions as appActionCreators,
   getUser,
@@ -16,31 +20,25 @@ import {
 } from '../../../../redux/modules/app';
 import { actions as customerActionCreators } from './redux';
 import { getAddressInfo, getContactNumberInvalidErrorVisibility } from './redux/selectors';
-import { init, completePhoneNumber } from './redux/thunk';
+import { init as initThunk, completePhoneNumber as completePhoneNumberThunk } from './redux/thunk';
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
-import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
-import _trim from 'lodash/trim';
-import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import './AddressDetail.scss';
 import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { COUNTRY_PHONE_CODES } from '../../../../../common/utils/phone-number-constants';
+
 const actions = {
   EDIT: 'edit',
   ADD: 'add',
 };
 
 class AddressDetail extends Component {
-  state = {
-    hasAnyChanges: false,
-  };
-
   gotoLoginPage = () => {
     const { history } = this.props;
     history.push({
@@ -86,32 +84,29 @@ class AddressDetail extends Component {
   };
 
   handleInputChange = e => {
-    this.setState({
-      hasAnyChanges: true,
-    });
+    const { customerActions } = this.props;
 
     const inputValue = e.target.value;
     if (e.target.name === 'addressName') {
-      this.props.customerActions.updateAddressInfo({ name: inputValue });
+      customerActions.updateAddressInfo({ name: inputValue });
     } else if (e.target.name === 'addressDetails') {
-      this.props.customerActions.updateAddressInfo({ details: inputValue });
+      customerActions.updateAddressInfo({ details: inputValue });
     } else if (e.target.name === 'contactName') {
-      this.props.customerActions.updateAddressInfo({ contactName: inputValue });
+      customerActions.updateAddressInfo({ contactName: inputValue });
     } else if (e.target.name === 'deliveryComments') {
-      this.props.customerActions.updateAddressInfo({ comments: inputValue });
+      customerActions.updateAddressInfo({ comments: inputValue });
     }
   };
 
   phoneInputChange = phone => {
+    const { customerActions } = this.props;
+
     const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
     const phoneInput =
       (COUNTRY_PHONE_CODES[selectedCountry] &&
         Utils.getFormatPhoneNumber(phone || '', COUNTRY_PHONE_CODES[selectedCountry])) ||
       '';
-    this.props.customerActions.updatePhoneNumber(phoneInput);
-    this.setState({
-      hasAnyChanges: true,
-    });
+    customerActions.updatePhoneNumber(phoneInput);
   };
 
   checkSaveButtonDisabled = () => {
@@ -181,7 +176,7 @@ class AddressDetail extends Component {
     try {
       const data = {
         contactName: _trim(contactName),
-        contactNumber: contactNumber,
+        contactNumber,
         addressName: _trim(name),
         deliveryTo: _trim(address),
         addressDetails: _trim(details),
@@ -245,7 +240,9 @@ class AddressDetail extends Component {
   };
 
   handlePhoneNumberFocus = () => {
-    this.props.customerActions.startEditPhoneNumber();
+    const { customerActions } = this.props;
+
+    customerActions.startEditPhoneNumber();
   };
 
   handlePhoneNumberInputBlur = async event => {
@@ -256,18 +253,20 @@ class AddressDetail extends Component {
   };
 
   render() {
-    const { addressInfo, t } = this.props;
+    const { addressInfo, t, contactNumberInvalidErrorVisibility } = this.props;
     const { type, name, address, details, comments, contactNumber, contactName, country } = addressInfo || {};
 
     return (
       <div className="flex flex-column address-detail">
         <HybridHeader
-          headerRef={ref => (this.headerEl = ref)}
+          headerRef={ref => {
+            this.headerEl = ref;
+          }}
           className="flex-middle"
           contentClassName="flex-middle"
-          isPage={true}
+          isPage
           title={type === actions.EDIT ? t('EditAddress') : t('AddNewAddress')}
-          navFunc={this.handleClickBack.bind(this)}
+          navFunc={this.handleClickBack}
         />
         <section
           className="address-detail__container"
@@ -305,11 +304,7 @@ class AddressDetail extends Component {
           </div>
 
           <div className="margin-normal padding-top-bottom-small" style={{ position: 'relative' }}>
-            <div
-              className={` ${
-                this.props.contactNumberInvalidErrorVisibility ? 'error' : ''
-              } form__group border-radius-normal`}
-            >
+            <div className={` ${contactNumberInvalidErrorVisibility ? 'error' : ''} form__group border-radius-normal`}>
               <div className=" address-detail__field flex flex-middle padding-top-bottom-small padding-left-right-normal ">
                 <div className="flex__fluid-content">
                   <div className="address-detail__title required">
@@ -330,7 +325,7 @@ class AddressDetail extends Component {
               </div>
             </div>
 
-            {this.props.contactNumberInvalidErrorVisibility && (
+            {contactNumberInvalidErrorVisibility && (
               <p
                 className="text-size-big  form__error-message padding-top-bottom-smaller "
                 style={{ position: 'absolute' }}
@@ -363,6 +358,7 @@ class AddressDetail extends Component {
           <div className="margin-normal padding-top-bottom-smaller">
             <button
               className="address-detail__detail-button button button__block form__group address-detail__field padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between"
+              data-test-id="ordering.customer.address-detail.edit-btn"
               onClick={this.handleAddressDetailClick}
             >
               <div className="text-left flex__fluid-content">
@@ -417,9 +413,15 @@ class AddressDetail extends Component {
             </div>
           </div>
         </section>
-        <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
+        <footer
+          className="footer footer__transparent margin-normal"
+          ref={ref => {
+            this.footerEl = ref;
+          }}
+        >
           <button
             className="address-detail__save-button button button__fill button__block padding-small text-weight-bolder text-uppercase"
+            data-test-id="ordering.customer.address-detail.save-button"
             disabled={this.checkSaveButtonDisabled()}
             onClick={() => {
               CleverTap.pushEvent('Address details - click save changes');
@@ -433,7 +435,54 @@ class AddressDetail extends Component {
     );
   }
 }
+
 AddressDetail.displayName = 'AddressDetail';
+
+AddressDetail.propTypes = {
+  user: PropTypes.shape({
+    consumerId: PropTypes.string,
+  }),
+  appActions: PropTypes.shape({
+    updateDeliveryDetails: PropTypes.func,
+  }),
+  customerActions: PropTypes.shape({
+    updateAddressInfo: PropTypes.func,
+    removeAddressInfo: PropTypes.func,
+    updatePhoneNumber: PropTypes.func,
+    startEditPhoneNumber: PropTypes.func,
+  }),
+  /* eslint-disable react/forbid-prop-types */
+  location: PropTypes.object,
+  addressInfo: PropTypes.object,
+  /* eslint-enable */
+  isUserLogin: PropTypes.bool,
+  init: PropTypes.func,
+  completePhoneNumber: PropTypes.func,
+  isFetchLoginStatusComplete: PropTypes.bool,
+  contactNumberInvalidErrorVisibility: PropTypes.bool,
+};
+
+AddressDetail.defaultProps = {
+  user: {
+    consumerId: '',
+  },
+  appActions: {
+    updateDeliveryDetails: () => {},
+  },
+  customerActions: {
+    updateAddressInfo: () => {},
+    removeAddressInfo: () => {},
+    updatePhoneNumber: () => {},
+    startEditPhoneNumber: () => {},
+  },
+  location: null,
+  addressInfo: null,
+  isUserLogin: false,
+  init: () => {},
+  completePhoneNumber: () => {},
+  isFetchLoginStatusComplete: false,
+  contactNumberInvalidErrorVisibility: false,
+};
 
 export default compose(
   withTranslation(['OrderingCustomer']),
@@ -450,8 +499,8 @@ export default compose(
     dispatch => ({
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
-      init: bindActionCreators(init, dispatch),
-      completePhoneNumber: bindActionCreators(completePhoneNumber, dispatch),
+      init: bindActionCreators(initThunk, dispatch),
+      completePhoneNumber: bindActionCreators(completePhoneNumberThunk, dispatch),
     })
   )
 )(AddressDetail);

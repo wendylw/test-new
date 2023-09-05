@@ -1,3 +1,6 @@
+import { compose } from 'redux';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
@@ -5,13 +8,15 @@ import Utils from '../../../../../utils/utils';
 import HybridHeader from '../../../../../components/HybridHeader';
 import constants from '../../../../../utils/constants';
 import { COUNTRY_PHONE_CODES } from '../../../../../common/utils/phone-number-constants';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
-import { getUser, getDeliveryDetails } from '../../../../redux/modules/app';
-import { actions as ContactDetailActions } from './redux';
+import { getDeliveryDetails } from '../../../../redux/modules/app';
+import {
+  actions as ContactDetailActions,
+  updateContactDetail as updateContactDetailThunk,
+  getUsername,
+  getPhone,
+} from './redux';
 import 'react-phone-number-input/style.css';
 import './ContactDetail.scss';
-import { updateContactDetail, getUsername, getPhone } from './redux';
 
 class ContactDetail extends Component {
   componentDidMount() {
@@ -30,20 +35,22 @@ class ContactDetail extends Component {
   };
 
   handleClickContinue = async () => {
-    await this.props.updateContactDetail();
+    const { updateContactDetail } = this.props;
+
+    await updateContactDetail();
     this.handleClickBack();
   };
 
   render() {
-    const { t, country, username, phone, updateUserName, updatePhone } = this.props;
+    const { t, username, phone, updateUserName, updatePhone } = this.props;
     return (
       <div className="contact-details flex flex-column">
         <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
-          isPage={true}
+          isPage
           title={t('ContactDetails')}
-          navFunc={this.handleClickBack.bind(this)}
+          navFunc={this.handleClickBack}
         />
         <section className="contact-details__container padding-left-right-normal">
           <p className="text-size-small text-line-height-base text-opacity margin-top-bottom-normal">
@@ -73,13 +80,12 @@ class ContactDetail extends Component {
                   data-test-id="ordering.contact-details.phone-input"
                   placeholder={t('EnterPhoneNumber')}
                   value={formatPhoneNumberIntl(phone)}
-                  country={country}
-                  onChange={phone => {
+                  onChange={phoneNumber => {
                     const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
 
                     updatePhone(
                       COUNTRY_PHONE_CODES[selectedCountry] &&
-                        Utils.getFormatPhoneNumber(phone || '', COUNTRY_PHONE_CODES[selectedCountry])
+                        Utils.getFormatPhoneNumber(phoneNumber || '', COUNTRY_PHONE_CODES[selectedCountry])
                     );
                   }}
                 />
@@ -109,13 +115,39 @@ class ContactDetail extends Component {
     );
   }
 }
+
 ContactDetail.displayName = 'ContactDetail';
+
+ContactDetail.propTypes = {
+  deliveryDetails: PropTypes.shape({
+    username: PropTypes.string,
+    phone: PropTypes.string,
+  }),
+  username: PropTypes.string,
+  phone: PropTypes.string,
+  init: PropTypes.func,
+  updateUserName: PropTypes.func,
+  updatePhone: PropTypes.func,
+  updateContactDetail: PropTypes.func,
+};
+
+ContactDetail.defaultProps = {
+  deliveryDetails: {
+    username: '',
+    phone: '',
+  },
+  username: '',
+  phone: '',
+  init: () => {},
+  updateUserName: () => {},
+  updatePhone: () => {},
+  updateContactDetail: () => {},
+};
 
 export default compose(
   withTranslation(),
   connect(
     state => ({
-      user: getUser(state),
       username: getUsername(state),
       phone: getPhone(state),
       deliveryDetails: getDeliveryDetails(state),
@@ -124,7 +156,7 @@ export default compose(
       init: ContactDetailActions.init,
       updateUserName: ContactDetailActions.updateUserName,
       updatePhone: ContactDetailActions.updatePhone,
-      updateContactDetail,
+      updateContactDetail: updateContactDetailThunk,
     }
   )
 )(ContactDetail);

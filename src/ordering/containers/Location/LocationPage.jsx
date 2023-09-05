@@ -1,5 +1,8 @@
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import { bindActionCreators, compose } from 'redux';
 import _get from 'lodash/get';
 import prefetch from '../../../common/utils/prefetch-assets';
 import HybridHeader from '../../../components/HybridHeader';
@@ -9,34 +12,36 @@ import ErrorImage from '../../../images/delivery-error.png';
 import ErrorToast from '../../../components/ErrorToast';
 import AddressSelector from '../../../containers/AddressSelector';
 import Utils from '../../../utils/utils';
-import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getBusiness, getUserIsLogin, getStoreId } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getAddressList } from '../../redux/modules/addressList/selectors';
-import { loadAddressList } from '../../redux/modules/addressList/thunks';
-import { setAddressInfo } from '../../../redux/modules/address/thunks';
-import { connect } from 'react-redux';
+import { loadAddressList as loadAddressListThunk } from '../../redux/modules/addressList/thunks';
+import { setAddressInfo as setAddressInfoThunk } from '../../../redux/modules/address/thunks';
 import CleverTap from '../../../utils/clevertap';
 import logger from '../../../utils/monitoring/logger';
 
 import './OrderingLocation.scss';
 
 class LocationPage extends Component {
-  state = {
-    initializing: true,
-    initError: null,
-    storeInfo: {},
-    errorToast: '',
-    outRange: Utils.getSessionVariable('outRange'),
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      initializing: true,
+      initError: null,
+      storeInfo: {},
+      errorToast: '',
+      outRange: Utils.getSessionVariable('outRange'),
+    };
+  }
 
   async componentDidMount() {
-    const { storeId } = this.props;
+    const { storeId, appActions, t } = this.props;
 
     this.loadStoreInfo();
     if (!storeId) {
-      await this.props.appActions.loadCoreBusiness();
-      const { qrOrderingSettings, country } = this.props.allBusinesses[this.props.business] || {};
+      await appActions.loadCoreBusiness();
+      const { business, allBusinesses } = this.props;
+      const { qrOrderingSettings, country } = allBusinesses[business] || {};
       const { deliveryRadius } = qrOrderingSettings || {};
 
       this.setState({
@@ -47,10 +52,12 @@ class LocationPage extends Component {
       });
     }
 
-    if (this.state.outRange) {
+    const { outRange } = this.state;
+
+    if (outRange) {
       this.setState(
         {
-          errorToast: this.props.t(`OutOfDeliveryRange`, { distance: this.state.outRange }),
+          errorToast: t(`OutOfDeliveryRange`, { distance: outRange }),
         },
         () => {
           Utils.removeSessionVariable('outRange');
@@ -75,6 +82,58 @@ class LocationPage extends Component {
       await loadAddressList();
     }
   }
+
+  onSelectPlace = async addressInfo => {
+    const { t, history, location, setAddressInfo, appActions } = this.props;
+    const { updateAddressEnabled = true, callbackPayload } = location.state || {};
+    const address = {
+      location: {
+        longitude: _get(addressInfo, 'coords.lng', 0),
+        latitude: _get(addressInfo, 'coords.lat', 0),
+      },
+    };
+
+    if (updateAddressEnabled) {
+      await setAddressInfo(addressInfo);
+    }
+
+    try {
+      let stores = await appActions.loadCoreStores(address);
+      stores = stores.responseGql.data.business.stores;
+
+      const { business, allBusinesses } = this.props;
+
+      if (!stores.length) {
+        const { deliveryRadius } = allBusinesses[business].qrOrderingSettings;
+
+        this.setState({
+          errorToast: t(`OutOfDeliveryRange`, { distance: deliveryRadius.toFixed(1) }),
+        });
+        return;
+      }
+    } catch (e) {
+      logger.error('Ordering_LocationPage_LoadCoreStoresFailed', { message: e?.message });
+
+      throw e;
+    }
+
+    const callbackUrl = Utils.getQueryString('callbackUrl');
+    if (typeof callbackUrl === 'string') {
+      history.replace(callbackUrl, { selectedAddress: addressInfo, ...callbackPayload });
+    } else {
+      history.go(-1);
+    }
+  };
+
+  handleBackClicked = () => {
+    CleverTap.pushEvent('Location Page - Click back');
+    const { history } = this.props;
+    history.go(-1);
+  };
+
+  clearErrorToast = () => {
+    this.setState({ errorToast: null });
+  };
 
   async loadStoreInfo() {
     const { storeId } = this.props;
@@ -110,55 +169,6 @@ class LocationPage extends Component {
     }
   }
 
-  onSelectPlace = async addressInfo => {
-    const { t, history, location, setAddressInfo } = this.props;
-    const { updateAddressEnabled = true, callbackPayload } = location.state || {};
-    const address = {
-      location: {
-        longitude: _get(addressInfo, 'coords.lng', 0),
-        latitude: _get(addressInfo, 'coords.lat', 0),
-      },
-    };
-
-    if (updateAddressEnabled) {
-      await setAddressInfo(addressInfo);
-    }
-
-    try {
-      let stores = await this.props.appActions.loadCoreStores(address);
-      stores = stores.responseGql.data.business.stores;
-      if (!stores.length) {
-        const { deliveryRadius } = this.props.allBusinesses[this.props.business].qrOrderingSettings;
-
-        this.setState({
-          errorToast: t(`OutOfDeliveryRange`, { distance: deliveryRadius.toFixed(1) }),
-        });
-        return;
-      }
-    } catch (e) {
-      logger.error('Ordering_LocationPage_LoadCoreStoresFailed', { message: e?.message });
-
-      throw e;
-    }
-
-    const callbackUrl = Utils.getQueryString('callbackUrl');
-    if (typeof callbackUrl === 'string') {
-      history.replace(callbackUrl, { selectedAddress: addressInfo, ...callbackPayload });
-    } else {
-      history.go(-1);
-    }
-  };
-
-  handleBackClicked = () => {
-    CleverTap.pushEvent('Location Page - Click back');
-    const { history } = this.props;
-    history.go(-1);
-  };
-
-  clearErrorToast = () => {
-    this.setState({ errorToast: null });
-  };
-
   renderInitError() {
     const { initError } = this.state;
     return (
@@ -191,11 +201,13 @@ class LocationPage extends Component {
     return (
       <section className="ordering-location flex flex-column" data-test-id="ordering.location.container">
         <HybridHeader
-          headerRef={ref => (this.headerEl = ref)}
+          headerRef={ref => {
+            this.headerEl = ref;
+          }}
           className="flex-middle"
           contentClassName="flex-middle"
           data-test-id="ordering.location.header"
-          isPage={true}
+          isPage
           title={t('DeliverTo')}
           navFunc={this.handleBackClicked}
         />
@@ -228,7 +240,40 @@ class LocationPage extends Component {
     );
   }
 }
+
 LocationPage.displayName = 'LocationPage';
+
+LocationPage.propTypes = {
+  storeId: PropTypes.string,
+  business: PropTypes.string,
+  appActions: PropTypes.shape({
+    loadCoreStores: PropTypes.func,
+    loadCoreBusiness: PropTypes.func,
+  }),
+  /* eslint-disable react/forbid-prop-types */
+  location: PropTypes.object,
+  allBusinesses: PropTypes.object,
+  addressList: PropTypes.arrayOf(PropTypes.object),
+  /* eslint-disable */
+  hasUserLoggedIn: PropTypes.bool,
+  setAddressInfo: PropTypes.func,
+  loadAddressList: PropTypes.func,
+};
+
+LocationPage.defaultProps = {
+  storeId: null,
+  business: null,
+  location: null,
+  addressList: [],
+  allBusinesses: {},
+  appActions: {
+    loadCoreStores: () => {},
+    loadCoreBusiness: () => {},
+  },
+  hasUserLoggedIn: false,
+  setAddressInfo: () => {},
+  loadAddressList: () => {},
+};
 
 export default compose(
   withTranslation(['OrderingDelivery']),
@@ -241,9 +286,9 @@ export default compose(
       storeId: getStoreId(state),
     }),
     dispatch => ({
-      setAddressInfo: bindActionCreators(setAddressInfo, dispatch),
+      setAddressInfo: bindActionCreators(setAddressInfoThunk, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
-      loadAddressList: bindActionCreators(loadAddressList, dispatch),
+      loadAddressList: bindActionCreators(loadAddressListThunk, dispatch),
     })
   )
 )(LocationPage);

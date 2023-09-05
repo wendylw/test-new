@@ -5,7 +5,7 @@ import { createSelector } from 'reselect';
 import { getUserProfile, getTableId } from '../../../redux/modules/app';
 import Constants from '../../../../utils/constants';
 
-const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS, API_REQUEST_STATUS } = Constants;
+const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS } = Constants;
 
 export const getOrder = state => state.orderStatus.common.order;
 

@@ -37,6 +37,7 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
         className={`${
           isBannerVisible ? 'invisible' : 'visible'
         } cashback-floating-button cashback-floating-button__absolute-wrapper flex flex-column flex-middle margin-normal`}
+        data-test-id="ordering.order-status.thank-you.cashback-banner.toggle-btn"
         onClick={toggleBannerHandler}
       >
         <img src={IconGiveCashBag} className="cashback-floating-button__icon" alt="Beep Cash Bag" />
@@ -64,11 +65,16 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
               <p className="text-line-height-base">{description}</p>
             </div>
           </div>
-          <IconClose className="cashback-banner__close-button icon icon__small" onClick={toggleBannerHandler} />
+          <IconClose
+            className="cashback-banner__close-button icon icon__small"
+            data-test-id="ordering.order-status.thank-you.cashback-banner.close-btn"
+            onClick={toggleBannerHandler}
+          />
         </div>
         <div className="padding-small text-center">
           <button
             className="cashback-banner__login-button button button__fill text-weight-bolder text-uppercase padding-left-right-normal"
+            data-test-id="ordering.order-status.thank-you.cashback-banner.login-btn"
             onClick={onLoginButtonClick}
           >
             {bannerButtonText}

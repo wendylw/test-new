@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import prefetch from '../../../common/utils/prefetch-assets';
 import ErrorPage from '../../../components/Error';
-
-import { connect } from 'react-redux';
 import { getPageError } from '../../../redux/modules/entities/error';
 import config from '../../../config';
 import Utils from '../../../utils/utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import NativeHeader from '../../../components/NativeHeader';
+
 export class Error extends Component {
   componentDidMount() {
     prefetch(['SITE_HM'], ['SiteHome']);
@@ -74,14 +75,24 @@ export class Error extends Component {
     );
   }
 }
+
 Error.displayName = 'Error';
+
+Error.propTypes = {
+  error: PropTypes.shape({
+    message: PropTypes.string,
+  }),
+};
+
+Error.defaultProps = {
+  error: {
+    message: '',
+  },
+};
 
 export default compose(
   withTranslation(),
-  connect(
-    state => ({
-      error: getPageError(state),
-    }),
-    dispatch => ({})
-  )
+  connect(state => ({
+    error: getPageError(state),
+  }))
 )(Error);

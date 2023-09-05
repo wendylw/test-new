@@ -222,12 +222,14 @@ class CartSubmissionStatus extends Component {
               <div className="ordering-submission__button-container flex flex-column flex-middle flex-center padding-small">
                 <button
                   className="ordering-submission__button button button__fill padding-normal text-uppercase text-weight-bolder"
+                  data-test-id="ordering.order-status.cart-submission-status.view-order-btn"
                   onClick={this.handleClickViewTableSummary}
                 >
                   {t('ViewOrder')}
                 </button>
                 <button
                   className="ordering-submission__button button button__outline padding-normal text-uppercase text-weight-bolder"
+                  data-test-id="ordering.order-status.cart-submission-status.add-item-btn"
                   onClick={this.handleClickAddMoreItems}
                 >
                   {t('AddMoreItems')}
@@ -253,6 +255,7 @@ class CartSubmissionStatus extends Component {
               <button
                 onClick={this.handleClickBack}
                 className="ordering-submission__return-button button button__fill padding-normal text-uppercase text-weight-bolder"
+                data-test-id="ordering.order-status.cart-submission-status.back-btn"
               >
                 {t('ReturnToCart')}
               </button>

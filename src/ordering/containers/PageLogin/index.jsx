@@ -1,7 +1,9 @@
 import React from 'react';
 import _get from 'lodash/get';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { bindActionCreators, compose } from 'redux';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
@@ -9,8 +11,6 @@ import Constants from '../../../utils/constants';
 import HybridHeader from '../../../components/HybridHeader';
 import PageLoader from '../../../components/PageLoader';
 import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
-import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
 import ApiFetchError from '../../../utils/api/api-fetch-error';
 import {
   actions as appActionCreators,
@@ -46,14 +46,17 @@ import CleverTap from '../../../utils/clevertap';
 const { ROUTER_PATHS, OTP_REQUEST_TYPES, RESEND_OTP_TIME } = Constants;
 
 class PageLogin extends React.Component {
-  state = {
-    sendOtp: false,
-    shouldShowModal: false,
-    isPhoneNumberValid: false,
-    imageStyle: {},
-  };
-
   captchaRef = React.createRef();
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      sendOtp: false,
+      shouldShowModal: false,
+      isPhoneNumberValid: false,
+      imageStyle: {},
+    };
+  }
 
   componentDidMount() {
     const { shouldShowGuestOption } = this.props;
@@ -69,56 +72,39 @@ class PageLogin extends React.Component {
     prefetch(['ORD_MNU'], ['OrderingDelivery']);
   }
 
-  componentDidUpdate(prevProps) {
-    const { user, imageStyle: prevImageStyle } = prevProps;
-    const { shouldShowGuestOption, imageStyle } = this.props;
-    const { isLogin } = user || {};
+  componentDidUpdate(prevProps, prevState) {
+    const { imageStyle: prevImageStyle } = prevState;
+    const { imageStyle: currImageStyle } = this.state;
+    const { user: prevUser } = prevProps;
+    const { user: currUser, shouldShowGuestOption } = this.props;
     const { sendOtp } = this.state;
     const imageHeight = getWebQRImageHeight();
 
-    if (sendOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
+    if (sendOtp && currUser.isLogin && prevUser.isLogin !== currUser.isLogin) {
       this.visitNextPage();
     }
 
-    if (shouldShowGuestOption && imageStyle?.height && prevImageStyle?.height !== imageHeight) {
-      this.setState({
-        imageStyle: { height: `${imageHeight}px` },
-      });
+    if (shouldShowGuestOption && currImageStyle?.height && prevImageStyle?.height !== imageHeight) {
+      this.updateImageHeight(imageHeight);
     }
   }
 
-  visitNextPage = async () => {
-    const { history, location } = this.props;
-    const { redirectLocation, isRedirect } = location.state || {};
-
-    if (redirectLocation && !isRedirect) {
-      history.replace(redirectLocation);
-
-      return;
-    } else if (redirectLocation && isRedirect) {
-      window.location.replace(redirectLocation);
-
-      return;
-    }
-    this.goBack();
-  };
-
-  handleCloseOtpModal() {
+  handleCloseOtpModal = () => {
     const { appActions } = this.props;
 
     this.setState({ shouldShowModal: false }, () => appActions.resetSendOtpRequest());
-  }
+  };
 
-  handleChangeOtpCode() {
+  handleChangeOtpCode = () => {
     const { isLoginRequestFailed, appActions } = this.props;
 
     if (!isLoginRequestFailed) return;
 
     // Only update create otp status when needed
     appActions.resetSendOtpRequest();
-  }
+  };
 
-  handleUpdateUser(user) {
+  handleUpdateUser = user => {
     const { appActions, isOtpRequestFailed } = this.props;
 
     appActions.updateUser(user);
@@ -127,7 +113,7 @@ class PageLogin extends React.Component {
     if (!isOtpRequestFailed) return;
 
     appActions.resetGetOtpRequest();
-  }
+  };
 
   handleUpdatePhoneNumberValidation = isValid => {
     this.setState({ isPhoneNumberValid: isValid });
@@ -176,7 +162,9 @@ class PageLogin extends React.Component {
   }
 
   async handleGetOtpCode(payload) {
-    await this.props.appActions.getOtp(payload);
+    const { appActions } = this.props;
+
+    await appActions.getOtp(payload);
 
     const { t, isOtpRequestFailed, otpError, shouldShowErrorPopUp, errorPopUpI18nKeys } = this.props;
 
@@ -191,8 +179,8 @@ class PageLogin extends React.Component {
     throw new ApiFetchError('Failed to get OTP code', { ...otpError });
   }
 
-  async handleClickContinueButton(phone, type) {
-    const { storeInfoForCleverTap } = this.props;
+  handleClickContinueButton = async (phone, type) => {
+    const { storeInfoForCleverTap, appActions } = this.props;
     const payload = { phone, type };
 
     this.setState({ sendOtp: false });
@@ -208,7 +196,7 @@ class PageLogin extends React.Component {
       }
 
       // We don't need to wait this API's response, it won't block us from fetching OTP API.
-      this.props.appActions.getPhoneWhatsAppSupport(phone);
+      appActions.getPhoneWhatsAppSupport(phone);
 
       await this.handleGetOtpCode(payload);
 
@@ -226,9 +214,9 @@ class PageLogin extends React.Component {
         }
       );
     }
-  }
+  };
 
-  async handleClickResendButton(phone, type) {
+  handleClickResendButton = async (phone, type) => {
     const payload = { phone, type };
     this.setState({ sendOtp: false });
     logger.log('Ordering_PageLogin_ClickResendButton', { type });
@@ -261,16 +249,16 @@ class PageLogin extends React.Component {
         }
       );
     }
-  }
+  };
 
-  handleCaptchaLoad() {
+  handleCaptchaLoad = () => {
     const { t } = this.props;
 
     const hasLoadSuccess = !!window.grecaptcha;
     const scriptName = 'google-recaptcha';
 
     window.newrelic?.addPageAction(`third-party-lib.load-script-${hasLoadSuccess ? 'succeeded' : 'failed'}`, {
-      scriptName: scriptName,
+      scriptName,
     });
 
     if (!hasLoadSuccess) {
@@ -278,9 +266,9 @@ class PageLogin extends React.Component {
         title: t('NetworkErrorTitle'),
       });
     }
-  }
+  };
 
-  async handleWebLogin(otp) {
+  handleWebLogin = async otp => {
     const { appActions, location } = this.props;
     const loginOptions = location.state?.loginOptions || {};
     const { shippingType } = loginOptions;
@@ -304,7 +292,8 @@ class PageLogin extends React.Component {
           shippingType,
         });
 
-        const hasLoggedIn = _get(this.props.user, 'isLogin', false);
+        const { user: newUser } = this.props;
+        const hasLoggedIn = _get(newUser, 'isLogin', false);
 
         if (!hasLoggedIn) {
           throw new Error('Failed to login');
@@ -327,9 +316,9 @@ class PageLogin extends React.Component {
         }
       );
     }
-  }
+  };
 
-  async handleClickContinueAsGuestButton() {
+  handleClickContinueAsGuestButton = async () => {
     const { appActions, storeInfoForCleverTap } = this.props;
 
     CleverTap.pushEvent('Login - Continue as Guest', storeInfoForCleverTap);
@@ -344,7 +333,32 @@ class PageLogin extends React.Component {
         message: error?.message,
       });
     }
-  }
+  };
+
+  updateImageHeight = height => {
+    this.setState({
+      imageStyle: { height: `${height}px` },
+    });
+  };
+
+  visitNextPage = async () => {
+    const { history, location } = this.props;
+    const { redirectLocation, isRedirect } = location.state || {};
+
+    if (redirectLocation && !isRedirect) {
+      history.replace(redirectLocation);
+
+      return;
+    }
+
+    if (redirectLocation && isRedirect) {
+      window.location.replace(redirectLocation);
+
+      return;
+    }
+
+    this.goBack();
+  };
 
   goBack = () => {
     const { history, location } = this.props;
@@ -387,10 +401,11 @@ class PageLogin extends React.Component {
         phone={phone}
         country={country}
         showWhatsAppResendBtn={!noWhatsAppAccount && country === 'MY'}
-        onClose={this.handleCloseOtpModal.bind(this)}
-        onChange={this.handleChangeOtpCode.bind(this)}
-        getOtp={this.handleClickResendButton.bind(this)}
-        sendOtp={this.handleWebLogin.bind(this)}
+        data-test-id="ordering.page-login.otp-modal"
+        onClose={this.handleCloseOtpModal}
+        onChange={this.handleChangeOtpCode}
+        getOtp={this.handleClickResendButton}
+        sendOtp={this.handleWebLogin}
         isLoading={shouldShowLoader}
         isResending={isOtpRequestPending}
         showError={isLoginRequestFailed}
@@ -410,7 +425,7 @@ class PageLogin extends React.Component {
         sitekey={config.googleRecaptchaSiteKey}
         size="invisible"
         ref={this.captchaRef}
-        asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}
+        asyncScriptOnLoad={this.handleCaptchaLoad}
       />
     );
   }
@@ -451,14 +466,14 @@ class PageLogin extends React.Component {
     }
 
     return (
-      <React.Fragment>
+      <>
         <section className={classList.join(' ')} data-test-id="ordering.login.container">
           <HybridHeader
             className="flex-middle"
             contentClassName="flex-middle"
             data-test-id="ordering.login.header"
             title="Login or Create Account"
-            isPage={true}
+            isPage
             navFunc={this.goBack}
           />
           <div className="page-login__container">
@@ -483,28 +498,26 @@ class PageLogin extends React.Component {
               content={t('LoginTip')}
               country={country}
               buttonText={isOtpRequestPending ? t('Processing') : t('Continue')}
-              show={true}
+              show
               isProcessing={isOtpRequestPending}
               showError={isOtpErrorFieldVisible}
               errorText={t(errorTextI18nKey)}
-              updatePhoneNumber={this.handleUpdateUser.bind(this)}
-              updateCountry={this.handleUpdateUser.bind(this)}
+              updatePhoneNumber={this.handleUpdateUser}
+              updateCountry={this.handleUpdateUser}
               onValidate={this.handleUpdatePhoneNumberValidation}
-              onSubmit={this.handleClickContinueButton.bind(this)}
+              onSubmit={this.handleClickContinueButton}
             >
               <p className="page-login__terms-privacy text-center margin-top-bottom-small text-line-height-base">
                 <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
               </p>
 
-              {shouldShowGuestOption && (
-                <GuestModeButton onContinueAsGuest={this.handleClickContinueAsGuestButton.bind(this)} />
-              )}
+              {shouldShowGuestOption && <GuestModeButton onContinueAsGuest={this.handleClickContinueAsGuestButton} />}
             </PhoneViewContainer>
           </div>
         </section>
         {this.renderOtpModal()}
         {this.renderReCAPTCHA()}
-      </React.Fragment>
+      </>
     );
   }
 }
@@ -513,10 +526,69 @@ PageLogin.displayName = 'PageLogin';
 PageLogin.propTypes = {
   className: PropTypes.string,
   title: PropTypes.string,
+  errorTextI18nKey: PropTypes.string,
+  isRequestSucceed: PropTypes.bool,
+  shouldShowLoader: PropTypes.bool,
+  isOtpRequestFailed: PropTypes.bool,
+  isOtpRequestPending: PropTypes.bool,
+  isLoginRequestFailed: PropTypes.bool,
+  shouldShowErrorPopUp: PropTypes.bool,
+  shouldShowGuestOption: PropTypes.bool,
+  isOtpErrorFieldVisible: PropTypes.bool,
+  /* eslint-disable react/forbid-prop-types */
+  user: PropTypes.object,
+  otpError: PropTypes.object,
+  location: PropTypes.object,
+  storeInfoForCleverTap: PropTypes.object,
+  /* eslint-enable */
+  errorPopUpI18nKeys: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+  }),
+  appActions: PropTypes.shape({
+    getOtp: PropTypes.func,
+    sendOtp: PropTypes.func,
+    loginApp: PropTypes.func,
+    updateUser: PropTypes.func,
+    setConsumerAsGuest: PropTypes.func,
+    resetGetOtpRequest: PropTypes.func,
+    resetSendOtpRequest: PropTypes.func,
+    loginByTngMiniProgram: PropTypes.func,
+    getPhoneWhatsAppSupport: PropTypes.func,
+  }),
 };
 
 PageLogin.defaultProps = {
+  user: {},
   title: '',
+  className: '',
+  location: null,
+  otpError: null,
+  errorTextI18nKey: '',
+  isRequestSucceed: false,
+  shouldShowLoader: false,
+  isOtpRequestFailed: false,
+  isOtpRequestPending: false,
+  isLoginRequestFailed: false,
+  shouldShowErrorPopUp: false,
+  shouldShowGuestOption: false,
+  isOtpErrorFieldVisible: false,
+  storeInfoForCleverTap: null,
+  errorPopUpI18nKeys: {
+    title: '',
+    description: '',
+  },
+  appActions: {
+    getOtp: () => {},
+    sendOtp: () => {},
+    loginApp: () => {},
+    updateUser: () => {},
+    setConsumerAsGuest: () => {},
+    resetGetOtpRequest: () => {},
+    resetSendOtpRequest: () => {},
+    loginByTngMiniProgram: () => {},
+    getPhoneWhatsAppSupport: () => {},
+  },
 };
 
 export default compose(

@@ -1,17 +1,19 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import qs from 'qs';
-
+import _get from 'lodash/get';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants from '../../../../../utils/constants';
 import PageLoader from '../../../../../components/PageLoader';
 import feedBackThankyou from '../../../../../images/feedback-thankyou.png';
-import { IconInsertPhoto } from '../../../../../components/Icons';
+import { IconInsertPhoto, IconClose } from '../../../../../components/Icons';
 import HybridHeader from '../../../../../components/HybridHeader';
 import Radio from '../../../../../components/Radio';
-import { actions as reportDriverActionCreators, thunks as reportDriverThunks } from './redux';
+import { actions as reportDriverActionCreators } from './redux';
+import { fetchReport as fetchReportThunk, submitReport as submitReportThunk } from './redux/thunks';
 import {
   getInputNotes,
   getSelectedReasonCode,
@@ -27,10 +29,15 @@ import {
   getInputEmailIsValid,
 } from './redux/selectors';
 import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
-import { loadOrder } from '../../redux/thunks';
+import { loadOrder as loadOrderThunk } from '../../redux/thunks';
 import { getReceiptNumber } from '../../redux/selector';
-import { actions as appActionCreators, getUserEmail, getUserConsumerId, getUser } from '../../../../redux/modules/app';
-import { IconClose } from '../../../../../components/Icons';
+import {
+  actions as appActionCreators,
+  getUserEmail,
+  getUserConsumerId,
+  getUser,
+  getUserIsLogin,
+} from '../../../../redux/modules/app';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -45,24 +52,24 @@ class ReportDriver extends Component {
   inputRefOfEmail = null;
 
   componentDidMount = async () => {
-    const { receiptNumber, loadOrder, fetchReport, user } = this.props;
+    const { receiptNumber, loadOrder, fetchReport, userIsLogin, loginByTngMiniProgram } = this.props;
 
     await loadOrder(receiptNumber);
 
-    if (!user?.isLogin) {
+    if (!userIsLogin) {
       if (Utils.isWebview()) {
-        const result = await NativeMethods.getTokenAsync();
-        await this.loginAppWithNativeToken(result);
+        const tokens = await NativeMethods.getTokenAsync();
+        await this.loginAppWithNativeToken(tokens);
 
         const { user } = this.props;
         if (!user.isLogin && user.isExpired) {
-          const result = await NativeMethods.tokenExpiredAsync();
-          await this.loginAppWithNativeToken(result);
+          const refreshedTokens = await NativeMethods.tokenExpiredAsync();
+          await this.loginAppWithNativeToken(refreshedTokens);
         }
       }
 
       if (Utils.isTNGMiniProgram()) {
-        await this.props.loginByTngMiniProgram();
+        await loginByTngMiniProgram();
       }
     }
 
@@ -72,29 +79,37 @@ class ReportDriver extends Component {
     prefetch(['ORD_TY', 'ORD_PL'], ['OrderingThankYou']);
   };
 
+  componentWillUnmount = () => {
+    const { removeUploadPhotoFile } = this.props;
+
+    // release the file reference
+    removeUploadPhotoFile();
+  };
+
   loginAppWithNativeToken = async result => {
-    if (!result?.access_token || !result?.refresh_token) {
+    const { loginApp } = this.props;
+    const accessToken = _get(result, 'access_token', null);
+    const refreshToken = _get(result, 'refresh_token', null);
+
+    if (!accessToken || !refreshToken) {
       logger.error('Ordering_ReportDriver_LoginByBeepAppFailedByInvalidNativeToken');
       return;
     }
-    await this.props.loginApp({
-      accessToken: result.access_token,
-      refreshToken: result.refresh_token,
+    await loginApp({
+      accessToken,
+      refreshToken,
     });
   };
 
   preFillEmail = async () => {
-    const { userConsumerId, loadProfileInfo, initialEmail } = this.props;
+    const { userConsumerId, loadProfileInfo } = this.props;
 
     userConsumerId && (await loadProfileInfo(userConsumerId));
 
-    initialEmail(this.props.userEmail);
-  };
+    const { userEmail, initialEmail } = this.props;
 
-  componentWillUnmount() {
-    // release the file reference
-    this.props.removeUploadPhotoFile();
-  }
+    initialEmail(userEmail);
+  };
 
   handleGoBack = () => {
     this.goBack();
@@ -103,23 +118,6 @@ class ReportDriver extends Component {
   handleDone = () => {
     this.goBack();
   };
-
-  goBack() {
-    if (Utils.isWebview()) {
-      NativeMethods.goBack();
-      return;
-    }
-
-    const from = Utils.getQueryString('from');
-
-    if (from === 'orderDetails') {
-      this.props.history.goBack();
-      return;
-    }
-
-    // from sms
-    this.gotoThankYourPage();
-  }
 
   gotoThankYourPage = () => {
     const { receiptNumber, history } = this.props;
@@ -135,29 +133,33 @@ class ReportDriver extends Component {
   };
 
   handleNotesChange = e => {
+    const { updateInputNotes } = this.props;
     const notes = e.target.value.slice(0, NOTE_MAX_LENGTH);
 
-    this.props.updateInputNotes(notes);
+    updateInputNotes(notes);
   };
 
   handleNotesBlur = () => {
-    const { inputNotes } = this.props;
+    const { inputNotes, updateInputNotes } = this.props;
 
-    this.props.updateInputNotes(inputNotes.trim());
+    updateInputNotes(inputNotes.trim());
   };
 
   handleEmailChange = e => {
+    const { updateInputEmail } = this.props;
     const email = e.target.value;
 
-    this.props.updateInputEmail(email);
+    updateInputEmail(email);
   };
 
   handleEmailInputBlur = () => {
-    this.props.inputEmailCompleted();
+    const { inputEmailCompleted } = this.props;
+
+    inputEmailCompleted();
   };
 
   handleUploadPhoto = e => {
-    const { t } = this.props;
+    const { t, setUploadPhotoFile } = this.props;
     // File Object https://developer.mozilla.org/en-US/docs/Web/API/File
     const file = e.target.files[0];
 
@@ -173,22 +175,30 @@ class ReportDriver extends Component {
       return;
     }
 
-    this.props.setUploadPhotoFile(file);
+    setUploadPhotoFile(file);
   };
 
   handleRemoveUploadPhoto = () => {
-    this.props.removeUploadPhotoFile();
+    const { removeUploadPhotoFile } = this.props;
+
+    removeUploadPhotoFile();
   };
 
   validate = () => {
-    this.props.inputEmailCompleted();
+    const { inputEmailCompleted } = this.props;
 
-    if (!this.props.inputEmailIsValid) {
+    inputEmailCompleted();
+
+    const { inputEmailIsValid } = this.props;
+
+    if (!inputEmailIsValid) {
       this.inputRefOfEmail?.focus();
       return false;
     }
 
-    if (!this.props.submittable) {
+    const { submittable } = this.props;
+
+    if (!submittable) {
       return false;
     }
 
@@ -200,11 +210,33 @@ class ReportDriver extends Component {
       return;
     }
 
-    await this.props.submitReport();
+    const { submitReport } = this.props;
+
+    await submitReport();
   };
 
   handleSelectReason = reasonCode => {
-    this.props.selectReasonCode(reasonCode);
+    const { selectReasonCode } = this.props;
+
+    selectReasonCode(reasonCode);
+  };
+
+  goBack = () => {
+    if (Utils.isWebview()) {
+      NativeMethods.goBack();
+      return;
+    }
+
+    const from = Utils.getQueryString('from');
+    const { history } = this.props;
+
+    if (from === 'orderDetails') {
+      history.goBack();
+      return;
+    }
+
+    // from sms
+    this.gotoThankYourPage();
   };
 
   renderSubmitButtonContent = () => {
@@ -229,10 +261,10 @@ class ReportDriver extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           data-test-id="ordering.report-driver.thank-you-header"
-          isPage={true}
+          isPage
           title={t('ReportIssue')}
           navFunc={this.handleGoBack}
-        ></HybridHeader>
+        />
         <div className="padding-normal">
           <div className="text-center padding-left-right-normal">
             <img className="ordering-report-thanks__image" alt="Thank your feedback" src={feedBackThankyou} />
@@ -245,6 +277,7 @@ class ReportDriver extends Component {
           </p>
           <button
             className="button button__fill button__block margin-top-bottom-small text-weight-bolder text-uppercase"
+            data-test-id="ordering.order-status.report-driver.done-btn"
             onClick={this.handleDone}
           >
             {t('Done')}
@@ -272,7 +305,7 @@ class ReportDriver extends Component {
             onChange={this.handleNotesChange}
             onBlur={this.handleNotesBlur}
             disabled={disabled}
-          ></textarea>
+          />
           <p className="text-size-small text-right padding-small text-opacity">
             {t('LimitCharacters', { inputLength: inputNotes.length, maxLength: NOTE_MAX_LENGTH })}
           </p>
@@ -298,12 +331,15 @@ class ReportDriver extends Component {
           } form__group margin-left-right-small border-radius-normal`}
         >
           <input
-            ref={ref => (this.inputRefOfEmail = ref)}
+            ref={ref => {
+              this.inputRefOfEmail = ref;
+            }}
             disabled={disabled}
             value={value}
             onChange={this.handleEmailChange}
             onBlur={this.handleEmailInputBlur}
             className="ordering-report-driver__input-email form__input padding-small form__group"
+            data-test-id="ordering.order-status.report-driver.email-input"
           />
         </div>
         {showInvalidError && (
@@ -384,10 +420,10 @@ class ReportDriver extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           data-test-id="ordering.report-driver.header"
-          isPage={true}
+          isPage
           title={t('ReportIssue')}
           navFunc={this.handleGoBack}
-        ></HybridHeader>
+        />
 
         <div className="ordering-report-driver__container padding-top-bottom-small">
           <div className="card padding-small margin-normal">
@@ -410,25 +446,23 @@ class ReportDriver extends Component {
 
                   return reason1.label.localeCompare(reason2.label);
                 })
-                .map(({ code, label }) => {
-                  return (
-                    <li key={code} className="flex flex-top padding-top-bottom-small">
-                      <Radio
-                        onChange={() => {
-                          this.handleSelectReason(code);
-                        }}
-                        data-test-id="ordering.report-driver.reason-item"
-                        checked={selectedReasonCode === code}
-                        inputId={`reason_${code}`}
-                        name="reason"
-                        disabled={disabled}
-                      />
-                      <label className="padding-left-right-small margin-smaller" htmlFor={`reason_${code}`}>
-                        {label}
-                      </label>
-                    </li>
-                  );
-                })}
+                .map(({ code, label }) => (
+                  <li key={code} className="flex flex-top padding-top-bottom-small">
+                    <Radio
+                      onChange={() => {
+                        this.handleSelectReason(code);
+                      }}
+                      data-test-id="ordering.report-driver.reason-item"
+                      checked={selectedReasonCode === code}
+                      inputId={`reason_${code}`}
+                      name="reason"
+                      disabled={disabled}
+                    />
+                    <label className="padding-left-right-small margin-smaller" htmlFor={`reason_${code}`}>
+                      {label}
+                    </label>
+                  </li>
+                ))}
             </ul>
             {selectedReasonNoteField
               ? this.renderNotesField({ t, inputNotes, disabled, required: selectedReasonNoteField.required })
@@ -459,7 +493,90 @@ class ReportDriver extends Component {
     );
   }
 }
+
 ReportDriver.displayName = 'ReportDriver';
+
+ReportDriver.propTypes = {
+  user: PropTypes.shape({
+    isLogin: PropTypes.bool,
+    isExpired: PropTypes.bool,
+  }),
+  inputEmail: PropTypes.shape({
+    value: PropTypes.string,
+    isCompleted: PropTypes.bool,
+    isValid: PropTypes.bool,
+  }),
+  submittable: PropTypes.bool,
+  userIsLogin: PropTypes.bool,
+  showPageLoader: PropTypes.bool,
+  inputEmailIsValid: PropTypes.bool,
+  isSubmitButtonDisabled: PropTypes.bool,
+  userEmail: PropTypes.string,
+  inputNotes: PropTypes.string,
+  submitStatus: PropTypes.string,
+  receiptNumber: PropTypes.string,
+  userConsumerId: PropTypes.string,
+  uploadPhotoUrl: PropTypes.string,
+  selectedReasonCode: PropTypes.string,
+  /* eslint-disable react/forbid-prop-types */
+  uploadPhotoFile: PropTypes.object,
+  selectedReasonNoteField: PropTypes.object,
+  selectedReasonPhotoField: PropTypes.object,
+  /* eslint-enable */
+  loginApp: PropTypes.func,
+  loadOrder: PropTypes.func,
+  fetchReport: PropTypes.func,
+  submitReport: PropTypes.func,
+  initialEmail: PropTypes.func,
+  loadProfileInfo: PropTypes.func,
+  selectReasonCode: PropTypes.func,
+  updateInputNotes: PropTypes.func,
+  updateInputEmail: PropTypes.func,
+  setUploadPhotoFile: PropTypes.func,
+  inputEmailCompleted: PropTypes.func,
+  loginByTngMiniProgram: PropTypes.func,
+  removeUploadPhotoFile: PropTypes.func,
+};
+
+ReportDriver.defaultProps = {
+  user: {
+    isLogin: false,
+    isExpired: false,
+  },
+  inputEmail: {
+    value: '',
+    isCompleted: false,
+    isValid: false,
+  },
+  submittable: false,
+  userIsLogin: false,
+  showPageLoader: false,
+  inputEmailIsValid: false,
+  isSubmitButtonDisabled: false,
+  userEmail: '',
+  inputNotes: '',
+  submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
+  receiptNumber: null,
+  userConsumerId: null,
+  uploadPhotoUrl: '',
+  uploadPhotoFile: null,
+  selectedReasonCode: null,
+  selectedReasonNoteField: null,
+  selectedReasonPhotoField: null,
+  loginApp: () => {},
+  loadOrder: () => {},
+  fetchReport: () => {},
+  submitReport: () => {},
+  initialEmail: () => {},
+  loadProfileInfo: () => {},
+  selectReasonCode: () => {},
+  updateInputNotes: () => {},
+  updateInputEmail: () => {},
+  setUploadPhotoFile: () => {},
+  inputEmailCompleted: () => {},
+  loginByTngMiniProgram: () => {},
+  removeUploadPhotoFile: () => {},
+};
 
 export default compose(
   withTranslation(['ReportDriver']),
@@ -481,6 +598,7 @@ export default compose(
       isSubmitButtonDisabled: getIsSubmitButtonDisabled(state),
       inputEmailIsValid: getInputEmailIsValid(state),
       user: getUser(state),
+      userIsLogin: getUserIsLogin(state),
     }),
     {
       updateInputNotes: reportDriverActionCreators.updateInputNotes,
@@ -489,9 +607,9 @@ export default compose(
       setUploadPhotoFileLocation: reportDriverActionCreators.setUploadPhotoFileLocation,
       selectReasonCode: reportDriverActionCreators.selectReasonCode,
       updateSubmitStatus: reportDriverActionCreators.updateSubmitStatus,
-      fetchReport: reportDriverThunks.fetchReport,
-      submitReport: reportDriverThunks.submitReport,
-      loadOrder,
+      fetchReport: fetchReportThunk,
+      submitReport: submitReportThunk,
+      loadOrder: loadOrderThunk,
       updateInputEmail: reportDriverActionCreators.updateInputEmail,
       inputEmailCompleted: reportDriverActionCreators.inputEmailCompleted,
       initialEmail: reportDriverActionCreators.initialEmail,

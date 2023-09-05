@@ -511,6 +511,7 @@ export class TableSummary extends React.Component {
             <button
               className="flex padding-smaller table-summary__cashback-info-button"
               aria-label="Beep Cashback Info"
+              data-test-id="ordering.order-status.table-summary.info-btn"
               onClick={this.handleClickCashbackInfoButton}
             >
               <Info size={16} />
@@ -524,6 +525,7 @@ export class TableSummary extends React.Component {
                 <input
                   id="cashback-switch"
                   className="table-summary__toggle-checkbox"
+                  data-test-id="ordering.order-status.table-summary.cashback-switch"
                   type="checkbox"
                   checked={isCashbackApplied}
                   onChange={this.handleToggleCashbackSwitch}
@@ -790,6 +792,7 @@ export class TableSummary extends React.Component {
             {isOrderPlaced ? (
               <button
                 className="table-summary__outline-button button button__outline button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+                data-test-id="ordering.order-status.table-summary.add-btn"
                 onClick={this.goToMenuPage}
               >
                 {t('AddItems')}

@@ -1,19 +1,18 @@
+import { compose } from 'redux';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 import HybridHeader from '../../../../../components/HybridHeader';
 import prefetch from '../../../../../common/utils/prefetch-assets';
-import Constants from '../../../../../utils/constants';
-import { connect } from 'react-redux';
-import { compose } from 'redux';
+import Constants, { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
 import Utils from '../../../../../utils/utils';
-import { loadOrder } from '../../redux/thunks';
+import { loadOrder as loadOrderThunk } from '../../redux/thunks';
 import { getReceiptNumber, getOrderStatus, getIsUseStorehubLogistics, getOrder } from '../../redux/selector';
 
 import './OrderingMerchantInfo.scss';
-
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
 export class MerchantInfo extends Component {
   componentDidMount() {
@@ -24,11 +23,13 @@ export class MerchantInfo extends Component {
   }
 
   handleReportUnsafeDriver = () => {
+    const { receiptNumber, history } = this.props;
+
     const queryParams = {
-      receiptNumber: this.props.receiptNumber,
+      receiptNumber,
     };
 
-    this.props.history.push({
+    history.push({
       pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
       search: qs.stringify(queryParams, { addQueryPrefix: true }),
     });
@@ -52,7 +53,7 @@ export class MerchantInfo extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           data-test-id="ordering.need-help.header"
-          isPage={true}
+          isPage
           title={t('ContactUs')}
           navFunc={() => {
             if (history.length > 1) {
@@ -115,7 +116,25 @@ export class MerchantInfo extends Component {
     );
   }
 }
+
 MerchantInfo.displayName = 'MerchantInfo';
+
+MerchantInfo.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  order: PropTypes.object,
+  orderStatus: PropTypes.string,
+  receiptNumber: PropTypes.string,
+  loadOrder: PropTypes.func,
+  isUseStorehubLogistics: PropTypes.bool,
+};
+
+MerchantInfo.defaultProps = {
+  order: {},
+  orderStatus: null,
+  receiptNumber: null,
+  loadOrder: () => {},
+  isUseStorehubLogistics: false,
+};
 
 export default compose(
   withTranslation(['OrderingDelivery']),
@@ -127,7 +146,7 @@ export default compose(
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
     }),
     {
-      loadOrder,
+      loadOrder: loadOrderThunk,
     }
   )
 )(MerchantInfo);
