@@ -327,8 +327,6 @@ export const queryCartSubmissionStatus = submissionId => async dispatch => {
         },
       }
     );
-
-    throw error;
   }
 };
 
