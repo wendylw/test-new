@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import dayjs from 'dayjs';
-import { getIsTNGMiniProgram, getIsWebview } from '../../../../../redux/modules/app';
+import { getIsTNGMiniProgram, getIsGCashMiniProgram, getIsWebview } from '../../../../../redux/modules/app';
 import {
   getStoreRating,
   getStoreComment,
@@ -25,12 +25,14 @@ export const getIsGoogleReviewURLAvailable = createSelector(
   googleReviewURL => !_isEmpty(googleReviewURL)
 );
 
+// TODO: Migrate isTNGMiniProgram || isGCashMiniProgram to isAlipayMiniProgram
 export const getShouldShowOkayButtonOnly = createSelector(
   getIsTNGMiniProgram,
+  getIsGCashMiniProgram,
   getIsHighRatedReview,
   getIsGoogleReviewURLAvailable,
-  (isTNGMiniProgram, isHighRatedReview, isGoogleReviewURLAvailable) =>
-    isTNGMiniProgram || !(isHighRatedReview && isGoogleReviewURLAvailable)
+  (isTNGMiniProgram, isGCashMiniProgram, isHighRatedReview, isGoogleReviewURLAvailable) =>
+    isTNGMiniProgram || isGCashMiniProgram || !(isHighRatedReview && isGoogleReviewURLAvailable)
 );
 
 // This selector is used for CleverTap only

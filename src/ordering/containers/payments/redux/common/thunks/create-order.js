@@ -9,8 +9,8 @@ import Constants from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 import { callTradePay } from '../../../../../../utils/tng-utils';
+import { callTradePay as callAlipayTradePay } from '../../../../../../common/utils/alipay-miniprogram-client';
 import { gotoHome } from '../../../../../../utils/native-methods';
-import { getCartItems, getDeliveryDetails, getShippingType } from '../../../../../redux/modules/app';
 import {
   actions as appActions,
   getBusiness,
@@ -24,9 +24,13 @@ import {
   getIsTNGMiniProgram,
   getIsWebview,
   getMerchantCountry,
+  getCartItems,
+  getDeliveryDetails,
+  getIsGCashMiniProgram,
+  getShippingType,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
-import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
+import { getSelectedPaymentProvider, getModifiedTime, getMiniProgramPaymentProvider } from '../selectors';
 
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../../../../voucher/utils';
 import { get, post } from '../../../../../../utils/api/api-fetch';
@@ -368,7 +372,8 @@ const handlePaymentError = ({ e, dispatch }) => {
 export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch, getState) => {
   const state = getState();
   const isTNGMiniProgram = getIsTNGMiniProgram(state);
-  const paymentProvider = isTNGMiniProgram ? PAYMENT_PROVIDERS.TNG_MINI_PROGRAM : paymentArgs?.paymentProvider;
+  const isGCashMiniProgram = getIsGCashMiniProgram(state);
+  const paymentProvider = getMiniProgramPaymentProvider(state) || paymentArgs?.paymentProvider;
 
   try {
     const shippingType = getShippingType(state);
@@ -399,7 +404,20 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       payload,
       dispatch
     );
+    const miniProgramPaymentPayload = {
+      amount: total,
+      receiptNumber: orderId,
+      businessName: business,
+      redirectURL,
+      webhookURL,
+      paymentMethod: paymentProvider,
+      currency,
+      source,
+      isInternal,
+      paymentId,
+    };
 
+    // TODO: will be removed when TNG code migrate to new utils
     if (isTNGMiniProgram) {
       const { redirectionUrl } = paymentData?.actionForm || {};
       await callTradePay(redirectionUrl);
@@ -415,6 +433,17 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
         isInternal,
         paymentId,
       });
+      return;
+    }
+
+    if (isGCashMiniProgram) {
+      const { paymentAction } = paymentData || {};
+      // TODO: maybe need BE to update paymentData format and migrate TNG to here
+      const miniProgramPaymentUrl = paymentAction?.actionUrl || '';
+
+      await callAlipayTradePay(miniProgramPaymentUrl);
+      Utils.submitForm(redirectURL, miniProgramPaymentPayload);
+
       return;
     }
 

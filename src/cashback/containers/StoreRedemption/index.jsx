@@ -4,7 +4,7 @@ import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
-import { isWebview, isTNGMiniProgram } from '../../../common/utils';
+import { isWebview, isTNGMiniProgram, isGCashMiniProgram } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
 import { getUserCountry } from '../../redux/modules/app';
@@ -107,7 +107,7 @@ const StoreRedemption = () => {
   const dispatch = useDispatch();
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
-  const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
+  const isDisplayWebResult = !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram();
 
   useMount(async () => {
     if (isDisplayWebResult) {

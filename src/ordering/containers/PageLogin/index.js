@@ -2,6 +2,8 @@ import React from 'react';
 import _get from 'lodash/get';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
 import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
@@ -9,14 +11,14 @@ import Constants from '../../../utils/constants';
 import HybridHeader from '../../../components/HybridHeader';
 import PageLoader from '../../../components/PageLoader';
 import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
-import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
 import ApiFetchError from '../../../utils/api/api-fetch-error';
 import {
   actions as appActionCreators,
   getUser,
   getIsLoginRequestFailed,
   getStoreInfoForCleverTap,
+  getIsGCashMiniProgram,
+  getIsAlipayMiniProgram,
 } from '../../redux/modules/app';
 import {
   getOtpRequestError,
@@ -56,10 +58,14 @@ class PageLogin extends React.Component {
   captchaRef = React.createRef();
 
   componentDidMount() {
-    const { shouldShowGuestOption } = this.props;
+    const { shouldShowGuestOption, isGCashMiniProgram } = this.props;
 
     if (Utils.isTNGMiniProgram()) {
       this.loginInTngMiniProgram();
+    }
+
+    if (isGCashMiniProgram) {
+      this.loginInAlipayMiniProgram();
     }
 
     if (shouldShowGuestOption) {
@@ -374,6 +380,18 @@ class PageLogin extends React.Component {
     this.visitNextPage();
   };
 
+  loginInAlipayMiniProgram = async () => {
+    const { appActions } = this.props;
+    const isLogin = await appActions.loginInAlipayMiniProgram();
+
+    if (!isLogin) {
+      this.goBack();
+      return;
+    }
+
+    this.visitNextPage();
+  };
+
   renderOtpModal() {
     const { user, shouldShowLoader, isOtpRequestPending, isLoginRequestFailed } = this.props;
     const { sendOtp, shouldShowModal } = this.state;
@@ -425,12 +443,14 @@ class PageLogin extends React.Component {
       isOtpRequestPending,
       isOtpErrorFieldVisible,
       shouldShowGuestOption,
+      isAlipayMiniProgram,
     } = this.props;
     const { isPhoneNumberValid, imageStyle } = this.state;
     const { isLogin, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
 
-    if (Utils.isTNGMiniProgram()) {
+    // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
+    if (Utils.isTNGMiniProgram() || isAlipayMiniProgram) {
       return <PageLoader />;
     }
 
@@ -536,6 +556,8 @@ export default compose(
       isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
       shouldShowGuestOption: getShouldShowGuestOption(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      isGCashMiniProgram: getIsGCashMiniProgram(state),
+      isAlipayMiniProgram: getIsAlipayMiniProgram(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

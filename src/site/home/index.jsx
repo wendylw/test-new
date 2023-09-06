@@ -18,7 +18,7 @@ import {
   getBannerCollections,
   getCarouselCollections,
 } from '../redux/modules/entities/storeCollections';
-import { appActionCreators } from '../redux/modules/app';
+import { appActionCreators, getIsAlipayMiniProgram } from '../redux/modules/app';
 import {
   getAllCurrentStores,
   getPaginationInfo,
@@ -110,7 +110,7 @@ class Home extends React.Component {
 
   loadAddressInfo = async () => {
     const { FRONTEND_CACHE, BACKEND_CACHE } = ADDRESS_INFO_SOURCE_TYPE;
-    const { getAddressInfo } = this.props;
+    const { getAddressInfo, isAlipayMiniProgram } = this.props;
 
     // eslint-disable-next-line react/destructuring-assignment
     if (this.props.ifAddressInfoExists) return FRONTEND_CACHE;
@@ -121,8 +121,9 @@ class Home extends React.Component {
     // eslint-disable-next-line react/destructuring-assignment
     if (this.props.ifAddressInfoExists) return BACKEND_CACHE;
 
-    // Get address from ip (or device for TNG Mini Program)
-    const { placeInfo, source } = await getPlaceInfo({ fromDevice: Utils.isTNGMiniProgram() });
+    // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
+    // Get address from ip (or device for Alipay Program)
+    const { placeInfo, source } = await getPlaceInfo({ fromDevice: Utils.isTNGMiniProgram() || isAlipayMiniProgram });
 
     const hasAddressInfo = !!placeInfo;
     if (hasAddressInfo) await this.updateAddressInfo(placeInfo);
@@ -343,6 +344,7 @@ Home.displayName = 'Home';
 
 Home.propTypes = {
   /* eslint-disable react/forbid-prop-types */
+  isAlipayMiniProgram: PropTypes.bool,
   stores: PropTypes.array,
   storeCollections: PropTypes.array,
   bannerCollections: PropTypes.array,
@@ -385,6 +387,7 @@ Home.defaultProps = {
   storeCollections: [],
   bannerCollections: [],
   carouselCollections: [],
+  isAlipayMiniProgram: false,
   ifAddressInfoExists: false,
   shouldShowCampaignBar: false,
   rootActions: {
@@ -415,6 +418,7 @@ export default compose(
       carouselCollections: getCarouselCollections(state),
       ifAddressInfoExists: getIfAddressInfoExists(state),
       shouldShowCampaignBar: getShouldShowCampaignBar(state),
+      isAlipayMiniProgram: getIsAlipayMiniProgram(state),
     }),
     dispatch => ({
       getAddressInfo: bindActionCreators(getAddressInfoThunk, dispatch),

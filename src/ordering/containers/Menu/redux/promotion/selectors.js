@@ -4,7 +4,7 @@ import { getBusinessInfo, getShippingType, getFormatCurrencyFunction } from '../
 import { getIsFreeDeliveryTagVisible, getFreeShippingFormattedMinAmount } from '../common/selectors';
 import { PROMOTION_CLIENT_TYPES, SHIPPING_TYPES } from '../../../../../common/utils/constants';
 import { PROMOTIONS_SHIPPING_TYPES_MAPPING, PROMOTIONS_TYPES } from '../../constants';
-import { isTNGMiniProgram, isWebview } from '../../../../../common/utils';
+import { isTNGMiniProgram, isGCashMiniProgram, isWebview } from '../../../../../common/utils';
 
 export const getAvailablePromotions = createSelector(
   getBusinessInfo,
@@ -19,6 +19,8 @@ export const getAvailablePromotions = createSelector(
         const { appliedSources, appliedClientTypes } = promotion;
         const currentClientType = isTNGMiniProgram()
           ? PROMOTION_CLIENT_TYPES.TNG_MINI_PROGRAM
+          : isGCashMiniProgram()
+          ? PROMOTION_CLIENT_TYPES.GCASH_MINI_PROGRAM
           : isWebview()
           ? PROMOTION_CLIENT_TYPES.APP
           : PROMOTION_CLIENT_TYPES.WEB;

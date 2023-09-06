@@ -17,7 +17,7 @@ import {
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
-import { isTNGMiniProgram, isWebview } from '../../../common/utils';
+import { isTNGMiniProgram, isGCashMiniProgram, isWebview } from '../../../common/utils';
 import faviconImage from '../../../images/favicon.ico';
 import '../../../Common.scss';
 import './Loyalty.scss';
@@ -42,6 +42,7 @@ class App extends Component {
 
       await Promise.all(initRequests);
 
+      // TODO: Migrate isTNGMiniProgram to isMiniProgramLogin
       // 2. login
       // TNGD code is executed at the very beginning.
       // Because the MP and Beep accounts are not synchronized,
@@ -77,6 +78,10 @@ class App extends Component {
             },
           });
         }
+      }
+
+      if (isGCashMiniProgram()) {
+        await appActions.loginByAlipayMiniProgram();
       }
 
       await appActions.loadConsumerLoginStatus();
@@ -156,7 +161,7 @@ class App extends Component {
           />
         ) : null}
         <Message />
-        {isLoginModalShown && !isWebview() && !isTNGMiniProgram() ? (
+        {isLoginModalShown && !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram() ? (
           <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
         ) : null}
         <Routes />
@@ -192,6 +197,7 @@ App.propTypes = {
     loginApp: PropTypes.func,
     clearError: PropTypes.func,
     loginByTngMiniProgram: PropTypes.func,
+    loginByAlipayMiniProgram: PropTypes.func,
     syncLoginFromBeepApp: PropTypes.func,
     loginByBeepApp: PropTypes.func,
     showLoginModal: PropTypes.func,

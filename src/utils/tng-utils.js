@@ -61,6 +61,7 @@ export const callMessagePortal = async (method, data) => {
   } catch (error) {
     debug('[TNG utils] call fail method: %s\n parameter: %o\n error: %o', method, data, error);
     const errorData = getMessagePortalErrorData(error?.message);
+
     logger.error('Utils_MessagePortal_CallAPIFailed', {
       method,
       ...errorData,
@@ -120,7 +121,7 @@ export const setTabBarVisibility = async visible => {
   try {
     await callMessagePortal('setTabBarVisibility', visible);
   } catch (e) {
-    console.error('Set tab bar visibility error', e);
+    logger.error('Utils_TngMiniProgram_SetTabBarVisibility', { message: e.message });
   }
 };
 

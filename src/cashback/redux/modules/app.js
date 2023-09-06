@@ -31,7 +31,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo, getCoreBusinessInfo } from './api-request';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
-import { isJSON, isTNGMiniProgram } from '../../../common/utils';
+import { isJSON, isTNGMiniProgram, isGCashMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
@@ -339,6 +339,7 @@ export const actions = {
     }
   },
 
+  // TODO: Migrate loginByTngMiniProgram to loginByAlipayMiniProgram
   loginByTngMiniProgram: () => async (dispatch, getState) => {
     try {
       dispatch({
@@ -367,6 +368,38 @@ export const actions = {
       });
 
       logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
+
+      return false;
+    }
+
+    return getIsUserLogin(getState());
+  },
+
+  loginByAlipayMiniProgram: () => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: types.CREATE_LOGIN_ALIPAY_REQUEST,
+      });
+
+      if (!isGCashMiniProgram()) {
+        throw new Error('Not in alipay mini program');
+      }
+
+      const business = getBusiness(getState());
+      const tokens = await TngUtils.getAccessToken({ business });
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+      await dispatch(actions.loginApp({ accessToken, refreshToken }));
+
+      dispatch({
+        type: types.CREATE_LOGIN_ALIPAY_SUCCESS,
+      });
+    } catch (error) {
+      dispatch({
+        type: types.CREATE_LOGIN_ALIPAY_FAILURE,
+      });
+
+      logger.error('Cashback_LoginByAlipayMiniProgram', { message: error?.message });
 
       return false;
     }
@@ -633,7 +666,6 @@ const user = (state = initialState.user, action) => {
         },
       };
     case types.CREATE_LOGIN_TNGD_FAILURE:
-      console.log(error);
       return {
         ...state,
         loginTngRequest: {

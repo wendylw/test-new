@@ -10,7 +10,12 @@ import {
   getOrderPromotionId,
   getOrderVoucherCode,
 } from './selectors';
-import { getUserConsumerId, getLocationSearch, getIsTNGMiniProgram } from '../../../../../redux/modules/app';
+import {
+  getUserConsumerId,
+  getLocationSearch,
+  getIsTNGMiniProgram,
+  getIsAlipayMiniProgram,
+} from '../../../../../redux/modules/app';
 import {
   loadPayLaterOrderStatus as loadOrderStatus,
   loadPayLaterOrder as loadOrder,
@@ -102,8 +107,8 @@ export const payByCoupons = createAsyncThunk(
   }
 );
 
-export const payByTnGMiniProgram = createAsyncThunk(
-  'ordering/orderStatus/tableSummary/payByTnGMiniProgram',
+export const payByAlipayMiniProgram = createAsyncThunk(
+  'ordering/orderStatus/tableSummary/payByAlipayMiniProgram',
   async (_, { dispatch, getState }) => {
     const state = getState();
     const total = getOrderTotal(state);
@@ -144,9 +149,11 @@ export const gotoPayment = createAsyncThunk(
 
       // If it comes from TnG mini program, we need to directly init payment
       const isTNGMiniProgram = getIsTNGMiniProgram(state);
+      const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
 
-      if (isTNGMiniProgram) {
-        await dispatch(payByTnGMiniProgram()).unwrap();
+      // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
+      if (isTNGMiniProgram || isAlipayMiniProgram) {
+        await dispatch(payByAlipayMiniProgram()).unwrap();
         return;
       }
 

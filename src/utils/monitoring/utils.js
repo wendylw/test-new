@@ -1,5 +1,5 @@
 import _isEmpty from 'lodash/isEmpty';
-import { isTNGMiniProgram, isAndroidWebview, isIOSWebview } from '../../common/utils';
+import { isTNGMiniProgram, isGCashMiniProgram, isAndroidWebview, isIOSWebview } from '../../common/utils';
 import { API_REQUEST_URL_PATTERNS, API_URL_WARNING_BYPASS_LIST } from './constants';
 
 export const getIsDebugMode = () => process.env.NODE_ENV === 'development';
@@ -7,6 +7,10 @@ export const getIsDebugMode = () => process.env.NODE_ENV === 'development';
 export const getAppPlatform = () => {
   if (isTNGMiniProgram()) {
     return 'tng-mini-program';
+  }
+
+  if (isGCashMiniProgram()) {
+    return 'gcash-mini-program';
   }
 
   return isAndroidWebview() ? 'android' : isIOSWebview() ? 'ios' : 'web';

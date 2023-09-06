@@ -29,7 +29,13 @@ import {
 import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
 import { loadOrder } from '../../redux/thunks';
 import { getReceiptNumber } from '../../redux/selector';
-import { actions as appActionCreators, getUserEmail, getUserConsumerId, getUser } from '../../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getUserEmail,
+  getUserConsumerId,
+  getUser,
+  getIsGCashMiniProgram,
+} from '../../../../redux/modules/app';
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
@@ -45,7 +51,7 @@ class ReportDriver extends Component {
   inputRefOfEmail = null;
 
   componentDidMount = async () => {
-    const { receiptNumber, loadOrder, fetchReport, user } = this.props;
+    const { receiptNumber, loadOrder, fetchReport, user, isGCashMiniProgram } = this.props;
 
     await loadOrder(receiptNumber);
 
@@ -61,8 +67,13 @@ class ReportDriver extends Component {
         }
       }
 
+      // TODO: Migrate isTNGMiniProgram to loginByAlipayMiniProgram
       if (Utils.isTNGMiniProgram()) {
         await this.props.loginByTngMiniProgram();
+      }
+
+      if (isGCashMiniProgram) {
+        await this.props.loginByAlipayMiniProgram();
       }
     }
 
@@ -481,6 +492,7 @@ export default compose(
       isSubmitButtonDisabled: getIsSubmitButtonDisabled(state),
       inputEmailIsValid: getInputEmailIsValid(state),
       user: getUser(state),
+      isGCashMiniProgram: getIsGCashMiniProgram(state),
     }),
     {
       updateInputNotes: reportDriverActionCreators.updateInputNotes,

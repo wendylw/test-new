@@ -20,6 +20,7 @@ import {
   getIsTNGMiniProgram,
   getHasLoginGuardPassed,
   getEnableCashback,
+  getIsAlipayMiniProgram,
 } from '../../../../redux/modules/app';
 import logger from '../../../../../utils/monitoring/logger';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -62,13 +63,13 @@ import {
   getPromoOrVoucherExist,
   getShouldShowRedirectLoader,
   getShouldShowPayNowButton,
-  getIsStorePayByCashOnly,
   getShouldShowSwitchButton,
   getShouldDisablePayButton,
   getShouldShowProcessingLoader,
   getIsReloadBillingByCashbackRequestPending,
   getIsReloadBillingByCashbackRequestRejected,
   getCleverTapAttributes,
+  getShouldRemoveFooter,
 } from './redux/selectors';
 import {
   getPayLaterOrderTableId as getTableNumber,
@@ -338,8 +339,10 @@ export class TableSummary extends React.Component {
       history,
       isWebview,
       isTNGMiniProgram,
+      isAlipayMiniProgram,
       loginByBeepApp,
       loginByTngMiniProgram,
+      loginByAlipayMiniProgram,
       showProcessingLoader,
       hideProcessingLoader,
     } = this.props;
@@ -349,9 +352,17 @@ export class TableSummary extends React.Component {
       return;
     }
 
+    // TODO: Migrate isTNGMiniProgram to loginByAlipayMiniProgram
     if (isTNGMiniProgram) {
       await showProcessingLoader();
       await loginByTngMiniProgram();
+      await hideProcessingLoader();
+      return;
+    }
+
+    if (isAlipayMiniProgram) {
+      await showProcessingLoader();
+      await loginByAlipayMiniProgram();
       await hideProcessingLoader();
       return;
     }
@@ -721,8 +732,7 @@ export class TableSummary extends React.Component {
       shouldShowRedirectLoader,
       shouldShowProcessingLoader,
       shouldShowPayNowButton,
-      isTNGMiniProgram,
-      isStorePayByCashOnly,
+      shouldRemoveFooter,
     } = this.props;
     const { cartContainerHeight } = this.state;
 
@@ -775,12 +785,12 @@ export class TableSummary extends React.Component {
             {this.renderPromotionItem()}
           </Billing>
         </div>
-        {isTNGMiniProgram && isStorePayByCashOnly ? (
+        {shouldRemoveFooter ? (
           <div className="table-summary__pay-by-cash-only flex flex-center padding-normal">
-            <p className="text-uppercase text-bold">{t('TnGAndPayByCashOnly')}</p>
+            <p className="text-uppercase text-bold">{t('AlipayMiniProgramAndPayByCashOnly')}</p>
           </div>
         ) : null}
-        {isTNGMiniProgram && isStorePayByCashOnly ? null : (
+        {shouldRemoveFooter ? null : (
           <footer
             ref={ref => {
               this.footerEl = ref;
@@ -857,8 +867,10 @@ TableSummary.propTypes = {
   cleverTapAttributes: PropTypes.object,
   isWebview: PropTypes.bool,
   isTNGMiniProgram: PropTypes.bool,
+  isAlipayMiniProgram: PropTypes.bool,
   loginByBeepApp: PropTypes.func,
   loginByTngMiniProgram: PropTypes.func,
+  loginByAlipayMiniProgram: PropTypes.func,
   reloadBillingByCashback: PropTypes.func,
   updateCashbackApplyStatus: PropTypes.func,
   showProcessingLoader: PropTypes.func,
@@ -868,7 +880,7 @@ TableSummary.propTypes = {
   shouldShowProcessingLoader: PropTypes.bool,
   shouldShowLoadingText: PropTypes.bool,
   shouldShowPayNowButton: PropTypes.bool,
-  isStorePayByCashOnly: PropTypes.bool,
+  shouldRemoveFooter: PropTypes.bool,
   isCashbackEnabled: PropTypes.bool,
   isCashbackApplied: PropTypes.bool,
   shouldShowSwitchButton: PropTypes.bool,
@@ -915,8 +927,10 @@ TableSummary.defaultProps = {
   cleverTapAttributes: {},
   isWebview: false,
   isTNGMiniProgram: false,
+  isAlipayMiniProgram: false,
   loginByBeepApp: () => {},
   loginByTngMiniProgram: () => {},
+  loginByAlipayMiniProgram: () => {},
   reloadBillingByCashback: () => {},
   updateCashbackApplyStatus: () => {},
   showProcessingLoader: () => {},
@@ -926,7 +940,7 @@ TableSummary.defaultProps = {
   shouldShowProcessingLoader: false,
   shouldShowLoadingText: false,
   shouldShowPayNowButton: false,
-  isStorePayByCashOnly: false,
+  shouldRemoveFooter: false,
   isCashbackEnabled: false,
   isCashbackApplied: false,
   shouldShowSwitchButton: false,
@@ -969,10 +983,11 @@ export default compose(
       cleverTapAttributes: getCleverTapAttributes(state),
       isWebview: getIsWebview(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
+      isAlipayMiniProgram: getIsAlipayMiniProgram(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
       shouldShowRedirectLoader: getShouldShowRedirectLoader(state),
       shouldShowPayNowButton: getShouldShowPayNowButton(state),
-      isStorePayByCashOnly: getIsStorePayByCashOnly(state),
+      shouldRemoveFooter: getShouldRemoveFooter(state),
       isCashbackEnabled: getEnableCashback(state),
       isCashbackApplied: getOrderApplyCashback(state),
       shouldShowSwitchButton: getShouldShowSwitchButton(state),
@@ -995,6 +1010,7 @@ export default compose(
       gotoPayment: gotoPaymentThunk,
       loginByBeepApp: appActions.loginByBeepApp,
       loginByTngMiniProgram: appActions.loginByTngMiniProgram,
+      loginByAlipayMiniProgram: appActions.loginByAlipayMiniProgram,
       reloadBillingByCashback: reloadBillingByCashbackThunk,
       updateCashbackApplyStatus: commonActionCreators.updateCashbackApplyStatus,
       showProcessingLoader: showProcessingLoaderThunk,
