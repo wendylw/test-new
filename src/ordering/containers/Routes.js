@@ -59,10 +59,6 @@ const ContactDetail = lazy(() =>
 const SavedCards = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_SCS" */ './payments/containers/SavedCards'))
 );
-// TODO: CVV will be removed, if payment & payout complete card and cardholder verification development
-const CardCvv = lazy(() =>
-  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_CVV" */ './payments/containers/SavedCards/CVV'))
-);
 const OrderDetails = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_OD" */ './order-status/containers/OrderDetails'))
 );
@@ -99,8 +95,6 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_STRIPE_PAYMENT} component={StripePayment} />
             <Route exact path={ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE} component={StripePayment} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS} component={SavedCards} />
-            {/* TODO: CVV will be removed, if payment & payout complete card and cardholder verification development */}
-            <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_CVV} component={CardCvv} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />
             <Route exact path={ROUTER_PATHS.ERROR} component={ErrorPage} />

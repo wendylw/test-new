@@ -1,6 +1,8 @@
 import _get from 'lodash/get';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import HybridHeader from '../../../../../components/HybridHeader';
 import Constants from '../../../../../utils/constants';
@@ -9,9 +11,7 @@ import prefetch from '../../../../../common/utils/prefetch-assets';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import Radio from '../../../../../components/Radio';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
-
-import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators, getUser } from '../../../../redux/modules/app';
+import { actions as appActionCreators, getUserConsumerId } from '../../../../redux/modules/app';
 import IconAddNew from '../../../../../images/icon-add-new.svg';
 import { getCardList, getSelectedPaymentCard, getIsRequestSavedCardsPending } from './redux/selectors';
 import { actions as savedCardsActions, thunks as savedCardsThunks } from './redux';
@@ -34,11 +34,16 @@ const { PAYMENT_METHOD_LABELS } = Constants;
 class SavedCards extends Component {
   willUnmount = false;
 
-  state = { processing: false };
+  constructor(props) {
+    super(props);
+    this.state = { processing: false };
+  }
 
   componentDidMount = async () => {
     try {
-      await this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+      const { initialize } = this.props;
+
+      await initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
 
       const {
         paymentProvider,
@@ -91,11 +96,6 @@ class SavedCards extends Component {
     } catch (error) {
       // TODO: Handle this error in Payment 2.0
       console.error('Ordering SavedCards initialize:', error?.message || '');
-    } finally {
-      // Resolve React Warning: perform a set state after component unmounted
-      if (this.willUnmount) {
-        return;
-      }
     }
   };
 
@@ -104,11 +104,11 @@ class SavedCards extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { user, selectedPaymentCard } = this.props;
+    const { userConsumerId, selectedPaymentCard } = this.props;
     const cardToken = _get(selectedPaymentCard, 'cardToken', null);
 
     return {
-      userId: user.consumerId,
+      userId: userConsumerId,
       cardToken,
       paymentProvider: Constants.PAYMENT_PROVIDERS.STRIPE,
       paymentOption: Constants.PAYMENT_API_PAYMENT_OPTIONS.TOKENIZATION,
@@ -116,16 +116,18 @@ class SavedCards extends Component {
   };
 
   loadCardList = async () => {
-    const { user: userInfo, paymentProvider, fetchSavedCards } = this.props;
+    const { userConsumerId, paymentProvider, fetchSavedCards } = this.props;
 
     return fetchSavedCards({
-      userId: userInfo.consumerId,
+      userId: userConsumerId,
       paymentName: paymentProvider,
     });
   };
 
   setPaymentCard = card => {
-    this.props.setPaymentCard(card);
+    const { setPaymentCard } = this.props;
+
+    setPaymentCard(card);
   };
 
   beforeCreateOrder = () => {
@@ -166,6 +168,7 @@ class SavedCards extends Component {
               <li
                 key={card.cardToken}
                 className="ordering-payment__card flex flex-middle flex-space-between padding-small border__bottom-divider"
+                data-test-id="ordering.payments.saved-cards.card-item"
                 onClick={() => this.setPaymentCard(card)}
               >
                 <div className="ordering-payment__item-content">
@@ -177,9 +180,9 @@ class SavedCards extends Component {
                     />
                   </figure>
                   <div className="ordering-card-list__description text-middle">
-                    <label className="ordering-payment__label text-omit__single-line text-size-big text-weight-bolder">
+                    <span className="ordering-payment__label text-omit__single-line text-size-big text-weight-bolder">
                       {getCardLabel(cardType)}
-                    </label>
+                    </span>
                     <p className="ordering-payment__prompt">{t('CardEndingIn', { cardEnding: maskedNumber })}</p>
                   </div>
                 </div>
@@ -194,6 +197,7 @@ class SavedCards extends Component {
           })}
           <li
             className="ordering-payment__card flex flex-middle flex-space-between padding-small border__bottom-divider"
+            data-test-id="ordering.payments.saved-cards.add-card-btn"
             onClick={async () => {
               history.push({
                 pathname: getCreditCardFormPathname(paymentProvider, true),
@@ -206,9 +210,9 @@ class SavedCards extends Component {
                 <img src={IconAddNew} alt="add new icon" />
               </div>
               <div className="ordering-payment__description text-middle">
-                <label className="ordering-payment__label text-omit__single-line text-size-big text-weight-bolder">
+                <span className="ordering-payment__label text-omit__single-line text-size-big text-weight-bolder">
                   {t('AddCreditCard')}
-                </label>
+                </span>
               </div>
             </div>
           </li>
@@ -223,13 +227,15 @@ class SavedCards extends Component {
     const cardToken = _get(selectedPaymentCard, 'cardToken', null);
 
     return (
-      <section className={`ordering-payment flex flex-column`}>
+      <section className="ordering-payment flex flex-column">
         <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
-          isPage={true}
+          isPage
           title={t('PayViaCard')}
-          headerRef={ref => (this.headerEl = ref)}
+          headerRef={ref => {
+            this.headerEl = ref;
+          }}
           navFunc={() => {
             history.goBack();
           }}
@@ -255,7 +261,9 @@ class SavedCards extends Component {
           {this.renderCardList()}
         </div>
         <footer
-          ref={ref => (this.footerEl = ref)}
+          ref={ref => {
+            this.footerEl = ref;
+          }}
           className="ordering-payment__footer flex__shrink-fixed footer padding-top-bottom-small padding-left-right-normal"
         >
           <CreateOrderButton
@@ -266,7 +274,7 @@ class SavedCards extends Component {
             total={total}
             disabled={!cardToken || processing || isRequestSavedCardsPending}
             paymentExtraData={this.getPaymentEntryRequestData()}
-            validCreateOrder={true}
+            validCreateOrder
             beforeCreateOrder={this.beforeCreateOrder}
             afterCreateOrder={this.afterCreateOrder}
             processing={processing || isRequestSavedCardsPending}
@@ -283,15 +291,52 @@ class SavedCards extends Component {
     );
   }
 }
+
 SavedCards.displayName = 'SavedCards';
+
+SavedCards.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  cardList: PropTypes.array,
+  selectedPaymentCard: PropTypes.object,
+  /* eslint-enable */
+  total: PropTypes.number,
+  receiptNumber: PropTypes.string,
+  supportSaveCard: PropTypes.bool,
+  userConsumerId: PropTypes.string,
+  paymentProvider: PropTypes.string,
+  isInitPaymentFailed: PropTypes.bool,
+  isRequestSavedCardsPending: PropTypes.bool,
+  initPaymentErrorMessage: PropTypes.string,
+  initPaymentRequestErrorCategory: PropTypes.string,
+  initialize: PropTypes.func,
+  setPaymentCard: PropTypes.func,
+  fetchSavedCards: PropTypes.func,
+};
+
+SavedCards.defaultProps = {
+  total: 0,
+  cardList: [],
+  paymentProvider: '',
+  receiptNumber: null,
+  userConsumerId: null,
+  supportSaveCard: false,
+  selectedPaymentCard: null,
+  isInitPaymentFailed: false,
+  isRequestSavedCardsPending: false,
+  initPaymentErrorMessage: '',
+  initPaymentRequestErrorCategory: '',
+  initialize: () => {},
+  setPaymentCard: () => {},
+  fetchSavedCards: () => {},
+};
 
 export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => ({
       total: getTotal(state),
-      user: getUser(state),
       cardList: getCardList(state),
+      userConsumerId: getUserConsumerId(state),
       selectedPaymentCard: getSelectedPaymentCard(state),
       supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
       paymentProvider: getSelectedPaymentProvider(state),

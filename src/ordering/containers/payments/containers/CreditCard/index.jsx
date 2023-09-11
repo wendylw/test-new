@@ -1,6 +1,9 @@
 /* eslint-disable jsx-a11y/alt-text */
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { bindActionCreators, compose } from 'redux';
 import HybridHeader from '../../../../../components/HybridHeader';
 import Loader from '../../components/Loader';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
@@ -11,8 +14,6 @@ import Url from '../../../../../utils/url';
 import Utils from '../../../../../utils/utils';
 import config from '../../../../../config';
 
-import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
@@ -41,45 +42,32 @@ import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitor
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class CreditCard extends Component {
-  static propTypes = {};
-
   form = null;
+
   cardNumberEl = null;
+
   prevCardNumber = '';
+
   order = {};
 
-  state = {
-    payNowLoading: false,
-    hasScriptLoaded: false,
-    cardNumberSelectionStart: 0,
-    card: {},
-    validDate: '',
-    invalidCardInfoFields: [],
-    cardInfoError: {
-      keys: [],
-      messages: [],
-    },
-    cardHolderNameError: {
-      key: null,
-      message: null,
-    },
-  };
-
-  loadScriptSucceedHandler = () => {
-    window.newrelic?.addPageAction('third-party-lib.load-script-succeeded', {
-      scriptName: '2c2p',
-    });
-    this.setState({ hasScriptLoaded: true });
-  };
-
-  loadScriptFailedHandler = err => {
-    delete window.Intercom;
-    window.newrelic?.addPageAction('third-party-lib.load-script-failed', {
-      scriptName: '2c2p',
-      error: err?.message,
-    });
-    this.setState({ hasScriptLoaded: false });
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      payNowLoading: false,
+      hasScriptLoaded: false,
+      card: {},
+      validDate: '',
+      invalidCardInfoFields: [],
+      cardInfoError: {
+        keys: [],
+        messages: [],
+      },
+      cardHolderNameError: {
+        key: null,
+        message: null,
+      },
+    };
+  }
 
   async componentDidMount() {
     const script = document.createElement('script');
@@ -89,9 +77,9 @@ class CreditCard extends Component {
     script.onerror = this.loadFailedHandler;
     document.body.appendChild(script);
 
-    this.setState({ domLoaded: true });
+    const { initialize } = this.props;
 
-    await this.props.initialize(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+    await initialize(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
 
     const { isInitPaymentFailed, initPaymentErrorMessage, initPaymentRequestErrorCategory } = this.props;
 
@@ -112,6 +100,45 @@ class CreditCard extends Component {
     }
 
     prefetch(['ORD_PMT'], ['OrderingPayment']);
+  }
+
+  handleChangeCardNumber(e) {
+    let cursor = e.target.selectionStart;
+
+    if (e.target.value.length % 5 === 1 && e.target.selectionStart === e.target.value.length - 1) {
+      cursor += 1;
+    }
+
+    this.setState(
+      {
+        card: creditCardDetector(e.target.value),
+      },
+      () => {
+        if (this.cardNumberEl !== null) {
+          this.cardNumberEl.selectionEnd = cursor;
+        }
+      }
+    );
+  }
+
+  handleChangeValidaDate(e) {
+    const { validDate } = this.state;
+    const isSpace = !validDate.replace(e.target.value, '').trim().length;
+
+    this.setState({
+      validDate: Utils.DateFormatter(e.target.value, e.target.value.length < validDate.length && isSpace),
+    });
+  }
+
+  handleChangeCardHolderName(e) {
+    const { card } = this.state;
+
+    this.setState({
+      card: {
+        ...card,
+        cardholderName: e.target.value,
+      },
+    });
   }
 
   getPaymentEntryRequestData = () => {
@@ -158,7 +185,7 @@ class CreditCard extends Component {
       }
     });
 
-    let rules = {
+    const rules = {
       required: {
         message: t('RequiredMessage'),
       },
@@ -206,78 +233,21 @@ class CreditCard extends Component {
     };
   }
 
-  validCardInfo() {
-    let cardInfoResults = {};
-    const invalidCardInfoFields = ['cardNumber', 'validDate', 'cvv'].filter(id => {
-      const cardInfoItemResult = FormValidate.validate(id, this.getCardInfoValidationOpts(id, []));
-
-      if (!cardInfoItemResult.isValid) {
-        if (Object.keys(cardInfoResults).includes(cardInfoItemResult.validateKey)) {
-          cardInfoResults[cardInfoItemResult.validateKey].push(id);
-        } else {
-          cardInfoResults[cardInfoItemResult.validateKey] = [id];
-        }
-
-        return cardInfoItemResult.validateKey !== FormValidate.errorNames.required ? id : null;
-      }
-
-      return false;
+  loadScriptSucceedHandler = () => {
+    window.newrelic?.addPageAction('third-party-lib.load-script-succeeded', {
+      scriptName: '2c2p',
     });
-    const cardInfoError = {
-      messages: {},
-    };
+    this.setState({ hasScriptLoaded: true });
+  };
 
-    cardInfoError.keys = Object.keys(cardInfoResults).filter(key => {
-      cardInfoResults[key].forEach(id => {
-        cardInfoError.messages[key] = FormValidate.getErrorMessage(
-          id,
-          this.getCardInfoValidationOpts(id, cardInfoResults.fixedLength || [])
-        );
-      });
-
-      if (key === FormValidate.errorNames.required) {
-        return null;
-      }
-
-      return key;
+  loadScriptFailedHandler = err => {
+    delete window.Intercom;
+    window.newrelic?.addPageAction('third-party-lib.load-script-failed', {
+      scriptName: '2c2p',
+      error: err?.message,
     });
-
-    this.setState({
-      cardInfoError,
-      invalidCardInfoFields,
-    });
-
-    return cardInfoResults.required;
-  }
-
-  validateForm() {
-    const cardHolderNameOptions = this.getCardHolderNameValidationOpts();
-    const holderNameResult = FormValidate.validate('cardholderName', cardHolderNameOptions);
-    const { invalidCardInfoFields, cardInfoError } = this.state;
-    let newCardHolderNameError = {
-      key: null,
-      message: null,
-    };
-    let newCardInfoError = cardInfoError;
-
-    if (this.validCardInfo() && this.validCardInfo().length) {
-      newCardInfoError.keys.push(FormValidate.errorNames.required);
-      newCardInfoError.messages.required = this.getCardInfoValidationOpts().rules.required.message;
-    }
-
-    if (!holderNameResult.isValid) {
-      Object.assign(newCardHolderNameError, {
-        key: holderNameResult.validateKey,
-        message: FormValidate.getErrorMessage('cardholderName', cardHolderNameOptions),
-      });
-    }
-
-    this.setState({
-      cardHolderNameError: newCardHolderNameError,
-      cardInfoError: newCardInfoError,
-      invalidCardInfoFields: Array.from([].concat(invalidCardInfoFields, this.validCardInfo() || [])),
-    });
-  }
+    this.setState({ hasScriptLoaded: false });
+  };
 
   isFromComplete = () => {
     const { cardInfoError, cardHolderNameError } = this.state;
@@ -329,7 +299,7 @@ class CreditCard extends Component {
       return;
     }
 
-    window.My2c2p.getEncrypted('bank-2c2p-form', function(encryptedData, errCode) {
+    window.My2c2p.getEncrypted('bank-2c2p-form', (encryptedData, errCode) => {
       if (!errCode) {
         window.encryptedCardData = encryptedData;
       } else {
@@ -371,8 +341,6 @@ class CreditCard extends Component {
         cardInfoError,
         invalidCardInfoFields: ['cvv'],
       });
-
-      return;
     }
   };
 
@@ -421,55 +389,86 @@ class CreditCard extends Component {
     }
   };
 
-  handleChangeCardNumber(e) {
-    let cursor = e.target.selectionStart;
+  validCardInfo() {
+    const cardInfoResults = {};
+    const invalidCardInfoFields = ['cardNumber', 'validDate', 'cvv'].filter(id => {
+      const cardInfoItemResult = FormValidate.validate(id, this.getCardInfoValidationOpts(id, []));
 
-    if (e.target.value.length % 5 === 1 && e.target.selectionStart === e.target.value.length - 1) {
-      cursor += 1;
+      if (!cardInfoItemResult.isValid) {
+        if (Object.keys(cardInfoResults).includes(cardInfoItemResult.validateKey)) {
+          cardInfoResults[cardInfoItemResult.validateKey].push(id);
+        } else {
+          cardInfoResults[cardInfoItemResult.validateKey] = [id];
+        }
+
+        return cardInfoItemResult.validateKey !== FormValidate.errorNames.required ? id : null;
+      }
+
+      return false;
+    });
+    const cardInfoError = {
+      messages: {},
+    };
+
+    cardInfoError.keys = Object.keys(cardInfoResults).filter(key => {
+      cardInfoResults[key].forEach(id => {
+        cardInfoError.messages[key] = FormValidate.getErrorMessage(
+          id,
+          this.getCardInfoValidationOpts(id, cardInfoResults.fixedLength || [])
+        );
+      });
+
+      if (key === FormValidate.errorNames.required) {
+        return null;
+      }
+
+      return key;
+    });
+
+    this.setState({
+      cardInfoError,
+      invalidCardInfoFields,
+    });
+
+    return cardInfoResults.required;
+  }
+
+  validateForm() {
+    const cardHolderNameOptions = this.getCardHolderNameValidationOpts();
+    const holderNameResult = FormValidate.validate('cardholderName', cardHolderNameOptions);
+    const { invalidCardInfoFields, cardInfoError } = this.state;
+    const newCardHolderNameError = {
+      key: null,
+      message: null,
+    };
+    const newCardInfoError = cardInfoError;
+
+    if (this.validCardInfo() && this.validCardInfo().length) {
+      newCardInfoError.keys.push(FormValidate.errorNames.required);
+      newCardInfoError.messages.required = this.getCardInfoValidationOpts().rules.required.message;
     }
 
-    this.setState(
-      {
-        card: creditCardDetector(e.target.value),
-      },
-      () => {
-        if (this.cardNumberEl !== null) {
-          this.cardNumberEl.selectionEnd = cursor;
-        }
-      }
-    );
-  }
-
-  handleChangeValidaDate(e) {
-    const { validDate } = this.state;
-    const isSpace = !validDate.replace(e.target.value, '').trim().length;
+    if (!holderNameResult.isValid) {
+      Object.assign(newCardHolderNameError, {
+        key: holderNameResult.validateKey,
+        message: FormValidate.getErrorMessage('cardholderName', cardHolderNameOptions),
+      });
+    }
 
     this.setState({
-      validDate: Utils.DateFormatter(e.target.value, e.target.value.length < validDate.length && isSpace),
-    });
-  }
-
-  handleChangeCardHolderName(e) {
-    const { card } = this.state;
-
-    this.setState({
-      card: {
-        ...card,
-        cardholderName: e.target.value,
-      },
+      cardHolderNameError: newCardHolderNameError,
+      cardInfoError: newCardInfoError,
+      invalidCardInfoFields: Array.from([].concat(invalidCardInfoFields, this.validCardInfo() || [])),
     });
   }
 
   renderCreditBrands() {
     const { card } = this.state;
+    const { merchantCountry } = this.props;
 
     return (
       <div className="payment-credit-card__card-type-container flex flex-middle">
-        <PaymentCardBrands
-          iconClassName={'payment-bank__card-type-icon'}
-          country={this.props.merchantCountry}
-          brand={card.brand}
-        />
+        <PaymentCardBrands iconClassName="payment-bank__card-type-icon" country={merchantCountry} brand={card.brand} />
       </div>
     );
   }
@@ -486,7 +485,7 @@ class CreditCard extends Component {
         </div>
         <div className="padding-left-right-normal">
           <div className="flex flex-middle flex-space-between padding-top-bottom-normal">
-            <label className="text-size-bigger text-weight-bolder">{t('CardInformation')}</label>
+            <span className="text-size-bigger text-weight-bolder">{t('CardInformation')}</span>
             {cardInfoError.keys.includes(FormValidate.errorNames.required) ? (
               <span className="form__error-message text-weight-bolder text-uppercase">
                 {cardInfoError.messages.required}
@@ -500,7 +499,9 @@ class CreditCard extends Component {
               }`}
             >
               <input
-                ref={ref => (this.cardNumberEl = ref)}
+                ref={ref => {
+                  this.cardNumberEl = ref;
+                }}
                 id="cardNumber"
                 className="payment-credit-card__input form__input text-size-biggest"
                 data-test-id="ordering.payment.credit-card.card-number"
@@ -562,7 +563,7 @@ class CreditCard extends Component {
         </div>
         <div className="padding-normal">
           <div className="flex flex-middle flex-space-between padding-top-bottom-normal">
-            <label className="text-size-bigger text-weight-bolder">{t('NameOnCard')}</label>
+            <span className="text-size-bigger text-weight-bolder">{t('NameOnCard')}</span>
             {cardHolderNameError.key === FormValidate.errorNames.required ? (
               <span className="form__error-message text-weight-bolder text-uppercase">
                 {cardHolderNameError.message}
@@ -588,10 +589,10 @@ class CreditCard extends Component {
           ) : null}
         </div>
 
-        <input type="hidden" data-encrypt="cardnumber" value={cardNumber}></input>
-        <input type="hidden" data-encrypt="month" value={(validDate || '').substring(0, 2)}></input>
-        <input type="hidden" data-encrypt="year" value={`20${(validDate || '').substring(5, 7)}`}></input>
-        <input type="hidden" name="encryptedCardInfo" value=""></input>
+        <input type="hidden" data-encrypt="cardnumber" value={cardNumber} />
+        <input type="hidden" data-encrypt="month" value={(validDate || '').substring(0, 2)} />
+        <input type="hidden" data-encrypt="year" value={`20${(validDate || '').substring(5, 7)}`} />
+        <input type="hidden" name="encryptedCardInfo" value="" />
       </form>
     );
   }
@@ -606,11 +607,13 @@ class CreditCard extends Component {
         data-test-id="ordering.payment.credit-card.container"
       >
         <HybridHeader
-          headerRef={ref => (this.headerEl = ref)}
+          headerRef={ref => {
+            this.headerEl = ref;
+          }}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-test-id="ordering.payment.credit-card.header"
-          isPage={true}
+          isPage
           title={t('PayViaCard')}
           navFunc={() => {
             CleverTap.pushEvent('Card Details - click back arrow');
@@ -630,7 +633,9 @@ class CreditCard extends Component {
         </div>
 
         <footer
-          ref={ref => (this.footerEl = ref)}
+          ref={ref => {
+            this.footerEl = ref;
+          }}
           style={{ position: 'sticky' }}
           className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
         >
@@ -639,7 +644,6 @@ class CreditCard extends Component {
             orderId={receiptNumber}
             total={total}
             className="margin-top-bottom-smaller text-uppercase"
-            data-test-id="payMoney"
             data-test-id="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}
             beforeCreateOrder={this.handleBeforeCreateOrder}
@@ -666,27 +670,53 @@ class CreditCard extends Component {
     );
   }
 }
+
 CreditCard.displayName = 'CreditCard';
+
+CreditCard.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  match: PropTypes.object,
+  currentPaymentOption: PropTypes.object,
+  cleverTapAttributes: PropTypes.object,
+  /* eslint-enable */
+  total: PropTypes.number,
+  receiptNumber: PropTypes.string,
+  merchantCountry: PropTypes.string,
+  isInitPaymentFailed: PropTypes.bool,
+  initPaymentErrorMessage: PropTypes.string,
+  initPaymentRequestErrorCategory: PropTypes.string,
+  initialize: PropTypes.func,
+};
+
+CreditCard.defaultProps = {
+  total: 0,
+  match: {},
+  receiptNumber: null,
+  merchantCountry: null,
+  isInitPaymentFailed: false,
+  cleverTapAttributes: {},
+  currentPaymentOption: {},
+  initPaymentErrorMessage: '',
+  initPaymentRequestErrorCategory: '',
+  initialize: () => {},
+};
 
 export default compose(
   withTranslation(['OrderingPayment']),
   connect(
-    state => {
-      return {
-        currentPaymentOption: getSelectedPaymentOption(state),
-
-        business: getBusiness(state),
-        businessInfo: getBusinessInfo(state),
-        total: getTotal(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        merchantCountry: getMerchantCountry(state),
-        cleverTapAttributes: getCleverTapAttributes(state),
-        receiptNumber: getReceiptNumber(state),
-        initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
-        initPaymentRequestErrorCategory: getInitPaymentRequestErrorCategory(state),
-        isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
-      };
-    },
+    state => ({
+      currentPaymentOption: getSelectedPaymentOption(state),
+      business: getBusiness(state),
+      businessInfo: getBusinessInfo(state),
+      total: getTotal(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      merchantCountry: getMerchantCountry(state),
+      cleverTapAttributes: getCleverTapAttributes(state),
+      receiptNumber: getReceiptNumber(state),
+      initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+      initPaymentRequestErrorCategory: getInitPaymentRequestErrorCategory(state),
+      isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
+    }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       initialize: bindActionCreators(initializeThunkCreator, dispatch),

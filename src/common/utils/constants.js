@@ -42,8 +42,6 @@ export const PATH_NAME_MAPPING = {
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   ORDERING_ONLINE_SAVED_CARDS: '/payment/cards',
-  // TODO: CVV will be removed, if payment & payout complete card and cardholder verification development
-  ORDERING_ONLINE_CVV: '/payment/cvv',
   MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
   ADDRESS_LIST: '/addressList',

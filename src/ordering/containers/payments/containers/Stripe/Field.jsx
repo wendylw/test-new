@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { extractDataAttributes } from '../../../../../common/utils';
 
 const Field = ({
@@ -30,6 +31,7 @@ const Field = ({
     <div className={`form__group ${error || showRequiredLabel ? 'error' : ''}`}>
       <input
         className={inputClassName}
+        data-test-id="ordering.payment.stripe.input"
         id={id}
         type={type}
         placeholder={placeholder}
@@ -38,6 +40,7 @@ const Field = ({
         value={value}
         onChange={onChange}
         onBlur={onBlur}
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...extractDataAttributes(restProps)}
       />
     </div>
@@ -45,5 +48,37 @@ const Field = ({
 );
 
 Field.displayName = 'Field';
+
+Field.propTypes = {
+  id: PropTypes.string,
+  error: PropTypes.string,
+  type: PropTypes.string,
+  label: PropTypes.string,
+  value: PropTypes.string,
+  required: PropTypes.bool,
+  showRequiredLabel: PropTypes.bool,
+  placeholder: PropTypes.string,
+  autoComplete: PropTypes.string,
+  formClassName: PropTypes.string,
+  inputClassName: PropTypes.string,
+  onBlur: PropTypes.func,
+  onChange: PropTypes.func,
+};
+
+Field.defaultProps = {
+  id: '',
+  type: 'text',
+  label: '',
+  value: '',
+  error: '',
+  required: false,
+  placeholder: '',
+  autoComplete: 'off',
+  formClassName: '',
+  inputClassName: '',
+  showRequiredLabel: false,
+  onBlur: () => {},
+  onChange: () => {},
+};
 
 export default Field;

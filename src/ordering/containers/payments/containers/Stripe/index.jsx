@@ -1,16 +1,17 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
+import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants from '../../../../../utils/constants';
-import { bindActionCreators, compose } from 'redux';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
-  getUser,
+  getUserConsumerId,
   getBusinessInfo,
 } from '../../../../redux/modules/app';
 import {
@@ -35,7 +36,9 @@ const { PAYMENT_PROVIDERS, ROUTER_PATHS, PAYMENT_METHOD_LABELS } = Constants;
 // React Stripe.js reference: https://stripe.com/docs/stripe-js/react
 class Stripe extends Component {
   async componentDidMount() {
-    await this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+    const { initialize } = this.props;
+
+    await initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
 
     const { isInitPaymentFailed, initPaymentErrorMessage, initPaymentRequestErrorCategory } = this.props;
 
@@ -59,13 +62,13 @@ class Stripe extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { user } = this.props;
+    const { userConsumerId } = this.props;
 
     return {
       paymentProvider: PAYMENT_PROVIDERS.STRIPE,
       paymentOption: null,
       paymentMethodId: '',
-      userId: user.consumerId,
+      userId: userConsumerId,
     };
   };
 
@@ -101,28 +104,59 @@ class Stripe extends Component {
     );
   }
 }
+
 Stripe.displayName = 'Stripe';
+
+Stripe.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  match: PropTypes.object,
+  cleverTapAttributes: PropTypes.object,
+  /* eslint-enable */
+  total: PropTypes.number,
+  stripePromise: PropTypes.instanceOf(Promise),
+  receiptNumber: PropTypes.string,
+  supportSaveCard: PropTypes.bool,
+  userConsumerId: PropTypes.string,
+  merchantCountry: PropTypes.string,
+  isInitPaymentFailed: PropTypes.bool,
+  initPaymentErrorMessage: PropTypes.string,
+  initPaymentRequestErrorCategory: PropTypes.string,
+  initialize: PropTypes.func,
+};
+
+Stripe.defaultProps = {
+  total: 0,
+  match: {},
+  userConsumerId: '',
+  merchantCountry: '',
+  receiptNumber: null,
+  stripePromise: null,
+  supportSaveCard: false,
+  cleverTapAttributes: {},
+  isInitPaymentFailed: false,
+  initPaymentErrorMessage: '',
+  initPaymentRequestErrorCategory: '',
+  initialize: () => {},
+};
 
 export default compose(
   withTranslation(['OrderingPayment']),
   connect(
-    state => {
-      return {
-        business: getBusiness(state),
-        businessInfo: getBusinessInfo(state),
-        total: getTotal(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        merchantCountry: getMerchantCountry(state),
-        user: getUser(state),
-        paymentProvider: getSelectedPaymentProvider(state),
-        supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
-        cleverTapAttributes: getCleverTapAttributes(state),
-        receiptNumber: getReceiptNumber(state),
-        initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
-        initPaymentRequestErrorCategory: getInitPaymentRequestErrorCategory(state),
-        isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
-      };
-    },
+    state => ({
+      business: getBusiness(state),
+      businessInfo: getBusinessInfo(state),
+      total: getTotal(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      merchantCountry: getMerchantCountry(state),
+      userConsumerId: getUserConsumerId(state),
+      paymentProvider: getSelectedPaymentProvider(state),
+      supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
+      cleverTapAttributes: getCleverTapAttributes(state),
+      receiptNumber: getReceiptNumber(state),
+      initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+      initPaymentRequestErrorCategory: getInitPaymentRequestErrorCategory(state),
+      isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
+    }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       initialize: bindActionCreators(initializeThunkCreator, dispatch),

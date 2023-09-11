@@ -1,5 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { getSupportCreditCardBrands } from '../../utils';
+import { VENDOR_STRIPE } from '../../utils/constants';
 import paymentVisaImage from '../../../../../images/payment-visa.svg';
 import paymentMasterImage from '../../../../../images/payment-mastercard.svg';
 import paymentJCBImage from '../../../../../images/payment-JCB.svg';
@@ -8,7 +10,7 @@ import Constants from '../../../../../utils/constants';
 const { CREDIT_CARD_BRANDS } = Constants;
 
 const mapBrandToStandard = (brand, vendor) => {
-  if (vendor === PaymentCardBrands.VENDOR_STRIPE) {
+  if (vendor === VENDOR_STRIPE) {
     // Referer: https://stripe.com/docs/js/element/events/on_change?type=cardElement
     // Card brand. Can be American Express, Diners Club, Discover, JCB, MasterCard, UnionPay, Visa, or Unknown.
     // The card brand of the card number being entered.
@@ -76,9 +78,20 @@ const PaymentCardBrands = ({ country, brand: originalBrand, vendor = '' }) => {
     </div>
   );
 };
+
 PaymentCardBrands.displayName = 'PaymentCardBrands';
 /* eslint-enable jsx-a11y/alt-text */
 
-PaymentCardBrands.VENDOR_STRIPE = 'Stripe';
+PaymentCardBrands.propTypes = {
+  brand: PropTypes.string,
+  vendor: PropTypes.string,
+  country: PropTypes.string,
+};
+
+PaymentCardBrands.defaultProps = {
+  brand: '',
+  vendor: '',
+  country: '',
+};
 
 export default PaymentCardBrands;

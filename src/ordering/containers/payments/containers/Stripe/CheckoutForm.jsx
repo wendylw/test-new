@@ -1,10 +1,11 @@
+import PropTypes from 'prop-types';
 import React, { useRef, useState, useCallback, useEffect } from 'react';
+import { CardNumberElement, CardExpiryElement, CardCvcElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import PaymentCardBrands from '../../components/PaymentCardBrands';
 import { getPaymentName } from '../../utils';
 import CVCCardImage from '../../../../../images/cvc-card.png';
 import SaveCardSwitch from '../../components/CreditCard/SaveCardSwitch';
 import CreditCardSecureInfo from '../../components/CreditCard/CreditCardSecureInfo';
-import { CardNumberElement, CardExpiryElement, CardCvcElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import Loader from '../../components/Loader';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
@@ -13,6 +14,7 @@ import CleverTap from '../../../../../utils/clevertap';
 import Field from './Field';
 import ErrorMessage from './ErrorMessage';
 import Constants from '../../../../../utils/constants';
+import { VENDOR_STRIPE } from '../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
 import logger from '../../../../../utils/monitoring/logger';
@@ -155,7 +157,7 @@ function CheckoutForm({
 
       logger.log('Ordering_Payment_CreatePaymentMethodByStripeSucceeded');
       setPaymentMethod(payload.paymentMethod);
-    } catch (error) {
+    } catch (err) {
       logger.error(
         'Ordering_CreditCard_PayOrderFailed',
         {
@@ -169,7 +171,7 @@ function CheckoutForm({
         }
       );
 
-      setError(error);
+      setError(err);
       setProcessing(false);
     }
   }, [cleverTapAttributes, country, cardComplete, stripe, elements, cardHolderName.value, saveCard]);
@@ -211,7 +213,7 @@ function CheckoutForm({
         className="flex-middle"
         contentClassName="flex-middle"
         data-test-id="ordering.payment.stripe.header"
-        isPage={true}
+        isPage
         title={title}
         navFunc={() => {
           CleverTap.pushEvent('Card Details - click back arrow');
@@ -241,7 +243,7 @@ function CheckoutForm({
           </div>
           <div className="padding-left-right-normal">
             <div className="flex flex-middle flex-space-between padding-top-bottom-small">
-              <label className="text-size-big text-weight-bolder">{t('CardInformation')}</label>
+              <span className="text-size-big text-weight-bolder">{t('CardInformation')}</span>
               {showCardInfoRequiredLabel ? (
                 <span className="form__error-message text-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
               ) : null}
@@ -272,24 +274,25 @@ function CheckoutForm({
                     },
                   },
                 }}
+                data-test-id="ordering.payment.stripe.card-number"
                 onChange={event => {
-                  setCardNumber(cardNumber => ({
-                    ...cardNumber,
+                  setCardNumber(number => ({
+                    ...number,
                     ...event,
                   }));
                   setError(null);
                 }}
-                onReady={e => {
+                onReady={() => {
                   setCardNumberDom(true);
                 }}
                 onBlur={() => {
-                  setCardNumber(cardNumber => ({
-                    ...cardNumber,
+                  setCardNumber(number => ({
+                    ...number,
                     isTouched: true,
                   }));
                 }}
               />
-              <PaymentCardBrands country={country} brand={cardNumber.brand} vendor={PaymentCardBrands.VENDOR_STRIPE} />
+              <PaymentCardBrands country={country} brand={cardNumber.brand} vendor={VENDOR_STRIPE} />
             </div>
 
             <div className="flex flex-middle">
@@ -321,19 +324,20 @@ function CheckoutForm({
                       },
                     },
                   }}
+                  data-test-id="ordering.payment.stripe.valid-date"
                   onChange={e => {
-                    setCardExpiry(cardExpiry => ({
-                      ...cardExpiry,
+                    setCardExpiry(expiry => ({
+                      ...expiry,
                       ...e,
                     }));
                   }}
-                  onReady={e => {
+                  onReady={() => {
                     CleverTap.pushEvent('Stripe - loaded', { timeStamp: new Date().getTime() });
                     setCardExpiryDom(true);
                   }}
                   onBlur={() => {
-                    setCardExpiry(cardExpiry => ({
-                      ...cardExpiry,
+                    setCardExpiry(expiry => ({
+                      ...expiry,
                       isTouched: true,
                     }));
                   }}
@@ -369,18 +373,19 @@ function CheckoutForm({
                       },
                     },
                   }}
+                  data-test-id="ordering.payment.stripe.cvc-card"
                   onChange={e => {
-                    setCardCvc(cardCvc => ({
-                      ...cardCvc,
+                    setCardCvc(cvc => ({
+                      ...cvc,
                       ...e,
                     }));
                   }}
-                  onReady={e => {
+                  onReady={() => {
                     setCardCVCDom(true);
                   }}
                   onBlur={() => {
-                    setCardCvc(cardCvc => ({
-                      ...cardCvc,
+                    setCardCvc(cvc => ({
+                      ...cvc,
                       isTouched: true,
                     }));
                   }}
@@ -403,13 +408,13 @@ function CheckoutForm({
             </div>
           </div>
 
-          <ErrorMessage errors={errors}></ErrorMessage>
+          <ErrorMessage errors={errors} />
 
           <Field
             t={t}
             label={t('NameOnCard')}
             formClassName="payment-credit-card__card-holder-name padding-normal margin-top-bottom-small"
-            inputClassName={`payment-credit-card__input form__input padding-left-right-normal text-size-biggest`}
+            inputClassName="payment-credit-card__input form__input padding-left-right-normal text-size-biggest"
             id="name"
             type="text"
             required
@@ -421,16 +426,16 @@ function CheckoutForm({
             onChange={e => {
               const value = e.target.value || '';
 
-              setCardHolderName(cardHolderName => ({
-                ...cardHolderName,
+              setCardHolderName(name => ({
+                ...name,
                 value,
                 empty: value.length === 0,
                 error: null,
               }));
             }}
             onBlur={() => {
-              setCardHolderName(cardHolderName => ({
-                ...cardHolderName,
+              setCardHolderName(name => ({
+                ...name,
                 isTouched: true,
               }));
             }}
@@ -440,6 +445,7 @@ function CheckoutForm({
             <div className="padding-left-right-normal">
               <SaveCardSwitch
                 value={saveCard}
+                data-test-id="ordering.payment.stripe.save-card.switch"
                 onChange={v => {
                   CleverTap.pushEvent('saved cards - click saved card');
                   setSaveCard(v);
@@ -449,7 +455,7 @@ function CheckoutForm({
             </div>
           )}
 
-          <Loader className={'loading-cover opacity'} loaded={isReady} />
+          <Loader className="loading-cover opacity" loaded={isReady} />
         </div>
       </div>
       <footer
@@ -467,7 +473,7 @@ function CheckoutForm({
           beforeCreateOrder={handleBeforeCreateOrder}
           validCreateOrder={!!paymentMethod}
           afterCreateOrder={handleAfterCreateOrder}
-          paymentName={'Stripe'}
+          paymentName="Stripe"
           paymentExtraData={finalPaymentExtraData}
           processing={processing}
           loaderText={t('Processing')}
@@ -486,6 +492,31 @@ function CheckoutForm({
     </section>
   );
 }
+
 CheckoutForm.displayName = 'CheckoutForm';
+
+CheckoutForm.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  match: PropTypes.object,
+  paymentExtraData: PropTypes.object,
+  cleverTapAttributes: PropTypes.object,
+  /* eslint-enable */
+  total: PropTypes.number,
+  country: PropTypes.string,
+  isAddCardPath: PropTypes.bool,
+  supportSaveCard: PropTypes.bool,
+  receiptNumber: PropTypes.string,
+};
+
+CheckoutForm.defaultProps = {
+  match: {},
+  total: 0,
+  country: '',
+  isAddCardPath: false,
+  receiptNumber: null,
+  supportSaveCard: false,
+  paymentExtraData: {},
+  cleverTapAttributes: {},
+};
 
 export default CheckoutForm;

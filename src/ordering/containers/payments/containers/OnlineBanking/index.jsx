@@ -1,5 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../../../components/HybridHeader';
 import Loader from '../../components/Loader';
@@ -7,15 +10,7 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import { IconKeyArrowDown } from '../../../../../components/Icons';
 import Constants from '../../../../../utils/constants';
-
-import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
-import {
-  actions as appActionCreators,
-  getOnlineStoreInfo,
-  getBusiness,
-  getBusinessInfo,
-} from '../../../../redux/modules/app';
+import { getOnlineStoreInfo, getBusiness, getBusinessInfo } from '../../../../redux/modules/app';
 import {
   getLoaderVisibility,
   getSelectedPaymentOption,
@@ -40,9 +35,12 @@ import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitor
 class OnlineBanking extends Component {
   order = {};
 
-  state = {
-    payNowLoading: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      payNowLoading: false,
+    };
+  }
 
   async componentDidMount() {
     const { initialize } = this.props;
@@ -141,19 +139,17 @@ class OnlineBanking extends Component {
         onChange={this.handleSelectBank}
         data-test-id="ordering.payment.online-banking.bank-select"
       >
-        {onlineBankingList.map(banking => {
-          return (
-            <option
-              className="text-size-small"
-              disabled={!banking.available}
-              key={`banking-${banking.agentCode}`}
-              value={banking.agentCode}
-            >
-              {banking.name}
-              {banking.available ? '' : ` (${t('TemporarilyUnavailable')})`}
-            </option>
-          );
-        })}
+        {onlineBankingList.map(banking => (
+          <option
+            className="text-size-small"
+            disabled={!banking.available}
+            key={`banking-${banking.agentCode}`}
+            value={banking.agentCode}
+          >
+            {banking.name}
+            {banking.available ? '' : ` (${t('TemporarilyUnavailable')})`}
+          </option>
+        ))}
       </select>
     );
   }
@@ -181,7 +177,7 @@ class OnlineBanking extends Component {
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-test-id="ordering.payment.online-banking.header"
-          isPage={true}
+          isPage
           title={t('PayViaOnlineBanking')}
           navFunc={() => {
             CleverTap.pushEvent('online banking - click back arrow');
@@ -197,7 +193,7 @@ class OnlineBanking extends Component {
           <form id="bank-2c2p-form" className="form">
             <div className="padding-normal">
               <div className="padding-top-bottom-normal">
-                <label className="text-size-bigger text-weight-bolder text-capitalize">{t('SelectABank')}</label>
+                <span className="text-size-bigger text-weight-bolder text-capitalize">{t('SelectABank')}</span>
               </div>
               <div className="ordering-banking__group form__group">
                 <div
@@ -222,7 +218,6 @@ class OnlineBanking extends Component {
             orderId={receiptNumber}
             total={total}
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
-            data-test-id="payMoney"
             data-test-id="ordering.payment.online-banking.pay-btn"
             disabled={payNowLoading}
             beforeCreateOrder={() => {
@@ -253,36 +248,67 @@ class OnlineBanking extends Component {
           </CreateOrderButton>
         </footer>
 
-        <Loader className={'loading-cover opacity'} loaded={!loaderVisibility} />
+        <Loader className="loading-cover opacity" loaded={!loaderVisibility} />
       </section>
     );
   }
 }
+
 OnlineBanking.displayName = 'OnlineBanking';
+
+OnlineBanking.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  match: PropTypes.object,
+  onlineBankingList: PropTypes.array,
+  currentPaymentOption: PropTypes.object,
+  currentOnlineBanking: PropTypes.object,
+  cleverTapAttributes: PropTypes.object,
+  /* eslint-enable */
+  total: PropTypes.number,
+  receiptNumber: PropTypes.string,
+  loaderVisibility: PropTypes.bool,
+  isInitPaymentFailed: PropTypes.bool,
+  initPaymentErrorMessage: PropTypes.string,
+  initPaymentRequestErrorCategory: PropTypes.string,
+  initialize: PropTypes.func,
+  updateBankingSelected: PropTypes.func,
+};
+
+OnlineBanking.defaultProps = {
+  total: 0,
+  match: {},
+  receiptNumber: null,
+  onlineBankingList: [],
+  loaderVisibility: false,
+  currentPaymentOption: {},
+  currentOnlineBanking: {},
+  cleverTapAttributes: {},
+  isInitPaymentFailed: false,
+  initPaymentErrorMessage: '',
+  initPaymentRequestErrorCategory: '',
+  initialize: () => {},
+  updateBankingSelected: () => {},
+};
 
 export default compose(
   withTranslation(['OrderingPayment']),
   connect(
-    state => {
-      return {
-        onlineBankingList: getOnlineBankList(state),
-        loaderVisibility: getLoaderVisibility(state),
-        currentOnlineBanking: getSelectedOnlineBanking(state),
-        currentPaymentOption: getSelectedPaymentOption(state),
-
-        business: getBusiness(state),
-        businessInfo: getBusinessInfo(state),
-        total: getTotal(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        cleverTapAttributes: getCleverTapAttributes(state),
-        receiptNumber: getReceiptNumber(state),
-        initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
-        initPaymentRequestErrorCategory: getInitPaymentRequestErrorCategory(state),
-        isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
-      };
-    },
+    state => ({
+      onlineBankingList: getOnlineBankList(state),
+      loaderVisibility: getLoaderVisibility(state),
+      currentOnlineBanking: getSelectedOnlineBanking(state),
+      currentPaymentOption: getSelectedPaymentOption(state),
+      business: getBusiness(state),
+      businessInfo: getBusinessInfo(state),
+      total: getTotal(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      cleverTapAttributes: getCleverTapAttributes(state),
+      receiptNumber: getReceiptNumber(state),
+      initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+      initPaymentRequestErrorCategory: getInitPaymentRequestErrorCategory(state),
+      isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
+    }),
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
       initialize: bindActionCreators(initializeThunkCreator, dispatch),
       updateBankingSelected: bindActionCreators(actions.updateBankingSelected, dispatch),
     })
