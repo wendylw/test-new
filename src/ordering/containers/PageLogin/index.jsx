@@ -84,7 +84,7 @@ class PageLogin extends React.Component {
       this.visitNextPage();
     }
 
-    if (shouldShowGuestOption && currImageStyle?.height && prevImageStyle?.height !== imageHeight) {
+    if (shouldShowGuestOption && currImageStyle?.height && prevImageStyle?.height !== `${imageHeight}px`) {
       this.updateImageHeight(imageHeight);
     }
   }
