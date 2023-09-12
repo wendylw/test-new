@@ -135,8 +135,12 @@ const StoreRedemption = () => {
             Please scan with
           </h2>
           <div className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl">
-            <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
-            <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+            <a className="tw-inline-flex" href="https://dl.beepit.com/kVmT">
+              <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
+            </a>
+            <a href={`https://onelink.tngd.my/8mmV/BeepTNG?qrValue=${encodeURIComponent(window.location.href)}`}>
+              <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+            </a>
           </div>
         </section>
       </div>,
