@@ -7,8 +7,6 @@ const legacyFiles = [
   'src/ordering/containers/Promotion/components/PromoList/PromoList.js',
   'src/ordering/containers/Promotion/index.js',
   'src/ordering/containers/Promotion/utils.js',
-  'src/ordering/containers/Routes.js',
-  'src/ordering/containers/StoreList/index.js',
   'src/ordering/redux/__fixtures__/app.fixture.js',
   'src/ordering/redux/__fixtures__/cart.fixture.js',
   'src/ordering/redux/__fixtures__/common.fixture.js',

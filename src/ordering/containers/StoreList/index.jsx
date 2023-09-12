@@ -1,14 +1,15 @@
+import qs from 'qs';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
+import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import _get from 'lodash/get';
 import Constants from '../../../utils/constants';
 import prefetch from '../../../common/utils/prefetch-assets';
-
-import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
 import HybridHeader from '../../../components/HybridHeader';
 import Image from '../../../components/Image';
-import { IconChecked } from '../../../components/Icons';
+import { IconChecked, IconLocation } from '../../../components/Icons';
 import { withAddressInfo } from '../Location/withAddressInfo';
 import {
   actions as appActionCreators,
@@ -20,80 +21,108 @@ import {
 } from '../../redux/modules/app';
 import { getIfAddressInfoExists, getAddressCoords } from '../../../redux/modules/address/selectors';
 import Utils from '../../../utils/utils';
-import { IconLocation } from '../../../components/Icons';
 import Tag from '../../../components/Tag';
-import qs from 'qs';
 import './OrderingStores.scss';
 import { checkStoreIsOpened } from '../../../utils/store-utils';
 
 const { ADDRESS_RANGE } = Constants;
-const StoreListItem = props => (
+
+const StoreListItem = ({ t, isClose, store, storeId, select, isDeliveryType, openingHours }) => (
   <li
     className={`flex flex-middle flex-space-between padding-top-bottom-normal margin-left-right-normal border__bottom-divider ${
-      props.isClose ? 'ordering-stores__item-disabled' : ''
+      isClose ? 'ordering-stores__item-disabled' : ''
     }`}
-    onClick={() => props.select(props.store)}
+    onClick={() => select(store)}
     data-test-id="ordering.store-list.store-item"
   >
     <summary
       className={`${
-        props.storeId === props.store.id ? 'ordering-stores__summary--selected' : 'ordering-stores__summary'
+        storeId === store.id ? 'ordering-stores__summary--selected' : 'ordering-stores__summary'
       } padding-left-right-small`}
     >
       <div className="flex flex-middle">
         <h3 className="ordering-stores__title margin-top-bottom-small text-size-big text-weight-bolder text-omit__single-line">
-          {props.store.name}
+          {store.name}
         </h3>
-        {props.isClose ? (
+        {isClose ? (
           <Tag
-            text={props.t('Closed')}
+            text={t('Closed')}
             className="tag__small tag__error margin-left-right-small text-middle text-size-small"
           />
         ) : null}
       </div>
       <p className="margin-top-bottom-small text-size-small text-opacity">
-        {Utils.getValidAddress(props.store, ADDRESS_RANGE.COUNTRY)}
+        {Utils.getValidAddress(store, ADDRESS_RANGE.COUNTRY)}
       </p>
-      {props.isDeliveryType && (
+      {isDeliveryType && (
         <ul className="store-info">
           <li className="store-info__item text-middle">
             <IconLocation className="icon icon__smaller text-middle" />
             <span className="store-info__text text-size-smaller text-middle">
-              {props.t('DistanceText', { distance: props.store.distance })}
+              {t('DistanceText', { distance: store.distance })}
             </span>
           </li>
         </ul>
       )}
-      {props.openingHours ? (
+      {openingHours ? (
         <p className="margin-top-bottom-small text-size-small">
-          {props.t('openingHours')}: {props.openingHours}
+          {t('openingHours')}: {openingHours}
         </p>
       ) : null}
     </summary>
 
-    {props.storeId === props.store.id && (
+    {storeId === store.id && (
       <IconChecked className="icon icon__primary flex__shrink-fixed margin-left-right-smaller" />
     )}
   </li>
 );
+
 StoreListItem.displayName = 'StoreListItem';
+
+StoreListItem.propTypes = {
+  isClose: PropTypes.bool,
+  storeId: PropTypes.string,
+  select: PropTypes.func,
+  isDeliveryType: PropTypes.bool,
+  store: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    distance: PropTypes.number,
+  }),
+  // eslint-disable-next-line react/forbid-prop-types
+  openingHours: PropTypes.array,
+};
+
+StoreListItem.defaultProps = {
+  isClose: false,
+  storeId: null,
+  isDeliveryType: false,
+  select: () => {},
+  store: {
+    id: '',
+    name: '',
+    distance: 0,
+  },
+  openingHours: [],
+};
 
 class StoreList extends Component {
   constructor(props) {
     super(props);
 
-    const { savedStoreId } = this.props;
+    const { savedStoreId, history } = this.props;
+    const search = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     this.state = {
-      storeid: savedStoreId,
-      search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
+      storeid: search.storeid || savedStoreId,
+      search,
       storeList: [],
     };
-    this.state.storeid = this.state.search.storeid || savedStoreId;
   }
 
   async componentDidMount() {
-    const { addressCoords } = this.props;
+    const { addressCoords, appActions } = this.props;
+    const { search } = this.state;
 
     const address = addressCoords && {
       location: {
@@ -102,9 +131,7 @@ class StoreList extends Component {
       },
     };
 
-    await this.props.appActions.loadCoreStores(
-      this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY ? address : ''
-    );
+    await appActions.loadCoreStores(search.type === Constants.DELIVERY_METHOD.DELIVERY ? address : '');
 
     this.getStoreList();
     prefetch(['ORD_LAD'], ['OrderingDelivery']);
@@ -112,10 +139,10 @@ class StoreList extends Component {
 
   getStoreList = () => {
     let stores = [];
+    const { search } = this.state;
     const { allStore, businessUTCOffset } = this.props;
     stores = allStore.filter(
-      item =>
-        item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
+      item => item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(search.type.toLowerCase()) !== -1
     );
 
     const currentTime = new Date();
@@ -137,29 +164,30 @@ class StoreList extends Component {
         storeid: store.id,
       },
       async () => {
-        const { history, location } = this.props;
+        const { search } = this.state;
+        const { callbackUrl } = search;
+        const { history, location, appActions } = this.props;
         const { state } = location || {};
         const { from } = state || {};
-        let search = history.location.search;
 
-        if (this.state.search.callbackUrl || from) {
-          search = search.replace(/&?storeid=[^&]*/, '');
+        let historySearch = history.location.search;
 
-          this.props.history.replace({
+        if (callbackUrl || from) {
+          historySearch = historySearch.replace(/&?storeid=[^&]*/, '');
+
+          history.replace({
             pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-            search: `${search}&${store.id ? 'storeid=' + store.id : ''}`,
+            search: `${historySearch}&${store.id ? `storeid=${store.id}` : ''}`,
             state: from ? { from } : null,
           });
         } else {
-          await this.props.appActions.getStoreHashData(store.id);
+          await appActions.getStoreHashData(store.id);
+
+          const { storeHash } = this.props;
+
           window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
             Constants.ROUTER_PATHS.ORDERING_HOME
-          }?h=${this.props.storeHash}&type=${this.state.search.type ||
-            Constants.DELIVERY_METHOD.DELIVERY}&from=${from}`;
-          // this.props.history.replace({
-          //   pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-          //   search: `h=${this.props.storeHash}&type=${this.state.search.type || Constants.DELIVERY_METHOD.DELIVERY}`,
-          // });
+          }?h=${storeHash}&type=${search.type || Constants.DELIVERY_METHOD.DELIVERY}&from=${from}`;
         }
       }
     );
@@ -188,7 +216,7 @@ class StoreList extends Component {
 
   render() {
     const { t, history, onlineStoreInfo } = this.props;
-    const { storeList } = this.state;
+    const { storeid, search, storeList } = this.state;
 
     return (
       (onlineStoreInfo && (
@@ -196,7 +224,7 @@ class StoreList extends Component {
           <HybridHeader
             className="flex-middle"
             contentClassName="flex-middle"
-            isPage={true}
+            isPage
             data-test-id="ordering.store-list.header"
             title={t('SelectStore')}
             navFunc={() => {
@@ -213,7 +241,7 @@ class StoreList extends Component {
                 </h2>
                 <p className="margin-top-bottom-small text-size-smaller text-opacity">{onlineStoreInfo.businessType}</p>
                 <p className="margin-top-bottom-small text-size-small">
-                  {this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY
+                  {search.type === Constants.DELIVERY_METHOD.DELIVERY
                     ? `${storeList.length} outlets near you`
                     : `Total ${storeList.length} outlets`}
                 </p>
@@ -224,11 +252,11 @@ class StoreList extends Component {
                 <StoreListItem
                   store={item}
                   openingHours={this.getOpeningHours(item)}
-                  storeId={this.state.storeid}
+                  storeId={storeid}
                   select={this.selectStore}
                   key={item.id}
-                  t={this.props.t}
-                  isDeliveryType={this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY}
+                  t={t}
+                  isDeliveryType={search.type === Constants.DELIVERY_METHOD.DELIVERY}
                   isClose={item.isClose}
                 />
               ))}
@@ -240,7 +268,49 @@ class StoreList extends Component {
     );
   }
 }
+
 StoreList.displayName = 'StoreList';
+
+StoreList.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  location: PropTypes.object,
+  allStore: PropTypes.arrayOf(PropTypes.object),
+  /* eslint-enable */
+  storeHash: PropTypes.string,
+  savedStoreId: PropTypes.string,
+  onlineStoreInfo: PropTypes.shape({
+    logo: PropTypes.string,
+    storeName: PropTypes.string,
+    businessType: PropTypes.string,
+  }),
+  addressCoords: PropTypes.shape({
+    lat: PropTypes.number,
+    lng: PropTypes.number,
+  }),
+  appActions: PropTypes.shape({
+    loadCoreStores: PropTypes.func,
+    getStoreHashData: PropTypes.func,
+  }),
+  businessUTCOffset: PropTypes.number,
+};
+
+StoreList.defaultProps = {
+  allStore: [],
+  location: null,
+  storeHash: null,
+  savedStoreId: null,
+  addressCoords: null,
+  businessUTCOffset: 480,
+  onlineStoreInfo: {
+    logo: '',
+    storeName: '',
+    businessType: '',
+  },
+  appActions: {
+    loadCoreStores: () => {},
+    getStoreHashData: () => {},
+  },
+};
 
 export default compose(
   withTranslation(),
