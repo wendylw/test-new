@@ -4,7 +4,8 @@ import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
-import { isWebview, isTNGMiniProgram } from '../../../common/utils';
+import { isWebview, isTNGMiniProgram, judgeClient } from '../../../common/utils';
+import { CLIENTS } from '../../../common/utils/constants';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
 import { getUserCountry } from '../../redux/modules/app';
@@ -105,6 +106,8 @@ StoreRedemptionNative.displayName = 'StoreRedemptionNative';
 
 const StoreRedemption = () => {
   const dispatch = useDispatch();
+  const client = judgeClient();
+  const desktopClients = [CLIENTS.PC, CLIENTS.MAC];
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
@@ -135,7 +138,12 @@ const StoreRedemption = () => {
             Please scan with
           </h2>
           <div className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl">
-            <a className="tw-inline-flex" href="https://dl.beepit.com/kVmT">
+            <a
+              className="tw-inline-flex"
+              rel="noreferrer"
+              href="https://dl.beepit.com/kVmT"
+              target={desktopClients.includes(client) ? '_blank' : ''}
+            >
               <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
             </a>
             <a href={`https://onelink.tngd.my/8mmV/BeepTNG?qrValue=${encodeURIComponent(window.location.href)}`}>
