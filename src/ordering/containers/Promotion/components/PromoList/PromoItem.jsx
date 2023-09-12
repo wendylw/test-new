@@ -38,7 +38,7 @@ class PromoItem extends Component {
       case PROMOTIONS_TYPES.FREE_SHIPPING:
         return t('PromoTitleFreeShipping');
       default:
-        t('Voucher');
+        return t('Voucher');
     }
   };
 
@@ -78,6 +78,7 @@ class PromoItem extends Component {
           promo.expired || promo.invalidForWeb ? 'disabled' : ''
         } ${isSelected ? 'selected' : ''}`}
         key={promo.id}
+        data-test-id="ordering.promotion.promo-item"
         onClick={() => (!promo.expired && !promo.invalidForWeb ? onSelectPromo(promo) : {})}
       >
         <IconVoucherTicket className="ordering-promo-item__icon-ticket icon icon__smaller icon__white margin-top-bottom-small margin-left-right-smaller" />
@@ -110,10 +111,12 @@ class PromoItem extends Component {
 PromoItem.displayName = 'PromoItem';
 
 PromoItem.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
   promo: PropTypes.object,
+  onlineStoreInfo: PropTypes.object,
+  /* eslint-disable */
   isSelected: PropTypes.bool,
   onSelectPromo: PropTypes.func,
-  onlineStoreInfo: PropTypes.object,
 };
 
 PromoItem.defaultProps = {

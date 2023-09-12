@@ -1,18 +1,19 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import _debounce from 'lodash/debounce';
+import { withTranslation } from 'react-i18next';
+import { bindActionCreators, compose } from 'redux';
 import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 import { IconWrappedClose } from '../../../components/Icons';
 import HybridHeader from '../../../components/HybridHeader';
 import PromoList from './components/PromoList/PromoList';
-import { bindActionCreators, compose } from 'redux';
-import { getIsFetchLoginStatusComplete } from '../../redux/modules/app';
 import {
   actions as promotionActionCreators,
   getPromoCode,
   getPromoErrorCode,
-  isAppliedSuccess,
-  isAppliedError,
+  getIsAppliedSuccess,
+  getIsAppliedError,
   isInProcess,
   getVoucherList,
   getFoundPromotion,
@@ -38,8 +39,8 @@ import {
   getOnlineStoreInfo,
   getStoreInfoForCleverTap,
   getEnablePayLater,
+  getIsFetchLoginStatusComplete,
 } from '../../redux/modules/app';
-import { withTranslation } from 'react-i18next';
 import { getErrorMessageByPromoErrorCode } from './utils';
 import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
@@ -49,23 +50,18 @@ import './OrderingPromotion.scss';
 class Promotion extends Component {
   promoCodeInput = null;
 
+  debounceSearchPromo = _debounce(() => {
+    const { promotionActions } = this.props;
+
+    promotionActions.getPromoInfo();
+  }, 700);
+
   constructor(props) {
     super(props);
     this.state = {
       containerHeight: this.getContainerHeight(),
     };
   }
-
-  gotoLoginPage = () => {
-    // TODO: will update login to HOC or hook
-    const { history } = this.props;
-
-    history.push({
-      pathname: PATH_NAME_MAPPING.ORDERING_LOGIN,
-      search: window.location.search,
-      state: { shouldGoBack: true },
-    });
-  };
 
   componentDidMount() {
     const { isFetchLoginStatusComplete, isUserLogin } = this.props;
@@ -87,17 +83,29 @@ class Promotion extends Component {
   };
 
   componentWillUnmount() {
-    this.props.promotionActions.resetPromotion();
-    this.props.promoActions.init();
+    const { promoActions, promotionActions } = this.props;
+
+    promotionActions.resetPromotion();
+    promoActions.init();
     this.removeResizeEventHandler();
   }
 
-  getContainerHeight = () => {
-    return Utils.containerHeight({
+  gotoLoginPage = () => {
+    // TODO: will update login to HOC or hook
+    const { history } = this.props;
+
+    history.push({
+      pathname: PATH_NAME_MAPPING.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
+  };
+
+  getContainerHeight = () =>
+    Utils.containerHeight({
       headerEls: [this.headerEl],
       footerEls: [this.footerEl],
     });
-  };
 
   handleResizeEvent = () => {
     this.setState({ containerHeight: this.getContainerHeight() });
@@ -112,7 +120,9 @@ class Promotion extends Component {
   };
 
   handleCleanClick = () => {
-    this.props.promotionActions.updatePromoCode('');
+    const { promotionActions } = this.props;
+
+    promotionActions.updatePromoCode('');
     this.promoCodeInput && this.promoCodeInput.focus();
   };
 
@@ -121,43 +131,55 @@ class Promotion extends Component {
   };
 
   gotoCartOrTableSummaryPage = () => {
-    this.props.history.goBack();
+    const { history } = this.props;
+
+    history.goBack();
   };
 
-  debounceSearchPromo = _debounce(() => {
-    this.props.promotionActions.getPromoInfo();
-  }, 700);
-
   handleInputChange = e => {
+    const { promotionActions } = this.props;
     const code = e.target.value.trim();
-    this.props.promotionActions.updatePromoCode(code);
+
+    promotionActions.updatePromoCode(code);
     if (!code) return;
 
     this.debounceSearchPromo();
   };
 
   handleApplyPromotion = async () => {
-    const { enablePayLater, applyPromo, selectPromoOrVoucherPayLater, applyVoucherPayLater } = this.props;
+    const {
+      inProcess,
+      promotionActions,
+      enablePayLater,
+      applyPromo,
+      selectPromoOrVoucherPayLater,
+      applyPromoOrVoucherPendingStatus,
+      applyVoucherPayLater,
+    } = this.props;
     logger.log('Ordering_Promotion_ApplyPromotion');
 
-    if (this.props.inProcess || this.props.applyPromoOrVoucherPendingStatus) {
-      return false;
+    if (inProcess || applyPromoOrVoucherPendingStatus) {
+      return;
     }
 
     !enablePayLater
-      ? await this.props.promotionActions.applyPromo()
+      ? await promotionActions.applyPromo()
       : (selectPromoOrVoucherPayLater && (await applyPromo())) || (await applyVoucherPayLater());
 
-    if (this.props.isAppliedSuccess || this.props.isAppliedSuccessPayLater.success) {
+    const { isAppliedSuccess, isAppliedSuccessPayLater, promoCode } = this.props;
+
+    if (isAppliedSuccess || isAppliedSuccessPayLater) {
       CleverTap.pushEvent('Cart Page - apply promo', {
-        'promo/voucher applied': this.props.promoCode,
+        'promo/voucher applied': promoCode,
       });
       this.gotoCartOrTableSummaryPage();
     }
   };
 
   handleSearchVoucher = searchingVoucher => {
-    this.props.promotionActions.setSearchMode(searchingVoucher);
+    const { promotionActions } = this.props;
+
+    promotionActions.setSearchMode(searchingVoucher);
   };
 
   getMessage = () => {
@@ -175,15 +197,15 @@ class Promotion extends Component {
       }
       const { code, extraInfo, errorMessage } = appliedResult;
       return getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo);
-    } else {
-      const { code, extraInfo, errorMessage } = promoErrorCodePayLater;
-
-      if (!code || isAppliedSuccessPayLater.success) {
-        return '';
-      }
-
-      return getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo);
     }
+
+    const { code, extraInfo, errorMessage } = promoErrorCodePayLater;
+
+    if (!code || isAppliedSuccessPayLater) {
+      return '';
+    }
+
+    return getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo);
   };
 
   render() {
@@ -219,19 +241,18 @@ class Promotion extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           data-test-id="ordering.promotion.header"
-          isPage={true}
+          isPage
           title={t('MyVouchersAndPromos')}
           titleAlignment="center"
           navFunc={this.handleClickBack}
-          headerRef={ref => (this.headerEl = ref)}
-        ></HybridHeader>
+          headerRef={ref => {
+            this.headerEl = ref;
+          }}
+        />
         <div className="ordering-promotion__container padding-top-bottom-normal" style={{ height: containerHeight }}>
           <div className="ordering-promotion__input-container padding-small">
             <div
-              className={
-                'form__group flex flex-middle flex-space-between margin-top-bottom-smaller margin-left-right-small ' +
-                inputContainerStatus
-              }
+              className={`form__group flex flex-middle flex-space-between margin-top-bottom-smaller margin-left-right-small ${inputContainerStatus}`}
             >
               <input
                 ref={ref => {
@@ -260,16 +281,18 @@ class Promotion extends Component {
                 </button>
               ) : null}
             </div>
-            {Boolean(this.getMessage()) ? (
+            {!this.getMessage() ? null : (
               <p className="form__error-message margin-small text-weight-bolder">{this.getMessage()}</p>
-            ) : null}
+            )}
           </div>
           <PromoList isPayLater={enablePayLater} />
         </div>
 
         <footer
           className="footer flex__shrink-fixed padding-small flex flex-middle flex-space-between"
-          ref={ref => (this.footerEl = ref)}
+          ref={ref => {
+            this.footerEl = ref;
+          }}
         >
           <button
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
@@ -284,35 +307,95 @@ class Promotion extends Component {
     );
   }
 }
+
 Promotion.displayName = 'Promotion';
+
+Promotion.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  onlineStoreInfo: PropTypes.object,
+  appliedResult: PropTypes.object,
+  selectedPromo: PropTypes.object,
+  promoErrorCodePayLater: PropTypes.object,
+  /* eslint-enable */
+  inProcess: PropTypes.bool,
+  isUserLogin: PropTypes.bool,
+  promoCode: PropTypes.string,
+  enablePayLater: PropTypes.bool,
+  isAppliedError: PropTypes.bool,
+  isAppliedSuccess: PropTypes.bool,
+  isAppliedSuccessPayLater: PropTypes.bool,
+  isFetchLoginStatusComplete: PropTypes.bool,
+  selectPromoOrVoucherPayLater: PropTypes.bool,
+  applyPromoOrVoucherPendingStatus: PropTypes.bool,
+  promoActions: PropTypes.shape({
+    init: PropTypes.func,
+  }),
+  promotionActions: PropTypes.shape({
+    applyPromo: PropTypes.func,
+    getPromoInfo: PropTypes.func,
+    setSearchMode: PropTypes.func,
+    updatePromoCode: PropTypes.func,
+    resetPromotion: PropTypes.func,
+  }),
+  applyPromo: PropTypes.func,
+  applyVoucherPayLater: PropTypes.func,
+};
+
+Promotion.defaultProps = {
+  promoCode: '',
+  inProcess: false,
+  isUserLogin: false,
+  appliedResult: null,
+  selectedPromo: {},
+  onlineStoreInfo: {},
+  enablePayLater: false,
+  isAppliedError: false,
+  isAppliedSuccess: false,
+  promoErrorCodePayLater: null,
+  isAppliedSuccessPayLater: false,
+  isFetchLoginStatusComplete: false,
+  selectPromoOrVoucherPayLater: false,
+  applyPromoOrVoucherPendingStatus: false,
+  promoActions: {
+    init: () => {},
+  },
+  promotionActions: {
+    applyPromo: () => {},
+    getPromoInfo: () => {},
+    setSearchMode: () => {},
+    updatePromoCode: () => {},
+    resetPromotion: () => {},
+  },
+  applyPromo: () => {},
+  applyVoucherPayLater: () => {},
+};
+
 export default compose(
   withTranslation(['OrderingPromotion']),
   connect(
-    state => {
-      return {
-        promoCode: getPromoCode(state),
-        errorCode: getPromoErrorCode(state),
-        isAppliedSuccess: isAppliedSuccess(state),
-        isAppliedSuccessPayLater: getIsAppliedSuccessPayLater(state),
-        isAppliedError: isAppliedError(state),
-        inProcess: isInProcess(state),
-        voucherList: getVoucherList(state),
-        user: getUser(state),
-        isUserLogin: getUser(state).isLogin,
-        foundPromo: getFoundPromotion(state),
-        searchMode: isPromoSearchMode(state),
-        hasSearchedForPromo: userHasSearchedForPromo(state),
-        selectedPromo: getSelectedPromo(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        appliedResult: getAppliedResult(state),
-        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-        enablePayLater: getEnablePayLater(state),
-        promoErrorCodePayLater: getPromoErrorCodePayLater(state),
-        selectPromoOrVoucherPayLater: getSelectPromoOrVoucherPayLater(state),
-        applyPromoOrVoucherPendingStatus: getApplyPromoOrVoucherPendingStatus(state),
-        isFetchLoginStatusComplete: getIsFetchLoginStatusComplete(state),
-      };
-    },
+    state => ({
+      promoCode: getPromoCode(state),
+      errorCode: getPromoErrorCode(state),
+      isAppliedSuccess: getIsAppliedSuccess(state),
+      isAppliedSuccessPayLater: getIsAppliedSuccessPayLater(state),
+      isAppliedError: getIsAppliedError(state),
+      inProcess: isInProcess(state),
+      voucherList: getVoucherList(state),
+      user: getUser(state),
+      isUserLogin: getUser(state).isLogin,
+      foundPromo: getFoundPromotion(state),
+      searchMode: isPromoSearchMode(state),
+      hasSearchedForPromo: userHasSearchedForPromo(state),
+      selectedPromo: getSelectedPromo(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      appliedResult: getAppliedResult(state),
+      storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      enablePayLater: getEnablePayLater(state),
+      promoErrorCodePayLater: getPromoErrorCodePayLater(state),
+      selectPromoOrVoucherPayLater: getSelectPromoOrVoucherPayLater(state),
+      applyPromoOrVoucherPendingStatus: getApplyPromoOrVoucherPendingStatus(state),
+      isFetchLoginStatusComplete: getIsFetchLoginStatusComplete(state),
+    }),
     dispatch => ({
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),

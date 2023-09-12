@@ -3,10 +3,6 @@ rulesDirPlugin.RULES_DIR = 'scripts/eslint-rules';
 
 // We will progressively remove files from this list
 const legacyFiles = [
-  'src/ordering/containers/Promotion/components/PromoList/PromoItem.js',
-  'src/ordering/containers/Promotion/components/PromoList/PromoList.js',
-  'src/ordering/containers/Promotion/index.js',
-  'src/ordering/containers/Promotion/utils.js',
   'src/ordering/redux/__fixtures__/app.fixture.js',
   'src/ordering/redux/__fixtures__/cart.fixture.js',
   'src/ordering/redux/__fixtures__/common.fixture.js',

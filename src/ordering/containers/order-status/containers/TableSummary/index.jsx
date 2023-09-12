@@ -844,7 +844,7 @@ TableSummary.propTypes = {
   clearQueryOrdersAndStatus: PropTypes.func,
   thankYouPageUrl: PropTypes.string,
   resetCartSubmission: PropTypes.func,
-  orderBillingPromo: PropTypes.string,
+  orderBillingPromo: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   loadOrders: PropTypes.func,
   removePromo: PropTypes.func,
   oderPromoDiscount: PropTypes.number,

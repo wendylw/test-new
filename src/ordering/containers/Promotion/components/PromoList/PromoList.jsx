@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -40,9 +41,9 @@ class PromoList extends Component {
   }
 
   renderPromoList = (promoList, title) => {
-    if (!promoList.length) return;
+    if (!promoList.length) return null;
 
-    const { selectedPromo, onlineStoreInfo, storeInfoForCleverTap } = this.props;
+    const { selectedPromo, onlineStoreInfo, promotionActions, storeInfoForCleverTap } = this.props;
 
     return (
       <div className="ordering-promotion-list__container padding-top-bottom-smaller margin-top-bottom-smaller">
@@ -55,7 +56,7 @@ class PromoList extends Component {
               isSelected={selectedPromo.id === promo.id}
               onSelectPromo={() => {
                 CleverTap.pushEvent('Cart Page - select voucher', storeInfoForCleverTap);
-                this.props.promotionActions.selectPromo(promo);
+                promotionActions.selectPromo(promo);
               }}
               onlineStoreInfo={onlineStoreInfo}
             />
@@ -70,10 +71,10 @@ class PromoList extends Component {
     const { t } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         {this.renderPromoList(availablePromos, t('YourVouchers'))}
         {this.renderPromoList(unavailablePromos, t('InapplicableVouchers'))}
-      </React.Fragment>
+      </>
     );
   };
 
@@ -133,23 +134,54 @@ class PromoList extends Component {
     return this.renderNotSearchMode();
   }
 }
+
 PromoList.displayName = 'PromoList';
+
+PromoList.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  foundPromo: PropTypes.object,
+  voucherList: PropTypes.object,
+  selectedPromo: PropTypes.object,
+  onlineStoreInfo: PropTypes.object,
+  storeInfoForCleverTap: PropTypes.object,
+  /* eslint-enable */
+  searchMode: PropTypes.bool,
+  isUserLogin: PropTypes.bool,
+  hasSearchedForPromo: PropTypes.bool,
+  promotionActions: PropTypes.shape({
+    selectPromo: PropTypes.func,
+    fetchConsumerVoucherList: PropTypes.func,
+  }),
+};
+
+PromoList.defaultProps = {
+  searchMode: false,
+  isUserLogin: false,
+  foundPromo: {},
+  voucherList: {},
+  selectedPromo: {},
+  onlineStoreInfo: {},
+  hasSearchedForPromo: false,
+  storeInfoForCleverTap: null,
+  promotionActions: {
+    selectPromo: () => {},
+    fetchConsumerVoucherList: () => {},
+  },
+};
 
 export default compose(
   withTranslation(['OrderingPromotion']),
   connect(
-    state => {
-      return {
-        voucherList: getVoucherList(state),
-        foundPromo: getFoundPromotion(state),
-        searchMode: isPromoSearchMode(state),
-        hasSearchedForPromo: userHasSearchedForPromo(state),
-        selectedPromo: getSelectedPromo(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-        isUserLogin: getUserIsLogin(state),
-      };
-    },
+    state => ({
+      voucherList: getVoucherList(state),
+      foundPromo: getFoundPromotion(state),
+      searchMode: isPromoSearchMode(state),
+      hasSearchedForPromo: userHasSearchedForPromo(state),
+      selectedPromo: getSelectedPromo(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      isUserLogin: getUserIsLogin(state),
+    }),
     dispatch => ({
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),

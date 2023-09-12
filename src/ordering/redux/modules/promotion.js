@@ -351,11 +351,11 @@ export function getAppliedResult(state) {
   return _get(state.promotion, 'appliedResult', null);
 }
 
-export function isAppliedSuccess(state) {
+export function getIsAppliedSuccess(state) {
   return _get(state.promotion, 'appliedResult.success', false);
 }
 
-export function isAppliedError(state) {
+export function getIsAppliedError(state) {
   return _get(state.promotion, 'appliedResult.success', false);
 }
 
