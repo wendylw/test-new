@@ -23,7 +23,7 @@ import {
 } from '../../../../redux/modules/app';
 import logger from '../../../../../utils/monitoring/logger';
 import prefetch from '../../../../../common/utils/prefetch-assets';
-import { actions as cartSubmissionActions } from '../../../../redux/cart/index';
+import { actions as cartSubmissionActions } from '../../../../redux/modules/cart';
 import {
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,

@@ -1,15 +1,15 @@
 /* eslint-disable import/no-cycle */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
-import Utils from '../../../utils/utils';
-import Constants from '../../../utils/constants';
-import { API_REQUEST_STATUS } from '../../../common/utils/constants';
-import { alert } from '../../../common/feedback';
-import { getBusinessUTCOffset } from '../modules/app';
+import Utils from '../../../../utils/utils';
+import Constants from '../../../../utils/constants';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import { alert } from '../../../../common/feedback';
+import { getBusinessUTCOffset } from '../app';
 import { CART_SUBMISSION_STATUS } from './constants';
 import { getCartVersion, getCartSource, getCartItems } from './selectors';
 import { actions as cartActionCreators } from '.';
-import Poller from '../../../common/utils/poller';
+import Poller from '../../../../common/utils/poller';
 import {
   fetchCart,
   postCartItems,
@@ -19,8 +19,8 @@ import {
   fetchCartSubmissionStatus,
   fetchCartStatus,
 } from './api-request';
-import logger from '../../../utils/monitoring/logger';
-import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
+import logger from '../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../utils/monitoring/constants';
 
 const TIMEOUT_CART_SUBMISSION_TIME = 30 * 1000;
 const CART_SUBMISSION_INTERVAL = 2 * 1000;

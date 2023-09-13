@@ -3,20 +3,6 @@ rulesDirPlugin.RULES_DIR = 'scripts/eslint-rules';
 
 // We will progressively remove files from this list
 const legacyFiles = [
-  'src/ordering/redux/__fixtures__/app.fixture.js',
-  'src/ordering/redux/__fixtures__/cart.fixture.js',
-  'src/ordering/redux/__fixtures__/common.fixture.js',
-  'src/ordering/redux/__fixtures__/home.fixture.js',
-  'src/ordering/redux/__fixtures__/thankYou.fixture.js',
-  'src/ordering/redux/modules/app.js',
-  'src/ordering/redux/modules/appActions.test.js',
-  'src/ordering/redux/modules/appReducer.test.js',
-  'src/ordering/redux/modules/index.js',
-  'src/ordering/redux/modules/locationAndDate.js',
-  'src/ordering/redux/modules/promotion.js',
-  'src/ordering/redux/store.js',
-  'src/ordering/redux/store.test.js',
-  'src/ordering/redux/types.js',
   'src/common/components/ReCAPTCHA/index.jsx',
   'src/site/qrscan/index.jsx',
   'src/serviceWorker.js',

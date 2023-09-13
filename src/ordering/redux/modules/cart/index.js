@@ -1,8 +1,8 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import Utils from '../../../utils/utils';
-import { API_REQUEST_STATUS } from '../../../common/utils/constants';
+import Utils from '../../../../utils/utils';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { loadCart, loadCartStatus, updateCartItems, removeCartItemsById, clearCart, submitCart } from './thunks';
 
 const CartSubmissionModel = {

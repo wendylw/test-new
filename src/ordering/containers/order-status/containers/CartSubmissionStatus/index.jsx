@@ -11,7 +11,7 @@ import {
   getCartSubmittedStatus,
   getCartSubmissionHasNotResult,
   getCartSubmissionReceiptNumber,
-} from '../../../../redux/cart/selectors';
+} from '../../../../redux/modules/cart/selectors';
 import {
   getHasPayLaterOrderTableIdChanged as getHasTableIdChanged,
   getPayLaterStoreHash as getStoreHash,
@@ -20,7 +20,7 @@ import {
 import {
   queryCartSubmissionStatus as queryCartSubmissionStatusThunk,
   clearQueryCartSubmissionStatus as clearQueryCartSubmissionStatusThunk,
-} from '../../../../redux/cart/thunks';
+} from '../../../../redux/modules/cart/thunks';
 import { loadPayLaterOrderStatus as loadOrderStatusThunk } from '../../redux/thunks';
 import { getCleverTapAttributes } from './redux/selector';
 import { getIsWebview } from '../../../../redux/modules/app';

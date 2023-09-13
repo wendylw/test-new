@@ -1,16 +1,16 @@
 import { createSelector } from 'reselect';
-import { getAllProducts } from '../../../redux/modules/entities/products';
-import { getAllCategories } from '../../../redux/modules/entities/categories';
+import { getAllProducts } from '../../../../redux/modules/entities/products';
+import { getAllCategories } from '../../../../redux/modules/entities/categories';
 import { CART_SUBMISSION_STATUS, CART_STATUS } from './constants';
-import { API_REQUEST_STATUS } from '../../../common/utils/constants';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
-export const getCartVersion = state => state.app.cart.version;
+export const getCartVersion = state => state.cart.version;
 
-export const getCartSource = state => state.app.cart.source;
+export const getCartSource = state => state.cart.source;
 
-export const getCartItemsCount = state => state.app.cart.count;
+export const getCartItemsCount = state => state.cart.count;
 
-const getOriginalCartItems = state => state.app.cart.items;
+const getOriginalCartItems = state => state.cart.items;
 
 export const getCartItems = createSelector(
   [getOriginalCartItems, getAllProducts, getAllCategories],
@@ -46,7 +46,7 @@ export const getCartItems = createSelector(
   }
 );
 
-export const getOriginalCartUnavailableItems = state => state.app.cart.unavailableItems;
+export const getOriginalCartUnavailableItems = state => state.cart.unavailableItems;
 
 export const getCartUnavailableItems = createSelector(
   [getOriginalCartUnavailableItems, getAllProducts, getAllCategories],
@@ -82,23 +82,20 @@ export const getCartUnavailableItems = createSelector(
   }
 );
 
-export const getCartSubmissionId = state => state.app.cart.submission.submissionId;
+export const getCartSubmissionId = state => state.cart.submission.submissionId;
 
-export const getCartReceiptNumber = state => state.app.cart.receiptNumber;
+export const getCartReceiptNumber = state => state.cart.receiptNumber;
 
-export const getCartSubmissionReceiptNumber = state => state.app.cart.submission.receiptNumber;
+export const getCartSubmissionReceiptNumber = state => state.cart.submission.receiptNumber;
 
-export const getCartSubmissionStatus = state => state.app.cart.submission.status;
+export const getCartSubmissionStatus = state => state.cart.submission.status;
 
-export const getCartSubmissionPendingStatus = state =>
-  state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING;
+export const getCartSubmissionPendingStatus = state => state.cart.submission.status === CART_SUBMISSION_STATUS.PENDING;
 
 export const getCartSubmittedStatus = state =>
-  state.app.cart.submission.status === CART_SUBMISSION_STATUS.COMPLETED ||
-  state.app.cart.status === CART_STATUS.COMPLETED;
+  state.cart.submission.status === CART_SUBMISSION_STATUS.COMPLETED || state.cart.status === CART_STATUS.COMPLETED;
 
-export const getCartSubmissionFailedStatus = state =>
-  state.app.cart.submission.status === CART_SUBMISSION_STATUS.FAILED;
+export const getCartSubmissionFailedStatus = state => state.cart.submission.status === CART_SUBMISSION_STATUS.FAILED;
 
 export const getCartSubmissionHasNotResult = createSelector(
   [getCartSubmissionPendingStatus, getCartSubmittedStatus, getCartSubmissionFailedStatus],
@@ -106,10 +103,9 @@ export const getCartSubmissionHasNotResult = createSelector(
     cartSubmissionPendingStatus || (!cartSubmittedStatus && !cartSubmissionFailedStatus)
 );
 
-export const getCartStatusNotSubmitted = state => state.app.cart.status !== CART_STATUS.COMPLETED;
+export const getCartStatusNotSubmitted = state => state.cart.status !== CART_STATUS.COMPLETED;
 
-export const getCartQueryRequestingStatus = state =>
-  state.app.cart.requestStatus.loadCart === API_REQUEST_STATUS.PENDING;
+export const getCartQueryRequestingStatus = state => state.cart.requestStatus.loadCart === API_REQUEST_STATUS.PENDING;
 
 export const getCartNotSubmittedAndEmpty = createSelector(
   [getCartItems, getCartUnavailableItems, getCartStatusNotSubmitted, getCartQueryRequestingStatus],
@@ -118,6 +114,6 @@ export const getCartNotSubmittedAndEmpty = createSelector(
 );
 
 export const getCartSubmissionRequestingStatus = state =>
-  state.app.cart.submission.requestStatus.submitCart === API_REQUEST_STATUS.PENDING;
+  state.cart.submission.requestStatus.submitCart === API_REQUEST_STATUS.PENDING;
 
-export const getCartSubtotal = state => state.app.cart.subtotal;
+export const getCartSubtotal = state => state.cart.subtotal;

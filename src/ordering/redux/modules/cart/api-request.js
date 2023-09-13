@@ -1,4 +1,4 @@
-import { get, post, del } from '../../../utils/api/api-fetch';
+import { get, post, del } from '../../../../utils/api/api-fetch';
 
 // fetch cart status
 export const fetchCartStatus = ({ shippingType, fulfillDate }) => {

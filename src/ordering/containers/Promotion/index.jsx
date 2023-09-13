@@ -25,6 +25,7 @@ import {
 import {
   getPromoErrorCodePayLater,
   getIsAppliedSuccessPayLater,
+  getIsAppliedErrorPayLater,
   getSelectPromoOrVoucherPayLater,
   getApplyPromoOrVoucherPendingStatus,
 } from './redux/common/selector';
@@ -215,7 +216,7 @@ class Promotion extends Component {
       isAppliedSuccess,
       isAppliedSuccessPayLater,
       isAppliedError,
-      promoErrorCodePayLater,
+      isAppliedErrorPayLater,
       inProcess,
       selectedPromo,
       enablePayLater,
@@ -231,7 +232,7 @@ class Promotion extends Component {
     let inputContainerStatus = '';
     if (isAppliedSuccess || isAppliedSuccessPayLater) {
       inputContainerStatus = 'success';
-    } else if (isAppliedError || promoErrorCodePayLater) {
+    } else if (isAppliedError || isAppliedErrorPayLater) {
       inputContainerStatus = 'error';
     }
 
@@ -323,6 +324,7 @@ Promotion.propTypes = {
   enablePayLater: PropTypes.bool,
   isAppliedError: PropTypes.bool,
   isAppliedSuccess: PropTypes.bool,
+  isAppliedErrorPayLater: PropTypes.bool,
   isAppliedSuccessPayLater: PropTypes.bool,
   isFetchLoginStatusComplete: PropTypes.bool,
   selectPromoOrVoucherPayLater: PropTypes.bool,
@@ -352,6 +354,7 @@ Promotion.defaultProps = {
   isAppliedError: false,
   isAppliedSuccess: false,
   promoErrorCodePayLater: null,
+  isAppliedErrorPayLater: false,
   isAppliedSuccessPayLater: false,
   isFetchLoginStatusComplete: false,
   selectPromoOrVoucherPayLater: false,
@@ -377,6 +380,7 @@ export default compose(
       promoCode: getPromoCode(state),
       errorCode: getPromoErrorCode(state),
       isAppliedSuccess: getIsAppliedSuccess(state),
+      isAppliedErrorPayLater: getIsAppliedErrorPayLater(state),
       isAppliedSuccessPayLater: getIsAppliedSuccessPayLater(state),
       isAppliedError: getIsAppliedError(state),
       inProcess: isInProcess(state),

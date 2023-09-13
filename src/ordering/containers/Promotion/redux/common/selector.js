@@ -1,4 +1,3 @@
-import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getSelectedPromo } from '../../../../redux/modules/promotion';
 import Constants, { API_REQUEST_STATUS } from '../../../../../utils/constants';
@@ -12,8 +11,14 @@ export const getPromoErrorCodePayLater = state => state.promoPayLater.common.err
 
 export const getAppliedResultPayLater = state => state.promoPayLater.common.appliedResult;
 
-export const getIsAppliedSuccessPayLater = createSelector(getAppliedResultPayLater, appliedResult =>
-  _get(appliedResult, 'success', false)
+export const getIsAppliedSuccessPayLater = createSelector(
+  getAppliedResultPayLater,
+  appliedResult => appliedResult.success === true
+);
+
+export const getIsAppliedErrorPayLater = createSelector(
+  getAppliedResultPayLater,
+  appliedResult => appliedResult.success === false
 );
 
 export const getSelectPromoOrVoucherPayLater = createSelector(getSelectedPromo, selectedPromo => {
