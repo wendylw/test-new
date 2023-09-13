@@ -62,7 +62,7 @@ class App extends Component {
             onSelection: async confirmStatus => {
               if (confirmStatus) {
                 // try again
-                Clevertap.pushEvent('POS Redemption Landing Page (Error Pop-up) - Click Try Again', {
+                Clevertap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Try Again', {
                   country: userCountry,
                 });
                 await appActions.loginByTngMiniProgram();
@@ -71,7 +71,7 @@ class App extends Component {
                 if (window.my.exitMiniProgram) {
                   window.my.exitMiniProgram();
                 }
-                Clevertap.pushEvent('POS Redemption Landing Page (Error Pop-up) - Click Cancel', {
+                Clevertap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Cancel', {
                   country: userCountry,
                 });
               }

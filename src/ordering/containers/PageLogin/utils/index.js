@@ -15,7 +15,8 @@ export const getWebQRImageHeight = () => {
   const loginAsGuestButton = document.querySelector('.page-login__login-as-guest-button') || null;
   const loginAsGuestButtonHeight = loginAsGuestButton?.clientHeight || 0;
   const loginAsGuestButtonMargin = loginAsGuestButton
-    ? window.parseFloat(window.getComputedStyle(loginAsGuestButton, null).marginTop) * 2
+    ? window.parseFloat(window.getComputedStyle(loginAsGuestButton, null).marginTop) +
+      window.parseFloat(window.getComputedStyle(loginAsGuestButton, null).marginBottom)
     : 0;
   const termTextHalfHeight = 17 / 2;
 
