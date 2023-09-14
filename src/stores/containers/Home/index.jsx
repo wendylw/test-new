@@ -168,7 +168,7 @@ Home.propTypes = {
   stores: PropTypes.array,
   onlineStoreInfo: PropTypes.object,
   businessInfo: PropTypes.object,
-  /* eslint-disable */
+  /* eslint-enable */
   hashCode: PropTypes.string,
   enableDelivery: PropTypes.bool,
   businessUTCOffset: PropTypes.number,

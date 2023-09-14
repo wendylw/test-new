@@ -114,7 +114,7 @@ PromoItem.propTypes = {
   /* eslint-disable react/forbid-prop-types */
   promo: PropTypes.object,
   onlineStoreInfo: PropTypes.object,
-  /* eslint-disable */
+  /* eslint-enable */
   isSelected: PropTypes.bool,
   onSelectPromo: PropTypes.func,
 };

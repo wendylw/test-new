@@ -286,7 +286,7 @@ App.propTypes = {
   /* eslint-disable react/forbid-prop-types */
   businessInfo: PropTypes.object,
   onlineStoreInfo: PropTypes.object,
-  /* eslint-disable */
+  /* eslint-enable */
   ifAddressInfoExists: PropTypes.bool,
   getAddressInfo: PropTypes.func,
   setAddressInfo: PropTypes.func,
