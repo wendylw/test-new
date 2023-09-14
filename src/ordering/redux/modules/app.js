@@ -1485,9 +1485,9 @@ export const getIsUserProfileStatusPending = createSelector(
 );
 
 export const getBusinessInfo = state => {
-  const businessInfo = getBusiness(state);
+  const businessName = getBusiness(state);
 
-  return getBusinessByName(state, businessInfo) || {};
+  return getBusinessByName(state, businessName) || {};
 };
 
 export const getMerchantCountry = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'country', null));
@@ -1598,10 +1598,12 @@ export const getShippingFee = createSelector(getCartBilling, billing => billing.
 
 export const getDeliveryDetails = state => state.app.deliveryDetails;
 
-export const getDeliveryAddressId = createSelector(getDeliveryDetails, details => _get(details, 'addressId', null));
+export const getDeliveryAddressId = createSelector(getDeliveryDetails, deliveryDetailInfo =>
+  _get(deliveryDetailInfo, 'addressId', null)
+);
 
-export const getHasFetchDeliveryDetailsRequestCompleted = createSelector(getDeliveryDetails, details =>
-  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(details.fetchRequestStatus)
+export const getHasFetchDeliveryDetailsRequestCompleted = createSelector(getDeliveryDetails, deliveryDetailInfo =>
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(deliveryDetailInfo.fetchRequestStatus)
 );
 
 export const getCartTotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'total', null));
@@ -1670,11 +1672,11 @@ export const getShoppingCart = createSelector(
 
 // This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
 export const getStoreInfoForCleverTap = state => {
-  const businessInfo = getBusiness(state);
+  const businessName = getBusiness(state);
   const allBusinessInfo = getAllBusinesses(state);
   const { billing: cartSummary } = state.app.shoppingCart;
 
-  return StoreUtils.getStoreInfoForCleverTap({ business: businessInfo, allBusinessInfo, cartSummary });
+  return StoreUtils.getStoreInfoForCleverTap({ business: businessName, allBusinessInfo, cartSummary });
 };
 
 export const getIsCartStatusRejected = createSelector(getCartStatus, status => status === API_REQUEST_STATUS.REJECTED);
@@ -1916,8 +1918,8 @@ export const getIsValidCreateOrder = createSelector(
   (isFreeOrder, isTNGMiniProgram) => isTNGMiniProgram || isFreeOrder
 );
 
-export const getTotalItemPrice = createSelector(getShoppingCart, cartInfo => {
-  const { items } = cartInfo || {};
+export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCartInfo => {
+  const { items } = shoppingCartInfo || {};
   let totalPrice = 0;
 
   (items || []).forEach(item => {
