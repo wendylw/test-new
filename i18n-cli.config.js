@@ -5,10 +5,10 @@ const path = require('path');
 module.exports = {
   projectId: '331737',
   projectName: 'beep-v1-web',
-  languages: ['en', 'th', 'zh-Hans'],
-  allowIncompleteIn: ['zh-Hans'],
+  languages: ['en', 'th'],
+  allowIncompleteIn: [],
   notification: {
-    groupId: 't_8639998782737637',
+    groupId: 't_6218677764852829',
   },
   proofreadRules: {
     htmlLike: true,
@@ -18,7 +18,7 @@ module.exports = {
   },
   adaptor: {
     read() {
-      const dirname = path.join(__dirname, 'public/locales/en');
+      const dirname = path.join(__dirname, 'frontend/public/locales/en');
       const filenames = fs.readdirSync(dirname);
       const termsMap = {};
       filenames.forEach(filename => {
