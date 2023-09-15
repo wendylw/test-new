@@ -18,7 +18,7 @@ module.exports = {
   },
   adaptor: {
     read() {
-      const dirname = path.join(__dirname, 'frontend/public/locales/en');
+      const dirname = path.join(__dirname, 'public/locales/en');
       const filenames = fs.readdirSync(dirname);
       const termsMap = {};
       filenames.forEach(filename => {
