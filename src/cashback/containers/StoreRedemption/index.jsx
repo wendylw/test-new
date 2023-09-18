@@ -1,10 +1,11 @@
+import qs from 'qs';
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
-import { isWebview, isTNGMiniProgram, judgeClient } from '../../../common/utils';
+import { isWebview, isTNGMiniProgram, judgeClient, getQueryString } from '../../../common/utils';
 import { CLIENTS } from '../../../common/utils/constants';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
@@ -146,7 +147,11 @@ const StoreRedemption = () => {
             >
               <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
             </a>
-            <a href={`https://onelink.tngd.my/8mmV/BeepTNG?qrValue=${encodeURIComponent(window.location.href)}`}>
+            <a
+              href={`https://onelink.tngd.my/8mmV/BeepTNG?qrValue=${window.location.origin}${
+                window.location.pathname
+              }${qs.stringify(getQueryString())}`}
+            >
               <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
             </a>
           </div>
