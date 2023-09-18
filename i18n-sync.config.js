@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = {
   projectId: '331737',
-  languages: ['en', 'th', 'zh-Hans'],
+  languages: ['en', 'th'],
   adaptor: {
     read() {
       const dirname = path.join(__dirname, 'public/locales/en');
