@@ -6,7 +6,7 @@ module.exports = {
   projectId: '331737',
   projectName: 'beep-v1-web',
   languages: ['en', 'th'],
-  allowIncompleteIn: [],
+  allowIncompleteIn: ['th'],
   notification: {
     groupId: 't_6218677764852829',
   },
@@ -32,9 +32,8 @@ module.exports = {
     write(translations) {
       const localeDir = path.join(__dirname, 'public/locales');
       Object.keys(translations).forEach(languageCode => {
-        const targetLanguageCode = languageCode === 'zh-Hans' ? 'zh-CN' : languageCode;
         if (languageCode !== 'en') {
-          const languageDir = path.join(localeDir, targetLanguageCode);
+          const languageDir = path.join(localeDir, languageCode);
           if (!fs.existsSync(languageDir)) {
             fs.mkdirSync(languageDir);
           }
