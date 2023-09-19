@@ -147,11 +147,7 @@ const StoreRedemption = () => {
             >
               <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
             </a>
-            <a
-              href={`https://onelink.tngd.my/8mmV/BeepTNG?qrValue=${window.location.origin}${
-                window.location.pathname
-              }${qs.stringify(getQueryString())}`}
-            >
+            <a href={`https://onelink.tngd.my/8mmV/BeepTNG?qrValue=${window.location.href}`}>
               <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
             </a>
           </div>
