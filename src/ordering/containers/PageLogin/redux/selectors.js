@@ -8,8 +8,6 @@ import {
   getIsQrOrderingShippingType,
   getIsGuestLoginEnabled,
 } from '../../../redux/modules/app';
-import { getIsFeatureEnabled } from '../../../../redux/modules/growthbook/selectors';
-import { FEATURE_KEYS } from '../../../../redux/modules/growthbook/constants';
 import { ERROR_TYPES } from '../../../../utils/api/constants';
 
 const {
@@ -127,14 +125,8 @@ export const getShouldShowLoader = createSelector(
   (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
 );
 
-export const getIsGuestCheckoutEnabled = createSelector(
-  getIsGuestLoginEnabled,
-  state => getIsFeatureEnabled(state),
-  (isGuestLoginEnabled, isFeatureEnabled) => isGuestLoginEnabled || isFeatureEnabled
-);
-
 export const getShouldShowGuestOption = createSelector(
-  getIsGuestCheckoutEnabled,
+  getIsGuestLoginEnabled,
   getIsQrOrderingShippingType,
-  (isGuestCheckoutEnabled, isQrOrderingShippingType) => isQrOrderingShippingType && isGuestCheckoutEnabled
+  (isGuestLoginEnabled, isQrOrderingShippingType) => isQrOrderingShippingType && isGuestLoginEnabled
 );
