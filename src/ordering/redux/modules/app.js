@@ -813,7 +813,7 @@ export const actions = {
 
     try {
       const business = getBusiness(getState());
-      const { access_token: accessToken, refresh_token: refreshToken } = await getAccessToken({ business: business });
+      const { access_token: accessToken, refresh_token: refreshToken } = await getAccessToken({ business });
 
       await dispatch(
         actions.loginApp({
