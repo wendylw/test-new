@@ -15,7 +15,7 @@ import {
   updateCartItems as updateCartItemsThunk,
   removeCartItemsById as removeCartItemsByIdThunk,
   loadCartStatus as loadCartStatusThunk,
-} from '../../../../redux/cart/thunks';
+} from '../../../../redux/modules/cart/thunks';
 import {
   getCartItems,
   getCartUnavailableItems,
@@ -24,7 +24,7 @@ import {
   getCartNotSubmittedAndEmpty,
   getCartSubmissionRequestingStatus,
   getCartReceiptNumber,
-} from '../../../../redux/cart/selectors';
+} from '../../../../redux/modules/cart/selectors';
 import { getUserIsLogin, getHasLoginGuardPassed, getIsGuestCheckout } from '../../../../redux/modules/app';
 import { IconClose, IconError } from '../../../../../components/Icons';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';

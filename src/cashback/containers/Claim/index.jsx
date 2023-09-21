@@ -214,7 +214,7 @@ PageClaim.propTypes = {
   cashbackInfo: PropTypes.object,
   businessInfo: PropTypes.object,
   onlineStoreInfo: PropTypes.object,
-  /* eslint-disable */
+  /* eslint-enable */
 };
 
 PageClaim.defaultProps = {

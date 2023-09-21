@@ -14,14 +14,14 @@ import {
 } from '../../../../../redux/modules/app';
 import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
-import Constants from '../../../../../../utils/constants';
+import Constants, { API_REQUEST_STATUS } from '../../../../../../utils/constants';
 import { getIsApplePaySupported } from '../../../utils';
 import { getTotal, getCleverTapAttributes, getPaymentName } from '../selectors';
 import CleverTap from '../../../../../../utils/clevertap';
 import logger from '../../../../../../utils/monitoring/logger';
 import ApiFetchError from '../../../../../../utils/api/api-fetch-error';
 
-const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
+const { PAYMENT_METHOD_LABELS } = Constants;
 
 /* Model */
 const PAYMENTS_MAPPING = {
@@ -109,12 +109,11 @@ const PaymentOptionModel = {
   supportSaveCard: false,
 };
 
-const preprocessPaymentOptions = (data = [], paymentOptionModel, paymentsMapping) => {
-  return data.map(currentOption => {
+const preprocessPaymentOptions = (data = [], paymentOptionModel, paymentsMapping) =>
+  data.map(currentOption => {
     const option = { ...paymentOptionModel, ...paymentsMapping[currentOption.paymentProvider], ...currentOption };
     return option;
   });
-};
 
 const OnlineBankModel = {
   id: null,
@@ -123,13 +122,12 @@ const OnlineBankModel = {
   agentCode: '',
 };
 
-const preprocessOnlineBankings = (data = [], onlineBankModel) => {
-  return data.map(currentBanking => {
+const preprocessOnlineBankings = (data = [], onlineBankModel) =>
+  data.map(currentBanking => {
     const banking = { ...onlineBankModel, ...currentBanking };
 
     return banking;
   });
-};
 /* end of Model */
 
 const cleverTapViewPageEvent = (eventName, getState) => {
@@ -141,27 +139,6 @@ const cleverTapViewPageEvent = (eventName, getState) => {
     'payment method': paymentName,
   });
 };
-
-export const initialize = createAsyncThunk(
-  'ordering/payments/initialize',
-  async (initialPaymentMethod = null, { dispatch, getState }) => {
-    try {
-      await dispatch(loadBilling()).unwrap();
-
-      // MUST call [loadBilling] thunk before calling this function
-      // because paymentOptions data depends on billing total
-      await dispatch(loadPaymentOptions(initialPaymentMethod)).unwrap();
-      cleverTapViewPageEvent('Payment Method - View page', getState);
-    } catch (error) {
-      logger.error('Ordering_Payment_InitializeFailed', {
-        message: error?.message,
-        method: initialPaymentMethod,
-      });
-
-      throw error;
-    }
-  }
-);
 
 /**
  * Billing is a abstract data, it has two source:
@@ -253,6 +230,27 @@ export const loadPaymentOptions = createAsyncThunk(
     } catch (error) {
       logger.error('Ordering_Payment_LoadPaymentOptionsFailed', {
         message: error?.message,
+      });
+
+      throw error;
+    }
+  }
+);
+
+export const initialize = createAsyncThunk(
+  'ordering/payments/initialize',
+  async (initialPaymentMethod = null, { dispatch, getState }) => {
+    try {
+      await dispatch(loadBilling()).unwrap();
+
+      // MUST call [loadBilling] thunk before calling this function
+      // because paymentOptions data depends on billing total
+      await dispatch(loadPaymentOptions(initialPaymentMethod)).unwrap();
+      cleverTapViewPageEvent('Payment Method - View page', getState);
+    } catch (error) {
+      logger.error('Ordering_Payment_InitializeFailed', {
+        message: error?.message,
+        method: initialPaymentMethod,
       });
 
       throw error;

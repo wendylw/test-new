@@ -11,7 +11,12 @@ const AddressLocationItem = React.memo(({ disabled, icon, title, tag, descriptio
   );
 
   return (
-    <button className={styles.addressLocationItemButton} disabled={disabled} onClick={onHandleSelectItem}>
+    <button
+      className={styles.addressLocationItemButton}
+      disabled={disabled}
+      onClick={onHandleSelectItem}
+      data-test-id="ordering.address-location.item-card"
+    >
       {icon}
       <div className="beep-line-clamp-flex-container tw-flex-col">
         <h4 className="tw-flex tw-items-center tw-justify-start tw-my-2 sm:tw-my-2px beep-line-clamp-flex-container">

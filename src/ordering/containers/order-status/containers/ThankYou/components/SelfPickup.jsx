@@ -42,6 +42,7 @@ function SelfPickup({
         </p>
         <button
           className="button button__block button__fill text-uppercase text-weight-bolder"
+          data-test-id="ordering.order-status.thank-you.self-pickup.switch-btn"
           onClick={() => {
             onClickSelfPickupButton();
             handleToggleModal(true);
@@ -62,12 +63,14 @@ function SelfPickup({
         <Modal.Footer className="flex flex-stretch">
           <button
             className="self-pickup__modal-default-button button button__link flex__fluid-content text-weight-bolder text-uppercase"
+            data-test-id="ordering.order-status.thank-you.self-pickup.cancel-btn"
             onClick={() => handleToggleModal(false)}
           >
             {t('GoBack')}
           </button>
           <button
             className="self-pickup__modal-fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
+            data-test-id="ordering.order-status.thank-you.self-pickup.confirm-btn"
             onClick={async () => {
               await updateOrderShippingType({ orderId, shippingType: DELIVERY_METHOD.PICKUP });
 

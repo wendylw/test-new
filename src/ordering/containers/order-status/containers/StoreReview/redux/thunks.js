@@ -203,7 +203,7 @@ export const submitButtonClicked = createAsyncThunk(
 
 export const stayButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/stayButtonClicked',
-  async (_, { getState, dispatch }) => {
+  async (_, { dispatch }) => {
     await dispatch(hideStoreReviewWarningModal());
   }
 );

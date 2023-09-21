@@ -2,14 +2,15 @@ import qs from 'qs';
 import _isNil from 'lodash/isNil';
 import { push } from 'connected-react-router';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { clearCart, updateCartItems, removeCartItemsById, clearQueryCartStatus } from '../../../../redux/cart/thunks';
-import { getOriginalCartItems } from './selectors';
 import {
-  actions as appActions,
-  getReceiptNumber,
-  getEnablePayLater,
-  getStoreInfoForCleverTap,
-} from '../../../../redux/modules/app';
+  clearCart,
+  updateCartItems,
+  removeCartItemsById,
+  clearQueryCartStatus,
+} from '../../../../redux/modules/cart/thunks';
+import { getCartReceiptNumber as getReceiptNumber } from '../../../../redux/modules/cart/selectors';
+import { getOriginalCartItems } from './selectors';
+import { actions as appActions, getEnablePayLater, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
 import { getStoreHashCode, getShippingTypeFromUrl } from '../../../../../common/utils';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import logger from '../../../../../utils/monitoring/logger';

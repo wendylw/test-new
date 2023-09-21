@@ -1,6 +1,6 @@
-import Constants from '../../../../../utils/constants';
+import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants';
 
-const { ORDER_STATUS, REFERRER_SOURCE_TYPES } = Constants;
+const { ORDER_STATUS } = Constants;
 
 export const ORDER_CANCELLATION_REASONS = {
   TAKING_TOO_LONG_TO_FIND_RIDER: 'takingTooLongToFindRider',

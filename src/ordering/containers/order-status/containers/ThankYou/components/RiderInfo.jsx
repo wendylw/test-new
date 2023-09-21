@@ -80,6 +80,7 @@ const RenderRiderInfoButton = ({ phone, supportCallPhone, buttonText, buttonClic
   ) : (
     <button
       onClick={buttonClickEvent}
+      data-test-id="ordering.order-status.thank-you.call-btn"
       className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
     >
       {buttonText}
@@ -281,6 +282,7 @@ function RiderInfo({
         <Modal.Footer className="padding-normal">
           <button
             className="button button__fill button__block text-weight-bolder text-uppercase"
+            data-test-id="ordering.order-status.thank-you.ok-btn"
             onClick={() => {
               setDisplayCopyPhoneModalStatus(false);
               setCopyPhoneModalDescription(null);

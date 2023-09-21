@@ -114,6 +114,7 @@ const TimeSlotDropdown = () => {
       <div className="tw-flex-1">
         <button
           className={styles.timeSlotDropdownButton}
+          data-test-id="ordering.menu.shipping-info-bar.time-slot-btn"
           disabled={!isTimeSlotAvailable}
           onClick={() => {
             dispatch(timeSlotDrawerOpened());

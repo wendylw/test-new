@@ -1,5 +1,6 @@
 import React from 'react';
 import _get from 'lodash/get';
+import PropTypes from 'prop-types';
 // GetzPay reuses Online Banking Image
 // WB-4764 [FE] Add a new payment option 'Pay Online' (GetzPay)
 import paymentBankingImage from '../../../../images/payment-banking.png';
@@ -27,6 +28,17 @@ const imageMap = {
 const PaymentLogo = ({ logo, alt }) => (
   <img className="ordering-payment__image" src={_get(imageMap, logo, null)} alt={alt} />
 );
+
 PaymentLogo.displayName = 'PaymentLogo';
+
+PaymentLogo.propTypes = {
+  logo: PropTypes.string,
+  alt: PropTypes.string,
+};
+
+PaymentLogo.defaultProps = {
+  logo: '',
+  alt: '',
+};
 
 export default PaymentLogo;

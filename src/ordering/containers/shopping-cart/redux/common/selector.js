@@ -2,8 +2,8 @@ import { createSelector } from 'reselect';
 import { getCartItems, getIsBillingTotalInvalid } from '../../../../redux/modules/app';
 import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
 
-export const getCheckingInventoryPendingState = ({ cart }) =>
-  cart.common.cartInventory.status === API_REQUEST_STATUS.PENDING;
+export const getCheckingInventoryPendingState = ({ shoppingCart }) =>
+  shoppingCart.common.cartInventory.status === API_REQUEST_STATUS.PENDING;
 
 export const getShouldDisablePayButton = createSelector(
   getCartItems,
@@ -15,7 +15,7 @@ export const getShouldDisablePayButton = createSelector(
   }
 );
 
-export const getReloadBillingByCashbackRequest = state => state.cart.common.reloadBillingByCashbackRequest;
+export const getReloadBillingByCashbackRequest = state => state.shoppingCart.common.reloadBillingByCashbackRequest;
 
 export const getIsReloadBillingByCashbackRequestPending = createSelector(
   getReloadBillingByCashbackRequest,

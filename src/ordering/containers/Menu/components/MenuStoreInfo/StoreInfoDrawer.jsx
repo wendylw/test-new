@@ -77,6 +77,7 @@ const StoreInfoDrawer = () => {
               <X
                 weight="light"
                 className="tw-flex-shrink-0 tw-text-2xl tw-text-gray"
+                data-test-id="ordering.menu.store-info-drawer.close-btn"
                 onClick={() => dispatch(hideStoreInfoDrawer())}
               />
             }

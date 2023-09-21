@@ -12,7 +12,7 @@ import CartList from '../../components/CartList';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
 import Utils from '../../../../../utils/utils';
-import Constants from '../../../../../utils/constants';
+import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import RedirectPageLoader from '../../../../components/RedirectPageLoader';
@@ -61,7 +61,7 @@ import logger from '../../../../../utils/monitoring/logger';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
-const { ROUTER_PATHS, REFERRER_SOURCE_TYPES } = Constants;
+const { ROUTER_PATHS } = Constants;
 
 class PayFirst extends Component {
   constructor(props) {
@@ -616,6 +616,7 @@ class PayFirst extends Component {
             <button
               className="flex padding-smaller cart-cashback__info-button"
               aria-label="Beep Cashback Info"
+              data-test-id="ordering.shopping-cart.pay-first.cashback-info-btn"
               onClick={this.handleClickCashbackInfoButton}
             >
               <Info size={16} />
@@ -631,6 +632,7 @@ class PayFirst extends Component {
                   className="cart-cashback__toggle-checkbox"
                   type="checkbox"
                   checked={isCashbackApplied}
+                  data-test-id="ordering.shopping-cart.pay-first.cashback-switch"
                   onChange={this.handleToggleCashbackSwitch}
                 />
                 <div className="cart-cashback__toggle-switch" />
