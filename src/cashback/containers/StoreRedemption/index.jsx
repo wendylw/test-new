@@ -1,11 +1,10 @@
-import qs from 'qs';
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
-import { isWebview, isTNGMiniProgram, judgeClient, getQueryString } from '../../../common/utils';
+import { isWebview, isTNGMiniProgram, judgeClient } from '../../../common/utils';
 import { CLIENTS } from '../../../common/utils/constants';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
