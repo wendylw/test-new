@@ -408,21 +408,19 @@ Payment.displayName = 'Payment';
 
 Payment.propTypes = {
   initialize: PropTypes.func,
-  // eslint-disable-next-line react/forbid-prop-types
+  /* eslint-disable react/forbid-prop-types */
   paymentActions: PropTypes.object,
+  allPaymentOptions: PropTypes.array,
+  cleverTapAttributes: PropTypes.object,
+  currentPaymentOption: PropTypes.object,
+  /* eslint-enable */
   createOrder: PropTypes.func,
   gotoPayment: PropTypes.func,
-  // eslint-disable-next-line react/forbid-prop-types
-  currentPaymentOption: PropTypes.object,
   currentPaymentSupportSaveCard: PropTypes.bool,
   hasLoginGuardPassed: PropTypes.bool,
   receiptNumber: PropTypes.string,
   loaderVisibility: PropTypes.bool,
-  // eslint-disable-next-line react/forbid-prop-types
-  allPaymentOptions: PropTypes.array,
   areAllOptionsUnavailable: PropTypes.bool,
-  // eslint-disable-next-line react/forbid-prop-types
-  cleverTapAttributes: PropTypes.object,
   total: PropTypes.number,
   shippingType: PropTypes.string,
   cashback: PropTypes.number,

@@ -54,7 +54,15 @@ class ProductItem extends Component {
     const classList = ['product-item flex flex-top', ...(className ? [className] : [])];
 
     return (
-      <div className={classList.join(' ')} {...extractDataAttributes(this.props)} onClick={() => handleClickItem()}>
+      <div
+        className={classList.join(' ')}
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...extractDataAttributes(this.props)}
+        onClick={() => handleClickItem()}
+        role="button"
+        tabIndex="0"
+        data-test-id="ordering.product.item-card"
+      >
         {this.renderImageEl()}
         {this.renderContent()}
         {children}
@@ -65,6 +73,7 @@ class ProductItem extends Component {
 ProductItem.displayName = 'ProductItem';
 
 ProductItem.propTypes = {
+  children: PropTypes.node,
   className: PropTypes.string,
   imageUrl: PropTypes.string,
   imageCover: PropTypes.element,
@@ -81,8 +90,10 @@ ProductItem.defaultProps = {
   imageCover: null,
   summaryTag: null,
   title: '',
+  className: '',
   variation: '',
   details: null,
+  children: null,
   shouldShowTakeawayVariant: false,
   handleClickItem: () => {},
 };

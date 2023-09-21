@@ -3,7 +3,8 @@ import { connectRouter } from 'connected-react-router';
 import entities from '../../../redux/modules/entities';
 import app from './app';
 import profile from '../../containers/Profile/redux/index';
-import cart from '../../containers/shopping-cart/redux';
+import cart from './cart';
+import shoppingCart from '../../containers/shopping-cart/redux';
 import promotion from './promotion';
 import payments from '../../containers/payments/redux';
 import customer from '../../containers/Customer/redux';
@@ -23,6 +24,7 @@ const rootReducer = history =>
     entities,
     app,
     cart,
+    shoppingCart,
     customer,
     payments,
     promotion,

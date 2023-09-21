@@ -27,6 +27,7 @@ const MenuViewOrderBar = () => {
         type="text"
         theme="ghost"
         className={styles.MenuViewOrderBarButton}
+        data-test-id="ordering.menu.bar.view-order-btn"
         onClick={() => dispatch(viewOnGoingOrder())}
       >
         {t('ViewOrder')}

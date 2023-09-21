@@ -18,7 +18,7 @@ import {
   getAddOrUpdateShoppingCartItemErrorCategory,
   getProductDetailErrorCategory,
 } from '../../../../redux/modules/app';
-import { updateCartItems } from '../../../../redux/cart/thunks';
+import { updateCartItems } from '../../../../redux/modules/cart/thunks';
 import {
   getSelectedProductId,
   getSelectedChildProductId,

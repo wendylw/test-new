@@ -1,6 +1,6 @@
 import _get from 'lodash/get';
-import Utils from '../../../../utils/utils';
 import { createSlice } from '@reduxjs/toolkit';
+import Utils from '../../../../utils/utils';
 import {
   loadOrder,
   loadPayLaterOrder,
@@ -162,7 +162,7 @@ const { reducer, actions } = createSlice({
 
       // WB-4939: BE will only generate new h when the table id is changed for performance sake.
       // Therefore, we should only update the hash when needed.
-      if (!!hash) {
+      if (hash) {
         state.payLaterOrderStatusInfo.data.storeHash = hash;
       }
 

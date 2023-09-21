@@ -633,7 +633,6 @@ const user = (state = initialState.user, action) => {
         },
       };
     case types.CREATE_LOGIN_TNGD_FAILURE:
-      console.log(error);
       return {
         ...state,
         loginTngRequest: {

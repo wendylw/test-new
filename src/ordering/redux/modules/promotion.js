@@ -1,13 +1,14 @@
+/* eslint-disable no-use-before-define */
+import _get from 'lodash/get';
 import { PROMOTION_TYPES } from '../types';
 import Url from '../../../utils/url';
-import Constants from '../../../utils/constants';
+import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getVoucherConsumerList, getSearchPromotionInfo } from './api-request';
-import { getBusinessUTCOffset, getCartBilling, getUserConsumerId } from './app';
-import _get from 'lodash/get';
+import { getBusiness, getBusinessUTCOffset, getCartBilling, getUserConsumerId } from './app';
 
-const { PROMO_TYPE, API_REQUEST_STATUS } = Constants;
+const { PROMO_TYPE } = Constants;
 
 const initialState = {
   promoCode: '',
@@ -123,7 +124,7 @@ export const actions = {
 
     return result;
   },
-  updatePromoCode: promoCode => (dispatch, getState) => {
+  updatePromoCode: promoCode => dispatch => {
     dispatch({
       type: PROMOTION_TYPES.UPDATE_PROMOTION_CODE,
       promoCode,
@@ -144,7 +145,9 @@ export const actions = {
 
       await dispatch({
         type: PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_SUCCESS,
-        response: result,
+        response: {
+          vouchers: result,
+        },
       });
     } catch (error) {
       dispatch({
@@ -160,14 +163,16 @@ export const actions = {
       });
 
       const state = getState();
-      const promoCode = state.promotion.promoCode;
-      const consumerId = state.app.user.consumerId;
-      const business = state.app.business;
+      const promoCode = getPromoCode(state);
+      const consumerId = getUserConsumerId(state);
+      const business = getBusiness(state);
       const result = await getSearchPromotionInfo({ promoCode, consumerId, business });
 
       await dispatch({
         type: PROMOTION_TYPES.FETCH_PROMO_INFO_SUCCESS,
-        response: result,
+        response: {
+          promos: result,
+        },
       });
     } catch (error) {
       await dispatch({
@@ -202,13 +207,27 @@ export const actions = {
     } else {
       dispatch({
         type: PROMOTION_TYPES.SELECT_PROMO,
-        promo: promo,
+        promo,
       });
     }
   },
 };
 
 const reducer = (state = initialState, action) => {
+  const vouchers = _get(action.response, 'vouchers', []);
+  const voucherList = {
+    availablePromos: vouchers.filter(voucher => !voucher.expired && !voucher.invalidForWeb),
+    unavailablePromos: vouchers.filter(voucher => voucher.expired || voucher.invalidForWeb),
+    quantity: vouchers.length,
+  };
+
+  const promos = _get(action.response, 'promos', []);
+  const foundPromo = {
+    availablePromos: promos.filter(voucher => !voucher.expired && !voucher.invalidForWeb),
+    unavailablePromos: promos.filter(voucher => voucher.expired || voucher.invalidForWeb),
+    quantity: promos.length,
+  };
+
   switch (action.type) {
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_FAILURE:
     case PROMOTION_TYPES.APPLY_VOUCHER_FAILURE:
@@ -261,13 +280,6 @@ const reducer = (state = initialState, action) => {
         },
       };
     case PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_SUCCESS:
-      const vouchers = action.response;
-      const voucherList = {
-        availablePromos: vouchers.filter(voucher => !voucher.expired && !voucher.invalidForWeb),
-        unavailablePromos: vouchers.filter(voucher => voucher.expired || voucher.invalidForWeb),
-        quantity: vouchers.length,
-      };
-
       return {
         ...state,
         voucherList,
@@ -293,13 +305,6 @@ const reducer = (state = initialState, action) => {
         },
       };
     case PROMOTION_TYPES.FETCH_PROMO_INFO_SUCCESS:
-      const promo = action.response;
-      const foundPromo = {
-        availablePromos: promo.filter(voucher => !voucher.expired && !voucher.invalidForWeb),
-        unavailablePromos: promo.filter(voucher => voucher.expired || voucher.invalidForWeb),
-        quantity: promo.length,
-      };
-
       return {
         ...state,
         foundPromo,
@@ -351,12 +356,12 @@ export function getAppliedResult(state) {
   return _get(state.promotion, 'appliedResult', null);
 }
 
-export function isAppliedSuccess(state) {
+export function getIsAppliedSuccess(state) {
   return _get(state.promotion, 'appliedResult.success', false);
 }
 
-export function isAppliedError(state) {
-  return _get(state.promotion, 'appliedResult.success', false);
+export function getIsAppliedError(state) {
+  return !_get(state.promotion, 'appliedResult.success', true);
 }
 
 export function isInProcess(state) {

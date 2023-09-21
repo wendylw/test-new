@@ -32,7 +32,7 @@ const AlcoholModal = ({ history }) => {
     if (!legalForAlcohol) {
       dispatch(getUserAlcoholConsent());
     }
-  }, []);
+  }, [dispatch, legalForAlcohol]);
 
   useEffect(() => {
     if (shouldShowAlcoholModal) {
