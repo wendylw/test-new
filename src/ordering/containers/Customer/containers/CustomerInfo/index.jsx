@@ -566,6 +566,7 @@ CustomerInfo.propTypes = {
   isTNGMiniProgram: PropTypes.bool,
   shouldGoToAddNewAddressPage: PropTypes.bool,
   isDisabledWebPayment: PropTypes.bool,
+  isAlipayMiniProgram: PropTypes.bool,
   deliveryDetails: PropTypes.shape({
     username: PropTypes.string,
     phone: PropTypes.string,
@@ -610,6 +611,7 @@ CustomerInfo.defaultProps = {
   isTNGMiniProgram: false,
   shouldGoToAddNewAddressPage: false,
   isDisabledWebPayment: false,
+  isAlipayMiniProgram: false,
   deliveryDetails: {
     username: '',
     phone: '',
