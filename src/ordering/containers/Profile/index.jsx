@@ -45,6 +45,7 @@ const Profile = ({ show, onClose }) => {
           <div className="text-right">
             <button
               className="profile__skip-button button button__link flex__shrink-fixed padding-normal text-size-small text-weight-bolder"
+              data-test-id="ordering.profile.skip-btn"
               onClick={onSkipProfilePage}
             >
               {t('SkipForNow')}

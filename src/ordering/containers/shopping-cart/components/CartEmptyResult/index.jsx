@@ -30,6 +30,7 @@ class CartEmptyResult extends Component {
           <button
             onClick={this.handleReturnClick}
             className="button button__fill padding-normal text-uppercase text-weight-bolder"
+            data-test-id="ordering.shopping-cart.empty-result.return-btn"
           >
             {/* PAY_LATER_DEBUG */}
             {!submittedStatus ? t('ReturnToMenu') : t('ReturnToTableSummary')}

@@ -46,6 +46,7 @@ const AddSpecialNotes = () => {
     if (showComments) {
       commentsTextareaRef.current.selectionEnd = notesContents.length;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showComments]);
 
   return (
@@ -59,6 +60,7 @@ const AddSpecialNotes = () => {
               theme="info"
               className={styles.AddSpecialNotesEditButton}
               contentClassName="tw-flex tw-items-center"
+              data-test-id="ordering.menu.product-detail.special-note.edit-btn"
               onClick={onHandleShowNotesDrawer}
             >
               <PencilSimple size={18} className="tw-text-blue" />
@@ -71,7 +73,13 @@ const AddSpecialNotes = () => {
         </div>
       ) : (
         <div className="tw-mx-4 sm:tw-mx-4px tw-my-6 sm:tw-my-6px">
-          <Button type="text" theme="info" contentClassName="tw-flex tw-items-center" onClick={onHandleShowNotesDrawer}>
+          <Button
+            type="text"
+            theme="info"
+            contentClassName="tw-flex tw-items-center"
+            data-test-id="ordering.menu.product-detail.special-note.create-btn"
+            onClick={onHandleShowNotesDrawer}
+          >
             <PencilSimple size={18} className="tw-text-blue" />
             <span className="tw-font-bold tw-text-blue tw-text-base tw-not-italic tw-p-4 sm:tw-p-4px">
               {t('AddSpecialInstructions')}
@@ -92,6 +100,7 @@ const AddSpecialNotes = () => {
               <X
                 weight="light"
                 className="tw-flex-shrink-0 tw-text-2xl tw-text-gray"
+                data-test-id="ordering.menu.product-detail.special-note.close-btn"
                 onClick={onHandleHideNotesDrawer}
               />
             }
@@ -114,13 +123,20 @@ const AddSpecialNotes = () => {
             rows={5}
             maxLength={NOTES_MAX_LENGTH}
             autoFocus
+            data-test-id="ordering.menu.product-detail.special-note.input"
           />
           <p className={styles.AddSpecialNotesLimitLength}>
             {t('LengthLimitOfNotes', { inputLength: notes.length, maxLength: NOTES_MAX_LENGTH })}
           </p>
         </div>
         <div className={styles.AddSpecialNotesSaveContainer}>
-          <Button block type="primary" className={styles.AddSpecialNotesSaveButton} onClick={saveSpecialNotes}>
+          <Button
+            block
+            type="primary"
+            className={styles.AddSpecialNotesSaveButton}
+            data-test-id="ordering.menu.product-detail.special-note.save-btn"
+            onClick={saveSpecialNotes}
+          >
             {t('Save')}
           </Button>
         </div>

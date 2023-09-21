@@ -59,6 +59,7 @@ const MenuFooter = () => {
         <div className="tw-flex tw-p-8 sm:tw-p-8px">
           <div
             className="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-mx-8 sm:tw-mx-8px tw-cursor-default"
+            data-test-id="ordering.menu.footer.mini-cart-btn"
             onClick={() => (isMiniCartDrawerVisible ? dispatch(hideMiniCartDrawer()) : dispatch(showMiniCartDrawer()))}
             role="button"
             tabIndex="0"
@@ -74,6 +75,7 @@ const MenuFooter = () => {
             type="primary"
             className={styles.MenuFooterOrderButton}
             disabled={!isAbleToReviewCart}
+            data-test-id="ordering.menu.footer.review-cart-btn"
             onClick={() => {
               dispatch(reviewCart());
             }}

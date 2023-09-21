@@ -6,7 +6,6 @@ import { getIsDisabledProfileSaveButton, getIsProfileDataUpdating } from '../red
 import { profileUpdated, profileMissingSkippedLimitUpdated, emailUpdated } from '../redux/thunk';
 import { alert, confirm, toast } from '../../../../common/utils/feedback';
 import CleverTap from '../../../../utils/clevertap';
-import logger from '../../../../utils/monitoring/logger';
 
 const ProfileFooter = ({ onCloseProfile }) => {
   const { t } = useTranslation(['Profile']);
@@ -56,6 +55,7 @@ const ProfileFooter = ({ onCloseProfile }) => {
     <footer className="footer footer__transparent margin-normal">
       <button
         className="profile__save-button button button__fill button__block padding-small text-weight-bolder text-uppercase"
+        data-test-id="ordering.profile.save-btn"
         disabled={isDisabledProfileSaveButton}
         onClick={onSaveButtonClick}
       >

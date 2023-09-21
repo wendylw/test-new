@@ -1,44 +1,32 @@
 import _get from 'lodash/get';
-import { initialState } from './index';
 import { createSelector } from 'reselect';
 import { REPORT_DRIVER_REASONS, REPORT_DRIVER_FIELD_NAMES, SUBMIT_STATUS } from '../constants';
 
-export const getInputNotes = state => {
-  return _get(state.orderStatus.reportDriver, 'inputNotes', initialState.inputNotes);
-};
+export const getInputNotes = state => _get(state.orderStatus.reportDriver, 'inputNotes', '');
 
-export const getSelectedReasonCode = state => {
-  return _get(state.orderStatus.reportDriver, 'selectedReasonCode', initialState.selectedReasonCode);
-};
+export const getSelectedReasonCode = state => _get(state.orderStatus.reportDriver, 'selectedReasonCode', null);
 
 export const getSelectedReasonFields = createSelector([getSelectedReasonCode], reasonCode => {
-  const reason = REPORT_DRIVER_REASONS.find(reason => {
-    return reason.code === reasonCode;
-  });
-  return _get(reason, 'fields', []);
+  const result = REPORT_DRIVER_REASONS.find(reason => reason.code === reasonCode);
+  return _get(result, 'fields', []);
 });
 
-export const getSubmitStatus = state => {
-  return _get(state.orderStatus.reportDriver, 'submitStatus', initialState.submitStatus);
-};
+export const getSubmitStatus = state => _get(state.orderStatus.reportDriver, 'submitStatus', SUBMIT_STATUS.NOT_SUBMIT);
 
-export const getShowPageLoader = state => {
-  return _get(state.orderStatus.reportDriver, 'showPageLoader', initialState.showPageLoader);
-};
+export const getShowPageLoader = state => _get(state.orderStatus.reportDriver, 'showPageLoader', true);
 
-export const getUploadPhotoFile = state => {
-  return _get(state.orderStatus.reportDriver, 'uploadPhoto.file', null);
-};
+export const getUploadPhotoFile = state => _get(state.orderStatus.reportDriver, 'uploadPhoto.file', null);
 
-export const getUploadPhotoUrl = state => {
-  return _get(state.orderStatus.reportDriver, 'uploadPhoto.url', '');
-};
+export const getUploadPhotoUrl = state => _get(state.orderStatus.reportDriver, 'uploadPhoto.url', '');
 
-export const getUploadPhotoLocation = state => {
-  return _get(state.orderStatus.reportDriver, 'uploadPhoto.location', '');
-};
+export const getUploadPhotoLocation = state => _get(state.orderStatus.reportDriver, 'uploadPhoto.location', '');
 
-export const getInputEmail = state => _get(state.orderStatus.reportDriver, 'inputEmail', initialState.inputEmail);
+export const getInputEmail = state =>
+  _get(state.orderStatus.reportDriver, 'inputEmail', {
+    value: '',
+    isCompleted: false,
+    isValid: false,
+  });
 
 export const getInputEmailValue = state => _get(state.orderStatus.reportDriver, 'inputEmail.value', '');
 

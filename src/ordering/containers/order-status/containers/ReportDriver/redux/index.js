@@ -1,25 +1,9 @@
-import React from 'react';
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import i18next from 'i18next';
-import Url from '../../../../../../utils/url';
-import { SUBMIT_STATUS } from '../constants';
-import {
-  getSelectedReasonCode,
-  getInputNotes,
-  getUploadPhotoFile,
-  getUploadPhotoLocation,
-  getInputEmailValue,
-  getSelectedReasonNoteField,
-  getSelectedReasonPhotoField,
-} from './selectors';
-import { getReceiptNumber } from '../../../redux/selector';
-import * as ApiFetch from '../../../../../../utils/api/api-fetch';
-import { uploadReportDriverPhoto } from '../../../../../../utils/aws-s3';
 import _get from 'lodash/get';
 import _trim from 'lodash/trim';
+import { createSlice } from '@reduxjs/toolkit';
+import { SUBMIT_STATUS } from '../constants';
+import { fetchReport, uploadReport, submitReport } from './thunks';
 import Utils from '../../../../../../utils/utils';
-import { alert } from '../../../../../../common/feedback';
-import logger from '../../../../../../utils/monitoring/logger.js';
 
 export const initialState = {
   inputNotes: '',
@@ -38,83 +22,7 @@ export const initialState = {
   },
 };
 
-export const thunks = {
-  submitReport: createAsyncThunk('ordering/orderStatus/reportDriver/submitReport', async (data, thunkAPI) => {
-    const { getState, dispatch } = thunkAPI;
-    const state = getState();
-    const actions = reportDriverSlice.actions;
-    const selectedReasonNotesField = getSelectedReasonNoteField(state);
-    const selectedReasonPhotoField = getSelectedReasonPhotoField(state);
-    const selectedReasonCode = getSelectedReasonCode(state);
-    const receiptNumber = getReceiptNumber(state);
-    const payload = {
-      reasonCode: [selectedReasonCode],
-      reporterType: 'consumer',
-      receiptNumber,
-    };
-
-    dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.IN_PROGRESS));
-
-    payload.email = getInputEmailValue(state);
-
-    if (selectedReasonNotesField) {
-      payload.notes = getInputNotes(state);
-    }
-
-    if (selectedReasonPhotoField) {
-      const file = getUploadPhotoFile(state);
-      let location = getUploadPhotoLocation(getState());
-
-      if (!location) {
-        try {
-          const result = await uploadReportDriverPhoto(file);
-          dispatch(actions.setUploadPhotoFileLocation(result.location));
-          location = result.location;
-        } catch (e) {
-          logger.error('Ordering_ReportDriver_UploadPhotoFailed', { message: e.message });
-
-          alert.raw(
-            <p className="padding-small text-size-biggest text-weight-bolder">{i18next.t('ConnectionIssue')}</p>
-          );
-
-          dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
-          return false;
-        }
-      }
-
-      payload.image = location;
-    }
-
-    try {
-      await ApiFetch.post(Url.API_URLS.CREATE_FEED_BACK.url, payload);
-      dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.SUBMITTED));
-    } catch (e) {
-      dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
-      logger.error('Ordering_ReportDriver_SubmitFailed', { message: e.message });
-      if (e.code) {
-        // TODO: This type is actually not used, because apiError does not respect action type,
-        // which is a bad practice, we will fix it in the future, for now we just keep a useless
-        // action type.
-        dispatch({ type: 'ordering/orderStatus/reportDriver/submitReportFailure', ...e });
-      } else {
-        alert.raw(<p className="padding-small text-size-biggest text-weight-bolder">{i18next.t('ConnectionIssue')}</p>);
-      }
-    }
-  }),
-  fetchReport: createAsyncThunk('ordering/orderStatus/reportDriver/fetchReport', (data, thunkAPI) => {
-    const { getState } = thunkAPI;
-    const state = getState();
-    const receiptNumber = getReceiptNumber(state);
-
-    return ApiFetch.get(Url.API_URLS.QUERY_FEED_BACK.url, {
-      queryParams: {
-        receiptNumber,
-      },
-    });
-  }),
-};
-
-export const reportDriverSlice = createSlice({
+const { reducer, actions } = createSlice({
   name: 'ordering/orderStatus/reportDriver',
   initialState,
   reducers: {
@@ -164,20 +72,32 @@ export const reportDriverSlice = createSlice({
     },
   },
   extraReducers: {
-    [thunks.fetchReport.pending]: state => {
+    [fetchReport.pending.type]: state => {
       state.showPageLoader = true;
     },
-    [thunks.fetchReport.fulfilled]: (state, action) => {
+    [fetchReport.fulfilled.type]: (state, action) => {
       const feedBack = _get(action.payload, 'data.feedBack', null);
       state.showPageLoader = false;
       state.submitStatus = feedBack ? SUBMIT_STATUS.SUBMITTED : SUBMIT_STATUS.NOT_SUBMIT;
     },
-    [thunks.fetchReport.rejected]: state => {
+    [fetchReport.rejected.type]: state => {
       state.showPageLoader = false;
+    },
+    [submitReport.pending.type]: state => {
+      state.submitStatus = SUBMIT_STATUS.IN_PROGRESS;
+    },
+    [submitReport.fulfilled.type]: state => {
+      state.submitStatus = SUBMIT_STATUS.SUBMITTED;
+    },
+    [submitReport.rejected.type]: state => {
+      state.submitStatus = SUBMIT_STATUS.NOT_SUBMIT;
+    },
+    [uploadReport.fulfilled.type]: (state, action) => {
+      const location = _get(action.payload, 'location', '');
+      state.uploadPhoto.location = location;
     },
   },
 });
 
-export default reportDriverSlice.reducer;
-
-export const { actions, reducer } = reportDriverSlice;
+export default reducer;
+export { actions };

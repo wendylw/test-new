@@ -24,6 +24,7 @@ const PromotionBar = () => {
         role="button"
         tabIndex="0"
         className={styles.promotionBar}
+        data-test-id="ordering.menu.promotion-bar.show-btn"
         onClick={() => {
           dispatch(setPromotionDrawerVisible(true));
         }}

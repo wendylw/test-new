@@ -94,7 +94,7 @@ const MenuStoreInfo = () => {
     }
     // do NOT add isStoreInfoReady as dependency, otherwise the storeNameInView will be set to false then back to true
     // in a short time, which will cause the native header blinks (FB-3535).
-  }, [dispatch, storeNameInView]);
+  }, [dispatch, isStoreInfoReady, storeNameInView]);
 
   if (!isStoreInfoReady) {
     return null;
