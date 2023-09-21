@@ -556,6 +556,7 @@ PageLogin.propTypes = {
   shouldShowGuestOption: PropTypes.bool,
   isOtpErrorFieldVisible: PropTypes.bool,
   isAlipayMiniProgram: PropTypes.bool,
+  isGCashMiniProgram: PropTypes.bool,
   /* eslint-disable react/forbid-prop-types */
   user: PropTypes.object,
   otpError: PropTypes.object,
@@ -596,6 +597,7 @@ PageLogin.defaultProps = {
   shouldShowGuestOption: false,
   isOtpErrorFieldVisible: false,
   isAlipayMiniProgram: false,
+  isGCashMiniProgram: false,
   storeInfoForCleverTap: null,
   errorPopUpI18nKeys: {
     title: '',
