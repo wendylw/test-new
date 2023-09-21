@@ -6,7 +6,7 @@ import {
   getOtpRequest,
   getIsLoginRequestStatusPending,
   getIsQrOrderingShippingType,
-  getIsGuestLoginEnabled,
+  getIsGuestLoginDisabled,
 } from '../../../redux/modules/app';
 import { ERROR_TYPES } from '../../../../utils/api/constants';
 
@@ -126,7 +126,7 @@ export const getShouldShowLoader = createSelector(
 );
 
 export const getShouldShowGuestOption = createSelector(
-  getIsGuestLoginEnabled,
+  getIsGuestLoginDisabled,
   getIsQrOrderingShippingType,
-  (isGuestLoginEnabled, isQrOrderingShippingType) => isQrOrderingShippingType && isGuestLoginEnabled
+  (isGuestLoginDisabled, isQrOrderingShippingType) => isQrOrderingShippingType && !isGuestLoginDisabled
 );

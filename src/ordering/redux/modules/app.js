@@ -1723,8 +1723,8 @@ export const getQROrderingSettings = createSelector(getBusinessInfo, businessInf
   _get(businessInfo, 'qrOrderingSettings', null)
 );
 
-export const getIsGuestLoginEnabled = createSelector(getQROrderingSettings, qrOrderingSettings =>
-  _get(qrOrderingSettings, 'enableGuestLogin', false)
+export const getIsGuestLoginDisabled = createSelector(getQROrderingSettings, qrOrderingSettings =>
+  _get(qrOrderingSettings, 'disableGuestLogin', false)
 );
 
 export const getSearchingTags = createSelector(getQROrderingSettings, qrOrderingSettings =>
