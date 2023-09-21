@@ -62,11 +62,11 @@ window.XMLHttpRequest.prototype.open = function() {
   });
   originXHROpen.apply(this, arguments);
 };
-/* eslint-disable */
+/* eslint-enable */
 
 const originFetch = window.fetch;
 window.fetch = function fetch(...args) {
-  var promise = originFetch(...args).then(resp => {
+  const promise = originFetch(...args).then(resp => {
     const { url } = resp;
     if (isRelativePath(url) && resp.status >= 500) {
       Sentry.withScope(scope => {
@@ -95,14 +95,7 @@ try {
   window.newrelic?.setCustomAttribute('app_plt', platform);
   Sentry.setTag('app_plt', platform);
 } catch (e) {
-  console.log(e);
-}
-
-class SentryCapturedError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'SentryCapturedError';
-  }
+  // Do nothing
 }
 
 const logUrlChange = type => {

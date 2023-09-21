@@ -1,7 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
-import Constants from '../../../../../../utils/constants';
+import Constants, { API_REQUEST_STATUS, REFERRER_SOURCE_TYPES } from '../../../../../../utils/constants';
 import {
   CASHBACK_CAN_CLAIM_STATUS_LIST,
   AFTER_PAID_STATUS_LIST,
@@ -28,7 +28,7 @@ import {
   getAllowAnonymousQROrdering,
 } from '../../../../../redux/modules/app';
 
-const { ORDER_STATUS, DELIVERY_METHOD, API_REQUEST_STATUS, REFERRER_SOURCE_TYPES } = Constants;
+const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
 export const getStoreHashCode = state => state.orderStatus.thankYou.storeHashCode;
 

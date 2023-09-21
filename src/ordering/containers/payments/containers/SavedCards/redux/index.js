@@ -1,13 +1,13 @@
+import _first from 'lodash/first';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { get } from '../../../../../../utils/api/api-fetch';
 import Url from '../../../../../../utils/url';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import _first from 'lodash/first';
 
 const thunks = {
-  fetchSavedCards: createAsyncThunk('ordering/payments/savedCards/fetchSavedCards', async ({ userId, paymentName }) => {
-    return get(Url.API_URLS.GET_SAVED_CARD(userId).url, { queryParams: { provider: paymentName } });
-  }),
+  fetchSavedCards: createAsyncThunk('ordering/payments/savedCards/fetchSavedCards', async ({ userId, paymentName }) =>
+    get(Url.API_URLS.GET_SAVED_CARD(userId).url, { queryParams: { provider: paymentName } })
+  ),
 };
 
 const initialState = {

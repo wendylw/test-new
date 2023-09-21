@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import qs from 'qs';
 import i18next from 'i18next';
 import { combineReducers } from 'redux';
@@ -8,9 +9,14 @@ import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
 import _lowerCase from 'lodash/lowerCase';
 import _cloneDeep from 'lodash/cloneDeep';
-import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
+import { replace } from 'connected-react-router';
+import { createCurrencyFormatter } from '@storehub/frontend-utils';
+import Constants, { API_REQUEST_STATUS, REGISTRATION_SOURCE } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
-import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
+import {
+  isAlipayMiniProgram as isAlipayMiniProgramUtil,
+  getAccessToken,
+} from '../../../common/utils/alipay-miniprogram-client';
 import * as VoucherUtils from '../../../voucher/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
@@ -32,14 +38,12 @@ import {
   getSavedAddressId,
   getIsAddressRequestStatusFulfilled,
 } from '../../../redux/modules/address/selectors';
-import cartReducer from '../cart';
-import { getCartItems as getNewCartItems } from '../cart/selectors';
+import { getCartItems as getNewCartItems } from './cart/selectors';
 import { getProfileInfo, postLoginGuest } from './api-request';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
-import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import logger from '../../../utils/monitoring/logger';
 import {
   isFromBeepSite,
@@ -47,13 +51,11 @@ import {
   isFromFoodCourt,
   isProductSoldOut,
   isGCashMiniProgram,
-  getFulfillDate,
 } from '../../../common/utils';
-import { replace } from 'connected-react-router';
 import { toast } from '../../../common/utils/feedback';
 import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 
-const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
+const { AUTH_INFO, DELIVERY_METHOD, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 
 export const types = APP_TYPES;
@@ -225,14 +227,12 @@ const generatorShoppingCartForVoucherOrdering = () => {
   };
 };
 
-export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) => {
-  return {
-    [API_REQUEST]: {
-      types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
-      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
-    },
-  };
-};
+export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) => ({
+  [API_REQUEST]: {
+    types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
+    ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
+  },
+});
 
 // variables := { productId, variations }
 const removeShoppingCartItem = variables => {
@@ -305,7 +305,7 @@ const fetchProductDetail = variables => {
   };
 };
 
-//action creators
+// action creators
 export const actions = {
   loginApp: ({ accessToken, refreshToken, source = null, shippingType = null }) => async (dispatch, getState) => {
     try {
@@ -328,9 +328,11 @@ export const actions = {
         payload: { ...result, source },
       });
     } catch (error) {
+      CleverTap.pushEvent('Login - login failed');
+
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
-        error: error,
+        error,
         payload: { source },
       });
     }
@@ -430,23 +432,23 @@ export const actions = {
       }
 
       const tokens = await NativeMethods.getTokenAsync();
-      const { access_token, refresh_token } = tokens;
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
       await dispatch(
         actions.loginApp({
-          accessToken: access_token,
-          refreshToken: refresh_token,
+          accessToken,
+          refreshToken,
         })
       );
 
       const isExpired = getUserIsExpired(getState());
 
       if (isExpired) {
-        const tokens = await NativeMethods.tokenExpiredAsync();
-        const { access_token, refresh_token } = tokens;
+        const validTokens = await NativeMethods.tokenExpiredAsync();
+
         await dispatch(
           actions.loginApp({
-            accessToken: access_token,
-            refreshToken: refresh_token,
+            accessToken: validTokens.access_token,
+            refreshToken: validTokens.refresh_token,
           })
         );
       }
@@ -458,8 +460,8 @@ export const actions = {
     }
   },
 
-  getLoginStatus: () => (dispatch, getState) => {
-    return dispatch({
+  getLoginStatus: () => (dispatch, getState) =>
+    dispatch({
       types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
       requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(async resp => {
         const { consumerId, login } = resp || {};
@@ -490,10 +492,12 @@ export const actions = {
           return resp;
         } catch (error) {
           logger.error('Ordering_App_getLoginStatus', { message: error?.message });
+
+          // profile API request won't block the login status request
+          return resp;
         }
       }),
-    });
-  },
+    }),
 
   hideApiMessageModal: () => ({
     type: types.CLEAR_API_ERROR,
@@ -557,9 +561,7 @@ export const actions = {
     await dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
   },
 
-  removeShoppingCartItem: variables => dispatch => {
-    return dispatch(removeShoppingCartItem(variables));
-  },
+  removeShoppingCartItem: variables => dispatch => dispatch(removeShoppingCartItem(variables)),
 
   addOrUpdateShoppingCartItem: variables => (dispatch, getState) => {
     const state = getState();
@@ -577,11 +579,9 @@ export const actions = {
     code,
   }),
 
-  clearAll: () => dispatch => {
-    return dispatch(emptyShoppingCart());
-  },
+  clearAll: () => dispatch => dispatch(emptyShoppingCart()),
 
-  initDeliveryDetails: () => async (dispatch, getState) => {
+  initDeliveryDetails: () => async dispatch => {
     const localStoragePhone = localStorage.getItem('user.p') || '';
 
     const payload = {
@@ -743,10 +743,11 @@ export const actions = {
       const isTokenExpired = getUserIsExpired(getState());
 
       if (isTokenExpired) {
-        const tokens = await NativeMethods.tokenExpiredAsync();
-        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+        const validTokens = await NativeMethods.tokenExpiredAsync();
 
-        await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+        await dispatch(
+          actions.loginApp({ accessToken: validTokens.access_token, refreshToken: validTokens.refresh_token, source })
+        );
       }
     } catch (e) {
       if (e?.code === 'B0001') {
@@ -774,13 +775,13 @@ export const actions = {
 
       const businessUTCOffset = getBusinessUTCOffset(getState());
 
-      const tokens = await TngUtils.getAccessToken({ business: business });
+      const tokens = await TngUtils.getAccessToken({ business });
 
-      const { access_token, refresh_token } = tokens;
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
       const result = await ApiRequest.login({
-        accessToken: access_token,
-        refreshToken: refresh_token,
+        accessToken,
+        refreshToken,
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
       });
 
@@ -789,6 +790,8 @@ export const actions = {
         payload: result,
       });
     } catch (error) {
+      CleverTap.pushEvent('Login - login failed');
+
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
         error,
@@ -804,7 +807,7 @@ export const actions = {
 
   // TODO: Migrate isTNGMiniProgram to here
   loginByAlipayMiniProgram: () => async (dispatch, getState) => {
-    if (!isAlipayMiniProgram()) {
+    if (!isAlipayMiniProgramUtil()) {
       throw new Error('Not in alipay mini program');
     }
 
@@ -921,10 +924,16 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response, prompt, error, responseGql, payload } = action;
-  const { consumerId, login, supportWhatsApp } = response || {};
+  const { consumerId, login, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken } = response || {};
+
+  const userConsumerId = _get(payload, 'consumerId', '');
+  const userInfo = _get(payload, 'user', {});
+  const { data } = responseGql || {};
+  const { business, onlineStoreInfo } = data || {};
   const source = _get(payload, 'source', null);
   const otpType = _get(payload, 'otpType', null);
   const isFromBeepApp = source === REGISTRATION_SOURCE.BEEP_APP;
+  const loginByBeepAppStatus = isFromBeepApp ? API_REQUEST_STATUS.REJECTED : null;
 
   switch (type) {
     case types.RESET_CREATE_OTP_REQUEST:
@@ -986,18 +995,13 @@ const user = (state = initialState.user, action) => {
     case types.GET_OTP_SUCCESS:
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.FULFILLED } };
     case types.CREATE_OTP_SUCCESS:
-      const { access_token, refresh_token } = response;
-
       return {
         ...state,
         isFetching: false,
-        accessToken: access_token,
-        refreshToken: refresh_token,
+        accessToken,
+        refreshToken,
       };
     case types.CREATE_LOGIN_SUCCESS: {
-      const consumerId = _get(payload, 'consumerId', '');
-      const user = _get(payload, 'user', {});
-
       if (state.accessToken) {
         delete state.accessToken;
       }
@@ -1008,15 +1012,15 @@ const user = (state = initialState.user, action) => {
 
       return {
         ...state,
-        consumerId,
+        consumerId: userConsumerId,
         // WB-5109: If login status refactor, please to remove profile data,
         // BE has any update profile field should update this reducer for api/login
         profile: {
           ...state.profile,
-          phone: user.phone,
-          name: user.firstName,
-          email: user.email,
-          birthday: user.birthday,
+          phone: userInfo.phone,
+          name: userInfo.firstName,
+          email: userInfo.email,
+          birthday: userInfo.birthday,
           status: API_REQUEST_STATUS.FULFILLED,
         },
         isLogin: true,
@@ -1036,10 +1040,6 @@ const user = (state = initialState.user, action) => {
         fetchLoginRequestStatus: API_REQUEST_STATUS.FULFILLED,
       };
     case types.CREATE_LOGIN_FAILURE:
-      CleverTap.pushEvent('Login - login failed');
-
-      const loginByBeepAppStatus = isFromBeepApp ? API_REQUEST_STATUS.REJECTED : null;
-
       if (error?.error === 'TokenExpiredError' || error?.error === 'JsonWebTokenError') {
         return {
           ...state,
@@ -1062,19 +1062,21 @@ const user = (state = initialState.user, action) => {
       return { ...state, prompt };
 
     case types.UPDATE_USER:
-      return Object.assign({}, state, action.user);
+      return {
+        ...state,
+        ...action.user,
+      };
     case types.FETCH_ONLINESTOREINFO_SUCCESS:
     case types.FETCH_COREBUSINESS_SUCCESS:
-      const { data } = responseGql;
-      const { business, onlineStoreInfo } = data || {};
-
       if (!state.phone && business && business.country) {
         return { ...state, country: business.country };
-      } else if (!state.phone && onlineStoreInfo && onlineStoreInfo.country) {
-        return { ...state, country: onlineStoreInfo.country };
-      } else {
-        return state;
       }
+
+      if (!state.phone && onlineStoreInfo && onlineStoreInfo.country) {
+        return { ...state, country: onlineStoreInfo.country };
+      }
+
+      return state;
 
     case types.GET_WHATSAPPSUPPORT_REQUEST:
       return { ...state, noWhatsAppAccount: true };
@@ -1120,13 +1122,13 @@ const error = (state = initialState.error, action) => {
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
-  } else if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
-    let errorMessage = message;
+  }
 
+  if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
     return {
       ...state,
       code,
-      message: errorMessage,
+      message,
     };
   }
 
@@ -1218,7 +1220,7 @@ const apiError = (state = initialState.apiError, action) => {
   const result = response || (responseGql || {}).data || payloadError;
   const errorCode = code || (result || {}).code;
   const { ERROR_CODE_MAP } = Constants;
-  const error = ERROR_CODE_MAP[errorCode];
+  const errorInfo = ERROR_CODE_MAP[errorCode];
 
   if (type === types.CLEAR_API_ERROR) {
     return {
@@ -1232,20 +1234,20 @@ const apiError = (state = initialState.apiError, action) => {
     };
   }
 
-  if (error) {
+  if (errorInfo) {
     return {
       ...state,
-      show: error.showModal,
+      show: errorInfo.showModal,
       code: errorCode,
-      message: i18next.t(error.title, { error_code: errorCode }),
-      description: i18next.t(error.desc),
-      buttonText: i18next.t(error.buttonText),
-      redirectUrl: error.redirectUrl,
+      message: i18next.t(errorInfo.title, { error_code: errorCode }),
+      description: i18next.t(errorInfo.desc),
+      buttonText: i18next.t(errorInfo.buttonText),
+      redirectUrl: errorInfo.redirectUrl,
     };
-  } else {
-    // TODO add default error message
-    return state;
   }
+
+  // TODO add default error message
+  return state;
 };
 
 const requestInfo = (state = initialState.requestInfo, action) => {
@@ -1262,9 +1264,13 @@ const requestInfo = (state = initialState.requestInfo, action) => {
 const shoppingCart = (state = initialState.shoppingCart, action) => {
   if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
     return { ...state, ...CartModel, isFetching: false, status: API_REQUEST_STATUS.FULFILLED };
-  } else if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
+  }
+
+  if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
     return { ...state, isFetching: true, status: API_REQUEST_STATUS.PENDING };
-  } else if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
+  }
+
+  if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
     const { items = [], unavailableItems = [], displayPromotions, voucher: voucherObject, ...cartBilling } =
       action.response || {};
     let promotion = null;
@@ -1297,9 +1303,13 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
         promotion,
       },
     };
-  } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
+  }
+
+  if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
     return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
-  } else if (action.type === types.UPDATE_SHOPPINGCART_APPLYCASHBACK) {
+  }
+
+  if (action.type === types.UPDATE_SHOPPINGCART_APPLYCASHBACK) {
     return { ...state, billing: { ...state.billing, applyCashback: action.payload } };
   }
 
@@ -1320,6 +1330,24 @@ const addOrUpdateShoppingCartItemRequest = (state = initialState.addOrUpdateShop
 };
 
 const deliveryDetails = (state = initialState.deliveryDetails, action) => {
+  const { response } = action || {};
+  const isAddressAvailable = _get(response, 'availableStatus', false);
+  const deliveryDetailsInfo = isAddressAvailable
+    ? {
+        username: _get(response, 'contactName', ''),
+        phone: _get(response, 'contactNumber', ''),
+        addressId: _get(response, '_id', ''),
+        addressName: _get(response, 'addressName', ''),
+        addressDetails: _get(response, 'addressDetails', ''),
+        deliveryComments: _get(response, 'comments', ''),
+        deliveryToAddress: _get(response, 'deliveryTo', ''),
+        deliveryToLocation: _get(response, 'location', null),
+        deliveryToCity: _get(response, 'city', ''),
+        postCode: _get(response, 'postCode', ''),
+        countryCode: _get(response, 'countryCode', ''),
+      }
+    : {};
+
   switch (action.type) {
     case types.DELIVERY_DETAILS_INIT:
       return {
@@ -1337,24 +1365,6 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
         fetchRequestStatus: API_REQUEST_STATUS.PENDING,
       };
     case types.FETCH_DELIVERYADDRESSDETAIL_SUCCESS:
-      const { response } = action;
-      const isAddressAvailable = _get(response, 'availableStatus', false);
-      const deliveryDetailsInfo = isAddressAvailable
-        ? {
-            username: _get(response, 'contactName', ''),
-            phone: _get(response, 'contactNumber', ''),
-            addressId: _get(response, '_id', ''),
-            addressName: _get(response, 'addressName', ''),
-            addressDetails: _get(response, 'addressDetails', ''),
-            deliveryComments: _get(response, 'comments', ''),
-            deliveryToAddress: _get(response, 'deliveryTo', ''),
-            deliveryToLocation: _get(response, 'location', null),
-            deliveryToCity: _get(response, 'city', ''),
-            postCode: _get(response, 'postCode', ''),
-            countryCode: _get(response, 'countryCode', ''),
-          }
-        : {};
-
       return {
         ...state,
         ...deliveryDetailsInfo,
@@ -1409,7 +1419,6 @@ export default combineReducers({
   apiError,
   shoppingCart,
   addOrUpdateShoppingCartItemRequest,
-  cart: cartReducer,
   deliveryDetails,
   storeHashCode: storeHashCodeReducer,
   coreBusiness,
@@ -1425,9 +1434,13 @@ export const getUserIsExpired = state => state.app.user.isExpired;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
 
-export const getIsGuestMode = createSelector(getUser, user => _get(user, 'guestModeRequest.isGuestMode', false));
+export const getIsGuestMode = createSelector(getUser, userInfo =>
+  _get(userInfo, 'guestModeRequest.isGuestMode', false)
+);
 
-export const getIsGuestModeRequestStatus = createSelector(getUser, user => _get(user, 'guestModeRequest.status', null));
+export const getIsGuestModeRequestStatus = createSelector(getUser, userInfo =>
+  _get(userInfo, 'guestModeRequest.status', null)
+);
 
 export const getIsGuestModeRequestFulfilled = createSelector(
   getIsGuestModeRequestStatus,
@@ -1439,9 +1452,9 @@ export const getIsGuestModeRequestRejected = createSelector(
   status => status === API_REQUEST_STATUS.REJECTED
 );
 
-export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+export const getUserIsLogin = createSelector(getUser, userInfo => _get(userInfo, 'isLogin', false));
 
-export const getFetchLoginRequestStatus = createSelector(getUser, user => user.fetchLoginRequestStatus || null);
+export const getFetchLoginRequestStatus = createSelector(getUser, userInfo => userInfo.fetchLoginRequestStatus || null);
 
 export const getIsFetchLoginStatusFulfilled = createSelector(
   getFetchLoginRequestStatus,
@@ -1459,13 +1472,11 @@ export const getIsFetchLoginStatusComplete = createSelector(
   (isFetchLoginStatusFulfilled, isFetchLoginStatusRejected) => isFetchLoginStatusFulfilled || isFetchLoginStatusRejected
 );
 
-export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
+export const getIsLoginRequestFailed = createSelector(getUser, userInfo => _get(userInfo, 'isError', false));
 
-export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
+export const getIsLoginRequestStatusPending = createSelector(getUser, userInfo => _get(userInfo, 'isFetching', false));
 
-export const getOnlineStoreInfo = state => {
-  return state.entities.onlineStores[state.app.onlineStoreInfo.id];
-};
+export const getOnlineStoreInfo = state => state.entities.onlineStores[state.app.onlineStoreInfo.id];
 
 export const getOnlineStoreInfoStatus = state => state.app.onlineStoreInfo.status;
 
@@ -1512,9 +1523,9 @@ export const getIsUserProfileStatusPending = createSelector(
 );
 
 export const getBusinessInfo = state => {
-  const business = getBusiness(state);
+  const businessName = getBusiness(state);
 
-  return getBusinessByName(state, business) || {};
+  return getBusinessByName(state, businessName) || {};
 };
 
 export const getMerchantCountry = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'country', null));
@@ -1525,11 +1536,9 @@ export const getStoreHashCode = state => state.app.storeHashCode.data;
 
 export const getDeliveryInfo = createSelector(getBusinessInfo, businessInfo => Utils.getDeliveryInfo(businessInfo));
 
-export const getReceiptNumber = state => state.app.cart.receiptNumber;
-
-export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
-  return _get(businessInfo, 'timezoneOffset', 480);
-});
+export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'timezoneOffset', 480)
+);
 
 export const getCoreBusinessAPIStatus = state => state.app.coreBusiness.status;
 
@@ -1563,32 +1572,22 @@ export const getIsProductDetailRequestRejected = createSelector(
 );
 
 // TODO: Utils.getOrderTypeFromUrl() will replace be selector
-export const getEnablePayLater = createSelector(getBusinessInfo, businessInfo => {
-  return (
+export const getEnablePayLater = createSelector(
+  getBusinessInfo,
+  businessInfo =>
     _get(businessInfo, 'qrOrderingSettings.enablePayLater', false) &&
     Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DINE_IN
-  );
-});
-
-export const getOrderingOngoingBannerVisibility = createSelector(
-  getReceiptNumber,
-  getEnablePayLater,
-  (receiptNumber, enablePayLater) => {
-    return receiptNumber && enablePayLater;
-  }
 );
 
 export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => {
-  const deliveryTypes = stores.reduce((types, store) => {
-    return types.concat(store.fulfillmentOptions);
-  }, []);
+  const deliveryTypes = stores.reduce((allTypes, store) => allTypes.concat(store.fulfillmentOptions), []);
 
   return _uniq(deliveryTypes);
 });
 
-export const getStoreId = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'storeId', null));
-export const getShippingType = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'shippingType', null));
-export const getTableId = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'tableId', null));
+export const getStoreId = createSelector(getRequestInfo, info => _get(info, 'storeId', null));
+export const getShippingType = createSelector(getRequestInfo, info => _get(info, 'shippingType', null));
+export const getTableId = createSelector(getRequestInfo, info => _get(info, 'tableId', null));
 
 export const getStore = state => {
   const storeId = getStoreId(state);
@@ -1598,9 +1597,7 @@ export const getStore = state => {
 
 export const getHasSelectedStore = createSelector(getStoreId, storeId => !!storeId);
 
-export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStoreInfo => {
-  return _get(onlineStoreInfo, 'currency', 'MYR');
-});
+export const getBusinessCurrency = createSelector(getOnlineStoreInfo, info => _get(info, 'currency', 'MYR'));
 
 export const getIsEnablePreOrder = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'qrOrderingSettings.enablePreOrder', false)
@@ -1639,12 +1636,12 @@ export const getShippingFee = createSelector(getCartBilling, billing => billing.
 
 export const getDeliveryDetails = state => state.app.deliveryDetails;
 
-export const getDeliveryAddressId = createSelector(getDeliveryDetails, deliveryDetails =>
-  _get(deliveryDetails, 'addressId', null)
+export const getDeliveryAddressId = createSelector(getDeliveryDetails, deliveryDetailInfo =>
+  _get(deliveryDetailInfo, 'addressId', null)
 );
 
-export const getHasFetchDeliveryDetailsRequestCompleted = createSelector(getDeliveryDetails, deliveryDetails =>
-  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(deliveryDetails.fetchRequestStatus)
+export const getHasFetchDeliveryDetailsRequestCompleted = createSelector(getDeliveryDetails, deliveryDetailInfo =>
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(deliveryDetailInfo.fetchRequestStatus)
 );
 
 export const getCartTotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'total', null));
@@ -1668,7 +1665,7 @@ export const getShoppingCart = createSelector(
   (cartBilling, items, unavailableItems, allProducts, categories) => {
     const categoriesKeys = Object.keys(categories) || [];
     const allProductIds = Object.keys(allProducts) || [];
-    const categoryInfo = function(selectedProductObject) {
+    const categoryInfo = selectedProductObject => {
       let categoryName = '';
       let categoryRank = '';
 
@@ -1713,22 +1710,22 @@ export const getShoppingCart = createSelector(
 
 // This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
 export const getStoreInfoForCleverTap = state => {
-  const business = getBusiness(state);
+  const businessName = getBusiness(state);
   const allBusinessInfo = getAllBusinesses(state);
   const { billing: cartSummary } = state.app.shoppingCart;
 
-  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartSummary });
+  return StoreUtils.getStoreInfoForCleverTap({ business: businessName, allBusinessInfo, cartSummary });
 };
 
 export const getIsCartStatusRejected = createSelector(getCartStatus, status => status === API_REQUEST_STATUS.REJECTED);
 
-export const getUserEmail = createSelector(getUser, user => _get(user, 'profile.email', ''));
+export const getUserEmail = createSelector(getUser, userInfo => _get(userInfo, 'profile.email', ''));
 
-export const getUserName = createSelector(getUser, user => _get(user, 'profile.name', ''));
+export const getUserName = createSelector(getUser, userInfo => _get(userInfo, 'profile.name', ''));
 
-export const getUserPhone = createSelector(getUser, user => _get(user, 'profile.phone', ''));
+export const getUserPhone = createSelector(getUser, userInfo => _get(userInfo, 'profile.phone', ''));
 
-export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', ''));
+export const getUserConsumerId = createSelector(getUser, userInfo => _get(userInfo, 'consumerId', ''));
 
 export const getStoreName = createSelector(getStore, store => _get(store, 'name', ''));
 
@@ -1798,8 +1795,8 @@ export const getEnableConditionalFreeShipping = createSelector(getQROrderingSett
   _get(qrOrderingSettings, 'defaultShippingZone.defaultShippingZoneMethod.enableConditionalFreeShipping', null)
 );
 
-const mergeWithShoppingCart = (onlineCategory, carts) => {
-  if (!Array.isArray(onlineCategory)) {
+const mergeWithShoppingCart = (onlineCategories, carts) => {
+  if (!Array.isArray(onlineCategories)) {
     return null;
   }
 
@@ -1821,12 +1818,12 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
     });
   }
 
-  return onlineCategory.map(category => {
+  return onlineCategories.map(category => {
     const { products } = category;
 
     category.cartQuantity = 0;
 
-    products.forEach(function(product) {
+    products.forEach(product => {
       product.variations = product.variations || [];
       product.soldOut = isProductSoldOut(product || {});
       product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
@@ -1857,21 +1854,19 @@ export const getCategoryProductList = createSelector(
     }
 
     const newCategories = Object.values(categories)
-      .map((category, categoryId) => {
-        return {
-          ...category,
-          products: category.products.map((id, index) => {
-            const product = JSON.parse(JSON.stringify(allProducts[id]));
+      .map((category, categoryId) => ({
+        ...category,
+        products: category.products.map((id, index) => {
+          const product = JSON.parse(JSON.stringify(allProducts[id]));
 
-            return {
-              categoryName: category.name,
-              categoryRank: categoryId + 1,
-              rank: index + 1,
-              ...product,
-            };
-          }),
-        };
-      })
+          return {
+            categoryName: category.name,
+            categoryRank: categoryId + 1,
+            rank: index + 1,
+            ...product,
+          };
+        }),
+      }))
       .filter(c => c.products.length);
 
     return mergeWithShoppingCart(newCategories, carts);
@@ -1879,24 +1874,23 @@ export const getCategoryProductList = createSelector(
 );
 
 // TODO: add Utils methods to state rather than using Utils
-export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
-export const getIsGCashMiniProgram = state => isGCashMiniProgram();
-export const getIsAlipayMiniProgram = state => isAlipayMiniProgram();
-export const getIsDigitalType = state => Utils.isDigitalType();
-export const getIsDeliveryOrder = state => Utils.isDeliveryOrder();
-export const getIsQROrder = state => Utils.isQROrder();
-export const getIsWebview = state => Utils.isWebview();
-export const getIsInBrowser = state => Utils.getClient() === CLIENTS.WEB;
-// TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
+export const getIsTNGMiniProgram = () => Utils.isTNGMiniProgram();
+export const getIsGCashMiniProgram = () => isGCashMiniProgram();
+export const getIsAlipayMiniProgram = () => isAlipayMiniProgramUtil();
+export const getIsDigitalType = () => Utils.isDigitalType();
+export const getIsDeliveryOrder = () => Utils.isDeliveryOrder();
+export const getIsQROrder = () => Utils.isQROrder();
+export const getIsWebview = () => Utils.isWebview();
+export const getIsInBrowser = () => Utils.getClient() === CLIENTS.WEB;
 export const getIsInAppOrMiniProgram = createSelector(
   getIsWebview,
   getIsTNGMiniProgram,
   getIsAlipayMiniProgram,
   (isWebview, isTNGMiniProgram, isAlipayMiniProgram) => isWebview || isTNGMiniProgram || isAlipayMiniProgram
 );
-export const getIsFromBeepSite = state => isFromBeepSite();
-export const getIsFromBeepSiteOrderHistory = state => isFromBeepSiteOrderHistory();
-export const getIsFromFoodCourt = state => isFromFoodCourt();
+export const getIsFromBeepSite = () => isFromBeepSite();
+export const getIsFromBeepSiteOrderHistory = () => isFromBeepSiteOrderHistory();
+export const getIsFromFoodCourt = () => isFromFoodCourt();
 
 /**
  * Is delivery shipping type
@@ -1967,8 +1961,8 @@ export const getIsValidCreateOrder = createSelector(
   (isFreeOrder, isTNGMiniProgram, isAlipayMiniProgram) => isTNGMiniProgram || isAlipayMiniProgram || isFreeOrder
 );
 
-export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCart => {
-  const { items } = shoppingCart || {};
+export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCartInfo => {
+  const { items } = shoppingCartInfo || {};
   let totalPrice = 0;
 
   (items || []).forEach(item => {

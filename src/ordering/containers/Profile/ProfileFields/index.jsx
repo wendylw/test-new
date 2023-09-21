@@ -82,6 +82,7 @@ const ProfileFields = () => {
             type="text"
             required
             value={profileName}
+            data-test-id="ordering.profile.name-input"
             onChange={handleChangeName}
             onFocus={handleFocusNameInput}
             onBlur={handleBlurNameInput}
@@ -109,6 +110,7 @@ const ProfileFields = () => {
             type="email"
             required
             value={profileEmail}
+            data-test-id="ordering.profile.email-input"
             onChange={handleChangeEmail}
             onFocus={handleFocusEmailInput}
             onBlur={handleBlurEmailInput}
@@ -144,6 +146,7 @@ const ProfileFields = () => {
                     type="date"
                     min={BIRTHDAY_DATE.MIN}
                     max={BIRTHDAY_DATE.MAX}
+                    data-test-id="ordering.profile.birthday-input"
                     onChange={handleSelectBirthDay}
                   />
                   {/* Reference input text is for most can */}
@@ -153,6 +156,7 @@ const ProfileFields = () => {
                     value={profileBirthday}
                     placeholder={PROFILE_BIRTHDAY_FORMAT}
                     type="text"
+                    data-test-id="ordering.profile.birthday-picker"
                     onClick={e => {
                       try {
                         e.stopPropagation();
@@ -175,6 +179,7 @@ const ProfileFields = () => {
                   value={profileBirthday}
                   placeholder={PROFILE_BIRTHDAY_FORMAT}
                   type="text"
+                  data-test-id="ordering.profile.birthday-input"
                   onChange={handleChangeBirthDay}
                   onFocus={handleFocusBirthdayInput}
                   onBlur={handleBlurBirthdayInput}

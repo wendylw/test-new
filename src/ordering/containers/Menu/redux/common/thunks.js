@@ -47,7 +47,7 @@ import {
   getStoreStatus,
   getHasSelectedProductItemInfo,
 } from './selectors';
-import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/cart/thunks';
+import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/modules/cart/thunks';
 import { PATH_NAME_MAPPING, SHIPPING_TYPES, SOURCE_TYPE } from '../../../../../common/utils/constants';
 import {
   getExpectedDeliveryDateFromSession,

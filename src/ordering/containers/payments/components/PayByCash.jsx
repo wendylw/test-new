@@ -29,12 +29,14 @@ function PayByCash({ modalDisplay, updatePayByCashPromptDisplayStatus, onPayWith
         <Modal.Footer className="flex flex-stretch">
           <button
             className="payment-item-prompt__default-button button button__link flex__fluid-content text-weight-bolder text-uppercase"
+            data-test-id="ordering.payments.pay-by-cash.back-btn"
             onClick={() => handleToggleModal(false)}
           >
             {t('GoBack')}
           </button>
           <button
             className="payment-item-prompt__fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
+            data-test-id="ordering.payments.pay-by-cash.confirm-btn"
             onClick={() => {
               handleToggleModal(false);
               onPayWithCash();

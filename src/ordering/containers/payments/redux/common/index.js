@@ -38,7 +38,7 @@ const { reducer, actions } = createSlice({
     },
   },
   extraReducers: {
-    [loadBilling.pending]: (state, action) => {
+    [loadBilling.pending]: state => {
       state.billing.status = API_REQUEST_STATUS.PENDING;
     },
     [loadBilling.fulfilled]: (state, { payload }) => {
