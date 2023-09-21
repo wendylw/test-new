@@ -565,6 +565,7 @@ CustomerInfo.propTypes = {
   /* eslint-enable */
   isTNGMiniProgram: PropTypes.bool,
   shouldGoToAddNewAddressPage: PropTypes.bool,
+  isDisabledWebPayment: PropTypes.bool,
   deliveryDetails: PropTypes.shape({
     username: PropTypes.string,
     phone: PropTypes.string,
@@ -608,6 +609,7 @@ CustomerInfo.defaultProps = {
   storeInfoForCleverTap: null,
   isTNGMiniProgram: false,
   shouldGoToAddNewAddressPage: false,
+  isDisabledWebPayment: false,
   deliveryDetails: {
     username: '',
     phone: '',
