@@ -146,7 +146,13 @@ const StoreRedemption = () => {
             >
               <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
             </a>
-            <a href="https://onelink.tngd.my/8mmV/beepTNG?af_xp=custom&pid=MULTI&deep_link_value=tngdwallet%3A%2F%2Fclient%2Fdl%2Fmp%3Fmpid%3D2171020089701729%26af_force_deeplink%3Dtrue%26query%3DqrValue%253Dhttps%253A%252F%252Fjw.beep.test13.shub.us%252Floyalty%252Fstore-redemption%253Fh%253DztS8%25252Bu1vp2fuoKYiXuFw9aOhCL2MxzhInHjhggf8FHo%25253D%2523">
+            <a
+              href={`https://onelink.tngd.my/8mmV/beepTNG?af_xp=custom&pid=MULTI&deep_link_value=${encodeURIComponent(
+                `tngdwallet://client/dl/mp?mpid=2171020089701729&af_force_deeplink=true&page=pages/index/index&query=${encodeURIComponent(
+                  'qrValue=https://jw.beep.test13.shub.us/loyalty/store-redemption?h=ztS8%2Bu1vp2fuoKYiXuFw9aOhCL2MxzhInHjhggf8FHo%3D'
+                )}`
+              )}`}
+            >
               <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
             </a>
           </div>
