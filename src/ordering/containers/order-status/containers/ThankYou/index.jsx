@@ -801,7 +801,7 @@ export class ThankYou extends PureComponent {
       'Store Name': _get(order, 'storeInfo.name', ''),
       'Charged ID': order.orderId,
       Items: itemsList,
-      'Order Source': Utils.getOrderSourceForCleverTab(),
+      'Order Source': Utils.getOrderSourceForCleverTap(),
       'Pre-order Period': preOrderPeriod,
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
