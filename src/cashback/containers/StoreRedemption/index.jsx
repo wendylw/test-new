@@ -148,8 +148,8 @@ const StoreRedemption = () => {
             </a>
             <a
               href={`https://onelink.tngd.my/8mmV/beepTNG?af_xp=custom&pid=MULTI&deep_link_value=${encodeURIComponent(
-                `tngdwallet://client/dl/mp?mpid=2171020089701729&af_force_deeplink=true&path=pages/index/index&query=${encodeURIComponent(
-                  'qrValue=https://jw.beep.test13.shub.us/loyalty/store-redemption?h=ztS8%2Bu1vp2fuoKYiXuFw9aOhCL2MxzhInHjhggf8FHo%3D'
+                `tngdwallet://client/dl/mp?mpid=2171020089701729&path=pages/index/index&af_force_deeplink=true&qrValue=${encodeURIComponent(
+                  'https://jw.beep.test13.shub.us/loyalty/store-redemption?h=ztS8%2Bu1vp2fuoKYiXuFw9aOhCL2MxzhInHjhggf8FHo%3D'
                 )}`
               )}`}
             >
