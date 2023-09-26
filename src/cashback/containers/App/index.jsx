@@ -18,6 +18,7 @@ import {
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
 import { isTNGMiniProgram, isGCashMiniProgram, isWebview } from '../../../common/utils';
+import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
 import faviconImage from '../../../images/favicon.ico';
 import '../../../Common.scss';
 import './Loyalty.scss';
@@ -42,14 +43,13 @@ class App extends Component {
 
       await Promise.all(initRequests);
 
-      // TODO: Migrate isTNGMiniProgram to isMiniProgramLogin
       // 2. login
-      // TNGD code is executed at the very beginning.
+      // TNGD & GCash code is executed at the very beginning.
       // Because the MP and Beep accounts are not synchronized,
       // it is impossible to determine that the accounts are the same
-      if (isTNGMiniProgram()) {
+      if (isAlipayMiniProgram()) {
         // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
-        await appActions.loginByTngMiniProgram();
+        await appActions.loginByAlipayMiniProgram();
 
         const { isTngAuthorizationError } = this.props;
 

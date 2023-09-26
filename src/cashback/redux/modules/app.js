@@ -20,6 +20,7 @@ import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
 import Url from '../../../utils/url';
 import * as TngUtils from '../../../utils/tng-utils';
+import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
 import * as ApiRequest from '../../../utils/api-request';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
@@ -31,7 +32,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo, getCoreBusinessInfo } from './api-request';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
-import { isJSON, isTNGMiniProgram, isGCashMiniProgram } from '../../../common/utils';
+import { isJSON, isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
@@ -53,7 +54,7 @@ export const initialState = {
       status: null,
       error: null,
     },
-    loginTngRequest: {
+    loginAlipayMPRequest: {
       status: null,
       error: null,
     },
@@ -381,7 +382,7 @@ export const actions = {
         type: types.CREATE_LOGIN_ALIPAY_REQUEST,
       });
 
-      if (!isGCashMiniProgram()) {
+      if (!isAlipayMiniProgram()) {
         throw new Error('Not in alipay mini program');
       }
 
@@ -649,26 +650,26 @@ const user = (state = initialState.user, action) => {
       return { ...state, showLoginModal: true };
     case types.HIDE_LOGIN_MODAL:
       return { ...state, showLoginModal: false };
-    case types.CREATE_LOGIN_TNGD_REQUEST:
+    case types.CREATE_LOGIN_ALIPAY_REQUEST:
       return {
         ...state,
-        loginTngRequest: {
+        loginAlipayMPRequest: {
           status: API_REQUEST_STATUS.PENDING,
           error: null,
         },
       };
-    case types.CREATE_LOGIN_TNGD_SUCCESS:
+    case types.CREATE_LOGIN_ALIPAY_SUCCESS:
       return {
         ...state,
-        loginTngRequest: {
+        loginAlipayMPRequest: {
           status: API_REQUEST_STATUS.FULFILLED,
           error: null,
         },
       };
-    case types.CREATE_LOGIN_TNGD_FAILURE:
+    case types.CREATE_LOGIN_ALIPAY_FAILURE:
       return {
         ...state,
-        loginTngRequest: {
+        loginAlipayMPRequest: {
           status: API_REQUEST_STATUS.REJECTED,
           error,
         },
@@ -792,7 +793,7 @@ export default combineReducers({
 // selectors
 export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
-export const getLoginTngRequest = state => state.app.user.loginTngRequest;
+export const getLoginAlipayMPRequest = state => state.app.user.loginAlipayMPRequest;
 export const getUserProfile = state => state.app.user.profile;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
@@ -978,10 +979,13 @@ export const getShouldShowLoader = createSelector(
   (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
 );
 
-export const getLoginTngRequestError = createSelector(getLoginTngRequest, loginTngRequest => loginTngRequest.error);
+export const getLoginAlipayMPRequestError = createSelector(
+  getLoginAlipayMPRequest,
+  loginAlipayMPRequest => loginAlipayMPRequest.error
+);
 
-// If error code is 10, it means user has not authorized the mini program. This error from TNGD Mini Program, Aplipay will response 10 error, get access token in mounted.
-export const getIsTngAuthorizationError = createSelector(
-  getLoginTngRequestError,
-  loginTngRequestError => (loginTngRequestError?.error || null) === 10
+// If error code is 10, it means user has not authorized the mini program. This error from TNGD or GCash Mini Program, Aplipay will response 10 error, get access token in mounted.
+export const getIsAlipayAuthorizationError = createSelector(
+  getLoginAlipayMPRequestError,
+  loginAlipayMPRequestError => (loginAlipayMPRequestError?.error || null) === 10
 );
