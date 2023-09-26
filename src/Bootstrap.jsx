@@ -12,7 +12,6 @@ import './Bootstrap.scss';
 import * as NativeMethods from './utils/native-methods';
 import logger from './utils/monitoring/logger';
 import { initDevTools } from './utils/dev-tools';
-import { isRequiredDevTools } from './utils/tng-utils';
 import { isRequiredAlipayMiniProgramDevTools } from './common/utils/alipay-miniprogram-client';
 import './utils/growthbook/setup';
 
@@ -150,13 +149,12 @@ class Bootstrap extends Component {
   }
 }
 
-// enable dev-tools in tng mini-program
+// enable dev-tools in tng & gcash mini-program
 (async () => {
   try {
-    const result = await isRequiredDevTools();
     const alipayMiniProgramResult = await isRequiredAlipayMiniProgramDevTools();
 
-    if (result || alipayMiniProgramResult) {
+    if (alipayMiniProgramResult) {
       initDevTools();
     }
   } catch {

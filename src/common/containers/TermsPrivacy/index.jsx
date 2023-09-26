@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import propTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import DocumentHeadInfo from '../../../components/DocumentHeadInfo';
-
+import { isAlipayMiniProgram } from '../../utils/alipay-miniprogram-client';
 import '../../../Common.scss';
-import { getUserAgentInfo, isTNGMiniProgram, isGCashMiniProgram, isWebview } from '../../utils';
+import { getUserAgentInfo, isWebview } from '../../utils';
 import HybridHeader from '../../../components/HybridHeader';
 import { getFiles } from './api-request';
 import './TermsPrivacy.scss';
@@ -54,8 +54,8 @@ export class TermsPrivacy extends Component {
 
   handleContentClick = event => {
     if (event.target?.nodeName.toLowerCase() === 'a') {
-      // block link in beep tng mini program because user can't back this page from third page
-      if (isTNGMiniProgram() || isGCashMiniProgram()) {
+      // block link in beep tng or gcash mini program because user can't back this page from third page
+      if (isAlipayMiniProgram()) {
         event.preventDefault();
         event.stopPropagation();
       }
@@ -66,15 +66,15 @@ export class TermsPrivacy extends Component {
     const { t } = this.props;
     const { termsPrivacyData } = this.state;
     const content = { __html: termsPrivacyData };
-    const headerVisible = isTNGMiniProgram() || isGCashMiniProgram() || isWebview();
+    const headerVisible = isAlipayMiniProgram() || isWebview();
 
     return (
       <DocumentHeadInfo title={t('Beep')}>
         {headerVisible && <HybridHeader title={this.getHeaderTitle()} />}
-        {/* remove link style in tng mini program */}
+        {/* remove link style in tng or gcash mini program */}
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
-          className={isTNGMiniProgram() || isGCashMiniProgram() ? 'terms-privacy__remove-link-style' : ''}
+          className={isAlipayMiniProgram() ? 'terms-privacy__remove-link-style' : ''}
           onClick={this.handleContentClick}
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={content}

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import dayjs from 'dayjs';
 import Constants from '../../../../../../utils/constants';
-import Utils, { isValidUrl, copyDataToClipboard } from '../../../../../../utils/utils';
+import { isValidUrl, copyDataToClipboard } from '../../../../../../utils/utils';
 import logger from '../../../../../../utils/monitoring/logger';
 import { formatCompletePhoneNumber } from '../utils';
 import { getOrderStoreName, getOrderDeliveryInfo } from '../redux/selector';
@@ -180,7 +180,7 @@ function RiderInfo({
       title: t('SelfDeliveryDescription'),
     },
   };
-  const callStoreDisplayState = !isUseStorehubLogistics || inApp || Utils.isTNGMiniProgram() || isAlipayMiniProgram;
+  const callStoreDisplayState = !isUseStorehubLogistics || inApp || isAlipayMiniProgram;
   const handleCopyPhoneNumber = (phone, phoneName) => {
     const result = copyDataToClipboard(phone);
 

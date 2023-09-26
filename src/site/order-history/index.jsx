@@ -63,13 +63,9 @@ class OrderHistory extends React.Component {
   }
 
   login = async () => {
-    const { loginByTngMiniProgram, loginByAlipayMiniProgram, isGCashMiniProgram } = this.props;
+    const { loginByAlipayMiniProgram, isAlipayMiniProgram } = this.props;
 
-    if (Utils.isTNGMiniProgram()) {
-      await loginByTngMiniProgram();
-    }
-
-    if (isGCashMiniProgram) {
+    if (isAlipayMiniProgram) {
       await loginByAlipayMiniProgram();
     }
   };
@@ -206,9 +202,8 @@ OrderHistory.propTypes = {
   pageLoaderVisibility: PropTypes.bool,
   isPingRequestDone: PropTypes.bool,
   isRequestOrderDataInPending: PropTypes.bool,
-  isGCashMiniProgram: PropTypes.bool,
+  isAlipayMiniProgram: PropTypes.bool,
   initOrderHistoryData: PropTypes.func,
-  loginByTngMiniProgram: PropTypes.func,
   loginByAlipayMiniProgram: PropTypes.func,
   loadNextOrderHistoryData: PropTypes.func,
 };
@@ -222,9 +217,8 @@ OrderHistory.defaultProps = {
   pageLoaderVisibility: true,
   isPingRequestDone: false,
   isRequestOrderDataInPending: false,
-  isGCashMiniProgram: false,
+  isAlipayMiniProgram: false,
   initOrderHistoryData: () => {},
-  loginByTngMiniProgram: () => {},
   loginByAlipayMiniProgram: () => {},
   loadNextOrderHistoryData: () => {},
 };
@@ -244,7 +238,6 @@ export default compose(
       isGCashMiniProgram: getIsGCashMiniProgram(state),
     }),
     {
-      loginByTngMiniProgram: appActionCreators.loginByTngMiniProgram,
       loginByAlipayMiniProgram: appActionCreators.loginByAlipayMiniProgram,
       initOrderHistoryData: initOrderHistoryDataThunk,
       loadNextOrderHistoryData: loadNextOrderHistoryDataThunk,

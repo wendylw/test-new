@@ -2,9 +2,9 @@ import { createSelector } from '@reduxjs/toolkit';
 import _get from 'lodash/get';
 import { getBusinessInfo, getShippingType, getFormatCurrencyFunction } from '../../../../redux/modules/app';
 import { getIsFreeDeliveryTagVisible, getFreeShippingFormattedMinAmount } from '../common/selectors';
-import { PROMOTION_CLIENT_TYPES, SHIPPING_TYPES } from '../../../../../common/utils/constants';
+import { PROMOTION_CLIENT_TYPES, SHIPPING_TYPES, CLIENTS } from '../../../../../common/utils/constants';
 import { PROMOTIONS_SHIPPING_TYPES_MAPPING, PROMOTIONS_TYPES } from '../../constants';
-import { isTNGMiniProgram, isGCashMiniProgram, isWebview } from '../../../../../common/utils';
+import { getClient } from '../../../../../common/utils';
 
 export const getAvailablePromotions = createSelector(
   getBusinessInfo,
@@ -16,16 +16,26 @@ export const getAvailablePromotions = createSelector(
     const promotions = _get(businessInfo, 'promotions', []);
     const availablePromotions = promotions
       .filter(promotion => {
-        const { appliedSources, appliedClientTypes } = promotion;
-        const currentClientType = isTNGMiniProgram()
-          ? PROMOTION_CLIENT_TYPES.TNG_MINI_PROGRAM
-          : isGCashMiniProgram()
-          ? PROMOTION_CLIENT_TYPES.GCASH_MINI_PROGRAM
-          : isWebview()
-          ? PROMOTION_CLIENT_TYPES.APP
-          : PROMOTION_CLIENT_TYPES.WEB;
-
         const currentSource = PROMOTIONS_SHIPPING_TYPES_MAPPING[shippingType || SHIPPING_TYPES.DELIVERY];
+        const { appliedSources, appliedClientTypes } = promotion;
+        const client = getClient();
+        let currentClientType = '';
+
+        switch (client) {
+          case CLIENTS.IOS:
+          case CLIENTS.ANDROID:
+            currentClientType = PROMOTION_CLIENT_TYPES.APP;
+            break;
+          case CLIENTS.TNG_MINI_PROGRAM:
+            currentClientType = PROMOTION_CLIENT_TYPES.TNG_MINI_PROGRAM;
+            break;
+          case CLIENTS.GCASH_MINI_PROGRAM:
+            currentClientType = PROMOTION_CLIENT_TYPES.GCASH_MINI_PROGRAM;
+            break;
+          default:
+            currentClientType = PROMOTION_CLIENT_TYPES.WEB;
+            break;
+        }
 
         if (!appliedSources.includes(currentSource)) return false;
 

@@ -19,7 +19,6 @@ import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
 import Url from '../../../utils/url';
-import * as TngUtils from '../../../utils/tng-utils';
 import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
 import * as ApiRequest from '../../../utils/api-request';
 import * as NativeMethods from '../../../utils/native-methods';
@@ -32,7 +31,6 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo, getCoreBusinessInfo } from './api-request';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
-import { isJSON, isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
@@ -338,42 +336,6 @@ export const actions = {
     } catch (e) {
       logger.error('Cashback_syncLoginFromBeepAppFailed', { message: e?.message, code: e?.code });
     }
-  },
-
-  // TODO: Migrate loginByTngMiniProgram to loginByAlipayMiniProgram
-  loginByTngMiniProgram: () => async (dispatch, getState) => {
-    try {
-      dispatch({
-        type: types.CREATE_LOGIN_TNGD_REQUEST,
-      });
-
-      if (!isTNGMiniProgram()) {
-        throw new Error('Not in tng mini program');
-      }
-
-      const business = getBusiness(getState());
-
-      const tokens = await TngUtils.getAccessToken({ business });
-
-      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
-
-      await dispatch(actions.loginApp({ accessToken, refreshToken }));
-
-      dispatch({
-        type: types.CREATE_LOGIN_TNGD_SUCCESS,
-      });
-    } catch (error) {
-      dispatch({
-        type: types.CREATE_LOGIN_TNGD_FAILURE,
-        error: isJSON(error?.message) ? JSON.parse(error.message) : error,
-      });
-
-      logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
-
-      return false;
-    }
-
-    return getIsUserLogin(getState());
   },
 
   loginByAlipayMiniProgram: () => async (dispatch, getState) => {

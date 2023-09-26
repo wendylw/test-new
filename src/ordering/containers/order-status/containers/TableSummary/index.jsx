@@ -17,7 +17,6 @@ import {
   getShippingType,
   getBusinessUTCOffset,
   getIsWebview,
-  getIsTNGMiniProgram,
   getHasLoginGuardPassed,
   getEnableCashback,
   getIsAlipayMiniProgram,
@@ -338,10 +337,8 @@ export class TableSummary extends React.Component {
     const {
       history,
       isWebview,
-      isTNGMiniProgram,
       isAlipayMiniProgram,
       loginByBeepApp,
-      loginByTngMiniProgram,
       loginByAlipayMiniProgram,
       showProcessingLoader,
       hideProcessingLoader,
@@ -349,14 +346,6 @@ export class TableSummary extends React.Component {
 
     if (isWebview) {
       await loginByBeepApp();
-      return;
-    }
-
-    // TODO: Migrate isTNGMiniProgram to loginByAlipayMiniProgram
-    if (isTNGMiniProgram) {
-      await showProcessingLoader();
-      await loginByTngMiniProgram();
-      await hideProcessingLoader();
       return;
     }
 
@@ -869,10 +858,8 @@ TableSummary.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   cleverTapAttributes: PropTypes.object,
   isWebview: PropTypes.bool,
-  isTNGMiniProgram: PropTypes.bool,
   isAlipayMiniProgram: PropTypes.bool,
   loginByBeepApp: PropTypes.func,
-  loginByTngMiniProgram: PropTypes.func,
   loginByAlipayMiniProgram: PropTypes.func,
   reloadBillingByCashback: PropTypes.func,
   updateCashbackApplyStatus: PropTypes.func,
@@ -929,10 +916,8 @@ TableSummary.defaultProps = {
   gotoPayment: () => {},
   cleverTapAttributes: {},
   isWebview: false,
-  isTNGMiniProgram: false,
   isAlipayMiniProgram: false,
   loginByBeepApp: () => {},
-  loginByTngMiniProgram: () => {},
   loginByAlipayMiniProgram: () => {},
   reloadBillingByCashback: () => {},
   updateCashbackApplyStatus: () => {},
@@ -985,7 +970,6 @@ export default compose(
       promoOrVoucherExist: getPromoOrVoucherExist(state),
       cleverTapAttributes: getCleverTapAttributes(state),
       isWebview: getIsWebview(state),
-      isTNGMiniProgram: getIsTNGMiniProgram(state),
       isAlipayMiniProgram: getIsAlipayMiniProgram(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
       shouldShowRedirectLoader: getShouldShowRedirectLoader(state),
@@ -1012,7 +996,6 @@ export default compose(
       removeVoucherPayLater: removeVoucherPayLaterThunk,
       gotoPayment: gotoPaymentThunk,
       loginByBeepApp: appActions.loginByBeepApp,
-      loginByTngMiniProgram: appActions.loginByTngMiniProgram,
       loginByAlipayMiniProgram: appActions.loginByAlipayMiniProgram,
       reloadBillingByCashback: reloadBillingByCashbackThunk,
       updateCashbackApplyStatus: commonActionCreators.updateCashbackApplyStatus,

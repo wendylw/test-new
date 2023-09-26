@@ -10,7 +10,7 @@ import {
   getIsGoogleReviewURLAvailable,
 } from '../../redux/selectors';
 import { getIsStoreThankYouModalVisible } from '../../../../redux/selector';
-import { getIsTNGMiniProgram, getIsGCashMiniProgram } from '../../../../../../redux/modules/app';
+import { getIsAlipayMiniProgram } from '../../../../../../redux/modules/app';
 import {
   thankYouModalOkayButtonClicked as okayButtonClicked,
   noThanksButtonClicked,
@@ -24,8 +24,7 @@ const ThankYouModal = () => {
   const { t } = useTranslation('OrderingThankYou');
 
   const isCommentEmpty = useSelector(getIsCommentEmpty);
-  const isTNGMiniProgram = useSelector(getIsTNGMiniProgram);
-  const isGCashMiniProgram = useSelector(getIsGCashMiniProgram);
+  const isAlipayMiniProgram = useSelector(getIsAlipayMiniProgram);
   const isHighRatedReview = useSelector(getIsHighRatedReview);
   const isModalVisible = useSelector(getIsStoreThankYouModalVisible);
   const shouldShowOkayButtonOnly = useSelector(getShouldShowOkayButtonOnly);
@@ -39,7 +38,7 @@ const ThankYouModal = () => {
       };
     }
 
-    if (isTNGMiniProgram || isGCashMiniProgram || !isGoogleReviewURLAvailable) {
+    if (isAlipayMiniProgram || !isGoogleReviewURLAvailable) {
       return {
         title: <Trans t={t} i18nKey="ThankYouModalHighRatingTitle" components={[<br />]} />,
         description: null,
@@ -52,7 +51,7 @@ const ThankYouModal = () => {
         ? t('ThankYouModalHighRatingGoogleReviewDescriptionWithoutComment')
         : t('ThankYouModalHighRatingGoogleReviewDescriptionWithComment'),
     };
-  }, [isHighRatedReview, isTNGMiniProgram, isGCashMiniProgram, isGoogleReviewURLAvailable, t, isCommentEmpty]);
+  }, [isHighRatedReview, isAlipayMiniProgram, isGoogleReviewURLAvailable, t, isCommentEmpty]);
 
   const clickRefuseButtonHandler = useCallback(async () => dispatch(noThanksButtonClicked()), [dispatch]);
 

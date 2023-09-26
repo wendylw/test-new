@@ -19,6 +19,7 @@ const PROMOTION_CLIENT_TYPES_DISPLAY_NAME_MAPPING = {
   [PROMOTION_CLIENT_TYPES.WEB]: i18next.t('Beepit.com'),
   [PROMOTION_CLIENT_TYPES.APP]: i18next.t('BeepApp'),
   [PROMOTION_CLIENT_TYPES.TNG_MINI_PROGRAM]: i18next.t('BeepTngMiniProgram'),
+  [PROMOTION_CLIENT_TYPES.GCASH_MINI_PROGRAM]: i18next.t('BeepGCashMiniProgram'),
 };
 
 export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo) {
