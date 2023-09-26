@@ -20,7 +20,7 @@ import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
 import Url from '../../../utils/url';
 import * as TngUtils from '../../../utils/tng-utils';
-import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
+import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
 import * as ApiRequest from '../../../utils/api-request';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
@@ -387,7 +387,7 @@ export const actions = {
       }
 
       const business = getBusiness(getState());
-      const tokens = await TngUtils.getAccessToken({ business });
+      const tokens = await getAccessToken({ business });
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
       await dispatch(actions.loginApp({ accessToken, refreshToken }));
