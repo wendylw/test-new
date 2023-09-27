@@ -6,7 +6,7 @@ module.exports = {
   projectId: '331737',
   projectName: 'beep-v1-web',
   languages: ['en', 'th'],
-  allowIncompleteIn: ['th'],
+  allowIncompleteIn: [],
   notification: {
     groupId: 't_6218677764852829',
   },
