@@ -13,15 +13,20 @@ import MenuFooter from './components/MenuFooter';
 import MiniCart from './components/MiniCart';
 import AlcoholModal from './components/AlcoholModal';
 import MenuOfflineModal from './components/MenuOfflineModal';
-import { getIsSearchingBannerVisible } from './redux/common/selectors';
+import MenuSkeleton from './components/MenuSkeleton';
+import {
+  getIsCoreBusinessAPIPending,
+  getIsSearchingBannerVisible,
+  getShouldShowOfflineMenu,
+} from './redux/common/selectors';
 import { mounted } from './redux/common/thunks';
-import { getDeliveryInfo } from '../../redux/modules/app';
 
 const Menu = () => {
   const dispatch = useDispatch();
   // for whether display searching banner, if not header, store info and promo banner display
   const isSearchingBannerVisible = useSelector(getIsSearchingBannerVisible);
-  const { enableLiveOnline } = useSelector(getDeliveryInfo);
+  const shouldShowOfflineMenu = useSelector(getShouldShowOfflineMenu);
+  const shouldShowMenuSkeleton = useSelector(getIsCoreBusinessAPIPending);
 
   useMount(() => {
     dispatch(mounted());
@@ -32,16 +37,13 @@ const Menu = () => {
   return (
     <Frame>
       <>
-        {/*
-         * Checking [enableLiveOnline] whether equal null is ensuring the "CoreBusiness" API Request has completed
-         * if we don't add this checking, The page will display store closed view a few seconds.
-         * TODO: This isn't a better way, it will cause issue FB-4265, should check the API request status instead of it.
-         */}
-        {enableLiveOnline == null ? null : !enableLiveOnline ? (
+        {shouldShowOfflineMenu ? (
           <>
             <MenuHeader />
             <MenuOfflineModal />
           </>
+        ) : shouldShowMenuSkeleton ? (
+          <MenuSkeleton />
         ) : (
           <>
             <MenuHeader webHeaderVisibility={!isSearchingBannerVisible} />

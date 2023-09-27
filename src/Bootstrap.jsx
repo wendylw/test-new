@@ -8,6 +8,7 @@ import Utils from './utils/utils';
 import NotFound from './containers/NotFound';
 import ErrorComponent from './components/Error';
 import i18n from './i18n';
+import 'react-loading-skeleton/dist/skeleton.css';
 import './Bootstrap.scss';
 import * as NativeMethods from './utils/native-methods';
 import logger from './utils/monitoring/logger';
