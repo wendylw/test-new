@@ -7,6 +7,10 @@ import {
   AFTER_PAID_STATUS_LIST,
   CASHBACK_CLAIMED_STATUS_LIST,
   REFERRERS_REQUIRING_PROFILE,
+  ORDER_DELAY_REASON_CODES,
+  RAINY_IMAGES_MAPPING,
+  DELIVERY_STATUS_IMAGES_MAPPING,
+  NOT_DELIVERY_STATUS_IMAGES_MAPPING,
 } from '../constants';
 import {
   getOrder,
@@ -19,6 +23,8 @@ import {
   getOrderStoreInfo,
   getHasStoreReviewed,
   getIsStoreReviewable,
+  getOrderDelayReason,
+  getIsPreOrder,
 } from '../../../redux/selector';
 import {
   getMerchantCountry,
@@ -26,6 +32,7 @@ import {
   getUserIsLogin,
   getOnlineStoreInfo,
   getAllowAnonymousQROrdering,
+  getIsWebview,
 } from '../../../../../redux/modules/app';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
@@ -224,5 +231,29 @@ export const getIsInitProfilePageEnabled = createSelector(
     }
 
     return false;
+  }
+);
+
+export const getStatusDescriptionImage = createSelector(
+  getIsWebview,
+  getOrderDelayReason,
+  getOrderShippingType,
+  getIsPreOrder,
+  getOrderStatus,
+  (isWebview, orderDelayReason, shippingType, isPreOrder, orderStatus) => {
+    const showMapInApp =
+      isWebview && orderStatus === ORDER_STATUS.PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY;
+    const delayByBadWeatherImageSource =
+      orderDelayReason === ORDER_DELAY_REASON_CODES.BAD_WEATHER ? RAINY_IMAGES_MAPPING[orderStatus] : null;
+    const preOrderPendingRiderConfirm =
+      shippingType === DELIVERY_METHOD.DELIVERY &&
+      isPreOrder &&
+      [ORDER_STATUS.PAID, ORDER_STATUS.ACCEPTED].includes(orderStatus);
+    const ImageSource =
+      preOrderPendingRiderConfirm || shippingType !== DELIVERY_METHOD.DELIVERY
+        ? NOT_DELIVERY_STATUS_IMAGES_MAPPING[orderStatus]
+        : DELIVERY_STATUS_IMAGES_MAPPING[orderStatus];
+
+    return showMapInApp ? null : delayByBadWeatherImageSource || ImageSource;
   }
 );

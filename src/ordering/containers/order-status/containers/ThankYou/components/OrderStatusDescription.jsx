@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
-import Constants from '../../../../../../utils/constants';
-import { ORDER_DELAY_REASON_CODES } from '../constants';
+import { ORDER_STATUS, SHIPPING_TYPES } from '../../../../../../common/utils/constants';
 import { ORDER_PAYMENT_METHODS } from '../../../constants';
 import {
   getOrderStatus,
@@ -14,43 +13,13 @@ import {
   getIsPayLater,
   getHasOrderTableIdChanged,
 } from '../../../redux/selector';
-import { getDeliverySwitchedToSelfPickupState, getOrderStoreName, getOrderPaymentMethod } from '../redux/selector';
-import orderStatusCreated from '../../../../../../images/order-success-1.svg';
-import orderStatusAccepted from '../../../../../../images/order-status-accepted.gif';
-import orderStatusConfirmed from '../../../../../../images/order-status-confirmed.gif';
-import orderStatusDelivered from '../../../../../../images/order-status-delivered.gif';
-import orderStatusPaid from '../../../../../../images/order-status-paid.gif';
-import orderStatusPickedUp from '../../../../../../images/order-status-picked-up.gif';
-import orderStatusPendingPayment from '../../../../../../images/order-status-pending-payment.gif';
-import orderStatusPickedUpRainy from '../../../../../../images/order-status-picked-up-rainy.gif';
-import orderStatusCancelled from '../../../../../../images/order-status-payment-cancelled.png';
-import orderSuccessImage from '../../../../../../images/order-success.png';
+import {
+  getDeliverySwitchedToSelfPickupState,
+  getOrderStoreName,
+  getOrderPaymentMethod,
+  getStatusDescriptionImage,
+} from '../redux/selector';
 
-const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
-const RAINY_IMAGES_MAPPING = {
-  [ORDER_STATUS.CONFIRMED]: orderStatusPickedUpRainy,
-  [ORDER_STATUS.LOGISTICS_CONFIRMED]: orderStatusPickedUpRainy,
-  [ORDER_STATUS.PICKED_UP]: orderStatusPickedUpRainy,
-};
-const DELIVERY_STATUS_IMAGES_MAPPING = {
-  [ORDER_STATUS.PAID]: orderStatusPaid,
-  [ORDER_STATUS.ACCEPTED]: orderStatusAccepted,
-  [ORDER_STATUS.CONFIRMED]: orderStatusConfirmed,
-  [ORDER_STATUS.LOGISTICS_CONFIRMED]: orderStatusConfirmed,
-  [ORDER_STATUS.PICKED_UP]: orderStatusPickedUp,
-  [ORDER_STATUS.DELIVERED]: orderStatusDelivered,
-  [ORDER_STATUS.CANCELLED]: orderStatusCancelled,
-};
-const NOT_DELIVERY_STATUS_IMAGES_MAPPING = {
-  [ORDER_STATUS.CREATED]: orderStatusCreated,
-  [ORDER_STATUS.PENDING_PAYMENT]: orderStatusPendingPayment,
-  [ORDER_STATUS.PAID]: orderSuccessImage,
-  [ORDER_STATUS.ACCEPTED]: orderSuccessImage,
-  [ORDER_STATUS.CONFIRMED]: orderSuccessImage,
-  [ORDER_STATUS.PICKED_UP]: orderStatusDelivered,
-  [ORDER_STATUS.CANCELLED]: orderStatusCancelled,
-  [ORDER_STATUS.PAYMENT_CANCELLED]: orderStatusCancelled,
-};
 const getNotDeliveryTitleAndDescription = (
   orderStatus,
   shippingType,
@@ -59,10 +28,18 @@ const getNotDeliveryTitleAndDescription = (
   isPayLater,
   hasOrderTableIdChanged
 ) => {
+  if (orderStatus === ORDER_STATUS.CANCELLED) {
+    return {
+      titleKey: 'OrderCanceled',
+      descriptionKey: 'OrderCancelledDescription',
+      emoji: null,
+    };
+  }
+
   if (orderStatus === ORDER_STATUS.PAYMENT_CANCELLED) {
     return {
       titleKey: 'SessionExpired',
-      descriptionKey: 'PaymentCancelledDescription',
+      descriptionKey: 'OrderCancelledDescription',
       emoji: null,
     };
   }
@@ -85,7 +62,7 @@ const getNotDeliveryTitleAndDescription = (
     };
   }
 
-  if (shippingType === DELIVERY_METHOD.PICKUP && orderStatus !== ORDER_STATUS.PICKED_UP) {
+  if (shippingType === SHIPPING_TYPES.PICKUP && orderStatus !== ORDER_STATUS.PICKED_UP) {
     return {
       titleKey: 'ThankYou',
       descriptionKey: deliveryToSelfPickup ? 'ThankYouForUpdatedToPickingUpForUS' : 'ThankYouForPickingUpForUS',
@@ -97,7 +74,7 @@ const getNotDeliveryTitleAndDescription = (
     };
   }
 
-  if (shippingType === DELIVERY_METHOD.PICKUP && orderStatus === ORDER_STATUS.PICKED_UP) {
+  if (shippingType === SHIPPING_TYPES.PICKUP && orderStatus === ORDER_STATUS.PICKED_UP) {
     return {
       titleKey: 'ThankYou',
       descriptionKey: deliveryToSelfPickup ? 'ThankYouForUpdatedToPickingUpForUS' : 'ThankYouForAlreadyPickUp',
@@ -131,29 +108,16 @@ function OrderStatusDescription(props) {
   const { t } = useTranslation('OrderingThankYou');
   const {
     orderStatus,
-    orderDelayReason,
     shippingType,
     cancelOperator,
-    isPreOrder,
     storeName,
     paymentMethod,
     deliveryToSelfPickup,
     cancelAmountEl,
-    inApp,
     isPayLater,
     hasOrderTableIdChanged,
+    statusDescriptionImage,
   } = props;
-  const delayByBadWeatherImageSource =
-    orderDelayReason === ORDER_DELAY_REASON_CODES.BAD_WEATHER ? RAINY_IMAGES_MAPPING[orderStatus] : null;
-  const preOrderPendingRiderConfirm =
-    shippingType === DELIVERY_METHOD.DELIVERY &&
-    isPreOrder &&
-    [ORDER_STATUS.PAID, ORDER_STATUS.ACCEPTED].includes(orderStatus);
-  const ImageSource =
-    preOrderPendingRiderConfirm || shippingType !== DELIVERY_METHOD.DELIVERY
-      ? NOT_DELIVERY_STATUS_IMAGES_MAPPING[orderStatus]
-      : DELIVERY_STATUS_IMAGES_MAPPING[orderStatus];
-  const showMapInApp = inApp && orderStatus === ORDER_STATUS.PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY;
   const titleAndDescription = getNotDeliveryTitleAndDescription(
     orderStatus,
     shippingType,
@@ -165,14 +129,14 @@ function OrderStatusDescription(props) {
 
   return (
     <>
-      {showMapInApp || (!ImageSource && !delayByBadWeatherImageSource) ? null : (
+      {statusDescriptionImage ? (
         <img
           className="ordering-thanks__image padding-small"
-          src={delayByBadWeatherImageSource || ImageSource}
+          src={statusDescriptionImage}
           alt={`Beep ${orderStatus || 'order success'}`}
         />
-      )}
-      {shippingType !== DELIVERY_METHOD.DELIVERY ? (
+      ) : null}
+      {shippingType !== SHIPPING_TYPES.DELIVERY ? (
         <>
           <h2 className="ordering-thanks__page-title text-center padding-left-right-small text-size-large text-weight-light">
             {t(titleAndDescription.titleKey)}!
@@ -207,35 +171,32 @@ OrderStatusDescription.displayName = 'OrderStatusDescription';
 
 OrderStatusDescription.propTypes = {
   orderStatus: PropTypes.oneOf(Object.values(ORDER_STATUS)),
-  shippingType: PropTypes.oneOf(Object.values(DELIVERY_METHOD)),
-  orderDelayReason: PropTypes.oneOf(Object.values(ORDER_DELAY_REASON_CODES)),
+  shippingType: PropTypes.oneOf(Object.values(SHIPPING_TYPES)),
   cancelOperator: PropTypes.oneOf(Object.keys(CANCELLED_DESCRIPTION_TRANSLATION_KEYS)),
-  isPreOrder: PropTypes.bool,
   deliveryToSelfPickup: PropTypes.bool,
   storeName: PropTypes.string,
   paymentMethod: PropTypes.string,
   cancelAmountEl: PropTypes.element,
-  inApp: PropTypes.bool,
   isPayLater: PropTypes.bool,
   hasOrderTableIdChanged: PropTypes.bool,
+  statusDescriptionImage: PropTypes.string,
 };
 
 OrderStatusDescription.defaultProps = {
   orderStatus: null,
   shippingType: null,
-  orderDelayReason: null,
   cancelOperator: null,
-  isPreOrder: false,
   deliveryToSelfPickup: false,
   storeName: null,
   paymentMethod: null,
   cancelAmountEl: <span />,
-  inApp: false,
   isPayLater: false,
   hasOrderTableIdChanged: false,
+  statusDescriptionImage: null,
 };
 
 export default connect(state => ({
+  statusDescriptionImage: getStatusDescriptionImage(state),
   orderStatus: getOrderStatus(state),
   shippingType: getOrderShippingType(state),
   orderDelayReason: getOrderDelayReason(state),

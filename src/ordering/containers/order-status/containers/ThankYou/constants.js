@@ -1,4 +1,14 @@
 import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants';
+import orderStatusCreated from '../../../../../images/order-success-1.svg';
+import orderStatusAccepted from '../../../../../images/order-status-accepted.gif';
+import orderStatusConfirmed from '../../../../../images/order-status-confirmed.gif';
+import orderStatusDelivered from '../../../../../images/order-status-delivered.gif';
+import orderStatusPaid from '../../../../../images/order-status-paid.gif';
+import orderStatusPickedUp from '../../../../../images/order-status-picked-up.gif';
+import orderStatusPendingPayment from '../../../../../images/order-status-pending-payment.gif';
+import orderStatusPickedUpRainy from '../../../../../images/order-status-picked-up-rainy.gif';
+import orderStatusCancelled from '../../../../../images/order-status-payment-cancelled.png';
+import orderSuccessImage from '../../../../../images/order-success.png';
 
 const { ORDER_STATUS } = Constants;
 
@@ -71,4 +81,31 @@ export const CASHBACK_CAN_CLAIM_STATUS_LIST = [CASHBACK_STATUS.CAN_CLAIM];
 export const PROFILE_DISPLAY_DELAY_DURATION = {
   [REFERRER_SOURCE_TYPES.LOGIN]: 1000,
   DEFAULT: 3000,
+};
+
+export const RAINY_IMAGES_MAPPING = {
+  [ORDER_STATUS.CONFIRMED]: orderStatusPickedUpRainy,
+  [ORDER_STATUS.LOGISTICS_CONFIRMED]: orderStatusPickedUpRainy,
+  [ORDER_STATUS.PICKED_UP]: orderStatusPickedUpRainy,
+};
+
+export const DELIVERY_STATUS_IMAGES_MAPPING = {
+  [ORDER_STATUS.PAID]: orderStatusPaid,
+  [ORDER_STATUS.ACCEPTED]: orderStatusAccepted,
+  [ORDER_STATUS.CONFIRMED]: orderStatusConfirmed,
+  [ORDER_STATUS.LOGISTICS_CONFIRMED]: orderStatusConfirmed,
+  [ORDER_STATUS.PICKED_UP]: orderStatusPickedUp,
+  [ORDER_STATUS.DELIVERED]: orderStatusDelivered,
+  [ORDER_STATUS.CANCELLED]: orderStatusCancelled,
+};
+
+export const NOT_DELIVERY_STATUS_IMAGES_MAPPING = {
+  [ORDER_STATUS.CREATED]: orderStatusCreated,
+  [ORDER_STATUS.PENDING_PAYMENT]: orderStatusPendingPayment,
+  [ORDER_STATUS.PAID]: orderSuccessImage,
+  [ORDER_STATUS.ACCEPTED]: orderSuccessImage,
+  [ORDER_STATUS.CONFIRMED]: orderSuccessImage,
+  [ORDER_STATUS.PICKED_UP]: orderStatusDelivered,
+  [ORDER_STATUS.CANCELLED]: orderStatusCancelled,
+  [ORDER_STATUS.PAYMENT_CANCELLED]: orderStatusCancelled,
 };
