@@ -7,7 +7,12 @@ import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import Constants from '../../../../../utils/constants';
-import { actions as appActionCreators, getShippingType, getHasLoginGuardPassed } from '../../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getShippingType,
+  getHasLoginGuardPassed,
+  getPaymentInfoForCleverTap,
+} from '../../../../redux/modules/app';
 import {
   getLoaderVisibility,
   getAllPaymentsOptions,
@@ -314,13 +319,19 @@ class Payment extends Component {
     }
   };
 
+  handleSelectPaymentOption = () => {
+    const { paymentInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent('Payment Method - click payment method', paymentInfoForCleverTap);
+  };
+
   renderPaymentList() {
     const { allPaymentOptions } = this.props;
 
     return (
       <ul>
         {allPaymentOptions.map(option => (
-          <PaymentItem key={option.key} option={option} />
+          <PaymentItem key={option.key} option={option} onSelect={this.handleSelectPaymentOption} />
         ))}
       </ul>
     );
@@ -336,6 +347,7 @@ class Payment extends Component {
       cleverTapAttributes,
       receiptNumber,
       total,
+      paymentInfoForCleverTap,
     } = this.props;
     const { payNowLoading, cartContainerHeight } = this.state;
 
@@ -350,7 +362,7 @@ class Payment extends Component {
           isPage
           title={t('SelectPayment')}
           navFunc={() => {
-            CleverTap.pushEvent('Payment Method - click back arrow');
+            CleverTap.pushEvent('Payment Method - click back arrow', paymentInfoForCleverTap);
             this.handleClickBack();
           }}
         />
@@ -385,6 +397,7 @@ class Payment extends Component {
             beforeCreateOrder={() => {
               CleverTap.pushEvent('Payment Method - click continue', {
                 ...cleverTapAttributes,
+                ...paymentInfoForCleverTap,
                 'payment method': currentPaymentOption?.paymentName,
               });
               this.handleBeforeCreateOrder();
@@ -413,6 +426,7 @@ Payment.propTypes = {
   allPaymentOptions: PropTypes.array,
   cleverTapAttributes: PropTypes.object,
   currentPaymentOption: PropTypes.object,
+  paymentInfoForCleverTap: PropTypes.object,
   /* eslint-enable */
   createOrder: PropTypes.func,
   gotoPayment: PropTypes.func,
@@ -435,6 +449,7 @@ Payment.defaultProps = {
   createOrder: () => {},
   gotoPayment: () => {},
   currentPaymentOption: {},
+  paymentInfoForCleverTap: {},
   currentPaymentSupportSaveCard: true,
   hasLoginGuardPassed: true,
   receiptNumber: null,
@@ -460,6 +475,7 @@ export default compose(
       currentPaymentSupportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
       areAllOptionsUnavailable: getAllOptionsUnavailableState(state),
       cleverTapAttributes: getCleverTapAttributes(state),
+      paymentInfoForCleverTap: getPaymentInfoForCleverTap(state),
       receiptNumber: getReceiptNumber(state),
       total: getTotal(state),
       shippingType: getShippingType(state),
