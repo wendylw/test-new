@@ -84,15 +84,17 @@ const getDefaultSelectedOptions = product => {
 
       variations.forEach(variation => {
         // WB-4385: If the variation is not Track Inventory, we should set the default option to the first available option.
-        const defaultSelectedOption = variation.optionValues.find(option =>
-          isVariationOptionAvailable({
-            variationType: variation.variationType,
-            variationShareModifier: variation.isModifier,
-            optionValue: option.value,
-            optionMarkedSoldOut: option.markedSoldOut,
-            productChildrenMap,
-          })
-        );
+        // WB-6451: If not any available option, set the first option as default.
+        const defaultSelectedOption =
+          variation.optionValues.find(option =>
+            isVariationOptionAvailable({
+              variationType: variation.variationType,
+              variationShareModifier: variation.isModifier,
+              optionValue: option.value,
+              optionMarkedSoldOut: option.markedSoldOut,
+              productChildrenMap,
+            })
+          ) ?? variation.optionValues[0];
 
         selectedOptions[variation.id] = {
           optionId: defaultSelectedOption.id,
