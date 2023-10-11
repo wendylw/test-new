@@ -46,7 +46,6 @@ import {
   cleanUpSelectedProductItemInfoIfNeeded,
 } from '../common/thunks';
 import { getHasSelectedExpectedDeliveryTime, getShouldShowProductDetailDrawer } from '../common/selectors';
-import { isVariationOptionAvailable } from '../../utils';
 import logger from '../../../../../utils/monitoring/logger';
 import ApiFetchError from '../../../../../utils/api/api-fetch-error';
 
@@ -83,16 +82,9 @@ const getDefaultSelectedOptions = product => {
       const selectedOptions = {};
 
       variations.forEach(variation => {
-        // WB-4385: If the variation is not Track Inventory, we should set the default option to the first available option.
-        const defaultSelectedOption = variation.optionValues.find(option =>
-          isVariationOptionAvailable({
-            variationType: variation.variationType,
-            variationShareModifier: variation.isModifier,
-            optionValue: option.value,
-            optionMarkedSoldOut: option.markedSoldOut,
-            productChildrenMap,
-          })
-        );
+        // If variation do not track inventory, default option should be first option
+        // select the first option from single variations
+        const defaultSelectedOption = variation.optionValues[0];
 
         selectedOptions[variation.id] = {
           optionId: defaultSelectedOption.id,

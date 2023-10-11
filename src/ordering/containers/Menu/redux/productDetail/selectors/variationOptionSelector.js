@@ -1,7 +1,7 @@
 import { createSelector, createStructuredSelector } from 'reselect';
 import { tools as frontendUtilTools, data as frontendUtilData } from '@storehub/frontend-utils';
 import { PRODUCT_VARIATION_TYPE } from '../../../constants';
-import { isVariationOptionAvailable } from '../../../utils';
+import { PRODUCT_STOCK_STATUS } from '../../../../../../common/utils/constants';
 
 export const formatVariationOptionPriceDiff = (priceDiff, formatCurrency) => {
   if (!priceDiff) {
@@ -111,21 +111,44 @@ const getIsAbleToIncreaseQuantity = createSelector(
   (variationSelectedQuantity, max) => variationSelectedQuantity < max
 );
 
-// is display the "unavailable" label on option
-const getIsAvailable = createSelector(
+/**
+ * is a option out of stock on all children product
+ */
+const getIsOptionOutOfStockOnAllChildrenProduct = createSelector(
   getVariationType,
   getShareModifierVariation,
   getVariationOptionValue,
   getVariationOptionMarkedSoldOut,
   getProductChildrenMap,
-  (variationType, variationShareModifier, optionValue, optionMarkedSoldOut, productChildrenMap) =>
-    isVariationOptionAvailable({
-      variationType,
-      variationShareModifier,
-      optionValue,
-      optionMarkedSoldOut,
-      productChildrenMap,
-    })
+  (variationType, variationShareModifier, optionValue, optionMarkedSoldOut, productChildrenMap) => {
+    if (optionMarkedSoldOut) {
+      return true;
+    }
+
+    if (variationType !== PRODUCT_VARIATION_TYPE.SINGLE_CHOICE) {
+      return false;
+    }
+
+    // If variation's isModifier is true, that means it is not Track Inventory, return false.
+    if (variationShareModifier) {
+      return false;
+    }
+
+    // If product has no children, that means it is not Track Inventory, return false.
+    if (productChildrenMap.length === 0) {
+      return false;
+    }
+
+    return productChildrenMap
+      .filter(({ variation }) => variation.includes(optionValue))
+      .every(({ stockStatus }) => stockStatus === PRODUCT_STOCK_STATUS.OUT_OF_STOCK);
+  }
+);
+
+// is display the "unavailable" label on option
+const getIsAvailable = createSelector(
+  getIsOptionOutOfStockOnAllChildrenProduct,
+  isOptionOutOfStockOnAllChildrenProduct => !isOptionOutOfStockOnAllChildrenProduct
 );
 
 const getIsDisabled = createSelector(

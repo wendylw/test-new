@@ -1,5 +1,4 @@
-import { SOURCE_TYPE, PRODUCT_STOCK_STATUS } from '../../../common/utils/constants';
-import { PRODUCT_VARIATION_TYPE } from './constants';
+import { SOURCE_TYPE } from '../../../common/utils/constants';
 import logger from '../../../utils/monitoring/logger';
 
 export const bodyScrollTopPosition = () =>
@@ -49,36 +48,4 @@ export const getShareLinkUrl = () => {
 
     return window.location.href;
   }
-};
-
-// WB-4385: This function is used to check if the variation option is available or not.
-// NOTE: The result is only based on the stock status now.
-export const isVariationOptionAvailable = ({
-  variationType,
-  variationShareModifier,
-  optionValue,
-  optionMarkedSoldOut,
-  productChildrenMap,
-}) => {
-  if (optionMarkedSoldOut) {
-    return false;
-  }
-
-  if (variationType !== PRODUCT_VARIATION_TYPE.SINGLE_CHOICE) {
-    return true;
-  }
-
-  // If variation's isModifier is true, that means it is not Track Inventory, return true.
-  if (variationShareModifier) {
-    return true;
-  }
-
-  // If product has no children, that means it is not Track Inventory, return true.
-  if (productChildrenMap.length === 0) {
-    return true;
-  }
-
-  return !productChildrenMap
-    .filter(({ variation }) => variation.includes(optionValue))
-    .every(({ stockStatus }) => stockStatus === PRODUCT_STOCK_STATUS.OUT_OF_STOCK);
 };
