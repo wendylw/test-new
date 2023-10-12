@@ -137,18 +137,40 @@ const StoreRedemption = () => {
             Oops... <br />
             Please scan with
           </h2>
-          <div className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl">
+          <div
+            className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl"
+            role="button"
+          >
             <a
               className="tw-inline-flex"
               rel="noreferrer"
               href="https://dl.beepit.com/kVmT"
               target={desktopClients.includes(client) ? '_blank' : ''}
+              role="button"
             >
               <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
             </a>
-            <a href="tngdwallet://client/dl/mp?mpid=2171020089701729&path=%2Fpages%2Findex%2Findex&testParam=xxyyzz">
+            <button
+              onClick={() => {
+                window.location.href =
+                  'tngdwallet://client/dl/mp?mpid=2171020089701729&path=%2Fpages%2Findex%2Findex&testParam=xxyyzz';
+
+                setTimeout(() => {
+                  const hidden =
+                    typeof window.document.hidden !== 'undefined' ||
+                    typeof window.document.mozHidden !== 'undefined' ||
+                    typeof window.document.msHidden !== 'undefined' ||
+                    typeof window.document.webkitHidden !== 'undefined';
+
+                  if (!hidden) {
+                    window.location.href = 'https://onelink.tngd.my/8mmV/beepTNG';
+                  }
+                }, 3000);
+              }}
+              data-test-id="tng-app-button"
+            >
               <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
-            </a>
+            </button>
           </div>
         </section>
       </div>,
