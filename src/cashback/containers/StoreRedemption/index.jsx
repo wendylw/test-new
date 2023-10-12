@@ -157,12 +157,12 @@ const StoreRedemption = () => {
 
                 setTimeout(() => {
                   const hidden =
-                    typeof window.document.hidden !== 'undefined' ||
-                    typeof window.document.mozHidden !== 'undefined' ||
-                    typeof window.document.msHidden !== 'undefined' ||
-                    typeof window.document.webkitHidden !== 'undefined';
+                    window.document.hidden ||
+                    window.document.mozHidden ||
+                    window.document.msHidden ||
+                    window.document.webkitHidden;
 
-                  if (!hidden) {
+                  if (typeof hidden === 'undefined' || hidden === false) {
                     window.location.href = 'https://onelink.tngd.my/8mmV/beepTNG';
                   }
                 }, 3000);
