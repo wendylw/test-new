@@ -1,37 +1,10 @@
 import _get from 'lodash/get';
-
-export const getErrorMessageFromHint = ({ originalException, syntheticException }) => {
-  if (typeof originalException === 'string') {
-    return originalException;
-  }
-  return originalException?.message || syntheticException?.message || 'UnknownSentryErrorMessage';
-};
-
-export const getErrorTypeFromHint = ({ originalException }) => {
-  if (typeof originalException === 'string') {
-    return originalException;
-  }
-
-  return originalException?.name || 'UnknownSentryErrorType';
-};
-
-export const getIsErrorExceptionValueFromEvent = (event, value) => {
-  const { values } = event.exception;
-  const exceptionValue = values.find(valueItem => valueItem.value === value);
-
-  return !!exceptionValue;
-};
-
-export const getErrorStacktraceFrames = event => {
-  const { values } = event.exception;
-  const frames = event.stacktrace?.frames || [];
-
-  if (values && values.length > 0) {
-    return frames.concat(values[0].stacktrace?.frames || []);
-  }
-
-  return frames;
-};
+import {
+  getErrorTypeFromHint,
+  getErrorMessageFromHint,
+  getErrorStacktraceFrames,
+  getIsErrorExceptionValueFromEvent,
+} from './utils';
 
 const isInfiniteScrollerBug = event => {
   // This error happens when the user make a fast slide and navigate to another page before the animation
@@ -368,7 +341,7 @@ const isResizeObserverLoopLimitExceeded = event => {
   }
 };
 
-const shouldFilter = (event, hint) => {
+const isIgnoredError = (event, hint) => {
   try {
     return (
       isInfiniteScrollerBug(event, hint) ||
@@ -398,4 +371,4 @@ const shouldFilter = (event, hint) => {
   }
 };
 
-export default shouldFilter;
+export default isIgnoredError;
