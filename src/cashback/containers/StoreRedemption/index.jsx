@@ -165,7 +165,7 @@ const StoreRedemption = () => {
                   if (typeof hidden === 'undefined' || hidden === false) {
                     window.location.href = 'https://onelink.tngd.my/8mmV/beepTNG';
                   }
-                }, 3000);
+                }, 1000);
               }}
               data-test-id="tng-app-button"
             >
