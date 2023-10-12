@@ -110,7 +110,7 @@ const CartItem = ({ item, isDineType }) => {
                 </span>
                 {item.formattedOriginalDisplayPrice && (
                   <span
-                    className={`${styles.cartItemPrice} tw-px-2 sm:tw-px-2px tw-leading-relaxed tw-line-through tw-gray-900 tw-opacity-40`}
+                    className={`${styles.cartItemPrice} tw-px-2 sm:tw-px-2px tw-leading-relaxed tw-line-through tw-text-gray-900 tw-opacity-40`}
                   >
                     {item.formattedOriginalDisplayPrice}
                   </span>
