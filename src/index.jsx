@@ -1,5 +1,6 @@
 import 'whatwg-fetch';
 import 'globalthis/auto';
+import 'intersection-observer';
 import smoothscroll from 'smoothscroll-polyfill';
 import './utils/monitoring/monitor';
 import './utils/monkey-patches';

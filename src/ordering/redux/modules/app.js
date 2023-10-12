@@ -1756,6 +1756,10 @@ export const getQROrderingSettings = createSelector(getBusinessInfo, businessInf
   _get(businessInfo, 'qrOrderingSettings', null)
 );
 
+export const getIsGuestLoginDisabled = createSelector(getQROrderingSettings, qrOrderingSettings =>
+  _get(qrOrderingSettings, 'disableGuestLogin', false)
+);
+
 export const getSearchingTags = createSelector(getQROrderingSettings, qrOrderingSettings =>
   _get(qrOrderingSettings, 'searchingTags', [])
 );
