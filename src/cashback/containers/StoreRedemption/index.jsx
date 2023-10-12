@@ -155,8 +155,7 @@ const StoreRedemption = () => {
               type="text"
               theme="ghost"
               onClick={() => {
-                window.location.href =
-                  'tngdwallet://client/dl/mp?mpid=2171020089701729&path=%2Fpages%2Findex%2Findex&qrUrl=xxyyzz';
+                window.location.href = `tngdwallet://client/dl/mp?mpid=2171020089701729&path=%2Fpages%2Findex%2Findex&qrUrl=${window.location.href}`;
 
                 setTimeout(() => {
                   const hidden =
