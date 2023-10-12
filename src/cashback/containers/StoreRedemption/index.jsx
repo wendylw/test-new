@@ -17,6 +17,7 @@ import {
 } from './redux/selectors';
 import { mounted, confirmToShareConsumerInfoRequests } from './redux/thunks';
 import Loader from '../../../common/components/Loader';
+import Button from '../../../common/components/Button';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
 import NativeHeader from '../../../components/NativeHeader';
@@ -150,7 +151,9 @@ const StoreRedemption = () => {
             >
               <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
             </a>
-            <button
+            <Button
+              type="text"
+              theme="ghost"
               onClick={() => {
                 window.location.href =
                   'tngdwallet://client/dl/mp?mpid=2171020089701729&path=%2Fpages%2Findex%2Findex&testParam=xxyyzz';
@@ -170,7 +173,7 @@ const StoreRedemption = () => {
               data-test-id="tng-app-button"
             >
               <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
-            </button>
+            </Button>
           </div>
         </section>
       </div>,
