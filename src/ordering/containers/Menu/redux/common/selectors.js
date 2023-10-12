@@ -43,6 +43,8 @@ import {
   getIsFromFoodCourt,
   getIsPickUpType,
   getHasSelectedStore,
+  getIsCoreBusinessAPIPending,
+  getIsCoreBusinessAPICompleted,
 } from '../../../../redux/modules/app';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -66,6 +68,7 @@ export {
   getStoreId,
   getSelectedLocationDisplayName,
   getIsPickUpType,
+  getIsCoreBusinessAPIPending,
 };
 
 /**
@@ -796,5 +799,14 @@ export const getShouldShowProductDetailDrawer = createSelector(
 
     // For delivery/pick-up orders, we only show the product detail drawer after the user has selected the location, store branch, and time slot.
     return true;
+  }
+);
+
+export const getShouldShowOfflineMenu = createSelector(
+  getDeliveryInfo,
+  getIsCoreBusinessAPICompleted,
+  (deliveryInfo, isCoreBusinessAPICompleted) => {
+    const { enableLiveOnline } = deliveryInfo;
+    return isCoreBusinessAPICompleted && !enableLiveOnline;
   }
 );

@@ -56,7 +56,7 @@ const BestSellerCategoryProductList = ({ products, categoryId }) => {
               <div className="tw-flex tw-flex-wrap tw-items-center tw-px-2 sm:tw-px-2px tw-my-4 sm:tw-my-4px">
                 <span className={styles.menuProductItemPrice}>{product.formattedDisplayPrice}</span>
                 {product.formattedOriginalDisplayPrice && (
-                  <span className={`${styles.menuProductItemPrice} tw-line-through tw-gray-900 tw-opacity-40`}>
+                  <span className={`${styles.menuProductItemPrice} tw-line-through tw-text-gray-900 tw-opacity-40`}>
                     {product.formattedOriginalDisplayPrice}
                   </span>
                 )}
@@ -124,7 +124,7 @@ const CategoryProductList = ({ products, categoryId }) => {
                 <div className="tw-flex tw-items-center tw-mt-8 sm:tw-mt-8px tw-mb-4 sm:tw-mb-4px">
                   <span className={styles.menuProductItemPrice}>{product.formattedDisplayPrice}</span>
                   {product.formattedOriginalDisplayPrice && (
-                    <span className={`${styles.menuProductItemPrice} tw-line-through tw-gray-900 tw-opacity-40`}>
+                    <span className={`${styles.menuProductItemPrice} tw-line-through tw-text-gray-900 tw-opacity-40`}>
                       {product.formattedOriginalDisplayPrice}
                     </span>
                   )}
