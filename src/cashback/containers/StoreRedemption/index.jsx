@@ -155,8 +155,10 @@ const StoreRedemption = () => {
               type="text"
               theme="ghost"
               onClick={() => {
+                // It is the deep link of TNG. If TNG exists, it will jump directly.
                 window.location.href = `tngdwallet://client/dl/mp?mpid=2171020089701729&path=%2Fpages%2Findex%2Findex&qrValue=${window.location.href}`;
 
+                // This is the deep link for downloading TNG. If the user has not downloaded TNG, clicking the logo will jump to the page for downloading TNG.
                 setTimeout(() => {
                   const hidden =
                     window.document.hidden ||
