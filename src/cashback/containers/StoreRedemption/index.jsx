@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
@@ -112,6 +112,20 @@ const StoreRedemption = () => {
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
+  const handleGotoTNGApp = useCallback(() => {
+    // It is the deep link of TNG. If TNG exists, it will jump directly.
+    window.location.href = `${process.env.REACT_APP_TNG_APP_DEEP_LINK_DOMAIN}?mpid=${process.env.REACT_APP_TNG_MPID}&path=%2Fpages%2Findex%2Findex&qrValue=${window.location.href}`;
+
+    // This is the deep link for downloading TNG. If the user has not downloaded TNG, clicking the logo will jump to the page for downloading TNG.
+    setTimeout(() => {
+      const hidden =
+        window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
+
+      if (typeof hidden === 'undefined' || hidden === false) {
+        window.location.href = process.env.REACT_APP_TNG_DOWNLOAD_DEEP_LINK;
+      }
+    }, 500);
+  });
 
   useMount(async () => {
     if (isDisplayWebResult) {
@@ -145,34 +159,13 @@ const StoreRedemption = () => {
             <a
               className="tw-inline-flex"
               rel="noreferrer"
-              href="https://dl.beepit.com/kVmT"
+              href={process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}
               target={desktopClients.includes(client) ? '_blank' : ''}
               role="button"
             >
               <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
             </a>
-            <Button
-              type="text"
-              theme="ghost"
-              onClick={() => {
-                // It is the deep link of TNG. If TNG exists, it will jump directly.
-                window.location.href = `tngdwallet://client/dl/mp?mpid=2171020089701729&path=%2Fpages%2Findex%2Findex&qrValue=${window.location.href}`;
-
-                // This is the deep link for downloading TNG. If the user has not downloaded TNG, clicking the logo will jump to the page for downloading TNG.
-                setTimeout(() => {
-                  const hidden =
-                    window.document.hidden ||
-                    window.document.mozHidden ||
-                    window.document.msHidden ||
-                    window.document.webkitHidden;
-
-                  if (typeof hidden === 'undefined' || hidden === false) {
-                    window.location.href = 'https://onelink.tngd.my/8mmV/beepTNG';
-                  }
-                }, 500);
-              }}
-              data-test-id="tng-app-button"
-            >
+            <Button type="text" theme="ghost" onClick={handleGotoTNGApp} data-test-id="tng-app-button">
               <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
             </Button>
           </div>
