@@ -121,6 +121,7 @@ const StoreRedemption = () => {
       const hidden =
         window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
 
+      // redirect to TNG download page deep link
       if (typeof hidden === 'undefined' || hidden === false) {
         window.location.href = process.env.REACT_APP_TNG_DOWNLOAD_DEEP_LINK;
       }
