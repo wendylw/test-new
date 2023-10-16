@@ -111,6 +111,8 @@ export const judgeClient = () => {
   return client;
 };
 
+export const getIsDesktopClients = client => [CLIENTS.PC, CLIENTS.MAC].includes(client);
+
 export const isProductSoldOut = product => {
   const { stockStatus, variations } = product;
 
@@ -411,3 +413,6 @@ export const isJSON = value => {
     return false;
   }
 };
+
+export const getIsThePageHidden = () =>
+  window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;

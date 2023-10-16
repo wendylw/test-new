@@ -4,8 +4,13 @@ import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
-import { isWebview, isTNGMiniProgram, judgeClient } from '../../../common/utils';
-import { CLIENTS } from '../../../common/utils/constants';
+import {
+  isWebview,
+  isTNGMiniProgram,
+  judgeClient,
+  getIsThePageHidden,
+  getIsDesktopClients,
+} from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
 import { getUserCountry } from '../../redux/modules/app';
@@ -108,7 +113,6 @@ StoreRedemptionNative.displayName = 'StoreRedemptionNative';
 const StoreRedemption = () => {
   const dispatch = useDispatch();
   const client = judgeClient();
-  const desktopClients = [CLIENTS.PC, CLIENTS.MAC];
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
@@ -118,11 +122,10 @@ const StoreRedemption = () => {
 
     // This is the deep link for downloading TNG. If the user has not downloaded TNG, clicking the logo will jump to the page for downloading TNG.
     setTimeout(() => {
-      const hidden =
-        window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
+      const hidden = getIsThePageHidden();
 
-      // redirect to TNG download page deep link
       if (typeof hidden === 'undefined' || hidden === false) {
+        // redirect to TNG download page deep link
         window.location.href = process.env.REACT_APP_TNG_DOWNLOAD_DEEP_LINK;
       }
     }, 500);
@@ -161,7 +164,7 @@ const StoreRedemption = () => {
               className="tw-inline-flex"
               rel="noreferrer"
               href={process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}
-              target={desktopClients.includes(client) ? '_blank' : ''}
+              target={getIsDesktopClients(client) ? '_blank' : ''}
               role="button"
             >
               <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
