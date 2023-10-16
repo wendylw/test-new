@@ -1,10 +1,44 @@
 import qs from 'qs';
+import dayjs from 'dayjs';
+import _get from 'lodash/get';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
-import { WEB_VIEW_SOURCE, SHIPPING_TYPES, PATH_NAME_MAPPING, CLIENTS, PRODUCT_STOCK_STATUS } from './constants';
+import { setDateTime } from './time-lib';
+import {
+  WEB_VIEW_SOURCE,
+  SHIPPING_TYPES,
+  PATH_NAME_MAPPING,
+  CLIENTS,
+  PRODUCT_STOCK_STATUS,
+  SH_LOGISTICS_VALID_TIME,
+  ADDRESS_RANGE,
+  TIME_SLOT_NOW,
+  ORDER_SOURCE,
+  REGISTRATION_TOUCH_POINT,
+  REGISTRATION_SOURCE,
+  SOURCE_TYPE,
+} from './constants';
 import config from '../../config';
 
 // todo: make old legacy utils to import function from here, rather than define same functions twice
+export const attemptLoad = (fn, retriesLeft = 5, interval = 1500) =>
+  new Promise((resolve, reject) => {
+    fn()
+      .then(resolve)
+      .catch(error => {
+        setTimeout(() => {
+          // if the target module has some runtime error (for example, try to access window.notExistingObj.notExistingProp),
+          // the promise will throw correct error for the first time, but will resolve an empty module next time, which makes
+          // the entire module seems to be resolved, however it's actually not working. To avoid this kind of thing, we will
+          // only deal with ChunkLoadError, which means the module cannot be loaded (mostly because of network issues).
+          if ((error.name !== 'ChunkLoadError' && error.code !== 'CSS_CHUNK_LOAD_FAILED') || retriesLeft <= 1) {
+            reject(error);
+          } else {
+            attemptLoad(fn, retriesLeft - 1, interval).then(resolve, reject);
+          }
+        }, interval);
+      });
+  });
 
 export const setCookieVariable = (name, value, attributes) => Cookies.set(name, value, attributes);
 
@@ -43,6 +77,86 @@ export const removeSessionVariable = name => {
   }
 };
 
+export const getLocalStorageVariable = name => {
+  try {
+    return localStorage.getItem(name);
+  } catch (e) {
+    const cookieNameOfLocalStorage = `localStorage_${name}`;
+    return getCookieVariable(cookieNameOfLocalStorage);
+  }
+};
+
+/* If localStorage is not operational, cookies will be used to store global variables */
+export const setLocalStorageVariable = (name, value) => {
+  try {
+    localStorage.setItem(name, value || '');
+  } catch (e) {
+    const cookieNameOfLocalStorage = `localStorage_${name}`;
+    setCookieVariable(cookieNameOfLocalStorage, value);
+  }
+};
+
+export const removeLocalStorageVariable = name => {
+  try {
+    localStorage.removeItem(name);
+  } catch (e) {
+    const cookieNameOfLocalStorage = `localStorage_${name}`;
+    removeCookieVariable(cookieNameOfLocalStorage);
+  }
+};
+
+export const isURL = url => {
+  try {
+    return !!new URL(url);
+  } catch {
+    return false;
+  }
+};
+
+export const isValidUrl = url => {
+  const domainRegex = /(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
+  return domainRegex.test(url);
+};
+
+export const checkEmailIsValid = email => {
+  const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return emailRegex.test(email);
+};
+
+export const getFileExtension = file => {
+  const fileNames = file.name.split('.');
+  const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
+
+  return fileNameExtension || file.type.split('/')[1];
+};
+
+export const copyDataToClipboard = async text => {
+  try {
+    const data = [new window.ClipboardItem({ 'text/plain': text })];
+
+    await navigator.clipboard.write(data);
+
+    return true;
+  } catch (e) {
+    if (!document.execCommand || !document.execCommand('copy')) {
+      return false;
+    }
+
+    const copyInput = document.createElement('input');
+
+    copyInput.setAttribute('readonly', 'readonly');
+    copyInput.setAttribute('style', 'position: absolute; top: -9999px; left: -9999px;');
+    copyInput.setAttribute('value', text);
+    document.body.appendChild(copyInput);
+    copyInput.setSelectionRange(0, copyInput.value.length);
+    copyInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(copyInput);
+
+    return true;
+  }
+};
+
 export const getUserAgentInfo = _once(() => {
   /* https://www.regextester.com/97574 */
   const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d.apre]+)/g;
@@ -56,6 +170,22 @@ export const getUserAgentInfo = _once(() => {
     browser: browsers ? browsers[0] : '',
   };
 });
+
+export const judgeClient = () => {
+  let client = '';
+  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+    // 判断iPhone|iPad|iPod|iOS
+    client = 'iOS';
+  } else if (/(Android)/i.test(navigator.userAgent)) {
+    // 判断Android
+    client = 'Android';
+  } else if (/(Mac)/i.test(navigator.userAgent)) {
+    client = 'Mac';
+  } else {
+    client = 'PC';
+  }
+  return client;
+};
 
 export const isSafari = _once(() => getUserAgentInfo().browser.includes('Safari'));
 
@@ -93,6 +223,16 @@ export const getClient = () => {
   }
 
   return CLIENTS.WEB;
+};
+
+export const getIsBeepDomain = () => {
+  const hostName = window.location.hostname;
+  const arr = hostName.split('.');
+
+  arr.shift();
+
+  const result = arr.join('.');
+  return result;
 };
 
 export const isProductSoldOut = product => {
@@ -151,6 +291,8 @@ export const saveSourceUrlToSessionStorage = sourceUrl => {
 
 export const getSourceUrlFromSessionStorage = () => getSessionVariable('BeepOrderingSourceUrl');
 
+export const isSharedLink = () => getSessionVariable('BeepOrderingSource') === SOURCE_TYPE.SHARED_LINK;
+
 export const getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
@@ -161,17 +303,19 @@ export const getQueryString = key => {
   return queries;
 };
 
+export const getQueryObject = (history, paramName) => {
+  if (!history.location.search) {
+    return null;
+  }
+
+  const params = new URLSearchParams(history.location.search);
+
+  return params.get(paramName);
+};
+
 export const getShippingTypeFromUrl = () => {
   const { type = '' } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
   return type;
-};
-
-export const isURL = url => {
-  try {
-    return !!new URL(url);
-  } catch {
-    return false;
-  }
 };
 
 export const isFromBeepSite = () => {
@@ -266,6 +410,12 @@ export const getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) 
   return storeUrl;
 };
 
+export const notHomeOrLocationPath = pathname =>
+  !(
+    ['/ordering/', '/ordering'].includes(pathname) ||
+    ['/ordering/location-date', '/ordering/location-date/'].includes(pathname)
+  );
+
 export const submitForm = (action, data = {}) => {
   const form = document.createElement('form');
   form.action = action;
@@ -301,6 +451,30 @@ export const getFilteredQueryString = (keys, queryString = window.location.searc
   }
 
   return qs.stringify(query, { addQueryPrefix: true });
+};
+
+export const getFulfillDate = (businessUTCOffset = 480) => {
+  try {
+    const { date, hour } = getExpectedDeliveryDateFromSession();
+    const expectedDate = _get(date, 'date', null);
+    const expectedFromTime = _get(hour, 'from', null);
+
+    if (!expectedDate || !expectedFromTime) {
+      return null;
+    }
+
+    if (expectedFromTime === TIME_SLOT_NOW) {
+      return null;
+    }
+
+    const expectedDayjs = dayjs(new Date(expectedDate)).utcOffset(businessUTCOffset);
+    const fulfillDayjs = setDateTime(expectedFromTime, expectedDayjs);
+
+    return fulfillDayjs.toISOString();
+  } catch (error) {
+    console.error('Common Utils getFulfillDate:', error?.message || '');
+    return null;
+  }
 };
 
 export const getOpeningHours = ({
@@ -376,6 +550,21 @@ export const getCountry = (phone, language, countries, defaultCountry) => {
   return undefined;
 };
 
+export const getPhoneNumberWithCode = (phone, countryCode) => {
+  if (!countryCode) {
+    return phone;
+  }
+
+  const startIndex = countryCode.length + ((phone || '')[0] === '+' ? 1 : 0);
+  const currentPhone = (phone || '').substring(startIndex);
+
+  if (countryCode && !currentPhone.indexOf(countryCode)) {
+    return `+${countryCode}${currentPhone.substring(countryCode.length)}`;
+  }
+
+  return phone;
+};
+
 export const extractDataAttributes = (props = {}) => {
   const dataAttributes = {};
   Object.keys(props).forEach(key => {
@@ -395,3 +584,197 @@ export const isJSON = value => {
     return false;
   }
 };
+
+export const getFullAddress = (addressInfo, splitLength) => {
+  const addressList = [];
+  const addressKeys = ['street1', 'street2', 'postalCode', 'city', 'state', 'country'];
+
+  addressKeys.forEach((item, index) => {
+    if (addressInfo[item] && Boolean(addressInfo[item]) && index < splitLength) {
+      addressList.push(addressInfo[item]);
+    }
+  });
+
+  return addressList.join(', ');
+};
+
+export const getDeliveryInfo = businessInfo => {
+  const { stores, qrOrderingSettings } = businessInfo || {};
+  const {
+    defaultShippingZone,
+    minimumConsumption,
+    validDays,
+    validTimeFrom,
+    validTimeTo,
+    enableLiveOnline,
+    enablePreOrder,
+    sellAlcohol,
+    disableTodayPreOrder,
+    disableOnDemandOrder,
+    breakTimeFrom,
+    breakTimeTo,
+    vacations,
+    useStorehubLogistics,
+  } = qrOrderingSettings || {};
+
+  let logisticsValidTimeFrom = validTimeFrom;
+  let logisticsValidTimeTo = validTimeTo;
+
+  // use storeHub Logistics valid time
+  if (useStorehubLogistics) {
+    logisticsValidTimeFrom =
+      SH_LOGISTICS_VALID_TIME.FROM > validTimeFrom ? SH_LOGISTICS_VALID_TIME.FROM : validTimeFrom;
+    logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
+  }
+
+  const { defaultShippingZoneMethod } = defaultShippingZone || {};
+  const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
+  const deliveryFee = rate || 0;
+  const minOrder = minimumConsumption || 0;
+
+  const { phone } = (stores && stores[0]) || {};
+  const storeAddress = getFullAddress((stores && stores[0]) || {}, ADDRESS_RANGE.COUNTRY);
+
+  return {
+    deliveryFee,
+    useStorehubLogistics,
+    minOrder,
+    storeAddress,
+    telephone: phone,
+    validDays,
+    validTimeFrom,
+    validTimeTo,
+    freeShippingMinAmount,
+    enableConditionalFreeShipping,
+    enableLiveOnline,
+    enablePreOrder,
+    sellAlcohol,
+    disableTodayPreOrder,
+    disableOnDemandOrder,
+    breakTimeFrom,
+    breakTimeTo,
+    vacations,
+    logisticsValidTimeFrom,
+    logisticsValidTimeTo,
+  };
+};
+
+export const getOrderSource = () => {
+  if (isTNGMiniProgram()) {
+    return ORDER_SOURCE.TNG_MINI_PROGRAM;
+  }
+
+  if (isWebview()) {
+    return ORDER_SOURCE.BEEP_APP;
+  }
+
+  if (isFromBeepSite()) {
+    return ORDER_SOURCE.BEEP_SITE;
+  }
+
+  return ORDER_SOURCE.BEEP_STORE;
+};
+
+export const getOrderSourceForCleverTab = () => {
+  const orderSource = getOrderSource();
+
+  const mapping = {
+    [ORDER_SOURCE.TNG_MINI_PROGRAM]: 'TNG Mini Program',
+    [ORDER_SOURCE.BEEP_APP]: 'App',
+    [ORDER_SOURCE.BEEP_SITE]: 'beepit.com',
+    [ORDER_SOURCE.BEEP_STORE]: 'Store URL',
+  };
+
+  return mapping[orderSource];
+};
+
+export const getRegistrationTouchPoint = () => {
+  const isOnCashbackPage = window.location.pathname.startsWith(PATH_NAME_MAPPING.CASHBACK_BASE);
+  const isOnOrderHistory = window.location.pathname.startsWith(PATH_NAME_MAPPING.ORDER_HISTORY);
+
+  if (isOnCashbackPage) {
+    return REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK;
+  }
+
+  if (isQROrder()) {
+    return REGISTRATION_TOUCH_POINT.QR_ORDER;
+  }
+
+  if (isTNGMiniProgram() && isOnOrderHistory) {
+    return REGISTRATION_TOUCH_POINT.TNG;
+  }
+
+  return REGISTRATION_TOUCH_POINT.ONLINE_ORDER;
+};
+
+export const getRegistrationSource = () => {
+  const registrationTouchPoint = getRegistrationTouchPoint();
+
+  switch (registrationTouchPoint) {
+    case REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK:
+      return isWebview() ? REGISTRATION_SOURCE.BEEP_APP : REGISTRATION_SOURCE.RECEIPT;
+
+    case REGISTRATION_TOUCH_POINT.QR_ORDER:
+      if (isSharedLink()) {
+        return REGISTRATION_SOURCE.SHARED_LINK;
+      }
+    // eslint-disable-next-line no-fallthrough
+    case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
+      if (isSharedLink()) {
+        return REGISTRATION_SOURCE.SHARED_LINK;
+      }
+    // eslint-disable-next-line no-fallthrough
+    default:
+      if (isTNGMiniProgram()) {
+        return REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
+      }
+
+      if (isWebview()) {
+        return REGISTRATION_SOURCE.BEEP_APP;
+      }
+
+      if (isFromBeepSite()) {
+        return REGISTRATION_SOURCE.BEEP_SITE;
+      }
+
+      return REGISTRATION_SOURCE.BEEP_STORE;
+  }
+};
+
+export const windowSize = () => ({
+  width: document.body.clientWidth || window.innerWidth,
+  height: document.body.clientHeight || window.innerHeight,
+});
+
+export const mainTop = ({ headerEls = [] }) => {
+  let top = 0;
+
+  if (headerEls.length) {
+    headerEls.forEach(headerEl => {
+      top += headerEl ? headerEl.clientHeight || headerEl.offsetHeight : 0;
+    });
+  }
+
+  return top;
+};
+
+export const marginBottom = ({ footerEls = [] }) => {
+  let bottom = 0;
+
+  if (footerEls.length) {
+    footerEls.forEach(footerEl => {
+      bottom += footerEl ? footerEl.clientHeight || footerEl.offsetHeight : 0;
+    });
+  }
+
+  return bottom;
+};
+
+export const containerHeight = ({ headerEls, footerEls }) =>
+  `${windowSize().height -
+    mainTop({
+      headerEls,
+    }) -
+    marginBottom({
+      footerEls,
+    })}px`;

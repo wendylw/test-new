@@ -31,7 +31,7 @@ import {
   getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
-import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../../utils';
+import { getPaymentName, getSupportCreditCardBrands, creditCardDetector, getCreditCardDate } from '../../utils';
 import PaymentCardBrands from '../../components/PaymentCardBrands';
 import '../../styles/PaymentCreditCard.scss';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -126,7 +126,7 @@ class CreditCard extends Component {
     const isSpace = !validDate.replace(e.target.value, '').trim().length;
 
     this.setState({
-      validDate: Utils.DateFormatter(e.target.value, e.target.value.length < validDate.length && isSpace),
+      validDate: getCreditCardDate(e.target.value, e.target.value.length < validDate.length && isSpace),
     });
   }
 

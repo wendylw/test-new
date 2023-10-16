@@ -600,10 +600,7 @@ const COLLECTIONS_TYPE = {
   CAROUSEL: 'Carrousel',
 };
 // storeHub Logistics valid time period
-const SH_LOGISTICS_VALID_TIME = {
-  FROM: '09:00',
-  TO: '21:00',
-};
+const { SH_LOGISTICS_VALID_TIME } = ConstantsV2;
 
 const { WEB_VIEW_SOURCE } = ConstantsV2;
 const PAYMENT_API_PAYMENT_OPTIONS = {
@@ -611,28 +608,18 @@ const PAYMENT_API_PAYMENT_OPTIONS = {
   TOKENIZATION: 'tokenization',
 };
 
-const TIME_SLOT_NOW = 'now';
+const { TIME_SLOT_NOW } = ConstantsV2;
 
 export const AVAILABLE_REPORT_DRIVER_ORDER_STATUSES = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
 const { CLIENTS } = ConstantsV2;
 
-export const REGISTRATION_TOUCH_POINT = {
-  CLAIM_CASHBACK: 'ClaimCashback',
-  ONLINE_ORDER: 'OnlineOrder',
-  QR_ORDER: 'QROrder',
-  TNG: 'TNG',
-};
+export const { REGISTRATION_TOUCH_POINT } = ConstantsV2;
 
 export const { REGISTRATION_SOURCE } = ConstantsV2;
 
 export const { API_REQUEST_STATUS } = ConstantsV2;
 
-export const ORDER_SOURCE = {
-  TNG_MINI_PROGRAM: 'BeepTngMiniProgram',
-  BEEP_APP: 'BeepApp',
-  BEEP_SITE: 'BeepSite',
-  BEEP_STORE: 'BeepStore',
-};
+export const { ORDER_SOURCE } = ConstantsV2;
 
 export const ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING = {
   [DELIVERY_METHOD.DINE_IN]: 'dine in',

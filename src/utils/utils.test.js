@@ -88,17 +88,6 @@ describe('utils/utils', () => {
     expect(window.location.search).not.toBe('?utm_source=infoq_web&utm_medium=menu');
   });
 
-  it('debounce', () => {
-    const mockFn = jest.fn();
-    const debounced = debounce(mockFn, 1000);
-
-    debounced();
-    debounced();
-
-    jest.runAllTimers();
-    expect(mockFn).toHaveBeenCalledTimes(1);
-  });
-
   describe('utils.Cookie', () => {
     let originGlobalDocument = null;
 

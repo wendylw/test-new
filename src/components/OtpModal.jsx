@@ -12,6 +12,25 @@ import './OtpModal.scss';
 import TermsAndPrivacy from './TermsAndPrivacy';
 import CleverTap from '../utils/clevertap';
 
+const elementPartialOffsetTop = (el, topAdjustment = 0, windowScrolledTop = 0) => {
+  const isSafari = Utils.getUserAgentInfo().browser.includes('Safari');
+  const height = isSafari ? el.getBoundingClientRect().height : el.offsetHeight;
+  let top = windowScrolledTop + el.getBoundingClientRect().top;
+
+  if (!isSafari) {
+    let currentParent = el.offsetParent;
+
+    top = el.offsetTop;
+
+    while (currentParent !== null) {
+      top += currentParent.offsetTop;
+      currentParent = currentParent.offsetParent;
+    }
+  }
+
+  return top + height - windowScrolledTop - topAdjustment;
+};
+
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {
   countDownSetTimeoutObj = null;
@@ -83,7 +102,7 @@ class OtpModal extends React.Component {
   getScrollBottom() {
     const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
     const otpInput = document.getElementById('newOtpInput');
-    const top = Utils.elementPartialOffsetTop(otpInput);
+    const top = elementPartialOffsetTop(otpInput);
     const inputBottom = windowHeight - top;
     const scrollHeight = windowHeight / 2 - inputBottom;
     return scrollHeight;
