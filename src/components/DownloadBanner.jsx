@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import beepAppAppleStore from '../images/beep-app-apple-store.svg';
 import beepAppGooglePlay from '../images/beep-app-google-play.svg';
 import { judgeClient, getIsDesktopClients } from '../common/utils';
-import Constants from '../utils/constants';
 import './DownloadBanner.scss';
 
 function DownloadBanner(props) {
