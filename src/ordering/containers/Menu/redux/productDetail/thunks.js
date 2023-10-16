@@ -10,6 +10,7 @@ import {
   getBusiness,
   getEnablePayLater,
   getStoreInfoForCleverTap,
+  getPaymentInfoForCleverTap,
   getHasSelectedStore,
   getIsPickUpType,
   getFoodTagsForCleverTap,
@@ -301,11 +302,13 @@ export const productItemClicked = createAsyncThunk(
     const allCategories = getAllCategories(state);
     const product = _get(allProducts, productId, null);
     const category = _get(allCategories, categoryId, null);
+    const paymentInfoForCleverTap = getPaymentInfoForCleverTap(state);
     const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
     const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
 
     Clevertap.pushEvent('Menu Page - Click product', {
       ...storeInfoForCleverTap,
+      ...paymentInfoForCleverTap,
       ...productCleverTapAttributes,
     });
 
@@ -420,6 +423,7 @@ export const addToCart = createAsyncThunk(
     const isTakeaway = getIsTakeawayProduct(state);
     const product = getSelectedProduct(getState());
     const category = getSelectedCategory(getState());
+    const paymentInfoForCleverTap = getPaymentInfoForCleverTap(getState());
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
     const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
     const foodTagsForCleverTap = getFoodTagsForCleverTap(getState());
@@ -431,6 +435,7 @@ export const addToCart = createAsyncThunk(
 
       Clevertap.pushEvent('Menu Page - Add to Cart', {
         ...storeInfoForCleverTap,
+        ...paymentInfoForCleverTap,
         ...productCleverTapAttributes,
         foodTags: foodTagsForCleverTap,
       });

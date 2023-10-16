@@ -39,6 +39,7 @@ import {
   getUser,
   getOnlineStoreInfo,
   getStoreInfoForCleverTap,
+  getPaymentInfoForCleverTap,
   getEnablePayLater,
   getIsFetchLoginStatusComplete,
 } from '../../redux/modules/app';
@@ -167,11 +168,12 @@ class Promotion extends Component {
       ? await promotionActions.applyPromo()
       : (selectPromoOrVoucherPayLater && (await applyPromo())) || (await applyVoucherPayLater());
 
-    const { isAppliedSuccess, isAppliedSuccessPayLater, promoCode } = this.props;
+    const { isAppliedSuccess, isAppliedSuccessPayLater, promoCode, paymentInfoForCleverTap } = this.props;
 
     if (isAppliedSuccess || isAppliedSuccessPayLater) {
       CleverTap.pushEvent('Cart Page - apply promo', {
         'promo/voucher applied': promoCode,
+        ...paymentInfoForCleverTap,
       });
       this.gotoCartOrTableSummaryPage();
     }
@@ -317,6 +319,7 @@ Promotion.propTypes = {
   appliedResult: PropTypes.object,
   selectedPromo: PropTypes.object,
   promoErrorCodePayLater: PropTypes.object,
+  paymentInfoForCleverTap: PropTypes.object,
   /* eslint-enable */
   inProcess: PropTypes.bool,
   isUserLogin: PropTypes.bool,
@@ -353,6 +356,7 @@ Promotion.defaultProps = {
   enablePayLater: false,
   isAppliedError: false,
   isAppliedSuccess: false,
+  paymentInfoForCleverTap: {},
   promoErrorCodePayLater: null,
   isAppliedErrorPayLater: false,
   isAppliedSuccessPayLater: false,
@@ -394,6 +398,7 @@ export default compose(
       onlineStoreInfo: getOnlineStoreInfo(state),
       appliedResult: getAppliedResult(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      paymentInfoForCleverTap: getPaymentInfoForCleverTap(state),
       enablePayLater: getEnablePayLater(state),
       promoErrorCodePayLater: getPromoErrorCodePayLater(state),
       selectPromoOrVoucherPayLater: getSelectPromoOrVoucherPayLater(state),

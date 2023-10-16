@@ -19,6 +19,7 @@ import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getStoreInfoForCleverTap,
+  getPaymentInfoForCleverTap,
   getUserIsLogin,
 } from '../../../../redux/modules/app';
 import CleverTap from '../../../../../utils/clevertap';
@@ -43,7 +44,13 @@ class PromoList extends Component {
   renderPromoList = (promoList, title) => {
     if (!promoList.length) return null;
 
-    const { selectedPromo, onlineStoreInfo, promotionActions, storeInfoForCleverTap } = this.props;
+    const {
+      selectedPromo,
+      onlineStoreInfo,
+      promotionActions,
+      storeInfoForCleverTap,
+      paymentInfoForCleverTap,
+    } = this.props;
 
     return (
       <div className="ordering-promotion-list__container padding-top-bottom-smaller margin-top-bottom-smaller">
@@ -55,7 +62,10 @@ class PromoList extends Component {
               promo={promo}
               isSelected={selectedPromo.id === promo.id}
               onSelectPromo={() => {
-                CleverTap.pushEvent('Cart Page - select voucher', storeInfoForCleverTap);
+                CleverTap.pushEvent('Cart Page - select voucher', {
+                  ...storeInfoForCleverTap,
+                  ...paymentInfoForCleverTap,
+                });
                 promotionActions.selectPromo(promo);
               }}
               onlineStoreInfo={onlineStoreInfo}
@@ -144,6 +154,7 @@ PromoList.propTypes = {
   selectedPromo: PropTypes.object,
   onlineStoreInfo: PropTypes.object,
   storeInfoForCleverTap: PropTypes.object,
+  paymentInfoForCleverTap: PropTypes.object,
   /* eslint-enable */
   searchMode: PropTypes.bool,
   isUserLogin: PropTypes.bool,
@@ -163,6 +174,7 @@ PromoList.defaultProps = {
   onlineStoreInfo: {},
   hasSearchedForPromo: false,
   storeInfoForCleverTap: null,
+  paymentInfoForCleverTap: null,
   promotionActions: {
     selectPromo: () => {},
     fetchConsumerVoucherList: () => {},
@@ -180,6 +192,7 @@ export default compose(
       selectedPromo: getSelectedPromo(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      paymentInfoForCleverTap: getPaymentInfoForCleverTap(state),
       isUserLogin: getUserIsLogin(state),
     }),
     dispatch => ({
