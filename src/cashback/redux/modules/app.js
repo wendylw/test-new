@@ -16,6 +16,7 @@ import Constants, {
 } from '../../../utils/constants';
 import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 import Utils from '../../../utils/utils';
+import { isJSON } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
 import Url from '../../../utils/url';
@@ -360,6 +361,7 @@ export const actions = {
     } catch (error) {
       dispatch({
         type: types.CREATE_LOGIN_ALIPAY_FAILURE,
+        error: isJSON(error?.message) ? JSON.parse(error.message) : error,
       });
 
       logger.error('Cashback_LoginByAlipayMiniProgram', { message: error?.message });

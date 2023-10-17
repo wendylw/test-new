@@ -44,15 +44,16 @@ class App extends Component {
       await Promise.all(initRequests);
 
       // 2. login
-      // TNGD & GCash code is executed at the very beginning.
-      // Because the MP and Beep accounts are not synchronized,
-      // it is impossible to determine that the accounts are the same
       if (isAlipayMiniProgram()) {
         // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
         await appActions.loginByAlipayMiniProgram();
 
         const { loginAlipayMiniProgramRequestError } = this.props;
 
+        // TNGD & GCash code is executed at the very beginning.
+        // Because the MP and Beep accounts are not synchronized,
+        // it is impossible to determine that the accounts are the same
+        // https://opendocs.alipay.com/support/01rb4b?ant_source=opendoc_recommend
         if (loginAlipayMiniProgramRequestError) {
           confirm(t('UnexpectedErrorOccurred'), {
             closeByBackButton: false,
@@ -182,7 +183,7 @@ App.propTypes = {
     code: PropTypes.number,
   }),
   isLoginModalShown: PropTypes.bool,
-  isAlipayAuthorizationError: PropTypes.bool,
+  loginAlipayMiniProgramRequestError: PropTypes.object || PropTypes.string,
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
     resetConsumerLoginStatus: PropTypes.func,
@@ -209,7 +210,7 @@ App.defaultProps = {
   error: {},
   pageError: {},
   isLoginModalShown: false,
-  isAlipayAuthorizationError: false,
+  loginAlipayMiniProgramRequestError: null,
   appActions: {},
 };
 
