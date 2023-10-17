@@ -124,15 +124,21 @@ export const checkEmailIsValid = email => {
 };
 
 export const getFileExtension = file => {
-  const fileNames = file.name.split('.');
-  const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
+  try {
+    const fileNames = file.name.split('.');
+    const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
 
-  return fileNameExtension || file.type.split('/')[1];
+    return fileNameExtension || file.type.split('/')[1];
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const copyDataToClipboard = async text => {
   try {
     const data = [new window.ClipboardItem({ 'text/plain': text })];
+
+    console.log(window.ClipboardItem);
 
     await navigator.clipboard.write(data);
 
@@ -141,6 +147,8 @@ export const copyDataToClipboard = async text => {
     if (!document.execCommand || !document.execCommand('copy')) {
       return false;
     }
+
+    // console.log(document.createElement);
 
     const copyInput = document.createElement('input');
 
