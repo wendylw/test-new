@@ -1,8 +1,24 @@
-import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getBusinessInfo } from '../../../../../redux/modules/app';
+import Utils from '../../../../../../utils/utils';
 
-export const getCleverTapAttributes = createSelector(getBusinessInfo, businessInfo => ({
-  'store name': _get(businessInfo, 'stores.0.name', ''),
-  'store id': _get(businessInfo, 'stores.0.id', ''),
-}));
+export const getCleverTapAttributes = createSelector(getBusinessInfo, businessInfo => {
+  const { defaultLoyaltyRatio, enableCashback, stores, country } = businessInfo || {};
+  const { id, name } = (stores && stores[0]) || {};
+
+  const cashbackRate = defaultLoyaltyRatio ? Math.floor((1 / defaultLoyaltyRatio) * 100) / 100 : 0;
+  const shippingType = Utils.getOrderTypeFromUrl() || 'unknown';
+
+  const res = {
+    'store name': name,
+    'store id': id,
+    'shipping type': shippingType,
+    country,
+  };
+
+  if (enableCashback) {
+    res.cashback = cashbackRate;
+  }
+
+  return res;
+});
