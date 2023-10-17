@@ -20,7 +20,7 @@ import {
 } from './constants';
 import config from '../../config';
 
-// todo: make old legacy utils to import function from here, rather than define same functions twice
+// Common Utils
 export const attemptLoad = (fn, retriesLeft = 5, interval = 1500) =>
   new Promise((resolve, reject) => {
     fn()
@@ -171,20 +171,38 @@ export const getUserAgentInfo = _once(() => {
   };
 });
 
-export const judgeClient = () => {
-  let client = '';
-  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-    // 判断iPhone|iPad|iPod|iOS
-    client = 'iOS';
-  } else if (/(Android)/i.test(navigator.userAgent)) {
-    // 判断Android
-    client = 'Android';
-  } else if (/(Mac)/i.test(navigator.userAgent)) {
-    client = 'Mac';
-  } else {
-    client = 'PC';
+export const getQueryString = key => {
+  const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+
+  if (key) {
+    return queries[key] || null;
   }
-  return client;
+
+  return queries;
+};
+
+export const getFilteredQueryString = (keys, queryString = window.location.search) => {
+  const query = qs.parse(queryString, { ignoreQueryPrefix: true });
+
+  // Only deal with string or array.
+  if (typeof keys === 'string') {
+    delete query[keys];
+  }
+  if (Array.isArray(keys)) {
+    keys.forEach(key => delete query[key]);
+  }
+
+  return qs.stringify(query, { addQueryPrefix: true });
+};
+
+export const getQueryObject = (history, paramName) => {
+  if (!history.location.search) {
+    return null;
+  }
+
+  const params = new URLSearchParams(history.location.search);
+
+  return params.get(paramName);
 };
 
 export const isSafari = _once(() => getUserAgentInfo().browser.includes('Safari'));
@@ -197,14 +215,6 @@ export const isIOSWebview = () => window.webViewSource === WEB_VIEW_SOURCE.IOS;
 export const isAndroidWebview = () => window.webViewSource === WEB_VIEW_SOURCE.Android;
 
 export const isWebview = () => isAndroidWebview() || isIOSWebview();
-
-export const isSiteApp = (domain = window.location.hostname) => {
-  const domainList = (process.env.REACT_APP_QR_SCAN_DOMAINS || '')
-    .split(',')
-    .map(d => d.trim())
-    .filter(d => d);
-  return domainList.some(d => domain.toLowerCase() === d.toLowerCase());
-};
 
 // eslint-disable-next-line no-underscore-dangle
 export const isTNGMiniProgram = () => window._isTNGMiniProgram_;
@@ -225,6 +235,80 @@ export const getClient = () => {
   return CLIENTS.WEB;
 };
 
+export const judgeClient = () => {
+  let client = '';
+  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+    // 判断iPhone|iPad|iPod|iOS
+    client = 'iOS';
+  } else if (/(Android)/i.test(navigator.userAgent)) {
+    // 判断Android
+    client = 'Android';
+  } else if (/(Mac)/i.test(navigator.userAgent)) {
+    client = 'Mac';
+  } else {
+    client = 'PC';
+  }
+
+  return client;
+};
+
+export const submitForm = (action, data = {}) => {
+  const form = document.createElement('form');
+  form.action = action;
+  form.method = 'POST';
+  form.style.height = 0;
+  form.style.width = 0;
+  form.style.overflow = 'hidden';
+  form.style.visibility = 'hidden';
+
+  Object.keys(data).forEach(key => {
+    const input = document.createElement('input');
+    input.name = key;
+    input.value = data[key];
+    input.type = 'hidden';
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+
+  document.body.removeChild(form);
+};
+
+export const isJSON = value => {
+  try {
+    JSON.parse(value);
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const getUUID = () => {
+  try {
+    return crypto.randomUUID();
+  } catch {
+    // Our application is not mission-critical, so Broofa's answer is good enough for us as a backup plan since it is pretty slick and effective.
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      /* eslint-disable no-bitwise */
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      /* eslint-enable */
+      return v.toString(16);
+    });
+  }
+};
+
+// Business Utils
+export const getBeepAppVersion = () => window.beepAppVersion;
+
+export const notHomeOrLocationPath = pathname =>
+  !(
+    ['/ordering/', '/ordering'].includes(pathname) ||
+    ['/ordering/location-date', '/ordering/location-date/'].includes(pathname)
+  );
+
 export const getIsBeepDomain = () => {
   const hostName = window.location.hostname;
   const arr = hostName.split('.');
@@ -235,86 +319,38 @@ export const getIsBeepDomain = () => {
   return result;
 };
 
-export const isProductSoldOut = product => {
-  const { stockStatus, variations } = product;
-
-  if (stockStatus === PRODUCT_STOCK_STATUS.OUT_OF_STOCK) {
-    return true;
-  }
-
-  if (Array.isArray(variations) && variations.length > 0) {
-    let soldOut = false;
-
-    const firstVariation = variations[0];
-
-    if (firstVariation && firstVariation.variationType === 'SingleChoice') {
-      const soldOutOptions = firstVariation.optionValues.filter(optionValue => optionValue.markedSoldOut);
-
-      if (soldOutOptions.length === firstVariation.optionValues.length) {
-        soldOut = true;
-      }
-    }
-
-    return soldOut;
-  }
-
-  return false;
-};
-
-export const getExpectedDeliveryDateFromSession = () => {
-  const selectedDate = JSON.parse(getSessionVariable('expectedDeliveryDate') || '{}');
-  const selectedHour = JSON.parse(getSessionVariable('expectedDeliveryHour') || '{}');
-
-  return {
-    date: selectedDate,
-    hour: selectedHour,
-  };
-};
-
-export const removeExpectedDeliveryTime = () => {
-  removeSessionVariable('expectedDeliveryDate');
-  removeSessionVariable('expectedDeliveryHour');
-};
-
-export const setExpectedDeliveryTime = ({ date, hour }) => {
-  setSessionVariable('expectedDeliveryDate', JSON.stringify(date));
-  setSessionVariable('expectedDeliveryHour', JSON.stringify(hour));
+export const isSiteApp = (domain = window.location.hostname) => {
+  const domainList = (process.env.REACT_APP_QR_SCAN_DOMAINS || '')
+    .split(',')
+    .map(d => d.trim())
+    .filter(d => d);
+  return domainList.some(d => domain.toLowerCase() === d.toLowerCase());
 };
 
 export const getStoreId = () => getCookieVariable('__s');
 
 export const getStoreHashCode = () => getCookieVariable('__h');
 
-export const saveSourceUrlToSessionStorage = sourceUrl => {
-  setSessionVariable('BeepOrderingSourceUrl', sourceUrl);
+export const getApiRequestShippingType = shippingType => {
+  const type = shippingType || getQueryString('type');
+
+  switch (type) {
+    case SHIPPING_TYPES.DINE_IN:
+      return 'dineIn';
+    default:
+      return type;
+  }
 };
+
+export const saveSourceUrlToSessionStorage = sourceUrl => setSessionVariable('BeepOrderingSourceUrl', sourceUrl);
 
 export const getSourceUrlFromSessionStorage = () => getSessionVariable('BeepOrderingSourceUrl');
 
 export const isSharedLink = () => getSessionVariable('BeepOrderingSource') === SOURCE_TYPE.SHARED_LINK;
 
-export const getQueryString = key => {
-  const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-
-  if (key) {
-    return queries[key] || null;
-  }
-
-  return queries;
-};
-
-export const getQueryObject = (history, paramName) => {
-  if (!history.location.search) {
-    return null;
-  }
-
-  const params = new URLSearchParams(history.location.search);
-
-  return params.get(paramName);
-};
-
 export const getShippingTypeFromUrl = () => {
   const { type = '' } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+
   return type;
 };
 
@@ -384,23 +420,50 @@ export const isDeliveryOrder = () => isDeliveryType() || isPickUpType();
 
 export const isQROrder = () => isDineInType() || isTakeAwayType();
 
-export const removeHtmlTag = str => {
-  if (!str) {
-    return '';
+export const isProductSoldOut = product => {
+  const { stockStatus, variations } = product;
+
+  if (stockStatus === PRODUCT_STOCK_STATUS.OUT_OF_STOCK) {
+    return true;
   }
 
-  return str.replace(/<[^>]+>/g, '');
+  if (Array.isArray(variations) && variations.length > 0) {
+    let soldOut = false;
+
+    const firstVariation = variations[0];
+
+    if (firstVariation && firstVariation.variationType === 'SingleChoice') {
+      const soldOutOptions = firstVariation.optionValues.filter(optionValue => optionValue.markedSoldOut);
+
+      if (soldOutOptions.length === firstVariation.optionValues.length) {
+        soldOut = true;
+      }
+    }
+
+    return soldOut;
+  }
+
+  return false;
 };
 
-export const getApiRequestShippingType = shippingType => {
-  const type = shippingType || getQueryString('type');
+export const getExpectedDeliveryDateFromSession = () => {
+  const selectedDate = JSON.parse(getSessionVariable('expectedDeliveryDate') || '{}');
+  const selectedHour = JSON.parse(getSessionVariable('expectedDeliveryHour') || '{}');
 
-  switch (type) {
-    case SHIPPING_TYPES.DINE_IN:
-      return 'dineIn';
-    default:
-      return type;
-  }
+  return {
+    date: selectedDate,
+    hour: selectedHour,
+  };
+};
+
+export const removeExpectedDeliveryTime = () => {
+  removeSessionVariable('expectedDeliveryDate');
+  removeSessionVariable('expectedDeliveryHour');
+};
+
+export const setExpectedDeliveryTime = ({ date, hour }) => {
+  setSessionVariable('expectedDeliveryDate', JSON.stringify(date));
+  setSessionVariable('expectedDeliveryHour', JSON.stringify(hour));
 };
 
 export const getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
@@ -408,49 +471,6 @@ export const getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) 
   if (type) storeUrl += `&type=${type}`;
   if (source) storeUrl += `&source=${encodeURIComponent(source)}`;
   return storeUrl;
-};
-
-export const notHomeOrLocationPath = pathname =>
-  !(
-    ['/ordering/', '/ordering'].includes(pathname) ||
-    ['/ordering/location-date', '/ordering/location-date/'].includes(pathname)
-  );
-
-export const submitForm = (action, data = {}) => {
-  const form = document.createElement('form');
-  form.action = action;
-  form.method = 'POST';
-  form.style.height = 0;
-  form.style.width = 0;
-  form.style.overflow = 'hidden';
-  form.style.visibility = 'hidden';
-
-  Object.keys(data).forEach(key => {
-    const input = document.createElement('input');
-    input.name = key;
-    input.value = data[key];
-    input.type = 'hidden';
-    form.appendChild(input);
-  });
-
-  document.body.appendChild(form);
-  form.submit();
-
-  document.body.removeChild(form);
-};
-
-export const getFilteredQueryString = (keys, queryString = window.location.search) => {
-  const query = qs.parse(queryString, { ignoreQueryPrefix: true });
-
-  // Only deal with string or array.
-  if (typeof keys === 'string') {
-    delete query[keys];
-  }
-  if (Array.isArray(keys)) {
-    keys.forEach(key => delete query[key]);
-  }
-
-  return qs.stringify(query, { addQueryPrefix: true });
 };
 
 export const getFulfillDate = (businessUTCOffset = 480) => {
@@ -513,23 +533,6 @@ export const getOpeningHours = ({
   return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
 };
 
-export const getBeepAppVersion = () => window.beepAppVersion;
-
-export const getUUID = () => {
-  try {
-    return crypto.randomUUID();
-  } catch {
-    // Our application is not mission-critical, so Broofa's answer is good enough for us as a backup plan since it is pretty slick and effective.
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-      /* eslint-disable no-bitwise */
-      const r = (Math.random() * 16) | 0;
-      const v = c === 'x' ? r : (r & 0x3) | 0x8;
-      /* eslint-enable */
-      return v.toString(16);
-    });
-  }
-};
-
 export const getCountry = (phone, language, countries, defaultCountry) => {
   if (phone) {
     return '';
@@ -563,26 +566,6 @@ export const getPhoneNumberWithCode = (phone, countryCode) => {
   }
 
   return phone;
-};
-
-export const extractDataAttributes = (props = {}) => {
-  const dataAttributes = {};
-  Object.keys(props).forEach(key => {
-    if (key.startsWith('data-')) {
-      dataAttributes[key] = props[key];
-    }
-  });
-  return dataAttributes;
-};
-
-export const isJSON = value => {
-  try {
-    JSON.parse(value);
-
-    return true;
-  } catch (error) {
-    return false;
-  }
 };
 
 export const getFullAddress = (addressInfo, splitLength) => {
@@ -741,6 +724,17 @@ export const getRegistrationSource = () => {
   }
 };
 
+export const extractDataAttributes = (props = {}) => {
+  const dataAttributes = {};
+  Object.keys(props).forEach(key => {
+    if (key.startsWith('data-')) {
+      dataAttributes[key] = props[key];
+    }
+  });
+  return dataAttributes;
+};
+
+// UI Utils
 export const windowSize = () => ({
   width: document.body.clientWidth || window.innerWidth,
   height: document.body.clientHeight || window.innerHeight,

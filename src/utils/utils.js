@@ -49,8 +49,6 @@ Utils.isSafari = UtilsV2.isSafari;
 
 export const { isValidUrl } = UtilsV2;
 
-Utils.removeHtmlTag = UtilsV2.removeHtmlTag;
-
 Utils.getOrderTypeFromUrl = UtilsV2.getShippingTypeFromUrl;
 
 Utils.isDeliveryType = UtilsV2.isDeliveryType;
