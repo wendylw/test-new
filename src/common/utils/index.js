@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import _get from 'lodash/get';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
-import { setDateTime } from './time-lib';
+import { setDateTime } from '../../utils/time-lib';
 import {
   WEB_VIEW_SOURCE,
   SHIPPING_TYPES,
