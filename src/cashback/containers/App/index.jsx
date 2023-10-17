@@ -13,7 +13,7 @@ import {
   getOnlineStoreInfoFavicon,
   getIsLoginModalShown,
   getUserConsumerId,
-  getIsAlipayAuthorizationError,
+  getLoginAlipayMiniProgramRequestError,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
@@ -51,9 +51,9 @@ class App extends Component {
         // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
         await appActions.loginByAlipayMiniProgram();
 
-        const { isAlipayAuthorizationError } = this.props;
+        const { loginAlipayMiniProgramRequestError } = this.props;
 
-        if (isAlipayAuthorizationError) {
+        if (loginAlipayMiniProgramRequestError) {
           confirm(t('UnexpectedErrorOccurred'), {
             closeByBackButton: false,
             closeByBackDrop: false,
@@ -225,7 +225,7 @@ export default compose(
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
       pageError: getPageError(state),
-      isAlipayAuthorizationError: getIsAlipayAuthorizationError(state),
+      loginAlipayMiniProgramRequestError: getLoginAlipayMiniProgramRequestError(state),
       userCountry: getUserCountry(state),
     }),
     dispatch => ({

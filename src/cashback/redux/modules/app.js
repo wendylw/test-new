@@ -945,9 +945,3 @@ export const getLoginAlipayMiniProgramRequestError = createSelector(
   getLoginAlipayMiniProgramRequest,
   loginAlipayMiniProgramRequest => loginAlipayMiniProgramRequest?.error || null
 );
-
-// If error code is 10, it means user has not authorized the mini program. This error from TNGD or GCash Mini Program, Aplipay will response 10 error, get access token in mounted.
-export const getIsAlipayAuthorizationError = createSelector(
-  getLoginAlipayMiniProgramRequestError,
-  loginAlipayMiniProgramRequestError => loginAlipayMiniProgramRequestError === 10
-);
