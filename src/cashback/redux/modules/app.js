@@ -52,7 +52,7 @@ export const initialState = {
       status: null,
       error: null,
     },
-    loginAlipayMPRequest: {
+    loginAlipayMiniProgramRequest: {
       status: null,
       error: null,
     },
@@ -615,7 +615,7 @@ const user = (state = initialState.user, action) => {
     case types.CREATE_LOGIN_ALIPAY_REQUEST:
       return {
         ...state,
-        loginAlipayMPRequest: {
+        loginAlipayMiniProgramRequest: {
           status: API_REQUEST_STATUS.PENDING,
           error: null,
         },
@@ -623,7 +623,7 @@ const user = (state = initialState.user, action) => {
     case types.CREATE_LOGIN_ALIPAY_SUCCESS:
       return {
         ...state,
-        loginAlipayMPRequest: {
+        loginAlipayMiniProgramRequest: {
           status: API_REQUEST_STATUS.FULFILLED,
           error: null,
         },
@@ -631,7 +631,7 @@ const user = (state = initialState.user, action) => {
     case types.CREATE_LOGIN_ALIPAY_FAILURE:
       return {
         ...state,
-        loginAlipayMPRequest: {
+        loginAlipayMiniProgramRequest: {
           status: API_REQUEST_STATUS.REJECTED,
           error,
         },
@@ -755,7 +755,7 @@ export default combineReducers({
 // selectors
 export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
-export const getLoginAlipayMPRequest = state => state.app.user.loginAlipayMPRequest;
+export const getLoginAlipayMiniProgramRequest = state => state.app.user.loginAlipayMiniProgramRequest;
 export const getUserProfile = state => state.app.user.profile;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
@@ -941,13 +941,13 @@ export const getShouldShowLoader = createSelector(
   (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
 );
 
-export const getLoginAlipayMPRequestError = createSelector(
-  getLoginAlipayMPRequest,
-  loginAlipayMPRequest => loginAlipayMPRequest.error
+export const getLoginAlipayMiniProgramRequestError = createSelector(
+  getLoginAlipayMiniProgramRequest,
+  loginAlipayMiniProgramRequest => loginAlipayMiniProgramRequest?.error || null
 );
 
 // If error code is 10, it means user has not authorized the mini program. This error from TNGD or GCash Mini Program, Aplipay will response 10 error, get access token in mounted.
 export const getIsAlipayAuthorizationError = createSelector(
-  getLoginAlipayMPRequestError,
-  loginAlipayMPRequestError => (loginAlipayMPRequestError?.error || null) === 10
+  getLoginAlipayMiniProgramRequestError,
+  loginAlipayMiniProgramRequestError => loginAlipayMiniProgramRequestError === 10
 );
