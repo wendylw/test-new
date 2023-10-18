@@ -138,8 +138,6 @@ export const copyDataToClipboard = async text => {
   try {
     const data = [new window.ClipboardItem({ 'text/plain': text })];
 
-    console.log(window.ClipboardItem);
-
     await navigator.clipboard.write(data);
 
     return true;
@@ -147,8 +145,6 @@ export const copyDataToClipboard = async text => {
     if (!document.execCommand || !document.execCommand('copy')) {
       return false;
     }
-
-    // console.log(document.createElement);
 
     const copyInput = document.createElement('input');
 
@@ -216,6 +212,8 @@ export const getQueryObject = (history, paramName) => {
 export const isSafari = _once(() => getUserAgentInfo().browser.includes('Safari'));
 
 export const isMobile = () => getUserAgentInfo().isMobile;
+
+console.log(window.webViewSource);
 
 // still need to distinguish ios webview and android webview
 export const isIOSWebview = () => window.webViewSource === WEB_VIEW_SOURCE.IOS;

@@ -1,4 +1,17 @@
-import { isURL, getUUID, isValidUrl, checkEmailIsValid, getFileExtension, copyDataToClipboard } from '../index';
+import { after } from 'lodash';
+import {
+  isURL,
+  getUUID,
+  isValidUrl,
+  checkEmailIsValid,
+  getFileExtension,
+  copyDataToClipboard,
+  getUserAgentInfo,
+  getQueryString,
+  getFilteredQueryString,
+  getQueryObject,
+  isIOSWebview,
+} from '../index';
 
 describe('isURL', () => {
   it('should return true if url is valid', () => {
@@ -135,6 +148,113 @@ describe('copyDataToClipboard', () => {
     const result = await copyDataToClipboard(text);
 
     expect(result).toBe(false);
+  });
+});
+
+describe('getUserAgentInfo', () => {
+  let windowSpy;
+
+  beforeEach(() => {
+    windowSpy = jest.spyOn(window, 'window', 'get');
+  });
+
+  afterEach(() => {
+    windowSpy.mockRestore();
+  });
+
+  it('should return an object with isMobile and browser properties', () => {
+    const userAgentInfo = getUserAgentInfo();
+    expect(userAgentInfo).toHaveProperty('isMobile');
+    expect(userAgentInfo).toHaveProperty('browser');
+  });
+
+  it('detects mobile devices correctly', () => {
+    const userAgentInfo = getUserAgentInfo();
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(
+      navigator.userAgent
+    );
+    expect(userAgentInfo.isMobile).toEqual(isMobile);
+  });
+
+  it('detects the browser correctly', () => {
+    const userAgentInfo = getUserAgentInfo();
+    const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d.apre]+)/g;
+    const browsers = navigator.userAgent.match(regex);
+
+    expect(userAgentInfo.browser).toEqual(browsers ? browsers[0] : '');
+  });
+});
+
+describe('getQueryString', () => {
+  it('should return null if key is not found', () => {
+    const result = getQueryString('foo');
+    expect(result).toBeNull();
+  });
+
+  it('should return the value of the key if found', () => {
+    const url = 'https://example.com/?foo=bar&baz=qux';
+    Object.defineProperty(window, 'location', {
+      value: new URL(url),
+    });
+
+    const result = getQueryString('foo');
+    expect(result).toEqual('bar');
+  });
+
+  it('should return all queries if no key is provided', () => {
+    const url = 'https://example.com/?foo=bar&baz=qux';
+    Object.defineProperty(window, 'location', {
+      value: new URL(url),
+    });
+
+    const result = getQueryString();
+    expect(result).toEqual({ foo: 'bar', baz: 'qux' });
+  });
+});
+
+describe('getFilteredQueryString', () => {
+  it('should remove a single key from the query string', () => {
+    const queryString = '?foo=bar&baz=qux';
+    const result = getFilteredQueryString('foo', queryString);
+    expect(result).toEqual('?baz=qux');
+  });
+
+  it('should remove multiple keys from the query string', () => {
+    const queryString = '?foo=bar&baz=qux&quux=corge';
+    const result = getFilteredQueryString(['foo', 'quux'], queryString);
+    expect(result).toEqual('?baz=qux');
+  });
+
+  it('should return the original query string if no keys are provided', () => {
+    const queryString = '?foo=bar&baz=qux';
+    const result = getFilteredQueryString(null, queryString);
+    expect(result).toEqual(queryString);
+  });
+
+  it('should return an empty query string if the original query string is empty', () => {
+    const queryString = '';
+    const result = getFilteredQueryString('foo', queryString);
+    expect(result).toEqual('');
+  });
+});
+
+describe('getQueryObject', () => {
+  it('should return null if history location search is empty', () => {
+    const history = { location: { search: '' } };
+    const paramName = 'test';
+    expect(getQueryObject(history, paramName)).toBeNull();
+  });
+
+  it('should return null if paramName is not found in search params', () => {
+    const history = { location: { search: '?foo=bar' } };
+    const paramName = 'test';
+    expect(getQueryObject(history, paramName)).toBeNull();
+  });
+
+  it('should return the value of paramName in search params', () => {
+    const history = { location: { search: '?foo=bar&test=baz' } };
+    const paramName = 'test';
+    expect(getQueryObject(history, paramName)).toEqual('baz');
   });
 });
 
