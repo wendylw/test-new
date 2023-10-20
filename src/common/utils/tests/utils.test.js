@@ -1,5 +1,9 @@
-import { after } from 'lodash';
+import Cookies from 'js-cookie';
 import {
+  attemptLoad,
+  setCookieVariable,
+  getCookieVariable,
+  removeCookieVariable,
   isURL,
   getUUID,
   isValidUrl,
@@ -10,8 +14,90 @@ import {
   getQueryString,
   getFilteredQueryString,
   getQueryObject,
-  isIOSWebview,
 } from '../index';
+
+describe('attemptLoad', () => {
+  it('should resolve with the result of the provided function', async () => {
+    const result = await attemptLoad(() => Promise.resolve('success'));
+    expect(result).toEqual('success');
+  });
+
+  it('should reject with the error thrown by the provided function', async () => {
+    const error = new Error('failure');
+    await expect(attemptLoad(() => Promise.reject(error))).rejects.toThrow(error);
+  });
+
+  it('should retry the provided function if it throws a ChunkLoadError', async () => {
+    const error = new Error('failure');
+
+    error.name = 'ChunkLoadError';
+
+    const fn = jest.fn(() => Promise.reject(error));
+
+    await expect(attemptLoad(fn, 3, 0)).rejects.toThrow(error);
+    expect(fn).toHaveBeenCalledTimes(3);
+  });
+
+  it('should not retry the provided function if it throws an error other than ChunkLoadError', async () => {
+    const error = new Error('failure');
+    const fn = jest.fn(() => Promise.reject(error));
+
+    await expect(attemptLoad(fn, 3, 0)).rejects.toThrow(error);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not retry the provided function if the maximum number of retries is reached', async () => {
+    const error = new Error('failure');
+
+    error.name = 'ChunkLoadError';
+    const fn = jest.fn(() => Promise.reject(error));
+
+    await expect(attemptLoad(fn, 10, 0)).rejects.toThrow(error);
+    expect(fn).toHaveBeenCalledTimes(10);
+  });
+});
+
+describe('setCookieVariable', () => {
+  it('sets a cookie with the given name and value', () => {
+    const name = 'testCookie';
+    const value = 'testValue';
+    setCookieVariable(name, value);
+    expect(Cookies.get(name)).toEqual(value);
+  });
+
+  it('sets a cookie with the given attributes', () => {
+    const name = 'testCookie';
+    const value = 'testValue';
+    const attributes = { expires: 0 };
+    setCookieVariable(name, value, attributes);
+
+    expect(document.cookie).not.toContain(`testCookie=`);
+  });
+});
+
+describe('getCookieVariable', () => {
+  it('should get the correct cookie variable', () => {
+    const cookieName = 'myCookie';
+    const cookieValue = 'myValue';
+
+    document.cookie = `${cookieName}=${cookieValue}`;
+    expect(getCookieVariable(cookieName)).toEqual(cookieValue);
+  });
+});
+
+describe('removeCookieVariable', () => {
+  it('removes a cookie variable', () => {
+    document.cookie = 'test=123';
+    removeCookieVariable('test');
+
+    expect(
+      document.cookie
+        .split('; ')
+        .find(row => row.startsWith('test='))
+        ?.split('=')[1]
+    ).toBeUndefined();
+  });
+});
 
 describe('isURL', () => {
   it('should return true if url is valid', () => {

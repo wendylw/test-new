@@ -213,8 +213,6 @@ export const isSafari = _once(() => getUserAgentInfo().browser.includes('Safari'
 
 export const isMobile = () => getUserAgentInfo().isMobile;
 
-console.log(window.webViewSource);
-
 // still need to distinguish ios webview and android webview
 export const isIOSWebview = () => window.webViewSource === WEB_VIEW_SOURCE.IOS;
 
