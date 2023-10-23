@@ -20,6 +20,9 @@ import {
   getQueryString,
   getFilteredQueryString,
   getQueryObject,
+  getBeepAppVersion,
+  notHomeOrLocationPath,
+  getBeepSubdomain,
 } from '../index';
 
 describe('attemptLoad', () => {
@@ -676,5 +679,130 @@ describe('getUUID', () => {
     }));
     expect(window.crypto).toBeUndefined();
     expect(getUUID()).toMatch(/^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/);
+  });
+});
+
+// Business Utils
+describe('getBeepAppVersion', () => {
+  const originalBeepAppVersion = window.beepAppVersion;
+
+  afterEach(() => {
+    window.beepAppVersion = originalBeepAppVersion;
+  });
+
+  it('should return the beep app version from the window object', () => {
+    window.beepAppVersion = '1.0.0';
+    expect(getBeepAppVersion()).toEqual('1.0.0');
+  });
+
+  it('should return undefined if the beep app version is not set', () => {
+    window.beepAppVersion = undefined;
+    expect(getBeepAppVersion()).toBeUndefined();
+  });
+});
+
+describe('notHomeOrLocationPath', () => {
+  it('should return false for /ordering', () => {
+    expect(notHomeOrLocationPath('/ordering')).toBe(false);
+  });
+
+  it('should return false for /ordering/location-date', () => {
+    expect(notHomeOrLocationPath('/ordering/location-date')).toBe(false);
+  });
+
+  it('should return false for /ordering/location-date/', () => {
+    expect(notHomeOrLocationPath('/ordering/location-date/')).toBe(false);
+  });
+
+  it('should return true for /ordering/123', () => {
+    expect(notHomeOrLocationPath('/ordering/123')).toBe(true);
+  });
+
+  it('should return true for /ordering/location-date/123', () => {
+    expect(notHomeOrLocationPath('/ordering/location-date/123')).toBe(true);
+  });
+
+  it('should return true for /home', () => {
+    expect(notHomeOrLocationPath('/home')).toBe(true);
+  });
+});
+
+describe('getBeepSubdomain', () => {
+  const originalLocation = window.location;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        hostname: '',
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      value: originalLocation,
+      writable: true,
+    });
+  });
+
+  it('returns correct domain for www.beepit.com', () => {
+    // Set up the window location hostname
+    Object.defineProperty(window, 'location', {
+      value: {
+        hostname: 'www.beepit.com',
+      },
+      writable: true,
+    });
+
+    expect(getBeepSubdomain()).toBe('beepit.com');
+  });
+
+  it('returns correct domain for beepit.com', () => {
+    // Set up the window location hostname
+    Object.defineProperty(window, 'location', {
+      value: {
+        hostname: 'beepit.com',
+      },
+      writable: true,
+    });
+
+    expect(getBeepSubdomain()).toBe('beepit.com');
+  });
+
+  it('returns correct domain beepit.co', () => {
+    // Set up the window location hostname
+    Object.defineProperty(window, 'location', {
+      value: {
+        hostname: 'beepit.co',
+      },
+      writable: true,
+    });
+
+    expect(getBeepSubdomain()).toBe('beepit.co');
+  });
+
+  it('returns correct domain if multiple subdomains', () => {
+    // Set up the window location hostname
+    Object.defineProperty(window, 'location', {
+      value: {
+        hostname: 'wendy.beep.test13.shub.us',
+      },
+      writable: true,
+    });
+
+    expect(getBeepSubdomain()).toBe('beep.test13.shub.us');
+  });
+
+  it('returns empty string if no subdomain', () => {
+    // Set up the window location hostname
+    Object.defineProperty(window, 'location', {
+      value: {
+        hostname: 'beep.com',
+      },
+      writable: true,
+    });
+
+    expect(getBeepSubdomain()).toBe('');
   });
 });

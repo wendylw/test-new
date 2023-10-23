@@ -120,7 +120,7 @@ Utils.getRegistrationTouchPoint = UtilsV2.getRegistrationTouchPoint;
 
 Utils.getRegistrationSource = UtilsV2.getRegistrationSource;
 
-Utils.getMainDomain = UtilsV2.getIsBeepDomain;
+Utils.getMainDomain = UtilsV2.getBeepSubdomain;
 
 Utils.getCookieVariable = UtilsV2.getCookieVariable;
 

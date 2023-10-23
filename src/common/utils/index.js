@@ -313,14 +313,16 @@ export const notHomeOrLocationPath = pathname =>
     ['/ordering/location-date', '/ordering/location-date/'].includes(pathname)
   );
 
-export const getIsBeepDomain = () => {
+export const getBeepSubdomain = () => {
+  const DOMAIN_REGEX_LIST = [/beepit.com/i, /beepit.co/i, /beep.*.shub.us/i];
   const hostName = window.location.hostname;
-  const arr = hostName.split('.');
+  const includedDomainIndex = DOMAIN_REGEX_LIST.findIndex(regex => regex.test(hostName));
 
-  arr.shift();
+  if (includedDomainIndex === -1) {
+    return '';
+  }
 
-  const result = arr.join('.');
-  return result;
+  return hostName.match(DOMAIN_REGEX_LIST[includedDomainIndex])[0];
 };
 
 export const isSiteApp = (domain = window.location.hostname) => {
