@@ -17,4 +17,4 @@ mkcert -install
 mkdir -p .cert
 
 # Generate a self-signed certificate for "*.beep.local.shub.us"
-mkcert -key-file ./.cert/key.pem -cert-file ./.cert/cert.pem "mickeymouseclubhouse.beep.local.shub.us"
+mkcert -key-file ./.cert/key.pem -cert-file ./.cert/cert.pem "*.beep.local.shub.us" "localhost" "127.0.0.1"
