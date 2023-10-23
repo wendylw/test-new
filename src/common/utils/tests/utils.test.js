@@ -4,6 +4,12 @@ import {
   setCookieVariable,
   getCookieVariable,
   removeCookieVariable,
+  setSessionVariable,
+  getSessionVariable,
+  removeSessionVariable,
+  getLocalStorageVariable,
+  setLocalStorageVariable,
+  removeLocalStorageVariable,
   isURL,
   getUUID,
   isValidUrl,
@@ -58,20 +64,33 @@ describe('attemptLoad', () => {
 });
 
 describe('setCookieVariable', () => {
+  const originalCookies = document.cookie;
+
+  afterEach(() => {
+    Object.defineProperty(document, 'cookie', {
+      value: originalCookies,
+      writable: true,
+    });
+  });
+
   it('sets a cookie with the given name and value', () => {
     const name = 'testCookie';
     const value = 'testValue';
     setCookieVariable(name, value);
     expect(Cookies.get(name)).toEqual(value);
+    Cookies.remove(name);
   });
 
   it('sets a cookie with the given attributes', () => {
     const name = 'testCookie';
     const value = 'testValue';
-    const attributes = { expires: 0 };
+    const attributes = { expires: 7 };
+    const expiresDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7).toGMTString();
+
     setCookieVariable(name, value, attributes);
 
-    expect(document.cookie).not.toContain(`testCookie=`);
+    expect(document.cookie).not.toContain(`${name}=${value} expires=${expiresDate}`);
+    Cookies.remove(name);
   });
 });
 
@@ -95,7 +114,253 @@ describe('removeCookieVariable', () => {
         .split('; ')
         .find(row => row.startsWith('test='))
         ?.split('=')[1]
-    ).toBeUndefined();
+    ).toEqual('');
+  });
+});
+
+describe('setSessionVariable', () => {
+  const originalSessionStorage = window.sessionStorage;
+  const originalDocument = document;
+
+  afterEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+
+    Object.defineProperty(document, 'cookie', {
+      value: originalDocument,
+      writable: true,
+    });
+  });
+
+  it('should set sessionStorage variable', () => {
+    const name = 'testName';
+    const value = 'testValue';
+    setSessionVariable(name, value);
+    expect(sessionStorage.getItem(name)).toEqual(value);
+  });
+
+  it('should set a cookie variable if session storage is not available', () => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: null,
+      writable: true,
+    });
+    Object.defineProperty(document, 'cookie', {
+      value: '',
+      writable: true,
+    });
+
+    setSessionVariable('test', 'value');
+    expect(document.cookie).toContain('sessionStorage_test=value; path=/');
+  });
+
+  it('should set empty string if value is not provided', () => {
+    const name = 'testName';
+    setSessionVariable(name);
+    expect(sessionStorage.getItem(name)).toEqual('');
+  });
+});
+
+describe('getSessionVariable', () => {
+  const originalSessionStorage = window.sessionStorage;
+
+  afterEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+  });
+
+  it('should return null if sessionStorage is not available and cookie is not set', () => {
+    sessionStorage.getItem = jest.fn(() => {
+      throw new Error('sessionStorage is not available');
+    });
+    expect(getSessionVariable('test')).toBeNull();
+  });
+
+  it('should return the value from sessionStorage if available', () => {
+    const name = 'test';
+    const value = 'value from sessionStorage';
+
+    sessionStorage.setItem(name, value || '');
+    expect(getSessionVariable(name)).toBe(value);
+    sessionStorage.removeItem(name);
+  });
+
+  it('should return the value from cookie if sessionStorage is not available', () => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: null,
+      writable: true,
+    });
+
+    document.cookie = 'sessionStorage_test=value from cookie';
+    expect(getSessionVariable('test')).toBe('value from cookie');
+  });
+});
+
+describe('removeSessionVariable', () => {
+  const originalSessionStorage = window.sessionStorage;
+  const originalDocument = document;
+
+  afterEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+
+    Object.defineProperty(document, 'cookie', {
+      value: originalDocument,
+      writable: true,
+    });
+  });
+
+  it('should remove session storage item if it exists', () => {
+    const name = 'test';
+    sessionStorage.setItem(name, 'value');
+    removeSessionVariable(name);
+    expect(sessionStorage.getItem(name)).toBeNull();
+  });
+
+  it('should remove cookie storage item if session storage does not exist', () => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: null,
+      writable: true,
+    });
+
+    const name = 'test';
+    const cookieName = `sessionStorage_${name}`;
+    document.cookie = `${cookieName}=value`;
+    const removeCookieVariable = jest.spyOn(Cookies, 'remove');
+
+    removeSessionVariable(name);
+    expect(removeCookieVariable).toHaveBeenCalled();
+  });
+
+  it('should not throw an error if session storage is not available and cookie storage does not exist', () => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: null,
+      writable: true,
+    });
+    Object.defineProperty(document, 'cookie', {
+      value: '',
+      writable: true,
+    });
+
+    const name = 'test';
+    expect(() => removeSessionVariable(name)).not.toThrow();
+  });
+});
+
+describe('getLocalStorageVariable', () => {
+  const originalLocalStorage = window.localStorage;
+
+  afterEach(() => {
+    Object.defineProperty(window, 'localStorage', {
+      value: originalLocalStorage,
+      writable: true,
+    });
+  });
+
+  it('should return the value from localStorage if it exists', () => {
+    const name = 'test';
+    const value = 'value';
+    localStorage.setItem(name, value);
+    expect(getLocalStorageVariable(name)).toEqual(value);
+    localStorage.removeItem(name);
+  });
+
+  it('should return the value from cookie if localStorage throws an error', () => {
+    const name = 'test';
+    const value = 'value';
+    const cookieName = `localStorage_${name}`;
+
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: null,
+      },
+    });
+    document.cookie = `${cookieName}=${value}`;
+
+    expect(getLocalStorageVariable(name)).toEqual(value);
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  });
+});
+
+describe('setLocalStorageVariable', () => {
+  const originalLocalStorage = window.localStorage;
+  const originalDocument = document;
+
+  afterEach(() => {
+    Object.defineProperty(window, 'localStorage', {
+      value: originalLocalStorage,
+      writable: true,
+    });
+
+    Object.defineProperty(document, 'cookie', {
+      value: originalDocument,
+      writable: true,
+    });
+  });
+
+  it('should set the value in localStorage', () => {
+    const name = 'testName';
+    const value = 'testValue';
+    setLocalStorageVariable(name, value);
+    expect(localStorage.getItem(name)).toEqual(value);
+  });
+
+  it('should set an empty string in localStorage if value is not provided', () => {
+    const name = 'testName';
+    setLocalStorageVariable(name);
+    expect(localStorage.getItem(name)).toEqual('');
+  });
+
+  it('should set the value in a cookie if localStorage is not available', () => {
+    Object.defineProperty(window, 'localStorage', {
+      value: null,
+      writable: true,
+    });
+    Object.defineProperty(document, 'cookie', {
+      value: '',
+      writable: true,
+    });
+
+    setLocalStorageVariable('test', 'value');
+    expect(document.cookie).toContain('localStorage_test=value; path=/');
+  });
+});
+
+describe('removeLocalStorageVariable', () => {
+  const originalLocalStorage = window.localStorage;
+
+  afterEach(() => {
+    Object.defineProperty(window, 'localStorage', {
+      value: originalLocalStorage,
+      writable: true,
+    });
+  });
+
+  it('should remove the variable from localStorage if it exists', () => {
+    const name = 'testVariable';
+    localStorage.setItem(name, 'testValue');
+    removeLocalStorageVariable(name);
+    expect(localStorage.getItem(name)).toBeNull();
+  });
+
+  it('should remove the variable from cookies if localStorage throws an error', () => {
+    Object.defineProperty(window, 'localStorage', {
+      value: null,
+      writable: true,
+    });
+
+    const name = 'test';
+    const cookieName = `localStorage_${name}`;
+    document.cookie = `${cookieName}=value`;
+    const removeCookieVariable = jest.spyOn(Cookies, 'remove');
+
+    removeLocalStorageVariable(name);
+    expect(removeCookieVariable).toHaveBeenCalled();
   });
 });
 
@@ -103,7 +368,7 @@ describe('isURL', () => {
   it('should return true if url is valid', () => {
     expect(isURL('https://www.google.com')).toBe(true);
   });
-  // TODO: not sure this logic is correct? https://www is true, but https:// is false
+
   it('should return false if url is invalid', () => {
     expect(isURL('https://')).toBe(false);
   });
@@ -169,7 +434,6 @@ describe('getFileExtension', function() {
 });
 
 describe('copyDataToClipboard', () => {
-  let windowSpy;
   const originalClipboard = navigator.clipboard;
   const originalExecCommand = document.execCommand;
   const originalCreateElement = document.createElement;
@@ -177,7 +441,6 @@ describe('copyDataToClipboard', () => {
   const originalRemoveChild = document.body.removeChild;
 
   beforeEach(() => {
-    windowSpy = jest.spyOn(window, 'window', 'get');
     navigator.clipboard = {
       write: jest.fn(),
     };
@@ -185,7 +448,8 @@ describe('copyDataToClipboard', () => {
     document.createElement = jest.fn(() => ({
       setAttribute: jest.fn(),
       select: jest.fn(),
-      value: '',
+      value: jest.fn(),
+      setSelectionRange: jest.fn(),
       addEventListener: jest.fn(),
     }));
     document.body.appendChild = jest.fn();
@@ -193,7 +457,6 @@ describe('copyDataToClipboard', () => {
   });
 
   afterEach(() => {
-    windowSpy.mockRestore();
     navigator.clipboard = originalClipboard;
     document.execCommand = originalExecCommand;
     document.createElement = originalCreateElement;
@@ -202,6 +465,7 @@ describe('copyDataToClipboard', () => {
   });
 
   it('should copy text to clipboard using Clipboard API', async () => {
+    const windowSpy = jest.spyOn(window, 'window', 'get');
     windowSpy.mockImplementation(() => ({
       ClipboardItem: jest.fn(),
     }));
@@ -211,19 +475,54 @@ describe('copyDataToClipboard', () => {
     await copyDataToClipboard(text);
 
     expect(navigator.clipboard.write).toHaveBeenCalledWith(data);
+    windowSpy.mockRestore();
   });
 
-  // TODO: add global.window.ClipboardItem is undefined test
+  it('should copy text to clipboard using document.execCommand if Clipboard API is not available', async () => {
+    const windowSpy = jest.spyOn(window, 'window', 'get');
+    windowSpy.mockImplementation(() => ({
+      ClipboardItem: () => new Error('ClipboardItem is not defined'),
+    }));
+    document.execCommand.mockReturnValue(true);
+
+    const text = 'Hello, world!';
+    navigator.clipboard = undefined;
+    const result = await copyDataToClipboard(text);
+
+    expect(document.execCommand).toHaveBeenCalledWith('copy');
+    expect(document.createElement).toHaveBeenCalledWith('input');
+    expect(document.body.appendChild).toHaveBeenCalled();
+    expect(document.body.removeChild).toHaveBeenCalled();
+    expect(result).toBe(true);
+    windowSpy.mockRestore();
+  });
+
+  it('should return false if document.execCommand is not available', async () => {
+    const windowSpy = jest.spyOn(window, 'window', 'get');
+    windowSpy.mockImplementation(() => ({
+      ClipboardItem: () => new Error('ClipboardItem is not defined'),
+    }));
+    document.execCommand.mockReturnValue(undefined);
+
+    const text = 'Hello, world!';
+    navigator.clipboard = undefined;
+    const result = await copyDataToClipboard(text);
+
+    expect(document.execCommand).toHaveBeenCalledWith('copy');
+    expect(result).toBe(false);
+    windowSpy.mockRestore();
+  });
 
   it('should return true if text is copied successfully', async () => {
+    const windowSpy = jest.spyOn(window, 'window', 'get');
     windowSpy.mockImplementation(() => ({
       ClipboardItem: jest.fn(),
     }));
     const text = 'test text';
-
     const result = await copyDataToClipboard(text);
 
     expect(result).toBe(true);
+    windowSpy.mockRestore();
   });
 
   it('should return false if text is not copied successfully', async () => {
