@@ -332,10 +332,16 @@ const isDuplicateAlert = hint => {
   }
 };
 
-// resizeObserver loop limit exceeded will not block page. refer: https://stackoverflow.com/a/50387233
-const isResizeObserverLoopLimitExceeded = event => {
+const isResizeObserverIssues = event => {
   try {
-    return getIsErrorExceptionValueFromEvent(event, 'ResizeObserver loop limit exceeded');
+    // resizeObserver loop limit exceeded will not block page. refer: https://stackoverflow.com/a/50387233
+    const isLoopLimitedIssue = getIsErrorExceptionValueFromEvent(event, 'ResizeObserver loop limit exceeded');
+    // User won't be blocked by this issue according to the Clarity recordings.
+    const isLoopCompletedIssue = getIsErrorExceptionValueFromEvent(
+      event,
+      'ResizeObserver loop completed with undelivered notifications'
+    );
+    return isLoopLimitedIssue || isLoopCompletedIssue;
   } catch {
     return false;
   }
@@ -364,7 +370,7 @@ const isIgnoredError = (event, hint) => {
       isEdgeBrowserIssues(event, hint) ||
       isNetworkIssues(event, hint) ||
       isDuplicateAlert(hint) ||
-      isResizeObserverLoopLimitExceeded(event)
+      isResizeObserverIssues(event)
     );
   } catch {
     return false;
