@@ -107,7 +107,7 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 - (Optional) Using HTTPS in Development
 
   > 1. Run `yarn generate-dev-ssl-cert` to create a certificate authority on your machine and generate certificates for this project.
-  > 2. Run `yarn: start:https` to serve pages over HTTPS.
+  > 2. Run `yarn start:https` to serve pages over HTTPS.
 
 - Start ordering using local backend
 
