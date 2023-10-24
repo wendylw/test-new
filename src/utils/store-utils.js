@@ -631,20 +631,3 @@ export const getStoreInfoForCleverTap = ({ business, allBusinessInfo, cartSummar
 
   return res;
 };
-
-/**
- *
- * @param {*} hourString
- * @returns {string} formatted hour
- */
-export const getFormattedStoreHour = (hourString = '') => {
-  const [hour, minute] = hourString ? hourString.split(':') : [];
-  const hourRemainder = Number(hour) % 12;
-  const localeMeridiem = Number(hour) > 11 && Number(hour) < 24 ? 'pm' : 'am';
-
-  if (Number.isNaN(hourRemainder)) {
-    return '';
-  }
-
-  return `${hourRemainder || 12}${Number(minute) ? `:${minute}` : ''}${localeMeridiem}`;
-};

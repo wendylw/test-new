@@ -34,7 +34,7 @@ import {
   isSharedLink,
   getShippingTypeFromUrl,
   isFromBeepSite,
-  isFromBeepSiteOrderHistory,
+  getOpeningHours,
 } from '../index';
 
 describe('attemptLoad', () => {

@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import _get from 'lodash/get';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
-import { setDateTime } from '../../utils/time-lib';
+import { formatTime, setDateTime } from '../../utils/time-lib';
 import {
   WEB_VIEW_SOURCE,
   SHIPPING_TYPES,
@@ -504,14 +504,10 @@ export const getFulfillDate = (businessUTCOffset = 480) => {
   }
 };
 
-export const getOpeningHours = ({
-  breakTimeFrom,
-  breakTimeTo,
-  validTimeFrom = '00:00',
-  validTimeTo = '24:00',
-  formatBreakTimes,
-  formatValidTimes = ['12am', '12am'],
-}) => {
+export const getOpeningHours = ({ breakTimeFrom, breakTimeTo, validTimeFrom = '00:00', validTimeTo = '24:00' }) => {
+  const formatBreakTimes = [formatTime(breakTimeFrom, 'h:mm a'), formatTime(breakTimeTo, 'h:mm a')];
+  const formatValidTimes = [formatTime(validTimeFrom, 'h:mm a'), formatTime(validTimeTo, 'h:mm a')];
+
   if (validTimeFrom >= breakTimeFrom && validTimeTo <= breakTimeTo) {
     return [];
   }

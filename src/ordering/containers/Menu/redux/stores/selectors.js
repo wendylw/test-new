@@ -13,7 +13,6 @@ import { checkStoreIsOpened } from '../../../../../utils/store-utils';
 import { getOpeningHours } from '../../../../../common/utils';
 import { computeStraightDistance } from '../../../../../utils/geoUtils';
 import Utils from '../../../../../utils/utils';
-import { formatTime } from '../../../../../utils/time-lib';
 import { API_REQUEST_STATUS, ADDRESS_RANGE, SHIPPING_TYPES } from '../../../../../common/utils/constants';
 import { getCurrentDate } from '../common/selectors';
 
@@ -71,15 +70,11 @@ export const getStoreList = createSelector(
       }
 
       const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
-      const formatBreakTimes = breakTimeFrom && breakTimeTo ? [formatTime(breakTimeFrom), formatTime(breakTimeTo)] : [];
-      const formatValidTimes = [formatTime(validTimeFrom), formatTime(validTimeTo)];
       const openingHours = getOpeningHours({
         validTimeFrom,
         validTimeTo,
         breakTimeFrom,
         breakTimeTo,
-        formatBreakTimes,
-        formatValidTimes,
       });
 
       return openingHours.join(', ');
