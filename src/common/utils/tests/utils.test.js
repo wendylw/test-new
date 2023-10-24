@@ -1,4 +1,6 @@
+import qs from 'qs';
 import Cookies from 'js-cookie';
+import { SHIPPING_TYPES, SOURCE_TYPE } from '../constants';
 import {
   attemptLoad,
   setCookieVariable,
@@ -23,6 +25,16 @@ import {
   getBeepAppVersion,
   notHomeOrLocationPath,
   getBeepSubdomain,
+  isSiteApp,
+  getStoreId,
+  getStoreHashCode,
+  getApiRequestShippingType,
+  saveSourceUrlToSessionStorage,
+  getSourceUrlFromSessionStorage,
+  isSharedLink,
+  getShippingTypeFromUrl,
+  isFromBeepSite,
+  isFromBeepSiteOrderHistory,
 } from '../index';
 
 describe('attemptLoad', () => {
@@ -804,5 +816,377 @@ describe('getBeepSubdomain', () => {
     });
 
     expect(getBeepSubdomain()).toBe('');
+  });
+});
+
+describe('isSiteApp', () => {
+  const originalLocation = window.location;
+
+  beforeEach(() => {
+    delete window.location;
+    window.location = { hostname: 'beepit.co' };
+  });
+
+  afterEach(() => {
+    delete process.env.REACT_APP_QR_SCAN_DOMAINS;
+    window.location = originalLocation;
+  });
+
+  it('should return true if the current domain is in the list of domains', () => {
+    process.env.REACT_APP_QR_SCAN_DOMAINS = 'beepit.co, foo.com, bar.com';
+    expect(isSiteApp()).toBe(true);
+  });
+
+  it('should return false if the current domain is not in the list of domains', () => {
+    process.env.REACT_APP_QR_SCAN_DOMAINS = 'foo.com, bar.com';
+    expect(isSiteApp()).toBe(false);
+  });
+
+  it('should return false if the list of domains is empty', () => {
+    process.env.REACT_APP_QR_SCAN_DOMAINS = '';
+    expect(isSiteApp()).toBe(false);
+  });
+
+  it('should use the provided domain if one is given', () => {
+    process.env.REACT_APP_QR_SCAN_DOMAINS = 'beepit.co';
+    expect(isSiteApp('beepit.co')).toBe(true);
+    expect(isSiteApp('foo.com')).toBe(false);
+  });
+
+  it('should ignore leading/trailing whitespace in the list of domains', () => {
+    process.env.REACT_APP_QR_SCAN_DOMAINS = '  beepit.co  ,  foo.com  ';
+    expect(isSiteApp('beepit.co')).toBe(true);
+    expect(isSiteApp('foo.com')).toBe(true);
+    expect(isSiteApp('bar.com')).toBe(false);
+  });
+
+  it('should ignore case when comparing domains', () => {
+    process.env.REACT_APP_QR_SCAN_DOMAINS = 'BEEPIT.CO, foo.com';
+    expect(isSiteApp('beepit.co')).toBe(true);
+    expect(isSiteApp('Foo.com')).toBe(true);
+    expect(isSiteApp('bar.com')).toBe(false);
+  });
+});
+
+describe('getStoreId', () => {
+  const originalCookies = document.cookie;
+
+  beforeEach(() => {
+    Object.defineProperty(document, 'cookie', {
+      value: '',
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(document, 'cookie', {
+      value: originalCookies,
+      writable: true,
+    });
+  });
+
+  it('returns the value of the __s cookie', () => {
+    // Set up a fake cookie with the value '123'
+    Object.defineProperty(document, 'cookie', {
+      value: '__s=123',
+      writable: true,
+    });
+
+    // Call the getStoreId function and expect it to return '123'
+    expect(getStoreId()).toEqual('123');
+  });
+
+  it('returns an empty string if the __s cookie is not set', () => {
+    // Clear any existing __s cookie
+    Object.defineProperty(document, 'cookie', {
+      value: '__s=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;',
+      writable: true,
+    });
+
+    // Call the getStoreId function and expect it to return an empty string
+    expect(getStoreId()).toEqual('');
+  });
+});
+
+describe('getStoreHashCode', () => {
+  const originalCookies = document.cookie;
+
+  beforeEach(() => {
+    Object.defineProperty(document, 'cookie', {
+      value: '',
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(document, 'cookie', {
+      value: originalCookies,
+      writable: true,
+    });
+  });
+
+  it('returns the value of the __h cookie', () => {
+    // Set up the document.cookie value to include the __h cookie
+    Object.defineProperty(document, 'cookie', {
+      value: '__h=abc123',
+      writable: true,
+    });
+
+    // Call the getStoreHashCode function and expect it to return the correct value
+    expect(getStoreHashCode()).toEqual('abc123');
+  });
+
+  it('returns undefined if the __h cookie is not set', () => {
+    // Set up the document.cookie value to not include the __h cookie
+    Object.defineProperty(document, 'cookie', {
+      value: 'other_cookie=def456',
+      writable: true,
+    });
+
+    // Call the getStoreHashCode function and expect it to return undefined
+    expect(getStoreHashCode()).toBeUndefined();
+  });
+});
+
+describe('getApiRequestShippingType', () => {
+  const originalQueryString = window.location.search;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '',
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: originalQueryString,
+      },
+      writable: true,
+    });
+  });
+
+  it('should return "dineIn" when shippingType is SHIPPING_TYPES.DINE_IN', () => {
+    const result = getApiRequestShippingType(SHIPPING_TYPES.DINE_IN);
+    expect(result).toEqual('dineIn');
+  });
+
+  it('should return argument value when shippingType is other value', () => {
+    const shippingType = 'test';
+    const result = getApiRequestShippingType(shippingType);
+    expect(result).toEqual(shippingType);
+  });
+
+  it('should return the value of the "type" query parameter when shippingType is null or undefined', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=pickup',
+      writable: true,
+    });
+    const getQueryStringSpy = jest.spyOn(qs, 'parse');
+    const result = getApiRequestShippingType(null);
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toEqual('pickup');
+    getQueryStringSpy.mockRestore();
+  });
+});
+
+describe('saveSourceUrlToSessionStorage', () => {
+  it('saves source URL to session storage', () => {
+    const sourceUrl = 'https://example.com';
+    saveSourceUrlToSessionStorage(sourceUrl);
+    expect(window.sessionStorage.getItem('BeepOrderingSourceUrl')).toEqual(sourceUrl);
+  });
+
+  it('should call window.sessionStorage.setItem with arguments (BeepOrdering and sourceUrl)', () => {
+    const originalSessionStorage = window.sessionStorage;
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        setItem: jest.fn(),
+        getItem: jest.fn(),
+      },
+      writable: true,
+    });
+
+    const sourceUrl = 'https://example.com';
+    const sessionStorageSetSpy = jest.spyOn(window.sessionStorage, 'setItem');
+
+    saveSourceUrlToSessionStorage(sourceUrl);
+
+    expect(sessionStorageSetSpy).toHaveBeenCalledWith('BeepOrderingSourceUrl', sourceUrl);
+    expect(window.sessionStorage.setItem).toHaveBeenCalledTimes(1);
+
+    sessionStorageSetSpy.mockRestore();
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+  });
+});
+
+describe('getSourceUrlFromSessionStorage', () => {
+  it('should return the value of BeepOrderingSourceUrl from session storage', () => {
+    const expected = 'https://example.com';
+    sessionStorage.setItem('BeepOrderingSourceUrl', expected);
+    const result = getSourceUrlFromSessionStorage();
+    expect(result).toEqual(expected);
+    sessionStorage.removeItem('BeepOrderingSourceUrl');
+  });
+
+  it('should return null if BeepOrderingSourceUrl is not set in session storage', () => {
+    const result = getSourceUrlFromSessionStorage();
+    expect(result).toBeNull();
+  });
+});
+
+describe('isSharedLink', () => {
+  const originalSessionStorage = window.sessionStorage;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(),
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+  });
+
+  it('returns true when BeepOrderingSource is SOURCE_TYPE.SHARED_LINK', () => {
+    // Arrange
+    const getSessionVariable = jest.spyOn(window.sessionStorage, 'getItem').mockReturnValue(SOURCE_TYPE.SHARED_LINK);
+
+    // Act
+    const result = isSharedLink();
+
+    // Assert
+    expect(result).toBe(true);
+    expect(getSessionVariable).toHaveBeenCalledWith('BeepOrderingSource');
+  });
+
+  it('returns false when BeepOrderingSource is not SOURCE_TYPE.SHARED_LINK', () => {
+    // Arrange
+    const getSessionVariable = jest.spyOn(window.sessionStorage, 'getItem').mockReturnValue('test');
+
+    // Act
+    const result = isSharedLink(getSessionVariable);
+
+    // Assert
+    expect(result).toBe(false);
+    expect(getSessionVariable).toHaveBeenCalledWith('BeepOrderingSource');
+  });
+});
+
+describe('getShippingTypeFromUrl', () => {
+  const originalLocation = window.location;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '',
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      value: originalLocation,
+      writable: true,
+    });
+  });
+
+  it('should return empty string when no type is present in the url', () => {
+    const url = 'https://example.com';
+    Object.defineProperty(window, 'location', {
+      value: new URL(url),
+    });
+
+    expect(getShippingTypeFromUrl()).toEqual('');
+  });
+
+  it('should return the type when it is present in the url', () => {
+    const url = 'https://example.com/?type=express';
+    Object.defineProperty(window, 'location', {
+      value: new URL(url),
+    });
+
+    expect(getShippingTypeFromUrl()).toEqual('express');
+  });
+});
+
+describe('isFromBeepSite', () => {
+  const originalSessionStorage = window.sessionStorage;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(),
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    delete process.env.REACT_APP_QR_SCAN_DOMAINS;
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+  });
+
+  it('should return false when no source url is found', () => {
+    window.sessionStorage.getItem.mockReturnValueOnce(null);
+    expect(isFromBeepSite()).toBe(false);
+  });
+
+  it('should return false when the source url is not from beep site', () => {
+    window.sessionStorage.getItem.mockReturnValueOnce('https://www.google.com');
+    expect(isFromBeepSite()).toBe(false);
+  });
+
+  it('should return true when the source url is from beep site', () => {
+    process.env.REACT_APP_QR_SCAN_DOMAINS = 'beepit.co, beep.com';
+    window.sessionStorage.getItem.mockReturnValueOnce('https://beep.com');
+    expect(isFromBeepSite()).toBe(true);
+  });
+
+  it('should catch and log errors, if any error happen', () => {
+    const originalURL = global.URL;
+    const error = new Error('test error');
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(() => {
+          return 'https://beep.com';
+        }),
+      },
+      writable: true,
+    });
+    Object.defineProperty(global, 'URL', {
+      value: {
+        hostname: 'beep.com',
+        toString: jest.fn(() => {
+          throw error;
+        }),
+      },
+      writable: true,
+    });
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+    expect(isFromBeepSite()).toBe(false);
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    console.error.mockRestore();
+    Object.defineProperty(global, 'URL', {
+      value: originalURL,
+      writable: true,
+    });
   });
 });

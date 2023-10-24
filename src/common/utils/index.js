@@ -330,6 +330,7 @@ export const isSiteApp = (domain = window.location.hostname) => {
     .split(',')
     .map(d => d.trim())
     .filter(d => d);
+
   return domainList.some(d => domain.toLowerCase() === d.toLowerCase());
 };
 
