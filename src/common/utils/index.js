@@ -453,6 +453,7 @@ export const isProductSoldOut = product => {
   return false;
 };
 
+// TODO: move to app selector file
 export const getExpectedDeliveryDateFromSession = () => {
   const selectedDate = JSON.parse(getSessionVariable('expectedDeliveryDate') || '{}');
   const selectedHour = JSON.parse(getSessionVariable('expectedDeliveryHour') || '{}');
@@ -463,21 +464,33 @@ export const getExpectedDeliveryDateFromSession = () => {
   };
 };
 
+// TODO: move to app selector file
 export const removeExpectedDeliveryTime = () => {
   removeSessionVariable('expectedDeliveryDate');
   removeSessionVariable('expectedDeliveryHour');
 };
 
+// TODO: move to app selector file
 export const setExpectedDeliveryTime = ({ date, hour }) => {
   setSessionVariable('expectedDeliveryDate', JSON.stringify(date));
   setSessionVariable('expectedDeliveryHour', JSON.stringify(hour));
 };
 
-export const getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
-  let storeUrl = `${config.beepOnlineStoreUrl(business)}/ordering/?h=${hash}`;
-  if (type) storeUrl += `&type=${type}`;
-  if (source) storeUrl += `&source=${encodeURIComponent(source)}`;
-  return storeUrl;
+/**
+ *
+ * @param {*} business
+ * @param {*} queryObject: Object
+ * @returns
+ */
+export const getMerchantStoreUrl = (business, queryObject) => {
+  const domain = config.beepOnlineStoreUrl(business);
+  const pathname = PATH_NAME_MAPPING.ORDERING_BASE;
+
+  if (!queryObject || Object.keys(queryObject).length === 0) {
+    return `${domain}${pathname}`;
+  }
+
+  return `${domain}${pathname}/?${qs.stringify(queryObject)}`;
 };
 
 export const getFulfillDate = (businessUTCOffset = 480) => {

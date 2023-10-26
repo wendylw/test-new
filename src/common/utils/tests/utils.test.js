@@ -1,6 +1,7 @@
 import qs from 'qs';
 import Cookies from 'js-cookie';
-import { SHIPPING_TYPES, SOURCE_TYPE } from '../constants';
+import dayjs from 'dayjs';
+import { SHIPPING_TYPES, SOURCE_TYPE, PATH_NAME_MAPPING } from '../constants';
 import {
   attemptLoad,
   setCookieVariable,
@@ -34,7 +35,21 @@ import {
   isSharedLink,
   getShippingTypeFromUrl,
   isFromBeepSite,
-  getOpeningHours,
+  isFromBeepSiteOrderHistory,
+  isFromFoodCourt,
+  isDeliveryType,
+  isPickUpType,
+  isDineInType,
+  isDigitalType,
+  isTakeAwayType,
+  isDeliveryOrder,
+  isQROrder,
+  isProductSoldOut,
+  getExpectedDeliveryDateFromSession,
+  removeExpectedDeliveryTime,
+  setExpectedDeliveryTime,
+  getMerchantStoreUrl,
+  getFulfillDate,
 } from '../index';
 
 describe('attemptLoad', () => {
@@ -1189,4 +1204,732 @@ describe('isFromBeepSite', () => {
       writable: true,
     });
   });
+});
+
+describe('isFromBeepSiteOrderHistory', () => {
+  const originalSessionStorage = window.sessionStorage;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(),
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    delete process.env.REACT_APP_QR_SCAN_DOMAINS;
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+  });
+
+  it('should return false when no source url is found', () => {
+    window.sessionStorage.getItem.mockReturnValueOnce(null);
+    expect(isFromBeepSiteOrderHistory()).toBe(false);
+  });
+
+  it('should return false when the source url is not from beep site', () => {
+    window.sessionStorage.getItem.mockReturnValueOnce('https://www.google.com');
+    expect(isFromBeepSiteOrderHistory()).toBe(false);
+  });
+
+  it('should return true when the source url is from beep order history', () => {
+    window.sessionStorage.getItem.mockReturnValueOnce(`https://beepit.com${PATH_NAME_MAPPING.ORDER_HISTORY}`);
+    expect(isFromBeepSiteOrderHistory()).toBe(true);
+  });
+
+  it('should catch and log errors, if any error happen', () => {
+    const originalURL = global.URL;
+    const error = new Error('test error');
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(() => {
+          return 'https://beep.com';
+        }),
+      },
+      writable: true,
+    });
+    Object.defineProperty(global, 'URL', {
+      value: {
+        hostname: 'beep.com',
+        toString: jest.fn(() => {
+          throw error;
+        }),
+      },
+      writable: true,
+    });
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+    expect(isFromBeepSiteOrderHistory()).toBe(false);
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    console.error.mockRestore();
+    Object.defineProperty(global, 'URL', {
+      value: originalURL,
+      writable: true,
+    });
+  });
+});
+
+describe('isFromFoodCourt', () => {
+  const originalSessionStorage = window.sessionStorage;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(),
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    delete process.env.REACT_APP_QR_SCAN_DOMAINS;
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+  });
+
+  it('should return false when no source url is found', () => {
+    window.sessionStorage.getItem.mockReturnValueOnce(null);
+    expect(isFromFoodCourt()).toBe(false);
+  });
+
+  it('should return false when the source url is not from beep site', () => {
+    window.sessionStorage.getItem.mockReturnValueOnce('https://www.google.com');
+    expect(isFromFoodCourt()).toBe(false);
+  });
+
+  it('should return true when the source url is from food court landing page', () => {
+    window.sessionStorage.getItem.mockReturnValueOnce(
+      `https://jw.beepit.com${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.FOOD_COURT}`
+    );
+    expect(isFromFoodCourt()).toBe(true);
+  });
+
+  it('should catch and log errors, if any error happen', () => {
+    const originalURL = global.URL;
+    const error = new Error('test error');
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(() => {
+          return 'https://beep.com';
+        }),
+      },
+      writable: true,
+    });
+    Object.defineProperty(global, 'URL', {
+      value: {
+        hostname: 'beep.com',
+        toString: jest.fn(() => {
+          throw error;
+        }),
+      },
+      writable: true,
+    });
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+    expect(isFromFoodCourt()).toBe(false);
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    console.error.mockRestore();
+    Object.defineProperty(global, 'URL', {
+      value: originalURL,
+      writable: true,
+    });
+  });
+});
+
+describe('isDeliveryType', () => {
+  let getQueryStringSpy;
+  const originalQueryString = window.location.search;
+
+  beforeEach(() => {
+    getQueryStringSpy = jest.spyOn(qs, 'parse');
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '',
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    getQueryStringSpy.mockRestore();
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: originalQueryString,
+      },
+      writable: true,
+    });
+  });
+
+  it('should return true when shipping type is delivery', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=delivery',
+      writable: true,
+    });
+
+    const result = isDeliveryType();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(true);
+  });
+
+  it('should return false when shipping type is not delivery', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=pickup',
+      writable: true,
+    });
+
+    const result = isDeliveryType();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(false);
+  });
+});
+
+describe('isPickUpType', () => {
+  let getQueryStringSpy;
+  const originalQueryString = window.location.search;
+
+  beforeEach(() => {
+    getQueryStringSpy = jest.spyOn(qs, 'parse');
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '',
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    getQueryStringSpy.mockRestore();
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: originalQueryString,
+      },
+      writable: true,
+    });
+  });
+
+  it('should return true when shipping type is pickup', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=pickup',
+      writable: true,
+    });
+
+    const result = isPickUpType();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(true);
+  });
+
+  it('should return false when shipping type is not pickup', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=delivery',
+      writable: true,
+    });
+
+    const result = isPickUpType();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(false);
+  });
+});
+
+describe('isDineInType', () => {
+  let getQueryStringSpy;
+  const originalQueryString = window.location.search;
+
+  beforeEach(() => {
+    getQueryStringSpy = jest.spyOn(qs, 'parse');
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '',
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    getQueryStringSpy.mockRestore();
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: originalQueryString,
+      },
+      writable: true,
+    });
+  });
+
+  it('should return true when shipping type is dine-in', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=dine-in',
+      writable: true,
+    });
+
+    const result = isDineInType();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(true);
+  });
+
+  it('should return false when shipping type is not dine-in', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=delivery',
+      writable: true,
+    });
+
+    const result = isDineInType();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(false);
+  });
+});
+
+describe('isDigitalType', () => {
+  let getQueryStringSpy;
+  const originalQueryString = window.location.search;
+
+  beforeEach(() => {
+    getQueryStringSpy = jest.spyOn(qs, 'parse');
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '',
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    getQueryStringSpy.mockRestore();
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: originalQueryString,
+      },
+      writable: true,
+    });
+  });
+
+  it('should return true when shipping type is digital', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=digital',
+      writable: true,
+    });
+
+    const result = isDigitalType();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(true);
+  });
+
+  it('should return false when shipping type is not digital', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=delivery',
+      writable: true,
+    });
+
+    const result = isDigitalType();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(false);
+  });
+});
+
+describe('isTakeAwayType', () => {
+  let getQueryStringSpy;
+  const originalQueryString = window.location.search;
+
+  beforeEach(() => {
+    getQueryStringSpy = jest.spyOn(qs, 'parse');
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '',
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    getQueryStringSpy.mockRestore();
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: originalQueryString,
+      },
+      writable: true,
+    });
+  });
+
+  it('should return true when shipping type is takeaway', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=takeaway',
+      writable: true,
+    });
+
+    const result = isTakeAwayType();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(true);
+  });
+
+  it('should return false when shipping type is not takeaway', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=delivery',
+      writable: true,
+    });
+
+    const result = isTakeAwayType();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(false);
+  });
+});
+
+describe('isDeliveryOrder', () => {
+  let getQueryStringSpy;
+  const originalQueryString = window.location.search;
+
+  beforeEach(() => {
+    getQueryStringSpy = jest.spyOn(qs, 'parse');
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '',
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    getQueryStringSpy.mockRestore();
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: originalQueryString,
+      },
+      writable: true,
+    });
+  });
+
+  it('should return true when shipping type is pickup or delivery', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=pickup',
+      writable: true,
+    });
+
+    const pickupResult = isDeliveryOrder();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(pickupResult).toBe(true);
+
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=pickup',
+      writable: true,
+    });
+
+    const deliveryResult = isDeliveryOrder();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(deliveryResult).toBe(true);
+  });
+
+  it('should return false when shipping type is not pickup and delivery', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=',
+      writable: true,
+    });
+
+    const result = isDeliveryOrder();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(false);
+  });
+});
+
+describe('isQROrder', () => {
+  let getQueryStringSpy;
+  const originalQueryString = window.location.search;
+
+  beforeEach(() => {
+    getQueryStringSpy = jest.spyOn(qs, 'parse');
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '',
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    getQueryStringSpy.mockRestore();
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: originalQueryString,
+      },
+      writable: true,
+    });
+  });
+
+  it('should return true when shipping type is dine-in or takeaway', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=dine-in',
+      writable: true,
+    });
+
+    const dineInResult = isQROrder();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(dineInResult).toBe(true);
+
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=takeaway',
+      writable: true,
+    });
+
+    const takeawayResult = isQROrder();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(takeawayResult).toBe(true);
+  });
+
+  it('should return false when shipping type is not dine-in and takeaway', () => {
+    Object.defineProperty(window.location, 'search', {
+      value: '?type=',
+      writable: true,
+    });
+
+    const result = isQROrder();
+    expect(getQueryStringSpy).toHaveBeenCalledWith(window.location.search, { ignoreQueryPrefix: true });
+    expect(result).toBe(false);
+  });
+});
+
+describe('isProductSoldOut', () => {
+  it('should return true if stockStatus is outOfStock', () => {
+    const product = { stockStatus: 'outOfStock', variations: [] };
+    expect(isProductSoldOut(product)).toBe(true);
+  });
+
+  it('should return true if all variations are sold out', () => {
+    const product = {
+      stockStatus: 'IN_STOCK',
+      variations: [
+        {
+          variationType: 'SingleChoice',
+          optionValues: [{ markedSoldOut: true }, { markedSoldOut: true }, { markedSoldOut: true }],
+        },
+      ],
+    };
+    expect(isProductSoldOut(product)).toBe(true);
+  });
+
+  it('should return false if at least one variation is not sold out', () => {
+    const product = {
+      stockStatus: 'IN_STOCK',
+      variations: [
+        {
+          variationType: 'SingleChoice',
+          optionValues: [{ markedSoldOut: true }, { markedSoldOut: false }, { markedSoldOut: true }],
+        },
+      ],
+    };
+    expect(isProductSoldOut(product)).toBe(false);
+  });
+
+  it('should return false if there are no variations', () => {
+    const product = { stockStatus: 'IN_STOCK', variations: [] };
+    expect(isProductSoldOut(product)).toBe(false);
+  });
+});
+
+describe('getExpectedDeliveryDateFromSession', () => {
+  const originalSessionStorage = window.sessionStorage;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(),
+        setItem: jest.fn(),
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+  });
+
+  it('should return an object with date and hour properties', () => {
+    // Arrange
+    const expectedDeliveryDate = {
+      date: { date: '2023-10-23T16:00:00.000Z', isOpen: true, isToday: true },
+      hour: { from: '21:00', to: '22:00' },
+    };
+    const sessionStorageGetItemSpy = jest.spyOn(window.sessionStorage, 'getItem');
+
+    sessionStorageGetItemSpy.mockImplementation(key => {
+      if (key === 'expectedDeliveryDate') {
+        return JSON.stringify(expectedDeliveryDate.date);
+      } else if (key === 'expectedDeliveryHour') {
+        return JSON.stringify(expectedDeliveryDate.hour);
+      }
+    });
+
+    // Act
+    const result = getExpectedDeliveryDateFromSession();
+
+    // Assert
+    expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryDate');
+    expect(window.sessionStorage.getItem('expectedDeliveryDate')).toEqual(JSON.stringify(expectedDeliveryDate.date));
+    expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryHour');
+    expect(window.sessionStorage.getItem('expectedDeliveryHour')).toEqual(JSON.stringify(expectedDeliveryDate.hour));
+    expect(result).toEqual(expectedDeliveryDate);
+    sessionStorageGetItemSpy.mockRestore();
+  });
+
+  it('should return an empty object if no session variables are set', () => {
+    // Act
+    const result = getExpectedDeliveryDateFromSession();
+    const sessionStorageGetItemSpy = jest.spyOn(window.sessionStorage, 'getItem');
+
+    // Assert
+    expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryDate');
+    expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryHour');
+    expect(result).toEqual({ date: {}, hour: {} });
+    sessionStorageGetItemSpy.mockRestore();
+  });
+});
+
+describe('removeExpectedDeliveryTime', () => {
+  it('should remove expectedDeliveryDate and expectedDeliveryHour from session variables', () => {
+    // Set up
+    window.sessionStorage.setItem('expectedDeliveryDate', '2022-01-01');
+    window.sessionStorage.setItem('expectedDeliveryHour', '12:00');
+
+    // Call function
+    removeExpectedDeliveryTime();
+
+    // Check that session variables were removed
+    expect(window.sessionStorage.getItem('expectedDeliveryDate')).toBeNull();
+    expect(window.sessionStorage.getItem('expectedDeliveryHour')).toBeNull();
+  });
+});
+
+describe('setExpectedDeliveryTime', () => {
+  it('should set expected delivery date and hour in session storage', () => {
+    const date = { date: new Date('2022-01-01').toISOString(), isOpen: true, isToday: true };
+    const hour = { from: '21:00', to: '22:00' };
+    setExpectedDeliveryTime({ date, hour });
+    expect(JSON.parse(window.sessionStorage.getItem('expectedDeliveryDate'))).toEqual(date);
+    expect(JSON.parse(window.sessionStorage.getItem('expectedDeliveryHour'))).toEqual(hour);
+  });
+});
+
+describe('getMerchantStoreUrl', () => {
+  let business;
+  let queryObject;
+
+  beforeEach(() => {
+    business = 'my-business';
+    queryObject = { source: 'my-source', foo: 'bar' };
+    process.env.REACT_APP_MERCHANT_STORE_URL = 'https://%business%.beep.com';
+  });
+
+  afterEach(() => {
+    business = undefined;
+    queryObject = undefined;
+    delete process.env.REACT_APP_MERCHANT_STORE_URL;
+  });
+
+  it('returns the correct URL without query parameters', () => {
+    const expectedUrl = 'https://my-business.beep.com/ordering';
+    const actualUrl = getMerchantStoreUrl(business, null);
+    expect(actualUrl).toEqual(expectedUrl);
+  });
+
+  it('returns the correct URL with empty query parameters', () => {
+    const expectedUrl = 'https://my-business.beep.com/ordering';
+    const actualUrl = getMerchantStoreUrl(business, {});
+    expect(actualUrl).toEqual(expectedUrl);
+  });
+
+  it('returns the correct URL with query parameters', () => {
+    const expectedUrl = 'https://my-business.beep.com/ordering/?source=my-source&foo=bar';
+    const actualUrl = getMerchantStoreUrl(business, queryObject);
+    expect(actualUrl).toEqual(expectedUrl);
+  });
+
+  it('returns the correct URL with encode URL in query parameters', () => {
+    queryObject = { source: 'https://beepit.com', foo: 'bar' };
+    const expectedUrl = `https://my-business.beep.com/ordering/?source=${encodeURIComponent(
+      queryObject.source
+    )}&foo=bar`;
+    const actualUrl = getMerchantStoreUrl(business, queryObject);
+    expect(actualUrl).toEqual(expectedUrl);
+  });
+});
+
+describe('getFulfillDate', () => {
+  const originalSessionStorage = window.sessionStorage;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(),
+        setItem: jest.fn(),
+      },
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+  });
+
+  it('should return null if expected date or expected from time is not defined', () => {
+    const result = getFulfillDate();
+    expect(result).toBeNull();
+  });
+
+  it('should return null if expected from time is TIME_SLOT_NOW', () => {
+    const result = getFulfillDate(480);
+    expect(result).toBeNull();
+  });
+
+  //TODO: dayjs testing
+  // it('should return the expected fulfill date in ISO string format', () => {
+  //   const expectedDeliveryDateFromSession = {
+  //     date: {
+  //       date: new Date('2022-01-01').toISOString(),
+  //     },
+  //     hour: {
+  //       from: '10:00',
+  //     },
+  //   };
+  //   const sessionStorageGetItemSpy = jest.spyOn(window.sessionStorage, 'getItem');
+  //   sessionStorageGetItemSpy.mockImplementation(key => {
+  //     if (key === 'expectedDeliveryDate') {
+  //       return JSON.stringify(expectedDeliveryDateFromSession.date);
+  //     } else if (key === 'expectedDeliveryHour') {
+  //       return JSON.stringify(expectedDeliveryDateFromSession.hour);
+  //     }
+  //   });
+  //   const dayjs = jest.requireActual('dayjs');
+
+  //   jest.fn().mockReturnValue(dayjs(new Date('2022-01-01').toISOString()).utcOffset(480));
+
+  //   const result = getFulfillDate(480);
+
+  //   expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryDate');
+  //   expect(window.sessionStorage.getItem('expectedDeliveryDate')).toEqual(
+  //     JSON.stringify(expectedDeliveryDateFromSession.date)
+  //   );
+  //   expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryHour');
+  //   expect(window.sessionStorage.getItem('expectedDeliveryHour')).toEqual(
+  //     JSON.stringify(expectedDeliveryDateFromSession.hour)
+  //   );
+  //   expect(result).toEqual('2022-01-01T10:00:00.000Z');
+  //   sessionStorageGetItemSpy.mockRestore();
+  // });
+
+  // it('should return null if an error occurs', () => {
+  //   jest.spyOn(global.console, 'error').mockImplementation(() => {});
+  //   jest.spyOn(global, 'getExpectedDeliveryDateFromSession').mockImplementation(() => {
+  //     throw new Error('Unexpected error');
+  //   });
+
+  //   const result = getFulfillDate(480);
+  //   expect(result).toBeNull();
+  // });
 });
