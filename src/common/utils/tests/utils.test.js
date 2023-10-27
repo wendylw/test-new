@@ -1,7 +1,7 @@
 import qs from 'qs';
 import Cookies from 'js-cookie';
 import dayjs from 'dayjs';
-import { SHIPPING_TYPES, SOURCE_TYPE, PATH_NAME_MAPPING } from '../constants';
+import { SHIPPING_TYPES, SOURCE_TYPE, PATH_NAME_MAPPING, ORDER_SOURCE, WEB_VIEW_SOURCE } from '../constants';
 import {
   attemptLoad,
   setCookieVariable,
@@ -54,6 +54,7 @@ import {
   getPhoneNumberWithCode,
   getFullAddress,
   getDeliveryInfo,
+  getOrderSource,
 } from '../index';
 
 describe('attemptLoad', () => {
@@ -2208,4 +2209,38 @@ describe('getDeliveryInfo', () => {
     expect(deliveryInfo.logisticsValidTimeFrom).toEqual('10:00');
     expect(deliveryInfo.logisticsValidTimeTo).toEqual('20:00');
   });
+});
+
+describe('getOrderSource', () => {
+  // it('should return TNG_MINI_PROGRAM when isTNGMiniProgram is true', () => {
+  //   Object.defineProperty(window, '_isTNGMiniProgram_', {
+  //     value: true,
+  //   });
+  //   expect(getOrderSource()).toEqual(ORDER_SOURCE.TNG_MINI_PROGRAM);
+  //   delete window._isTNGMiniProgram_;
+  // });
+  // it('should return BEEP_APP when isWebview is true', () => {
+  //   jest.spyOn(window, '_isTNGMiniProgram_', )
+  //   Object.defineProperty(window, '_isTNGMiniProgram_', {
+  //     value: false,
+  //   });
+  //   Object.defineProperty(window, 'webViewSource', {
+  //     value: WEB_VIEW_SOURCE.Android,
+  //   });
+  //   expect(getOrderSource()).toEqual(ORDER_SOURCE.BEEP_APP);
+  //   delete window._isTNGMiniProgram_;
+  //   delete window.webViewSource;
+  // });
+  // it('should return BEEP_SITE when isFromBeepSite is true', () => {
+  //   jest.spyOn(utils, 'isTNGMiniProgram').mockReturnValue(false);
+  //   jest.spyOn(utils, 'isWebview').mockReturnValue(false);
+  //   jest.spyOn(utils, 'isFromBeepSite').mockReturnValue(true);
+  //   expect(getOrderSource()).toEqual(ORDER_SOURCE.BEEP_SITE);
+  // });
+  // it('should return BEEP_STORE when none of the above is true', () => {
+  //   jest.spyOn(utils, 'isTNGMiniProgram').mockReturnValue(false);
+  //   jest.spyOn(utils, 'isWebview').mockReturnValue(false);
+  //   jest.spyOn(utils, 'isFromBeepSite').mockReturnValue(false);
+  //   expect(getOrderSource()).toEqual(ORDER_SOURCE.BEEP_STORE);
+  // });
 });
