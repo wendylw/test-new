@@ -50,6 +50,10 @@ import {
   setExpectedDeliveryTime,
   getMerchantStoreUrl,
   getFulfillDate,
+  getCountry,
+  getPhoneNumberWithCode,
+  getFullAddress,
+  getDeliveryInfo,
 } from '../index';
 
 describe('attemptLoad', () => {
@@ -458,8 +462,8 @@ describe('getFileExtension', function() {
   });
 
   it('should throw an error when the file object is invalid', function() {
-    const file = { type: 'image/jpeg' };
-    expect(() => getFileExtension(file)).toThrow();
+    expect(() => getFileExtension({ type: 'image/jpeg' })).toThrow();
+    expect(() => getFileExtension(undefined)).toThrow();
   });
 });
 
@@ -1932,4 +1936,276 @@ describe('getFulfillDate', () => {
   //   const result = getFulfillDate(480);
   //   expect(result).toBeNull();
   // });
+});
+
+describe('getCountry', () => {
+  let countries;
+  let defaultCountry;
+
+  beforeEach(() => {
+    countries = ['us', 'ca', 'mx'];
+    defaultCountry = 'us';
+  });
+
+  afterEach(() => {
+    countries = undefined;
+    defaultCountry = undefined;
+  });
+
+  it('should return an empty string if phone is provided', () => {
+    const result = getCountry('1234567890', 'en-US', countries, defaultCountry);
+    expect(result).toEqual('');
+  });
+
+  it('should return defaultCountry if language is not provided', () => {
+    expect(getCountry(null, '', countries, defaultCountry)).toEqual(defaultCountry);
+    expect(getCountry(null, null, countries, defaultCountry)).toEqual(defaultCountry);
+    expect(getCountry(null, undefined, countries, defaultCountry)).toEqual(defaultCountry);
+  });
+
+  it('should return undefined if language is not in the list of countries', () => {
+    const result = getCountry(null, 'fr-FR', countries, defaultCountry);
+    expect(result).toBeUndefined();
+  });
+
+  it('should return the language prefix as country code if language prefix is in the list of countries', () => {
+    const result = getCountry(null, 'mx-es', countries, defaultCountry);
+    expect(result).toEqual('mx');
+  });
+
+  it('should return the language suffix as country code if language suffix is in the list of countries', () => {
+    const result = getCountry(null, 'fr-ca', countries, defaultCountry);
+    expect(result).toEqual('ca');
+  });
+});
+
+describe('getPhoneNumberWithCode', () => {
+  let phone;
+  let countryCode;
+
+  beforeEach(() => {
+    phone = '1234567890';
+    countryCode = '91';
+  });
+
+  afterEach(() => {
+    phone = undefined;
+    countryCode = undefined;
+  });
+
+  it('should return phone if countryCode is not provided', () => {
+    countryCode = undefined;
+    expect(getPhoneNumberWithCode(phone, countryCode)).toEqual(phone);
+  });
+
+  it('should return phone if countryCode is empty', () => {
+    countryCode = '';
+    expect(getPhoneNumberWithCode(phone, countryCode)).toEqual(phone);
+  });
+
+  it('should return phone if countryCode is not in phone', () => {
+    expect(getPhoneNumberWithCode(phone, countryCode)).toEqual(phone);
+  });
+
+  it('should return phone with countryCode if countryCode is in phone', () => {
+    phone = '911234567890';
+    expect(getPhoneNumberWithCode(phone, countryCode)).toEqual(`+${phone}`);
+  });
+
+  it('should return phone with countryCode if countryCode is in phone and phone has +', () => {
+    phone = '+911234567890';
+    expect(getPhoneNumberWithCode(phone, countryCode)).toEqual(phone);
+  });
+
+  it('should return phone with countryCode if countryCode is in phone and phone has extra digits', () => {
+    phone = '911234567890';
+    expect(getPhoneNumberWithCode(phone, countryCode)).toEqual('+911234567890');
+  });
+});
+
+describe('getFullAddress', () => {
+  it('should return empty string when addressInfo is empty', () => {
+    const addressInfo = {};
+    const splitLength = 6;
+    const result = getFullAddress(addressInfo, splitLength);
+    expect(result).toEqual('');
+  });
+
+  it('should return full address when splitLength is greater than the number of address keys', () => {
+    const addressInfo = {
+      street1: '123 Main St',
+      street2: 'Apt 4',
+      postalCode: '12345',
+      city: 'Anytown',
+      state: 'CA',
+      country: 'USA',
+    };
+    const splitLength = 10;
+    const result = getFullAddress(addressInfo, splitLength);
+    expect(result).toEqual('123 Main St, Apt 4, 12345, Anytown, CA, USA');
+  });
+
+  it('should return partial address when splitLength is less than the number of address keys', () => {
+    const addressInfo = {
+      street1: '123 Main St',
+      street2: 'Apt 4',
+      postalCode: '12345',
+      city: 'Anytown',
+      state: 'CA',
+      country: 'USA',
+    };
+    const splitLength = 3;
+    const result = getFullAddress(addressInfo, splitLength);
+    expect(result).toEqual('123 Main St, Apt 4, 12345');
+  });
+
+  it('should ignore empty address keys', () => {
+    const addressInfo = {
+      street1: '123 Main St',
+      street2: '',
+      postalCode: '12345',
+      city: 'Anytown',
+      state: '',
+      country: 'USA',
+    };
+    const splitLength = 6;
+    const result = getFullAddress(addressInfo, splitLength);
+    expect(result).toEqual('123 Main St, 12345, Anytown, USA');
+  });
+});
+
+describe('getDeliveryInfo', () => {
+  it('returns default values when businessInfo is undefined', () => {
+    const deliveryInfo = getDeliveryInfo(undefined);
+    expect(deliveryInfo.deliveryFee).toEqual(0);
+    expect(deliveryInfo.useStorehubLogistics).toBeFalsy();
+    expect(deliveryInfo.minOrder).toEqual(0);
+    expect(deliveryInfo.storeAddress).toEqual('');
+    expect(deliveryInfo.telephone).toBeUndefined();
+    expect(deliveryInfo.validDays).toBeUndefined();
+    expect(deliveryInfo.validTimeFrom).toBeUndefined();
+    expect(deliveryInfo.validTimeTo).toBeUndefined();
+    expect(deliveryInfo.freeShippingMinAmount).toBeUndefined();
+    expect(deliveryInfo.enableConditionalFreeShipping).toBeUndefined();
+    expect(deliveryInfo.enableLiveOnline).toBeUndefined();
+    expect(deliveryInfo.enablePreOrder).toBeUndefined();
+    expect(deliveryInfo.sellAlcohol).toBeUndefined();
+    expect(deliveryInfo.disableTodayPreOrder).toBeUndefined();
+    expect(deliveryInfo.disableOnDemandOrder).toBeUndefined();
+    expect(deliveryInfo.breakTimeFrom).toBeUndefined();
+    expect(deliveryInfo.breakTimeTo).toBeUndefined();
+    expect(deliveryInfo.vacations).toBeUndefined();
+    expect(deliveryInfo.logisticsValidTimeFrom).toBeUndefined();
+    expect(deliveryInfo.logisticsValidTimeTo).toBeUndefined();
+  });
+
+  it('returns default values when qrOrderingSettings is undefined', () => {
+    const deliveryInfo = getDeliveryInfo({});
+    expect(deliveryInfo.deliveryFee).toEqual(0);
+    expect(deliveryInfo.useStorehubLogistics).toBeFalsy();
+    expect(deliveryInfo.minOrder).toEqual(0);
+    expect(deliveryInfo.storeAddress).toEqual('');
+    expect(deliveryInfo.telephone).toBeUndefined();
+    expect(deliveryInfo.validDays).toBeUndefined();
+    expect(deliveryInfo.validTimeFrom).toBeUndefined();
+    expect(deliveryInfo.validTimeTo).toBeUndefined();
+    expect(deliveryInfo.freeShippingMinAmount).toBeUndefined();
+    expect(deliveryInfo.enableConditionalFreeShipping).toBeUndefined();
+    expect(deliveryInfo.enableLiveOnline).toBeUndefined();
+    expect(deliveryInfo.enablePreOrder).toBeUndefined();
+    expect(deliveryInfo.sellAlcohol).toBeUndefined();
+    expect(deliveryInfo.disableTodayPreOrder).toBeUndefined();
+    expect(deliveryInfo.disableOnDemandOrder).toBeUndefined();
+    expect(deliveryInfo.breakTimeFrom).toBeUndefined();
+    expect(deliveryInfo.breakTimeTo).toBeUndefined();
+    expect(deliveryInfo.vacations).toBeUndefined();
+    expect(deliveryInfo.logisticsValidTimeFrom).toBeUndefined();
+    expect(deliveryInfo.logisticsValidTimeTo).toBeUndefined();
+  });
+
+  it('returns expected values when qrOrderingSettings is defined', () => {
+    const businessInfo = {
+      stores: [
+        {
+          phone: '123-456-7890',
+        },
+      ],
+    };
+    const qrOrderingSettings = {
+      defaultShippingZone: {
+        defaultShippingZoneMethod: {
+          rate: 5,
+          freeShippingMinAmount: 50,
+          enableConditionalFreeShipping: true,
+        },
+      },
+      minimumConsumption: 20,
+      validDays: [1, 2, 3],
+      validTimeFrom: '10:00',
+      validTimeTo: '20:00',
+      enableLiveOnline: true,
+      enablePreOrder: true,
+      sellAlcohol: true,
+      disableTodayPreOrder: true,
+      disableOnDemandOrder: true,
+      breakTimeFrom: '12:00',
+      breakTimeTo: '13:00',
+      vacations: ['2022-01-01', '2022-02-01'],
+      useStorehubLogistics: true,
+    };
+    const deliveryInfo = getDeliveryInfo({ stores: businessInfo.stores, qrOrderingSettings });
+    expect(deliveryInfo.deliveryFee).toEqual(5);
+    expect(deliveryInfo.useStorehubLogistics).toBeTruthy();
+    expect(deliveryInfo.minOrder).toEqual(20);
+    expect(deliveryInfo.storeAddress).toEqual('');
+    expect(deliveryInfo.telephone).toEqual('123-456-7890');
+    expect(deliveryInfo.validDays).toEqual([1, 2, 3]);
+    expect(deliveryInfo.validTimeFrom).toEqual('10:00');
+    expect(deliveryInfo.validTimeTo).toEqual('20:00');
+    expect(deliveryInfo.freeShippingMinAmount).toEqual(50);
+    expect(deliveryInfo.enableConditionalFreeShipping).toBeTruthy();
+    expect(deliveryInfo.enableLiveOnline).toBeTruthy();
+    expect(deliveryInfo.enablePreOrder).toBeTruthy();
+    expect(deliveryInfo.sellAlcohol).toBeTruthy();
+    expect(deliveryInfo.disableTodayPreOrder).toBeTruthy();
+    expect(deliveryInfo.disableOnDemandOrder).toBeTruthy();
+    expect(deliveryInfo.breakTimeFrom).toEqual('12:00');
+    expect(deliveryInfo.breakTimeTo).toEqual('13:00');
+    expect(deliveryInfo.vacations).toEqual(['2022-01-01', '2022-02-01']);
+    expect(deliveryInfo.logisticsValidTimeFrom).toEqual('10:00');
+    expect(deliveryInfo.logisticsValidTimeTo).toEqual('20:00');
+  });
+
+  it('uses storeHub Logistics valid time when useStorehubLogistics is true and out of valid time', () => {
+    const qrOrderingSettings = {
+      validTimeFrom: '08:00',
+      validTimeTo: '23:00',
+      useStorehubLogistics: true,
+    };
+    const deliveryInfo = getDeliveryInfo({ qrOrderingSettings });
+    expect(deliveryInfo.logisticsValidTimeFrom).toEqual('09:00');
+    expect(deliveryInfo.logisticsValidTimeTo).toEqual('21:00');
+  });
+
+  it('uses store Logistics valid time when useStorehubLogistics is true and within valid time', () => {
+    const qrOrderingSettings = {
+      validTimeFrom: '09:30',
+      validTimeTo: '20:30',
+      useStorehubLogistics: true,
+    };
+    const deliveryInfo = getDeliveryInfo({ qrOrderingSettings });
+    expect(deliveryInfo.logisticsValidTimeFrom).toEqual('09:30');
+    expect(deliveryInfo.logisticsValidTimeTo).toEqual('20:30');
+  });
+
+  it('does not use storeHub Logistics valid time when useStorehubLogistics is false', () => {
+    const qrOrderingSettings = {
+      validTimeFrom: '10:00',
+      validTimeTo: '20:00',
+      useStorehubLogistics: false,
+    };
+    const deliveryInfo = getDeliveryInfo({ qrOrderingSettings });
+    expect(deliveryInfo.logisticsValidTimeFrom).toEqual('10:00');
+    expect(deliveryInfo.logisticsValidTimeTo).toEqual('20:00');
+  });
 });

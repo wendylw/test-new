@@ -124,14 +124,10 @@ export const checkEmailIsValid = email => {
 };
 
 export const getFileExtension = file => {
-  try {
-    const fileNames = file.name.split('.');
-    const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
+  const fileNames = file.name.split('.');
+  const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
 
-    return fileNameExtension || file.type.split('/')[1];
-  } catch (error) {
-    throw error;
-  }
+  return fileNameExtension || file.type.split('/')[1];
 };
 
 export const copyDataToClipboard = async text => {
@@ -518,8 +514,9 @@ export const getFulfillDate = (businessUTCOffset = 480) => {
 };
 
 export const getOpeningHours = ({ breakTimeFrom, breakTimeTo, validTimeFrom = '00:00', validTimeTo = '24:00' }) => {
-  const formatBreakTimes = [formatTime(breakTimeFrom, 'h:mm a'), formatTime(breakTimeTo, 'h:mm a')];
-  const formatValidTimes = [formatTime(validTimeFrom, 'h:mm a'), formatTime(validTimeTo, 'h:mm a')];
+  const formatBreakTimes =
+    breakTimeFrom && breakTimeTo ? [formatTime(breakTimeFrom), formatTime(breakTimeTo)] : undefined;
+  const formatValidTimes = [formatTime(validTimeFrom), formatTime(validTimeTo)];
 
   if (validTimeFrom >= breakTimeFrom && validTimeTo <= breakTimeTo) {
     return [];
@@ -570,15 +567,12 @@ export const getCountry = (phone, language, countries, defaultCountry) => {
 };
 
 export const getPhoneNumberWithCode = (phone, countryCode) => {
-  if (!countryCode) {
+  if (!countryCode || phone.startsWith(`+${countryCode}`)) {
     return phone;
   }
 
-  const startIndex = countryCode.length + ((phone || '')[0] === '+' ? 1 : 0);
-  const currentPhone = (phone || '').substring(startIndex);
-
-  if (countryCode && !currentPhone.indexOf(countryCode)) {
-    return `+${countryCode}${currentPhone.substring(countryCode.length)}`;
+  if (phone.startsWith(countryCode)) {
+    return `+${phone}`;
   }
 
   return phone;
