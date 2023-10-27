@@ -668,7 +668,7 @@ export const getOrderSource = () => {
   return ORDER_SOURCE.BEEP_STORE;
 };
 
-export const getOrderSourceForCleverTab = () => {
+export const getOrderSourceForCleverTap = () => {
   const orderSource = getOrderSource();
 
   const mapping = {

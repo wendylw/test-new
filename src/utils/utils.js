@@ -108,7 +108,7 @@ Utils.getOpeningHours = UtilsV2.getOpeningHours;
 
 Utils.getOrderSource = UtilsV2.getOrderSource;
 
-Utils.getOrderSourceForCleverTab = UtilsV2.getOrderSourceForCleverTab;
+Utils.getOrderSourceForCleverTap = UtilsV2.getOrderSourceForCleverTap;
 
 Utils.getClient = UtilsV2.getClient;
 
