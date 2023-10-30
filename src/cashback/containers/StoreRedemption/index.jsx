@@ -158,12 +158,13 @@ const StoreRedemption = () => {
     );
   }
 
-  console.log(isCoreBusinessLoaded);
-  console.log(isLoadCoreBusinessFailed);
-  console.log(isConsumerCustomerLoaded);
-  console.log(isLoadConsumerCustomerFailed);
-  console.log(isOnlineStoreInfoLoaded);
-  console.log(isLoadOnlineStoreInfoFailed);
+  console.log('isCoreBusinessLoaded', isCoreBusinessLoaded);
+  console.log('isLoadCoreBusinessFailed', isLoadCoreBusinessFailed);
+  console.log('isConsumerCustomerLoaded', isConsumerCustomerLoaded);
+  console.log('isLoadConsumerCustomerFailed', isLoadConsumerCustomerFailed);
+  console.log('isOnlineStoreInfoLoaded', isOnlineStoreInfoLoaded);
+  console.log('isLoadOnlineStoreInfoFailed', isLoadOnlineStoreInfoFailed);
+  console.log('==========================================================');
 
   return (
     <>
