@@ -7,7 +7,15 @@ import { alert } from '../../../common/utils/feedback';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
-import { getUserCountry } from '../../redux/modules/app';
+import {
+  getUserCountry,
+  getIsCoreBusinessLoaded,
+  getIsLoadCoreBusinessFailed,
+  getIsConsumerCustomerLoaded,
+  getIsLoadConsumerCustomerFailed,
+  getIsOnlineStoreInfoLoaded,
+  getIsLoadOnlineStoreInfoFailed,
+} from '../../redux/modules/app';
 import {
   getIsStoreRedemptionNewCustomer,
   getIsDisplayStoreRedemptionContent,
@@ -108,6 +116,12 @@ const StoreRedemption = () => {
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
+  const isCoreBusinessLoaded = useSelector(getIsCoreBusinessLoaded);
+  const isLoadCoreBusinessFailed = useSelector(getIsLoadCoreBusinessFailed);
+  const isConsumerCustomerLoaded = useSelector(getIsConsumerCustomerLoaded);
+  const isLoadConsumerCustomerFailed = useSelector(getIsLoadConsumerCustomerFailed);
+  const isOnlineStoreInfoLoaded = useSelector(getIsOnlineStoreInfoLoaded);
+  const isLoadOnlineStoreInfoFailed = useSelector(getIsLoadOnlineStoreInfoFailed);
 
   useMount(async () => {
     if (isDisplayWebResult) {
@@ -143,6 +157,13 @@ const StoreRedemption = () => {
       document.getElementById('modal-mount-point')
     );
   }
+
+  console.log(isCoreBusinessLoaded);
+  console.log(isLoadCoreBusinessFailed);
+  console.log(isConsumerCustomerLoaded);
+  console.log(isLoadConsumerCustomerFailed);
+  console.log(isOnlineStoreInfoLoaded);
+  console.log(isLoadOnlineStoreInfoFailed);
 
   return (
     <>
