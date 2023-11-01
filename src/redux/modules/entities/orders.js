@@ -19,7 +19,9 @@ const reducer = (state = initialState, action) => {
     if (data.orders) {
       const [order] = data.orders;
       return { ...state, [order.orderId]: transferOrderName(order) };
-    } else if (data.order) {
+    }
+
+    if (data.order) {
       const { order } = data;
       return { ...state, [order.orderId]: transferOrderName(order) };
     }
@@ -35,10 +37,6 @@ export default reducer;
 
 // selectors
 
-export const getAllOrders = state => {
-  return state.entities.orders;
-};
+export const getAllOrders = state => state.entities.orders;
 
-export const getOrderByOrderId = (state, orderId) => {
-  return getAllOrders(state)[orderId];
-};
+export const getOrderByOrderId = (state, orderId) => getAllOrders(state)[orderId];

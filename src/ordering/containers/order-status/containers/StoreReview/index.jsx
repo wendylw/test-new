@@ -118,7 +118,7 @@ const StoreReview = () => {
         <div className="tw-flex tw-justify-center tw-leading-normal">
           {storeHasReviewed ? t('AlreadyRated') : t('HearAboutExperience')}
         </div>
-        <div className="tw-flex tw-justify-center tw-leading-normal tw-text-lg tw-font-bold tw-mb-8 sm:tw-mb-8px">
+        <div className="tw-flex tw-justify-center tw-leading-normal tw-text-lg tw-text-center tw-font-bold tw-mb-8 sm:tw-mb-8px tw-mx-16 sm:tw-mx-16px">
           {storeName}
         </div>
         <div className="tw-flex tw-justify-center">
@@ -185,6 +185,7 @@ const StoreReview = () => {
             <div className="tw-flex">
               <TextareaAutosize
                 className={`${styles.StoreReviewContainerTextareaInput} tw-border-0`}
+                data-test-id="ordering.order-status.store-review.input"
                 onChange={handleChangeComment}
                 minRows={4}
                 value={comments}
@@ -208,6 +209,7 @@ const StoreReview = () => {
         <CheckBox
           size="small"
           className="tw-m-2 sm:tw-m-2px"
+          data-test-id="ordering.order-status.store-review.checkbox"
           checked={isContactAllowable}
           onChange={handleToggleContactConsent}
           disabled={storeHasReviewed}
@@ -222,6 +224,7 @@ const StoreReview = () => {
               block
               type="primary"
               disabled={shouldDisableSubmitButton}
+              data-test-id="ordering.order-status.store-review.submit-btn"
               onClick={handleClickSubmitButton}
               className="tw-uppercase"
             >

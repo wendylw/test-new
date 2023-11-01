@@ -1,10 +1,10 @@
-import _isEmpty from 'lodash/isEmpty';
-import Constants from '../../../utils/constants';
-import Utils from '../../../utils/utils';
 import i18next from 'i18next';
 import _get from 'lodash/get';
+import _isEmpty from 'lodash/isEmpty';
+import Constants, { PROMOTION_CLIENT_TYPES } from '../../../utils/constants';
+import Utils from '../../../utils/utils';
 
-const { PROMOTION_ERROR_CODES, VOUCHER_STATUS, PROMOTION_CLIENT_TYPES } = Constants;
+const { PROMOTION_ERROR_CODES, VOUCHER_STATUS } = Constants;
 const WEEK_DAYS_MAPPING = {
   2: 'Mon',
   3: 'Tue',
@@ -78,9 +78,9 @@ export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, o
     }
 
     return i18next.t(translationKey);
-  } else {
-    return _isEmpty(errorMessage) ? i18next.t(`OrderingPromotion:60000InvalidPromotionOrVoucher`) : errorMessage;
   }
+
+  return _isEmpty(errorMessage) ? i18next.t(`OrderingPromotion:60000InvalidPromotionOrVoucher`) : errorMessage;
 }
 
 export const getPromoStatusLabelText = ({ status, validFrom, validTo, expired, invalidForWeb }) => {

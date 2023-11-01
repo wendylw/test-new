@@ -31,7 +31,7 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo, getCoreBusinessInfo } from './api-request';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
-import { isTNGMiniProgram } from '../../../common/utils';
+import { isJSON, isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
@@ -50,6 +50,10 @@ export const initialState = {
       data: {
         type: OTP_REQUEST_TYPES.OTP,
       },
+      status: null,
+      error: null,
+    },
+    loginTngRequest: {
       status: null,
       error: null,
     },
@@ -336,11 +340,15 @@ export const actions = {
   },
 
   loginByTngMiniProgram: () => async (dispatch, getState) => {
-    if (!isTNGMiniProgram()) {
-      throw new Error('Not in tng mini program');
-    }
-
     try {
+      dispatch({
+        type: types.CREATE_LOGIN_TNGD_REQUEST,
+      });
+
+      if (!isTNGMiniProgram()) {
+        throw new Error('Not in tng mini program');
+      }
+
       const business = getBusiness(getState());
 
       const tokens = await TngUtils.getAccessToken({ business });
@@ -348,7 +356,16 @@ export const actions = {
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
       await dispatch(actions.loginApp({ accessToken, refreshToken }));
+
+      dispatch({
+        type: types.CREATE_LOGIN_TNGD_SUCCESS,
+      });
     } catch (error) {
+      dispatch({
+        type: types.CREATE_LOGIN_TNGD_FAILURE,
+        error: isJSON(error?.message) ? JSON.parse(error.message) : error,
+      });
+
       logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
 
       return false;
@@ -599,6 +616,30 @@ const user = (state = initialState.user, action) => {
       return { ...state, showLoginModal: true };
     case types.HIDE_LOGIN_MODAL:
       return { ...state, showLoginModal: false };
+    case types.CREATE_LOGIN_TNGD_REQUEST:
+      return {
+        ...state,
+        loginTngRequest: {
+          status: API_REQUEST_STATUS.PENDING,
+          error: null,
+        },
+      };
+    case types.CREATE_LOGIN_TNGD_SUCCESS:
+      return {
+        ...state,
+        loginTngRequest: {
+          status: API_REQUEST_STATUS.FULFILLED,
+          error: null,
+        },
+      };
+    case types.CREATE_LOGIN_TNGD_FAILURE:
+      return {
+        ...state,
+        loginTngRequest: {
+          status: API_REQUEST_STATUS.REJECTED,
+          error,
+        },
+      };
     default:
       return state;
   }
@@ -718,6 +759,7 @@ export default combineReducers({
 // selectors
 export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
+export const getLoginTngRequest = state => state.app.user.loginTngRequest;
 export const getUserProfile = state => state.app.user.profile;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
@@ -901,4 +943,12 @@ export const getShouldShowLoader = createSelector(
   getIsOtpRequestStatusPending,
   getIsLoginRequestStatusPending,
   (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
+);
+
+export const getLoginTngRequestError = createSelector(getLoginTngRequest, loginTngRequest => loginTngRequest.error);
+
+// If error code is 10, it means user has not authorized the mini program. This error from TNGD Mini Program, Aplipay will response 10 error, get access token in mounted.
+export const getIsTngAuthorizationError = createSelector(
+  getLoginTngRequestError,
+  loginTngRequestError => (loginTngRequestError?.error || null) === 10
 );

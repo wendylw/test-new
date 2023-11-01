@@ -1,14 +1,15 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { bindActionCreators, compose } from 'redux';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import prefetch from '../../../../common/utils/prefetch-assets';
 import { tryGetDeviceCoordinates } from '../../../../components/LocationPicker';
-import { withTranslation } from 'react-i18next';
 import { IconLeftArrow } from '../../../../components/Icons';
 import { getAddressList } from '../../../redux/modules/addressList/selectors';
 import { getUserIsLogin } from '../../../redux/modules/app';
-import { loadAddressList } from '../../../redux/modules/addressList/thunks';
-import { setAddressInfo } from '../../../../redux/modules/address/thunks';
+import { loadAddressList as loadAddressListThunk } from '../../../redux/modules/addressList/thunks';
+import { setAddressInfo as setAddressInfoThunk } from '../../../../redux/modules/address/thunks';
 import { defaultLocations, getDefaultCoords } from './utils';
 import AddressSelector from '../../../../containers/AddressSelector';
 import CleverTap from '../../../../utils/clevertap';
@@ -16,10 +17,13 @@ import logger from '../../../../utils/monitoring/logger';
 import './index.scss';
 
 class Location extends React.Component {
-  state = {
-    origin: null,
-    status: 'fetch_location',
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      origin: null,
+      status: 'fetch_location',
+    };
+  }
 
   componentDidMount = async () => {
     const { location, hasUserLoggedIn, loadAddressList } = this.props;
@@ -42,11 +46,6 @@ class Location extends React.Component {
         });
       } catch (e) {
         const defaultCoords = getDefaultCoords(defaultLocations.KualaLumpur);
-        console.warn(
-          '[Location] fetch_location_failed, to use default defaultCoords=%s city=%s',
-          JSON.stringify(defaultCoords),
-          defaultLocations.KualaLumpur
-        );
         logger.warn('Site_Location_FetchLocationFailed');
         this.setState({
           status: 'fetch_location_failed',
@@ -129,7 +128,30 @@ class Location extends React.Component {
     );
   }
 }
+
 Location.displayName = 'Location';
+
+Location.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  addressList: PropTypes.array,
+  location: PropTypes.shape({
+    state: PropTypes.object,
+  }),
+  /* eslint-enable */
+  hasUserLoggedIn: PropTypes.bool,
+  setAddressInfo: PropTypes.func,
+  loadAddressList: PropTypes.func,
+};
+
+Location.defaultProps = {
+  location: {
+    state: null,
+  },
+  addressList: [],
+  hasUserLoggedIn: false,
+  setAddressInfo: () => {},
+  loadAddressList: () => {},
+};
 
 export default compose(
   withTranslation(['OrderingDelivery']),
@@ -139,8 +161,8 @@ export default compose(
       hasUserLoggedIn: getUserIsLogin(state),
     }),
     dispatch => ({
-      setAddressInfo: bindActionCreators(setAddressInfo, dispatch),
-      loadAddressList: bindActionCreators(loadAddressList, dispatch),
+      setAddressInfo: bindActionCreators(setAddressInfoThunk, dispatch),
+      loadAddressList: bindActionCreators(loadAddressListThunk, dispatch),
     })
   )
 )(Location);

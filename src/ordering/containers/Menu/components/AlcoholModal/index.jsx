@@ -32,11 +32,11 @@ const AlcoholModal = ({ history }) => {
     if (!legalForAlcohol) {
       dispatch(getUserAlcoholConsent());
     }
-  }, []);
+  }, [dispatch, legalForAlcohol]);
 
   useEffect(() => {
     if (shouldShowAlcoholModal) {
-      Clevertap.pushEvent('Menu Page - Alcohol Counsent - Pop up', storeInfoForCleverTap);
+      Clevertap.pushEvent('Menu Page - Alcohol Consent - Pop up', storeInfoForCleverTap);
     }
     // push clevertap event only when shouldShowAlcoholModal changes
     // eslint-disable-next-line react-hooks/exhaustive-deps

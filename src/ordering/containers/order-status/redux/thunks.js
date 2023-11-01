@@ -119,15 +119,11 @@ export const hideStoreReviewLoadingIndicator = createAsyncThunk(
 export const loadOrderStoreReview = createAsyncThunk(
   'ordering/orderStatus/common/loadOrderStoreReview',
   async (_, { getState }) => {
-    try {
-      const offline = getOffline(getState());
-      const orderId = getReceiptNumber(getState());
-      const { data } = await getOrderStoreReview(orderId, offline);
+    const offline = getOffline(getState());
+    const orderId = getReceiptNumber(getState());
+    const { data } = await getOrderStoreReview(orderId, offline);
 
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    return data;
   }
 );
 

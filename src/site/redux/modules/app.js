@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import { createSelector } from 'reselect';
 import { get } from '../../../utils/request';
 import Utils from '../../../utils/utils';
@@ -39,7 +40,7 @@ const actions = {
   }),
 
   // Important: this is an example to get response from dispatched requestPromise
-  ping: () => async (dispatch, getState) => {
+  ping: () => async dispatch => {
     await dispatch(queryPing());
   },
 
@@ -55,10 +56,11 @@ const actions = {
 
       const result = await TngUtils.getAccessToken({ business: '' });
 
-      const { access_token, refresh_token } = result;
+      const { access_token: accessToken, refresh_token: refreshToken } = result;
+
       const data = await ApiRequest.login({
-        accessToken: access_token,
-        refreshToken: refresh_token,
+        accessToken,
+        refreshToken,
       });
 
       dispatch({
@@ -180,4 +182,4 @@ export const getIsPingRequestDone = createSelector(
   pingStatus => pingStatus === API_REQUEST_STATUS.FULFILLED || pingStatus === API_REQUEST_STATUS.REJECTED
 );
 
-export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
+export const getIsTNGMiniProgram = () => Utils.isTNGMiniProgram();

@@ -23,7 +23,14 @@ const PromotionDrawer = () => {
       className={styles.promotionDrawer}
       header={
         <DrawerHeader
-          left={<X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" onClick={closeDrawer} />}
+          left={
+            <X
+              weight="light"
+              className="tw-flex-shrink-0 tw-text-2xl tw-text-gray"
+              data-test-id="ordering.menu.promotion-bar.close-btn"
+              onClick={closeDrawer}
+            />
+          }
         >
           <span className="tw-font-bold tw-text-lg tw-leading-relaxed">{t('Promos')}</span>
         </DrawerHeader>

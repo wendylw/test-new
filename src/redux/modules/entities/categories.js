@@ -26,7 +26,9 @@ const reducer = (state = initialState, action) => {
       }
     });
     return { ...state, ...kvData };
-  } else if (action.type === APP_TYPES.RESET_ONLINECATEGORY_STATUS) {
+  }
+
+  if (action.type === APP_TYPES.RESET_ONLINECATEGORY_STATUS) {
     return initialState;
   }
   return state;

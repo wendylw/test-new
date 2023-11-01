@@ -125,6 +125,7 @@ function LogisticsProcessing({ isUseStorehubLogistics, isPreOrder, orderStatus, 
       </ul>
       <IconExpandMore
         className="logistics-processing__icon-expand-more icon icon__small icon__default flex__shrink-fixed"
+        data-test-id="ordering.order-status.thank-you.logistics-processing.expand-button"
         onClick={() => setExpandProcessingList(!expandProcessingList)}
       />
     </div>

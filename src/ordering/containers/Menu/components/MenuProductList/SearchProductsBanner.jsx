@@ -59,7 +59,7 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
     return () => {
       isMobile() && !isIosMobile && visualViewportObj?.removeEventListener('resize', onUpdateStatusVirtualKeyboard);
     };
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (isSearchingBannerVisible) {
@@ -75,6 +75,7 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
           theme="ghost"
           className={styles.menuSearchProductsBannerButton}
           contentClassName={styles.menuSearchProductsBannerButtonContent}
+          data-test-id="ordering.menu.product-list.search-banner.show-btn"
           onClick={async () => {
             // get window scroll position
             const scrollTopPosition = bodyScrollTopPosition();
@@ -139,6 +140,7 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
           <Button
             type="text"
             className={styles.menuSearchProductsBannerCancelButton}
+            data-test-id="ordering.menu.product-list.search-banner.cancel-btn"
             onClick={async () => {
               await dispatch(hideSearchingBox());
               dispatch(clearSearchingKeyword());

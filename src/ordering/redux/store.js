@@ -1,12 +1,13 @@
 import { createStore, applyMiddleware, compose } from 'redux';
+import { routerMiddleware } from 'connected-react-router';
 import thunk from 'redux-thunk';
 import createRootReducer from './modules';
 import api from '../../redux/middlewares/api';
 import apiGql from '../../redux/middlewares/apiGql';
 import requestPromise from '../../redux/middlewares/requestPromise';
-import { routerMiddleware } from 'connected-react-router';
 import history from '../orderingHistory';
 
+// eslint-disable-next-line no-underscore-dangle
 const isEnableReduxDevTools = process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION__;
 const reduxDevToolsComposeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
 

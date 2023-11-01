@@ -61,8 +61,8 @@ export const getOriginalPaymentOptions = ({ payments }) => payments.common.optio
 export const getAllPaymentsOptions = createSelector(
   getOriginalPaymentOptions,
   getTotal,
-  (originalPaymentOptions, total) => {
-    return originalPaymentOptions
+  (originalPaymentOptions, total) =>
+    originalPaymentOptions
       .map(originalOption => {
         const option = { ...originalOption };
         const { available, minAmount, isStoreSupported } = option;
@@ -87,8 +87,7 @@ export const getAllPaymentsOptions = createSelector(
         }
 
         return true;
-      });
-  }
+      })
 );
 
 export const getSelectedPaymentOption = ({ payments }) => {
@@ -99,9 +98,10 @@ export const getSelectedPaymentOption = ({ payments }) => {
   return selectedPaymentOption || {};
 };
 
-export const getPaymentName = createSelector(getSelectedPaymentOption, selectedPaymentOption => {
-  return selectedPaymentOption.paymentName;
-});
+export const getPaymentName = createSelector(
+  getSelectedPaymentOption,
+  selectedPaymentOption => selectedPaymentOption.paymentName
+);
 
 export const getSelectedPaymentOptionSupportSaveCard = createSelector(
   getUser,
@@ -118,11 +118,9 @@ export const getOnlineBankList = ({ payments }) => {
   return onlineBankingObject.agentCodes || [];
 };
 
-export const getAllOptionsUnavailableState = createSelector(getAllPaymentsOptions, allPaymentOptions => {
-  return _every(allPaymentOptions, option =>
-    _some(Object.values(option.disabledConditions || {}), value => value === true)
-  );
-});
+export const getAllOptionsUnavailableState = createSelector(getAllPaymentsOptions, allPaymentOptions =>
+  _every(allPaymentOptions, option => _some(Object.values(option.disabledConditions || {}), value => value === true))
+);
 
 export const getCleverTapAttributes = createSelector(
   getBusinessInfo,
@@ -148,20 +146,18 @@ export const getCleverTapAttributes = createSelector(
     itemsQuantity,
     total,
     subtotal
-  ) => {
-    return {
-      'store name': _get(businessInfo, 'stores.0.name', ''),
-      'store id': _get(businessInfo, 'stores.0.id', ''),
-      'free delivery above': freeShippingMinAmount,
-      'shipping type': shippingType,
-      country: country,
-      cashback: enableCashback ? cashbackRate : undefined,
-      'minimum order value': enableConditionalFreeShipping ? minimumConsumption : undefined,
-      'cart items quantity': itemsQuantity,
-      'cart amount': total,
-      'has met minimum order value': subtotal >= minimumConsumption,
-    };
-  }
+  ) => ({
+    'store name': _get(businessInfo, 'stores.0.name', ''),
+    'store id': _get(businessInfo, 'stores.0.id', ''),
+    'free delivery above': freeShippingMinAmount,
+    'shipping type': shippingType,
+    country,
+    cashback: enableCashback ? cashbackRate : undefined,
+    'minimum order value': enableConditionalFreeShipping ? minimumConsumption : undefined,
+    'cart items quantity': itemsQuantity,
+    'cart amount': total,
+    'has met minimum order value': subtotal >= minimumConsumption,
+  })
 );
 
 export const getInitPaymentRequestErrorMessage = createSelector(getInitPaymentRequestError, initRequestError =>

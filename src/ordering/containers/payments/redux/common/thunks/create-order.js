@@ -2,18 +2,18 @@ import React from 'react';
 import { captureException } from '@sentry/react';
 import i18next from 'i18next';
 import _isEmpty from 'lodash/isEmpty';
-
+import { push } from 'connected-react-router';
 import Url from '../../../../../../utils/url';
 import Utils from '../../../../../../utils/utils';
-import Constants from '../../../../../../utils/constants';
+import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 import { callTradePay } from '../../../../../../utils/tng-utils';
 import { gotoHome } from '../../../../../../utils/native-methods';
-import { getCartItems, getDeliveryDetails, getShippingType } from '../../../../../redux/modules/app';
 import {
   actions as appActions,
   getBusiness,
+  getCartItems,
   getOnlineStoreInfo,
   getRequestInfo,
   getBusinessUTCOffset,
@@ -23,23 +23,23 @@ import {
   getUserPhone,
   getIsTNGMiniProgram,
   getIsWebview,
+  getShippingType,
+  getDeliveryDetails,
   getMerchantCountry,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
 import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
-
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../../../../voucher/utils';
-import { get, post } from '../../../../../../utils/api/api-fetch';
+import { post } from '../../../../../../utils/api/api-fetch';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
 import { alert } from '../../../../../../common/feedback';
 import { alert as alertV2 } from '../../../../../../common/utils/feedback';
 import { initPaymentWithOrder, createOrderStatusRequest } from './api-info';
-import { push } from 'connected-react-router';
 import logger from '../../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../../utils/monitoring/constants';
 
-const { DELIVERY_METHOD, PAYMENT_PROVIDERS, REFERRER_SOURCE_TYPES } = Constants;
+const { DELIVERY_METHOD, PAYMENT_PROVIDERS } = Constants;
 
 const POLLING_INTERVAL = 3000;
 
@@ -59,26 +59,22 @@ const pollingOrderStatus = (callback, orderId, timeout) => {
         if (!['created', 'failed', 'cancelled'].includes(status)) {
           callback(null, order);
           return;
-        } else {
-          callback({ code: '54012' }, order);
-          return;
         }
+        callback({ code: '54012' }, order);
       }
     },
     error => {
       if (typeof error !== 'object' || !error.code) {
         callback({ code: '80000' }, null);
         return;
-      } else {
-        callback(error, null);
-        return;
       }
+      callback(error, null);
     }
   );
 };
 
-const checkCreatedOrderStatus = orderId => {
-  return new Promise(async (resolve, reject) => {
+const checkCreatedOrderStatus = orderId =>
+  new Promise((resolve, reject) => {
     pollingOrderStatus(
       (error, order) => {
         if (error) {
@@ -91,6 +87,12 @@ const checkCreatedOrderStatus = orderId => {
       30 * 1000
     );
   });
+
+const createVoucherOrderRequest = async payload => post(Url.API_URLS.CREATE_VOUCHER_ORDER.url, payload);
+
+const createOrderRequest = async payload => {
+  const endpoint = Url.apiGql('CreateOrder');
+  return post(endpoint, payload);
 };
 
 export const createOrder = ({ cashback, shippingType }) => async (dispatch, getState) => {
@@ -105,7 +107,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStorage();
     const payload = {
       businessName: business,
-      productId: productId,
+      productId,
       email: voucherOrderingInfo.contactEmail,
     };
     try {
@@ -119,13 +121,13 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
       } else {
         alert.raw(
+          // eslint-disable-next-line react/jsx-filename-extension
           <p className="padding-small text-size-biggest text-weight-bolder">
             {i18next.t('OrderingPayment:PlaceOrderFailedDescription')}
           </p>
         );
       }
     }
-    return;
   }
 
   const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
@@ -270,13 +272,9 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       redirectUrl,
     };
 
-    try {
-      await checkCreatedOrderStatus(order.orderId);
+    await checkCreatedOrderStatus(order.orderId);
 
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    return result;
   } catch (error) {
     if (error.code === '40027') {
       alertV2(i18next.t('ApiError:40027Description'), {
@@ -304,26 +302,6 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     }
 
     throw error;
-  }
-};
-
-const createVoucherOrderRequest = async payload => {
-  return post(Url.API_URLS.CREATE_VOUCHER_ORDER.url, payload);
-};
-
-const createOrderRequest = async payload => {
-  const endpoint = Url.apiGql('CreateOrder');
-  return post(endpoint, payload);
-};
-
-const initPayment = async (data, dispatch) => {
-  try {
-    const res = await initPaymentWithOrder(data);
-    return res;
-  } catch (e) {
-    handlePaymentError({ e, dispatch });
-
-    throw e;
   }
 };
 
@@ -362,6 +340,17 @@ const handlePaymentError = ({ e, dispatch }) => {
       closeButtonContent: i18next.t('Refresh'),
       onClose: () => window.location.reload(),
     });
+  }
+};
+
+const initPayment = async (data, dispatch) => {
+  try {
+    const res = await initPaymentWithOrder(data);
+    return res;
+  } catch (e) {
+    handlePaymentError({ e, dispatch });
+
+    throw e;
   }
 };
 

@@ -34,7 +34,14 @@ const StoreListDrawer = ({
       show={isStoreListDrawerVisible}
       header={
         <DrawerHeader
-          left={<X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" onClick={onClose} />}
+          left={
+            <X
+              weight="light"
+              className="tw-flex-shrink-0 tw-text-2xl tw-text-gray"
+              onClick={onClose}
+              data-test-id="ordering.store-list-drawer.close-btn"
+            />
+          }
         >
           <div className="tw-flex tw-flex-col tw-items-center">
             <h3 className="tw-font-bold tw-text-lg tw-leading-relaxed tw-capitalize">{t('StoreListDrawerTitle')}</h3>
@@ -58,6 +65,7 @@ const StoreListDrawer = ({
               onClick={() => onHandleSelectStoreBranch(store.id)}
               active={store.selected}
               disabled={!store.available}
+              data-test-id="ordering.store-list-drawer.store-card"
             >
               <StoreIcon className={styles.storeListDrawerInfoIcon} />
               <div className="tw-ml-8 sm:tw-ml-8px">

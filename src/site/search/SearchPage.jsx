@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation, Trans } from 'react-i18next';
@@ -11,7 +12,7 @@ import StoreList from '../components/StoreList';
 import EmptySearch from './components/EmptySearch';
 import FilterBar from '../components/FilterBar';
 import Drawer from '../../common/components/Drawer';
-import PageLoader from '../../../src/components/PageLoader';
+import PageLoader from '../../components/PageLoader';
 import DrawerHeader from '../../common/components/Drawer/DrawerHeader';
 import Button from '../../common/components/Button';
 import SingleChoiceSelector from '../components/OptionSelectors/SingleChoiceSelector';
@@ -42,11 +43,10 @@ import {
 } from '../redux/modules/search/thunks';
 import { submitStoreMenu } from '../home/utils';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
-import { rootActionCreators } from '../redux/modules';
+import { rootActionCreators, checkStateRestoreStatus } from '../redux/modules';
 import { appActionCreators } from '../redux/modules/app';
 import { getAddressInfo, getAddressCoords } from '../../redux/modules/address/selectors';
-import { getAddressInfo as fetchAddressInfo } from '../../redux/modules/address/thunks';
-import { checkStateRestoreStatus } from '../redux/modules/index';
+import { getAddressInfo as fetchAddressInfoThunk } from '../../redux/modules/address/thunks';
 import { withAddressInfo } from '../ordering/containers/Location/withAddressInfo';
 import {
   collectionCardActionCreators,
@@ -80,12 +80,32 @@ const { COLLECTIONS_TYPE } = constants;
 
 class SearchPage extends React.Component {
   renderId = `${Date.now()}`;
+
   scrollTop = 0;
+
   sectionRef = React.createRef();
 
-  state = {
-    drawerInfo: { category: null },
-  };
+  debounceSearchStores = _debounce(async () => {
+    const { resetPageInfo, loadStoreList } = this.props;
+
+    await resetPageInfo();
+    await loadStoreList();
+
+    const { searchKeyword, searchResults } = this.props;
+
+    CleverTap.pushEvent('Search - Perform search', {
+      keyword: searchKeyword,
+      'has results': searchResults.length > 0,
+    });
+  }, 700);
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      drawerInfo: { category: null },
+    };
+  }
 
   componentDidMount = async () => {
     const {
@@ -93,6 +113,7 @@ class SearchPage extends React.Component {
       popularCollections,
       fetchAddressInfo,
       loadSearchOptionList,
+      collectionCardActions,
       loadSelectedOptionList,
     } = this.props;
     if (!checkStateRestoreStatus()) {
@@ -100,10 +121,10 @@ class SearchPage extends React.Component {
       await loadSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
       await this.resetSearchData();
       if (otherCollections.length === 0) {
-        this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
+        collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
       }
       if (popularCollections.length === 0) {
-        this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
+        collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
       }
     } else {
       // BEEP-2532: The purpose for reloading selected option list is to force swiper to recalculate number of slides and their offsets.
@@ -123,6 +144,8 @@ class SearchPage extends React.Component {
       searchKeyword,
       resetPageInfo,
       loadStoreList,
+      collectionCardActions,
+      backUpSelectedOptionList,
     } = this.props;
 
     const hasAddressCoordsChanged = !isSameAddressCoords(prevAddressCoords, currAddressCoords);
@@ -131,8 +154,8 @@ class SearchPage extends React.Component {
 
     if (hasAddressCoordsChanged) {
       // Reload other and popular collections once address changed
-      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
-      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
+      collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
+      collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
     }
 
     if (shouldReloadStoreList) {
@@ -142,7 +165,7 @@ class SearchPage extends React.Component {
     }
 
     if (hasSelectedOptionListChanged) {
-      this.props.backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
+      backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
     }
   };
 
@@ -150,8 +173,9 @@ class SearchPage extends React.Component {
     // Reset filter redux data state when user leaves the page in below 2 cases:
     // 1. User directly clicks the back button from browser
     // 2. User directly clicks the back button from the collection page
+    const { resetSelectedOptionList } = this.props;
 
-    this.props.resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
+    resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
   };
 
   resetSearchData = async () => {
@@ -162,7 +186,7 @@ class SearchPage extends React.Component {
   };
 
   onGoBack = () => {
-    const { searchKeyword, searchActions, resetShippingType, resetPageInfo, resetStoreList } = this.props;
+    const { searchKeyword, searchActions, resetShippingType, resetPageInfo, resetStoreList, history } = this.props;
 
     if (!searchKeyword) {
       CleverTap.pushEvent('Empty Search - Click back');
@@ -170,7 +194,7 @@ class SearchPage extends React.Component {
       CleverTap.pushEvent('Search - click back');
     }
 
-    this.props.history.push({
+    history.push({
       pathname: '/home',
     });
 
@@ -181,31 +205,27 @@ class SearchPage extends React.Component {
     resetPageInfo();
   };
 
-  debounceSearchStores = _debounce(async () => {
-    await this.props.resetPageInfo();
-    await this.props.loadStoreList();
-    const { searchKeyword, searchResults } = this.props;
-    CleverTap.pushEvent('Search - Perform search', {
-      keyword: searchKeyword,
-      'has results': searchResults.length > 0,
-    });
-  }, 700);
-
   handleSearchTextChange = event => {
     const keyword = event.currentTarget.value;
-    this.props.searchActions.setSearchInfo({ keyword });
-    this.props.setPageInfo({ scrollTop: 0 });
+    const { searchActions, setPageInfo } = this.props;
+
+    searchActions.setSearchInfo({ keyword });
+    setPageInfo({ scrollTop: 0 });
     this.debounceSearchStores();
   };
 
   handleClearSearchText = () => {
+    const { searchActions, setPageInfo } = this.props;
+
     CleverTap.pushEvent('Search - Click clear search field');
-    this.props.searchActions.resetSearchInfo();
-    this.props.setPageInfo({ scrollTop: 0 });
+    searchActions.resetSearchInfo();
+    setPageInfo({ scrollTop: 0 });
   };
 
   backupState = () => {
-    this.props.rootActions.backup();
+    const { rootActions } = this.props;
+
+    rootActions.backup();
   };
 
   backLeftPosition = async store => {
@@ -214,14 +234,103 @@ class SearchPage extends React.Component {
     this.backupState();
     await submitStoreMenu({
       deliveryAddress: addressInfo,
-      store: store,
+      store,
       source: document.location.href,
       shippingType,
     });
   };
 
   handleLoadCollections = () => {
-    return this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
+    const { collectionCardActions } = this.props;
+
+    return collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
+  };
+
+  handleClickCategoryButton = category => {
+    const { id, name, type, selected } = category;
+    const { searchKeyword, setShippingType, toggleCategorySelectStatus } = this.props;
+
+    if (id === IDS.SORT_BY) {
+      CleverTap.pushEvent('Search - Click sort by button', {
+        'search keyword': searchKeyword,
+      });
+    } else {
+      const attributes = { 'type of filter': name };
+
+      if (type === TYPES.TOGGLE) {
+        // Only record select state for toggle filters
+        attributes['select state'] = !selected;
+      }
+
+      CleverTap.pushEvent('Search - Click quick filter button', attributes);
+    }
+
+    if (id === IDS.PICK_UP) {
+      setShippingType({ shippingType: selected ? SHIPPING_TYPES.DELIVERY : SHIPPING_TYPES.PICKUP });
+    }
+
+    if (FILTER_DRAWER_SUPPORT_TYPES.includes(type)) {
+      this.setState({ drawerInfo: { category } });
+    } else {
+      toggleCategorySelectStatus({ categoryId: id });
+    }
+  };
+
+  handleClickResetAllCategoryButton = async () => {
+    const { resetSelectedOptionList, setShippingType } = this.props;
+    await setShippingType({ shippingType: SHIPPING_TYPES.DELIVERY });
+    await resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
+    CleverTap.pushEvent('Search - Click reset quick sort and filter button');
+  };
+
+  handleCloseDrawer = () => {
+    this.setState({ drawerInfo: { category: null } });
+  };
+
+  handleClickSingleChoiceOptionItem = (category, option) => {
+    const { id: categoryId } = category;
+    const { id: optionId, name: optionName } = option;
+    const { updateCategoryOptionSelectStatus } = this.props;
+
+    if (categoryId === IDS.SORT_BY) {
+      CleverTap.pushEvent('Search - Select sort option (Sort button)', {
+        'type of sort': optionName,
+      });
+    }
+
+    updateCategoryOptionSelectStatus({ categoryId, optionIds: [optionId] });
+    this.handleCloseDrawer();
+  };
+
+  handleClickResetOptionButton = category => {
+    const { id: categoryId, name: filterName } = category;
+    const { resetCategoryAllOptionSelectStatus } = this.props;
+
+    CleverTap.pushEvent('Search - Reset (Filter slide-up)', {
+      'type of filter': filterName,
+    });
+
+    resetCategoryAllOptionSelectStatus({ categoryId });
+    this.handleCloseDrawer();
+  };
+
+  handleClickApplyAllOptionButton = (category, options) => {
+    const { id: categoryId, name: filterName } = category;
+    const optionNames = options
+      .filter(option => option.selected)
+      .map(option => option.name)
+      .join(', ');
+    const optionIds = options.filter(option => option.selected).map(option => option.id);
+
+    CleverTap.pushEvent('Search - Select filter options (Filter button)', {
+      'type of filter': filterName,
+      'filter options': optionNames,
+    });
+
+    const { updateCategoryOptionSelectStatus } = this.props;
+
+    updateCategoryOptionSelectStatus({ categoryId, optionIds });
+    this.handleCloseDrawer();
   };
 
   renderStoreList() {
@@ -249,13 +358,15 @@ class SearchPage extends React.Component {
     const shouldShowNoResultPage = shouldShowNoSearchResultPage || shouldShowNoFilteredResultPage;
 
     return (
-      <React.Fragment>
+      <>
         {shouldShowCategories && (
           <div>
             <StoreListAutoScroll
               getScrollParent={() => this.sectionRef.current}
               defaultScrollTop={pageInfo.scrollTop}
-              onScroll={scrollTop => (this.scrollTop = scrollTop)}
+              onScroll={top => {
+                this.scrollTop = top;
+              }}
             >
               <EmptySearch
                 populars={popularCollections}
@@ -295,7 +406,9 @@ class SearchPage extends React.Component {
             <StoreListAutoScroll
               getScrollParent={() => this.sectionRef.current}
               defaultScrollTop={pageInfo.scrollTop}
-              onScroll={scrollTop => (this.scrollTop = scrollTop)}
+              onScroll={top => {
+                this.scrollTop = top;
+              }}
             >
               <StoreList
                 key={`store-list-${this.renderId}`}
@@ -320,92 +433,9 @@ class SearchPage extends React.Component {
             </StoreListAutoScroll>
           </div>
         ) : null}
-      </React.Fragment>
+      </>
     );
   }
-
-  handleClickCategoryButton = category => {
-    const { id, name, type, selected } = category;
-    const { searchKeyword, setShippingType } = this.props;
-
-    if (id === IDS.SORT_BY) {
-      CleverTap.pushEvent('Search - Click sort by button', {
-        'search keyword': searchKeyword,
-      });
-    } else {
-      const attributes = { 'type of filter': name };
-
-      if (type === TYPES.TOGGLE) {
-        // Only record select state for toggle filters
-        attributes['select state'] = !selected;
-      }
-
-      CleverTap.pushEvent('Search - Click quick filter button', attributes);
-    }
-
-    if (id === IDS.PICK_UP) {
-      setShippingType({ shippingType: selected ? SHIPPING_TYPES.DELIVERY : SHIPPING_TYPES.PICKUP });
-    }
-
-    if (FILTER_DRAWER_SUPPORT_TYPES.includes(type)) {
-      this.setState({ drawerInfo: { category } });
-    } else {
-      this.props.toggleCategorySelectStatus({ categoryId: id });
-    }
-  };
-
-  handleClickResetAllCategoryButton = async () => {
-    const { resetSelectedOptionList, setShippingType } = this.props;
-    await setShippingType({ shippingType: SHIPPING_TYPES.DELIVERY });
-    await resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
-    CleverTap.pushEvent('Search - Click reset quick sort and filter button');
-  };
-
-  handleCloseDrawer = () => {
-    this.setState({ drawerInfo: { category: null } });
-  };
-
-  handleClickSingleChoiceOptionItem = (category, option) => {
-    const { id: categoryId } = category;
-    const { id: optionId, name: optionName } = option;
-
-    if (categoryId === IDS.SORT_BY) {
-      CleverTap.pushEvent('Search - Select sort option (Sort button)', {
-        'type of sort': optionName,
-      });
-    }
-
-    this.props.updateCategoryOptionSelectStatus({ categoryId, optionIds: [optionId] });
-    this.handleCloseDrawer();
-  };
-
-  handleClickResetOptionButton = category => {
-    const { id: categoryId, name: filterName } = category;
-
-    CleverTap.pushEvent('Search - Reset (Filter slide-up)', {
-      'type of filter': filterName,
-    });
-
-    this.props.resetCategoryAllOptionSelectStatus({ categoryId });
-    this.handleCloseDrawer();
-  };
-
-  handleClickApplyAllOptionButton = (category, options) => {
-    const { id: categoryId, name: filterName } = category;
-    const optionNames = options
-      .filter(option => option.selected)
-      .map(option => option.name)
-      .join(', ');
-    const optionIds = options.filter(option => option.selected).map(option => option.id);
-
-    CleverTap.pushEvent('Search - Select filter options (Filter button)', {
-      'type of filter': filterName,
-      'filter options': optionNames,
-    });
-
-    this.props.updateCategoryOptionSelectStatus({ categoryId, optionIds });
-    this.handleCloseDrawer();
-  };
 
   renderDrawer = () => {
     const {
@@ -429,6 +459,7 @@ class SearchPage extends React.Component {
               <Button
                 type="text"
                 theme="ghost"
+                data-test-id="site.search.drawer.close-btn"
                 onClick={this.handleCloseDrawer}
                 className={styles.SearchPageCategoryDrawerHeaderButton}
                 contentClassName={styles.SearchPageCategoryDrawerHeaderButtonContent}
@@ -442,7 +473,11 @@ class SearchPage extends React.Component {
         }
       >
         {shouldShowSingleChoiceSelector ? (
-          <SingleChoiceSelector category={category} onClick={this.handleClickSingleChoiceOptionItem} />
+          <SingleChoiceSelector
+            category={category}
+            onClick={this.handleClickSingleChoiceOptionItem}
+            data-test-id="site.search.drawer.option-selector.apply-btn"
+          />
         ) : shouldShowMultipleChoiceSelector ? (
           <MultipleChoiceSelector
             category={category}
@@ -495,7 +530,107 @@ class SearchPage extends React.Component {
     );
   }
 }
+
 SearchPage.displayName = 'SearchPage';
+
+SearchPage.propTypes = {
+  shippingType: PropTypes.string,
+  searchKeyword: PropTypes.string,
+  /* eslint-disable react/forbid-prop-types */
+  stores: PropTypes.array,
+  pageInfo: PropTypes.object,
+  addressInfo: PropTypes.object,
+  storePageInfo: PropTypes.object,
+  searchResults: PropTypes.array,
+  otherCollections: PropTypes.array,
+  popularCollections: PropTypes.array,
+  selectedOptionList: PropTypes.object,
+  categoryFilterList: PropTypes.array,
+  /* eslint-enable */
+  shouldShowFilterBar: PropTypes.bool,
+  shouldShowStoreList: PropTypes.bool,
+  shouldShowCategories: PropTypes.bool,
+  shouldShowResetButton: PropTypes.bool,
+  shouldShowStoreListLoader: PropTypes.bool,
+  shouldShowStartSearchPage: PropTypes.bool,
+  shouldShowNoSearchResultPage: PropTypes.bool,
+  shouldShowNoFilteredResultPage: PropTypes.bool,
+  setPageInfo: PropTypes.func,
+  resetPageInfo: PropTypes.func,
+  loadStoreList: PropTypes.func,
+  resetStoreList: PropTypes.func,
+  setShippingType: PropTypes.func,
+  fetchAddressInfo: PropTypes.func,
+  resetShippingType: PropTypes.func,
+  loadSearchOptionList: PropTypes.func,
+  loadSelectedOptionList: PropTypes.func,
+  resetSelectedOptionList: PropTypes.func,
+  backUpSelectedOptionList: PropTypes.func,
+  toggleCategorySelectStatus: PropTypes.func,
+  updateCategoryOptionSelectStatus: PropTypes.func,
+  resetCategoryAllOptionSelectStatus: PropTypes.func,
+  addressCoords: PropTypes.shape({
+    lat: PropTypes.number,
+    lng: PropTypes.number,
+  }),
+  rootActions: PropTypes.shape({
+    backup: PropTypes.func,
+  }),
+  searchActions: PropTypes.shape({
+    setSearchInfo: PropTypes.func,
+    resetSearchInfo: PropTypes.func,
+  }),
+  collectionCardActions: PropTypes.shape({
+    getCollections: PropTypes.func,
+  }),
+};
+
+SearchPage.defaultProps = {
+  stores: [],
+  shippingType: '',
+  searchKeyword: '',
+  searchResults: [],
+  otherCollections: [],
+  popularCollections: [],
+  selectedOptionList: null,
+  categoryFilterList: [],
+  shouldShowFilterBar: false,
+  shouldShowStoreList: false,
+  shouldShowCategories: false,
+  shouldShowResetButton: false,
+  shouldShowStoreListLoader: false,
+  shouldShowStartSearchPage: false,
+  shouldShowNoSearchResultPage: false,
+  shouldShowNoFilteredResultPage: false,
+  setPageInfo: () => {},
+  resetPageInfo: () => {},
+  loadStoreList: () => {},
+  resetStoreList: () => {},
+  setShippingType: () => {},
+  fetchAddressInfo: () => {},
+  resetShippingType: () => {},
+  loadSearchOptionList: () => {},
+  loadSelectedOptionList: () => {},
+  resetSelectedOptionList: () => {},
+  backUpSelectedOptionList: () => {},
+  toggleCategorySelectStatus: () => {},
+  updateCategoryOptionSelectStatus: () => {},
+  resetCategoryAllOptionSelectStatus: () => {},
+  pageInfo: null,
+  addressInfo: null,
+  addressCoords: null,
+  storePageInfo: null,
+  rootActions: {
+    backup: () => {},
+  },
+  searchActions: {
+    setSearchInfo: () => {},
+    resetSearchInfo: () => {},
+  },
+  collectionCardActions: {
+    getCollections: () => {},
+  },
+};
 
 export default compose(
   withAddressInfo(),
@@ -531,7 +666,7 @@ export default compose(
       resetShippingType: bindActionCreators(resetShippingTypeThunkCreator, dispatch),
       loadStoreList: bindActionCreators(loadStoreListThunkCreator, dispatch),
       resetStoreList: bindActionCreators(resetStoreListThunkCreator, dispatch),
-      fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
+      fetchAddressInfo: bindActionCreators(fetchAddressInfoThunk, dispatch),
       loadSearchOptionList: bindActionCreators(loadSearchOptionListThunkCreator, dispatch),
       loadSelectedOptionList: bindActionCreators(loadSelectedOptionListThunkCreator, dispatch),
       backUpSelectedOptionList: bindActionCreators(backUpSelectedOptionListThunkCreator, dispatch),

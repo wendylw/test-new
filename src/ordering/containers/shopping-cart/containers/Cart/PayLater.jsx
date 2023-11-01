@@ -15,7 +15,7 @@ import {
   updateCartItems as updateCartItemsThunk,
   removeCartItemsById as removeCartItemsByIdThunk,
   loadCartStatus as loadCartStatusThunk,
-} from '../../../../redux/cart/thunks';
+} from '../../../../redux/modules/cart/thunks';
 import {
   getCartItems,
   getCartUnavailableItems,
@@ -24,8 +24,14 @@ import {
   getCartNotSubmittedAndEmpty,
   getCartSubmissionRequestingStatus,
   getCartReceiptNumber,
-} from '../../../../redux/cart/selectors';
-import { getUserIsLogin, getHasLoginGuardPassed } from '../../../../redux/modules/app';
+} from '../../../../redux/modules/cart/selectors';
+import {
+  getUserIsLogin,
+  getHasLoginGuardPassed,
+  getIsGuestCheckout,
+  getStoreInfoForCleverTap,
+  getPaymentInfoForCleverTap,
+} from '../../../../redux/modules/app';
 import { IconClose, IconError } from '../../../../../components/Icons';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
 import Utils from '../../../../../utils/utils';
@@ -33,6 +39,7 @@ import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CartEmptyResult from '../../components/CartEmptyResult';
+import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { alert } from '../../../../../common/feedback';
@@ -48,11 +55,11 @@ class PayLater extends Component {
   }
 
   componentDidMount = async () => {
-    const { queryCartAndStatus, userIsLogin } = this.props;
+    const { queryCartAndStatus, userIsLogin, isGuestCheckout } = this.props;
     const from = Utils.getCookieVariable('__pl_cp_source');
     Utils.removeCookieVariable('__pl_cp_source');
 
-    if (userIsLogin && from === REFERRER_SOURCE_TYPES.LOGIN) {
+    if ((userIsLogin || isGuestCheckout) && from === REFERRER_SOURCE_TYPES.LOGIN) {
       await this.handleSubmitCart();
     }
 
@@ -140,7 +147,9 @@ class PayLater extends Component {
   };
 
   handleClickContinue = async () => {
-    const { history, hasLoginGuardPassed } = this.props;
+    const { history, hasLoginGuardPassed, paymentInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent('Cart Page - click place order', paymentInfoForCleverTap);
 
     if (!hasLoginGuardPassed) {
       // FB-4196: we only need to handle the web login here since the Beep app and TnG MP customers should have already logged in on the menu page.
@@ -212,7 +221,12 @@ class PayLater extends Component {
   };
 
   handleClearAll = () => {
-    const { clearCart, history } = this.props;
+    const { clearCart, history, storeInfoForCleverTap, paymentInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent('Cart page - click clear all', {
+      ...paymentInfoForCleverTap,
+      ...storeInfoForCleverTap,
+    });
 
     clearCart().then(() => {
       history.push({
@@ -252,6 +266,10 @@ class PayLater extends Component {
   };
 
   AdditionalCommentsFocus = () => {
+    const { paymentInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent('Cart page - click special instructions', paymentInfoForCleverTap);
+
     setTimeout(() => {
       const container = document.querySelector('.ordering-cart__container');
       const productContainer = document.querySelector('.ordering-cart__products-container');
@@ -285,7 +303,10 @@ class PayLater extends Component {
   };
 
   handleDecreaseCartItem = cartItem => {
-    const { updateCartItems } = this.props;
+    const { updateCartItems, paymentInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent('Cart page - decrease quantity', paymentInfoForCleverTap);
+
     logger.log('Ordering_PayLaterCart_AdjustItemQuantity', { action: 'decrease' });
     const { quantity } = cartItem;
 
@@ -297,7 +318,10 @@ class PayLater extends Component {
   };
 
   handleIncreaseCartItem = cartItem => {
-    const { updateCartItems } = this.props;
+    const { updateCartItems, paymentInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent('Cart page - Increase quantity', paymentInfoForCleverTap);
+
     logger.log('Ordering_PayLaterCart_AdjustItemQuantity', { action: 'increase' });
 
     updateCartItems(this.getUpdateShoppingCartItemData(cartItem, 1));
@@ -364,6 +388,8 @@ class PayLater extends Component {
       cartItems,
       unavailableCartItems,
       cartSubmittedStatus,
+      storeInfoForCleverTap,
+      paymentInfoForCleverTap,
       cartNotSubmittedAndEmpty,
       cartSubmissionRequesting,
     } = this.props;
@@ -387,6 +413,10 @@ class PayLater extends Component {
           isPage
           title={t('ProductsInOrderText', { count })}
           navFunc={() => {
+            CleverTap.pushEvent('Cart page - click back arrow', {
+              ...storeInfoForCleverTap,
+              ...paymentInfoForCleverTap,
+            });
             this.handleClickBack();
           }}
           rightContent={
@@ -429,6 +459,7 @@ class PayLater extends Component {
           <button
             className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
             onClick={() => {
+              CleverTap.pushEvent('Cart Page - click back button (bottom)', paymentInfoForCleverTap);
               this.handleClickBack();
             }}
             data-test-id="ordering.cart.back-btn"
@@ -474,6 +505,10 @@ PayLater.propTypes = {
   submitCart: PropTypes.func,
   clearCart: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
+  storeInfoForCleverTap: PropTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
+  paymentInfoForCleverTap: PropTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
   unavailableCartItems: PropTypes.array,
   updateCartItems: PropTypes.func,
   removeCartItemsById: PropTypes.func,
@@ -481,6 +516,7 @@ PayLater.propTypes = {
   cartNotSubmittedAndEmpty: PropTypes.bool,
   cartSubmissionRequesting: PropTypes.bool,
   hasLoginGuardPassed: PropTypes.bool,
+  isGuestCheckout: PropTypes.bool,
 };
 
 PayLater.defaultProps = {
@@ -492,7 +528,10 @@ PayLater.defaultProps = {
   cartNotSubmittedAndEmpty: false,
   cartSubmissionRequesting: false,
   hasLoginGuardPassed: false,
+  isGuestCheckout: false,
   receiptNumber: null,
+  storeInfoForCleverTap: {},
+  paymentInfoForCleverTap: {},
   queryCartAndStatus: () => {},
   loadCartStatus: () => {},
   clearQueryCartStatus: () => {},
@@ -515,6 +554,9 @@ export default compose(
       cartSubmissionRequesting: getCartSubmissionRequestingStatus(state),
       receiptNumber: getCartReceiptNumber(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
+      isGuestCheckout: getIsGuestCheckout(state),
+      storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      paymentInfoForCleverTap: getPaymentInfoForCleverTap(state),
     }),
     {
       removeCartItemsById: removeCartItemsByIdThunk,

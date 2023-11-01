@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { PRODUCT_STOCK_STATUS } from '../../../../../common/utils/constants';
 
 export const VariationOptionShape = PropTypes.shape({
   id: PropTypes.string.isRequired,

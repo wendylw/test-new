@@ -65,6 +65,7 @@ const Rating = ({
                 }`}
                 weight={rating && key < rating ? 'fill' : 'light'}
                 size={starSize}
+                data-test-id="ordering.order-status.rating.rate-btn"
                 onClick={() => handleUpdateRating(key + 1)}
               />
             </li>

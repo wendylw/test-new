@@ -8,7 +8,6 @@ import {
   getEnablePayLater as getIsEnablePayLater,
   getCartCount,
   getMinimumConsumption,
-  getOrderingOngoingBannerVisibility,
   getShoppingCart,
   getIsStoreInfoReady,
 } from '../../../../redux/modules/app';
@@ -16,9 +15,10 @@ import {
   getCartItemsCount,
   getCartItems as getCartAvailableItems,
   getCartUnavailableItems,
-} from '../../../../redux/cart/selectors';
+  getCartReceiptNumber,
+} from '../../../../redux/modules/cart/selectors';
 
-export { getTableId, getShippingType, getIsEnablePayLater, getOrderingOngoingBannerVisibility };
+export { getTableId, getShippingType, getIsEnablePayLater };
 
 /**
  *  get formatted cart quantity
@@ -247,4 +247,10 @@ export const getHiddenMiniOrderStatus = createSelector(
   getIsEnableMinimumAmount,
   getIsFulfillMinimumConsumption,
   (isEnableMinimumAmount, isFulfillMinimumConsumption) => !isEnableMinimumAmount || isFulfillMinimumConsumption
+);
+
+export const getOrderingOngoingBannerVisibility = createSelector(
+  getCartReceiptNumber,
+  getIsEnablePayLater,
+  (receiptNumber, enablePayLater) => receiptNumber && enablePayLater
 );

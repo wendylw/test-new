@@ -105,7 +105,7 @@ export function creditCardDetector(cardNumberString) {
   const cardNumberSections = [];
   let cardNumber = cardNumberString.replace(/[^\d]/g, '').substring(0, 19);
 
-  const ruler = rulerList.find(ruler => ruler.reg.test(cardNumber));
+  const ruler = rulerList.find(rule => rule.reg.test(cardNumber));
 
   const usingBlocks = _get(ruler, 'blocks', defaultBlock);
 

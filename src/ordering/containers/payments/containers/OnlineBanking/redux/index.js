@@ -17,7 +17,7 @@ const { reducer, actions } = createSlice({
   },
   extraReducers: {
     [loadPaymentOptions.fulfilled]: (state, { payload }) => {
-      const paymentOptions = payload.paymentOptions;
+      const { paymentOptions } = payload;
       const onlineBankingOption = paymentOptions.find(payment => payment.key === 'OnlineBanking');
       if (onlineBankingOption) {
         const selectedOnlineBanking = onlineBankingOption.agentCodes.find(

@@ -1,22 +1,21 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import '../../../common/styles/base.scss';
 import ErrorToast from '../../../components/ErrorToast';
-import SiteFooter from '../../components/SiteFooter';
 import { appActionCreators, getError } from '../../redux/modules/app';
 import Routes from '../../Routes';
-class SiteApp extends React.Component {
-  showSiteFooter = false; // hide the siteFooter temporarily, could show it in the future
 
+class SiteApp extends React.Component {
   componentDidMount = async () => {
-    await this.props.appActions.ping();
+    const { appActions } = this.props;
+
+    await appActions.ping();
   };
 
   render() {
     const { error, appActions } = this.props;
-    // const { pathname } = window.location || {};
-    // const isErrorPage = /^\/error/.test(pathname || '') || /^\/ordering\/location/.test(pathname || '');
 
     return (
       <div className="tw-font-sans">
@@ -27,14 +26,29 @@ class SiteApp extends React.Component {
             clearError={appActions.clearError}
           />
         ) : null}
-        {/* <SiteFakeHeader /> */}
         <Routes />
-        {this.showSiteFooter && <SiteFooter />}
       </div>
     );
   }
 }
+
 SiteApp.displayName = 'SiteApp';
+
+SiteApp.propTypes = {
+  error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  appActions: PropTypes.shape({
+    ping: PropTypes.func,
+    clearError: PropTypes.func,
+  }),
+};
+
+SiteApp.defaultProps = {
+  error: '',
+  appActions: {
+    ping: () => {},
+    clearError: () => {},
+  },
+};
 
 export default compose(
   connect(
