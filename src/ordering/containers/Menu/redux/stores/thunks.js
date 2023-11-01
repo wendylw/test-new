@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
 import { createAsyncThunk } from '@reduxjs/toolkit';
@@ -9,6 +10,7 @@ import {
 } from '../../../../redux/modules/app';
 import { hideStoreListDrawer, changeStore } from '../common/thunks';
 import Clevertap from '../../../../../utils/clevertap';
+import { toast } from '../../../../../common/utils/feedback';
 import logger from '../../../../../utils/monitoring/logger';
 
 /**
@@ -54,6 +56,8 @@ export const storeBranchSelected = createAsyncThunk(
       await dispatch(appActionCreators.loadDeliveryAddressDetailsIfNeeded());
       await dispatch(hideStoreListDrawer());
     } catch (e) {
+      toast(i18next.t('SelectStoreErrorMessage'), { type: 'error' });
+
       logger.error('Ordering_Menu_SelectStoreBranchFailed', { message: e?.message });
       throw e;
     }
