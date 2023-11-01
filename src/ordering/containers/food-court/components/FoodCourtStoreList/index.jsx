@@ -23,6 +23,7 @@ const FoodCourtStoreList = () => {
             <li
               key={`bestSellerProductItem-${store.id}`}
               className={store.isClosed ? styles.foodCourtStoreClosed : styles.foodCourtStore}
+              data-test-id="ordering.food-court.store-item"
               onClick={() => {
                 if (!store.unavailable) {
                   dispatch(selectedOneStore({ businessName: store.businessName, redirectUrl: store.redirectUrl }));

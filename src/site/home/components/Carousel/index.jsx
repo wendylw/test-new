@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import _get from 'lodash/get';
@@ -33,13 +34,14 @@ class Carousel extends Component {
 
     await submitStoreMenu({
       deliveryAddress: addressInfo,
-      store: store,
+      store,
       source: document.location.href,
       shippingType: shippingType.toLowerCase(),
     });
   };
 
   handleTitleBarClicked = (index, item) => {
+    const { history } = this.props;
     const { name, urlPath, beepCollectionId } = item;
 
     CleverTap.pushEvent('Homepage - Click Carousel See All', {
@@ -47,7 +49,8 @@ class Carousel extends Component {
       'collection id': beepCollectionId,
       rank: index + 1,
     });
-    this.props.history.push({
+
+    history.push({
       pathname: `/collections/${urlPath}`,
     });
   };
@@ -63,7 +66,11 @@ class Carousel extends Component {
           const { id } = store || {};
           return (
             <div key={id} className="carousel__item tw-flex tw-justify-center">
-              <StoreCard store={store} onClick={this.handleStoreClicked.bind(this, index, store, collectionInfo)} />
+              <StoreCard
+                store={store}
+                onClick={() => this.handleStoreClicked(index, store, collectionInfo)}
+                data-test-id="site.home.carousel.store-card"
+              />
             </div>
           );
         })}
@@ -79,7 +86,11 @@ class Carousel extends Component {
           const { name, stores, beepCollectionId } = item;
           return (
             <section key={beepCollectionId} data-test-id="site.home.carousel.container">
-              <Banner title={name} onClick={this.handleTitleBarClicked.bind(this, index, item)} />
+              <Banner
+                title={name}
+                onClick={() => this.handleTitleBarClicked(index, item)}
+                data-test-id="site.home.carousel.banner"
+              />
               {stores &&
                 this.renderCarouselStores(stores, {
                   name,
@@ -92,6 +103,19 @@ class Carousel extends Component {
     );
   }
 }
+
 Carousel.displayName = 'Carousel';
+
+Carousel.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  addressInfo: PropTypes.object,
+  collections: PropTypes.array,
+  /* eslint-enable */
+};
+
+Carousel.defaultProps = {
+  addressInfo: null,
+  collections: [],
+};
 
 export default compose(connect(state => ({ addressInfo: getAddressInfo(state) })))(withRouter(Carousel));

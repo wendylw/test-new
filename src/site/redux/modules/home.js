@@ -1,5 +1,7 @@
+/* eslint-disable no-use-before-define */
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
+import _get from 'lodash/get';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
@@ -60,7 +62,7 @@ const actions = {
     paginationInfo,
   }),
 
-  jumpToStore: ({ business, storeId, source = 'beepit.com', shippingType = 'delivery' }) => (dispatch, getState) => {
+  jumpToStore: ({ business, storeId, source = 'beepit.com', shippingType = 'delivery' }) => dispatch => {
     const context = { storeId, business, source, shippingType };
     return dispatch(fetchStoreUrlHash(storeId, context));
   },
@@ -68,10 +70,10 @@ const actions = {
   getStoreListNextPage: () => (dispatch, getState) => {
     const { loading, hasMore } = getPaginationInfo(getState());
     if (loading || !hasMore) return;
-    return dispatch(fetchStoreList());
+    dispatch(fetchStoreList());
   },
 
-  reloadStoreList: () => (dispatch, getState) => {
+  reloadStoreList: () => dispatch => {
     dispatch(
       actions.setPaginationInfo({
         page: 0,
@@ -132,7 +134,10 @@ const storeIdsReducer = (state = initialState.storeIds, action) => {
 };
 
 const paginationInfoReducer = (state = initialState.paginationInfo, action) => {
+  const { stores } = action.response || {};
+  const cxtPage = _get(action, 'context.page', 0);
   let nextState;
+
   switch (action.type) {
     case types.SET_PAGINATION_INFO:
       return { ...state, ...action.paginationInfo };
@@ -143,9 +148,7 @@ const paginationInfoReducer = (state = initialState.paginationInfo, action) => {
       }
       return { ...nextState, loading: true };
     case types.GET_STORE_LIST_SUCCESS:
-      const { stores } = action.response || {};
-      const page = action.context.page + 1;
-      nextState = { ...state, page, loading: false };
+      nextState = { ...state, page: cxtPage + 1, loading: false };
       if (!stores || !stores.length || state.pageSize > stores.length) {
         nextState.hasMore = false;
       }
@@ -153,7 +156,6 @@ const paginationInfoReducer = (state = initialState.paginationInfo, action) => {
     case types.GET_STORE_LIST_FAILURE:
       return { ...state, hasMore: false, loading: false };
     case types.GET_STORE_LIST_CANCEL:
-      console.log('request cancelled');
       return { ...state, loading: false };
     default:
       return state;
@@ -164,7 +166,9 @@ const storeLinkInfo = (state = initialState.storeLinkInfo, action) => {
   const { type, context } = action;
   if (type === types.FETCH_STORE_HASHCODE_REQUEST) {
     return { ...state, loading: true };
-  } else if (type === types.FETCH_STORE_HASHCODE_SUCCESS) {
+  }
+
+  if (type === types.FETCH_STORE_HASHCODE_SUCCESS) {
     const { redirectTo } = action.response || {};
     const storeUrlParams = {
       business: context.business,
@@ -181,7 +185,9 @@ const storeLinkInfo = (state = initialState.storeLinkInfo, action) => {
       storeId: context.storeId,
       loading: false,
     };
-  } else if (type === types.FETCH_STORE_HASHCODE_FAILURE) {
+  }
+
+  if (type === types.FETCH_STORE_HASHCODE_FAILURE) {
     return { ...initialState.storeLinkInfo };
   }
 

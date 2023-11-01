@@ -53,10 +53,12 @@ const { reducer, actions } = createSlice({
       state.updateCashbackInfoStatus = 'pending';
     },
     [loadCashbackInfo.fulfilled.type]: (state, { payload }) => {
-      state.cashbackInfo = Object.assign({}, state.cashbackInfo, payload, {
+      state.cashbackInfo = {
+        ...state.cashbackInfo,
+        ...payload,
         updateCashbackInfoStatus: 'fulfilled',
         createdCashbackInfo: false,
-      });
+      };
     },
     [loadCashbackInfo.rejected.type]: (state, { error }) => {
       state.cashbackInfo.error = error;
@@ -66,10 +68,12 @@ const { reducer, actions } = createSlice({
       state.updateCashbackInfoStatus = 'pending';
     },
     [createCashbackInfo.fulfilled.type]: (state, { payload }) => {
-      state.cashbackInfo = Object.assign({}, state.cashbackInfo, payload, {
+      state.cashbackInfo = {
+        ...state.cashbackInfo,
+        ...payload,
         updateCashbackInfoStatus: 'fulfilled',
         createdCashbackInfo: true,
-      });
+      };
     },
     [createCashbackInfo.rejected.type]: (state, { error }) => {
       state.cashbackInfo.error = error;

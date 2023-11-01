@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
-import { getUserStoreCashback, getUserCountry } from '../../redux/modules/app';
+import { getUserCountry } from '../../redux/modules/app';
 import {
-  getStoreDisplayTitle,
+  getIsStoreRedemptionNewCustomer,
   getIsDisplayStoreRedemptionContent,
   getIsLoadStoreRedemptionDataCompleted,
   getIsAvailableToShareConsumerInfo,
@@ -22,41 +22,41 @@ import NativeHeader from '../../../components/NativeHeader';
 import PowerByStoreHubLogo from '../../../images/power-by-storehub-logo.svg';
 import BeepAppLogo from '../../../images/app-beep-logo.svg';
 import TNGAppLogo from '../../../images/app-tng-logo.svg';
+import StoreRedemptionImage from '../../../images/store-redemption.png';
 import '../../../common/styles/base.scss';
 import styles from './StoreRedemption.module.scss';
+import { ObjectFitImage } from '../../../common/components/Image';
 
 const StoreRedemptionNative = () => {
   const { t } = useTranslation('Cashback');
   const dispatch = useDispatch();
-  // get store display title, storeBrandName || onlineStoreName
-  const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   // get is display store redemption content
   const isDisplayStoreRedemptionContent = useSelector(getIsDisplayStoreRedemptionContent);
-  const userStoreCashback = useSelector(getUserStoreCashback);
   const userCountry = useSelector(getUserCountry);
   const isAvailableToShareConsumerInfo = useSelector(getIsAvailableToShareConsumerInfo);
+  const isStoreRedemptionNewCustomer = useSelector(getIsStoreRedemptionNewCustomer);
 
   useMount(() => {
     CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
       country: userCountry,
-      page: userStoreCashback > 0 ? 'With Cashback' : 'Without Cashback',
+      page: isDisplayStoreRedemptionContent
+        ? 'With Cashback'
+        : `Without Cashback (${isStoreRedemptionNewCustomer ? 'New' : 'Returning'} Customer)`,
     });
 
-    alert(
-      <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
-        {userStoreCashback > 0
-          ? t('StoreRedemptionCashRedeemAlert')
-          : t('StoreRedemptionNoCashbackAlert', { storeDisplayTitle })}
-      </p>,
-      {
-        id: 'StoreRedemptionInitialAlert',
-        onClose: () => {
-          CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
-            country: userCountry,
-          });
-        },
-      }
-    );
+    if (isDisplayStoreRedemptionContent) {
+      alert(
+        <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">{t('StoreRedemptionCashRedeemAlert')}</p>,
+        {
+          id: 'StoreRedemptionInitialAlert',
+          onClose: () => {
+            CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
+              country: userCountry,
+            });
+          },
+        }
+      );
+    }
   });
 
   useEffect(() => {
@@ -74,7 +74,29 @@ const StoreRedemptionNative = () => {
         >
           <CashbackBlock />
         </section>
-      ) : null}
+      ) : (
+        <section className="tw-flex-1 tw-flex tw-flex-col tw-items-center tw-justify-center">
+          <h2
+            className={`${styles.StoreRedemptionGreetings} tw-flex-1 tw-flex tw-items-center tw-text-center tw-text-xl tw-leading-normal tw-font-bold`}
+          >
+            {isStoreRedemptionNewCustomer ? (
+              t('StoreRedemptionNewUserGreetings')
+            ) : (
+              <Trans i18nKey="StoreRedemptionUserGreetings">
+                Thanks for visiting our store.
+                <br />
+                See you again!
+              </Trans>
+            )}
+          </h2>
+          <ObjectFitImage
+            noCompression
+            className={`${styles.StoreRedemptionDefaultImage} tw-flex-shrink-0`}
+            src={StoreRedemptionImage}
+            alt="StoreHub store redemption"
+          />
+        </section>
+      )}
     </>
   );
 };
@@ -91,7 +113,7 @@ const StoreRedemption = () => {
     if (isDisplayWebResult) {
       CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
         country: userCountry,
-        page: 'When users scan QR with phone camera',
+        page: 'When users scan QR with phone camera (web)',
       });
     } else {
       await dispatch(mounted());

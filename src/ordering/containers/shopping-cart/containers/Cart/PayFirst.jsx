@@ -12,7 +12,7 @@ import CartList from '../../components/CartList';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
 import Utils from '../../../../../utils/utils';
-import Constants from '../../../../../utils/constants';
+import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import RedirectPageLoader from '../../../../components/RedirectPageLoader';
@@ -27,6 +27,7 @@ import {
   getHasLoginGuardPassed,
   getCartBilling,
   getStoreInfoForCleverTap,
+  getPaymentInfoForCleverTap,
   getIsDineType,
   getValidBillingTotal,
   getIsValidCreateOrder,
@@ -41,6 +42,7 @@ import {
   getShouldShowCashbackSwitchButton,
   getUserIsLogin,
   getIsFreeOrder,
+  getIsGuestCheckout,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import {
@@ -76,7 +78,16 @@ class PayFirst extends Component {
   }
 
   async componentDidMount() {
-    const { appActions, storeInfoForCleverTap } = this.props;
+    const { history, appActions, storeInfoForCleverTap, isGuestCheckout } = this.props;
+    const from = Utils.getCookieVariable('__pl_cp_source');
+    Utils.removeCookieVariable('__pl_cp_source');
+
+    if (isGuestCheckout && from === REFERRER_SOURCE_TYPES.LOGIN) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+        search: window.location.search,
+      });
+    }
 
     await appActions.loadShoppingCart();
 
@@ -173,11 +184,14 @@ class PayFirst extends Component {
   };
 
   handleClearAll = () => {
-    const { history, storeInfoForCleverTap, appActions } = this.props;
+    const { history, storeInfoForCleverTap, paymentInfoForCleverTap, appActions } = this.props;
 
     logger.log('Ordering_PayFirstCart_ClearAllItems');
 
-    CleverTap.pushEvent('Cart page - click clear all', storeInfoForCleverTap);
+    CleverTap.pushEvent('Cart page - click clear all', {
+      ...storeInfoForCleverTap,
+      ...paymentInfoForCleverTap,
+    });
 
     appActions.clearAll().then(() => {
       history.push({
@@ -245,9 +259,12 @@ class PayFirst extends Component {
   };
 
   handleGotoPromotion = async () => {
-    const { history, isLogin, storeInfoForCleverTap, isWebview, appActions } = this.props;
+    const { history, isLogin, storeInfoForCleverTap, paymentInfoForCleverTap, isWebview, appActions } = this.props;
 
-    CleverTap.pushEvent('Cart page - click add promo code/voucher', storeInfoForCleverTap);
+    CleverTap.pushEvent('Cart page - click add promo code/voucher', {
+      ...storeInfoForCleverTap,
+      ...paymentInfoForCleverTap,
+    });
 
     if (isLogin) {
       history.push({
@@ -289,7 +306,9 @@ class PayFirst extends Component {
   });
 
   handleIncreaseCartItem = cartItem => {
-    const { appActions } = this.props;
+    const { appActions, paymentInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent('Cart page - Increase quantity', paymentInfoForCleverTap);
 
     logger.log('Ordering_PayFirstCart_AdjustItemQuantity', { action: 'increase' });
     const { quantity } = cartItem;
@@ -301,7 +320,9 @@ class PayFirst extends Component {
   };
 
   handleDecreaseCartItem = cartItem => {
-    const { appActions } = this.props;
+    const { appActions, paymentInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent('Cart page - decrease quantity', paymentInfoForCleverTap);
 
     logger.log('Ordering_PayFirstCart_AdjustItemQuantity', { action: 'decrease' });
     const { quantity } = cartItem;
@@ -334,7 +355,9 @@ class PayFirst extends Component {
   };
 
   AdditionalCommentsFocus = () => {
-    CleverTap.pushEvent('Cart page - click special instructions');
+    const { paymentInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent('Cart page - click special instructions', paymentInfoForCleverTap);
     setTimeout(() => {
       const container = document.querySelector('.ordering-cart__container');
       const productContainer = document.querySelector('.ordering-cart__products-container');
@@ -356,7 +379,7 @@ class PayFirst extends Component {
   };
 
   handleClickPayButtonEventTracking = () => {
-    const { cartBilling, businessInfo, storeInfoForCleverTap } = this.props;
+    const { cartBilling, businessInfo, storeInfoForCleverTap, paymentInfoForCleverTap } = this.props;
     const { name } = businessInfo || {};
     const { cashback, promotion } = cartBilling || {};
     const { promoCode } = promotion || {};
@@ -364,6 +387,7 @@ class PayFirst extends Component {
     logger.log('Ordering_PayFirstCart_ClickPayNowButton');
     CleverTap.pushEvent('Cart Page - click pay now', {
       ...storeInfoForCleverTap,
+      ...paymentInfoForCleverTap,
       'promo/voucher applied': promoCode || '',
       'Cashback Amount': cashback || 0,
       'Cashback Store': name || '',
@@ -446,6 +470,12 @@ class PayFirst extends Component {
     this.handleClickPayButtonEventTracking();
     this.handleGtmEventTracking(() => {
       if (isValidCreateOrder) return;
+
+      if (pathname === ROUTER_PATHS.ORDERING_LOGIN) {
+        // WB-6075: If users are not logged in, we need to set the referrer source to the login page.
+        Utils.setCookieVariable('__pl_cp_source', REFERRER_SOURCE_TYPES.LOGIN);
+      }
+
       history.push({
         pathname,
         search: window.location.search,
@@ -600,6 +630,7 @@ class PayFirst extends Component {
             <button
               className="flex padding-smaller cart-cashback__info-button"
               aria-label="Beep Cashback Info"
+              data-test-id="ordering.shopping-cart.pay-first.cashback-info-btn"
               onClick={this.handleClickCashbackInfoButton}
             >
               <Info size={16} />
@@ -615,6 +646,7 @@ class PayFirst extends Component {
                   className="cart-cashback__toggle-checkbox"
                   type="checkbox"
                   checked={isCashbackApplied}
+                  data-test-id="ordering.shopping-cart.pay-first.cashback-switch"
                   onChange={this.handleToggleCashbackSwitch}
                 />
                 <div className="cart-cashback__toggle-switch" />
@@ -745,6 +777,7 @@ class PayFirst extends Component {
       shoppingCart,
       businessInfo,
       storeInfoForCleverTap,
+      paymentInfoForCleverTap,
       isDineType,
       serviceChargeRate,
       shouldShowProcessingLoader,
@@ -773,7 +806,10 @@ class PayFirst extends Component {
           isPage
           title={t('ProductsInOrderText', { count: count || 0 })}
           navFunc={() => {
-            CleverTap.pushEvent('Cart page - click back arrow', storeInfoForCleverTap);
+            CleverTap.pushEvent('Cart page - click back arrow', {
+              ...storeInfoForCleverTap,
+              ...paymentInfoForCleverTap,
+            });
             this.handleClickBack();
           }}
           rightContent={{
@@ -832,7 +868,7 @@ class PayFirst extends Component {
           <button
             className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
             onClick={() => {
-              CleverTap.pushEvent('Cart Page - click back button(bottom)');
+              CleverTap.pushEvent('Cart Page - click back button (bottom)', paymentInfoForCleverTap);
               this.handleClickBack();
             }}
             data-test-id="ordering.cart.back-btn"
@@ -876,9 +912,12 @@ PayFirst.propTypes = {
   isDineType: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   storeInfoForCleverTap: PropTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
+  paymentInfoForCleverTap: PropTypes.object,
   isValidCreateOrder: PropTypes.bool,
   shouldDisablePayButton: PropTypes.bool,
   hasLoginGuardPassed: PropTypes.bool,
+  isGuestCheckout: PropTypes.bool,
   isBillingTotalInvalid: PropTypes.bool,
   validBillingTotal: PropTypes.number,
   isFreeOrder: PropTypes.bool,
@@ -923,9 +962,11 @@ PayFirst.defaultProps = {
   businessInfo: {},
   isDineType: false,
   storeInfoForCleverTap: {},
+  paymentInfoForCleverTap: {},
   isValidCreateOrder: false,
   shouldDisablePayButton: false,
   hasLoginGuardPassed: false,
+  isGuestCheckout: false,
   isBillingTotalInvalid: false,
   isFreeOrder: false,
   validBillingTotal: 0,
@@ -963,8 +1004,10 @@ export default compose(
       isValidCreateOrder: getIsValidCreateOrder(state),
       shouldDisablePayButton: getShouldDisablePayButton(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
+      isGuestCheckout: getIsGuestCheckout(state),
       isBillingTotalInvalid: getIsBillingTotalInvalid(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      paymentInfoForCleverTap: getPaymentInfoForCleverTap(state),
       deliveryDetails: getDeliveryDetails(state),
       consumerId: getUserConsumerId(state),
       userProfile: getUserProfile(state),

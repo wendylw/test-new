@@ -45,6 +45,7 @@ const SimpleMultipleChoiceVariation = ({ variation }) => {
                 value={option.id}
                 containerClassName={styles.variationOptionItem}
                 className={styles.variationOptionOperator}
+                data-test-id="ordering.menu.product-detail-drawer.check-box"
                 disabled={option.disabled}
                 onChange={onChange}
               >

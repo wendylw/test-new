@@ -51,6 +51,7 @@ const MiniCart = () => {
             <X
               weight="light"
               className="tw-flex-shrink-0 tw-text-2xl tw-text-gray"
+              data-test-id="ordering.menu.mini-cart.close-btn"
               onClick={() => dispatch(hideMiniCartDrawer())}
             />
           }
@@ -59,6 +60,7 @@ const MiniCart = () => {
               type="text"
               theme="danger"
               className={styles.removeAllButton}
+              data-test-id="ordering.menu.mini-cart.remove-btn"
               icon={<Trash size={18} />}
               onClick={() => {
                 dispatch(removeAllCartItems());

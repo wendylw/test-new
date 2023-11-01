@@ -8,7 +8,7 @@ import {
 
 const initialState = {
   requestId: null,
-  sharingConsumerInfo: {
+  sharedInfoData: {
     id: '',
     merchantName: '',
     expiredDate: '',
@@ -17,6 +17,7 @@ const initialState = {
     consumerId: '',
     customerId: '',
     sharedInfoDate: '',
+    isNewCustomer: false,
   },
   updateSharingConsumerInfo: {
     status: null,
@@ -36,7 +37,7 @@ export const { reducer, actions } = createSlice({
     },
     [updateShareConsumerInfoRequests.fulfilled.type]: (state, { payload }) => {
       state.updateSharingConsumerInfo.status = API_REQUEST_STATUS.FULFILLED;
-      state.sharedInfoDate = payload;
+      state.sharedInfoData = payload;
     },
     [updateShareConsumerInfoRequests.rejected.type]: state => {
       state.updateSharingConsumerInfo.status = API_REQUEST_STATUS.REJECTED;
@@ -46,7 +47,7 @@ export const { reducer, actions } = createSlice({
     },
     [confirmToShareConsumerInfoRequests.fulfilled.type]: (state, { payload }) => {
       state.confirmSharingConsumerInfo.status = API_REQUEST_STATUS.FULFILLED;
-      state.sharedInfoDate = payload;
+      state.sharedInfoData = payload;
     },
     [confirmToShareConsumerInfoRequests.rejected.type]: state => {
       state.confirmSharingConsumerInfo.status = API_REQUEST_STATUS.REJECTED;

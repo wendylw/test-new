@@ -69,7 +69,13 @@ const FoodCourtHeader = () => {
             {tableIdOrShippingType ? (
               <span className="tw-p-16 sm:tw-p-16px tw-text-gray-700">{tableIdOrShippingType}</span>
             ) : null}
-            <img onClick={goOrderHistoryPage} className={styles.OrderHistoryEntry} src={OrderHistoryEntry} alt="" />
+            <img
+              data-test-id="ordering.food-court.history-btn"
+              onClick={goOrderHistoryPage}
+              className={styles.OrderHistoryEntry}
+              src={OrderHistoryEntry}
+              alt=""
+            />
           </div>
         </header>
       )}

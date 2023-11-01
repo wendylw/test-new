@@ -104,6 +104,11 @@ Please contact the project administrator to access apollo https://apollo.shub.us
   > 5. Set \_\_s to local ordering page cookie from PROXY testing environment (optional)
   > 6. Set deliveryAddress to local sessionStorage from PROXY testing environment (optional)
 
+- (Optional) Using HTTPS in Development
+
+  > 1. Run `yarn generate-dev-ssl-cert` to create a certificate authority on your machine and generate certificates for this project.
+  > 2. Run `yarn start:https` to serve pages over HTTPS.
+
 - Start ordering using local backend
 
   > 1. [Set up and Run Backend](https://github.com/storehubnet/beep-v1-web/tree/master/backend#beep)

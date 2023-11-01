@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, CaretDown, X } from 'phosphor-react';
+import { CaretDown, X } from 'phosphor-react';
 import Button from '../../../../../common/components/Button';
 import Badge from '../../../../../common/components/Badge';
 import Drawer from '../../../../../common/components/Drawer';
@@ -30,6 +30,7 @@ const CategoryList = ({ categories, onCategoryItemClick }) => {
           className={`${styles.menuProductCategoryItem} tw-cursor-default beep-line-clamp-flex-container ${
             (highlightedCategory && highlightedCategory.id) === category.id ? ' active' : ''
           }`}
+          data-test-id="ordering.menu.product-list.category-item"
           onClick={() => {
             onCategoryItemClick(category.id);
           }}
@@ -86,6 +87,7 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
         theme="ghost"
         className={styles.menuProductCategoryButton}
         contentClassName={styles.menuProductCategoryContentButton}
+        data-test-id="ordering.menu.product-list.show-btn"
         onClick={() => {
           if (isProductListReady) {
             setShowDrawer(true);
@@ -109,6 +111,7 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
               <Button
                 type="text"
                 theme="ghost"
+                data-test-id="ordering.menu.product-list.close-btn"
                 onClick={() => setShowDrawer(false)}
                 className={styles.menuProductCategoryDrawerHeaderCloseButton}
                 contentClassName={styles.menuProductCategoryDrawerHeaderCloseButtonContent}

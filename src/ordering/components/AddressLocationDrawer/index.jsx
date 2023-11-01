@@ -43,7 +43,14 @@ const AddressLocationDrawer = ({
       header={
         <DrawerHeader
           className={styles.addressLocationDrawerHeader}
-          left={<X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" onClick={onClose} />}
+          left={
+            <X
+              weight="light"
+              className="tw-flex-shrink-0 tw-text-2xl tw-text-gray"
+              onClick={onClose}
+              data-test-id="ordering.address-location-drawer.close-btn"
+            />
+          }
         >
           <span className="tw-font-bold tw-text-lg tw-leading-relaxed">{t('DeliverTo')}</span>
         </DrawerHeader>

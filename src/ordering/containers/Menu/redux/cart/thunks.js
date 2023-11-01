@@ -2,13 +2,19 @@ import qs from 'qs';
 import _isNil from 'lodash/isNil';
 import { push } from 'connected-react-router';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { clearCart, updateCartItems, removeCartItemsById, clearQueryCartStatus } from '../../../../redux/cart/thunks';
+import {
+  clearCart,
+  updateCartItems,
+  removeCartItemsById,
+  clearQueryCartStatus,
+} from '../../../../redux/modules/cart/thunks';
+import { getCartReceiptNumber as getReceiptNumber } from '../../../../redux/modules/cart/selectors';
 import { getOriginalCartItems } from './selectors';
 import {
   actions as appActions,
-  getReceiptNumber,
   getEnablePayLater,
   getStoreInfoForCleverTap,
+  getPaymentInfoForCleverTap,
 } from '../../../../redux/modules/app';
 import { getStoreHashCode, getShippingTypeFromUrl } from '../../../../../common/utils';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
@@ -116,6 +122,7 @@ export const increaseCartItemQuantity = createAsyncThunk(
       quantity: variationQuantity,
     }));
     const cartItemCleverTapAttributes = getCartItemCleverTapAttributes(originalCartItem);
+    const paymentInfoForCleverTap = getPaymentInfoForCleverTap(state);
     const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
     const cartItemGTMData = getCartItemGTMData(originalCartItem);
     const { comments } = originalCartItem;
@@ -124,6 +131,7 @@ export const increaseCartItemQuantity = createAsyncThunk(
 
     Clevertap.pushEvent('Menu Page - Cart Preview - Increase quantity', {
       ...storeInfoForCleverTap,
+      ...paymentInfoForCleverTap,
       ...cartItemCleverTapAttributes,
     });
 
@@ -204,12 +212,14 @@ export const decreaseCartItemQuantity = createAsyncThunk(
     const originalCartItem = originalCartItems.find(item => item.id === cartItemId) || {};
     const { quantity, productId, variations } = originalCartItem || {};
 
+    const paymentInfoForCleverTap = getPaymentInfoForCleverTap(state);
     const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
     const cartItemCleverTapAttributes = getCartItemCleverTapAttributes(originalCartItem);
     const { comments, isTakeaway } = originalCartItem;
 
     Clevertap.pushEvent('Menu Page - Cart Preview - Decrease quantity', {
       ...storeInfoForCleverTap,
+      ...paymentInfoForCleverTap,
       ...cartItemCleverTapAttributes,
     });
 

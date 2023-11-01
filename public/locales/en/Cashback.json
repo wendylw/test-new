@@ -15,8 +15,10 @@
   "Login": "Login",
   "CashbackLoginTip": "Login here to claim your cashback",
   "StoreRedemptionCashbackDescription": "Total balance to redeem",
+  "StoreRedemptionUserGreetings": "Thanks for visiting our store.<1></1>See you again!",
+  "StoreRedemptionNewUserGreetings": "Thanks for signing up with us!",
   "StoreRedemptionCashRedeemAlert": "Your cashback balance will be auto redeemed at the cashier",
-  "StoreRedemptionNoCashbackAlert": "Thanks for signing up with {{storeDisplayTitle}}",
   "LoginBannerPrompt": "Do you have a Beep account? Login with your mobile phone number.",
-  "Redirecting": "Redirecting..."
+  "Redirecting": "Redirecting...",
+  "UnexpectedErrorOccurred": "Oops! An unexpected error has occurred"
 }

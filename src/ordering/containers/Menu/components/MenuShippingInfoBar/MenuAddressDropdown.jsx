@@ -160,6 +160,7 @@ const MenuAddressDropdown = () => {
     <div className="tw-flex-1">
       <button
         className={`${styles.addressDropdownButton}${isPickUpType ? '' : ' tw-cursor-pointer'}`}
+        data-test-id="ordering.menu.shipping-info-bar.address-btn"
         onClick={onHandleOpenLocationDrawer}
       >
         <div className="tw-flex tw-items-center">

@@ -19,6 +19,7 @@ if (typeof MediaStream === 'undefined' && typeof webkitMediaStream !== 'undefine
   MediaStream = window.webkitMediaStream;
 }
 
+// eslint-disable-next-line no-redeclare
 /*global MediaStream:true */
 if (typeof MediaStream !== 'undefined' && !('stop' in MediaStream.prototype)) {
   MediaStream.prototype.stop = function() {

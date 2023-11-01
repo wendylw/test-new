@@ -19,7 +19,7 @@ const mockErrorCode = 401;
 const commonSuccessData = {
   status: 'ok',
 };
-const commonFailResponse = new RequestError(mockErrorMsg, mockErrorCode);
+const commonFailResponse = new RequestError(mockErrorMsg, { code: mockErrorCode });
 
 const successMockFetch = () => {
   fetch.mockResponseOnce(JSON.stringify(commonSuccessData));

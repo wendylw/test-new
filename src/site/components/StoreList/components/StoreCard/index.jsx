@@ -64,7 +64,7 @@ const StoreCard = ({ store, onClick }) => {
   }, [searchingTags]);
 
   return (
-    <button className={styles.StoreCardContainer} data-testid="deliverStore" onClick={onClick}>
+    <button className={styles.StoreCardContainer} data-test-id="site.common.store-card.btn" onClick={onClick}>
       <div className={styles.StoreCardImageContainer}>
         {_isEmpty(ribbonBadges) ? null : (
           <div className={styles.StoreCardRibbonBadgeWrapper}>

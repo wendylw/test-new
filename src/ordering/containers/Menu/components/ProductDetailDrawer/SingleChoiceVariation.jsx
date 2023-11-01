@@ -41,6 +41,7 @@ const SingleChoiceVariation = ({ variation }) => {
                 value={option.id}
                 containerClassName={styles.variationOptionItem}
                 className={styles.variationOptionOperator}
+                data-test-id="ordering.menu.product-detail-drawer.radio"
                 disabled={option.disabled}
                 onChange={onChange}
               >

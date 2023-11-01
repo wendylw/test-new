@@ -5,12 +5,12 @@ import Utils from '../../utils/utils';
 import logger from '../../utils/monitoring/logger';
 import { ADDRESS_INFO_SOURCE_TYPE } from '../../redux/modules/address/constants';
 
+// eslint-disable-next-line consistent-return
 export const getPlaceInfoByDeviceByAskPermission = async () => {
   try {
     const placeInfo = await getPositionInfoBySource(ADDRESS_INFO_SOURCE_TYPE.DEVICE, true);
     return placeInfo;
   } catch (e) {
-    console.warn(e);
     logger.warn('Site_Utils_GetPlaceInfoByDeviceByAskPermission', {
       message: e?.message,
     });
@@ -29,7 +29,6 @@ export const getPlaceInfo = async ({ fromDevice = true, fromIp = true } = {}) =>
       placeInfo = await getPositionInfoBySource(DEVICE, true);
       if (placeInfo) source = DEVICE;
     } catch (e) {
-      console.warn(e);
       logger.warn('Site_Utils_GetPlaceInfo', {
         message: e?.message,
       });
@@ -63,11 +62,11 @@ export const submitStoreMenu = async ({ deliveryAddress, store, source, shipping
   const storeUrlParams = {
     business: store.business,
     hash: redirectTo,
-    source: source,
+    source,
   };
   const redirectUrl = Utils.getMerchantStoreUrl({ ...storeUrlParams, type: shippingType });
 
-  if (!Boolean(deliveryAddress)) {
+  if (!deliveryAddress) {
     logger.error('Site_Utils_GoToStoreFailedByEmptyDeliveryAddress');
     console.error('delivery address is empty');
     return;

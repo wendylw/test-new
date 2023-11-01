@@ -1,6 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import Constants from '../../../../../../utils/constants';
+import Constants, { API_REQUEST_STATUS } from '../../../../../../utils/constants';
 import {
   getBusinessInfo,
   getCashbackRate,
@@ -14,7 +14,7 @@ import {
   getPayLaterSubmitOrderRequest as getSubmitOrderRequest,
 } from '../../../redux/selector';
 
-const { ORDER_STATUS, API_REQUEST_STATUS } = Constants;
+const { ORDER_STATUS } = Constants;
 
 export const getOrderReceiptNumber = createSelector(getOrder, order => order.receiptNumber);
 

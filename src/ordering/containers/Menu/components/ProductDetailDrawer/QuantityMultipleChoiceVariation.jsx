@@ -38,6 +38,7 @@ const QuantityMultipleChoiceVariation = ({ variation }) => {
             </div>
             <QuantityAdjuster
               className={styles.variationOptionOperator}
+              data-test-id="ordering.menu.product-detail-drawer.quantity-adjuster"
               increaseDisabled={option.disabled || !option.isAbleToIncreaseQuantity}
               decreaseDisabled={option.disabled || !option.isAbleToDecreaseQuantity}
               value={option.quantity}

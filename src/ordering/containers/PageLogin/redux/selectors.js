@@ -1,21 +1,23 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import Constants from '../../../../utils/constants';
-import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { getOtpRequest, getIsLoginRequestStatusPending, getIsQrOrderingShippingType } from '../../../redux/modules/app';
-import { getIsFeatureEnabled } from '../../../../redux/modules/growthbook/selectors';
-import { FEATURE_KEYS } from '../../../../redux/modules/growthbook/constants';
-import { ERROR_TYPES } from '../../../../utils/api/constants';
-
-const {
-  OTP_REQUEST_TYPES,
+import Constants, {
   OTP_BFF_ERROR_CODES,
   OTP_API_ERROR_CODES,
   SMS_API_ERROR_CODES,
   OTP_COMMON_ERROR_TYPES,
   OTP_SERVER_ERROR_I18N_KEYS,
   OTP_ERROR_POPUP_I18N_KEYS,
-} = Constants;
+} from '../../../../utils/constants';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import {
+  getOtpRequest,
+  getIsLoginRequestStatusPending,
+  getIsQrOrderingShippingType,
+  getIsGuestLoginDisabled,
+} from '../../../redux/modules/app';
+import { ERROR_TYPES } from '../../../../utils/api/constants';
+
+const { OTP_REQUEST_TYPES } = Constants;
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);
 
@@ -122,10 +124,8 @@ export const getShouldShowLoader = createSelector(
   (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
 );
 
-export const getIsGuestCheckoutEnabled = state => getIsFeatureEnabled(state, FEATURE_KEYS.GUEST_CHECKOUT);
-
 export const getShouldShowGuestOption = createSelector(
-  getIsGuestCheckoutEnabled,
+  getIsGuestLoginDisabled,
   getIsQrOrderingShippingType,
-  (isGuestCheckoutEnabled, isQrOrderingShippingType) => isQrOrderingShippingType && isGuestCheckoutEnabled
+  (isGuestLoginDisabled, isQrOrderingShippingType) => isQrOrderingShippingType && !isGuestLoginDisabled
 );

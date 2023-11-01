@@ -55,6 +55,7 @@ const OfflinePageHeader = () => {
         <header className="tw-absolute  tw-container tw-p-12 sm:tw-p-12px" style={{ zIndex: 101 }}>
           <button
             className={styles.MenuHeaderLogoOffline}
+            data-test-id="ordering.menu.header.back-btn"
             onClick={() => {
               goBackToPreviousPage();
             }}
@@ -192,7 +193,15 @@ const MenuHeader = ({ webHeaderVisibility }) => {
 
   const leftContentForWebHeader = () => {
     if (isShowBackButton) {
-      return <img className={styles.MenuHeaderBackArrow} src={BackArrow} alt="" onClick={() => dispatch(goBack())} />;
+      return (
+        <img
+          className={styles.MenuHeaderBackArrow}
+          src={BackArrow}
+          alt=""
+          data-test-id="ordering.menu.header.back-btn"
+          onClick={() => dispatch(goBack())}
+        />
+      );
     }
 
     return <img className={styles.MenuHeaderLogo} src={PowerByBeepLogo} alt="" />;

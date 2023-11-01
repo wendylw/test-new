@@ -29,6 +29,15 @@
   background-size: 100% 100%;
 }
 
+.StoreRedemptionGreetings {
+  max-width: 260px;
+}
+
+.StoreRedemptionDefaultImage {
+  padding-top: 22%;
+  background-color: transparent;
+}
+
 @media (min-width: 770px) {
   .StoreRedemptionWeb {
     margin: auto;

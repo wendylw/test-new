@@ -28,6 +28,7 @@ const CartItemOperator = ({
           type="text"
           theme="danger"
           className={styles.removeItemButton}
+          data-test-id="ordering.menu.mini-cart.remove-item-btn"
           onClick={() => {
             dispatch(removeCartItem({ cartItemId: id }));
           }}
@@ -38,6 +39,7 @@ const CartItemOperator = ({
         <div className="tw-flex tw-flex-col tw-items-center tw-flex-shrink-0">
           <QuantityAdjuster
             className="tw-px-2 sm:tw-px-2px tw-mt-8 sm:tw-mt-8px"
+            data-test-id="ordering.menu.mini-cart.quantity-adjuster"
             decreaseDisabled={!isAbleToDecreaseQuantity}
             increaseDisabled={!isAbleToIncreaseQuantity}
             onChange={delta => {
@@ -108,7 +110,7 @@ const CartItem = ({ item, isDineType }) => {
                 </span>
                 {item.formattedOriginalDisplayPrice && (
                   <span
-                    className={`${styles.cartItemPrice} tw-px-2 sm:tw-px-2px tw-leading-relaxed tw-line-through tw-gray-900 tw-opacity-40`}
+                    className={`${styles.cartItemPrice} tw-px-2 sm:tw-px-2px tw-leading-relaxed tw-line-through tw-text-gray-900 tw-opacity-40`}
                   >
                     {item.formattedOriginalDisplayPrice}
                   </span>

@@ -8,6 +8,7 @@ import {
   getIsCoreStoresLoaded,
   getStoreId,
   getStoreInfoForCleverTap,
+  getPaymentInfoForCleverTap,
   getTableId,
   getUserConsumerId,
   getUserIsLogin,
@@ -46,7 +47,7 @@ import {
   getStoreStatus,
   getHasSelectedProductItemInfo,
 } from './selectors';
-import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/cart/thunks';
+import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/modules/cart/thunks';
 import { PATH_NAME_MAPPING, SHIPPING_TYPES, SOURCE_TYPE } from '../../../../../common/utils/constants';
 import {
   getExpectedDeliveryDateFromSession,
@@ -863,10 +864,14 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
   const isBeepDelivery = getIsBeepDeliveryShippingType(state);
   const hasSelectedExpectedDeliveryTime = getHasSelectedExpectedDeliveryTime(state);
   const ifAddressInfoExists = getIfAddressInfoExists(getState());
+  const paymentInfoForCleverTap = getPaymentInfoForCleverTap(state);
   const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
   const search = getLocationSearch(state);
 
-  Clevertap.pushEvent('Menu Page - Click order now', storeInfoForCleverTap);
+  Clevertap.pushEvent('Menu page - Click Review cart', {
+    ...storeInfoForCleverTap,
+    ...paymentInfoForCleverTap,
+  });
 
   if (shippingType === SHIPPING_TYPES.DELIVERY && !ifAddressInfoExists) {
     await dispatch(showLocationDrawer());

@@ -31,6 +31,10 @@ CurrencyNumber.propTypes = {
 };
 
 CurrencyNumber.defaultProps = {
+  className: '',
+  addonBefore: '',
+  locale: '',
+  currency: '',
   price: 0,
 };
 

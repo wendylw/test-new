@@ -142,6 +142,7 @@ const ProductDetailDrawer = () => {
           type="text"
           theme="ghost"
           className={styles.topArrowBtn}
+          data-test-id="ordering.menu.product-detail-drawer.top-btn"
           onClick={onTopArrowClick}
           style={{
             transform: showTopArrow ? 'translateY(0)' : 'translateY(-100%)',
@@ -157,6 +158,7 @@ const ProductDetailDrawer = () => {
               <ImageSwiper images={product.images} />
               <button
                 className={styles.closeButton}
+                data-test-id="ordering.menu.product-detail-drawer.close-btn"
                 onClick={() => {
                   onClose();
                 }}
@@ -183,6 +185,7 @@ const ProductDetailDrawer = () => {
                   {product.formattedDisplayPrice}
                 </span>
               </div>
+              {/* eslint-disable-next-line react/no-danger */}
               <p className={styles.productDescription} dangerouslySetInnerHTML={{ __html: product.description }} />
             </section>
             {shouldShowTakeawayVariant && (
@@ -214,6 +217,7 @@ const ProductDetailDrawer = () => {
                 value={selectedQuantity}
                 increaseDisabled={!product.isAbleToIncreaseQuantity}
                 decreaseDisabled={!product.isAbleToDecreaseQuantity}
+                data-test-id="ordering.menu.product-detail-drawer.quantity-adjuster"
                 onChange={delta => {
                   if (delta > 0) {
                     dispatch(increaseProductQuantity());
@@ -235,6 +239,7 @@ const ProductDetailDrawer = () => {
                 block
                 type="primary"
                 loading={isAddToCartLoading}
+                data-test-id="ordering.menu,product-detail-drawer.add-btn"
                 onClick={() => {
                   dispatch(addToCart());
                 }}
