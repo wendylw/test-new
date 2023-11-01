@@ -291,7 +291,7 @@ export const initExpectedDeliveryDate = createAsyncThunk(
           return null;
         }
 
-        console.log(TimeLib.isToday(expectedDeliveryTimeDayjsObj));
+        console.log(expectedDeliveryTimeDayjsObj);
         // If disableTodayPreOrder is true, then disable today pre-order
         if (disableTodayPreOrder && TimeLib.isToday(expectedDeliveryTimeDayjsObj)) {
           return null;
