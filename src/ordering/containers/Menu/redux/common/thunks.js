@@ -46,7 +46,6 @@ import {
   getHasSelectedExpectedDeliveryTime,
   getStoreStatus,
   getHasSelectedProductItemInfo,
-  getSelectedDateDisplayValue,
 } from './selectors';
 import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/modules/cart/thunks';
 import { PATH_NAME_MAPPING, SHIPPING_TYPES, SOURCE_TYPE, TIME_SLOT } from '../../../../../common/utils/constants';
@@ -245,7 +244,6 @@ export const initExpectedDeliveryDate = createAsyncThunk(
       const shippingType = getShippingType(getState());
       const currentTime = getCurrentTime(getState());
       const store = getStore(getState());
-      const selectedDateDisplayValue = getSelectedDateDisplayValue(getState());
 
       let initialExpectedDeliveryTime = (() => {
         if (!expectedDeliveryDate || !from || !store) {
@@ -293,8 +291,9 @@ export const initExpectedDeliveryDate = createAsyncThunk(
           return null;
         }
 
+        console.log(TimeLib.isToday(expectedDeliveryTimeDayjsObj));
         // If disableTodayPreOrder is true, then disable today pre-order
-        if (disableTodayPreOrder && selectedDateDisplayValue === TIME_SLOT.TODAY) {
+        if (disableTodayPreOrder && TimeLib.isToday(expectedDeliveryTimeDayjsObj)) {
           return null;
         }
 
@@ -302,7 +301,7 @@ export const initExpectedDeliveryDate = createAsyncThunk(
         if (
           shippingType === SHIPPING_TYPES.DELIVERY &&
           disableTodayDeliveryPreOrder &&
-          selectedDateDisplayValue === TIME_SLOT.TODAY
+          TimeLib.isToday(expectedDeliveryTimeDayjsObj)
         ) {
           return null;
         }
