@@ -128,3 +128,9 @@ export const PRODUCT_STOCK_STATUS = {
   OUT_OF_STOCK: 'outOfStock',
   UNAVAILABLE: 'unavailable',
 };
+
+export const TIME_SLOT = {
+  NOW: 'now',
+  TODAY: 'Today',
+  TOMORROW: 'Tomorrow',
+};

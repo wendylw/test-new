@@ -4,7 +4,12 @@ import _get from 'lodash/get';
 import _sumBy from 'lodash/sumBy';
 import _map from 'lodash/map';
 import _escapeRegExp from 'lodash/escapeRegExp';
-import { API_REQUEST_STATUS, SHIPPING_TYPES, PRODUCT_STOCK_STATUS } from '../../../../../common/utils/constants';
+import {
+  API_REQUEST_STATUS,
+  SHIPPING_TYPES,
+  PRODUCT_STOCK_STATUS,
+  TIME_SLOT,
+} from '../../../../../common/utils/constants';
 import { getOpeningHours } from '../../../../../common/utils/index';
 import { getCartQuantity, getCartQuantityByProductId, getIsFulfillMinimumConsumption } from '../cart/selectors';
 import {
@@ -367,7 +372,7 @@ export const getSelectedDateDisplayValue = createSelector(
     }
 
     if (expectedDeliveryTime === 'now') {
-      return 'Today';
+      return TIME_SLOT.TODAY;
     }
 
     const expectedDeliveryTimeDayjsObj = StoreUtils.getBusinessDateTime(
@@ -376,7 +381,7 @@ export const getSelectedDateDisplayValue = createSelector(
     );
 
     if (expectedDeliveryTimeDayjsObj.isSame(currentTime, 'day')) {
-      return 'Today';
+      return TIME_SLOT.TODAY;
     }
 
     const tomorrowDayjsObj = StoreUtils.getBusinessDateTime(businessUTCOffset, new Date(currentTime)).add(1, 'day');
@@ -384,7 +389,7 @@ export const getSelectedDateDisplayValue = createSelector(
     const isTomorrow = expectedDeliveryTimeDayjsObj.isSame(tomorrowDayjsObj, 'day');
 
     if (isTomorrow) {
-      return 'Tomorrow';
+      return TIME_SLOT.TOMORROW;
     }
 
     return expectedDeliveryTimeDayjsObj.format('ddd DD');
