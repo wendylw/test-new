@@ -50,6 +50,11 @@ const getStripePromise = country => {
         },
         style: { zIndex: '300' },
       });
+
+      // WB-6503: Stripe Elements only accept a Stripe object or a Promise resolving to a Stripe object.
+      // We are allowed to pass in `null` or a Promise resolving to `null` to `Elements` component, otherwise, it will throw an error.
+      // Refer: https://stripe.com/docs/stripe-js/react#elements-provider
+      return null;
     });
 };
 

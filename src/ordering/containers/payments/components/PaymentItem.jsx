@@ -23,12 +23,13 @@ class PaymentItem extends Component {
   }
 
   handleSelectPaymentOption = (option, currentPaymentOption) => {
-    const { updatePaymentOptionSelected } = this.props;
+    const { onSelect, updatePaymentOptionSelected } = this.props;
     const { disabledConditions, paymentProvider } = option;
     const selectedOption = this.getSelectedCurrentOptionState(paymentProvider, currentPaymentOption);
     const enabledOption = this.getAllDisabledConditionsAvailable(disabledConditions);
 
     if (!selectedOption && enabledOption) {
+      onSelect();
       updatePaymentOptionSelected(paymentProvider);
     }
   };
@@ -131,6 +132,7 @@ const optionType = PropTypes.shape({
 PaymentItem.propTypes = {
   option: optionType,
   currentPaymentOption: optionType,
+  onSelect: PropTypes.func,
   updatePaymentOptionSelected: PropTypes.func,
 };
 
@@ -141,6 +143,7 @@ PaymentItem.defaultProps = {
   currentPaymentOption: {
     paymentProvider: null,
   },
+  onSelect: () => {},
   updatePaymentOptionSelected: () => {},
 };
 

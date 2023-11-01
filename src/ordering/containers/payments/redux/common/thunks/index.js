@@ -11,6 +11,7 @@ import {
   getCartCount,
   getStoreId,
   getShippingType,
+  getPaymentInfoForCleverTap,
 } from '../../../../../redux/modules/app';
 import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
@@ -132,10 +133,12 @@ const preprocessOnlineBankings = (data = [], onlineBankModel) =>
 
 const cleverTapViewPageEvent = (eventName, getState) => {
   const cleverTapAttributes = getCleverTapAttributes(getState());
+  const paymentInfoForCleverTap = getPaymentInfoForCleverTap(getState());
   const paymentName = getPaymentName(getState());
 
   CleverTap.pushEvent(eventName, {
     ...cleverTapAttributes,
+    ...paymentInfoForCleverTap,
     'payment method': paymentName,
   });
 };
