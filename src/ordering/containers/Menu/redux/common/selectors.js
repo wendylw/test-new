@@ -371,7 +371,7 @@ export const getSelectedDateDisplayValue = createSelector(
       return '';
     }
 
-    if (expectedDeliveryTime === 'now') {
+    if (expectedDeliveryTime === TIME_SLOT.NOW) {
       return TIME_SLOT.TODAY;
     }
 
@@ -409,7 +409,7 @@ export const getSelectedTimeDisplayValue = createSelector(
       return '';
     }
 
-    if (expectedDeliveryTime === 'now') {
+    if (expectedDeliveryTime === TIME_SLOT.NOW) {
       return 'Immediate';
     }
 

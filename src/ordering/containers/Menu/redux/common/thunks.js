@@ -165,7 +165,7 @@ export const updateExpectedDeliveryDate = createAsyncThunk(
       }
 
       // Immediate delivery time
-      if (expectedDate === 'now') {
+      if (expectedDate === TIME_SLOT.NOW) {
         const isOpen = StoreUtils.isAvailableOnDemandOrderTime(
           store,
           currentDayJsObj.toDate(),
@@ -183,11 +183,13 @@ export const updateExpectedDeliveryDate = createAsyncThunk(
           })
         );
         const expectedDeliveryHour =
-          shippingType === SHIPPING_TYPES.DELIVERY ? { from: 'now', to: 'now' } : { from: 'now' };
+          shippingType === SHIPPING_TYPES.DELIVERY
+            ? { from: TIME_SLOT.NOW, to: TIME_SLOT.NOW }
+            : { from: TIME_SLOT.NOW };
 
         setSessionVariable('expectedDeliveryHour', JSON.stringify(expectedDeliveryHour));
 
-        return 'now';
+        return TIME_SLOT.NOW;
       }
 
       const expectedDateDayJsObj = StoreUtils.getBusinessDateTime(businessUTCOffset, expectedDate);
@@ -260,7 +262,7 @@ export const initExpectedDeliveryDate = createAsyncThunk(
           return null;
         }
 
-        if (from === 'now') {
+        if (from === TIME_SLOT.NOW) {
           const isAvailableOnDemandOrder = StoreUtils.isAvailableOnDemandOrderTime(
             store,
             new Date(currentTime),
@@ -271,7 +273,7 @@ export const initExpectedDeliveryDate = createAsyncThunk(
             return null;
           }
 
-          return 'now';
+          return TIME_SLOT.NOW;
         }
 
         const expectedDeliveryDateDayjsObj = StoreUtils.getBusinessDateTime(
@@ -324,7 +326,7 @@ export const initExpectedDeliveryDate = createAsyncThunk(
         !initialExpectedDeliveryTime &&
         StoreUtils.isAvailableOnDemandOrderTime(store, new Date(currentTime), businessUTCOffset, shippingType)
       ) {
-        initialExpectedDeliveryTime = 'now';
+        initialExpectedDeliveryTime = TIME_SLOT.NOW;
       }
 
       dispatch(
