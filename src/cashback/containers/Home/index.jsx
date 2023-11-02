@@ -75,8 +75,8 @@ class PageLoyalty extends React.Component {
         {isWebview() && (
           <NativeHeader
             navFunc={() => {
-              console.log('history.state.back', history.state?.back);
-              if (!history.state?.back) {
+              console.log('history.state.back', history.state?.key);
+              if (!history.state?.key) {
                 closeWebView();
               } else {
                 goBack();
