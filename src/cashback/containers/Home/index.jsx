@@ -11,8 +11,12 @@ import ReceiptList from './components/ReceiptList';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import DownloadBanner from '../../../components/DownloadBanner';
 import NativeHeader from '../../../components/NativeHeader';
-import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
-import { getCashbackHistorySummary } from '../../redux/modules/home';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getBusinessInfo,
+  getTotalCredits,
+} from '../../redux/modules/app';
 import './LoyaltyHome.scss';
 
 const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
@@ -37,8 +41,7 @@ class PageLoyalty extends React.Component {
   }
 
   renderCashback() {
-    const { history, cashbackHistorySummary } = this.props;
-    const { totalCredits } = cashbackHistorySummary || {};
+    const { history, totalCredits } = this.props;
 
     return (
       <div>
@@ -106,8 +109,7 @@ PageLoyalty.propTypes = {
   onlineStoreInfo: PropTypes.shape({
     logo: PropTypes.string,
   }),
-  // eslint-disable-next-line react/forbid-prop-types
-  cashbackHistorySummary: PropTypes.object,
+  totalCredits: PropTypes.number,
   appActions: PropTypes.shape({
     showMessageInfo: PropTypes.func,
     setCashbackMessage: PropTypes.func,
@@ -122,7 +124,7 @@ PageLoyalty.defaultProps = {
   onlineStoreInfo: {
     logo: '',
   },
-  cashbackHistorySummary: null,
+  totalCredits: 0,
   appActions: {
     showMessageInfo: () => {},
     setCashbackMessage: () => {},
@@ -135,7 +137,7 @@ export default compose(
     state => ({
       businessInfo: getBusinessInfo(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
-      cashbackHistorySummary: getCashbackHistorySummary(state),
+      totalCredits: getTotalCredits(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

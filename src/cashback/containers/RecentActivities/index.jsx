@@ -3,17 +3,17 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { toLocaleDateString } from '../../../../../utils/datetime-lib';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
-import { IconPending, IconChecked, IconEarned } from '../../../../../components/Icons';
-import HybridHeader from '../../../../../components/HybridHeader';
+import { toLocaleDateString } from '../../../utils/datetime-lib';
+import CurrencyNumber from '../../components/CurrencyNumber';
+import { IconPending, IconChecked, IconEarned } from '../../../components/Icons';
+import HybridHeader from '../../../components/HybridHeader';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getIsUserLogin,
   getUserCustomerId,
   getCashbackHistory,
-} from '../../../../redux/modules/app';
+} from '../../redux/modules/app';
 import './RecentActivities.scss';
 
 const DATE_OPTIONS = {
