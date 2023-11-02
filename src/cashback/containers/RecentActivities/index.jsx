@@ -136,7 +136,7 @@ class RecentActivities extends React.Component {
           isPage
           title={t('CashbackHistory')}
           navFunc={() => {
-            if (isWebview()) {
+            if (isWebview() && history.state.back) {
               goBack();
             } else {
               history.push({
