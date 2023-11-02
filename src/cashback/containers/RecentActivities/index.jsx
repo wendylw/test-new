@@ -4,7 +4,6 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { toLocaleDateString } from '../../../utils/datetime-lib';
-import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconPending, IconChecked, IconEarned } from '../../../components/Icons';
 import HybridHeader from '../../../components/HybridHeader';
@@ -135,7 +134,7 @@ class RecentActivities extends React.Component {
           title={t('CashbackHistory')}
           navFunc={() => {
             history.push({
-              pathname: PATH_NAME_MAPPING.CASHBACK_BASE,
+              pathname: '/',
               search: window.location.search,
             });
           }}
