@@ -98,8 +98,6 @@ function CheckoutForm({
       return;
     }
 
-    console.error('Load Stripe time out');
-
     alert(t('ConnectionIssue'), { title: t('TimeOut') });
 
     logger.error(
