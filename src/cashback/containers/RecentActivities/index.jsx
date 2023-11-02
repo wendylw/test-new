@@ -4,6 +4,9 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { toLocaleDateString } from '../../../utils/datetime-lib';
+import { isWebview } from '../../../common/utils';
+import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
+import { goBack } from '../../../utils/native-methods';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconPending, IconChecked, IconEarned } from '../../../components/Icons';
 import HybridHeader from '../../../components/HybridHeader';
@@ -87,8 +90,6 @@ class RecentActivities extends React.Component {
     const { cashbackHistory, onlineStoreInfo } = this.props;
     const { country } = onlineStoreInfo || {};
 
-    console.log(cashbackHistory);
-
     return (
       <ul className="padding-left-right-small">
         {(cashbackHistory || []).map((activity, i) => {
@@ -124,7 +125,7 @@ class RecentActivities extends React.Component {
   }
 
   render() {
-    const { t } = this.props;
+    const { t, history } = this.props;
 
     return (
       <>
@@ -134,6 +135,16 @@ class RecentActivities extends React.Component {
           contentClassName="flex-middle"
           isPage
           title={t('CashbackHistory')}
+          navFunc={() => {
+            if (isWebview()) {
+              goBack();
+            } else {
+              history.push({
+                pathname: PATH_NAME_MAPPING.CASHBACK_BASE,
+                search: window.location.search,
+              });
+            }
+          }}
         />
 
         <section className="recent-activities" data-test-id="cashback.home.recent-activities.container">

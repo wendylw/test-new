@@ -5,7 +5,7 @@ import Utils from '../../utils/utils';
 import NotFound from '../../containers/NotFound';
 
 const RecentActivities = lazy(() =>
-  Utils.attemptLoad(() => import(/* webpackChunkName: "CB_RA" */ './Home/components/RecentActivities'))
+  Utils.attemptLoad(() => import(/* webpackChunkName: "CB_RA" */ './RecentActivities'))
 );
 const Claim = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_CL" */ './Claim')));
 const Home = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_HM" */ './Home')));
