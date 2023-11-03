@@ -117,7 +117,7 @@ class RecentActivities extends React.Component {
   }
 
   render() {
-    const { t } = this.props;
+    const { t, history } = this.props;
 
     return (
       <>
