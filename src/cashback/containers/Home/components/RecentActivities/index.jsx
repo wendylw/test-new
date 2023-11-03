@@ -127,6 +127,12 @@ class RecentActivities extends React.Component {
           contentClassName="flex-middle"
           isPage
           title={t('CashbackHistory')}
+          navFunc={() => {
+            history.push({
+              pathname: '/',
+              search: window.location.search,
+            });
+          }}
         />
 
         <section className="recent-activities" data-test-id="cashback.home.recent-activities.container">
