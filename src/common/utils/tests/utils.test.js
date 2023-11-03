@@ -1,6 +1,8 @@
 import qs from 'qs';
 import Cookies from 'js-cookie';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import * as timeLib from '../../../utils/time-lib';
 import { SHIPPING_TYPES, SOURCE_TYPE, PATH_NAME_MAPPING, ORDER_SOURCE, WEB_VIEW_SOURCE } from '../constants';
 import {
   attemptLoad,
@@ -56,6 +58,8 @@ import {
   getDeliveryInfo,
   getOrderSource,
 } from '../index';
+
+dayjs.extend(utc);
 
 describe('attemptLoad', () => {
   it('should resolve with the result of the provided function', async () => {
@@ -1892,51 +1896,70 @@ describe('getFulfillDate', () => {
     expect(result).toBeNull();
   });
 
-  //TODO: dayjs testing
-  // it('should return the expected fulfill date in ISO string format', () => {
-  //   const expectedDeliveryDateFromSession = {
-  //     date: {
-  //       date: new Date('2022-01-01').toISOString(),
-  //     },
-  //     hour: {
-  //       from: '10:00',
-  //     },
-  //   };
-  //   const sessionStorageGetItemSpy = jest.spyOn(window.sessionStorage, 'getItem');
-  //   sessionStorageGetItemSpy.mockImplementation(key => {
-  //     if (key === 'expectedDeliveryDate') {
-  //       return JSON.stringify(expectedDeliveryDateFromSession.date);
-  //     } else if (key === 'expectedDeliveryHour') {
-  //       return JSON.stringify(expectedDeliveryDateFromSession.hour);
-  //     }
-  //   });
-  //   const dayjs = jest.requireActual('dayjs');
+  it('should return the expected fulfill date in ISO string format', () => {
+    const businessUTCOffset = 480;
+    const expectedDeliveryDateFromSession = {
+      date: {
+        date: '2023-11-03T08:15:52.873Z',
+      },
+      hour: {
+        from: '10:00',
+      },
+    };
+    const sessionStorageGetItemSpy = jest.spyOn(window.sessionStorage, 'getItem').mockImplementation(key => {
+      if (key === 'expectedDeliveryDate') {
+        return JSON.stringify(expectedDeliveryDateFromSession.date);
+      } else if (key === 'expectedDeliveryHour') {
+        return JSON.stringify(expectedDeliveryDateFromSession.hour);
+      }
+    });
 
-  //   jest.fn().mockReturnValue(dayjs(new Date('2022-01-01').toISOString()).utcOffset(480));
+    const result = getFulfillDate(businessUTCOffset);
+    const mockFulfillDateResult = timeLib
+      .setDateTime(
+        expectedDeliveryDateFromSession.hour.from,
+        dayjs(new Date(expectedDeliveryDateFromSession.date.date)).utcOffset(businessUTCOffset)
+      )
+      .toISOString();
 
-  //   const result = getFulfillDate(480);
+    expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryDate');
+    expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryHour');
+    expect(result).toEqual(mockFulfillDateResult);
+    sessionStorageGetItemSpy.mockRestore();
+  });
 
-  //   expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryDate');
-  //   expect(window.sessionStorage.getItem('expectedDeliveryDate')).toEqual(
-  //     JSON.stringify(expectedDeliveryDateFromSession.date)
-  //   );
-  //   expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryHour');
-  //   expect(window.sessionStorage.getItem('expectedDeliveryHour')).toEqual(
-  //     JSON.stringify(expectedDeliveryDateFromSession.hour)
-  //   );
-  //   expect(result).toEqual('2022-01-01T10:00:00.000Z');
-  //   sessionStorageGetItemSpy.mockRestore();
-  // });
+  it('should return null if an error occurs', () => {
+    const error = new Error('test error');
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+    const expectedDeliveryDateFromSession = {
+      date: {
+        date: '2023-11-03T08:15:52.873Z',
+      },
+      hour: {
+        from: '10:00',
+      },
+    };
+    const sessionStorageGetItemSpy = jest.spyOn(window.sessionStorage, 'getItem').mockImplementation(key => {
+      if (key === 'expectedDeliveryDate') {
+        return JSON.stringify(expectedDeliveryDateFromSession.date);
+      } else if (key === 'expectedDeliveryHour') {
+        return JSON.stringify(expectedDeliveryDateFromSession.hour);
+      }
+    });
+    const utcOffsetSpy = jest.spyOn(timeLib, 'setDateTime').mockImplementation(() => {
+      throw error;
+    });
 
-  // it('should return null if an error occurs', () => {
-  //   jest.spyOn(global.console, 'error').mockImplementation(() => {});
-  //   jest.spyOn(global, 'getExpectedDeliveryDateFromSession').mockImplementation(() => {
-  //     throw new Error('Unexpected error');
-  //   });
+    const result = getFulfillDate(480);
 
-  //   const result = getFulfillDate(480);
-  //   expect(result).toBeNull();
-  // });
+    expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryDate');
+    expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('expectedDeliveryHour');
+    expect(utcOffsetSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(result).toBeNull();
+    sessionStorageGetItemSpy.mockRestore();
+    utcOffsetSpy.mockRestore();
+  });
 });
 
 describe('getCountry', () => {
