@@ -68,7 +68,17 @@ class PageLoyalty extends React.Component {
 
     return (
       <>
-        {isWebview() && <NativeHeader />}
+        {isWebview() && (
+          <NativeHeader
+            navFunc={() => {
+              if (isWebview() && !history.state?.key) {
+                closeWebView();
+              } else {
+                goBack();
+              }
+            }}
+          />
+        )}
         <section className="loyalty-home__container flex flex-column" data-test-id="cashback.home.container">
           <article className="loyalty-home__article text-center margin-top-bottom-normal">
             {logo ? (
