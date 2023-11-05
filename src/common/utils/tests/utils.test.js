@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from '../../../utils/time-lib';
-import { SHIPPING_TYPES, SOURCE_TYPE, PATH_NAME_MAPPING, ORDER_SOURCE, WEB_VIEW_SOURCE } from '../constants';
+import { SHIPPING_TYPES, SOURCE_TYPE, PATH_NAME_MAPPING, ORDER_SOURCE } from '../constants';
 import {
   attemptLoad,
   setCookieVariable,
@@ -52,11 +52,14 @@ import {
   setExpectedDeliveryTime,
   getMerchantStoreUrl,
   getFulfillDate,
+  getOpeningHours,
   getCountry,
   getPhoneNumberWithCode,
   getFullAddress,
   getDeliveryInfo,
   getOrderSource,
+  getOrderSourceForCleverTap,
+  getRegistrationTouchPoint,
 } from '../index';
 
 dayjs.extend(utc);
@@ -1962,6 +1965,66 @@ describe('getFulfillDate', () => {
   });
 });
 
+describe('getOpeningHours', () => {
+  it('returns an empty array if validTimeFrom is greater than or equal to breakTimeFrom and validTimeTo is less than or equal to breakTimeTo', () => {
+    const openingHours = getOpeningHours({
+      breakTimeFrom: '12:00',
+      breakTimeTo: '14:00',
+      validTimeFrom: '13:00',
+      validTimeTo: '13:30',
+    });
+    expect(openingHours).toEqual([]);
+  });
+
+  it('returns an array with one element if breakTimeFrom and breakTimeTo are not provided or validTimeFrom is greater than or equal to breakTimeTo or validTimeTo is less than or equal to breakTimeTo and breakTimeFrom equals breakTimeTo', () => {
+    const openingHours = getOpeningHours({
+      validTimeFrom: '08:00',
+      validTimeTo: '18:00',
+    });
+    expect(openingHours).toEqual(['8:00 AM - 6:00 PM']);
+  });
+
+  it('returns an array with two elements if validTimeFrom is less than breakTimeFrom and validTimeTo is greater than breakTimeTo and breakTimeFrom does not equal breakTimeTo', () => {
+    const openingHours = getOpeningHours({
+      breakTimeFrom: '12:00',
+      breakTimeTo: '14:00',
+      validTimeFrom: '10:00',
+      validTimeTo: '16:00',
+    });
+    expect(openingHours).toEqual(['10:00 AM - 12:00 PM', '2:00 PM - 4:00 PM']);
+  });
+
+  it('returns an array with one element if validTimeFrom is greater than or equal to breakTimeFrom and validTimeFrom is less than or equal to breakTimeTo and breakTimeTo is less than validTimeTo', () => {
+    const openingHours = getOpeningHours({
+      breakTimeFrom: '12:00',
+      breakTimeTo: '14:00',
+      validTimeFrom: '13:00',
+      validTimeTo: '16:00',
+    });
+    expect(openingHours).toEqual(['2:00 PM - 4:00 PM']);
+  });
+
+  it('returns an array with one element if validTimeTo is less than or equal to breakTimeTo and validTimeTo is greater than or equal to breakTimeFrom and breakTimeFrom is greater than validTimeFrom', () => {
+    const openingHours = getOpeningHours({
+      breakTimeFrom: '12:00',
+      breakTimeTo: '14:00',
+      validTimeFrom: '10:00',
+      validTimeTo: '13:00',
+    });
+    expect(openingHours).toEqual(['10:00 AM - 12:00 PM']);
+  });
+
+  it('returns an array with one element if none of the above conditions are met', () => {
+    const openingHours = getOpeningHours({
+      breakTimeFrom: '12:00',
+      breakTimeTo: '14:00',
+      validTimeFrom: '10:00',
+      validTimeTo: '16:00',
+    });
+    expect(openingHours).toEqual(['10:00 AM - 12:00 PM', '2:00 PM - 4:00 PM']);
+  });
+});
+
 describe('getCountry', () => {
   let countries;
   let defaultCountry;
@@ -2235,35 +2298,222 @@ describe('getDeliveryInfo', () => {
 });
 
 describe('getOrderSource', () => {
-  // it('should return TNG_MINI_PROGRAM when isTNGMiniProgram is true', () => {
-  //   Object.defineProperty(window, '_isTNGMiniProgram_', {
-  //     value: true,
-  //   });
-  //   expect(getOrderSource()).toEqual(ORDER_SOURCE.TNG_MINI_PROGRAM);
-  //   delete window._isTNGMiniProgram_;
-  // });
-  // it('should return BEEP_APP when isWebview is true', () => {
-  //   jest.spyOn(window, '_isTNGMiniProgram_', )
-  //   Object.defineProperty(window, '_isTNGMiniProgram_', {
-  //     value: false,
-  //   });
-  //   Object.defineProperty(window, 'webViewSource', {
-  //     value: WEB_VIEW_SOURCE.Android,
-  //   });
-  //   expect(getOrderSource()).toEqual(ORDER_SOURCE.BEEP_APP);
-  //   delete window._isTNGMiniProgram_;
-  //   delete window.webViewSource;
-  // });
-  // it('should return BEEP_SITE when isFromBeepSite is true', () => {
-  //   jest.spyOn(utils, 'isTNGMiniProgram').mockReturnValue(false);
-  //   jest.spyOn(utils, 'isWebview').mockReturnValue(false);
-  //   jest.spyOn(utils, 'isFromBeepSite').mockReturnValue(true);
-  //   expect(getOrderSource()).toEqual(ORDER_SOURCE.BEEP_SITE);
-  // });
-  // it('should return BEEP_STORE when none of the above is true', () => {
-  //   jest.spyOn(utils, 'isTNGMiniProgram').mockReturnValue(false);
-  //   jest.spyOn(utils, 'isWebview').mockReturnValue(false);
-  //   jest.spyOn(utils, 'isFromBeepSite').mockReturnValue(false);
-  //   expect(getOrderSource()).toEqual(ORDER_SOURCE.BEEP_STORE);
-  // });
+  const originalWindow = window;
+
+  beforeEach(() => {
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: false,
+      writable: true,
+    });
+
+    Object.defineProperty(window, 'webViewSource', {
+      value: null,
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: originalWindow._isTNGMiniProgram_,
+      writable: true,
+    });
+
+    Object.defineProperty(window, 'webViewSource', {
+      value: originalWindow.webViewSource,
+      writable: true,
+    });
+  });
+
+  it('should return TNG_MINI_PROGRAM when isTNGMiniProgram returns true', () => {
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: true,
+      writable: true,
+    });
+    expect(getOrderSource()).toEqual(ORDER_SOURCE.TNG_MINI_PROGRAM);
+  });
+
+  it('should return BEEP_APP when isWebview returns true', () => {
+    Object.defineProperty(window, 'webViewSource', {
+      value: 'iOS',
+      writable: true,
+    });
+    expect(getOrderSource()).toEqual(ORDER_SOURCE.BEEP_APP);
+
+    Object.defineProperty(window, 'webViewSource', {
+      value: 'Android',
+      writable: true,
+    });
+    expect(getOrderSource()).toEqual(ORDER_SOURCE.BEEP_APP);
+  });
+
+  it('should return BEEP_SITE when isFromBeepSite returns true', () => {
+    const originalSessionStorage = window.sessionStorage;
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(),
+      },
+      writable: true,
+    });
+
+    process.env.REACT_APP_QR_SCAN_DOMAINS = 'beepit.co, beep.com';
+    window.sessionStorage.getItem.mockReturnValueOnce('https://beep.com');
+    expect(getOrderSource()).toEqual(ORDER_SOURCE.BEEP_SITE);
+
+    delete process.env.REACT_APP_QR_SCAN_DOMAINS;
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+  });
+
+  it('should return BEEP_STORE when none of the conditions are met', () => {
+    expect(getOrderSource()).toEqual(ORDER_SOURCE.BEEP_STORE);
+  });
+});
+
+describe('getOrderSourceForCleverTap', () => {
+  const originalWindow = window;
+
+  beforeEach(() => {
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: false,
+      writable: true,
+    });
+
+    Object.defineProperty(window, 'webViewSource', {
+      value: null,
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: originalWindow._isTNGMiniProgram_,
+      writable: true,
+    });
+
+    Object.defineProperty(window, 'webViewSource', {
+      value: originalWindow.webViewSource,
+      writable: true,
+    });
+  });
+
+  it('should return "TNG Mini Program" when order source is TNG_MINI_PROGRAM', () => {
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: true,
+      writable: true,
+    });
+    const result = getOrderSourceForCleverTap();
+    expect(result).toBe('TNG Mini Program');
+  });
+
+  it('should return "App" when order source is iOS', () => {
+    Object.defineProperty(window, 'webViewSource', {
+      value: 'iOS',
+      writable: true,
+    });
+    const result = getOrderSourceForCleverTap();
+    expect(result).toBe('App');
+
+    Object.defineProperty(window, 'webViewSource', {
+      value: 'Android',
+      writable: true,
+    });
+    const androidResult = getOrderSourceForCleverTap();
+    expect(androidResult).toBe('App');
+  });
+
+  it('should return "beepit.com" when order source is BEEP_SITE', () => {
+    const originalSessionStorage = window.sessionStorage;
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(),
+      },
+      writable: true,
+    });
+
+    process.env.REACT_APP_QR_SCAN_DOMAINS = 'beepit.co, beep.com';
+    window.sessionStorage.getItem.mockReturnValueOnce('https://beep.com');
+
+    const result = getOrderSourceForCleverTap();
+    expect(result).toBe('beepit.com');
+
+    delete process.env.REACT_APP_QR_SCAN_DOMAINS;
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalSessionStorage,
+      writable: true,
+    });
+  });
+
+  it('should return "Store URL" when order source is BEEP_STORE', () => {
+    const result = getOrderSourceForCleverTap();
+    expect(result).toBe('Store URL');
+  });
+});
+
+describe('getRegistrationTouchPoint', () => {
+  const originalWindow = window;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '',
+        search: '',
+      },
+      writable: true,
+    });
+
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: false,
+      writable: true,
+    });
+
+    Object.defineProperty(window, 'webViewSource', {
+      value: null,
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      value: originalWindow.location,
+      writable: true,
+    });
+
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: originalWindow._isTNGMiniProgram_,
+      writable: true,
+    });
+
+    Object.defineProperty(window, 'webViewSource', {
+      value: originalWindow.webViewSource,
+      writable: true,
+    });
+  });
+
+  it('returns CLAIM_CASHBACK when on cashback page', () => {
+    window.location.pathname = '/loyalty';
+    expect(getRegistrationTouchPoint()).toEqual('ClaimCashback');
+  });
+
+  it('returns QR_ORDER when on QR order page', () => {
+    window.location.search = '?type=dine-in';
+    expect(getRegistrationTouchPoint()).toEqual('QROrder');
+    window.location.search = '?type=takeaway';
+    expect(getRegistrationTouchPoint()).toEqual('QROrder');
+  });
+
+  it('returns TNG when on TNG mini program order history page', () => {
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: true,
+      writable: true,
+    });
+    window.location.pathname = '/order-history';
+    expect(getRegistrationTouchPoint()).toEqual('TNG');
+  });
+
+  it('returns ONLINE_ORDER when on any other page', () => {
+    window.location.pathname = '/home';
+    expect(getRegistrationTouchPoint()).toEqual('OnlineOrder');
+  });
 });
