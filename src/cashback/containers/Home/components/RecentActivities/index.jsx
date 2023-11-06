@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { WarningCircle } from 'phosphor-react';
 import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { IconPending, IconChecked, IconEarned } from '../../../../../components/Icons';
@@ -77,7 +76,7 @@ class RecentActivities extends React.Component {
       adjustment: {
         text: t('Adjustment'),
         // eslint-disable-next-line react/jsx-props-no-spreading
-        icon: <WarningCircle className="recent-activities__adjustment-icon" size={30} weight="fill" />,
+        icon: <IconEarned {...props} />,
       },
     };
 
@@ -95,7 +94,7 @@ class RecentActivities extends React.Component {
           const eventDateTime = new Date(Number.parseInt(eventTime, 10));
           const type = this.getType(eventType, {
             className: `recent-activities__list-icon icon  ${
-              eventType === 'earned' ? 'icon__primary' : 'icon__default'
+              eventType === 'earned' || eventType === 'adjustment' ? 'icon__primary' : 'icon__default'
             }`,
           });
 
