@@ -10,6 +10,7 @@ import {
   getBusiness,
   getEnablePayLater,
   getStoreInfoForCleverTap,
+  getPaymentInfoForCleverTap,
   getHasSelectedStore,
   getIsPickUpType,
   getFoodTagsForCleverTap,
@@ -46,6 +47,7 @@ import {
   cleanUpSelectedProductItemInfoIfNeeded,
 } from '../common/thunks';
 import { getHasSelectedExpectedDeliveryTime, getShouldShowProductDetailDrawer } from '../common/selectors';
+import { isVariationOptionAvailable } from '../../utils';
 import logger from '../../../../../utils/monitoring/logger';
 import ApiFetchError from '../../../../../utils/api/api-fetch-error';
 
@@ -82,9 +84,18 @@ const getDefaultSelectedOptions = product => {
       const selectedOptions = {};
 
       variations.forEach(variation => {
-        // If variation do not track inventory, default option should be first option
-        // select the first option from single variations
-        const defaultSelectedOption = variation.optionValues[0];
+        // WB-4385: If the variation is not Track Inventory, we should set the default option to the first available option.
+        // WB-6451: If not any available option, set the first option as default.
+        const defaultSelectedOption =
+          variation.optionValues.find(option =>
+            isVariationOptionAvailable({
+              variationType: variation.variationType,
+              variationShareModifier: variation.isModifier,
+              optionValue: option.value,
+              optionMarkedSoldOut: option.markedSoldOut,
+              productChildrenMap,
+            })
+          ) ?? variation.optionValues[0];
 
         selectedOptions[variation.id] = {
           optionId: defaultSelectedOption.id,
@@ -301,11 +312,13 @@ export const productItemClicked = createAsyncThunk(
     const allCategories = getAllCategories(state);
     const product = _get(allProducts, productId, null);
     const category = _get(allCategories, categoryId, null);
+    const paymentInfoForCleverTap = getPaymentInfoForCleverTap(state);
     const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
     const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
 
     Clevertap.pushEvent('Menu Page - Click product', {
       ...storeInfoForCleverTap,
+      ...paymentInfoForCleverTap,
       ...productCleverTapAttributes,
     });
 
@@ -420,6 +433,7 @@ export const addToCart = createAsyncThunk(
     const isTakeaway = getIsTakeawayProduct(state);
     const product = getSelectedProduct(getState());
     const category = getSelectedCategory(getState());
+    const paymentInfoForCleverTap = getPaymentInfoForCleverTap(getState());
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
     const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
     const foodTagsForCleverTap = getFoodTagsForCleverTap(getState());
@@ -431,6 +445,7 @@ export const addToCart = createAsyncThunk(
 
       Clevertap.pushEvent('Menu Page - Add to Cart', {
         ...storeInfoForCleverTap,
+        ...paymentInfoForCleverTap,
         ...productCleverTapAttributes,
         foodTags: foodTagsForCleverTap,
       });

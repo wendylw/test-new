@@ -118,7 +118,7 @@ const StoreReview = () => {
         <div className="tw-flex tw-justify-center tw-leading-normal">
           {storeHasReviewed ? t('AlreadyRated') : t('HearAboutExperience')}
         </div>
-        <div className="tw-flex tw-justify-center tw-leading-normal tw-text-lg tw-font-bold tw-mb-8 sm:tw-mb-8px">
+        <div className="tw-flex tw-justify-center tw-leading-normal tw-text-lg tw-text-center tw-font-bold tw-mb-8 sm:tw-mb-8px tw-mx-16 sm:tw-mx-16px">
           {storeName}
         </div>
         <div className="tw-flex tw-justify-center">
