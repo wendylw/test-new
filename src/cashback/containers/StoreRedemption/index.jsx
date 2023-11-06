@@ -169,7 +169,13 @@ const StoreRedemption = () => {
             >
               <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
             </a>
-            <Button type="text" theme="ghost" onClick={handleGotoTNGApp} data-test-id="tng-app-button">
+            <Button
+              className="tw-inline-flex"
+              type="text"
+              theme="ghost"
+              onClick={handleGotoTNGApp}
+              data-test-id="tng-app-button"
+            >
               <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
             </Button>
           </div>
