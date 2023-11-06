@@ -128,10 +128,7 @@ class RecentActivities extends React.Component {
           isPage
           title={t('CashbackHistory')}
           navFunc={() => {
-            history.push({
-              pathname: '/',
-              search: window.location.search,
-            });
+            history.goBack();
           }}
         />
 

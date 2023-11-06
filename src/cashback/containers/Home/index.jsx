@@ -72,11 +72,7 @@ class PageLoyalty extends React.Component {
         {isWebview() && (
           <NativeHeader
             navFunc={() => {
-              if (isWebview() && !history.state?.key) {
-                closeWebView();
-              } else {
-                goBack();
-              }
+              closeWebView();
             }}
           />
         )}
