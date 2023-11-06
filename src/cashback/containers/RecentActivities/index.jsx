@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import { WarningCircle } from 'phosphor-react';
 import { toLocaleDateString } from '../../../utils/datetime-lib';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconPending, IconChecked, IconEarned } from '../../../components/Icons';
@@ -77,6 +78,11 @@ class RecentActivities extends React.Component {
         text: t('YouEarned'),
         // eslint-disable-next-line react/jsx-props-no-spreading
         icon: <IconEarned {...props} />,
+      },
+      adjustment: {
+        text: t('Adjustment'),
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        icon: <WarningCircle className="recent-activities__adjustment-icon" size={30} weight="fill" />,
       },
     };
 
