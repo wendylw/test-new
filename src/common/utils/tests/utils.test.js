@@ -3,7 +3,8 @@ import Cookies from 'js-cookie';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from '../../../utils/time-lib';
-import { SHIPPING_TYPES, SOURCE_TYPE, PATH_NAME_MAPPING, ORDER_SOURCE } from '../constants';
+// import * as utils from '../index';
+import { SHIPPING_TYPES, SOURCE_TYPE, PATH_NAME_MAPPING, ORDER_SOURCE, CLIENTS } from '../constants';
 import {
   attemptLoad,
   setCookieVariable,
@@ -16,7 +17,6 @@ import {
   setLocalStorageVariable,
   removeLocalStorageVariable,
   isURL,
-  getUUID,
   isValidUrl,
   checkEmailIsValid,
   getFileExtension,
@@ -25,6 +25,19 @@ import {
   getQueryString,
   getFilteredQueryString,
   getQueryObject,
+  //
+  isSafari,
+  isMobile,
+  isIOSWebview,
+  isAndroidWebview,
+  isWebview,
+  isTNGMiniProgram,
+  getClient,
+  judgeClient,
+  submitForm,
+  isJSON,
+  //
+  getUUID,
   getBeepAppVersion,
   notHomeOrLocationPath,
   getBeepSubdomain,
@@ -60,6 +73,7 @@ import {
   getOrderSource,
   getOrderSourceForCleverTap,
   getRegistrationTouchPoint,
+  getRegistrationSource,
 } from '../index';
 
 dayjs.extend(utc);
@@ -682,6 +696,304 @@ describe('getQueryObject', () => {
     const history = { location: { search: '?foo=bar&test=baz' } };
     const paramName = 'test';
     expect(getQueryObject(history, paramName)).toEqual('baz');
+  });
+});
+
+// describe('isSafari', () => {
+//   const originalUserAgent = navigator.userAgent;
+
+//   beforeEach(() => {
+//     Object.defineProperty(navigator, 'userAgent', {
+//       value:
+//         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
+//       writable: true,
+//     });
+//   });
+
+//   afterEach(() => {
+//     Object.defineProperty(navigator, 'userAgent', {
+//       value: originalUserAgent,
+//       writable: true,
+//     });
+//   });
+
+//   it('should return true if user agent is Safari', () => {
+//     console.log(navigator.userAgent);
+//     expect(isSafari()).toBe(true);
+//   });
+// });
+
+describe('isIOSWebview', () => {
+  const originalWebViewSource = window.webViewSource;
+
+  afterEach(() => {
+    window.webViewSource = originalWebViewSource;
+  });
+
+  it('returns true when window.webViewSource is iOS', () => {
+    window.webViewSource = 'iOS';
+    expect(isIOSWebview()).toBe(true);
+  });
+
+  it('returns false when window.webViewSource is not iOS', () => {
+    window.webViewSource = 'Android';
+    expect(isIOSWebview()).toBe(false);
+  });
+});
+
+describe('isAndroidWebview', () => {
+  const originalWebViewSource = window.webViewSource;
+
+  afterEach(() => {
+    window.webViewSource = originalWebViewSource;
+  });
+
+  it('returns true when window.webViewSource is Android', () => {
+    window.webViewSource = 'Android';
+    expect(isAndroidWebview()).toBe(true);
+  });
+
+  it('returns false when window.webViewSource is not Android', () => {
+    window.webViewSource = 'iOS';
+    expect(isAndroidWebview()).toBe(false);
+  });
+});
+
+describe('isWebview', () => {
+  const originalWebViewSource = window.webViewSource;
+
+  afterEach(() => {
+    window.webViewSource = originalWebViewSource;
+  });
+
+  it('should return true for Android webview', () => {
+    window.webViewSource = 'Android';
+
+    // Act
+    const result = isWebview();
+
+    // Assert
+    expect(result).toBe(true);
+  });
+
+  it('should return true for iOS webview', () => {
+    window.webViewSource = 'iOS';
+
+    // Act
+    const result = isWebview();
+
+    // Assert
+    expect(result).toBe(true);
+  });
+
+  it('should return false for regular browser', () => {
+    // Act
+    const result = isWebview();
+
+    // Assert
+    expect(result).toBe(false);
+  });
+});
+
+describe('isTNGMiniProgram', () => {
+  const originalIsTNGMiniProgram = window._isTNGMiniProgram_;
+
+  afterEach(() => {
+    window._isTNGMiniProgram_ = originalIsTNGMiniProgram;
+  });
+
+  it('should return the value of window._isTNGMiniProgram_', () => {
+    window._isTNGMiniProgram_ = true;
+    expect(isTNGMiniProgram()).toBe(true);
+
+    window._isTNGMiniProgram_ = false;
+    expect(isTNGMiniProgram()).toBe(false);
+  });
+});
+
+describe('getClient', () => {
+  const originalTNGMiniProgram = window._isTNGMiniProgram_;
+
+  beforeEach(() => {
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: '',
+      writable: true,
+    });
+
+    Object.defineProperty(window, 'webViewSource', {
+      value: '',
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: originalTNGMiniProgram,
+      writable: true,
+    });
+
+    Object.defineProperty(window, 'webViewSource', {
+      value: '',
+      writable: true,
+    });
+  });
+
+  it('should return TNG_MINI_PROGRAM client when isTNGMiniProgram is true', () => {
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: true,
+      writable: true,
+    });
+    expect(getClient()).toEqual(CLIENTS.TNG_MINI_PROGRAM);
+  });
+
+  it('should return ANDROID client when isAndroidWebview is true', () => {
+    Object.defineProperty(window, 'webViewSource', {
+      value: 'Android',
+      writable: true,
+    });
+    expect(getClient()).toEqual(CLIENTS.ANDROID);
+  });
+
+  it('should return IOS client when isIOSWebview is true', () => {
+    Object.defineProperty(window, 'webViewSource', {
+      value: 'iOS',
+      writable: true,
+    });
+    expect(getClient()).toEqual(CLIENTS.IOS);
+  });
+
+  it('should return WEB client when none of the conditions are met', () => {
+    expect(getClient()).toEqual(CLIENTS.WEB);
+  });
+});
+
+describe('judgeClient', () => {
+  const originalUserAgent = navigator.userAgent;
+
+  beforeEach(() => {
+    Object.defineProperty(navigator, 'userAgent', {
+      value: '',
+      writable: true,
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(navigator, 'userAgent', {
+      value: originalUserAgent,
+      writable: true,
+    });
+  });
+
+  it("should return 'iOS' when user agent is an iOS device", () => {
+    Object.defineProperty(navigator, 'userAgent', {
+      value:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+      writable: true,
+    });
+    expect(judgeClient()).toEqual('iOS');
+  });
+
+  it("should return 'Android' when user agent is an Android device", () => {
+    Object.defineProperty(navigator, 'userAgent', {
+      value:
+        'Mozilla/5.0 (Linux; Android 11; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Mobile Safari/537.36',
+      writable: true,
+    });
+    expect(judgeClient()).toEqual('Android');
+  });
+
+  it("should return 'Mac' when user agent is a Mac device", () => {
+    Object.defineProperty(navigator, 'userAgent', {
+      value:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36',
+      writable: true,
+    });
+    expect(judgeClient()).toEqual('Mac');
+  });
+
+  it("should return 'PC' when user agent is not recognized", () => {
+    Object.defineProperty(navigator, 'userAgent', {
+      value:
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36',
+      writable: true,
+    });
+    expect(judgeClient()).toEqual('PC');
+  });
+});
+
+// describe('submitForm', () => {
+//   const action = 'https://example.com';
+//   const data = {
+//     name: 'John',
+//     age: 30,
+//   };
+
+//   beforeEach(() => {
+//     jest.spyOn(document.body, 'appendChild');
+//     jest.spyOn(document.body, 'removeChild');
+//   });
+
+//   afterEach(() => {
+//     jest.restoreAllMocks();
+//   });
+
+//   it('should create a form with the correct action and method', () => {
+//     submitForm(action, data);
+
+//     const form = document.body.querySelector('form');
+//     expect(form).not.toBeNull();
+//     expect(form.action).toBe(action);
+//     expect(form.method).toBe('POST');
+//   });
+
+//   it('should create a hidden input for each key-value pair in the data object', () => {
+//     submitForm(action, data);
+
+//     const form = document.body.querySelector('form');
+//     expect(form).not.toBeNull();
+
+//     Object.keys(data).forEach(key => {
+//       const input = form.querySelector(`input[name="${key}"]`);
+//       expect(input).not.toBeNull();
+//       expect(input.value).toBe(data[key].toString());
+//       expect(input.type).toBe('hidden');
+//     });
+//   });
+
+//   it('should append the form to the document body and submit it', () => {
+//     submitForm(action, data);
+
+//     expect(document.body.appendChild).toHaveBeenCalledTimes(1);
+//     expect(document.body.removeChild).toHaveBeenCalledTimes(1);
+
+//     const form = document.body.querySelector('form');
+//     expect(form).not.toBeNull();
+
+//     expect(form.style.height).toBe('0');
+//     expect(form.style.width).toBe('0');
+//     expect(form.style.overflow).toBe('hidden');
+//     expect(form.style.visibility).toBe('hidden');
+
+//     expect(form.submit).toHaveBeenCalledTimes(1);
+//   });
+// });
+
+describe('isJSON', () => {
+  it('should return true for valid JSON', () => {
+    expect(isJSON('{"name": "John", "age": 30, "city": "New York"}')).toBe(true);
+  });
+
+  it('should return false for invalid JSON', () => {
+    expect(isJSON("{name: 'John', age: 30, city: 'New York'}")).toBe(false);
+  });
+
+  it('should return true for JSON.parese parseable input', () => {
+    expect(isJSON('123')).toBe(true);
+    expect(isJSON(123)).toBe(true);
+  });
+
+  it('should return false for Non-JSON.parese parseable input', () => {
+    expect(isJSON('test')).toBe(false);
   });
 });
 
@@ -2517,3 +2829,69 @@ describe('getRegistrationTouchPoint', () => {
     expect(getRegistrationTouchPoint()).toEqual('OnlineOrder');
   });
 });
+
+// describe('getRegistrationSource', () => {
+//   const originalGetRegistrationTouchPoint = getRegistrationTouchPoint;
+//   const originalIsWebview = isWebview;
+//   const originalIsSharedLink = isSharedLink;
+//   const originalIsTNGMiniProgram = isTNGMiniProgram;
+//   const originalIsFromBeepSite = isFromBeepSite;
+
+//   afterEach(() => {
+//     getRegistrationTouchPoint = originalGetRegistrationTouchPoint;
+//     isWebview = originalIsWebview;
+//     isSharedLink = originalIsSharedLink;
+//     isTNGMiniProgram = originalIsTNGMiniProgram;
+//     isFromBeepSite = originalIsFromBeepSite;
+//   });
+
+//   it('returns REGISTRATION_SOURCE.BEEP_APP when registrationTouchPoint is CLAIM_CASHBACK and isWebview is true', () => {
+//     getRegistrationTouchPoint = jest.fn().mockReturnValue(REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK);
+//     isWebview = jest.fn().mockReturnValue(true);
+
+//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.BEEP_APP);
+//   });
+
+//   it('returns REGISTRATION_SOURCE.RECEIPT when registrationTouchPoint is CLAIM_CASHBACK and isWebview is false', () => {
+//     getRegistrationTouchPoint = jest.fn().mockReturnValue(REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK);
+//     isWebview = jest.fn().mockReturnValue(false);
+
+//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.RECEIPT);
+//   });
+
+//   it('returns REGISTRATION_SOURCE.SHARED_LINK when registrationTouchPoint is QR_ORDER and isSharedLink is true', () => {
+//     getRegistrationTouchPoint = jest.fn().mockReturnValue(REGISTRATION_TOUCH_POINT.QR_ORDER);
+//     isSharedLink = jest.fn().mockReturnValue(true);
+
+//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.SHARED_LINK);
+//   });
+
+//   it('returns REGISTRATION_SOURCE.SHARED_LINK when registrationTouchPoint is ONLINE_ORDER and isSharedLink is true', () => {
+//     getRegistrationTouchPoint = jest.fn().mockReturnValue(REGISTRATION_TOUCH_POINT.ONLINE_ORDER);
+//     isSharedLink = jest.fn().mockReturnValue(true);
+
+//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.SHARED_LINK);
+//   });
+
+//   it('returns REGISTRATION_SOURCE.TNGD_MINI_PROGRAM when isTNGMiniProgram is true', () => {
+//     isTNGMiniProgram = jest.fn().mockReturnValue(true);
+
+//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.TNGD_MINI_PROGRAM);
+//   });
+
+//   it('returns REGISTRATION_SOURCE.BEEP_APP when isWebview is true', () => {
+//     isWebview = jest.fn().mockReturnValue(true);
+
+//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.BEEP_APP);
+//   });
+
+//   it('returns REGISTRATION_SOURCE.BEEP_SITE when isFromBeepSite is true', () => {
+//     isFromBeepSite = jest.fn().mockReturnValue(true);
+
+//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.BEEP_SITE);
+//   });
+
+//   it('returns REGISTRATION_SOURCE.BEEP_STORE when none of the conditions are met', () => {
+//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.BEEP_STORE);
+//   });
+// });
