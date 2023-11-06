@@ -1678,6 +1678,20 @@ export const getStoreInfoForCleverTap = state => {
   return StoreUtils.getStoreInfoForCleverTap({ business: businessName, allBusinessInfo, cartSummary });
 };
 
+// This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
+export const getPaymentInfoForCleverTap = state => {
+  const enablePayLater = getEnablePayLater(state);
+  const isDineType = getIsDineType(state);
+
+  const res = {};
+
+  if (isDineType) {
+    res['dine-in payment flow'] = enablePayLater ? 'pay later' : 'pay first';
+  }
+
+  return res;
+};
+
 export const getIsCartStatusRejected = createSelector(getCartStatus, status => status === API_REQUEST_STATUS.REJECTED);
 
 export const getUserEmail = createSelector(getUser, userInfo => _get(userInfo, 'profile.email', ''));

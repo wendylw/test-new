@@ -73,6 +73,11 @@ class RecentActivities extends React.Component {
         // eslint-disable-next-line react/jsx-props-no-spreading
         icon: <IconEarned {...props} />,
       },
+      adjustment: {
+        text: t('Adjustment'),
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        icon: <IconEarned {...props} />,
+      },
     };
 
     return TypesMap[type];
@@ -89,7 +94,7 @@ class RecentActivities extends React.Component {
           const eventDateTime = new Date(Number.parseInt(eventTime, 10));
           const type = this.getType(eventType, {
             className: `recent-activities__list-icon icon  ${
-              eventType === 'earned' ? 'icon__primary' : 'icon__default'
+              eventType === 'earned' || eventType === 'adjustment' ? 'icon__primary' : 'icon__default'
             }`,
           });
 

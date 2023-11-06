@@ -680,10 +680,6 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   const { data } = responseGql || {};
   const { onlineStoreInfo: info } = data || {};
 
-  if (!(responseGql && info)) {
-    return state;
-  }
-
   switch (type) {
     case types.FETCH_ONLINE_STORE_INFO_REQUEST:
       return { ...state, isFetching: true, loadOnlineStoreInfoStatus: API_REQUEST_STATUS.PENDING };
