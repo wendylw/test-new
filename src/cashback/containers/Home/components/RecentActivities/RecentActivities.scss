@@ -1,4 +1,4 @@
-@import "src/Variables";
+@import "../../../../../Variables";
 
 .recent-activities {
   max-height: 100%;
@@ -18,5 +18,9 @@
 
   &__time {
     color: $gray-2;
+  }
+
+  &__adjustment-icon {
+    fill: $theme-color;
   }
 }
