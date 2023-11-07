@@ -63,7 +63,7 @@ class PayLater extends Component {
       await this.handleSubmitCart();
     }
 
-    await queryCartAndStatus();
+    await queryCartAndStatus('cart');
 
     window.scrollTo(0, 0);
     this.setCartContainerHeight();

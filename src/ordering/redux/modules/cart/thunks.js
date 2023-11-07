@@ -7,7 +7,7 @@ import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { alert } from '../../../../common/feedback';
 import { getBusinessUTCOffset } from '../app';
 import { CART_SUBMISSION_STATUS } from './constants';
-import { getCartVersion, getCartSource, getCartItems } from './selectors';
+import { getCartVersion, getCartSource, getCartItems, getIsPollingCart } from './selectors';
 import { actions as cartActionCreators } from '.';
 import Poller from '../../../../common/utils/poller';
 import {
@@ -84,25 +84,47 @@ export const loadCartStatus = createAsyncThunk(
   }
 );
 
-export const queryCartAndStatus = () => async dispatch => {
+const CART_STATUS_POLLERS = {
+  menu: null,
+  cart: null,
+};
+export const queryCartAndStatus = pollerKey => async (dispatch, getState) => {
+  const pollerKeys = Object.keys(CART_STATUS_POLLERS);
+
+  pollerKeys.forEach(key => {
+    if (CART_STATUS_POLLERS[key]) {
+      CART_STATUS_POLLERS[key].stop();
+      CART_STATUS_POLLERS[key] = null;
+    }
+  });
+
+  await dispatch(cartActionCreators.isPollingCartUpdated(true));
   logger.log('Ordering_Cart_PollCartStatus', { action: 'start' });
+
   try {
-    const queryCartStatus = () => {
-      queryCartAndStatus.timer = setTimeout(async () => {
-        await dispatch(loadCartStatus());
+    const newCartStatusPoller = new Poller({
+      fetchData: async () => {
+        const isPollingCart = getIsPollingCart(getState());
 
-        // Loop has been stopped
-        if (!queryCartAndStatus.timer) {
-          logger.log('Ordering_Cart_PollCartStatus', { action: 'quit-silently' });
-          return;
+        if (!isPollingCart) {
+          newCartStatusPoller.stop();
+
+          logger.log('Ordering_Cart_PollCartStatus', { action: 'stop' });
+        } else {
+          await dispatch(loadCartStatus());
         }
+      },
+      onError: async error => {
+        newCartStatusPoller.stop();
+        dispatch(cartActionCreators.isPollingCartUpdated(false));
+        logger.log('Ordering_Cart_PollCartStatus', { action: 'stop', error: error?.message });
+      },
+      clearTimeoutTimerOnStop: true,
+      interval: CART_VERSION_AND_STATUS_INTERVAL,
+    });
 
-        queryCartStatus();
-      }, CART_VERSION_AND_STATUS_INTERVAL);
-    };
-
-    await dispatch(loadCart());
-    queryCartStatus();
+    CART_STATUS_POLLERS[pollerKey] = newCartStatusPoller;
+    CART_STATUS_POLLERS[pollerKey].start();
   } catch (error) {
     logger.error('Ordering_Cart_QueryCartAndStatusFailed', { message: error?.message });
 
@@ -110,10 +132,9 @@ export const queryCartAndStatus = () => async dispatch => {
   }
 };
 
-export const clearQueryCartStatus = () => () => {
-  clearTimeout(queryCartAndStatus.timer);
+export const clearQueryCartStatus = () => async dispatch => {
+  await dispatch(cartActionCreators.isPollingCartUpdated(false));
   logger.log('Ordering_Cart_PollCartStatus', { action: 'stop' });
-  queryCartAndStatus.timer = null;
 };
 
 /**
