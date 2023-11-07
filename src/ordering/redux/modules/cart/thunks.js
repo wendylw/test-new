@@ -84,6 +84,7 @@ export const loadCartStatus = createAsyncThunk(
   }
 );
 
+// Diff page should use diff poller, otherwise can not stop poller correctly
 const CART_STATUS_POLLERS = {
   menu: null,
   cart: null,
