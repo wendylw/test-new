@@ -161,22 +161,22 @@ const StoreRedemption = () => {
             role="button"
           >
             <a
-              className="tw-inline-flex"
+              className="tw-inline-flex tw-m-8 sm:tw-m-8px"
               rel="noreferrer"
               href={process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}
               target={getIsDesktopClients(client) ? '_blank' : ''}
               role="button"
             >
-              <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
+              <img src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
             </a>
             <Button
-              className="tw-inline-flex"
+              className="tw-inline-flex tw-m-8 sm:tw-m-8px"
               type="text"
               theme="ghost"
               onClick={handleGotoTNGApp}
               data-test-id="tng-app-button"
             >
-              <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+              <img src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
             </Button>
           </div>
         </section>
