@@ -4,7 +4,14 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from '../../../utils/time-lib';
 // import * as utils from '../index';
-import { SHIPPING_TYPES, SOURCE_TYPE, PATH_NAME_MAPPING, ORDER_SOURCE, CLIENTS } from '../constants';
+import {
+  SHIPPING_TYPES,
+  SOURCE_TYPE,
+  PATH_NAME_MAPPING,
+  ORDER_SOURCE,
+  CLIENTS,
+  REGISTRATION_TOUCH_POINT,
+} from '../constants';
 import {
   attemptLoad,
   setCookieVariable,
@@ -1493,8 +1500,8 @@ describe('isFromBeepSite', () => {
   });
 
   it('should return true when the source url is from beep site', () => {
-    process.env.REACT_APP_QR_SCAN_DOMAINS = 'beepit.co, beep.com';
-    window.sessionStorage.getItem.mockReturnValueOnce('https://beep.com');
+    process.env.REACT_APP_QR_SCAN_DOMAINS = 'beepit.co, beepit.com';
+    window.sessionStorage.getItem.mockReturnValueOnce('https://beepit.com');
     expect(isFromBeepSite()).toBe(true);
   });
 
@@ -1504,14 +1511,14 @@ describe('isFromBeepSite', () => {
     Object.defineProperty(window, 'sessionStorage', {
       value: {
         getItem: jest.fn(() => {
-          return 'https://beep.com';
+          return 'https://beepit.com';
         }),
       },
       writable: true,
     });
     Object.defineProperty(global, 'URL', {
       value: {
-        hostname: 'beep.com',
+        hostname: 'beepit.com',
         toString: jest.fn(() => {
           throw error;
         }),
@@ -2804,14 +2811,32 @@ describe('getRegistrationTouchPoint', () => {
   });
 
   it('returns CLAIM_CASHBACK when on cashback page', () => {
-    window.location.pathname = '/loyalty';
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/loyalty',
+      },
+      writable: true,
+    });
     expect(getRegistrationTouchPoint()).toEqual('ClaimCashback');
   });
 
-  it('returns QR_ORDER when on QR order page', () => {
-    window.location.search = '?type=dine-in';
+  it('returns QROrder when on QR order page', () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/ordering',
+        search: '?type=dine-in',
+      },
+      writable: true,
+    });
     expect(getRegistrationTouchPoint()).toEqual('QROrder');
-    window.location.search = '?type=takeaway';
+
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/ordering',
+        search: '?type=takeaway',
+      },
+      writable: true,
+    });
     expect(getRegistrationTouchPoint()).toEqual('QROrder');
   });
 
@@ -2820,78 +2845,214 @@ describe('getRegistrationTouchPoint', () => {
       value: true,
       writable: true,
     });
-    window.location.pathname = '/order-history';
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/order-history',
+      },
+      writable: true,
+    });
     expect(getRegistrationTouchPoint()).toEqual('TNG');
   });
 
   it('returns ONLINE_ORDER when on any other page', () => {
-    window.location.pathname = '/home';
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/home',
+      },
+      writable: true,
+    });
     expect(getRegistrationTouchPoint()).toEqual('OnlineOrder');
   });
 });
 
-// describe('getRegistrationSource', () => {
-//   const originalGetRegistrationTouchPoint = getRegistrationTouchPoint;
-//   const originalIsWebview = isWebview;
-//   const originalIsSharedLink = isSharedLink;
-//   const originalIsTNGMiniProgram = isTNGMiniProgram;
-//   const originalIsFromBeepSite = isFromBeepSite;
+describe('getRegistrationSource', () => {
+  const originalWindow = window;
 
-//   afterEach(() => {
-//     getRegistrationTouchPoint = originalGetRegistrationTouchPoint;
-//     isWebview = originalIsWebview;
-//     isSharedLink = originalIsSharedLink;
-//     isTNGMiniProgram = originalIsTNGMiniProgram;
-//     isFromBeepSite = originalIsFromBeepSite;
-//   });
+  beforeEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: {
+        getItem: jest.fn(),
+      },
+      writable: true,
+    });
 
-//   it('returns REGISTRATION_SOURCE.BEEP_APP when registrationTouchPoint is CLAIM_CASHBACK and isWebview is true', () => {
-//     getRegistrationTouchPoint = jest.fn().mockReturnValue(REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK);
-//     isWebview = jest.fn().mockReturnValue(true);
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '',
+        search: '',
+      },
+      writable: true,
+    });
 
-//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.BEEP_APP);
-//   });
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: false,
+      writable: true,
+    });
 
-//   it('returns REGISTRATION_SOURCE.RECEIPT when registrationTouchPoint is CLAIM_CASHBACK and isWebview is false', () => {
-//     getRegistrationTouchPoint = jest.fn().mockReturnValue(REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK);
-//     isWebview = jest.fn().mockReturnValue(false);
+    Object.defineProperty(window, 'webViewSource', {
+      value: null,
+      writable: true,
+    });
+  });
 
-//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.RECEIPT);
-//   });
+  afterEach(() => {
+    Object.defineProperty(window, 'sessionStorage', {
+      value: originalWindow.sessionStorage,
+      writable: true,
+    });
+    Object.defineProperty(window, 'location', {
+      value: originalWindow.location,
+      writable: true,
+    });
 
-//   it('returns REGISTRATION_SOURCE.SHARED_LINK when registrationTouchPoint is QR_ORDER and isSharedLink is true', () => {
-//     getRegistrationTouchPoint = jest.fn().mockReturnValue(REGISTRATION_TOUCH_POINT.QR_ORDER);
-//     isSharedLink = jest.fn().mockReturnValue(true);
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: originalWindow._isTNGMiniProgram_,
+      writable: true,
+    });
 
-//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.SHARED_LINK);
-//   });
+    Object.defineProperty(window, 'webViewSource', {
+      value: originalWindow.webViewSource,
+      writable: true,
+    });
+  });
 
-//   it('returns REGISTRATION_SOURCE.SHARED_LINK when registrationTouchPoint is ONLINE_ORDER and isSharedLink is true', () => {
-//     getRegistrationTouchPoint = jest.fn().mockReturnValue(REGISTRATION_TOUCH_POINT.ONLINE_ORDER);
-//     isSharedLink = jest.fn().mockReturnValue(true);
+  it('returns `BeepApp` when registrationTouchPoint is `ClaimCashback` and isWebview is true', () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/loyalty',
+      },
+      writable: true,
+    });
 
-//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.SHARED_LINK);
-//   });
+    Object.defineProperty(window, 'webViewSource', {
+      value: 'iOS',
+      writable: true,
+    });
 
-//   it('returns REGISTRATION_SOURCE.TNGD_MINI_PROGRAM when isTNGMiniProgram is true', () => {
-//     isTNGMiniProgram = jest.fn().mockReturnValue(true);
+    expect(getRegistrationSource()).toEqual('BeepApp');
 
-//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.TNGD_MINI_PROGRAM);
-//   });
+    Object.defineProperty(window, 'webViewSource', {
+      value: 'Android',
+      writable: true,
+    });
 
-//   it('returns REGISTRATION_SOURCE.BEEP_APP when isWebview is true', () => {
-//     isWebview = jest.fn().mockReturnValue(true);
+    expect(getRegistrationSource()).toEqual('BeepApp');
+  });
 
-//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.BEEP_APP);
-//   });
+  it('returns `Receipt` when registrationTouchPoint is `ClaimCashback` and isWebview is false', () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/loyalty',
+      },
+      writable: true,
+    });
 
-//   it('returns REGISTRATION_SOURCE.BEEP_SITE when isFromBeepSite is true', () => {
-//     isFromBeepSite = jest.fn().mockReturnValue(true);
+    expect(getRegistrationSource()).toEqual('Receipt');
+  });
 
-//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.BEEP_SITE);
-//   });
+  it('returns `SharedLink` when registrationTouchPoint is `QROrder` and isSharedLink is true', () => {
+    const sessionStorageGetItemSpy = jest.spyOn(window.sessionStorage, 'getItem').mockImplementation(key => {
+      if (key === 'BeepOrderingSource') {
+        return 'SharedLink';
+      }
+    });
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/ordering',
+        search: '?type=dine-in',
+      },
+      writable: true,
+    });
+    expect(getRegistrationSource()).toEqual('SharedLink');
 
-//   it('returns REGISTRATION_SOURCE.BEEP_STORE when none of the conditions are met', () => {
-//     expect(getRegistrationSource()).toEqual(REGISTRATION_SOURCE.BEEP_STORE);
-//   });
-// });
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/ordering',
+        search: '?type=takeaway',
+      },
+      writable: true,
+    });
+
+    const result = getRegistrationSource();
+
+    expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('BeepOrderingSource');
+    expect(result).toEqual('SharedLink');
+
+    sessionStorageGetItemSpy.mockRestore();
+  });
+
+  it('returns `SharedLink` when registrationTouchPoint is `OnlineOrder` and isSharedLink is true', () => {
+    const sessionStorageGetItemSpy = jest.spyOn(window.sessionStorage, 'getItem').mockImplementation(key => {
+      if (key === 'BeepOrderingSource') {
+        return 'SharedLink';
+      }
+    });
+
+    const result = getRegistrationSource();
+
+    expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('BeepOrderingSource');
+    expect(result).toEqual('SharedLink');
+
+    sessionStorageGetItemSpy.mockRestore();
+  });
+
+  it('returns `BeepTngMiniProgram` when isTNGMiniProgram is true', () => {
+    Object.defineProperty(window, '_isTNGMiniProgram_', {
+      value: true,
+      writable: true,
+    });
+
+    expect(getRegistrationSource()).toEqual('BeepTngMiniProgram');
+  });
+
+  it('returns `BeepApp` when isWebview is true', () => {
+    Object.defineProperty(window, 'webViewSource', {
+      value: 'iOS',
+      writable: true,
+    });
+    const iOSResult = getRegistrationSource();
+
+    expect(iOSResult).toEqual('BeepApp');
+
+    Object.defineProperty(window, 'webViewSource', {
+      value: 'Android',
+      writable: true,
+    });
+    const AndroidResult = getRegistrationSource();
+
+    expect(AndroidResult).toEqual('BeepApp');
+  });
+
+  it('returns `BeepSite` when isFromBeepSite is true', () => {
+    process.env.REACT_APP_QR_SCAN_DOMAINS = 'beepit.com, foo.com, bar.com';
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/home',
+        hostname: 'beepit.com',
+      },
+      writable: true,
+    });
+    const sessionStorageGetItemSpy = jest.spyOn(window.sessionStorage, 'getItem').mockImplementation(key => {
+      if (key === 'BeepOrderingSourceUrl') {
+        return 'https://beepit.com';
+      }
+    });
+    const urlSpy = jest.spyOn(global, 'URL').mockImplementation(() => {
+      return {
+        hostname: 'beepit.com',
+      };
+    });
+
+    const result = getRegistrationSource();
+
+    expect(sessionStorageGetItemSpy).toHaveBeenCalledWith('BeepOrderingSourceUrl');
+    expect(result).toEqual('BeepSite');
+    delete process.env.REACT_APP_QR_SCAN_DOMAINS;
+    sessionStorageGetItemSpy.mockRestore();
+    urlSpy.mockRestore();
+  });
+
+  it('returns `BeepStore` when none of the conditions are met', () => {
+    expect(getRegistrationSource()).toEqual('BeepStore');
+  });
+});
