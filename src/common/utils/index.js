@@ -2,7 +2,7 @@ import qs from 'qs';
 import dayjs from 'dayjs';
 import _get from 'lodash/get';
 import _once from 'lodash/once';
-import Cookies from 'js-cookie';
+import Cookies, { get } from 'js-cookie';
 import { formatTime, setDateTime } from '../../utils/time-lib';
 import {
   WEB_VIEW_SOURCE,

@@ -3,7 +3,6 @@ import Cookies from 'js-cookie';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from '../../../utils/time-lib';
-// import * as utils from '../index';
 import { SHIPPING_TYPES, SOURCE_TYPE, PATH_NAME_MAPPING, ORDER_SOURCE, CLIENTS } from '../constants';
 import {
   attemptLoad,
@@ -25,9 +24,6 @@ import {
   getQueryString,
   getFilteredQueryString,
   getQueryObject,
-  //
-  isSafari,
-  isMobile,
   isIOSWebview,
   isAndroidWebview,
   isWebview,
@@ -36,7 +32,6 @@ import {
   judgeClient,
   submitForm,
   isJSON,
-  //
   getUUID,
   getBeepAppVersion,
   notHomeOrLocationPath,
@@ -703,30 +698,6 @@ describe('getQueryObject', () => {
     expect(getQueryObject(history, paramName)).toEqual('baz');
   });
 });
-
-// describe('isSafari', () => {
-//   const originalUserAgent = navigator.userAgent;
-
-//   beforeEach(() => {
-//     Object.defineProperty(navigator, 'userAgent', {
-//       value:
-//         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
-//       writable: true,
-//     });
-//   });
-
-//   afterEach(() => {
-//     Object.defineProperty(navigator, 'userAgent', {
-//       value: originalUserAgent,
-//       writable: true,
-//     });
-//   });
-
-//   it('should return true if user agent is Safari', () => {
-//     console.log(navigator.userAgent);
-//     expect(isSafari()).toBe(true);
-//   });
-// });
 
 describe('isIOSWebview', () => {
   const originalWebViewSource = window.webViewSource;
