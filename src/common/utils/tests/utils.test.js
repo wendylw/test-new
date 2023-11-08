@@ -4,14 +4,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from '../../../utils/time-lib';
 // import * as utils from '../index';
-import {
-  SHIPPING_TYPES,
-  SOURCE_TYPE,
-  PATH_NAME_MAPPING,
-  ORDER_SOURCE,
-  CLIENTS,
-  REGISTRATION_TOUCH_POINT,
-} from '../constants';
+import { SHIPPING_TYPES, SOURCE_TYPE, PATH_NAME_MAPPING, ORDER_SOURCE, CLIENTS } from '../constants';
 import {
   attemptLoad,
   setCookieVariable,
@@ -81,6 +74,11 @@ import {
   getOrderSourceForCleverTap,
   getRegistrationTouchPoint,
   getRegistrationSource,
+  extractDataAttributes,
+  windowSize,
+  mainTop,
+  marginBottom,
+  containerHeight,
 } from '../index';
 
 dayjs.extend(utc);
@@ -3054,5 +3052,100 @@ describe('getRegistrationSource', () => {
 
   it('returns `BeepStore` when none of the conditions are met', () => {
     expect(getRegistrationSource()).toEqual('BeepStore');
+  });
+});
+
+describe('extractDataAttributes', () => {
+  it('should return an empty object when no props are passed', () => {
+    const result = extractDataAttributes();
+    expect(result).toEqual({});
+  });
+
+  it('should return an empty object when no data attributes are present', () => {
+    const props = { foo: 'bar', baz: 'qux' };
+    const result = extractDataAttributes(props);
+    expect(result).toEqual({});
+  });
+
+  it('should return an object with data attributes when present', () => {
+    const props = {
+      'data-foo': 'bar',
+      'data-baz': 'qux',
+      'data-quux': 'corge',
+      notData: 'grault',
+    };
+    const result = extractDataAttributes(props);
+    expect(result).toEqual({
+      'data-foo': 'bar',
+      'data-baz': 'qux',
+      'data-quux': 'corge',
+    });
+  });
+});
+
+describe('windowSize', () => {
+  it('should return an object with width and height properties', () => {
+    const size = windowSize();
+    expect(size).toHaveProperty('width');
+    expect(size).toHaveProperty('height');
+  });
+
+  it('should return the correct window size', () => {
+    const size = windowSize();
+    expect(size.width).toBe(window.innerWidth);
+    expect(size.height).toBe(window.innerHeight);
+  });
+});
+
+describe('mainTop', function() {
+  it('returns 0 when no header elements are provided', () => {
+    const top = mainTop({});
+    expect(top).toEqual(0);
+  });
+
+  it('returns the sum of the heights of the provided header elements', () => {
+    const headerEls = [{ clientHeight: 10 }, { offsetHeight: 20 }, { clientHeight: 30, offsetHeight: 40 }];
+    const top = mainTop({ headerEls });
+    expect(top).toEqual(60);
+  });
+
+  it('ignores null or undefined header elements', () => {
+    const headerEls = [{ clientHeight: 10 }, null, { offsetHeight: 20 }, undefined, { offsetHeight: 40 }];
+    const top = mainTop({ headerEls });
+    expect(top).toEqual(70);
+  });
+});
+
+describe('marginBottom', function() {
+  it('returns 0 when footerEls is an empty array', () => {
+    const bottom = marginBottom({ footerEls: [] });
+    expect(bottom).toEqual(0);
+  });
+
+  it('returns the sum of the clientHeight or offsetHeight of all footerEls', () => {
+    const footerEls = [{ clientHeight: 10 }, { offsetHeight: 20 }, { clientHeight: 30, offsetHeight: 40 }, null];
+    const bottom = marginBottom({ footerEls });
+    expect(bottom).toEqual(60);
+  });
+
+  it('ignores null or undefined footer elements', () => {
+    const footerEls = [{ clientHeight: 10 }, null, { offsetHeight: 20 }, undefined, { offsetHeight: 40 }];
+    const bottom = marginBottom({ footerEls });
+    expect(bottom).toEqual(70);
+  });
+});
+
+describe('containerHeight', function() {
+  it("returns a 768px with 'px' suffix", () => {
+    const result = containerHeight({ headerEls: [], footerEls: [] });
+    expect(result).toBe('768px');
+    expect(result.endsWith('px')).toBeTruthy();
+  });
+
+  it('calculates the container height correctly', () => {
+    const headerEls = ['header1', 'header2'];
+    const footerEls = ['footer1', 'footer2'];
+    const expectedHeight = `${window.innerHeight - mainTop({ headerEls }) - marginBottom({ footerEls })}px`;
+    expect(containerHeight({ headerEls, footerEls })).toEqual(expectedHeight);
   });
 });
