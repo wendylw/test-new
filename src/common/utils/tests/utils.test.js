@@ -968,9 +968,9 @@ describe('submitForm', () => {
   });
 
   it('should append the form to the document body, submit it, and remove it', () => {
-    const form = document.createElement.mock.results[0].value;
-
     submitForm('/test');
+
+    const form = document.createElement.mock.results[0].value;
 
     expect(document.body.appendChild).toHaveBeenCalledWith(form);
     expect(form.submit).toHaveBeenCalled();
