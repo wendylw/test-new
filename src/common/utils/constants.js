@@ -143,6 +143,28 @@ export const ORDER_SOURCE = {
   BEEP_STORE: 'BeepStore',
 };
 
+export const ORDER_STATUS = {
+  CREATED: 'created',
+  PENDING_PAYMENT: 'pendingPayment',
+  PENDING_VERIFICATION: 'pendingVerification',
+  PAID: 'paid',
+  PAYMENT_CANCELLED: 'paymentCancelled',
+  READY_FOR_DELIVERY: 'readyForDelivery',
+  READY_FOR_PICKUP: 'readyForPickup',
+  SHIPPED: 'shipped',
+  CANCELLED: 'cancelled',
+  FAILED: 'failed',
+  ACCEPTED: 'accepted',
+  LOGISTICS_CONFIRMED: 'logisticsConfirmed',
+  CONFIRMED: 'confirmed',
+  DELIVERED: 'delivered',
+  /**
+   * If shipping type is delivery, pickedUp means picked up by rider.
+   * if shipping type is self-pickup, pickedUp means picked up by customer
+   * */
+  PICKED_UP: 'pickedUp',
+};
+
 export const REGISTRATION_TOUCH_POINT = {
   CLAIM_CASHBACK: 'ClaimCashback',
   ONLINE_ORDER: 'OnlineOrder',
