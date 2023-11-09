@@ -897,62 +897,86 @@ describe('judgeClient', () => {
   });
 });
 
-// describe('submitForm', () => {
-//   const action = 'https://example.com';
-//   const data = {
-//     name: 'John',
-//     age: 30,
-//   };
+describe('submitForm', () => {
+  const originalCreateElement = document.createElement;
+  const originalBody = document.body;
 
-//   beforeEach(() => {
-//     jest.spyOn(document.body, 'appendChild');
-//     jest.spyOn(document.body, 'removeChild');
-//   });
+  beforeEach(() => {
+    Object.defineProperty(document, 'body', {
+      value: {
+        appendChild: jest.fn(),
+        removeChild: jest.fn(),
+      },
+      writable: true,
+    });
 
-//   afterEach(() => {
-//     jest.restoreAllMocks();
-//   });
+    document.createElement = jest.fn(key => {
+      if (key === 'form') {
+        return {
+          style: {},
+          appendChild: jest.fn(),
+          submit: jest.fn(),
+          method: '',
+          action: '',
+        };
+      } else if (key === 'input') {
+        return {
+          name: '',
+          value: '',
+          type: '',
+        };
+      }
+    });
+  });
 
-//   it('should create a form with the correct action and method', () => {
-//     submitForm(action, data);
+  afterEach(() => {
+    Object.defineProperty(document.body, 'appendChild', {
+      value: originalBody.appendChild,
+      writable: true,
+    });
 
-//     const form = document.body.querySelector('form');
-//     expect(form).not.toBeNull();
-//     expect(form.action).toBe(action);
-//     expect(form.method).toBe('POST');
-//   });
+    document.createElement = originalCreateElement;
+  });
 
-//   it('should create a hidden input for each key-value pair in the data object', () => {
-//     submitForm(action, data);
+  it('should create a form with the correct action and method', () => {
+    const action = '/test';
+    const data = { foo: 'bar' };
+    submitForm(action, data);
 
-//     const form = document.body.querySelector('form');
-//     expect(form).not.toBeNull();
+    expect(document.createElement).toHaveBeenCalledWith('form');
 
-//     Object.keys(data).forEach(key => {
-//       const input = form.querySelector(`input[name="${key}"]`);
-//       expect(input).not.toBeNull();
-//       expect(input.value).toBe(data[key].toString());
-//       expect(input.type).toBe('hidden');
-//     });
-//   });
+    const form = document.createElement.mock.results[0].value;
 
-//   it('should append the form to the document body and submit it', () => {
-//     submitForm(action, data);
+    expect(form.action).toBe(action);
+    expect(form.method).toBe('POST');
+  });
 
-//     expect(document.body.appendChild).toHaveBeenCalledTimes(1);
-//     expect(document.body.removeChild).toHaveBeenCalledTimes(1);
+  it('should create a hidden input for each key in the data object', () => {
+    const data = { foo: 'bar', baz: 'qux' };
+    submitForm('/test', data);
 
-//     const form = document.body.querySelector('form');
-//     expect(form).not.toBeNull();
+    const form = document.createElement.mock.results[0].value;
+    const inputs = [document.createElement.mock.results[1].value, document.createElement.mock.results[2].value];
 
-//     expect(form.style.height).toBe('0');
-//     expect(form.style.width).toBe('0');
-//     expect(form.style.overflow).toBe('hidden');
-//     expect(form.style.visibility).toBe('hidden');
+    expect(document.createElement).toHaveBeenCalledWith('form');
+    expect(document.createElement).toHaveBeenCalledWith('input');
+    expect(form.appendChild).toHaveBeenCalledTimes(2);
+    expect(inputs[0].name).toBe('foo');
+    expect(inputs[0].value).toBe('bar');
+    expect(inputs[1].name).toBe('baz');
+    expect(inputs[1].value).toBe('qux');
+  });
 
-//     expect(form.submit).toHaveBeenCalledTimes(1);
-//   });
-// });
+  it('should append the form to the document body, submit it, and remove it', () => {
+    const form = document.createElement.mock.results[0].value;
+
+    submitForm('/test');
+
+    expect(document.body.appendChild).toHaveBeenCalledWith(form);
+    expect(form.submit).toHaveBeenCalled();
+    expect(document.body.removeChild).toHaveBeenCalledWith(form);
+  });
+});
 
 describe('isJSON', () => {
   it('should return true for valid JSON', () => {
