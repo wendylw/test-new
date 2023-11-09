@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { isWebview, isTNGMiniProgram } from '../../../common/utils';
-import { closeWebView, goBack } from '../../../utils/native-methods';
+import { closeWebView } from '../../../utils/native-methods';
 import Image from '../../../components/Image';
 import RedeemInfo from '../../components/RedeemInfo';
 import { IconInfo } from '../../../components/Icons';
