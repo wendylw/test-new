@@ -5,8 +5,8 @@ import claimReducers, {
   getCashbackInfo,
   getReceiptNumber,
 } from './claim';
-import rootReducer from './index';
-import { CLAIM_TYPES as types } from '../types';
+import rootReducer from '../../../redux/modules';
+import { CLAIM_TYPES as types } from '../../../redux/types';
 
 describe('src/cashback/redux/modules/claim.js:reducers', () => {
   const claimActionInfo = {

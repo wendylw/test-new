@@ -12,7 +12,7 @@ import {
   getIsLoginRequestStatusPending,
   getOnlineStoreInfoFavicon,
   getIsLoginModalShown,
-  getUserConsumerId,
+  // getUserConsumerId,
   getIsTngAuthorizationError,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
@@ -81,11 +81,11 @@ class App extends Component {
 
       await appActions.loadConsumerLoginStatus();
 
-      const { isUserLogin, userConsumerId } = this.props;
+      const { isUserLogin } = this.props;
 
-      if (userConsumerId) {
-        await appActions.loadConsumerCustomerInfo();
-      }
+      // if (userConsumerId) {
+      //   await appActions.loadConsumerCustomerInfo();
+      // }
 
       if (isWebview()) {
         await appActions.syncLoginFromBeepApp();
@@ -102,8 +102,8 @@ class App extends Component {
   }
 
   componentDidUpdate = async prevProps => {
-    const { appActions, pageError, isUserLogin: currIsUserLogin, userConsumerId: currUserConsumerId } = this.props;
-    const { pageError: prevPageError, isUserLogin: prevIsUserLogin, userConsumerId: prevUserConsumerId } = prevProps;
+    const { appActions, pageError, isUserLogin: currIsUserLogin } = this.props;
+    const { pageError: prevPageError, isUserLogin: prevIsUserLogin } = prevProps;
     const { code } = prevPageError || {};
 
     if (pageError.code && pageError.code !== code) {
@@ -112,9 +112,9 @@ class App extends Component {
 
     // currUserConsumerId !== prevUserConsumerId instead of !prevUserConsumerId .
     // The 3rd MiniProgram cached the previous consumerId, so the consumerId is not the correct account
-    if (currUserConsumerId && currUserConsumerId !== prevUserConsumerId) {
-      appActions.loadConsumerCustomerInfo();
-    }
+    // if (currUserConsumerId && currUserConsumerId !== prevUserConsumerId) {
+    //   appActions.loadConsumerCustomerInfo();
+    // }
 
     if (currIsUserLogin && currIsUserLogin !== prevIsUserLogin) {
       appActions.hideLoginModal();
@@ -172,7 +172,7 @@ App.propTypes = {
   userCountry: PropTypes.string,
   loginBannerPrompt: PropTypes.string,
   isUserLogin: PropTypes.bool,
-  userConsumerId: PropTypes.string,
+  // userConsumerId: PropTypes.string,
   onlineStoreInfoFavicon: PropTypes.string,
   error: PropTypes.shape({
     message: PropTypes.string,
@@ -203,7 +203,7 @@ App.defaultProps = {
   userCountry: null,
   loginBannerPrompt: null,
   isUserLogin: false,
-  userConsumerId: null,
+  // userConsumerId: null,
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
@@ -219,7 +219,7 @@ export default compose(
       loginBannerPrompt: getLoginBannerPrompt(state),
       isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
       isUserLogin: getIsUserLogin(state),
-      userConsumerId: getUserConsumerId(state),
+      // userConsumerId: getUserConsumerId(state),
       isLoginModalShown: getIsLoginModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),

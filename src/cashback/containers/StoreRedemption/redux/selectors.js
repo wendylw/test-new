@@ -5,13 +5,11 @@ import {
   getIsCoreBusinessLoaded,
   getIsLoadCoreBusinessFailed,
   getIsCoreBusinessEnableCashback,
-  getIsConsumerCustomerLoaded,
-  getIsLoadConsumerCustomerFailed,
-  getUserStoreCashback,
   getIsOnlineStoreInfoLoaded,
   getIsLoadOnlineStoreInfoFailed,
   getIsUserLogin,
 } from '../../../redux/modules/app';
+import { getCustomerCashback, getIsCustomerRequestCompleted } from '../../../redux/modules/customer/selectors';
 
 /**
  * get store redemption request id
@@ -61,29 +59,27 @@ export const getStoreDisplayTitle = createSelector(getOnlineStoreInfo, onlineSto
 export const getIsLoadStoreRedemptionDataCompleted = createSelector(
   getIsCoreBusinessLoaded,
   getIsLoadCoreBusinessFailed,
-  getIsConsumerCustomerLoaded,
-  getIsLoadConsumerCustomerFailed,
+  getIsCustomerRequestCompleted,
   getIsOnlineStoreInfoLoaded,
   getIsLoadOnlineStoreInfoFailed,
   (
     isCoreBusinessLoaded,
     isLoadCoreBusinessFailed,
-    isConsumerCustomerLoaded,
-    isLoadConsumerCustomerFailed,
+    isCustomerRequestCompleted,
     isOnlineStoreInfoLoaded,
     isLoadOnlineStoreInfoFailed
   ) =>
     (isCoreBusinessLoaded || isLoadCoreBusinessFailed) &&
-    (isConsumerCustomerLoaded || isLoadConsumerCustomerFailed) &&
+    isCustomerRequestCompleted &&
     (isOnlineStoreInfoLoaded || isLoadOnlineStoreInfoFailed)
 );
 
 export const getIsDisplayStoreRedemptionContent = createSelector(
   getIsLoadStoreRedemptionDataCompleted,
   getIsCoreBusinessEnableCashback,
-  getUserStoreCashback,
-  (isLoadStoreRedemptionDataCompleted, isCoreBusinessEnableCashback, userStoreCashback) =>
-    isLoadStoreRedemptionDataCompleted && isCoreBusinessEnableCashback && userStoreCashback > 0
+  getCustomerCashback,
+  (isLoadStoreRedemptionDataCompleted, isCoreBusinessEnableCashback, customerCashback) =>
+    isLoadStoreRedemptionDataCompleted && isCoreBusinessEnableCashback && customerCashback > 0
 );
 
 export const getIsDisplayStoreRedemptionAlert = createSelector(
