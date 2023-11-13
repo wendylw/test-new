@@ -129,6 +129,12 @@ export const PRODUCT_STOCK_STATUS = {
   UNAVAILABLE: 'unavailable',
 };
 
+export const TIME_SLOT = {
+  NOW: 'now',
+  TODAY: 'Today',
+  TOMORROW: 'Tomorrow',
+};
+
 export const ORDER_STATUS = {
   CREATED: 'created',
   PENDING_PAYMENT: 'pendingPayment',
