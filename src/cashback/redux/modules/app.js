@@ -75,6 +75,14 @@ export const initialState = {
       status: null,
     },
     showLoginModal: false,
+    customerRequest: {
+      data: {
+        customerId: null,
+        storeCreditsBalance: 0,
+      },
+      status: null,
+      error: null,
+    },
     loadConsumerCustomerStatus: null,
   },
   customerInfo: {},
