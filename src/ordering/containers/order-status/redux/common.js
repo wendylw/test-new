@@ -196,16 +196,12 @@ const { reducer, actions } = createSlice({
     },
     [loadOrderStoreReview.fulfilled.type]: (state, { payload }) => {
       const { review, transaction } = payload;
-      const hasReviewed = _get(review, 'reviewed', false);
-      const isMerchantContactAllowable = !hasReviewed
-        ? true
-        : _get(review, 'reviewContent.allowMerchantContact', false);
 
-      state.storeReviewInfo.data.hasReviewed = hasReviewed;
+      state.storeReviewInfo.data.hasReviewed = _get(review, 'reviewed', false);
       state.storeReviewInfo.data.isReviewable = _get(review, 'reviewable', false);
       state.storeReviewInfo.data.rating = _get(review, 'reviewContent.rating', null);
       state.storeReviewInfo.data.comments = _get(review, 'reviewContent.comments', null);
-      state.storeReviewInfo.data.isMerchantContactAllowable = isMerchantContactAllowable;
+      state.storeReviewInfo.data.isMerchantContactAllowable = _get(review, 'reviewContent.allowMerchantContact', true);
       state.storeReviewInfo.data.googleReviewURL = _get(review, 'googleReviewUrl', null);
       state.storeReviewInfo.data.storeName = _get(transaction, 'store.name', null);
       state.storeReviewInfo.data.storeDisplayName = _get(transaction, 'store.storeDisplayName', null);
