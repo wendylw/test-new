@@ -277,23 +277,6 @@ export const actions = {
     user,
   }),
 
-  // loadConsumerCustomerInfo: () => async (dispatch, getState) => {
-  //   try {
-  //     dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
-
-  //     const state = getState();
-  //     const consumerId = getUserConsumerId(state);
-  //     const result = await getConsumerCustomerInfo(consumerId);
-
-  //     dispatch({
-  //       type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED,
-  //       response: result,
-  //     });
-  //   } catch (error) {
-  //     dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED });
-  //   }
-  // },
-
   resetConsumerCustomerInfo: () => ({
     type: types.RESET_CONSUMER_CUSTOMER_INFO,
   }),
@@ -468,16 +451,7 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response, responseGql, prompt, error, payload } = action || {};
-  const {
-    login,
-    consumerId,
-    supportWhatsApp,
-    // storeCreditInfo,
-    // customerId,
-    access_token: accessToken,
-    refresh_token: refreshToken,
-  } = response || {};
-  // const { storeCreditsBalance } = storeCreditInfo || {};
+  const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken } = response || {};
   const { data } = responseGql || {};
   const { business, onlineStoreInfo } = data || {};
   const otpType = _get(payload, 'otpType', null);
@@ -591,20 +565,6 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     }
-    // load consumer customer info
-    // case types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING:
-    //   return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.PENDING };
-    // case types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED:
-    //   return {
-    //     ...state,
-    //     loadConsumerCustomerStatus: API_REQUEST_STATUS.FULFILLED,
-    //     storeCreditsBalance,
-    //     customerId,
-    //   };
-    // case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
-    //   return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.REJECTED };
-    // case type.RESET_CONSUMER_CUSTOMER_INFO:
-    //   return { ...state, loadConsumerCustomerStatus: null, storeCreditsBalance: 0, customerId: null };
     // fetch online store info success
     // fetch core business success
     case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
@@ -823,27 +783,9 @@ export const getIsLoginModalShown = createSelector(getUser, userInfo => _get(use
 
 export const getUserConsumerId = createSelector(getUser, userInfo => _get(userInfo, 'consumerId', null));
 
-// export const getUserCustomerId = createSelector(getUser, userInfo => _get(userInfo, 'customerId', null));
-
-// export const getUserStoreCashback = createSelector(getUser, userInfo => _get(userInfo, 'storeCreditsBalance', 0));
-
 export const getIsLoginRequestFailed = createSelector(getUser, userInfo => _get(userInfo, 'isError', false));
 
 export const getIsLoginRequestStatusPending = createSelector(getUser, userInfo => _get(userInfo, 'isFetching', false));
-
-// export const getLoadConsumerCustomerStatus = createSelector(getUser, userInfo =>
-//   _get(userInfo, 'loadConsumerCustomerStatus', null)
-// );
-
-// export const getIsConsumerCustomerLoaded = createSelector(
-//   getLoadConsumerCustomerStatus,
-//   loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.FULFILLED
-// );
-
-// export const getIsLoadConsumerCustomerFailed = createSelector(
-//   getLoadConsumerCustomerStatus,
-//   loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.REJECTED
-// );
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);
 
