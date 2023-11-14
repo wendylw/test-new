@@ -7,6 +7,7 @@ const initialState = {
     customerId: null,
     storeCreditsBalance: 0,
   },
+  loadable: false,
   status: null,
   error: null,
 };
@@ -15,6 +16,9 @@ const { reducer, actions } = createSlice({
   name: 'loyalty/customer',
   initialState,
   reducers: {
+    loadableUpdate: (state, action) => {
+      state.loadable = action.payload;
+    },
     consumerCustomerInfoReset: () => initialState,
   },
   extraReducers: {
@@ -28,10 +32,12 @@ const { reducer, actions } = createSlice({
       state.data.customerId = customerId;
       state.data.storeCreditsBalance = storeCreditsBalance;
 
+      state.loadable = false;
       state.status = API_REQUEST_STATUS.FULFILLED;
       state.error = null;
     },
     [loadConsumerCustomerInfo.rejected.type]: (state, action) => {
+      state.loadable = false;
       state.status = API_REQUEST_STATUS.REJECTED;
       state.error = action.error;
     },

@@ -10,6 +10,8 @@ export const getCustomerCashback = createSelector(getCustomer, customerInfo =>
   _get(customerInfo, 'data.storeCreditsBalance', 0)
 );
 
+export const getCustomerLoadable = createSelector(getCustomer, customerInfo => customerInfo.loadable);
+
 export const getCustomerRequestStatus = createSelector(getCustomer, customerInfo => customerInfo.status);
 
 export const getCustomerError = createSelector(getCustomer, customerInfo => customerInfo.error);
