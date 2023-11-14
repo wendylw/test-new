@@ -12,10 +12,12 @@ import {
   getIsLoginRequestStatusPending,
   getOnlineStoreInfoFavicon,
   getIsLoginModalShown,
-  // getUserConsumerId,
+  getUserConsumerId,
   getIsTngAuthorizationError,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
+import { getCustomerLoadable } from '../../redux/modules/customer/selectors';
+import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
 import Constants from '../../../utils/constants';
 import { isTNGMiniProgram, isWebview } from '../../../common/utils';
 import faviconImage from '../../../images/favicon.ico';
@@ -32,7 +34,7 @@ import Clevertap from '../../../utils/clevertap';
 
 class App extends Component {
   async componentDidMount() {
-    const { t, appActions, userCountry } = this.props;
+    const { t, appActions, userCountry, loadConsumerCustomerInfo } = this.props;
 
     this.visitErrorPage();
 
@@ -81,11 +83,7 @@ class App extends Component {
 
       await appActions.loadConsumerLoginStatus();
 
-      const { isUserLogin } = this.props;
-
-      // if (userConsumerId) {
-      //   await appActions.loadConsumerCustomerInfo();
-      // }
+      const { isUserLogin, customerLoadable, userConsumerId } = this.props;
 
       if (isWebview()) {
         await appActions.syncLoginFromBeepApp();
@@ -96,13 +94,24 @@ class App extends Component {
       if (!isUserLogin) {
         appActions.showLoginModal();
       }
+
+      if (userConsumerId && customerLoadable) {
+        await loadConsumerCustomerInfo();
+      }
     } catch (error) {
       logger.error('Cashback_App_InitFailed', { message: error?.message });
     }
   }
 
   componentDidUpdate = async prevProps => {
-    const { appActions, pageError, isUserLogin: currIsUserLogin } = this.props;
+    const {
+      appActions,
+      pageError,
+      isUserLogin: currIsUserLogin,
+      userConsumerId: currUserConsumerId,
+      customerLoadable,
+      loadConsumerCustomerInfo,
+    } = this.props;
     const { pageError: prevPageError, isUserLogin: prevIsUserLogin } = prevProps;
     const { code } = prevPageError || {};
 
@@ -112,9 +121,9 @@ class App extends Component {
 
     // currUserConsumerId !== prevUserConsumerId instead of !prevUserConsumerId .
     // The 3rd MiniProgram cached the previous consumerId, so the consumerId is not the correct account
-    // if (currUserConsumerId && currUserConsumerId !== prevUserConsumerId) {
-    //   appActions.loadConsumerCustomerInfo();
-    // }
+    if (currUserConsumerId && customerLoadable) {
+      loadConsumerCustomerInfo();
+    }
 
     if (currIsUserLogin && currIsUserLogin !== prevIsUserLogin) {
       appActions.hideLoginModal();
@@ -172,7 +181,8 @@ App.propTypes = {
   userCountry: PropTypes.string,
   loginBannerPrompt: PropTypes.string,
   isUserLogin: PropTypes.bool,
-  // userConsumerId: PropTypes.string,
+  userConsumerId: PropTypes.string,
+  customerLoadable: PropTypes.bool,
   onlineStoreInfoFavicon: PropTypes.string,
   error: PropTypes.shape({
     message: PropTypes.string,
@@ -197,19 +207,22 @@ App.propTypes = {
     showLoginModal: PropTypes.func,
     hideLoginModal: PropTypes.func,
   }),
+  loadConsumerCustomerInfo: PropTypes.func,
 };
 
 App.defaultProps = {
   userCountry: null,
   loginBannerPrompt: null,
   isUserLogin: false,
-  // userConsumerId: null,
+  userConsumerId: null,
+  customerLoadable: false,
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
   isTngAuthorizationError: false,
   isLoginModalShown: false,
   appActions: {},
+  loadConsumerCustomerInfo: () => {},
 };
 
 export default compose(
@@ -219,7 +232,8 @@ export default compose(
       loginBannerPrompt: getLoginBannerPrompt(state),
       isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
       isUserLogin: getIsUserLogin(state),
-      // userConsumerId: getUserConsumerId(state),
+      userConsumerId: getUserConsumerId(state),
+      customerLoadable: getCustomerLoadable(state),
       isLoginModalShown: getIsLoginModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
@@ -229,6 +243,7 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      loadConsumerCustomerInfo: bindActionCreators(loadConsumerCustomerInfoThunk, dispatch),
     })
   )
 )(App);

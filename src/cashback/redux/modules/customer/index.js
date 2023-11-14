@@ -16,7 +16,7 @@ const { reducer, actions } = createSlice({
   name: 'loyalty/customer',
   initialState,
   reducers: {
-    loadableUpdate: (state, action) => {
+    customerLoadableUpdate: (state, action) => {
       state.loadable = action.payload;
     },
     consumerCustomerInfoReset: () => initialState,

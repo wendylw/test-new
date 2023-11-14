@@ -12,6 +12,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import DownloadBanner from '../../../components/DownloadBanner';
 import NativeHeader from '../../../components/NativeHeader';
 import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
+import { actions as customerActionCreators } from '../../redux/modules/customer';
 import { getCashbackHistorySummary } from './redux';
 import './LoyaltyHome.scss';
 
@@ -19,9 +20,10 @@ const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
 const cashbackDownloadText = 'Download the Beep app to keep track of your cashback!';
 class PageLoyalty extends React.Component {
   async componentDidMount() {
-    const { appActions } = this.props;
+    const { appActions, customerActions } = this.props;
     await appActions.setCashbackMessage();
     appActions.showMessageInfo();
+    customerActions.customerLoadableUpdate(true);
   }
 
   renderLocation() {
@@ -112,6 +114,9 @@ PageLoyalty.propTypes = {
     showMessageInfo: PropTypes.func,
     setCashbackMessage: PropTypes.func,
   }),
+  customerActions: PropTypes.shape({
+    customerLoadableUpdate: PropTypes.func,
+  }),
 };
 
 PageLoyalty.defaultProps = {
@@ -127,6 +132,9 @@ PageLoyalty.defaultProps = {
     showMessageInfo: () => {},
     setCashbackMessage: () => {},
   },
+  customerActions: {
+    customerLoadableUpdate: () => {},
+  },
 };
 
 export default compose(
@@ -139,6 +147,7 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(PageLoyalty);
