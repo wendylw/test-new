@@ -1,10 +1,12 @@
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
-import Constants from '../../../utils/constants';
 import { CLAIM_TYPES } from '../types';
-import { getBusiness } from './app';
+import Constants from '../../../utils/constants';
+
 import { API_REQUEST } from '../../../redux/middlewares/api';
+
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { getBusiness } from './app';
 
 export const initialState = {
   cashbackInfo: null,
@@ -112,6 +114,8 @@ const reducer = (state = initialState, action) => {
   }
 };
 
+export default reducer;
+
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
   return getBusinessByName(state, business);
@@ -120,5 +124,3 @@ export const getBusinessInfo = state => {
 export const isFetchingCashbackInfo = state => state.claim.isFetching;
 export const getCashbackInfo = state => state.claim.cashbackInfo;
 export const getReceiptNumber = state => state.claim.receiptNumber;
-
-export default reducer;
