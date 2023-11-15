@@ -125,7 +125,7 @@ class RecentActivities extends React.Component {
   }
 
   render() {
-    const { t } = this.props;
+    const { t, history } = this.props;
 
     return (
       <>
@@ -135,6 +135,9 @@ class RecentActivities extends React.Component {
           contentClassName="flex-middle"
           isPage
           title={t('CashbackHistory')}
+          navFunc={() => {
+            history.goBack();
+          }}
         />
 
         <section className="recent-activities" data-test-id="cashback.home.recent-activities.container">
