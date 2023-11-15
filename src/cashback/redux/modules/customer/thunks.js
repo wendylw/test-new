@@ -13,8 +13,6 @@ export const loadConsumerCustomerInfo = createAsyncThunk(
 
       return result;
     } catch (error) {
-      logger.error('Cashback_loadConsumerCustomerInfo', { message: error?.message });
-
       throw error;
     }
   }
