@@ -44,8 +44,6 @@ export const initialState = {
     isLogin: false,
     isExpired: false,
     consumerId: config.consumerId,
-    // customerId: '',
-    // storeCreditsBalance: 0,
     isError: false,
     otpRequest: {
       data: {
@@ -76,15 +74,6 @@ export const initialState = {
       status: null,
     },
     showLoginModal: false,
-    // customerRequest: {
-    //   data: {
-    //     customerId: null,
-    //     storeCreditsBalance: 0,
-    //   },
-    //   status: null,
-    //   error: null,
-    // },
-    // loadConsumerCustomerStatus: null,
   },
   customerInfo: {},
   error: null, // network error
