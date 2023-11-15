@@ -1,10 +1,10 @@
-import Url from '../../../../utils/url';
-import Utils from '../../../../utils/utils';
-import Constants from '../../../../utils/constants';
-import { CLAIM_TYPES } from '../../../redux/types';
-import { getBusiness } from '../../../redux/modules/app';
-import { API_REQUEST } from '../../../../redux/middlewares/api';
-import { getBusinessByName } from '../../../../redux/modules/entities/businesses';
+import Url from '../../../utils/url';
+import Utils from '../../../utils/utils';
+import Constants from '../../../utils/constants';
+import { CLAIM_TYPES } from '../types';
+import { getBusiness } from './app';
+import { API_REQUEST } from '../../../redux/middlewares/api';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 export const initialState = {
   cashbackInfo: null,

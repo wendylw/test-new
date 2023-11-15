@@ -2,8 +2,8 @@ import { combineReducers } from 'redux';
 import entities from '../../../redux/modules/entities';
 import app from './app';
 import customer from './customer';
-import home from '../../containers/Home/redux';
-import claim from '../../containers/Claim/redux';
+import home from './home';
+import claim from './claim';
 import storeRedemption from '../../containers/StoreRedemption/redux';
 
 const rootReducer = combineReducers({

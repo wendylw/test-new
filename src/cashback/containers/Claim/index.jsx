@@ -18,7 +18,12 @@ import {
 } from '../../redux/modules/app';
 import { getCustomerId } from '../../redux/modules/customer/selectors';
 import { actions as customerActionCreators } from '../../redux/modules/customer';
-import { actions as claimActionCreators, getCashbackInfo, getReceiptNumber, isFetchingCashbackInfo } from './redux';
+import {
+  actions as claimActionCreators,
+  getCashbackInfo,
+  getReceiptNumber,
+  isFetchingCashbackInfo,
+} from '../../redux/modules/claim';
 import NativeHeader from '../../../components/NativeHeader';
 import './LoyaltyClaim.scss';
 

@@ -1,5 +1,5 @@
 import { actions } from './claim';
-import { CLAIM_TYPES as types } from '../../../redux/types';
+import { CLAIM_TYPES as types } from '../types';
 import {
   store,
   successMockFetch,
@@ -8,7 +8,7 @@ import {
   commonSuccessData,
   mockErrorMsg,
   mockErrorCode,
-} from '../../../../utils/testHelper';
+} from '../../../utils/testHelper';
 
 describe('src/cashback/redux/modules/claims.js:actions', () => {
   beforeEach(() => {

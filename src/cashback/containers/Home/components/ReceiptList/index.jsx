@@ -9,7 +9,12 @@ import { getCustomerId } from '../../../../redux/modules/customer/selectors';
 import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { IconTicket } from '../../../../../components/Icons';
-import { actions as homeActionCreators, getCashbackHistory, getReceiptList, getFetchState } from '../../redux';
+import {
+  actions as homeActionCreators,
+  getCashbackHistory,
+  getReceiptList,
+  getFetchState,
+} from '../../../../redux/modules/home';
 import './ReceiptList.scss';
 
 const DATE_OPTIONS = {

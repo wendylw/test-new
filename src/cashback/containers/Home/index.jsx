@@ -13,7 +13,7 @@ import DownloadBanner from '../../../components/DownloadBanner';
 import NativeHeader from '../../../components/NativeHeader';
 import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
 import { actions as customerActionCreators } from '../../redux/modules/customer';
-import { getCashbackHistorySummary } from './redux';
+import { getCashbackHistorySummary } from '../../redux/modules/home';
 import './LoyaltyHome.scss';
 
 const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';

@@ -10,7 +10,7 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import { getOnlineStoreInfo, getIsUserLogin } from '../../../../redux/modules/app';
 import { actions as customerActionCreators } from '../../../../redux/modules/customer';
 import { getCustomerId } from '../../../../redux/modules/customer/selectors';
-import { actions as homeActionCreators, getCashbackHistory } from '../../redux';
+import { actions as homeActionCreators, getCashbackHistory } from '../../../../redux/modules/home';
 import './RecentActivities.scss';
 
 const DATE_OPTIONS = {

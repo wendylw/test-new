@@ -1,9 +1,9 @@
-import Url from '../../../../utils/url';
-import { API_REQUEST } from '../../../../redux/middlewares/api';
-import { getLoyaltyHistoriesByCustomerId } from '../../../../redux/modules/entities/loyaltyHistories';
-import { getBusinessByName } from '../../../../redux/modules/entities/businesses';
-import { getUser, getBusiness } from '../../../redux/modules/app';
-import { HOME_TYPES } from '../../../redux/types';
+import Url from '../../../utils/url';
+import { API_REQUEST } from '../../../redux/middlewares/api';
+import { getLoyaltyHistoriesByCustomerId } from '../../../redux/modules/entities/loyaltyHistories';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { getUser, getBusiness } from './app';
+import { HOME_TYPES } from '../types';
 
 export const initialState = {
   receiptList: [],
