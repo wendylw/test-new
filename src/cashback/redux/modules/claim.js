@@ -1,12 +1,13 @@
+import _get from 'lodash/get';
+import { createSelector } from 'reselect';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import { CLAIM_TYPES } from '../types';
 import Constants from '../../../utils/constants';
-
 import { API_REQUEST } from '../../../redux/middlewares/api';
-
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getBusiness } from './app';
+import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 
 export const initialState = {
   cashbackInfo: null,
@@ -55,7 +56,6 @@ const reducer = (state = initialState, action) => {
 
   switch (action.type) {
     case types.FETCH_CASHBACKINFO_REQUEST:
-    case types.CREATE_CASHBACKINFO_REQUEST:
       return {
         ...state,
         cashbackInfo: {
@@ -63,14 +63,31 @@ const reducer = (state = initialState, action) => {
           isFetching: true,
         },
       };
+    case types.CREATE_CASHBACKINFO_REQUEST:
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          cashbackClaimStatus: API_REQUEST_STATUS.PENDING,
+          isFetching: true,
+        },
+      };
     case types.FETCH_RECEIPTNUMBER_REQUEST:
       return { ...state, isFetching: true };
     case types.FETCH_CASHBACKINFO_FAILURE:
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          isFetching: false,
+        },
+      };
     case types.CREATE_CASHBACKINFO_FAILURE:
       return {
         ...state,
         cashbackInfo: {
           ...state.cashbackInfo,
+          cashbackClaimStatus: API_REQUEST_STATUS.REJECTED,
           isFetching: false,
         },
       };
@@ -85,6 +102,7 @@ const reducer = (state = initialState, action) => {
           isFetching: false,
           loadedCashbackInfo: true,
           createdCashbackInfo: false,
+          cashbackClaimStatus: API_REQUEST_STATUS.FULFILLED,
         },
       };
     }
@@ -124,3 +142,12 @@ export const getBusinessInfo = state => {
 export const isFetchingCashbackInfo = state => state.claim.isFetching;
 export const getCashbackInfo = state => state.claim.cashbackInfo;
 export const getReceiptNumber = state => state.claim.receiptNumber;
+
+export const getCashbackClaimRequestStatus = createSelector(getCashbackInfo, cashbackInfo =>
+  _get(cashbackInfo, 'cashbackClaimStatus', null)
+);
+
+export const getIsCashbackClaimRequestFulfilled = createSelector(
+  getCashbackClaimRequestStatus,
+  cashbackClaimRequestStatus => cashbackClaimRequestStatus === API_REQUEST_STATUS.FULFILLED
+);

@@ -10,6 +10,7 @@ import {
   getIsUserLogin,
 } from '../../../redux/modules/app';
 import { getCustomerCashback, getIsCustomerRequestCompleted } from '../../../redux/modules/customer/selectors';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
 /**
  * get store redemption request id
@@ -25,6 +26,14 @@ export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 
  */
 export const getIsStoreRedemptionNewCustomer = state =>
   _get(state.storeRedemption, 'sharedInfoData.isNewCustomer', false);
+
+/**
+ *
+ * @param {*} state
+ * @returns string
+ */
+export const getConfirmSharingConsumerInfoStatus = state =>
+  _get(state.storeRedemption, 'confirmSharingConsumerInfo.status', null);
 
 /**
  * get consumer share info available status
@@ -85,4 +94,11 @@ export const getIsDisplayStoreRedemptionContent = createSelector(
 export const getIsDisplayStoreRedemptionAlert = createSelector(
   getIsLoadStoreRedemptionDataCompleted,
   isLoadStoreRedemptionDataCompleted => isLoadStoreRedemptionDataCompleted
+);
+
+export const getIsConfirmSharingConsumerInfoCompleted = createSelector(
+  getConfirmSharingConsumerInfoStatus,
+  confirmSharingConsumerInfoStatus =>
+    confirmSharingConsumerInfoStatus === API_REQUEST_STATUS.FULFILLED ||
+    confirmSharingConsumerInfoStatus === API_REQUEST_STATUS.REJECTED
 );

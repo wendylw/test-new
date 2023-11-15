@@ -17,7 +17,6 @@ import {
   getIsUserLogin,
 } from '../../redux/modules/app';
 import { getCustomerId } from '../../redux/modules/customer/selectors';
-import { actions as customerActionCreators } from '../../redux/modules/customer';
 import {
   actions as claimActionCreators,
   getCashbackInfo,
@@ -89,10 +88,8 @@ class PageClaim extends React.Component {
       await this.setState({ claimed: true });
       await claimActions.createCashbackInfo(this.getOrderInfo());
 
-      const { cashbackInfo, customerId, customerActions } = this.props;
+      const { cashbackInfo, customerId } = this.props;
       const { customerId: cashbackCustomerId } = cashbackInfo || {};
-
-      await customerActions.customerLoadableUpdate(true);
 
       history.replace({
         pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
@@ -247,7 +244,7 @@ PageClaim.defaultProps = {
 PageClaim.displayName = 'PageClaim';
 
 export default compose(
-  withTranslation(['Cashback']),
+  withTranslation(['Cashback', 'ApiError']),
   connect(
     state => ({
       isUserLogin: getIsUserLogin(state),
@@ -261,7 +258,6 @@ export default compose(
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       claimActions: bindActionCreators(claimActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(PageClaim);

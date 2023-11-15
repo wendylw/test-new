@@ -8,7 +8,6 @@ import { isWebview, isTNGMiniProgram } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
 import { getUserCountry } from '../../redux/modules/app';
-import { actions as customerActions } from '../../redux/modules/customer';
 import {
   getIsStoreRedemptionNewCustomer,
   getIsDisplayStoreRedemptionContent,
@@ -62,9 +61,7 @@ const StoreRedemptionNative = () => {
 
   useEffect(() => {
     if (isAvailableToShareConsumerInfo) {
-      dispatch(confirmToShareConsumerInfoRequests()).then(() => {
-        dispatch(customerActions.customerLoadableUpdate(true));
-      });
+      dispatch(confirmToShareConsumerInfoRequests());
     }
   }, [dispatch, isAvailableToShareConsumerInfo]);
 

@@ -15,8 +15,9 @@ import {
   getUserConsumerId,
   getIsTngAuthorizationError,
 } from '../../redux/modules/app';
+import { getIsCashbackClaimRequestFulfilled } from '../../redux/modules/claim';
+import { getIsConfirmSharingConsumerInfoCompleted } from '../StoreRedemption/redux/selectors';
 import { getPageError } from '../../../redux/modules/entities/error';
-import { getCustomerLoadable } from '../../redux/modules/customer/selectors';
 import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
 import Constants from '../../../utils/constants';
 import { isTNGMiniProgram, isWebview } from '../../../common/utils';
@@ -31,10 +32,12 @@ import { confirm } from '../../../common/utils/feedback';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import logger from '../../../utils/monitoring/logger';
 import Clevertap from '../../../utils/clevertap';
+import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 
 class App extends Component {
   async componentDidMount() {
     const { t, appActions, userCountry, loadConsumerCustomerInfo } = this.props;
+    const { pathname } = window.location;
 
     this.visitErrorPage();
 
@@ -83,7 +86,12 @@ class App extends Component {
 
       await appActions.loadConsumerLoginStatus();
 
-      const { isUserLogin, customerLoadable, userConsumerId } = this.props;
+      const {
+        isUserLogin,
+        userConsumerId,
+        isCashbackClaimRequestFulfilled,
+        isConfirmSharingConsumerInfoCompleted,
+      } = this.props;
 
       if (isWebview()) {
         await appActions.syncLoginFromBeepApp();
@@ -95,8 +103,20 @@ class App extends Component {
         appActions.showLoginModal();
       }
 
-      if (userConsumerId && customerLoadable) {
-        await loadConsumerCustomerInfo();
+      if (userConsumerId) {
+        let isLoadCustomerAvailable = true;
+
+        if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM)) {
+          isLoadCustomerAvailable = isCashbackClaimRequestFulfilled;
+        }
+
+        if (pathname.includes('/store-redemption')) {
+          isLoadCustomerAvailable = isConfirmSharingConsumerInfoCompleted;
+        }
+
+        if (isLoadCustomerAvailable) {
+          await loadConsumerCustomerInfo();
+        }
       }
     } catch (error) {
       logger.error('Cashback_App_InitFailed', { message: error?.message });
@@ -109,7 +129,6 @@ class App extends Component {
       pageError,
       isUserLogin: currIsUserLogin,
       userConsumerId: currUserConsumerId,
-      customerLoadable,
       loadConsumerCustomerInfo,
     } = this.props;
     const { pageError: prevPageError, isUserLogin: prevIsUserLogin } = prevProps;
@@ -121,7 +140,7 @@ class App extends Component {
 
     // currUserConsumerId !== prevUserConsumerId instead of !prevUserConsumerId .
     // The 3rd MiniProgram cached the previous consumerId, so the consumerId is not the correct account
-    if (currUserConsumerId && customerLoadable) {
+    if (currUserConsumerId) {
       loadConsumerCustomerInfo();
     }
 
@@ -181,8 +200,9 @@ App.propTypes = {
   userCountry: PropTypes.string,
   loginBannerPrompt: PropTypes.string,
   isUserLogin: PropTypes.bool,
+  isCashbackClaimRequestFulfilled: PropTypes.bool,
+  isConfirmSharingConsumerInfoCompleted: PropTypes.bool,
   userConsumerId: PropTypes.string,
-  customerLoadable: PropTypes.bool,
   onlineStoreInfoFavicon: PropTypes.string,
   error: PropTypes.shape({
     message: PropTypes.string,
@@ -214,8 +234,9 @@ App.defaultProps = {
   userCountry: null,
   loginBannerPrompt: null,
   isUserLogin: false,
+  isCashbackClaimRequestFulfilled: false,
+  isConfirmSharingConsumerInfoCompleted: false,
   userConsumerId: null,
-  customerLoadable: false,
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
@@ -233,7 +254,8 @@ export default compose(
       isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
       isUserLogin: getIsUserLogin(state),
       userConsumerId: getUserConsumerId(state),
-      customerLoadable: getCustomerLoadable(state),
+      isCashbackClaimRequestFulfilled: getIsCashbackClaimRequestFulfilled(state),
+      isConfirmSharingConsumerInfoCompleted: getIsConfirmSharingConsumerInfoCompleted(state),
       isLoginModalShown: getIsLoginModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
