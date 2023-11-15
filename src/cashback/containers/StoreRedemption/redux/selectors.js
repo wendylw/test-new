@@ -9,7 +9,7 @@ import {
   getIsLoadOnlineStoreInfoFailed,
   getIsUserLogin,
 } from '../../../redux/modules/app';
-import { getCustomerCashback, getIsCustomerRequestCompleted } from '../../../redux/modules/customer/selectors';
+import { getCustomerCashback, getIsLoadCustomerRequestCompleted } from '../../../redux/modules/customer/selectors';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
 /**
@@ -68,7 +68,7 @@ export const getStoreDisplayTitle = createSelector(getOnlineStoreInfo, onlineSto
 export const getIsLoadStoreRedemptionDataCompleted = createSelector(
   getIsCoreBusinessLoaded,
   getIsLoadCoreBusinessFailed,
-  getIsCustomerRequestCompleted,
+  getIsLoadCustomerRequestCompleted,
   getIsOnlineStoreInfoLoaded,
   getIsLoadOnlineStoreInfoFailed,
   (

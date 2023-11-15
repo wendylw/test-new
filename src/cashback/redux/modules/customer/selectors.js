@@ -14,12 +14,12 @@ export const getLoadCustomerRequestStatus = createSelector(getCustomer, customer
 
 export const getLoadCustomerRequestError = createSelector(getCustomer, customerInfo => customerInfo.error);
 
-export const getIsCustomerRequestPending = createSelector(
+export const getIsLoadCustomerRequestPending = createSelector(
   getLoadCustomerRequestStatus,
   loadCustomerRequestStatus => loadCustomerRequestStatus === API_REQUEST_STATUS.PENDING
 );
 
-export const getIsCustomerRequestCompleted = createSelector(
+export const getIsLoadCustomerRequestCompleted = createSelector(
   getLoadCustomerRequestStatus,
   loadCustomerRequestStatus =>
     loadCustomerRequestStatus === API_REQUEST_STATUS.FULFILLED ||
