@@ -52,6 +52,7 @@ export const PATH_NAME_MAPPING = {
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
   // site
+  SITE_BASE: '/',
   SITE_HOME: '/home',
   QRSCAN: '/qrscan',
   SCAN: '/scan',
@@ -64,6 +65,11 @@ export const PATH_NAME_MAPPING = {
   VOUCHER_THANK_YOU: '/voucher/thank-you',
   VOUCHER_SORRY: '/voucher/sorry',
   VOUCHER_PAYMENT: '/ordering/payment',
+  // rewards App basename
+  REWARDS_BASE: '/rewards',
+  REWARDS_HOME: '/',
+  REWARDS_BUSINESS: '/business',
+  JOIN_MEMBERSHIP: '/join-membership',
   // dine
   DINE: '/dine',
   FOOD_COURT: '/food-court',
