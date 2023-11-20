@@ -238,7 +238,7 @@ PageClaim.defaultProps = {
 PageClaim.displayName = 'PageClaim';
 
 export default compose(
-  withTranslation(['Cashback', 'ApiError']),
+  withTranslation(['Cashback']),
   connect(
     state => ({
       isUserLogin: getIsUserLogin(state),
