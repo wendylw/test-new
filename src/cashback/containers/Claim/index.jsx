@@ -209,9 +209,6 @@ PageClaim.propTypes = {
     createCashbackInfo: PropTypes.func,
     getCashbackReceiptNumber: PropTypes.func,
   }),
-  customerActions: PropTypes.shape({
-    customerLoadableUpdate: PropTypes.func,
-  }),
   /* eslint-disable react/forbid-prop-types */
   cashbackInfo: PropTypes.object,
   businessInfo: PropTypes.object,
@@ -232,9 +229,6 @@ PageClaim.defaultProps = {
     getCashbackInfo: () => {},
     createCashbackInfo: () => {},
     getCashbackReceiptNumber: () => {},
-  },
-  customerActions: {
-    customerLoadableUpdate: () => {},
   },
   cashbackInfo: {},
   businessInfo: {},

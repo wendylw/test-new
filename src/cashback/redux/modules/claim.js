@@ -102,7 +102,6 @@ const reducer = (state = initialState, action) => {
           isFetching: false,
           loadedCashbackInfo: true,
           createdCashbackInfo: false,
-          cashbackClaimStatus: API_REQUEST_STATUS.FULFILLED,
         },
       };
     }
@@ -115,6 +114,7 @@ const reducer = (state = initialState, action) => {
           isFetching: false,
           loadedCashbackInfo: false,
           createdCashbackInfo: true,
+          cashbackClaimStatus: API_REQUEST_STATUS.FULFILLED,
         },
       };
     }

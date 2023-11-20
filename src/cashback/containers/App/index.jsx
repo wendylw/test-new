@@ -103,6 +103,8 @@ class App extends Component {
         appActions.showLoginModal();
       }
 
+      // TODO: This will be optimized later, this is a temporary modification plan.
+      // It is not recommended to introduce page selector in App or app.
       if (userConsumerId) {
         let isLoadCustomerAvailable = true;
 
@@ -110,7 +112,7 @@ class App extends Component {
           isLoadCustomerAvailable = isCashbackClaimRequestFulfilled;
         }
 
-        if (pathname.includes('/store-redemption')) {
+        if (pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION)) {
           isLoadCustomerAvailable = isConfirmSharingConsumerInfoCompleted;
         }
 
@@ -152,6 +154,8 @@ class App extends Component {
   async componentWillUnmount() {
     const { appActions } = this.props;
 
+    // The reset here is because BeepApp or TNG MP has a login data cache
+    // to ensure the accuracy of data logged in with different accounts.
     await appActions.resetConsumerLoginStatus();
     await appActions.resetConsumerCustomerInfo();
   }

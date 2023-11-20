@@ -8,7 +8,6 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { IconPending, IconChecked, IconEarned } from '../../../../../components/Icons';
 import HybridHeader from '../../../../../components/HybridHeader';
 import { getOnlineStoreInfo, getIsUserLogin } from '../../../../redux/modules/app';
-import { actions as customerActionCreators } from '../../../../redux/modules/customer';
 import { getCustomerId } from '../../../../redux/modules/customer/selectors';
 import { actions as homeActionCreators, getCashbackHistory } from '../../../../redux/modules/home';
 import './RecentActivities.scss';
@@ -22,13 +21,12 @@ const DATE_OPTIONS = {
 
 class RecentActivities extends React.Component {
   componentDidMount() {
-    const { isUserLogin, customerId, onModalVisibilityChanged, customerActions } = this.props;
+    const { isUserLogin, customerId, onModalVisibilityChanged } = this.props;
 
     if (isUserLogin && customerId) {
       this.getLoyaltyHistory(customerId);
     }
     onModalVisibilityChanged(true);
-    customerActions.customerLoadableUpdate(true);
   }
 
   componentDidUpdate(prevProps) {
@@ -162,9 +160,6 @@ RecentActivities.propTypes = {
   homeActions: PropTypes.shape({
     getCashbackHistory: PropTypes.func,
   }),
-  customerActions: PropTypes.shape({
-    customerLoadableUpdate: PropTypes.func,
-  }),
 };
 
 RecentActivities.defaultProps = {
@@ -179,9 +174,6 @@ RecentActivities.defaultProps = {
   homeActions: {
     getCashbackHistory: () => {},
   },
-  customerActions: {
-    customerLoadableUpdate: () => {},
-  },
 };
 
 export default compose(
@@ -195,7 +187,6 @@ export default compose(
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(RecentActivities);
