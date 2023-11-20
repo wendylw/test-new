@@ -6,8 +6,10 @@ import Constants from '../../utils/constants';
 import NotFound from '../../containers/NotFound';
 import history from '../rewardsHistory';
 
-const MembershipForm = lazy(() =>
-  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_MF" */ './Business/containers/MembershipForm'))
+const MembershipFormProxy = lazy(() =>
+  Utils.attemptLoad(() =>
+    import(/* webpackChunkName: "RWD_MF" */ './Business/containers/MembershipForm/MembershipFormProxy')
+  )
 );
 
 const { ROUTER_PATHS } = Constants;
@@ -19,7 +21,7 @@ const Routes = () => (
         <Route
           exact
           path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.JOIN_MEMBERSHIP}`}
-          component={MembershipForm}
+          component={MembershipFormProxy}
         />
         <Route path="*" component={NotFound} />
       </Switch>

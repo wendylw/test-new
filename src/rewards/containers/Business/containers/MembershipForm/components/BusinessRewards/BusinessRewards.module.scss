@@ -1,0 +1,7 @@
+.businessRewards {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-w-full tw-box-border;
+
+  iframe {
+    max-width: 100%;
+  }
+}

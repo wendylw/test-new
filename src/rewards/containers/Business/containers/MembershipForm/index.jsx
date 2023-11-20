@@ -1,34 +1,17 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
-import Button from '../../../../../common/components/Button';
-import PageHeader from '../../../../../common/components/PageHeader';
-import PageFooter from '../../../../../common/components/PageFooter';
-import { getShouldShowBackButton } from './redux/selectors';
-import styles from './MembershipForm.module.scss';
+import BusinessProfile from './components/BusinessProfile';
+import BusinessRewards from './components/BusinessRewards';
+import Footer from './components/Footer';
 
-const MembershipForm = () => {
-  const { t } = useTranslation('Rewards');
-  const shouldShowBackButton = useSelector(getShouldShowBackButton);
-
-  return (
+const MembershipForm = () => (
+  <>
     <section>
-      <PageHeader title={t('JoinOurMembership')} isShowBackButton={shouldShowBackButton} />
-      <PageFooter className="tw-shadow-xl">
-        <div className={styles.MembershipFormFooter}>
-          <Button
-            block
-            type="primary"
-            data-test-id="rewards.business.membership-form.join-btn"
-            className="tw-uppercase"
-          >
-            {t('JoinNow')}
-          </Button>
-        </div>
-      </PageFooter>
+      <BusinessProfile />
+      <BusinessRewards />
     </section>
-  );
-};
+    <Footer />
+  </>
+);
 
 MembershipForm.displayName = 'MembershipForm';
 
