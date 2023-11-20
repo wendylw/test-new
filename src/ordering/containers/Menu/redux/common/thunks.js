@@ -48,7 +48,7 @@ import {
   getHasSelectedProductItemInfo,
 } from './selectors';
 import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/modules/cart/thunks';
-import { PATH_NAME_MAPPING, SHIPPING_TYPES, SOURCE_TYPE } from '../../../../../common/utils/constants';
+import { PATH_NAME_MAPPING, SHIPPING_TYPES, SOURCE_TYPE, TIME_SLOT } from '../../../../../common/utils/constants';
 import {
   getExpectedDeliveryDateFromSession,
   getFilteredQueryString,
@@ -164,7 +164,7 @@ export const updateExpectedDeliveryDate = createAsyncThunk(
       }
 
       // Immediate delivery time
-      if (expectedDate === 'now') {
+      if (expectedDate === TIME_SLOT.NOW) {
         const isOpen = StoreUtils.isAvailableOnDemandOrderTime(
           store,
           currentDayJsObj.toDate(),
@@ -182,11 +182,13 @@ export const updateExpectedDeliveryDate = createAsyncThunk(
           })
         );
         const expectedDeliveryHour =
-          shippingType === SHIPPING_TYPES.DELIVERY ? { from: 'now', to: 'now' } : { from: 'now' };
+          shippingType === SHIPPING_TYPES.DELIVERY
+            ? { from: TIME_SLOT.NOW, to: TIME_SLOT.NOW }
+            : { from: TIME_SLOT.NOW };
 
         setSessionVariable('expectedDeliveryHour', JSON.stringify(expectedDeliveryHour));
 
-        return 'now';
+        return TIME_SLOT.NOW;
       }
 
       const expectedDateDayJsObj = StoreUtils.getBusinessDateTime(businessUTCOffset, expectedDate);
@@ -258,7 +260,7 @@ export const initExpectedDeliveryDate = createAsyncThunk(
           return null;
         }
 
-        if (from === 'now') {
+        if (from === TIME_SLOT.NOW) {
           const isAvailableOnDemandOrder = StoreUtils.isAvailableOnDemandOrderTime(
             store,
             new Date(currentTime),
@@ -269,7 +271,7 @@ export const initExpectedDeliveryDate = createAsyncThunk(
             return null;
           }
 
-          return 'now';
+          return TIME_SLOT.NOW;
         }
 
         const expectedDeliveryDateDayjsObj = StoreUtils.getBusinessDateTime(
@@ -284,11 +286,21 @@ export const initExpectedDeliveryDate = createAsyncThunk(
           return null;
         }
 
-        // store is disable pre-order
+        // If enablePreOrder is false, then disable pre-order
+        if (!enablePreOrder && from !== TIME_SLOT.NOW) {
+          return null;
+        }
+
+        // If disableTodayPreOrder is true, then disable today pre-order
+        if (disableTodayPreOrder && TimeLib.isToday(expectedDeliveryTimeDayjsObj)) {
+          return null;
+        }
+
+        // If disableTodayDeliveryPreOrder is true, then disable today delivery pre-order
         if (
-          !enablePreOrder ||
-          disableTodayPreOrder ||
-          (shippingType === SHIPPING_TYPES.DELIVERY && disableTodayDeliveryPreOrder)
+          shippingType === SHIPPING_TYPES.DELIVERY &&
+          disableTodayDeliveryPreOrder &&
+          TimeLib.isToday(expectedDeliveryTimeDayjsObj)
         ) {
           return null;
         }
@@ -312,7 +324,7 @@ export const initExpectedDeliveryDate = createAsyncThunk(
         !initialExpectedDeliveryTime &&
         StoreUtils.isAvailableOnDemandOrderTime(store, new Date(currentTime), businessUTCOffset, shippingType)
       ) {
-        initialExpectedDeliveryTime = 'now';
+        initialExpectedDeliveryTime = TIME_SLOT.NOW;
       }
 
       dispatch(
