@@ -42,7 +42,13 @@ import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
-import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt, isProductSoldOut } from '../../../common/utils';
+import {
+  getQueryString,
+  isFromBeepSite,
+  isFromBeepSiteOrderHistory,
+  isFromFoodCourt,
+  isProductSoldOut,
+} from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 
@@ -897,7 +903,8 @@ export const actions = {
       type: types.CHECK_URL_VALIDATION_REQUEST,
     });
     try {
-      const { isExpired: isUrlExpired } = await getUrlAccessValidation();
+      const h = getQueryString('h');
+      const { isExpired: isUrlExpired } = await getUrlAccessValidation(h);
 
       dispatch({
         type: types.CHECK_URL_VALIDATION_SUCCESS,
