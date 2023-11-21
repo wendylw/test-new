@@ -281,7 +281,7 @@ class App extends Component {
   }
 
   render() {
-    const { onlineStoreInfo, apiError, isDynamicUrl, isDynamicUrlExpired } = this.props;
+    const { onlineStoreInfo, apiError, isDynamicUrlExpired } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
