@@ -11,8 +11,8 @@ import {
   getApiError,
   getBusinessInfo,
   getRouterPathName,
-  getIsDineInUrlExpired,
-  getIsDineType,
+  getIsDynamicUrlExpired,
+  getIsDynamicUrl,
 } from '../../redux/modules/app';
 import {
   getAddressInfo as getAddressInfoThunk,
@@ -138,17 +138,17 @@ class App extends Component {
   }
 
   checkIfDineInUrlExpired = async () => {
-    const { t, appActions, isDineType } = this.props;
+    const { t, appActions, isDynamicUrl } = this.props;
 
-    if (!isDineType) {
+    if (!isDynamicUrl) {
       return;
     }
 
     await appActions.checkIsUrlValidation();
 
-    const { isDineInUrlExpired } = this.props;
+    const { isDynamicUrlExpired } = this.props;
 
-    if (isDineInUrlExpired) {
+    if (isDynamicUrlExpired) {
       result(
         <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
           <div className={styles.UrlExpiredImageContainer}>
@@ -329,8 +329,8 @@ App.propTypes = {
   routerPathName: PropTypes.string,
   /* eslint-enable */
   ifAddressInfoExists: PropTypes.bool,
-  isDineInUrlExpired: PropTypes.bool,
-  isDineType: PropTypes.bool,
+  isDynamicUrlExpired: PropTypes.bool,
+  isDynamicUrl: PropTypes.bool,
   getAddressInfo: PropTypes.func,
   setAddressInfo: PropTypes.func,
 };
@@ -362,8 +362,8 @@ App.defaultProps = {
   onlineStoreInfo: {},
   routerPathName: '',
   ifAddressInfoExists: false,
-  isDineInUrlExpired: false,
-  isDineType: false,
+  isDynamicUrlExpired: false,
+  isDynamicUrl: false,
   getAddressInfo: () => {},
   setAddressInfo: () => {},
 };
@@ -380,8 +380,8 @@ export default compose(
       apiError: getApiError(state),
       routerPathName: getRouterPathName(state),
       ifAddressInfoExists: getIfAddressInfoExists(state),
-      isDineInUrlExpired: getIsDineInUrlExpired(state),
-      isDineType: getIsDineType(state),
+      isDynamicUrlExpired: getIsDynamicUrlExpired(state),
+      isDynamicUrl: getIsDynamicUrl(state),
     }),
     dispatch => ({
       getAddressInfo: bindActionCreators(getAddressInfoThunk, dispatch),

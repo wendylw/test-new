@@ -12,6 +12,7 @@ import _cloneDeep from 'lodash/cloneDeep';
 import { replace } from 'connected-react-router';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants, { API_REQUEST_STATUS, REGISTRATION_SOURCE } from '../../../utils/constants';
+import { URL_TYPES } from '../../../common/utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
 import config from '../../../config';
@@ -2110,12 +2111,18 @@ export const getIsAddOrUpdateShoppingCartItemRejected = createSelector(
 
 export const getShouldShowCashbackSwitchButton = createSelector(getCartCashback, cashback => cashback > 0);
 
+export const getDynamicQrCodeUrlType = createSelector(getDynamicQrCode, dynamicQrCodeInfo =>
+  _get(dynamicQrCodeInfo, 'data.urlType', null)
+);
+
 export const getIsDynamicQrCodeUrlExpired = createSelector(getDynamicQrCode, dynamicQrCodeInfo =>
   _get(dynamicQrCodeInfo, 'data.isUrlExpired', false)
 );
 
-export const getIsDineInUrlExpired = createSelector(
-  getIsDineType,
+export const getIsDynamicUrl = createSelector(getDynamicQrCodeUrlType, urlType => urlType === URL_TYPES.DYNAMIC);
+
+export const getIsDynamicUrlExpired = createSelector(
   getIsDynamicQrCodeUrlExpired,
-  (isDineInType, isDynamicQrCodeUrlExpired) => isDineInType && isDynamicQrCodeUrlExpired
+  getIsDynamicUrl,
+  (isDynamicQrCodeUrlExpired, isDynamicUrl) => isDynamicQrCodeUrlExpired && isDynamicUrl
 );
