@@ -43,6 +43,10 @@ class App extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      routerPathName: null,
+    };
+
     const source = Utils.getQueryString('source');
 
     if (source) {
@@ -125,16 +129,21 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    const { routerPathName: currStateRouterPathName } = this.state;
     const { pageError, routerPathName: currRouterPathName } = this.props;
-    const { code, routerPathName: prevRouterPathName } = prevProps.pageError || {};
+    const { code } = prevProps.pageError || {};
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
     }
 
-    if (prevRouterPathName && currRouterPathName && currRouterPathName !== prevRouterPathName) {
-      this.checkIfDineInUrlExpired();
+    /* eslint-disable react/no-did-update-set-state */
+    if (currRouterPathName && currRouterPathName !== currStateRouterPathName) {
+      this.setState({ routerPathName: currRouterPathName }, () => {
+        this.checkIfDineInUrlExpired();
+      });
     }
+    /* eslint-enable react/no-did-update-set-state */
   }
 
   checkIfDineInUrlExpired = async () => {
@@ -150,7 +159,7 @@ class App extends Component {
 
     if (isDynamicUrlExpired) {
       result(
-        <div className="tw-justify-center tw-py-8 sm:tw-py-8px tw-hidden">
+        <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
           <div className={styles.UrlExpiredImageContainer}>
             <ObjectFitImage src={BeepWarningImage} noCompression />
           </div>
