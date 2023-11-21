@@ -132,7 +132,7 @@ class App extends Component {
       this.visitErrorPage();
     }
 
-    if (currRouterPathName !== prevRouterPathName) {
+    if (prevRouterPathName && currRouterPathName && currRouterPathName !== prevRouterPathName) {
       this.checkIfDineInUrlExpired();
     }
   }
@@ -150,19 +150,26 @@ class App extends Component {
 
     if (isDynamicUrlExpired) {
       result(
-        <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
+        <div className="tw-justify-center tw-py-8 sm:tw-py-8px tw-hidden">
           <div className={styles.UrlExpiredImageContainer}>
             <ObjectFitImage src={BeepWarningImage} noCompression />
           </div>
 
-          <h4 className="tw-flex tw-justify-center tw-text-xl tw-leading-normal tw-font-bold">
-            {t('UrlExpiredTitle')}
-          </h4>
+          <h4 className={styles.UrlExpiredTitle}>{t('UrlExpiredTitle')}</h4>
           <div className={styles.UrlExpiredDescription}>{t('UrlExpiredDescription')}</div>
         </div>,
         {
           customizeContent: true,
+          closeButtonClassName: styles.UrlExpiredButton,
           closeButtonContent: t('UrlExpiredButton'),
+          zIndex: 1000,
+          onClose: () => {
+            if (Utils.isWebview()) {
+              NativeMethods.closeWebView();
+            } else {
+              window.location.href = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${ROUTER_PATHS.QRSCAN}`;
+            }
+          },
         }
       );
     }
