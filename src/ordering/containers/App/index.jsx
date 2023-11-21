@@ -281,7 +281,7 @@ class App extends Component {
   }
 
   render() {
-    const { onlineStoreInfo, apiError } = this.props;
+    const { onlineStoreInfo, apiError, isDynamicUrl, isDynamicUrlExpired } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
@@ -298,7 +298,7 @@ class App extends Component {
             }}
           />
         ) : null}
-        <Routes />
+        {isDynamicUrlExpired ? null : <Routes />}
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
