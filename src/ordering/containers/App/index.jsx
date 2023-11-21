@@ -10,7 +10,9 @@ import {
   getUser,
   getApiError,
   getBusinessInfo,
+  getRouterPathName,
   getIsDineInUrlExpired,
+  getIsDineType,
 } from '../../redux/modules/app';
 import {
   getAddressInfo as getAddressInfoThunk,
@@ -66,32 +68,13 @@ class App extends Component {
   }
 
   async componentDidMount() {
-    const { t, appActions, isDineInUrlExpired } = this.props;
+    const { appActions } = this.props;
     const { pathname } = window.location;
     const isThankYouPage = pathname.includes(`${ROUTER_PATHS.THANK_YOU}`);
     const isOrderDetailPage = pathname.includes(`${ROUTER_PATHS.ORDER_DETAILS}`);
     const isMerchantInfPage = pathname.includes(`${ROUTER_PATHS.MERCHANT_INFO}`);
     const isReportIssuePage = pathname.includes(`${ROUTER_PATHS.REPORT_DRIVER}`);
     const { browser } = Utils.getUserAgentInfo();
-
-    if (isDineInUrlExpired) {
-      result(
-        <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
-          <div className={styles.UrlExpiredImageContainer}>
-            <ObjectFitImage src={BeepWarningImage} noCompression />
-          </div>
-
-          <h4 className="tw-flex tw-justify-center tw-text-xl tw-leading-normal tw-font-bold">
-            {t('UrlExpiredTitle')}
-          </h4>
-          <div className={styles.UrlExpiredDescription}>{t('UrlExpiredDescription')}</div>
-        </div>,
-        {
-          customizeContent: true,
-          closeButtonContent: t('UrlExpiredButton'),
-        }
-      );
-    }
 
     if (
       !(isThankYouPage || isOrderDetailPage || isMerchantInfPage || isReportIssuePage) &&
@@ -106,6 +89,8 @@ class App extends Component {
     this.visitErrorPage();
 
     try {
+      this.checkIfDineInUrlExpired();
+
       const initRequests = [this.initAddressInfo(), appActions.getLoginStatus(), appActions.fetchOnlineStoreInfo()];
 
       if (Utils.notHomeOrLocationPath(window.location.pathname)) {
@@ -140,18 +125,48 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { user, pageError } = this.props;
-    const { isExpired, isWebview } = user || {};
-    const { code } = prevProps.pageError || {};
+    const { pageError, routerPathName: currRouterPathName } = this.props;
+    const { code, routerPathName: prevRouterPathName } = prevProps.pageError || {};
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
     }
 
-    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      // this.postAppMessage(user);
+    if (currRouterPathName !== prevRouterPathName) {
+      this.checkIfDineInUrlExpired();
     }
   }
+
+  checkIfDineInUrlExpired = async () => {
+    const { t, appActions, isDineType } = this.props;
+
+    if (!isDineType) {
+      return;
+    }
+
+    await appActions.checkIsUrlValidation();
+
+    const { isDineInUrlExpired } = this.props;
+
+    if (isDineInUrlExpired) {
+      result(
+        <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
+          <div className={styles.UrlExpiredImageContainer}>
+            <ObjectFitImage src={BeepWarningImage} noCompression />
+          </div>
+
+          <h4 className="tw-flex tw-justify-center tw-text-xl tw-leading-normal tw-font-bold">
+            {t('UrlExpiredTitle')}
+          </h4>
+          <div className={styles.UrlExpiredDescription}>{t('UrlExpiredDescription')}</div>
+        </div>,
+        {
+          customizeContent: true,
+          closeButtonContent: t('UrlExpiredButton'),
+        }
+      );
+    }
+  };
 
   initAddressInfo = async () => {
     const { getAddressInfo, setAddressInfo } = this.props;
@@ -306,13 +321,16 @@ App.propTypes = {
     fetchOnlineStoreInfo: PropTypes.func,
     hideMessageModal: PropTypes.func,
     hideApiMessageModal: PropTypes.func,
+    checkIsUrlValidation: PropTypes.func,
   }),
   /* eslint-disable react/forbid-prop-types */
   businessInfo: PropTypes.object,
   onlineStoreInfo: PropTypes.object,
+  routerPathName: PropTypes.string,
   /* eslint-enable */
   ifAddressInfoExists: PropTypes.bool,
   isDineInUrlExpired: PropTypes.bool,
+  isDineType: PropTypes.bool,
   getAddressInfo: PropTypes.func,
   setAddressInfo: PropTypes.func,
 };
@@ -338,11 +356,14 @@ App.defaultProps = {
     fetchOnlineStoreInfo: () => {},
     hideMessageModal: () => {},
     hideApiMessageModal: () => {},
+    checkIsUrlValidation: () => {},
   },
   businessInfo: {},
   onlineStoreInfo: {},
+  routerPathName: '',
   ifAddressInfoExists: false,
   isDineInUrlExpired: false,
+  isDineType: false,
   getAddressInfo: () => {},
   setAddressInfo: () => {},
 };
@@ -357,8 +378,10 @@ export default compose(
       error: getError(state),
       pageError: getPageError(state),
       apiError: getApiError(state),
+      routerPathName: getRouterPathName(state),
       ifAddressInfoExists: getIfAddressInfoExists(state),
       isDineInUrlExpired: getIsDineInUrlExpired(state),
+      isDineType: getIsDineType(state),
     }),
     dispatch => ({
       getAddressInfo: bindActionCreators(getAddressInfoThunk, dispatch),
