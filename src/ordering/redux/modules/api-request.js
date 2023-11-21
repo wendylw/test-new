@@ -14,4 +14,4 @@ export const getSearchPromotionInfo = ({ consumerId, business, promoCode }) =>
 
 export const postLoginGuest = () => post('/api/login/guest');
 
-export const getUrlAccessValidation = () => get('/api/v3/accesses/validation');
+export const getUrlAccessValidation = () => get('/api/v3/urls/validation');

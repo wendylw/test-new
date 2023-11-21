@@ -74,22 +74,6 @@ class App extends Component {
     const isReportIssuePage = pathname.includes(`${ROUTER_PATHS.REPORT_DRIVER}`);
     const { browser } = Utils.getUserAgentInfo();
 
-    result(
-      <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
-        <div className={styles.UrlExpiredImageContainer}>
-          <ObjectFitImage src={BeepWarningImage} noCompression />
-        </div>
-
-        <h4 className="tw-flex tw-justify-center tw-text-xl tw-leading-normal tw-font-bold">{t('UrlExpiredTitle')}</h4>
-        <div className={styles.UrlExpiredDescription}>{t('UrlExpiredDescription')}</div>
-      </div>,
-      {
-        customizeContent: true,
-        closeButtonContent: t('UrlExpiredButton'),
-        header: <header>test</header>,
-      }
-    );
-
     if (isDineInUrlExpired) {
       result(
         <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
@@ -105,7 +89,6 @@ class App extends Component {
         {
           customizeContent: true,
           closeButtonContent: t('UrlExpiredButton'),
-          header: <header>test</header>,
         }
       );
     }
