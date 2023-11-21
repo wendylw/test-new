@@ -127,13 +127,19 @@ class App extends Component {
 
   componentDidUpdate = async prevProps => {
     const {
-      appActions,
       pageError,
       isUserLogin: currIsUserLogin,
       userConsumerId: currUserConsumerId,
       loadConsumerCustomerInfo,
+      isCashbackClaimRequestFulfilled: currIsCashbackClaimRequestFulfilled,
+      isConfirmSharingConsumerInfoCompleted: currIsConfirmSharingConsumerInfoCompleted,
     } = this.props;
-    const { pageError: prevPageError, isUserLogin: prevIsUserLogin } = prevProps;
+    const {
+      pageError: prevPageError,
+      isUserLogin: prevIsUserLogin,
+      isCashbackClaimRequestFulfilled: prevIsCashbackClaimRequestFulfilled,
+      isConfirmSharingConsumerInfoCompleted: prevIsConfirmSharingConsumerInfoCompleted,
+    } = prevProps;
     const { code } = prevPageError || {};
 
     if (pageError.code && pageError.code !== code) {
@@ -142,8 +148,26 @@ class App extends Component {
 
     // currUserConsumerId !== prevUserConsumerId instead of !prevUserConsumerId .
     // The 3rd MiniProgram cached the previous consumerId, so the consumerId is not the correct account
-    if (currUserConsumerId) {
-      loadConsumerCustomerInfo();
+    if (isUserLogin && currUserConsumerId) {
+      let isLoadCustomerAvailable = false;
+
+      if (
+        pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM) &&
+        currIsCashbackClaimRequestFulfilled !== prevIsCashbackClaimRequestFulfilled
+      ) {
+        isLoadCustomerAvailable = isCashbackClaimRequestFulfilled;
+      }
+
+      if (
+        pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION) &&
+        currIsConfirmSharingConsumerInfoCompleted !== prevIsConfirmSharingConsumerInfoCompleted
+      ) {
+        isLoadCustomerAvailable = isConfirmSharingConsumerInfoCompleted;
+      }
+
+      if (isLoadCustomerAvailable) {
+        await loadConsumerCustomerInfo();
+      }
     }
 
     if (currIsUserLogin && currIsUserLogin !== prevIsUserLogin) {
