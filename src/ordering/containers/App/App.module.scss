@@ -1,0 +1,11 @@
+.UrlExpiredImageContainer {
+  @apply tw-mx-auto tw-my-12 sm:tw-my-12px;
+
+  max-width: 170px;
+}
+
+.UrlExpiredDescription {
+  @apply tw-flex tw-justify-center tw-text-center tw-mx-auto tw-my-auto tw-mt-4 sm:tw-mt-4px tw-mb-8 sm:tw-mb-8px tw-leading-relaxed tw-text-gray-700;
+
+  max-width: 300px;
+}

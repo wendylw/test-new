@@ -51,6 +51,32 @@ const getIsGuest = () => {
   }
 };
 
+const getUrlType = () => {
+  try {
+    const urlType = document.cookie
+      .split(';')
+      .find(s => s.includes('__sh_url_type'))
+      .split('=')[1];
+
+    return urlType;
+  } catch (e) {
+    return null;
+  }
+};
+
+const getIsUrlExpired = () => {
+  try {
+    const isUrlExpired = document.cookie
+      .split(';')
+      .find(s => s.includes('__sh_url_expired'))
+      .split('=')[1];
+
+    return isUrlExpired === 'true';
+  } catch (e) {
+    return null;
+  }
+};
+
 const config = {
   beepOnlineStoreUrl: business => (process.env.REACT_APP_MERCHANT_STORE_URL || '').replace('%business%', business),
   storehubPaymentResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_RESPONSE_URL,
@@ -80,6 +106,8 @@ const config = {
   storeId: getStoreId(),
   consumerId: getConsumerId(),
   isGuest: getIsGuest(),
+  urlType: getUrlType(),
+  isUrlExpired: getIsUrlExpired(),
   PUBLIC_URL: process.env.PUBLIC_URL || '',
   googleMapsAPIKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
   googleRecaptchaSiteKey: process.env.REACT_APP_GOOGLE_RECAPTCHA_SITE_KEY,

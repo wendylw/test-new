@@ -35,7 +35,7 @@ import {
   getIsAddressRequestStatusFulfilled,
 } from '../../../redux/modules/address/selectors';
 import { getCartItems as getNewCartItems } from './cart/selectors';
-import { getProfileInfo, postLoginGuest } from './api-request';
+import { getProfileInfo, postLoginGuest, getUrlAccessValidation } from './api-request';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
@@ -195,6 +195,14 @@ export const initialState = {
     postCode: '',
     countryCode: '',
     fetchRequestStatus: null,
+  },
+  dynamicQrCode: {
+    data: {
+      urlType: config.urlType,
+      isUrlExpired: config.isUrlExpired,
+    },
+    status: null,
+    error: null,
   },
 };
 
@@ -882,6 +890,27 @@ export const actions = {
       birthday,
     },
   }),
+
+  checkIsUrlValidation: () => async dispatch => {
+    dispatch({
+      type: types.CHECK_URL_VALIDATION_REQUEST,
+    });
+    try {
+      const { isExpired: isUrlExpired } = await getUrlAccessValidation();
+
+      dispatch({
+        type: types.CHECK_URL_VALIDATION_SUCCESS,
+        payload: {
+          isUrlExpired,
+        },
+      });
+    } catch (error) {
+      dispatch({
+        type: types.CHECK_URL_VALIDATION_FAILURE,
+        error,
+      });
+    }
+  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -1372,6 +1401,37 @@ const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
   }
 };
 
+const dynamicQrCode = (state = initialState.dynamicQrCode, action) => {
+  switch (action.type) {
+    case types.CHECK_URL_VALIDATION_REQUEST: {
+      return {
+        ...state,
+        status: API_REQUEST_STATUS.PENDING,
+      };
+    }
+    case types.CHECK_URL_VALIDATION_SUCCESS: {
+      const isUrlExpired = _get(action.payload, 'isUrlExpired', null);
+
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          isUrlExpired,
+        },
+        status: API_REQUEST_STATUS.FULFILLED,
+      };
+    }
+    case types.CHECK_URL_VALIDATION_FAILURE: {
+      return {
+        ...state,
+        status: API_REQUEST_STATUS.REJECTED,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   user,
   error,
@@ -1387,6 +1447,7 @@ export default combineReducers({
   onlineCategory,
   coreStores,
   productDetail,
+  dynamicQrCode,
 });
 
 // selectors
@@ -1395,6 +1456,7 @@ export const getOtpRequest = state => state.app.user.otpRequest;
 export const getUserIsExpired = state => state.app.user.isExpired;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
+export const getDynamicQrCode = state => state.app.dynamicQrCode;
 
 export const getIsGuestMode = createSelector(getUser, userInfo =>
   _get(userInfo, 'guestModeRequest.isGuestMode', false)
@@ -2024,6 +2086,8 @@ export const getRouter = state => state.router;
 
 export const getLocation = state => state.router.location;
 
+export const getPathName = createSelector(getLocation, location => location.pathname);
+
 export const getLocationSearch = createSelector(getLocation, location => location.search);
 
 export const getURLQueryObject = createSelector(getLocationSearch, locationSearch =>
@@ -2043,4 +2107,15 @@ export const getIsAddOrUpdateShoppingCartItemRejected = createSelector(
   getAddOrUpdateShoppingCartItemStatus,
   addOrUpdateShoppingCartItemStatus => addOrUpdateShoppingCartItemStatus === API_REQUEST_STATUS.REJECTED
 );
+
 export const getShouldShowCashbackSwitchButton = createSelector(getCartCashback, cashback => cashback > 0);
+
+export const getIsDynamicQrCodeUrlExpired = createSelector(getDynamicQrCode, dynamicQrCodeInfo =>
+  _get(dynamicQrCodeInfo, 'data.isUrlExpired', false)
+);
+
+export const getIsDineInUrlExpired = createSelector(
+  getIsDineType,
+  getIsDynamicQrCodeUrlExpired,
+  (isDineInType, isDynamicQrCodeUrlExpired) => isDineInType && isDynamicQrCodeUrlExpired
+);

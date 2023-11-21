@@ -10,6 +10,7 @@ import {
   getUser,
   getApiError,
   getBusinessInfo,
+  getIsDineInUrlExpired,
 } from '../../redux/modules/app';
 import {
   getAddressInfo as getAddressInfoThunk,
@@ -29,6 +30,10 @@ import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
 import { SOURCE_TYPE } from '../../../common/utils/constants';
 import { isURL } from '../../../common/utils';
+import { result } from '../../../common/utils/feedback';
+import BeepWarningImage from '../../../images/beep-warning.svg';
+import ObjectFitImage from '../../../common/components/Image/ObjectFitImage';
+import styles from './App.module.scss';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -61,13 +66,49 @@ class App extends Component {
   }
 
   async componentDidMount() {
-    const { appActions } = this.props;
+    const { t, appActions, isDineInUrlExpired } = this.props;
     const { pathname } = window.location;
     const isThankYouPage = pathname.includes(`${ROUTER_PATHS.THANK_YOU}`);
     const isOrderDetailPage = pathname.includes(`${ROUTER_PATHS.ORDER_DETAILS}`);
     const isMerchantInfPage = pathname.includes(`${ROUTER_PATHS.MERCHANT_INFO}`);
     const isReportIssuePage = pathname.includes(`${ROUTER_PATHS.REPORT_DRIVER}`);
     const { browser } = Utils.getUserAgentInfo();
+
+    result(
+      <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
+        <div className={styles.UrlExpiredImageContainer}>
+          <ObjectFitImage src={BeepWarningImage} noCompression />
+        </div>
+
+        <h4 className="tw-flex tw-justify-center tw-text-xl tw-leading-normal tw-font-bold">{t('UrlExpiredTitle')}</h4>
+        <div className={styles.UrlExpiredDescription}>{t('UrlExpiredDescription')}</div>
+      </div>,
+      {
+        customizeContent: true,
+        closeButtonContent: t('UrlExpiredButton'),
+        header: <header>test</header>,
+      }
+    );
+
+    if (isDineInUrlExpired) {
+      result(
+        <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
+          <div className={styles.UrlExpiredImageContainer}>
+            <ObjectFitImage src={BeepWarningImage} noCompression />
+          </div>
+
+          <h4 className="tw-flex tw-justify-center tw-text-xl tw-leading-normal tw-font-bold">
+            {t('UrlExpiredTitle')}
+          </h4>
+          <div className={styles.UrlExpiredDescription}>{t('UrlExpiredDescription')}</div>
+        </div>,
+        {
+          customizeContent: true,
+          closeButtonContent: t('UrlExpiredButton'),
+          header: <header>test</header>,
+        }
+      );
+    }
 
     if (
       !(isThankYouPage || isOrderDetailPage || isMerchantInfPage || isReportIssuePage) &&
@@ -288,6 +329,7 @@ App.propTypes = {
   onlineStoreInfo: PropTypes.object,
   /* eslint-enable */
   ifAddressInfoExists: PropTypes.bool,
+  isDineInUrlExpired: PropTypes.bool,
   getAddressInfo: PropTypes.func,
   setAddressInfo: PropTypes.func,
 };
@@ -317,6 +359,7 @@ App.defaultProps = {
   businessInfo: {},
   onlineStoreInfo: {},
   ifAddressInfoExists: false,
+  isDineInUrlExpired: false,
   getAddressInfo: () => {},
   setAddressInfo: () => {},
 };
@@ -332,6 +375,7 @@ export default compose(
       pageError: getPageError(state),
       apiError: getApiError(state),
       ifAddressInfoExists: getIfAddressInfoExists(state),
+      isDineInUrlExpired: getIsDineInUrlExpired(state),
     }),
     dispatch => ({
       getAddressInfo: bindActionCreators(getAddressInfoThunk, dispatch),
