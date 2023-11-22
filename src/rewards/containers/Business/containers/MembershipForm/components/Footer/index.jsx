@@ -1,10 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useTranslation, Trans } from 'react-i18next';
 import Button from '../../../../../../../common/components/Button';
 import PageFooter from '../../../../../../../common/components/PageFooter';
 import { TERMS_AND_CONDITION_URL } from '../../constants';
 
-const Footer = () => {
+const Footer = ({ onButtonClick }) => {
   const { t } = useTranslation('Rewards');
 
   return (
@@ -23,7 +24,13 @@ const Footer = () => {
             </a>
           </Trans>
         </p>
-        <Button block type="primary" data-test-id="rewards.business.membership-form.join-btn" className="tw-uppercase">
+        <Button
+          block
+          type="primary"
+          data-test-id="rewards.business.membership-form.join-btn"
+          className="tw-uppercase"
+          onClick={onButtonClick}
+        >
           {t('JoinNow')}
         </Button>
       </div>
@@ -32,5 +39,13 @@ const Footer = () => {
 };
 
 Footer.displayName = 'Footer';
+
+Footer.propTypes = {
+  onButtonClick: PropTypes.func,
+};
+
+Footer.defaultProps = {
+  onButtonClick: () => {},
+};
 
 export default Footer;

@@ -1,3 +1,4 @@
+import { useMount } from 'react-use';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,12 +13,16 @@ import {
   getShouldShowCongratulation,
   getShouldShowBackButton,
 } from './redux/selectors';
-import { backButtonClicked, retryButtonClicked } from './redux/thunks';
+import { mounted, backButtonClicked, retryButtonClicked, joinNowButtonClicked } from './redux/thunks';
 import MembershipForm from '.';
 
 const MembershipFormProxy = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation('Rewards');
+
+  useMount(() => {
+    dispatch(mounted());
+  });
 
   const shouldShowPageLoader = useSelector(getShouldShowPageLoader);
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
@@ -26,6 +31,7 @@ const MembershipFormProxy = () => {
 
   const handleClickBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickRetryButton = useCallback(() => dispatch(retryButtonClicked()), [dispatch]);
+  const handleJoinNowButton = useCallback(() => dispatch(joinNowButtonClicked()), [dispatch]);
 
   return (
     <Frame>
@@ -41,7 +47,7 @@ const MembershipFormProxy = () => {
       ) : shouldShowUnknownError ? (
         <ErrorResult onCloseButtonClick={handleClickRetryButton} />
       ) : (
-        <MembershipForm />
+        <MembershipForm onJoinButtonClick={handleJoinNowButton} />
       )}
     </Frame>
   );
