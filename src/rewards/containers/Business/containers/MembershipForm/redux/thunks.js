@@ -1,7 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack } from '../../../../../../utils/native-methods';
+import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import { fetchUserLoginStatus } from '../../../../../../redux/modules/user/thunks';
 
-export const mounted = createAsyncThunk('rewards/business/membershipForm/mounted', async () => {});
+export const mounted = createAsyncThunk('rewards/business/membershipForm/mounted', async (_, { dispatch }) =>
+  dispatch(fetchUserLoginStatus())
+);
 
 export const backButtonClicked = createAsyncThunk(
   'rewards/business/membershipForm/backButtonClicked',
@@ -14,5 +18,8 @@ export const retryButtonClicked = createAsyncThunk('rewards/business/membershipF
 
 export const joinNowButtonClicked = createAsyncThunk(
   'rewards/business/membershipForm/joinNowButtonClicked',
-  async () => {}
+  async (_, { getState }) => {
+    const state = getState();
+    const isLogin = getIsLogin(state);
+  }
 );
