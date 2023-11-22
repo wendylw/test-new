@@ -13,7 +13,7 @@ import {
   getShouldShowCongratulation,
   getShouldShowBackButton,
 } from './redux/selectors';
-import { mounted, backButtonClicked, retryButtonClicked, joinNowButtonClicked } from './redux/thunks';
+import { mounted, backButtonClicked, retryButtonClicked } from './redux/thunks';
 import MembershipForm from '.';
 
 const MembershipFormProxy = () => {
@@ -31,7 +31,6 @@ const MembershipFormProxy = () => {
 
   const handleClickBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickRetryButton = useCallback(() => dispatch(retryButtonClicked()), [dispatch]);
-  const handleJoinNowButton = useCallback(() => dispatch(joinNowButtonClicked()), [dispatch]);
 
   return (
     <Frame>
@@ -47,7 +46,7 @@ const MembershipFormProxy = () => {
       ) : shouldShowUnknownError ? (
         <ErrorResult onCloseButtonClick={handleClickRetryButton} />
       ) : (
-        <MembershipForm onJoinButtonClick={handleJoinNowButton} />
+        <MembershipForm />
       )}
     </Frame>
   );

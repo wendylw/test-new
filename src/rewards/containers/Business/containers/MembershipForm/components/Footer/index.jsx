@@ -1,12 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import Button from '../../../../../../../common/components/Button';
 import PageFooter from '../../../../../../../common/components/PageFooter';
+import { getIsJoinNowButtonDisabled } from '../../redux/selectors';
+import { joinNowButtonClicked } from '../../redux/thunks';
 import { TERMS_AND_CONDITION_URL } from '../../constants';
 
-const Footer = ({ onButtonClick }) => {
+const Footer = () => {
+  const dispatch = useDispatch();
   const { t } = useTranslation('Rewards');
+  const isJoinNowButtonDisabled = useSelector(getIsJoinNowButtonDisabled);
+  const handleClickJoinNowButton = useCallback(() => dispatch(joinNowButtonClicked()), [dispatch]);
 
   return (
     <PageFooter className="tw-shadow-xl">
@@ -29,7 +34,8 @@ const Footer = ({ onButtonClick }) => {
           type="primary"
           data-test-id="rewards.business.membership-form.join-btn"
           className="tw-uppercase"
-          onClick={onButtonClick}
+          disabled={isJoinNowButtonDisabled}
+          onClick={handleClickJoinNowButton}
         >
           {t('JoinNow')}
         </Button>
@@ -39,13 +45,5 @@ const Footer = ({ onButtonClick }) => {
 };
 
 Footer.displayName = 'Footer';
-
-Footer.propTypes = {
-  onButtonClick: PropTypes.func,
-};
-
-Footer.defaultProps = {
-  onButtonClick: () => {},
-};
 
 export default Footer;

@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
 import { getIsWebview } from '../../../../../redux/modules/common/selectors';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
@@ -22,6 +23,23 @@ export const getShouldShowPageLoader = createSelector(
 
 export const getShouldShowUnknownError = () => false;
 
-export const getShouldShowCongratulation = () => false;
+export const getJoinMembershipRequest = state => state.business.membershipForm.joinMembershipRequest;
+
+export const getJoinMembershipRequestStatus = createSelector(
+  getJoinMembershipRequest,
+  joinMembershipRequest => joinMembershipRequest.status
+);
+
+export const getIsJoinMembershipRequestStatusFulfilled = createSelector(
+  getJoinMembershipRequestStatus,
+  joinMembershipRequestStatus => joinMembershipRequestStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getShouldShowCongratulation = createSelector(
+  getIsJoinMembershipRequestStatusFulfilled,
+  isJoinMembershipRequestStatusFulfilled => isJoinMembershipRequestStatusFulfilled
+);
 
 export const getShouldShowBackButton = createSelector(getIsWebview, isInWebview => isInWebview);
+
+export const getIsJoinNowButtonDisabled = () => false;
