@@ -104,6 +104,19 @@ const setRenderer = renderer => {
   return gb?.setRenderer(renderer);
 };
 
+const patchAttributes = attrs => {
+  const gb = getInstance();
+
+  if (!gb) {
+    return;
+  }
+
+  gb.setAttributes({
+    ...gb.getAttributes(),
+    ...attrs,
+  });
+};
+
 export default {
   isOn,
   getInstance,
@@ -111,4 +124,5 @@ export default {
   loadFeatures,
   refreshFeatures,
   getFeatureValue,
+  patchAttributes,
 };

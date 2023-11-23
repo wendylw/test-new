@@ -2,11 +2,13 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { postUserMembership } from './api-request';
 import { goBack } from '../../../../../../utils/native-methods';
 import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import Growthbook from '../../../../../../utils/growthbook';
 import { fetchUserLoginStatus } from '../../../../../../redux/modules/user/thunks';
 
-export const mounted = createAsyncThunk('rewards/business/membershipForm/mounted', async (_, { dispatch }) =>
-  dispatch(fetchUserLoginStatus())
-);
+export const mounted = createAsyncThunk('rewards/business/membershipForm/mounted', async (_, { dispatch }) => {
+  Growthbook.patchAttributes({ business: 'mickeymouseclubhouse' });
+  dispatch(fetchUserLoginStatus());
+});
 
 export const backButtonClicked = createAsyncThunk(
   'rewards/business/membershipForm/backButtonClicked',
