@@ -4,17 +4,19 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
-import PageLoader from '../../../../../components/PageLoader';
 import ErrorResult from './components/ErrorResult';
 import SuccessResult from './components/SuccessResult';
+import SkeletonLoader from './components/SkeletonLoader';
 import {
-  getShouldShowPageLoader,
+  getShouldShowSkeletonLoader,
+  getShouldShowUnsupportedError,
   getShouldShowUnknownError,
   getShouldShowCongratulation,
   getShouldShowBackButton,
 } from './redux/selectors';
 import { mounted, backButtonClicked, retryButtonClicked } from './redux/thunks';
 import MembershipForm from '.';
+import BeepWarningImage from '../../../../../images/beep-warning.png';
 
 const MembershipFormProxy = () => {
   const dispatch = useDispatch();
@@ -24,7 +26,8 @@ const MembershipFormProxy = () => {
     dispatch(mounted());
   });
 
-  const shouldShowPageLoader = useSelector(getShouldShowPageLoader);
+  const shouldShowSkeletonLoader = useSelector(getShouldShowSkeletonLoader);
+  const shouldShowUnsupportedError = useSelector(getShouldShowUnsupportedError);
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
   const shouldShowCongratulation = useSelector(getShouldShowCongratulation);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
@@ -39,12 +42,24 @@ const MembershipFormProxy = () => {
         onBackArrowClick={handleClickBackButton}
         isShowBackButton={shouldShowBackButton}
       />
-      {shouldShowPageLoader ? (
-        <PageLoader />
+      {shouldShowSkeletonLoader ? (
+        <SkeletonLoader />
       ) : shouldShowCongratulation ? (
         <SuccessResult />
+      ) : shouldShowUnsupportedError ? (
+        <ErrorResult
+          title={t('MembershipUnavailableTitle')}
+          content={t('MembershipUnavailableDescription')}
+          isCloseButtonVisible={false}
+        />
       ) : shouldShowUnknownError ? (
-        <ErrorResult onCloseButtonClick={handleClickRetryButton} />
+        <ErrorResult
+          title={t('SomethingWentWrongTitle')}
+          content={t('SomethingWentWrongDescription')}
+          buttonText={t('Retry')}
+          imageSrc={BeepWarningImage}
+          onCloseButtonClick={handleClickRetryButton}
+        />
       ) : (
         <MembershipForm />
       )}

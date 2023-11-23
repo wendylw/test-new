@@ -1,3 +1,21 @@
-import { post } from '../../../../../../utils/api/api-fetch';
+import { get, post } from '../../../../../../utils/api/api-fetch';
 
-export const postUserMembership = () => post('/api/join/membership');
+export const postUserMembership = ({ consumerId, business, source }) =>
+  post(`/api/v3/consumers/${consumerId}/memberships`, {
+    business,
+    source,
+  });
+
+export const getBusinessInfo = business =>
+  get('/api/v3/memberships', {
+    queryParams: {
+      business,
+    },
+  });
+
+export const getConsumerCustomerBusinessInfo = ({ consumerId, business }) =>
+  get(`/api/v3/consumers/${consumerId}/customer`, {
+    queryParams: {
+      business,
+    },
+  });

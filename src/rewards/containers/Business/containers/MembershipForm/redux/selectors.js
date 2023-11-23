@@ -1,14 +1,72 @@
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
 import { getIsWebview } from '../../../../../redux/modules/common/selectors';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
-import { getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
+import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
 
-export const getBusinessLogo = () =>
-  'https://i.etsystatic.com/isla/2d7134/54253089/isla_500x500.54253089_5oqc7two.jpg?version=0';
+export const getBusinessInfoRequest = state => state.business.membershipForm.fetchBusinessInfoRequest;
 
-export const getBusinessName = () => 'Loopy Slime - Best Slime Shop on Etsy';
+export const getBusinessInfo = createSelector(getBusinessInfoRequest, businessInfoRequest => businessInfoRequest.data);
+
+export const getBusinessLogo = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'businessLogo', ''));
+
+export const getBusinessName = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'businessName', ''));
+
+export const getIsBusinessMembershipEnabled = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'membershipEnabled', false)
+);
+
+export const getBusinessInfoRequestStatus = createSelector(
+  getBusinessInfoRequest,
+  businessInfoRequest => businessInfoRequest.status
+);
+
+export const getIsBusinessInfoRequestStatusFulfilled = createSelector(
+  getBusinessInfoRequestStatus,
+  businessInfoRequestStatus => businessInfoRequestStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsBusinessInfoRequestStatusRejected = createSelector(
+  getBusinessInfoRequestStatus,
+  businessInfoRequestStatus => businessInfoRequestStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getIsBusinessInfoRequestStatusCompleted = createSelector(
+  getBusinessInfoRequestStatus,
+  businessInfoRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(businessInfoRequestStatus)
+);
+
+export const getConsumerCustomerBusinessInfoRequest = state =>
+  state.business.membershipForm.fetchConsumerCustomerBusinessInfoRequest;
+
+export const getConsumerCustomerBusinessInfo = createSelector(
+  getConsumerCustomerBusinessInfoRequest,
+  consumerCustomerBusinessInfoRequest => consumerCustomerBusinessInfoRequest.data
+);
+
+export const getHasJoinedMembership = createSelector(
+  getConsumerCustomerBusinessInfo,
+  consumerCustomerBusinessInfo => !!_get(consumerCustomerBusinessInfo, 'customerTier', null)
+);
+
+export const getConsumerCustomerBusinessInfoRequestStatus = createSelector(
+  getConsumerCustomerBusinessInfoRequest,
+  consumerCustomerBusinessInfoRequest => consumerCustomerBusinessInfoRequest.status
+);
+
+export const getIsConsumerCustomerBusinessInfoRequestStatusRejected = createSelector(
+  getConsumerCustomerBusinessInfoRequestStatus,
+  consumerCustomerBusinessInfoRequest => consumerCustomerBusinessInfoRequest === API_REQUEST_STATUS.REJECTED
+);
+
+export const getIsConsumerCustomerBusinessInfoRequestStatusCompleted = createSelector(
+  getConsumerCustomerBusinessInfoRequestStatus,
+  consumerCustomerBusinessInfoRequest =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(consumerCustomerBusinessInfoRequest)
+);
 
 export const getBusinessRewardsUrl = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.FOUNDATION_OF_TIERED_MEMBERSHIP).introURL;
@@ -16,12 +74,52 @@ export const getBusinessRewardsUrl = state =>
 export const getCongratulationUrl = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.FOUNDATION_OF_TIERED_MEMBERSHIP).congratsURL;
 
-export const getShouldShowPageLoader = createSelector(
+export const getShouldShowSkeletonLoader = createSelector(
+  getIsLogin,
   getIsCheckLoginRequestCompleted,
-  isCheckLoginRequestCompleted => !isCheckLoginRequestCompleted
+  getIsBusinessInfoRequestStatusCompleted,
+  getIsConsumerCustomerBusinessInfoRequestStatusCompleted,
+  (
+    isLogin,
+    isCheckLoginRequestCompleted,
+    isBusinessInfoRequestStatusCompleted,
+    isConsumerCustomerBusinessInfoRequestStatusCompleted
+  ) => {
+    if (isLogin) {
+      return !(
+        isCheckLoginRequestCompleted &&
+        isBusinessInfoRequestStatusCompleted &&
+        isConsumerCustomerBusinessInfoRequestStatusCompleted
+      );
+    }
+
+    return !(isCheckLoginRequestCompleted && isBusinessInfoRequestStatusCompleted);
+  }
 );
 
-export const getShouldShowUnknownError = () => false;
+export const getShouldShowUnsupportedError = createSelector(
+  getIsBusinessInfoRequestStatusFulfilled,
+  getIsBusinessMembershipEnabled,
+  (isBusinessInfoRequestStatusFulfilled, isBusinessMembershipEnabled) =>
+    isBusinessInfoRequestStatusFulfilled && !isBusinessMembershipEnabled
+);
+
+export const getShouldShowUnknownError = createSelector(
+  getIsLogin,
+  getIsBusinessInfoRequestStatusRejected,
+  getIsConsumerCustomerBusinessInfoRequestStatusRejected,
+  (isLogin, isBusinessInfoRequestStatusRejected, isConsumerCustomerBusinessInfoRequestStatusRejected) => {
+    if (isBusinessInfoRequestStatusRejected) {
+      return true;
+    }
+
+    if (isLogin) {
+      return isConsumerCustomerBusinessInfoRequestStatusRejected;
+    }
+
+    return false;
+  }
+);
 
 export const getJoinMembershipRequest = state => state.business.membershipForm.joinMembershipRequest;
 
@@ -36,10 +134,12 @@ export const getIsJoinMembershipRequestStatusFulfilled = createSelector(
 );
 
 export const getShouldShowCongratulation = createSelector(
+  getHasJoinedMembership,
   getIsJoinMembershipRequestStatusFulfilled,
-  isJoinMembershipRequestStatusFulfilled => isJoinMembershipRequestStatusFulfilled
+  (hasJoinedMembership, isJoinMembershipRequestStatusFulfilled) =>
+    hasJoinedMembership || isJoinMembershipRequestStatusFulfilled
 );
 
 export const getShouldShowBackButton = createSelector(getIsWebview, isInWebview => isInWebview);
 
-export const getIsJoinNowButtonDisabled = () => false;
+export const getIsJoinNowButtonDisabled = state => state.business.membershipForm.isJoinNowButtonDisabled;

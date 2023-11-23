@@ -15,3 +15,8 @@ export const getIsLogin = createSelector(getUserLoginStatusData, checkLoginReque
 export const getIsCheckLoginRequestCompleted = createSelector(getCheckLoginRequestStatus, status =>
   [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(status)
 );
+
+export const getConsumerId = createSelector(
+  getUserLoginStatusData,
+  checkLoginRequestData => checkLoginRequestData.consumerId
+);
