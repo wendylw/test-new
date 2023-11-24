@@ -90,15 +90,17 @@ const CartStatusPollers = {
     menu: null,
     cart: null,
   },
-  clearPoller: () => {
-    const keys = Object.keys(CartStatusPollers.pollers);
+  // eslint-disable-next-line object-shorthand
+  clearPoller: function() {
+    const keys = Object.keys(this.pollers);
 
     keys.forEach(key => {
-      if (CartStatusPollers.pollers[key]?.stop()) {
-        CartStatusPollers.pollers[key].stop();
+      if (!this.pollers[key]) {
+        return;
       }
 
-      CartStatusPollers.pollers[key] = null;
+      this.pollers[key].stop();
+      this.pollers[key] = null;
     });
   },
 };
