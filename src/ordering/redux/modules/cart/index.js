@@ -75,14 +75,12 @@ const initialState = {
   shippingType: Utils.getOrderTypeFromUrl(),
   source: Utils.getOrderSource(),
   submission: CartSubmissionModel,
-  isPollingCart: false,
   error: {
     loadCart: null,
     loadCartStatus: null,
     updateCartItems: null,
     removeCartItemsById: null,
     clearCart: null,
-    pollingCart: null,
   },
 };
 
@@ -104,9 +102,6 @@ export const { reducer, actions } = createSlice({
         items: items.map(item => ({ ...CartItemModel, ...item })),
         unavailableItems: unavailableItems.map(unavailableItem => ({ ...CartItemModel, ...unavailableItem })),
       };
-    },
-    isPollingCartUpdated(state, { payload }) {
-      state.isPollingCart = payload;
     },
     resetCartSubmission(state) {
       state.submission = CartSubmissionModel;

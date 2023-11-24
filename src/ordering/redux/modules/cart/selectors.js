@@ -10,8 +10,6 @@ export const getCartSource = state => state.cart.source;
 
 export const getCartItemsCount = state => state.cart.count;
 
-export const getIsPollingCart = state => state.cart.isPollingCart;
-
 const getOriginalCartItems = state => state.cart.items;
 
 export const getCartItems = createSelector(
