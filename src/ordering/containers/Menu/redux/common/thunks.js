@@ -365,7 +365,7 @@ const initializeForBeepQR = async ({ dispatch, getState }) => {
     const enablePayLater = getIsEnablePayLater(getState());
 
     if (storeId) {
-      enablePayLater ? dispatch(queryCartAndStatus()) : dispatch(appActions.loadShoppingCart());
+      enablePayLater ? dispatch(queryCartAndStatus('menu')) : dispatch(appActions.loadShoppingCart());
     }
 
     // There must be a log for the error of loadShoppingCart. If there is no cart, the footer of the review cart button will not be displayed.

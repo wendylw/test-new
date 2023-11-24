@@ -3,10 +3,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import Utils from '../../../../utils/utils';
 import Constants from '../../../../utils/constants';
-import { API_REQUEST_STATUS, PATH_NAME_MAPPING } from '../../../../common/utils/constants';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { alert } from '../../../../common/feedback';
 import { getBusinessUTCOffset } from '../app';
-import { CART_SUBMISSION_STATUS } from './constants';
+import { CART_SUBMISSION_STATUS, AVAILABLE_QUERY_CART_STATUS_ROUTES } from './constants';
 import { getCartVersion, getCartSource, getCartItems } from './selectors';
 import { actions as cartActionCreators } from '.';
 import Poller from '../../../../common/utils/poller';
@@ -84,33 +84,35 @@ export const loadCartStatus = createAsyncThunk(
   }
 );
 
+// Diff page should use diff poller, otherwise can not stop poller correctly
 const CartStatusPollers = {
-  poller: null,
+  pollers: {
+    menu: null,
+    cart: null,
+  },
   clearPoller: () => {
-    if (CartStatusPollers.poller?.stop) {
-      CartStatusPollers.poller.stop();
-    }
-    CartStatusPollers.poller = null;
+    const keys = Object.keys(CartStatusPollers.pollers);
+
+    keys.forEach(key => {
+      if (CartStatusPollers.pollers[key]?.stop()) {
+        CartStatusPollers.pollers[key].stop();
+      }
+
+      CartStatusPollers.pollers[key] = null;
+    });
   },
 };
-export const queryCartAndStatus = () => async dispatch => {
-  CartStatusPollers?.poller?.stop();
+export const queryCartAndStatus = pollerKey => async dispatch => {
+  CartStatusPollers.clearPoller();
   logger.log('Ordering_Cart_PollCartStatus', { action: 'start' });
 
   try {
-    CartStatusPollers.poller = new Poller({
+    CartStatusPollers.pollers[pollerKey] = new Poller({
       fetchData: async () => {
         const { pathname } = window.location;
 
         // Add a judgment condition. There may be requests that have not been cleared before and are still being polled.
-        if (
-          [
-            PATH_NAME_MAPPING.ORDERING_BASE,
-            `${PATH_NAME_MAPPING.ORDERING_BASE}/`,
-            `${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_CART}`,
-            `${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_CART}/`,
-          ].includes(pathname)
-        ) {
+        if (AVAILABLE_QUERY_CART_STATUS_ROUTES.includes(pathname)) {
           await dispatch(loadCartStatus());
         }
       },
@@ -121,7 +123,7 @@ export const queryCartAndStatus = () => async dispatch => {
       interval: CART_VERSION_AND_STATUS_INTERVAL,
     });
 
-    CartStatusPollers.poller.start();
+    CartStatusPollers.pollers[pollerKey].start();
   } catch (error) {
     logger.error('Ordering_Cart_QueryCartAndStatusFailed', { message: error?.message });
 
@@ -130,7 +132,6 @@ export const queryCartAndStatus = () => async dispatch => {
 };
 
 export const clearQueryCartStatus = () => () => {
-  CartStatusPollers.clearPoller();
   logger.log('Ordering_Cart_PollCartStatus', { action: 'stop' });
 };
 
