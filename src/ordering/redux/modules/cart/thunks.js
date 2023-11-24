@@ -94,6 +94,7 @@ const CartStatusPollers = {
   },
 };
 export const queryCartAndStatus = () => async dispatch => {
+  CartStatusPollers?.poller?.stop();
   logger.log('Ordering_Cart_PollCartStatus', { action: 'start' });
 
   try {
@@ -101,11 +102,13 @@ export const queryCartAndStatus = () => async dispatch => {
       fetchData: async () => {
         const { pathname } = window.location;
 
+        // Add a judgment condition. There may be requests that have not been cleared before and are still being polled.
         if (
           [
             PATH_NAME_MAPPING.ORDERING_BASE,
             `${PATH_NAME_MAPPING.ORDERING_BASE}/`,
             `${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_CART}`,
+            `${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_CART}/`,
           ].includes(pathname)
         ) {
           await dispatch(loadCartStatus());
