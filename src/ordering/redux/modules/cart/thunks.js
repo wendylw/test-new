@@ -119,7 +119,7 @@ export const queryCartAndStatus = pollerKey => async dispatch => {
         }
       },
       onError: error => {
-        CartStatusPollers.poller.stop();
+        CartStatusPollers.pollers[pollerKey].stop();
         logger.log('Ordering_Cart_PollCartStatus', { action: 'stop', error: error?.message });
       },
       interval: CART_VERSION_AND_STATUS_INTERVAL,
