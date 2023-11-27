@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { CaretDown } from 'phosphor-react';
+import { TIME_SLOT } from '../../../../../common/utils/constants';
 import { TimeSlotIcon } from '../../../../../common/components/Icons';
 import {
   getIsQrOrderingShippingType,
@@ -72,15 +73,12 @@ const TimeSlotDropdown = () => {
   // is initializing, if TRUE, show a loader
   const isInitializing = useSelector(getIsInitializing);
   const timeSlotTItle = t(TIME_SLOT_TITLE_KEYS[shippingType]) || t(TIME_SLOT_TITLE_KEYS.default);
-  const dateTranslated = ['Today', 'Tomorrow'].includes(selectedDateDisplayValue)
+  const dateTranslated = [TIME_SLOT.TODAY, TIME_SLOT.TOMORROW].includes(selectedDateDisplayValue)
     ? t(selectedDateDisplayValue)
     : selectedDateDisplayValue;
   const timeTranslated =
     selectedTimeDisplayValue === 'Immediate' ? t(selectedTimeDisplayValue) : selectedTimeDisplayValue;
-  const dateTimeValue =
-    !selectedDateDisplayValue && !selectedDateDisplayValue
-      ? t('SelectTimeSlot')
-      : `${dateTranslated}, ${timeTranslated}`;
+  const dateTimeValue = !selectedDateDisplayValue ? t('SelectTimeSlot') : `${dateTranslated}, ${timeTranslated}`;
 
   const selectedDateInTimeSlotDrawer = useSelector(getSelectedDate);
   const selectedShippingTypeInTimeSlotDrawer = useSelector(getSelectedShippingType);
