@@ -25,7 +25,7 @@ import * as storeUtils from '../../../../../utils/store-utils';
 import { hideTimeSlotDrawer, updateExpectedDeliveryDate } from '../common/thunks';
 import { setDateTime } from '../../../../../utils/time-lib';
 import Clevertap from '../../../../../utils/clevertap';
-import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
+import { SHIPPING_TYPES, TIME_SLOT } from '../../../../../common/utils/constants';
 import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import ApiFetchError from '../../../../../utils/api/api-fetch-error';
@@ -88,13 +88,13 @@ export const timeSlotDrawerShown = createAsyncThunk('ordering/menu/timeSlot/time
       };
     }
 
-    if (expectedDeliveryTime === 'now') {
+    if (expectedDeliveryTime === TIME_SLOT.NOW) {
       const selectedDate = currentDayjs.startOf('day').toISOString();
 
       return {
         selectedShippingType,
         selectedDate,
-        selectedTimeSlot: 'now',
+        selectedTimeSlot: TIME_SLOT.NOW,
       };
     }
 
@@ -223,8 +223,8 @@ export const timeSlotSelected = createAsyncThunk(
       Clevertap.pushEvent('Timeslot - confirm', storeInfoForCleverTap);
 
       const selectedExpectedDeliveryTime = (() => {
-        if (selectedTimeSlot === 'now') {
-          return 'now';
+        if (selectedTimeSlot === TIME_SLOT.NOW) {
+          return TIME_SLOT.NOW;
         }
 
         const selectedDateBusinessTimeZone = storeUtils.getBusinessDateTime(businessUTCOffset, selectedDate);
