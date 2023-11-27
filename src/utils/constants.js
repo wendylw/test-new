@@ -570,27 +570,7 @@ const REPORT_DRIVER_REASON_CODE = {
   OTHERS: 'others',
 };
 
-const ORDER_STATUS = {
-  CREATED: 'created',
-  PENDING_PAYMENT: 'pendingPayment',
-  PENDING_VERIFICATION: 'pendingVerification',
-  PAID: 'paid',
-  PAYMENT_CANCELLED: 'paymentCancelled',
-  READY_FOR_DELIVERY: 'readyForDelivery',
-  READY_FOR_PICKUP: 'readyForPickup',
-  SHIPPED: 'shipped',
-  CANCELLED: 'cancelled',
-  FAILED: 'failed',
-  ACCEPTED: 'accepted',
-  LOGISTICS_CONFIRMED: 'logisticsConfirmed',
-  CONFIRMED: 'confirmed',
-  DELIVERED: 'delivered',
-  /**
-   * If shipping type is delivery, pickedUp means picked up by rider.
-   * if shipping type is self-pickup, pickedUp means picked up by customer
-   * */
-  PICKED_UP: 'pickedUp',
-};
+const { ORDER_STATUS } = ConstantsV2;
 
 const COLLECTIONS_TYPE = {
   ICON: 'Icon',
@@ -611,7 +591,7 @@ const PAYMENT_API_PAYMENT_OPTIONS = {
   TOKENIZATION: 'tokenization',
 };
 
-const TIME_SLOT_NOW = 'now';
+const TIME_SLOT_NOW = ConstantsV2.TIME_SLOT.NOW;
 
 export const AVAILABLE_REPORT_DRIVER_ORDER_STATUSES = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
 const { CLIENTS } = ConstantsV2;
