@@ -95,6 +95,24 @@ export const getClient = () => {
   return CLIENTS.WEB;
 };
 
+export const judgeClient = () => {
+  let client = '';
+  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+    // 判断iPhone|iPad|iPod|iOS
+    client = 'iOS';
+  } else if (/(Android)/i.test(navigator.userAgent)) {
+    // 判断Android
+    client = 'Android';
+  } else if (/(Mac)/i.test(navigator.userAgent)) {
+    client = 'Mac';
+  } else {
+    client = 'PC';
+  }
+  return client;
+};
+
+export const getIsDesktopClients = client => [CLIENTS.PC, CLIENTS.MAC].includes(client);
+
 export const isProductSoldOut = product => {
   const { stockStatus, variations } = product;
 
@@ -395,3 +413,6 @@ export const isJSON = value => {
     return false;
   }
 };
+
+export const getIsThePageHidden = () =>
+  window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;

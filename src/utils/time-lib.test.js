@@ -14,6 +14,7 @@ import {
   isSameOrBefore,
   isSameOrAfter,
   isBetween,
+  isToday,
   setDateTime,
   getTimeFromDayjs,
   ceilToHour,
@@ -198,6 +199,23 @@ describe('test isBetween function', () => {
     expect(() => {
       isBetween('00:00', { minTime: '01:00', maxTime: '02:00' }, 'invalid inclusivity');
     }).toThrowError("Invalid argument of 'inclusivity'");
+  });
+});
+
+describe('test isToday function', () => {
+  const oneDayMillineSecond = 24 * 60 * 60 * 1000;
+  const today = new Date();
+  const todayIOSString = today.toISOString();
+  const yesterdayIOSString = new Date(today.getTime() - oneDayMillineSecond).toISOString();
+  const tomorrowIOSString = new Date(today.getTime() + oneDayMillineSecond).toISOString();
+
+  test.each`
+    date                  | expected
+    ${todayIOSString}     | ${true}
+    ${yesterdayIOSString} | ${false}
+    ${tomorrowIOSString}  | ${false}
+  `('return $expected when $date is today or not', ({ date, expected }) => {
+    expect(isToday(dayjs(date))).toBe(expected);
   });
 });
 
