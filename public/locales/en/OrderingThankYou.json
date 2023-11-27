@@ -2,12 +2,13 @@
   "OrderPaid": "Order Paid",
   "PingStaffTitle": "Ping the staff for a receipt",
   "ThankYou": "Thank You",
+  "OrderCanceled": "Order Canceled",
   "PayAtCounter": "Pay at Counter",
   "SessionExpired": "Session Expired",
   "PrepareOrderDescription": "We're preparing your order now.",
   "HopeYouEnjoyedYourMeal": "We hope you enjoyed your meal!",
   "PendingPaymentDescription": "Your meal will only be served after payment is completed.",
-  "PaymentCancelledDescription": "Please return to the menu screen if you'd like to place your order again.",
+  "OrderCancelledDescription": "Please return to the menu screen if you'd like to place your order again.",
   "OrderConfirmed": "Order Confirmed",
   "RiderPendingTips": "Pending Rider Confirm",
   "Confirmed": "Confirmed",
@@ -29,7 +30,7 @@
   "OrderCancelled": "Order Cancelled",
   "MerchantCancelledDescription": "<0>Sorry! Your order from <0>{{storeName}}</0> was not accepted by the store and has been cancelled. <1></1> will be fully refunded to you.</0>",
   "AutoCancelledDescription": "<0>Sorry! Your order from <0>{{storeName}}</0> has been cancelled because we couldn't reach the store. <1></1> will be fully refunded to you.</0>",
-  "ISTCancelledDescription": "<0>Sorry! We can't find a rider for your order from <0>{{storeName}}</0> now due to high volume. <1></1> will be fully refunded to you.</0>",
+  "ISTCancelledDescription": "<0>Sorry! This order has been canceled. <1></1> will be fully refunded to you.</0>",
   "CustomerCancelledDescription": "<0>Your cancellation has been processed! <1></1> will be fully refunded to you.</0>",
   "UnknownCancelledDescription": "<0>Your cancellation has been processed! <1></1> will be fully refunded to you.</0>",
   "ConfirmedDescription": "A {{courier}} rider is on its way to you",
@@ -138,6 +139,6 @@
   "UnsupportedErrorDescription": "Make an order today and keep your review fresh!",
   "Loading": "Loading...",
   "Retry": "Retry",
-  "TableNumberUpdatedTitle":"Table Updated",
-  "TableNumberUpdatedDescription":"Your table number has been changed. Kindly check your new table number before paying."
+  "TableNumberUpdatedTitle": "Table Updated",
+  "TableNumberUpdatedDescription": "Your table number has been changed. Kindly check your new table number before paying."
 }

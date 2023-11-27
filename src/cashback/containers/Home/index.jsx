@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { isWebview, isTNGMiniProgram, isGCashMiniProgram } from '../../../common/utils';
+import { closeWebView } from '../../../utils/native-methods';
 import Image from '../../../components/Image';
 import RedeemInfo from '../../components/RedeemInfo';
 import { IconInfo } from '../../../components/Icons';
@@ -68,7 +69,13 @@ class PageLoyalty extends React.Component {
 
     return (
       <>
-        {isWebview() && <NativeHeader />}
+        {isWebview() && (
+          <NativeHeader
+            navFunc={() => {
+              closeWebView();
+            }}
+          />
+        )}
         <section className="loyalty-home__container flex flex-column" data-test-id="cashback.home.container">
           <article className="loyalty-home__article text-center margin-top-bottom-normal">
             {logo ? (

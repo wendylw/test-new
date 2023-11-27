@@ -399,21 +399,7 @@ Utils.attemptLoad = (fn, retriesLeft = 5, interval = 1500) =>
       });
   });
 
-Utils.judgeClient = () => {
-  let client = '';
-  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-    // 判断iPhone|iPad|iPod|iOS
-    client = 'iOS';
-  } else if (/(Android)/i.test(navigator.userAgent)) {
-    // 判断Android
-    client = 'Android';
-  } else if (/(Mac)/i.test(navigator.userAgent)) {
-    client = 'Mac';
-  } else {
-    client = 'PC';
-  }
-  return client;
-};
+Utils.judgeClient = UtilsV2.judgeClient;
 
 Utils.windowSize = () => ({
   width: document.body.clientWidth || window.innerWidth,
