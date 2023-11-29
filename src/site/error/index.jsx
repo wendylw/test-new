@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Trans, withTranslation } from 'react-i18next';
 import { IconLeftArrow } from '../../components/Icons';
 import prefetch from '../../common/utils/prefetch-assets';
-import beepWarningImage from '../../images/beep-warning.png';
+import beepWarningImage from '../../images/beep-warning.svg';
 import './index.scss';
 
 class Error extends Component {
