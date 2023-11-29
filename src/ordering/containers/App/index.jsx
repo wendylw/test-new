@@ -10,7 +10,7 @@ import {
   getUser,
   getApiError,
   getBusinessInfo,
-  getRouterPathName,
+  // getRouterPathName,
   getIsDynamicUrlExpired,
   getIsDynamicUrl,
 } from '../../redux/modules/app';
@@ -43,9 +43,9 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      routerPathName: null,
-    };
+    // this.state = {
+    //   routerPathName: null,
+    // };
 
     const source = Utils.getQueryString('source');
 
@@ -95,6 +95,8 @@ class App extends Component {
     try {
       this.checkIfDineInUrlExpired();
 
+      window.addEventListener('sh-location-change', this.checkIfDineInUrlExpired);
+
       const initRequests = [this.initAddressInfo(), appActions.getLoginStatus(), appActions.fetchOnlineStoreInfo()];
 
       if (Utils.notHomeOrLocationPath(window.location.pathname)) {
@@ -129,8 +131,9 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { routerPathName: currStateRouterPathName } = this.state;
-    const { pageError, routerPathName: currRouterPathName } = this.props;
+    // const { routerPathName: currStateRouterPathName } = this.state;
+    // const { pageError, routerPathName: currRouterPathName } = this.props;
+    const { pageError } = this.props;
     const { code } = prevProps.pageError || {};
 
     if (pageError.code && pageError.code !== code) {
@@ -138,11 +141,11 @@ class App extends Component {
     }
 
     /* eslint-disable react/no-did-update-set-state */
-    if (currRouterPathName && currRouterPathName !== currStateRouterPathName) {
-      this.setState({ routerPathName: currRouterPathName }, () => {
-        this.checkIfDineInUrlExpired();
-      });
-    }
+    // if (currRouterPathName && currRouterPathName !== currStateRouterPathName) {
+    //   this.setState({ routerPathName: currRouterPathName }, () => {
+    //     this.checkIfDineInUrlExpired();
+    //   });
+    // }
     /* eslint-enable react/no-did-update-set-state */
   }
 
@@ -153,7 +156,7 @@ class App extends Component {
       return;
     }
 
-    await appActions.checkIsUrlValidation();
+    await appActions.checkUrlsValidation();
 
     const { isDynamicUrlExpired } = this.props;
 
@@ -337,12 +340,12 @@ App.propTypes = {
     fetchOnlineStoreInfo: PropTypes.func,
     hideMessageModal: PropTypes.func,
     hideApiMessageModal: PropTypes.func,
-    checkIsUrlValidation: PropTypes.func,
+    checkUrlsValidation: PropTypes.func,
   }),
   /* eslint-disable react/forbid-prop-types */
   businessInfo: PropTypes.object,
   onlineStoreInfo: PropTypes.object,
-  routerPathName: PropTypes.string,
+  // routerPathName: PropTypes.string,
   /* eslint-enable */
   ifAddressInfoExists: PropTypes.bool,
   isDynamicUrlExpired: PropTypes.bool,
@@ -372,11 +375,11 @@ App.defaultProps = {
     fetchOnlineStoreInfo: () => {},
     hideMessageModal: () => {},
     hideApiMessageModal: () => {},
-    checkIsUrlValidation: () => {},
+    checkUrlsValidation: () => {},
   },
   businessInfo: {},
   onlineStoreInfo: {},
-  routerPathName: '',
+  // routerPathName: '',
   ifAddressInfoExists: false,
   isDynamicUrlExpired: false,
   isDynamicUrl: false,
@@ -394,7 +397,7 @@ export default compose(
       error: getError(state),
       pageError: getPageError(state),
       apiError: getApiError(state),
-      routerPathName: getRouterPathName(state),
+      // routerPathName: getRouterPathName(state),
       ifAddressInfoExists: getIfAddressInfoExists(state),
       isDynamicUrlExpired: getIsDynamicUrlExpired(state),
       isDynamicUrl: getIsDynamicUrl(state),
