@@ -10,7 +10,6 @@ import {
   getUser,
   getApiError,
   getBusinessInfo,
-  // getRouterPathName,
   getIsDynamicUrlExpired,
   getIsDynamicUrl,
 } from '../../redux/modules/app';
@@ -32,8 +31,8 @@ import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
 import { SOURCE_TYPE } from '../../../common/utils/constants';
 import { isURL } from '../../../common/utils';
-import { result } from '../../../common/utils/feedback';
 import BeepWarningImage from '../../../images/beep-warning.svg';
+import Result from '../../../common/components/Result';
 import ObjectFitImage from '../../../common/components/Image/ObjectFitImage';
 import styles from './App.module.scss';
 
@@ -42,10 +41,6 @@ const { ROUTER_PATHS } = Constants;
 class App extends Component {
   constructor(props) {
     super(props);
-
-    // this.state = {
-    //   routerPathName: null,
-    // };
 
     const source = Utils.getQueryString('source');
 
@@ -131,60 +126,22 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    // const { routerPathName: currStateRouterPathName } = this.state;
-    // const { pageError, routerPathName: currRouterPathName } = this.props;
     const { pageError } = this.props;
     const { code } = prevProps.pageError || {};
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
     }
-
-    /* eslint-disable react/no-did-update-set-state */
-    // if (currRouterPathName && currRouterPathName !== currStateRouterPathName) {
-    //   this.setState({ routerPathName: currRouterPathName }, () => {
-    //     this.checkIfDineInUrlExpired();
-    //   });
-    // }
-    /* eslint-enable react/no-did-update-set-state */
   }
 
   checkIfDineInUrlExpired = async () => {
-    const { t, appActions, isDynamicUrl } = this.props;
+    const { appActions, isDynamicUrl } = this.props;
 
     if (!isDynamicUrl) {
       return;
     }
 
     await appActions.checkUrlsValidation();
-
-    const { isDynamicUrlExpired } = this.props;
-
-    if (isDynamicUrlExpired) {
-      result(
-        <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
-          <div className={styles.UrlExpiredImageContainer}>
-            <ObjectFitImage src={BeepWarningImage} noCompression />
-          </div>
-
-          <h4 className={styles.UrlExpiredTitle}>{t('UrlExpiredTitle')}</h4>
-          <div className={styles.UrlExpiredDescription}>{t('UrlExpiredDescription')}</div>
-        </div>,
-        {
-          customizeContent: true,
-          closeButtonClassName: styles.UrlExpiredButton,
-          closeButtonContent: t('UrlExpiredButton'),
-          zIndex: 1000,
-          onClose: () => {
-            if (Utils.isWebview()) {
-              NativeMethods.closeWebView();
-            } else {
-              window.location.href = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${ROUTER_PATHS.QRSCAN}`;
-            }
-          },
-        }
-      );
-    }
   };
 
   initAddressInfo = async () => {
@@ -293,7 +250,7 @@ class App extends Component {
   }
 
   render() {
-    const { onlineStoreInfo, apiError, isDynamicUrlExpired } = this.props;
+    const { t, onlineStoreInfo, apiError, isDynamicUrlExpired } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
@@ -310,7 +267,32 @@ class App extends Component {
             }}
           />
         ) : null}
-        {isDynamicUrlExpired ? null : <Routes />}
+        {isDynamicUrlExpired ? (
+          <Result
+            customizeContent
+            closeButtonClassName={styles.UrlExpiredButton}
+            closeButtonContent={t('UrlExpiredButton')}
+            zIndex={1000}
+            onClose={() => {
+              if (Utils.isWebview()) {
+                NativeMethods.closeWebView();
+              } else {
+                window.location.href = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${ROUTER_PATHS.QRSCAN}`;
+              }
+            }}
+          >
+            <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
+              <div className={styles.UrlExpiredImageContainer}>
+                <ObjectFitImage src={BeepWarningImage} noCompression />
+              </div>
+
+              <h4 className={styles.UrlExpiredTitle}>{t('UrlExpiredTitle')}</h4>
+              <div className={styles.UrlExpiredDescription}>{t('UrlExpiredDescription')}</div>
+            </div>
+          </Result>
+        ) : (
+          <Routes />
+        )}
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
@@ -345,7 +327,6 @@ App.propTypes = {
   /* eslint-disable react/forbid-prop-types */
   businessInfo: PropTypes.object,
   onlineStoreInfo: PropTypes.object,
-  // routerPathName: PropTypes.string,
   /* eslint-enable */
   ifAddressInfoExists: PropTypes.bool,
   isDynamicUrlExpired: PropTypes.bool,
@@ -379,7 +360,6 @@ App.defaultProps = {
   },
   businessInfo: {},
   onlineStoreInfo: {},
-  // routerPathName: '',
   ifAddressInfoExists: false,
   isDynamicUrlExpired: false,
   isDynamicUrl: false,
@@ -397,7 +377,6 @@ export default compose(
       error: getError(state),
       pageError: getPageError(state),
       apiError: getApiError(state),
-      // routerPathName: getRouterPathName(state),
       ifAddressInfoExists: getIfAddressInfoExists(state),
       isDynamicUrlExpired: getIsDynamicUrlExpired(state),
       isDynamicUrl: getIsDynamicUrl(state),

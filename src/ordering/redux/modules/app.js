@@ -2094,8 +2094,6 @@ export const getRouter = state => state.router;
 
 export const getLocation = state => state.router.location;
 
-// export const getRouterPathName = createSelector(getLocation, location => location.pathname);
-
 export const getLocationSearch = createSelector(getLocation, location => location.search);
 
 export const getURLQueryObject = createSelector(getLocationSearch, locationSearch =>
