@@ -33,7 +33,7 @@ import { SOURCE_TYPE } from '../../../common/utils/constants';
 import { isURL } from '../../../common/utils';
 import BeepWarningImage from '../../../images/beep-warning.svg';
 import Result from '../../../common/components/Result';
-import ObjectFitImage from '../../../common/components/Image/ObjectFitImage';
+import ResultContent from '../../../common/components/Result/ResultContent';
 import styles from './App.module.scss';
 
 const { ROUTER_PATHS } = Constants;
@@ -281,14 +281,11 @@ class App extends Component {
               }
             }}
           >
-            <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
-              <div className={styles.UrlExpiredImageContainer}>
-                <ObjectFitImage src={BeepWarningImage} noCompression />
-              </div>
-
-              <h4 className={styles.UrlExpiredTitle}>{t('UrlExpiredTitle')}</h4>
-              <div className={styles.UrlExpiredDescription}>{t('UrlExpiredDescription')}</div>
-            </div>
+            <ResultContent
+              content={t('UrlExpiredDescription')}
+              title={t('UrlExpiredTitle')}
+              imageSrc={BeepWarningImage}
+            />
           </Result>
         ) : (
           <Routes />
