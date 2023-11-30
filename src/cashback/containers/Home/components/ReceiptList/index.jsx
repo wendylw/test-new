@@ -4,8 +4,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import { getOnlineStoreInfo, getBusiness } from '../../../../redux/modules/app';
-import { getCustomerId } from '../../../../redux/modules/customer/selectors';
+import { getOnlineStoreInfo, getUserCustomerId, getBusiness } from '../../../../redux/modules/app';
 import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { IconTicket } from '../../../../../components/Icons';
@@ -31,19 +30,19 @@ class RecentActivities extends React.Component {
   }
 
   componentDidMount() {
-    const { homeActions, customerId } = this.props;
+    const { homeActions, userCustomerId } = this.props;
 
-    if (customerId) {
-      homeActions.getCashbackHistory(customerId);
+    if (userCustomerId) {
+      homeActions.getCashbackHistory(userCustomerId);
     }
   }
 
   async componentDidUpdate(prevProps) {
-    const { homeActions, customerId: currUserCustomerId } = this.props;
-    const { customerId: prevUserCustomerId } = prevProps || {};
+    const { homeActions, userCustomerId: currUserCustomerId } = this.props;
+    const { userCustomerId: prevUserCustomerId } = prevProps || {};
 
-    // customerId !== prevProps.customerId instead of !prevProps.customerId
-    // The 3rd MiniProgram cached the previous customerId, so the customerId is not the correct account
+    // userCustomerId !== prevProps.userCustomerId instead of !prevProps.userCustomerId
+    // The 3rd MiniProgram cached the previous userCustomerId, so the userCustomerId is not the correct account
     if (currUserCustomerId && currUserCustomerId !== prevUserCustomerId) {
       homeActions.getCashbackHistory(currUserCustomerId);
     }
@@ -103,9 +102,9 @@ class RecentActivities extends React.Component {
 
   render() {
     const { fullScreen } = this.state;
-    const { cashbackHistory, customerId, t } = this.props;
+    const { cashbackHistory, userCustomerId, t } = this.props;
 
-    if (!Array.isArray(cashbackHistory) || !customerId) {
+    if (!Array.isArray(cashbackHistory) || !userCustomerId) {
       return null;
     }
 
@@ -146,7 +145,7 @@ RecentActivities.displayName = 'RecentActivities';
 RecentActivities.propTypes = {
   business: PropTypes.string,
   fetchState: PropTypes.bool,
-  customerId: PropTypes.string,
+  userCustomerId: PropTypes.string,
   homeActions: PropTypes.shape({
     getReceiptList: PropTypes.func,
     getCashbackHistory: PropTypes.func,
@@ -161,7 +160,7 @@ RecentActivities.propTypes = {
 RecentActivities.defaultProps = {
   business: '',
   fetchState: true,
-  customerId: '',
+  userCustomerId: '',
   homeActions: {
     getReceiptList: () => {},
     getCashbackHistory: () => {},
@@ -177,7 +176,7 @@ export default compose(
   withTranslation(['Cashback']),
   connect(
     state => ({
-      customerId: getCustomerId(state),
+      userCustomerId: getUserCustomerId(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       business: getBusiness(state),
       cashbackHistory: getCashbackHistory(state),

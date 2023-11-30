@@ -18,21 +18,6 @@
   }
 }
 
-.otp-modal__content {
-  max-width: 304px;
-}
-
-.form__input.otp-modal__input {
-  height: 56px;
-  width: 7.6em;
-  line-height: 42px;
-}
-
-.otp-modal__button-resend-sms {
-  border: 1px solid #000;
-  width: 220px;
-}
-
 @media (min-width: 770px) {
   .login {
     &__terms-privacy {
