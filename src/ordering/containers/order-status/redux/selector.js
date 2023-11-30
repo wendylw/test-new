@@ -235,3 +235,5 @@ export const getIsStoreReviewSupportable = createSelector(getStoreReviewInfoData
 );
 
 export const getOffline = state => state.orderStatus.storeReview.offline;
+
+export const getIsStoreSuccessToastVisible = () => true;

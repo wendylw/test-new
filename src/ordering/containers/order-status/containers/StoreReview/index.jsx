@@ -16,6 +16,7 @@ import Tag from '../../../../../common/components/Tag';
 import ThankYouModal from './components/ThankYouModal';
 import WarningModal from './components/WarningModal';
 import PageLoadingIndicator from './components/PageLoadingIndicator';
+import SuccessToast from './components/SuccessToast';
 import styles from './StoreReview.module.scss';
 import StoreReviewImg from '../../../../../images/store-review.svg';
 import {
@@ -233,6 +234,7 @@ const StoreReview = () => {
           </div>
         </PageFooter>
       )}
+      <SuccessToast />
       <PageLoadingIndicator />
       <ThankYouModal />
       <WarningModal />

@@ -1,0 +1,53 @@
+.SuccessToastContainer {
+  @apply tw-fixed tw-z-200 tw-bg-gray-900 tw-bg-opacity-90 tw-rounded tw-text-white tw-z-100 tw-p-12 sm:tw-p-12px tw-overflow-hidden;
+
+  left: 50%;
+  top: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
+  height: auto;
+  transform: translate(-50%, -50%);
+}
+
+.SuccessToastHeader {
+  @apply tw-flex tw-flex-col tw-justify-start tw-items-center;
+}
+
+.SuccessToastIconContainer {
+  @apply tw-relative;
+}
+
+.SuccessToastCopyIcon {
+  @apply tw-text-4xl tw-m-4 sm:tw-m-4px;
+}
+
+.SuccessToastCheckedIconWrapper {
+  @apply tw-absolute tw-bg-white tw-flex tw-rounded-full tw-overflow-hidden tw-top-20px tw-left-20px;
+
+  box-shadow: inset 0 0 0 4px #36a93f;
+}
+
+.SuccessToastCheckedIcon {
+  @apply tw-text-green;
+}
+
+.SuccessToastTitle {
+  @apply tw-leading-relaxed tw-text-center tw-px-4 sm:tw-px-4px tw-my-8 sm:tw-my-8px tw-font-bold;
+}
+
+.SuccessToastContent {
+  @apply tw-flex tw-flex-col tw-justify-end tw-items-center tw-leading-relaxed tw-px-4 sm:tw-px-4px tw-mt-12 sm:tw-mt-12px;
+
+  color: #fec788;
+}
+
+.SuccessToastAdditionalInfo {
+  @apply tw-text-white tw-leading-relaxed tw-text-center tw-font-bold;
+}
+
+@media (min-width: 770px) {
+  .SuccessToastContainer {
+    width: 350px;
+  }
+}
