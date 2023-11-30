@@ -15,7 +15,10 @@ import {
   getUserConsumerId,
   getIsTngAuthorizationError,
 } from '../../redux/modules/app';
+import { getIsCashbackClaimRequestFulfilled } from '../../redux/modules/claim';
+import { getIsConfirmSharingConsumerInfoCompleted } from '../StoreRedemption/redux/selectors';
 import { getPageError } from '../../../redux/modules/entities/error';
+import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
 import Constants from '../../../utils/constants';
 import { isTNGMiniProgram, isWebview } from '../../../common/utils';
 import faviconImage from '../../../images/favicon.ico';
@@ -29,10 +32,12 @@ import { confirm } from '../../../common/utils/feedback';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import logger from '../../../utils/monitoring/logger';
 import Clevertap from '../../../utils/clevertap';
+import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 
 class App extends Component {
   async componentDidMount() {
-    const { t, appActions, userCountry } = this.props;
+    const { t, appActions, userCountry, loadConsumerCustomerInfo } = this.props;
+    const { pathname } = window.location;
 
     this.visitErrorPage();
 
@@ -81,11 +86,12 @@ class App extends Component {
 
       await appActions.loadConsumerLoginStatus();
 
-      const { isUserLogin, userConsumerId } = this.props;
-
-      if (userConsumerId) {
-        await appActions.loadConsumerCustomerInfo();
-      }
+      const {
+        isUserLogin,
+        userConsumerId,
+        isCashbackClaimRequestFulfilled,
+        isConfirmSharingConsumerInfoCompleted,
+      } = this.props;
 
       if (isWebview()) {
         await appActions.syncLoginFromBeepApp();
@@ -96,15 +102,47 @@ class App extends Component {
       if (!isUserLogin) {
         appActions.showLoginModal();
       }
+
+      // TODO: This will be optimized later, this is a temporary modification plan.
+      // It is not recommended to introduce page selector in App or app.
+      if (userConsumerId) {
+        let isLoadCustomerAvailable = true;
+
+        if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM)) {
+          isLoadCustomerAvailable = isCashbackClaimRequestFulfilled;
+        }
+
+        if (pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION)) {
+          isLoadCustomerAvailable = isConfirmSharingConsumerInfoCompleted;
+        }
+
+        if (isLoadCustomerAvailable) {
+          await loadConsumerCustomerInfo();
+        }
+      }
     } catch (error) {
       logger.error('Cashback_App_InitFailed', { message: error?.message });
     }
   }
 
   componentDidUpdate = async prevProps => {
-    const { appActions, pageError, isUserLogin: currIsUserLogin, userConsumerId: currUserConsumerId } = this.props;
-    const { pageError: prevPageError, isUserLogin: prevIsUserLogin, userConsumerId: prevUserConsumerId } = prevProps;
+    const {
+      appActions,
+      pageError,
+      isUserLogin: currIsUserLogin,
+      userConsumerId: currUserConsumerId,
+      loadConsumerCustomerInfo,
+      isCashbackClaimRequestFulfilled: currIsCashbackClaimRequestFulfilled,
+      isConfirmSharingConsumerInfoCompleted: currIsConfirmSharingConsumerInfoCompleted,
+    } = this.props;
+    const {
+      pageError: prevPageError,
+      isUserLogin: prevIsUserLogin,
+      isCashbackClaimRequestFulfilled: prevIsCashbackClaimRequestFulfilled,
+      isConfirmSharingConsumerInfoCompleted: prevIsConfirmSharingConsumerInfoCompleted,
+    } = prevProps;
     const { code } = prevPageError || {};
+    const { pathname } = window.location;
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
@@ -112,8 +150,26 @@ class App extends Component {
 
     // currUserConsumerId !== prevUserConsumerId instead of !prevUserConsumerId .
     // The 3rd MiniProgram cached the previous consumerId, so the consumerId is not the correct account
-    if (currUserConsumerId && currUserConsumerId !== prevUserConsumerId) {
-      appActions.loadConsumerCustomerInfo();
+    if (currIsUserLogin && currUserConsumerId) {
+      let isLoadCustomerAvailable = false;
+
+      if (
+        pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM) &&
+        currIsCashbackClaimRequestFulfilled !== prevIsCashbackClaimRequestFulfilled
+      ) {
+        isLoadCustomerAvailable = currIsCashbackClaimRequestFulfilled;
+      }
+
+      if (
+        pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION) &&
+        currIsConfirmSharingConsumerInfoCompleted !== prevIsConfirmSharingConsumerInfoCompleted
+      ) {
+        isLoadCustomerAvailable = currIsConfirmSharingConsumerInfoCompleted;
+      }
+
+      if (isLoadCustomerAvailable) {
+        await loadConsumerCustomerInfo();
+      }
     }
 
     if (currIsUserLogin && currIsUserLogin !== prevIsUserLogin) {
@@ -124,6 +180,8 @@ class App extends Component {
   async componentWillUnmount() {
     const { appActions } = this.props;
 
+    // The reset here is because BeepApp or TNG MP has a login data cache
+    // to ensure the accuracy of data logged in with different accounts.
     await appActions.resetConsumerLoginStatus();
     await appActions.resetConsumerCustomerInfo();
   }
@@ -172,6 +230,8 @@ App.propTypes = {
   userCountry: PropTypes.string,
   loginBannerPrompt: PropTypes.string,
   isUserLogin: PropTypes.bool,
+  isCashbackClaimRequestFulfilled: PropTypes.bool,
+  isConfirmSharingConsumerInfoCompleted: PropTypes.bool,
   userConsumerId: PropTypes.string,
   onlineStoreInfoFavicon: PropTypes.string,
   error: PropTypes.shape({
@@ -197,12 +257,15 @@ App.propTypes = {
     showLoginModal: PropTypes.func,
     hideLoginModal: PropTypes.func,
   }),
+  loadConsumerCustomerInfo: PropTypes.func,
 };
 
 App.defaultProps = {
   userCountry: null,
   loginBannerPrompt: null,
   isUserLogin: false,
+  isCashbackClaimRequestFulfilled: false,
+  isConfirmSharingConsumerInfoCompleted: false,
   userConsumerId: null,
   onlineStoreInfoFavicon: '',
   error: {},
@@ -210,6 +273,7 @@ App.defaultProps = {
   isTngAuthorizationError: false,
   isLoginModalShown: false,
   appActions: {},
+  loadConsumerCustomerInfo: () => {},
 };
 
 export default compose(
@@ -220,6 +284,8 @@ export default compose(
       isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
       isUserLogin: getIsUserLogin(state),
       userConsumerId: getUserConsumerId(state),
+      isCashbackClaimRequestFulfilled: getIsCashbackClaimRequestFulfilled(state),
+      isConfirmSharingConsumerInfoCompleted: getIsConfirmSharingConsumerInfoCompleted(state),
       isLoginModalShown: getIsLoginModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
@@ -229,6 +295,7 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      loadConsumerCustomerInfo: bindActionCreators(loadConsumerCustomerInfoThunk, dispatch),
     })
   )
 )(App);

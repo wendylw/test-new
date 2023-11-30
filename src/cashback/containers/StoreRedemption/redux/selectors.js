@@ -5,13 +5,12 @@ import {
   getIsCoreBusinessLoaded,
   getIsLoadCoreBusinessFailed,
   getIsCoreBusinessEnableCashback,
-  getIsConsumerCustomerLoaded,
-  getIsLoadConsumerCustomerFailed,
-  getUserStoreCashback,
   getIsOnlineStoreInfoLoaded,
   getIsLoadOnlineStoreInfoFailed,
   getIsUserLogin,
 } from '../../../redux/modules/app';
+import { getCustomerCashback, getIsLoadCustomerRequestCompleted } from '../../../redux/modules/customer/selectors';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
 /**
  * get store redemption request id
@@ -27,6 +26,14 @@ export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 
  */
 export const getIsStoreRedemptionNewCustomer = state =>
   _get(state.storeRedemption, 'sharedInfoData.isNewCustomer', false);
+
+/**
+ *
+ * @param {*} state
+ * @returns string
+ */
+export const getConfirmSharingConsumerInfoStatus = state =>
+  _get(state.storeRedemption, 'confirmSharingConsumerInfo.status', null);
 
 /**
  * get consumer share info available status
@@ -61,32 +68,37 @@ export const getStoreDisplayTitle = createSelector(getOnlineStoreInfo, onlineSto
 export const getIsLoadStoreRedemptionDataCompleted = createSelector(
   getIsCoreBusinessLoaded,
   getIsLoadCoreBusinessFailed,
-  getIsConsumerCustomerLoaded,
-  getIsLoadConsumerCustomerFailed,
+  getIsLoadCustomerRequestCompleted,
   getIsOnlineStoreInfoLoaded,
   getIsLoadOnlineStoreInfoFailed,
   (
     isCoreBusinessLoaded,
     isLoadCoreBusinessFailed,
-    isConsumerCustomerLoaded,
-    isLoadConsumerCustomerFailed,
+    isCustomerRequestCompleted,
     isOnlineStoreInfoLoaded,
     isLoadOnlineStoreInfoFailed
   ) =>
     (isCoreBusinessLoaded || isLoadCoreBusinessFailed) &&
-    (isConsumerCustomerLoaded || isLoadConsumerCustomerFailed) &&
+    isCustomerRequestCompleted &&
     (isOnlineStoreInfoLoaded || isLoadOnlineStoreInfoFailed)
 );
 
 export const getIsDisplayStoreRedemptionContent = createSelector(
   getIsLoadStoreRedemptionDataCompleted,
   getIsCoreBusinessEnableCashback,
-  getUserStoreCashback,
-  (isLoadStoreRedemptionDataCompleted, isCoreBusinessEnableCashback, userStoreCashback) =>
-    isLoadStoreRedemptionDataCompleted && isCoreBusinessEnableCashback && userStoreCashback > 0
+  getCustomerCashback,
+  (isLoadStoreRedemptionDataCompleted, isCoreBusinessEnableCashback, customerCashback) =>
+    isLoadStoreRedemptionDataCompleted && isCoreBusinessEnableCashback && customerCashback > 0
 );
 
 export const getIsDisplayStoreRedemptionAlert = createSelector(
   getIsLoadStoreRedemptionDataCompleted,
   isLoadStoreRedemptionDataCompleted => isLoadStoreRedemptionDataCompleted
+);
+
+export const getIsConfirmSharingConsumerInfoCompleted = createSelector(
+  getConfirmSharingConsumerInfoStatus,
+  confirmSharingConsumerInfoStatus =>
+    confirmSharingConsumerInfoStatus === API_REQUEST_STATUS.FULFILLED ||
+    confirmSharingConsumerInfoStatus === API_REQUEST_STATUS.REJECTED
 );
