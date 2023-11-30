@@ -14,6 +14,7 @@ import {
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
 import { getUserCountry } from '../../redux/modules/app';
+import { getIsLoadCustomerRequestCompleted } from '../../redux/modules/customer/selectors';
 import {
   getIsStoreRedemptionNewCustomer,
   getIsDisplayStoreRedemptionContent,
@@ -37,40 +38,53 @@ import { ObjectFitImage } from '../../../common/components/Image';
 const StoreRedemptionNative = () => {
   const { t } = useTranslation('Cashback');
   const dispatch = useDispatch();
+  const isLoadCustomerRequestCompleted = useSelector(getIsLoadCustomerRequestCompleted);
   // get is display store redemption content
   const isDisplayStoreRedemptionContent = useSelector(getIsDisplayStoreRedemptionContent);
   const userCountry = useSelector(getUserCountry);
   const isAvailableToShareConsumerInfo = useSelector(getIsAvailableToShareConsumerInfo);
   const isStoreRedemptionNewCustomer = useSelector(getIsStoreRedemptionNewCustomer);
 
-  useMount(() => {
-    CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
-      country: userCountry,
-      page: isDisplayStoreRedemptionContent
-        ? 'With Cashback'
-        : `Without Cashback (${isStoreRedemptionNewCustomer ? 'New' : 'Returning'} Customer)`,
-    });
+  useEffect(() => {
+    if (isLoadCustomerRequestCompleted) {
+      CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
+        country: userCountry,
+        page: isDisplayStoreRedemptionContent
+          ? 'With Cashback'
+          : `Without Cashback (${isStoreRedemptionNewCustomer ? 'New' : 'Returning'} Customer)`,
+      });
 
-    if (isDisplayStoreRedemptionContent) {
-      alert(
-        <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">{t('StoreRedemptionCashRedeemAlert')}</p>,
-        {
-          id: 'StoreRedemptionInitialAlert',
-          onClose: () => {
-            CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
-              country: userCountry,
-            });
-          },
-        }
-      );
+      if (isDisplayStoreRedemptionContent) {
+        alert(
+          <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
+            {t('StoreRedemptionCashRedeemAlert')}
+          </p>,
+          {
+            id: 'StoreRedemptionInitialAlert',
+            onClose: () => {
+              CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
+                country: userCountry,
+              });
+            },
+          }
+        );
+      }
     }
-  });
+  }, [isDisplayStoreRedemptionContent, isLoadCustomerRequestCompleted]);
 
   useEffect(() => {
     if (isAvailableToShareConsumerInfo) {
       dispatch(confirmToShareConsumerInfoRequests());
     }
   }, [dispatch, isAvailableToShareConsumerInfo]);
+
+  if (!isLoadCustomerRequestCompleted) {
+    return (
+      <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center">
+        <Loader className="tw-text-3xl tw-text-orange" weight="bold" />
+      </div>
+    );
+  }
 
   return (
     <>

@@ -9,7 +9,7 @@ import {
   getIsLoadOnlineStoreInfoFailed,
   getIsUserLogin,
 } from '../../../redux/modules/app';
-import { getCustomerCashback, getIsLoadCustomerRequestCompleted } from '../../../redux/modules/customer/selectors';
+import { getCustomerCashback } from '../../../redux/modules/customer/selectors';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
 /**
@@ -68,19 +68,10 @@ export const getStoreDisplayTitle = createSelector(getOnlineStoreInfo, onlineSto
 export const getIsLoadStoreRedemptionDataCompleted = createSelector(
   getIsCoreBusinessLoaded,
   getIsLoadCoreBusinessFailed,
-  getIsLoadCustomerRequestCompleted,
   getIsOnlineStoreInfoLoaded,
   getIsLoadOnlineStoreInfoFailed,
-  (
-    isCoreBusinessLoaded,
-    isLoadCoreBusinessFailed,
-    isCustomerRequestCompleted,
-    isOnlineStoreInfoLoaded,
-    isLoadOnlineStoreInfoFailed
-  ) =>
-    (isCoreBusinessLoaded || isLoadCoreBusinessFailed) &&
-    isCustomerRequestCompleted &&
-    (isOnlineStoreInfoLoaded || isLoadOnlineStoreInfoFailed)
+  (isCoreBusinessLoaded, isLoadCoreBusinessFailed, isOnlineStoreInfoLoaded, isLoadOnlineStoreInfoFailed) =>
+    (isCoreBusinessLoaded || isLoadCoreBusinessFailed) && (isOnlineStoreInfoLoaded || isLoadOnlineStoreInfoFailed)
 );
 
 export const getIsDisplayStoreRedemptionContent = createSelector(
