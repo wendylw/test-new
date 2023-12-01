@@ -1,11 +1,9 @@
 import qs from 'qs';
-import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push } from 'connected-react-router';
 import {
   loadOrderStoreReview,
   saveOrderStoreReview,
-  hideStoreReviewThankYouModal,
   showStoreReviewWarningModal,
   hideStoreReviewWarningModal,
   showStoreReviewLoadingIndicator,
@@ -21,8 +19,8 @@ import {
   getIsMerchantContactAllowable,
   getOffline,
 } from '../../../redux/selector';
-import { getIsWebview } from '../../../../../redux/modules/app';
-import { getIsCommentEmpty, getTransactionInfoForCleverTap } from './selectors';
+import { getIsWebview, getMerchantCountry } from '../../../../../redux/modules/app';
+import { getTransactionInfoForCleverTap, getShouldShowSuccessToast, getIsCommentEmpty } from './selectors';
 import {
   goBack as nativeGoBack,
   openBrowserURL,
@@ -31,14 +29,32 @@ import {
   BEEP_MODULE_METHODS,
   gotoHome,
 } from '../../../../../../utils/native-methods';
-import { STORE_REVIEW_SOURCE_TYPE_MAPPING, STORE_REVIEW_TEXT_COPIED_TIP_DURATION } from '../constants';
+import { STORE_REVIEW_SOURCE_TYPE_MAPPING } from '../constants';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import { REFERRER_SOURCE_TYPES } from '../../../../../../utils/constants';
-import { toast } from '../../../../../../common/utils/feedback';
 import { getSessionVariable, getQueryString } from '../../../../../../common/utils';
 import { copyDataToClipboard } from '../../../../../../utils/utils';
-import { FEEDBACK_STATUS } from '../../../../../../common/utils/feedback/utils';
 import CleverTap from '../../../../../../utils/clevertap';
+
+export const showStoreReviewThankYouModal = createAsyncThunk(
+  'ordering/orderStatus/storeReview/showStoreReviewThankYouModal',
+  async () => {}
+);
+
+export const hideStoreReviewThankYouModal = createAsyncThunk(
+  'ordering/orderStatus/storeReview/hideStoreReviewThankYouModal',
+  async () => {}
+);
+
+export const showStoreReviewSuccessToast = createAsyncThunk(
+  'ordering/orderStatus/storeReview/showStoreReviewSuccessToast',
+  async () => {}
+);
+
+export const hideStoreReviewSuccessToast = createAsyncThunk(
+  'ordering/orderStatus/storeReview/hideStoreReviewSuccessToast',
+  async () => {}
+);
 
 export const goToMenuPage = createAsyncThunk(
   'ordering/orderStatus/storeReview/goToMenuPage',
@@ -101,6 +117,13 @@ export const openGoogleReviewURL = createAsyncThunk(
     const state = getState();
     const isWebview = getIsWebview(state);
     const googleReviewUrl = getStoreGoogleReviewURL(state);
+    const country = getMerchantCountry(state);
+    const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
+
+    CleverTap.pushEvent('GMB Redirection loader', {
+      country,
+      ...transactionInfoCleverTap,
+    });
 
     if (!isWebview) {
       await dispatch(showStoreReviewLoadingIndicator());
@@ -191,13 +214,36 @@ export const submitButtonClicked = createAsyncThunk(
     const state = getState();
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
     const offline = getOffline(state);
+    const country = getMerchantCountry(state);
 
     CleverTap.pushEvent('Feedback Page - Click Submit', {
       rating,
       'allow store to contact': allowMerchantContact,
       ...transactionInfoCleverTap,
     });
+
     await dispatch(saveOrderStoreReview({ rating, comments, allowMerchantContact, offline }));
+
+    const shouldShowSuccessToast = getShouldShowSuccessToast(getState());
+    const isCommentEmpty = getIsCommentEmpty(getState());
+
+    if (shouldShowSuccessToast) {
+      await dispatch(showStoreReviewSuccessToast());
+
+      !isCommentEmpty && (await copyDataToClipboard(comments));
+
+      const eventName = !comments
+        ? 'GMB Redirection Information toast - Without review'
+        : 'GMB Redirection Information toast - With review';
+
+      CleverTap.pushEvent(eventName, {
+        country,
+        ...transactionInfoCleverTap,
+      });
+      return;
+    }
+
+    await dispatch(showStoreReviewThankYouModal());
   }
 );
 
@@ -221,68 +267,6 @@ export const thankYouModalOkayButtonClicked = createAsyncThunk(
   async (_, { dispatch }) => {
     await dispatch(hideStoreReviewThankYouModal());
     await dispatch(goBack());
-  }
-);
-
-export const noThanksButtonClicked = createAsyncThunk(
-  'ordering/orderStatus/storeReview/noThanksButtonClicked',
-  async (_, { getState, dispatch }) => {
-    const state = getState();
-    const rating = getStoreRating(state);
-    const isCommentEmpty = getIsCommentEmpty(state);
-    const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
-
-    CleverTap.pushEvent('Feedback Page popup - Click No Thanks', {
-      rating,
-      'empty review': isCommentEmpty,
-      ...transactionInfoCleverTap,
-    });
-
-    await dispatch(hideStoreReviewThankYouModal());
-    await dispatch(goBack());
-  }
-);
-
-export const rateNowButtonClicked = createAsyncThunk(
-  'ordering/orderStatus/storeReview/rateNowButtonClicked',
-  async (_, { dispatch, getState }) => {
-    const state = getState();
-    const rating = getStoreRating(state);
-    const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
-    CleverTap.pushEvent('Feedback Page popup - Click Rate Now', {
-      rating,
-      'empty review': false,
-      ...transactionInfoCleverTap,
-    });
-
-    await dispatch(hideStoreReviewThankYouModal());
-    await dispatch(openGoogleReviewURL());
-  }
-);
-
-export const copyRateButtonClicked = createAsyncThunk(
-  'ordering/orderStatus/storeReview/copyRateButtonClicked',
-  async (_, { dispatch, getState }) => {
-    const state = getState();
-    const rating = getStoreRating(state);
-    const comment = getStoreComment(state);
-    const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
-
-    CleverTap.pushEvent('Feedback Page popup - Click Copy & Rate', {
-      rating,
-      'empty review': false,
-      ...transactionInfoCleverTap,
-    });
-
-    await dispatch(hideStoreReviewThankYouModal());
-
-    await copyDataToClipboard(comment);
-
-    await toast(i18next.t(`OrderingThankYou:ReviewTextCopiedTip`), {
-      type: FEEDBACK_STATUS.SUCCESS,
-      duration: STORE_REVIEW_TEXT_COPIED_TIP_DURATION,
-    });
-    await dispatch(openGoogleReviewURL());
   }
 );
 
