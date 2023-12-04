@@ -1,10 +1,8 @@
 .SuccessToastContainer {
-  @apply tw-fixed tw-z-200 tw-bg-gray-900 tw-bg-opacity-90 tw-rounded tw-text-white tw-z-100 tw-p-12 sm:tw-p-12px tw-overflow-hidden;
+  @apply tw-fixed tw-z-200 tw-bg-gray-900 tw-bg-opacity-90 tw-rounded tw-text-white tw-z-100 tw-p-12 tw-mx-auto sm:tw-p-12px tw-overflow-hidden;
 
   left: 50%;
   top: 50%;
-  margin-left: auto;
-  margin-right: auto;
   width: 70%;
   height: auto;
   transform: translate(-50%, -50%);
@@ -37,9 +35,7 @@
 }
 
 .SuccessToastContent {
-  @apply tw-flex tw-flex-col tw-justify-end tw-items-center tw-leading-relaxed tw-px-4 sm:tw-px-4px tw-mt-12 sm:tw-mt-12px;
-
-  color: #fec788;
+  @apply tw-flex tw-flex-col tw-justify-end tw-items-center tw-leading-relaxed tw-px-4 sm:tw-px-4px tw-mt-12 sm:tw-mt-12px tw-text-orange-light;
 }
 
 .SuccessToastAdditionalInfo {
