@@ -130,6 +130,20 @@ const StoreRedemption = () => {
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
+  const handleGotoBeepDownloadPage = () => {
+    const downloadBeepAppDeepLink = process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK;
+
+    CleverTap.pushEvent('POS Redemption Landing Page - Click Beep App Logo', {
+      country: userCountry,
+      page: 'When users scan QR with phone camera (web)',
+    });
+
+    if (getIsDesktopClients(client)) {
+      window.open(downloadBeepAppDeepLink, '_blank');
+    } else {
+      window.location.href = downloadBeepAppDeepLink;
+    }
+  };
   const handleGotoTNGApp = () => {
     CleverTap.pushEvent('POS Redemption Landing Page - Click TNG App Logo', {
       userCountry,
@@ -183,21 +197,8 @@ const StoreRedemption = () => {
               className="tw-inline-flex tw-m-8 sm:tw-m-8px"
               type="text"
               theme="ghost"
-              target={getIsDesktopClients(client) ? '_blank' : ''}
-              onClick={() => {
-                const downloadBeepAppDeepLink = process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK;
-
-                CleverTap.pushEvent('POS Redemption Landing Page - Click Beep App Logo', {
-                  country: userCountry,
-                  page: 'When users scan QR with phone camera (web)',
-                });
-
-                if (getIsDesktopClients(client)) {
-                  window.open(downloadBeepAppDeepLink, '_blank');
-                } else {
-                  window.location.href = downloadBeepAppDeepLink;
-                }
-              }}
+              onClick={handleGotoBeepDownloadPage}
+              data-test-id="seamless-loyalty.beep-app-button"
             >
               <img src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
             </Button>
@@ -206,7 +207,7 @@ const StoreRedemption = () => {
               type="text"
               theme="ghost"
               onClick={handleGotoTNGApp}
-              data-test-id="tng-app-button"
+              data-test-id="seamless-loyalty.tng-app-button"
             >
               <img src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
             </Button>
