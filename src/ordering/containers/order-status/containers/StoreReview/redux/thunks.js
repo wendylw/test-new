@@ -121,7 +121,7 @@ export const openGoogleReviewURL = createAsyncThunk(
     const country = getMerchantCountry(state);
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
 
-    CleverTap.pushEvent('GMB Redirection loader', {
+    CleverTap.pushEvent('GMB Redirection', {
       country,
       ...transactionInfoCleverTap,
     });
