@@ -35,6 +35,7 @@ import { REFERRER_SOURCE_TYPES } from '../../../../../../utils/constants';
 import { getSessionVariable, getQueryString } from '../../../../../../common/utils';
 import { copyDataToClipboard } from '../../../../../../utils/utils';
 import CleverTap from '../../../../../../utils/clevertap';
+import logger from '../../../../../../utils/monitoring/logger';
 
 export const showStoreReviewThankYouModal = createAsyncThunk(
   'ordering/orderStatus/storeReview/showStoreReviewThankYouModal',
@@ -222,28 +223,32 @@ export const submitButtonClicked = createAsyncThunk(
       ...transactionInfoCleverTap,
     });
 
-    await dispatch(saveOrderStoreReview({ rating, comments, allowMerchantContact, offline }));
+    try {
+      await dispatch(saveOrderStoreReview({ rating, comments, allowMerchantContact, offline })).unwrap();
 
-    const shouldShowSuccessToast = getShouldShowSuccessToast(getState());
-    const isCommentEmpty = getIsCommentEmpty(getState());
+      const shouldShowSuccessToast = getShouldShowSuccessToast(getState());
+      const isCommentEmpty = getIsCommentEmpty(getState());
 
-    if (shouldShowSuccessToast) {
-      await dispatch(showStoreReviewSuccessToast());
+      if (shouldShowSuccessToast) {
+        await dispatch(showStoreReviewSuccessToast());
 
-      !isCommentEmpty && (await copyDataToClipboard(comments));
+        !isCommentEmpty && (await copyDataToClipboard(comments));
 
-      const eventName = !comments
-        ? 'GMB Redirection Information toast - Without review'
-        : 'GMB Redirection Information toast - With review';
+        const eventName = !comments
+          ? 'GMB Redirection Information toast - Without review'
+          : 'GMB Redirection Information toast - With review';
 
-      CleverTap.pushEvent(eventName, {
-        country,
-        ...transactionInfoCleverTap,
-      });
-      return;
+        CleverTap.pushEvent(eventName, {
+          country,
+          ...transactionInfoCleverTap,
+        });
+        return;
+      }
+
+      await dispatch(showStoreReviewThankYouModal());
+    } catch (e) {
+      logger.error('Ordering_OrderStatus_SubmitStoreReviewFailed', { message: e?.message || '' });
     }
-
-    await dispatch(showStoreReviewThankYouModal());
   }
 );
 
