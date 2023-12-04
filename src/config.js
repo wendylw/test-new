@@ -73,7 +73,7 @@ const getIsUrlExpired = () => {
 
     return isUrlExpired === 'true';
   } catch (e) {
-    return null;
+    return false;
   }
 };
 

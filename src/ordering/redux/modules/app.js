@@ -1418,7 +1418,7 @@ const qrCodeInfo = (state = initialState.qrCodeInfo, action) => {
       };
     }
     case types.CHECK_URL_VALIDATION_SUCCESS: {
-      const isUrlExpired = _get(action.payload, 'isUrlExpired', null);
+      const isUrlExpired = _get(action.payload, 'isUrlExpired', false);
 
       return {
         ...state,
