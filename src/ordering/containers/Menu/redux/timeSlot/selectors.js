@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { API_REQUEST_STATUS, SHIPPING_TYPES } from '../../../../../common/utils/constants';
+import { API_REQUEST_STATUS, SHIPPING_TYPES, TIME_SLOT } from '../../../../../common/utils/constants';
 import {
   getBusinessUTCOffset,
   getStore,
@@ -153,14 +153,14 @@ export const getTimeSlotList = createSelector(
     })();
 
     return timeSlotList.map(time => {
-      if (time === 'now') {
+      if (time === TIME_SLOT.NOW) {
         return {
-          value: 'now',
+          value: TIME_SLOT.NOW,
           from: 'Immediate',
           to: 'Immediate',
           available: true,
           soldOut: false,
-          selected: selectedTimeSlot === 'now',
+          selected: selectedTimeSlot === TIME_SLOT.NOW,
         };
       }
 

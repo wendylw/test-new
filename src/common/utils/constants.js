@@ -171,3 +171,9 @@ export const REGISTRATION_TOUCH_POINT = {
   QR_ORDER: 'QROrder',
   TNG: 'TNG',
 };
+
+export const TIME_SLOT = {
+  NOW: 'now',
+  TODAY: 'Today',
+  TOMORROW: 'Tomorrow',
+};

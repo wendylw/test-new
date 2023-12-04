@@ -1,10 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { alert } from '../../../common/utils/feedback';
-import { isWebview, isTNGMiniProgram } from '../../../common/utils';
+import {
+  isWebview,
+  isTNGMiniProgram,
+  judgeClient,
+  getIsThePageHidden,
+  getIsDesktopClients,
+} from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
 import { getUserCountry } from '../../redux/modules/app';
@@ -16,6 +22,7 @@ import {
 } from './redux/selectors';
 import { mounted, confirmToShareConsumerInfoRequests } from './redux/thunks';
 import Loader from '../../../common/components/Loader';
+import Button from '../../../common/components/Button';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
 import NativeHeader from '../../../components/NativeHeader';
@@ -105,9 +112,24 @@ StoreRedemptionNative.displayName = 'StoreRedemptionNative';
 
 const StoreRedemption = () => {
   const dispatch = useDispatch();
+  const client = judgeClient();
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
+  const handleGotoTNGApp = useCallback(() => {
+    // It is the deep link of TNG. If TNG exists, it will jump directly.
+    window.location.href = `${process.env.REACT_APP_TNG_APP_DEEP_LINK_DOMAIN}?mpid=${process.env.REACT_APP_TNG_MPID}&path=%2Fpages%2Findex%2Findex&qrValue=${window.location.href}`;
+
+    // This is the deep link for downloading TNG. If the user has not downloaded TNG, clicking the logo will jump to the page for downloading TNG.
+    setTimeout(() => {
+      const hidden = getIsThePageHidden();
+
+      if (typeof hidden === 'undefined' || hidden === false) {
+        // redirect to TNG download page deep link
+        window.location.href = process.env.REACT_APP_TNG_DOWNLOAD_DEEP_LINK;
+      }
+    }, 500);
+  });
 
   useMount(async () => {
     if (isDisplayWebResult) {
@@ -134,9 +156,28 @@ const StoreRedemption = () => {
             Oops... <br />
             Please scan with
           </h2>
-          <div className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl">
-            <img className="tw-m-8 sm:tw-m-8px" src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
-            <img className="tw-m-8 sm:tw-m-8px" src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+          <div
+            className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl"
+            role="button"
+          >
+            <a
+              className="tw-inline-flex tw-m-8 sm:tw-m-8px"
+              rel="noreferrer"
+              href={process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}
+              target={getIsDesktopClients(client) ? '_blank' : ''}
+              role="button"
+            >
+              <img src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
+            </a>
+            <Button
+              className="tw-inline-flex tw-m-8 sm:tw-m-8px"
+              type="text"
+              theme="ghost"
+              onClick={handleGotoTNGApp}
+              data-test-id="tng-app-button"
+            >
+              <img src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+            </Button>
           </div>
         </section>
       </div>,

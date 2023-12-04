@@ -252,6 +252,8 @@ export const judgeClient = () => {
   return client;
 };
 
+export const getIsDesktopClients = client => [CLIENTS.PC, CLIENTS.MAC].includes(client);
+
 export const submitForm = (action, data = {}) => {
   const form = document.createElement('form');
   form.action = action;
@@ -782,3 +784,6 @@ export const containerHeight = ({ headerEls, footerEls }) =>
     marginBottom({
       footerEls,
     })}px`;
+
+export const getIsThePageHidden = () =>
+  window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
