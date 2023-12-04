@@ -134,6 +134,10 @@ class App extends Component {
     }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('sh-location-change', this.checkIfDineInUrlExpired);
+  }
+
   checkIfDineInUrlExpired = async () => {
     const { appActions, isDynamicUrl } = this.props;
 
@@ -234,6 +238,14 @@ class App extends Component {
     }
   };
 
+  handleExpiredUrlPageButtonClick = () => {
+    if (Utils.isWebview()) {
+      NativeMethods.closeWebView();
+    } else {
+      window.location.href = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${ROUTER_PATHS.QRSCAN}`;
+    }
+  };
+
   visitErrorPage() {
     const { pageError } = this.props;
     const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${
@@ -273,13 +285,7 @@ class App extends Component {
             closeButtonClassName={styles.UrlExpiredButton}
             closeButtonContent={t('UrlExpiredButton')}
             zIndex={1000}
-            onClose={() => {
-              if (Utils.isWebview()) {
-                NativeMethods.closeWebView();
-              } else {
-                window.location.href = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${ROUTER_PATHS.QRSCAN}`;
-              }
-            }}
+            onClose={handleExpiredUrlPageButtonClick}
           >
             <ResultContent
               content={t('UrlExpiredDescription')}
