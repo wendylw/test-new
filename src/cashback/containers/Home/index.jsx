@@ -48,7 +48,7 @@ class PageLoyalty extends React.Component {
       <div>
         <CurrencyNumber
           className="loyalty-home__money-currency padding-left-right-small text-size-large"
-          money={totalCredits || 0}
+          money={totalCredits}
         />
         <span
           role="button"

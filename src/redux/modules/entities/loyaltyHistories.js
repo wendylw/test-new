@@ -20,6 +20,6 @@ export default reducer;
 
 // selectors
 
-export const getAllBusinesses = state => state.entities.loyaltyHistories;
+export const getAllLoyaltyHistories = state => state.entities.loyaltyHistories;
 
-export const getLoyaltyHistoriesByCustomerId = (state, customerId) => getAllBusinesses(state)[customerId];
+export const getLoyaltyHistoriesByCustomerId = (state, customerId) => getAllLoyaltyHistories(state)[customerId];
