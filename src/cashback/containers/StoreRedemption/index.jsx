@@ -131,6 +131,11 @@ const StoreRedemption = () => {
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
   const handleGotoTNGApp = () => {
+    CleverTap.pushEvent('POS Redemption Landing Page - Click TNG App Logo', {
+      userCountry,
+      page: 'When users scan QR with phone camera (web)',
+    });
+
     // It is the deep link of TNG. If TNG exists, it will jump directly.
     window.location.href = `${process.env.REACT_APP_TNG_APP_DEEP_LINK_DOMAIN}?mpid=${process.env.REACT_APP_TNG_MPID}&path=%2Fpages%2Findex%2Findex&qrValue=${window.location.href}`;
 
@@ -174,15 +179,28 @@ const StoreRedemption = () => {
             className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl"
             role="button"
           >
-            <a
+            <Button
               className="tw-inline-flex tw-m-8 sm:tw-m-8px"
-              rel="noreferrer"
-              href={process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}
+              type="text"
+              theme="ghost"
               target={getIsDesktopClients(client) ? '_blank' : ''}
-              role="button"
+              onClick={() => {
+                const downloadBeepAppDeepLink = process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK;
+
+                CleverTap.pushEvent('POS Redemption Landing Page - Click Beep App Logo', {
+                  country: userCountry,
+                  page: 'When users scan QR with phone camera (web)',
+                });
+
+                if (getIsDesktopClients(client)) {
+                  window.open(downloadBeepAppDeepLink, '_blank');
+                } else {
+                  window.location.href = downloadBeepAppDeepLink;
+                }
+              }}
             >
               <img src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
-            </a>
+            </Button>
             <Button
               className="tw-inline-flex tw-m-8 sm:tw-m-8px"
               type="text"
