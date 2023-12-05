@@ -53,7 +53,11 @@ const StoreRedemptionNative = () => {
           ? 'With Cashback'
           : `Without Cashback (${isStoreRedemptionNewCustomer ? 'New' : 'Returning'} Customer)`,
       });
+    }
+  }, [isDisplayStoreRedemptionContent, isLoadCustomerRequestCompleted, isStoreRedemptionNewCustomer, userCountry]);
 
+  useEffect(() => {
+    if (isLoadCustomerRequestCompleted) {
       if (isDisplayStoreRedemptionContent) {
         alert(
           <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
@@ -144,7 +148,7 @@ const StoreRedemption = () => {
       window.location.href = downloadBeepAppDeepLink;
     }
   }, [client, userCountry]);
-  const handleGotoTNGApp = () => {
+  const handleGotoTNGApp = useCallback(() => {
     CleverTap.pushEvent('POS Redemption Landing Page - Click TNG App Logo', {
       country: userCountry,
       page: 'When users scan QR with phone camera (web)',
@@ -162,7 +166,7 @@ const StoreRedemption = () => {
         window.location.href = process.env.REACT_APP_TNG_DOWNLOAD_DEEP_LINK;
       }
     }, 500);
-  };
+  }, [userCountry]);
 
   useMount(async () => {
     if (isDisplayWebResult) {
