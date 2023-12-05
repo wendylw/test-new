@@ -4,13 +4,9 @@ import i18next from 'i18next';
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import _get from 'lodash/get';
-import _uniq from 'lodash/uniq';
 import _isEmpty from 'lodash/isEmpty';
-import _isEqual from 'lodash/isEqual';
-import _lowerCase from 'lodash/lowerCase';
 import _cloneDeep from 'lodash/cloneDeep';
 import { replace } from 'connected-react-router';
-import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants, { API_REQUEST_STATUS, REGISTRATION_SOURCE } from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
 import config from '../../../../config';
@@ -23,11 +19,8 @@ import { API_REQUEST } from '../../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../../redux/middlewares/apiGql';
 import { get } from '../../../../utils/request';
 import { post } from '../../../../utils/api/api-fetch';
-import { getCoreStoreList, getStoreById } from '../../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../../redux/modules/entities/products';
-import { getAllCategories, getCategoryList } from '../../../../redux/modules/entities/categories';
-import { setAddressInfo } from '../../../../redux/modules/address/thunks';
-import { getSavedAddressId } from '../../../../redux/modules/address/selectors';
+import { getCategoryList } from '../../../../redux/modules/entities/categories';
 import { getProfileInfo, postLoginGuest } from './api-request';
 
 import * as TngUtils from '../../../../utils/tng-utils';
@@ -43,19 +36,6 @@ const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 export const types = APP_TYPES;
 
 export { getCategoryList, getAllProducts };
-
-const CartItemModel = {
-  id: null,
-  productId: null,
-  title: '',
-  variationTexts: [],
-  isTakeaway: false,
-  displayPrice: 0,
-  originalDisplayPrice: 0,
-  image: null,
-  stockStatus: '',
-  quantity: 0,
-};
 
 const CartModel = {
   status: API_REQUEST_STATUS.PENDING,
@@ -190,14 +170,6 @@ export const initialState = {
     fetchRequestStatus: null,
   },
 };
-
-const fetchCoreBusiness = variables => ({
-  [FETCH_GRAPHQL]: {
-    types: [types.FETCH_COREBUSINESS_REQUEST, types.FETCH_COREBUSINESS_SUCCESS, types.FETCH_COREBUSINESS_FAILURE],
-    endpoint: Url.apiGql('CoreBusiness'),
-    variables,
-  },
-});
 
 // action creators
 export const actions = {
@@ -414,15 +386,6 @@ export const actions = {
     type: types.RESET_COREBUSINESS_STATUS,
   }),
 
-  loadCoreBusiness: id => (dispatch, getState) => {
-    const state = getState();
-    const { business } = config;
-    const storeId = getStoreId(state);
-    const shippingType = getShippingType(state);
-
-    return dispatch(fetchCoreBusiness({ business, storeId: id || storeId, shippingType }));
-  },
-
   // TODO: This type is actually not used, because apiError does not respect action type,
   // which is a bad practice, we will fix it in the future, for now we just keep a useless
   // action type.
@@ -444,98 +407,6 @@ export const actions = {
     });
 
     await dispatch(actions.loadDeliveryAddressDetailsIfNeeded());
-  },
-
-  updateDeliveryDetails: data => async (dispatch, getState) => {
-    const state = getState();
-    const deliveryDetails = getDeliveryDetails(state);
-
-    const payload = {
-      ...deliveryDetails,
-      ...data,
-    };
-
-    const isAddressInfoEmpty = !payload.addressId;
-    const hasAddressInfoChanged = [
-      'addressId',
-      'addressName',
-      'deliveryToAddress',
-      'deliveryToCity',
-      'postCode',
-      'countryCode',
-      'deliveryToLocation',
-    ].some(key => !_isEqual(deliveryDetails[key], payload[key]));
-    const deliveryToLocation = _get(payload, 'deliveryToLocation', null);
-    let coords = null;
-
-    if (deliveryToLocation) {
-      coords = {
-        lat: _get(deliveryToLocation, 'latitude', 0),
-        lng: _get(deliveryToLocation, 'longitude', 0),
-      };
-    }
-
-    if (!isAddressInfoEmpty && hasAddressInfoChanged) {
-      dispatch(
-        setAddressInfo({
-          savedAddressId: _get(payload, 'addressId', null),
-          shortName: _get(payload, 'addressName', ''),
-          fullName: _get(payload, 'deliveryToAddress', ''),
-          coords,
-          city: _get(payload, 'deliveryToCity', ''),
-          postCode: _get(payload, 'postCode', ''),
-          countryCode: _get(payload, 'countryCode', ''),
-        })
-      );
-    }
-
-    dispatch({
-      type: types.DELIVERY_DETAILS_UPDATED,
-      payload,
-    });
-  },
-
-  loadDeliveryAddressDetails: () => async (dispatch, getState) => {
-    const state = getState();
-    const consumerId = getUserConsumerId(state);
-    const storeId = getStoreId(state);
-    const savedAddressId = getSavedAddressId(state);
-
-    return dispatch({
-      [API_REQUEST]: {
-        types: [
-          types.FETCH_DELIVERYADDRESSDETAIL_REQUEST,
-          types.FETCH_DELIVERYADDRESSDETAIL_SUCCESS,
-          types.FETCH_DELIVERYADDRESSDETAIL_FAILURE,
-        ],
-        ...Url.API_URLS.GET_DELIVERY_ADDRESS_DETAILS(consumerId, storeId, savedAddressId),
-      },
-    });
-  },
-
-  loadDeliveryAddressDetailsIfNeeded: () => async (dispatch, getState) => {
-    const state = getState();
-    const savedAddressId = getSavedAddressId(state);
-    const storeId = getStoreId(state);
-
-    if (!(_isEmpty(savedAddressId) || _isEmpty(storeId))) {
-      await dispatch(actions.loadDeliveryAddressDetails());
-    }
-  },
-
-  loadCoreStores: address => (dispatch, getState) => {
-    const state = getState();
-    const business = getBusiness(state);
-    const shippingType = getShippingType(state);
-
-    // will be handle in src/redux/modules/entities/stores.js
-    return dispatch({
-      [FETCH_GRAPHQL]: {
-        types: [types.FETCH_CORESTORES_REQUEST, types.FETCH_CORESTORES_SUCCESS, types.FETCH_CORESTORES_FAILURE],
-        endpoint: Url.apiGql('CoreStores'),
-        variables: { business, shippingType, ...address },
-      },
-    });
   },
 
   getStoreHashData: storeId => ({
@@ -650,34 +521,6 @@ export const actions = {
 
       await Promise.all([dispatch(actions.loadCoreBusiness()), dispatch(actions.loadCoreStores())]);
     }
-  },
-
-  updateStoreId: newStoreId => (dispatch, getState) => {
-    const state = getState();
-    const storeId = getStoreId(state);
-
-    // replace new store id in url query
-    if (storeId !== newStoreId) {
-      const store = getStoreById(state, newStoreId);
-      const hashCode = _get(store, 'hash', null);
-      const h = decodeURIComponent(hashCode);
-      const queryObj = getURLQueryObject(state);
-      const location = getLocation(state);
-      queryObj.h = h;
-      dispatch(
-        replace({
-          pathname: location.pathname,
-          hash: location.hash,
-          state: location.state,
-          search: qs.stringify(queryObj, { addQueryPrefix: true }),
-        })
-      );
-    }
-
-    dispatch({
-      type: types.UPDATE_STORE_ID,
-      payload: newStoreId,
-    });
   },
 
   updateCashbackApplyStatus: newStatus => ({
@@ -930,57 +773,6 @@ const error = (state = initialState.error, action) => {
 
 const business = (state = initialState.business) => state;
 
-const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
-  const { type, responseGql } = action;
-
-  if (!(responseGql && responseGql.data.onlineStoreInfo)) {
-    return state;
-  }
-
-  switch (type) {
-    case types.FETCH_ONLINESTOREINFO_REQUEST:
-      return { ...state, status: API_REQUEST_STATUS.PENDING };
-    case types.FETCH_ONLINESTOREINFO_SUCCESS:
-      return { ...state, status: API_REQUEST_STATUS.FULFILLED, id: action.responseGql.data.onlineStoreInfo.id };
-    case types.FETCH_ONLINESTOREINFO_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED };
-    default:
-      return state;
-  }
-};
-
-const onlineCategory = (state = initialState.onlineCategory, action) => {
-  switch (action.type) {
-    case types.RESET_ONLINECATEGORY_STATUS:
-      return { ...state, status: null };
-    case types.FETCH_ONLINECATEGORY_REQUEST:
-      return { ...state, status: API_REQUEST_STATUS.PENDING };
-    case types.FETCH_ONLINECATEGORY_SUCCESS:
-      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
-    case types.FETCH_ONLINECATEGORY_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
-    default:
-      return state;
-  }
-};
-
-const coreBusiness = (state = initialState.coreBusiness, action) => {
-  const { type, category } = action;
-
-  switch (type) {
-    case types.RESET_COREBUSINESS_STATUS:
-      return { ...state, status: null };
-    case types.FETCH_COREBUSINESS_REQUEST:
-      return { ...state, status: API_REQUEST_STATUS.PENDING };
-    case types.FETCH_COREBUSINESS_SUCCESS:
-      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
-    case types.FETCH_COREBUSINESS_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: category };
-    default:
-      return state;
-  }
-};
-
 const coreStores = (state = initialState.coreStores, action) => {
   switch (action.type) {
     case types.FETCH_CORESTORES_REQUEST:
@@ -1054,74 +846,6 @@ const requestInfo = (state = initialState.requestInfo, action) => {
   }
 };
 
-const shoppingCart = (state = initialState.shoppingCart, action) => {
-  if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
-    return { ...state, ...CartModel, isFetching: false, status: API_REQUEST_STATUS.FULFILLED };
-  }
-
-  if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
-    return { ...state, isFetching: true, status: API_REQUEST_STATUS.PENDING };
-  }
-
-  if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
-    const { items = [], unavailableItems = [], displayPromotions, voucher: voucherObject, ...cartBilling } =
-      action.response || {};
-    let promotion = null;
-    if (voucherObject) {
-      promotion = {
-        promoCode: voucherObject.voucherCode,
-        status: voucherObject.status,
-        discount: voucherObject.value,
-        validFrom: new Date(voucherObject.validFrom),
-        promoType: Constants.PROMO_TYPE.VOUCHER,
-      };
-    } else if (displayPromotions && displayPromotions.length) {
-      const displayPromotion = displayPromotions[0];
-      promotion = {
-        promoCode: displayPromotion.promotionCode,
-        discount: displayPromotion.displayDiscount,
-        promoType: Constants.PROMO_TYPE.PROMOTION,
-        status: displayPromotion.status,
-      };
-    }
-
-    return {
-      ...state,
-      isFetching: false,
-      status: API_REQUEST_STATUS.FULFILLED,
-      items: items.map(item => ({ ...CartItemModel, ...item })),
-      unavailableItems: unavailableItems.map(unavailableItem => ({ ...CartItemModel, ...unavailableItem })),
-      billing: {
-        ...cartBilling,
-        promotion,
-      },
-    };
-  }
-
-  if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
-    return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
-  }
-
-  if (action.type === types.UPDATE_SHOPPINGCART_APPLYCASHBACK) {
-    return { ...state, billing: { ...state.billing, applyCashback: action.payload } };
-  }
-
-  return state;
-};
-
-const addOrUpdateShoppingCartItemRequest = (state = initialState.addOrUpdateShoppingCartItemRequest, action) => {
-  switch (action.type) {
-    case types.ADDORUPDATE_SHOPPINGCARTITEM_REQUEST:
-      return { ...state, status: API_REQUEST_STATUS.PENDING };
-    case types.ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS:
-      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
-    case types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE:
-      return { ...state, status: API_REQUEST_STATUS.REJECTED, errorCategory: action.category };
-    default:
-      return state;
-  }
-};
-
 const deliveryDetails = (state = initialState.deliveryDetails, action) => {
   const { response } = action || {};
   const isAddressAvailable = _get(response, 'availableStatus', false);
@@ -1173,49 +897,13 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
   }
 };
 
-const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
-  switch (action.type) {
-    case types.FETCH_STORE_HASHCODE_REQUEST: {
-      return {
-        ...state,
-        status: API_REQUEST_STATUS.PENDING,
-      };
-    }
-    case types.FETCH_STORE_HASHCODE_SUCCESS: {
-      const hashCode = _get(action.response, 'redirectTo', null);
-
-      return {
-        ...state,
-        data: hashCode,
-        status: API_REQUEST_STATUS.FULFILLED,
-      };
-    }
-
-    case types.FETCH_STORE_HASHCODE_FAILURE: {
-      return {
-        ...state,
-        data: null,
-        status: API_REQUEST_STATUS.REJECTED,
-      };
-    }
-    default:
-      return state;
-  }
-};
-
 export default combineReducers({
   user,
   error,
   business,
-  onlineStoreInfo,
   requestInfo,
   apiError,
-  shoppingCart,
-  addOrUpdateShoppingCartItemRequest,
   deliveryDetails,
-  storeHashCode: storeHashCodeReducer,
-  coreBusiness,
-  onlineCategory,
   coreStores,
   productDetail,
 });
@@ -1316,168 +1004,6 @@ export const getIsUserProfileStatusPending = createSelector(
   status => status === API_REQUEST_STATUS.PENDING
 );
 
-export const getStoresList = state => getCoreStoreList(state);
-
-export const getStoreHashCode = state => state.app.storeHashCode.data;
-
-export const getCoreBusinessAPIStatus = state => state.app.coreBusiness.status;
-
-export const getCoreBusinessAPIErrorCategory = state => state.app.coreBusiness.errorCategory;
-
-export const getIsCoreBusinessAPIPending = createSelector(
-  getCoreBusinessAPIStatus,
-  status => status === API_REQUEST_STATUS.PENDING
-);
-export const getIsCoreBusinessAPIFulfilled = createSelector(
-  getCoreBusinessAPIStatus,
-  status => status === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsCoreBusinessRequestRejected = createSelector(
-  getCoreBusinessAPIStatus,
-  status => status === API_REQUEST_STATUS.REJECTED
-);
-
-export const getIsCoreBusinessAPICompleted = createSelector(getCoreBusinessAPIStatus, status =>
-  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(status)
-);
-
-export const getProductDetailStatus = state => state.app.productDetail.status;
-
-export const getProductDetailErrorCategory = state => state.app.productDetail.errorCategory;
-
-export const getIsProductDetailRequestRejected = createSelector(
-  getProductDetailStatus,
-  productDetailStatus => productDetailStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => {
-  const deliveryTypes = stores.reduce((allTypes, store) => allTypes.concat(store.fulfillmentOptions), []);
-
-  return _uniq(deliveryTypes);
-});
-
-export const getStoreId = createSelector(getRequestInfo, info => _get(info, 'storeId', null));
-export const getShippingType = createSelector(getRequestInfo, info => _get(info, 'shippingType', null));
-export const getTableId = createSelector(getRequestInfo, info => _get(info, 'tableId', null));
-
-export const getStore = state => {
-  const storeId = getStoreId(state);
-
-  return getStoreById(state, storeId);
-};
-
-export const getHasSelectedStore = createSelector(getStoreId, storeId => !!storeId);
-
-export const getBusinessCurrency = createSelector(getOnlineStoreInfo, info => _get(info, 'currency', 'MYR'));
-
-export const getStoreFulfillmentOptions = createSelector(getStore, store => _get(store, 'fulfillmentOptions', []));
-
-export const getIsEnablePerTimeSlotLimitForPreOrder = createSelector(getStore, store =>
-  _get(store, 'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder', false)
-);
-
-export const getStoreSupportShippingTypes = createSelector(getStoreFulfillmentOptions, storeFulfillmentOptions =>
-  storeFulfillmentOptions.map(_lowerCase)
-);
-
-export const getIsEnablePauseMode = createSelector(getStore, store =>
-  _get(store, 'qrOrderingSettings.pauseModeEnabled', false)
-);
-
-export const getCartItems = state => state.app.shoppingCart.items;
-
-export const getCartBilling = state => state.app.shoppingCart.billing;
-
-export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
-
-export const getCartStatus = state => state.app.shoppingCart.status;
-
-export const getCartErrorCategory = state => state.app.shoppingCart.errorCategory;
-
-export const getIsGetCartFailed = createSelector(
-  getCartStatus,
-  cartStatus => cartStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getShippingFee = createSelector(getCartBilling, billing => billing.shippingFee);
-
-export const getDeliveryDetails = state => state.app.deliveryDetails;
-
-export const getDeliveryAddressId = createSelector(getDeliveryDetails, deliveryDetailInfo =>
-  _get(deliveryDetailInfo, 'addressId', null)
-);
-
-export const getHasFetchDeliveryDetailsRequestCompleted = createSelector(getDeliveryDetails, deliveryDetailInfo =>
-  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(deliveryDetailInfo.fetchRequestStatus)
-);
-
-export const getCartTotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'total', null));
-export const getCartSubtotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'subtotal', null));
-export const getCartCashback = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'cashback', null));
-export const getCartTotalCashback = createSelector(getCartBilling, cartBilling =>
-  _get(cartBilling, 'totalCashback', null)
-);
-export const getCartCount = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'count', 0));
-
-export const getCartApplyCashback = createSelector(getCartBilling, cartBilling =>
-  _get(cartBilling, 'applyCashback', false)
-);
-
-export const getServiceChargeRate = createSelector(getCartBilling, cartBilling =>
-  _get(cartBilling, 'serviceChargeInfo.serviceChargeRate', 0)
-);
-
-export const getShoppingCart = createSelector(
-  [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
-  (cartBilling, items, unavailableItems, allProducts, categories) => {
-    const categoriesKeys = Object.keys(categories) || [];
-    const allProductIds = Object.keys(allProducts) || [];
-    const categoryInfo = selectedProductObject => {
-      let categoryName = '';
-      let categoryRank = '';
-
-      categoriesKeys.forEach((key, index) => {
-        if ((categories[key].products || []).find(productId => productId === selectedProductObject.productId)) {
-          categoryName = categories[key].name;
-          categoryRank = index + 1;
-        }
-      });
-
-      return {
-        categoryName,
-        categoryRank,
-      };
-    };
-
-    cartBilling.count = [...items, ...unavailableItems].reduce((sumCount, item) => sumCount + item.quantity, 0);
-
-    return {
-      cartBilling,
-      items: items.map(item => ({
-        ...item,
-        ...categoryInfo(item),
-        rank: allProductIds.findIndex(id => id === item.productId) + 1,
-        isFeaturedProduct:
-          allProducts[item.productId] && allProducts[item.productId].isFeaturedProduct
-            ? allProducts[item.productId].isFeaturedProduct
-            : false,
-      })),
-      unavailableItems: unavailableItems.map(unavailableItem => ({
-        ...unavailableItem,
-        ...categoryInfo(unavailableItem),
-        rank: allProductIds.findIndex(id => id === unavailableItem.productId) + 1,
-        isFeaturedProduct:
-          allProducts[unavailableItem.productId] && allProducts[unavailableItem.productId].isFeaturedProduct
-            ? allProducts[unavailableItem.productId].isFeaturedProduct
-            : false,
-      })),
-    };
-  }
-);
-
-export const getIsCartStatusRejected = createSelector(getCartStatus, status => status === API_REQUEST_STATUS.REJECTED);
-
 export const getUserEmail = createSelector(getUser, userInfo => _get(userInfo, 'profile.email', ''));
 
 export const getUserName = createSelector(getUser, userInfo => _get(userInfo, 'profile.name', ''));
@@ -1485,19 +1011,6 @@ export const getUserName = createSelector(getUser, userInfo => _get(userInfo, 'p
 export const getUserPhone = createSelector(getUser, userInfo => _get(userInfo, 'profile.phone', ''));
 
 export const getUserConsumerId = createSelector(getUser, userInfo => _get(userInfo, 'consumerId', ''));
-
-export const getStoreName = createSelector(getStore, store => _get(store, 'name', ''));
-
-export const getStoreCoords = createSelector(getStore, store => {
-  if (!store) {
-    return null;
-  }
-
-  return {
-    lat: _get(store, 'location.latitude'),
-    lng: _get(store, 'location.longitude'),
-  };
-});
 
 export const getIsGuestLoginDisabled = createSelector(getUser, userInfo => userInfo.disableGuestLogin);
 
@@ -1516,6 +1029,8 @@ export const getIsInAppOrMiniProgram = createSelector(
 export const getIsFromBeepSite = () => isFromBeepSite();
 export const getIsFromBeepSiteOrderHistory = () => isFromBeepSiteOrderHistory();
 export const getIsFromFoodCourt = () => isFromFoodCourt();
+
+export const getShippingType = createSelector(getRequestInfo, info => _get(info, 'shippingType', null));
 
 /**
  * Is delivery shipping type
@@ -1551,18 +1066,6 @@ export const getIsGuestCheckout = createSelector(
 );
 
 /**
- * get Format Currency function
- * Usage example: formatCurrency(100), output: "RM 100.00"
- */
-export const getFormatCurrencyFunction = createSelector(getBusinessCurrency, currencyCode => {
-  const currencyFormatter = createCurrencyFormatter({
-    currencyCode,
-  });
-
-  return currencyFormatter.format.bind(currencyFormatter);
-});
-
-/**
  * is shipping type of QR ordering
  * @returns
  */
@@ -1578,16 +1081,6 @@ export const getIsQrOrderingShippingType = createSelector(
 export const getIsBeepDeliveryShippingType = createSelector(
   getShippingType,
   shippingType => shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP
-);
-
-export const getIsCoreStoresLoaded = createSelector(
-  getCoreStoresStatus,
-  coreStoresStatus => coreStoresStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsCoreStoresRequestRejected = createSelector(
-  getCoreStoresStatus,
-  coreStoresStatus => coreStoresStatus === API_REQUEST_STATUS.REJECTED
 );
 
 export const getRouter = state => state.router;
