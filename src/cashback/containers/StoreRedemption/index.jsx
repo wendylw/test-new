@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
@@ -130,7 +130,7 @@ const StoreRedemption = () => {
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
-  const handleGotoBeepDownloadPage = () => {
+  const handleGotoBeepDownloadPage = useCallback(() => {
     const downloadBeepAppDeepLink = process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK;
 
     CleverTap.pushEvent('POS Redemption Landing Page - Click Beep App Logo', {
@@ -143,10 +143,10 @@ const StoreRedemption = () => {
     } else {
       window.location.href = downloadBeepAppDeepLink;
     }
-  };
+  }, [client, userCountry]);
   const handleGotoTNGApp = () => {
     CleverTap.pushEvent('POS Redemption Landing Page - Click TNG App Logo', {
-      userCountry,
+      country: userCountry,
       page: 'When users scan QR with phone camera (web)',
     });
 
