@@ -12,6 +12,8 @@ const MembershipFormProxy = lazy(() =>
   )
 );
 
+const Login = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_Login" */ './Login')));
+
 const { ROUTER_PATHS } = Constants;
 
 const Routes = () => (
@@ -23,6 +25,7 @@ const Routes = () => (
           path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.JOIN_MEMBERSHIP}`}
           component={MembershipFormProxy}
         />
+        <Route exact path={ROUTER_PATHS.LOGIN} component={Login} />
         <Route path="*" component={NotFound} />
       </Switch>
     </Suspense>
