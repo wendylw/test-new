@@ -107,7 +107,7 @@ export const loginUser = createAsyncThunk('app/user/loginUser', async ({ accessT
 export const syncUserLoginInfo = createAsyncThunk(
   'app/user/syncUserLoginInfo',
   async ({ accessToken, refreshToken }, { dispatch }) => {
-    await dispatch(loginUser({ accessToken, refreshToken }));
+    await dispatch(loginUser({ accessToken, refreshToken })).unwrap();
     await dispatch(initUserInfo());
   }
 );
