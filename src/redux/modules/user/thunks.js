@@ -25,38 +25,24 @@ export const fetchUserLoginStatus = createAsyncThunk('app/user/getUserLoginStatu
   }
 });
 
-export const syncUserPhoneNumber = createAsyncThunk('app/user/syncUserPhoneNumber', phone => {
-  Utils.setLocalStorageVariable('user.p', phone);
-
-  return phone;
-});
-
 /**
  * @param {undefined}
  * @return {Object} {id, phone, firstName, lastName, email, gender, birthday, birthdayModifiedTime, notificationSettings, birthdayChangeAllowed }
  */
-export const fetchUserProfileInfo = createAsyncThunk(
-  'app/user/fetchUserProfileInfo',
-  async (_, { dispatch, getState }) => {
-    try {
-      const state = getState();
-      const consumerId = getConsumerId(state);
+export const fetchUserProfileInfo = createAsyncThunk('app/user/fetchUserProfileInfo', async (_, { getState }) => {
+  try {
+    const state = getState();
+    const consumerId = getConsumerId(state);
 
-      const result = await getUserProfile(consumerId);
-      const { phone } = result || {};
+    const result = await getUserProfile(consumerId);
 
-      if (phone) {
-        dispatch(syncUserPhoneNumber(phone));
-      }
+    return result;
+  } catch (error) {
+    logger.error('User_FetchUserProfileInfoFailed', { message: error?.message });
 
-      return result;
-    } catch (error) {
-      logger.error('User_FetchUserProfileInfoFailed', { message: error?.message });
-
-      throw error;
-    }
+    throw error;
   }
-);
+});
 
 export const initUserInfo = createAsyncThunk('app/user/initUserInfo', async (_, { dispatch, getState }) => {
   await dispatch(fetchUserLoginStatus());

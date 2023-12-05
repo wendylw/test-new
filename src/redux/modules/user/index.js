@@ -1,10 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import config from '../../../config';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
-import Utils from '../../../utils/utils';
-import { fetchUserLoginStatus, fetchUserProfileInfo, syncUserPhoneNumber, loginUser, loginUserAsGuest } from './thunks';
+import { fetchUserLoginStatus, fetchUserProfileInfo, loginUser, loginUserAsGuest } from './thunks';
 
-const localStoragePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const initialState = {
   checkLoginRequest: {
     data: {
@@ -31,7 +29,7 @@ const initialState = {
   loadProfileRequest: {
     data: {
       id: null,
-      phone: localStoragePhoneNumber,
+      phone: null,
       birthday: null,
       email: null,
       firstName: null,
@@ -67,11 +65,6 @@ const { reducer, actions } = createSlice({
     [fetchUserLoginStatus.rejected.type]: (state, { error }) => {
       state.checkLoginRequest.status = API_REQUEST_STATUS.REJECTED;
       state.checkLoginRequest.error = error;
-    },
-    [syncUserPhoneNumber.fulfilled.type]: (state, { payload }) => {
-      const { phone } = payload;
-
-      state.loadProfileRequest.phone = phone;
     },
     [loginUser.pending.type]: state => {
       state.loginRequest.status = API_REQUEST_STATUS.PENDING;
