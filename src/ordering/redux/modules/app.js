@@ -1410,6 +1410,8 @@ const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
 };
 
 const qrCodeInfo = (state = initialState.qrCodeInfo, action) => {
+  const isUrlExpired = _get(action.payload, 'isUrlExpired', false);
+
   switch (action.type) {
     case types.CHECK_URL_VALIDATION_REQUEST: {
       return {
@@ -1418,8 +1420,6 @@ const qrCodeInfo = (state = initialState.qrCodeInfo, action) => {
       };
     }
     case types.CHECK_URL_VALIDATION_SUCCESS: {
-      const isUrlExpired = _get(action.payload, 'isUrlExpired', false);
-
       return {
         ...state,
         data: {
