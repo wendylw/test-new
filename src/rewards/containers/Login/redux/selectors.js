@@ -14,7 +14,7 @@ import {
   getIsLoginRequestStatusPending,
   getIsQrOrderingShippingType,
   getIsGuestLoginDisabled,
-} from '../app';
+} from '../../../redux/modules/app';
 import { ERROR_TYPES } from '../../../../utils/api/constants';
 
 const { OTP_REQUEST_TYPES } = Constants;

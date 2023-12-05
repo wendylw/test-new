@@ -12,7 +12,7 @@ import HybridHeader from '../../../components/HybridHeader';
 import PageLoader from '../../../components/PageLoader';
 import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
 import ApiFetchError from '../../../utils/api/api-fetch-error';
-import { actions as appActionCreators, getUser, getIsLoginRequestFailed } from './app';
+import { actions as appActionCreators, getUser, getIsLoginRequestFailed } from '../../redux/modules/app';
 import {
   getOtpRequestError,
   getShouldShowLoader,
