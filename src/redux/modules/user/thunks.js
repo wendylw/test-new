@@ -30,18 +30,11 @@ export const fetchUserLoginStatus = createAsyncThunk('app/user/getUserLoginStatu
  * @return {Object} {id, phone, firstName, lastName, email, gender, birthday, birthdayModifiedTime, notificationSettings, birthdayChangeAllowed }
  */
 export const fetchUserProfileInfo = createAsyncThunk('app/user/fetchUserProfileInfo', async (_, { getState }) => {
-  try {
-    const state = getState();
-    const consumerId = getConsumerId(state);
+  const state = getState();
+  const consumerId = getConsumerId(state);
+  const result = await getUserProfile(consumerId);
 
-    const result = await getUserProfile(consumerId);
-
-    return result;
-  } catch (error) {
-    logger.error('User_FetchUserProfileInfoFailed', { message: error?.message });
-
-    throw error;
-  }
+  return result;
 });
 
 export const initUserInfo = createAsyncThunk('app/user/initUserInfo', async (_, { dispatch, getState }) => {
