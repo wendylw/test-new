@@ -95,14 +95,19 @@ export const getIsCheckLoginRequestCompleted = createSelector(getCheckLoginReque
   [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(status)
 );
 
-export const getIsLoginRequestPending = createSelector(
+export const getIsLoginRequestStatusPending = createSelector(
   getLoginRequestStatus,
   status => status === API_REQUEST_STATUS.PENDING
 );
 
-export const getIsLoginRequestSuccess = createSelector(
+export const getIsLoginRequestStatusFulfilled = createSelector(
   getLoginRequestStatus,
   status => status === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsLoginRequestStatusRejected = createSelector(
+  getLoginRequestStatus,
+  status => status === API_REQUEST_STATUS.REJECTED
 );
 
 export const getIsLoginExpired = createSelector(getLoginRequestError, loginRequestError =>

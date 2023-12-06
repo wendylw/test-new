@@ -1,5 +1,4 @@
 import React from 'react';
-import _get from 'lodash/get';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
@@ -9,32 +8,31 @@ import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
 import Constants from '../../../utils/constants';
 import HybridHeader from '../../../components/HybridHeader';
-import PageLoader from '../../../components/PageLoader';
 import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
 import ApiFetchError from '../../../utils/api/api-fetch-error';
-import { actions as appActionCreators, getUser, getIsLoginRequestFailed } from '../../redux/modules/app';
+import { syncUserLoginInfo as syncUserLoginInfoThunk } from '../../../redux/modules/user/thunks';
+import { getIsLogin } from '../../../redux/modules/user/selectors';
+import { actions as appActionCreators, getUser } from '../../redux/modules/app';
 import {
+  getAccessToken,
+  getRefreshToken,
   getOtpRequestError,
   getShouldShowLoader,
   getOtpErrorTextI18nKey,
   getShouldShowErrorPopUp,
-  getShouldShowGuestOption,
   getOtpErrorPopUpI18nKeys,
   getIsOtpErrorFieldVisible,
   getIsOtpInitialRequestFailed,
   getIsOtpRequestStatusPending,
   getIsOtpRequestStatusRejected,
+  getIsSendOtpRequestStatusRejected,
 } from './redux/selectors';
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
-import GuestModeButton from './components/GuestModeButton';
 import './OrderingPageLogin.scss';
 import config from '../../../config';
-import prefetch from '../../../common/utils/prefetch-assets';
 import logger from '../../../utils/monitoring/logger';
-import Utils from '../../../utils/utils';
 import { alert } from '../../../common/utils/feedback';
-import { getWebQRImageHeight } from './utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 import CleverTap from '../../../utils/clevertap';
 
@@ -53,34 +51,13 @@ class PageLogin extends React.Component {
     };
   }
 
-  componentDidMount() {
-    const { shouldShowGuestOption } = this.props;
-
-    if (Utils.isTNGMiniProgram()) {
-      this.loginInTngMiniProgram();
-    }
-
-    if (shouldShowGuestOption) {
-      this.setState({ imageStyle: { height: `${getWebQRImageHeight()}px` } });
-    }
-
-    prefetch(['ORD_MNU'], ['OrderingDelivery']);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { imageStyle: prevImageStyle } = prevState;
-    const { imageStyle: currImageStyle } = this.state;
-    const { user: prevUser } = prevProps;
-    const { user: currUser, shouldShowGuestOption } = this.props;
+  componentDidUpdate(prevProps) {
+    const { isLogin: prevIsLogin } = prevProps;
+    const { isLogin: currIsLogin } = this.props;
     const { sendOtp } = this.state;
-    const imageHeight = getWebQRImageHeight();
 
-    if (sendOtp && currUser.isLogin && prevUser.isLogin !== currUser.isLogin) {
+    if (sendOtp && !prevIsLogin && currIsLogin) {
       this.visitNextPage();
-    }
-
-    if (shouldShowGuestOption && currImageStyle?.height && prevImageStyle?.height !== `${imageHeight}px`) {
-      this.updateImageHeight(imageHeight);
     }
   }
 
@@ -91,11 +68,11 @@ class PageLogin extends React.Component {
   };
 
   handleChangeOtpCode = () => {
-    const { isLoginRequestFailed, appActions } = this.props;
+    const { isSendOtpRequestFailed, appActions } = this.props;
 
-    if (!isLoginRequestFailed) return;
+    if (!isSendOtpRequestFailed) return;
 
-    // Only update create otp status when needed
+    // Only update send otp status when needed
     appActions.resetSendOtpRequest();
   };
 
@@ -264,33 +241,31 @@ class PageLogin extends React.Component {
   };
 
   handleWebLogin = async otp => {
-    const { appActions, location } = this.props;
+    const { appActions, location, syncUserLoginInfo } = this.props;
     const loginOptions = location.state?.loginOptions || {};
     const { shippingType } = loginOptions;
 
     try {
       await appActions.sendOtp({ otp });
 
-      const { isLoginRequestFailed } = this.props;
+      const { isSendOtpRequestFailed } = this.props;
 
-      if (isLoginRequestFailed) {
+      if (isSendOtpRequestFailed) {
         throw new Error('Failed to verify OTP');
       }
 
-      const { user } = this.props;
-      const { accessToken, refreshToken } = user;
+      const { accessToken, refreshToken } = this.props;
 
       if (accessToken && refreshToken) {
-        await appActions.loginApp({
+        await syncUserLoginInfo({
           accessToken,
           refreshToken,
           shippingType,
         });
 
-        const { user: newUser } = this.props;
-        const hasLoggedIn = _get(newUser, 'isLogin', false);
+        const { isLogin } = this.props;
 
-        if (!hasLoggedIn) {
+        if (!isLogin) {
           throw new Error('Failed to login');
         }
       } else {
@@ -311,29 +286,6 @@ class PageLogin extends React.Component {
         }
       );
     }
-  };
-
-  handleClickContinueAsGuestButton = async () => {
-    const { appActions } = this.props;
-
-    CleverTap.pushEvent('Login - Continue as Guest');
-
-    try {
-      await appActions.setConsumerAsGuest();
-
-      this.visitNextPage();
-    } catch (error) {
-      // NOTE: No need to throw an error, the error is used to log an event only.
-      logger.error('Ordering_PageLogin_LoginAsGuestFailed', {
-        message: error?.message,
-      });
-    }
-  };
-
-  updateImageHeight = height => {
-    this.setState({
-      imageStyle: { height: `${height}px` },
-    });
   };
 
   visitNextPage = async () => {
@@ -366,25 +318,13 @@ class PageLogin extends React.Component {
 
     // Default route
     history.replace({
-      pathname: ROUTER_PATHS.ORDERING_HOME,
+      pathname: ROUTER_PATHS.REWARDS_HOME,
       search: window.location.search,
     });
   };
 
-  loginInTngMiniProgram = async () => {
-    const { appActions } = this.props;
-    const isLogin = await appActions.loginByTngMiniProgram();
-
-    if (!isLogin) {
-      this.goBack();
-      return;
-    }
-
-    this.visitNextPage();
-  };
-
   renderOtpModal() {
-    const { user, shouldShowLoader, isOtpRequestPending, isLoginRequestFailed } = this.props;
+    const { user, shouldShowLoader, isOtpRequestPending, isSendOtpRequestFailed } = this.props;
     const { sendOtp, shouldShowModal } = this.state;
     const { phone, noWhatsAppAccount, country } = user || {};
 
@@ -403,7 +343,7 @@ class PageLogin extends React.Component {
         sendOtp={this.handleWebLogin}
         isLoading={shouldShowLoader}
         isResending={isOtpRequestPending}
-        showError={isLoginRequestFailed}
+        showError={isSendOtpRequestFailed}
         shouldCountdown={sendOtp}
       />
     );
@@ -429,20 +369,16 @@ class PageLogin extends React.Component {
     const {
       t,
       user,
+      isLogin,
       className,
       errorTextI18nKey,
       isRequestSucceed,
       isOtpRequestPending,
       isOtpErrorFieldVisible,
-      shouldShowGuestOption,
     } = this.props;
     const { isPhoneNumberValid, imageStyle } = this.state;
-    const { isLogin, phone, country } = user || {};
+    const { phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
-
-    if (Utils.isTNGMiniProgram()) {
-      return <PageLoader />;
-    }
 
     if (isLogin) {
       return null;
@@ -454,10 +390,6 @@ class PageLogin extends React.Component {
 
     if (isRequestSucceed) {
       classList.push('active');
-    }
-
-    if (shouldShowGuestOption) {
-      classList.push('qr-ordering');
     }
 
     return (
@@ -505,8 +437,6 @@ class PageLogin extends React.Component {
               <p className="page-login__terms-privacy text-center margin-top-bottom-small text-line-height-base">
                 <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
               </p>
-
-              {shouldShowGuestOption && <GuestModeButton onContinueAsGuest={this.handleClickContinueAsGuestButton} />}
             </PhoneViewContainer>
           </div>
         </section>
@@ -521,14 +451,16 @@ PageLogin.displayName = 'PageLogin';
 PageLogin.propTypes = {
   className: PropTypes.string,
   title: PropTypes.string,
+  isLogin: PropTypes.bool,
+  accessToken: PropTypes.string,
+  refreshToken: PropTypes.string,
   errorTextI18nKey: PropTypes.string,
   isRequestSucceed: PropTypes.bool,
   shouldShowLoader: PropTypes.bool,
   isOtpRequestFailed: PropTypes.bool,
   isOtpRequestPending: PropTypes.bool,
-  isLoginRequestFailed: PropTypes.bool,
+  isSendOtpRequestFailed: PropTypes.bool,
   shouldShowErrorPopUp: PropTypes.bool,
-  shouldShowGuestOption: PropTypes.bool,
   isOtpErrorFieldVisible: PropTypes.bool,
   /* eslint-disable react/forbid-prop-types */
   user: PropTypes.object,
@@ -542,30 +474,30 @@ PageLogin.propTypes = {
   appActions: PropTypes.shape({
     getOtp: PropTypes.func,
     sendOtp: PropTypes.func,
-    loginApp: PropTypes.func,
     updateUser: PropTypes.func,
-    setConsumerAsGuest: PropTypes.func,
     resetGetOtpRequest: PropTypes.func,
     resetSendOtpRequest: PropTypes.func,
-    loginByTngMiniProgram: PropTypes.func,
     getPhoneWhatsAppSupport: PropTypes.func,
   }),
+  syncUserLoginInfo: PropTypes.func,
 };
 
 PageLogin.defaultProps = {
   user: {},
   title: '',
+  isLogin: false,
   className: '',
   location: null,
   otpError: null,
+  accessToken: null,
+  refreshToken: null,
   errorTextI18nKey: '',
   isRequestSucceed: false,
   shouldShowLoader: false,
   isOtpRequestFailed: false,
   isOtpRequestPending: false,
-  isLoginRequestFailed: false,
+  isSendOtpRequestFailed: false,
   shouldShowErrorPopUp: false,
-  shouldShowGuestOption: false,
   isOtpErrorFieldVisible: false,
   errorPopUpI18nKeys: {
     title: '',
@@ -574,35 +506,36 @@ PageLogin.defaultProps = {
   appActions: {
     getOtp: () => {},
     sendOtp: () => {},
-    loginApp: () => {},
     updateUser: () => {},
-    setConsumerAsGuest: () => {},
     resetGetOtpRequest: () => {},
     resetSendOtpRequest: () => {},
-    loginByTngMiniProgram: () => {},
     getPhoneWhatsAppSupport: () => {},
   },
+  syncUserLoginInfo: () => {},
 };
 
 export default compose(
-  withTranslation(),
+  withTranslation(['ApiError']),
   connect(
     state => ({
       user: getUser(state),
+      isLogin: getIsLogin(state),
       otpError: getOtpRequestError(state),
+      accessToken: getAccessToken(state),
+      refreshToken: getRefreshToken(state),
       shouldShowLoader: getShouldShowLoader(state),
       errorTextI18nKey: getOtpErrorTextI18nKey(state),
       errorPopUpI18nKeys: getOtpErrorPopUpI18nKeys(state),
       shouldShowErrorPopUp: getShouldShowErrorPopUp(state),
-      isLoginRequestFailed: getIsLoginRequestFailed(state),
       isOtpRequestPending: getIsOtpRequestStatusPending(state),
       isOtpRequestFailed: getIsOtpRequestStatusRejected(state),
       isOtpErrorFieldVisible: getIsOtpErrorFieldVisible(state),
       isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
-      shouldShowGuestOption: getShouldShowGuestOption(state),
+      isSendOtpRequestFailed: getIsSendOtpRequestStatusRejected(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      syncUserLoginInfo: bindActionCreators(syncUserLoginInfoThunk, dispatch),
     })
   )
 )(PageLogin);

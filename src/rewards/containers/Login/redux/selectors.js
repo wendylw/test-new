@@ -9,15 +9,33 @@ import Constants, {
   OTP_ERROR_POPUP_I18N_KEYS,
 } from '../../../../utils/constants';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import {
-  getOtpRequest,
-  getIsLoginRequestStatusPending,
-  getIsQrOrderingShippingType,
-  getIsGuestLoginDisabled,
-} from '../../../redux/modules/app';
+import { getOtpRequest, getSendOtpRequest } from '../../../redux/modules/app';
+import { getIsLoginRequestStatusPending } from '../../../../redux/modules/user/selectors';
 import { ERROR_TYPES } from '../../../../utils/api/constants';
 
 const { OTP_REQUEST_TYPES } = Constants;
+
+export const getSendOtpRequestData = createSelector(getSendOtpRequest, sendOtpRequest => sendOtpRequest.data);
+
+export const getAccessToken = createSelector(getSendOtpRequest, sendOtpRequest =>
+  _get(sendOtpRequest.data, 'accessToken', null)
+);
+
+export const getRefreshToken = createSelector(getSendOtpRequest, sendOtpRequest =>
+  _get(sendOtpRequest.data, 'refreshToken', null)
+);
+
+export const getSendOtpRequestStatus = createSelector(getSendOtpRequest, sendOtpRequest => sendOtpRequest.status);
+
+export const getIsSendOtpRequestStatusRejected = createSelector(
+  getSendOtpRequestStatus,
+  sendOtpRequestStatus => sendOtpRequestStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getIsSendOtpRequestStatusPending = createSelector(
+  getSendOtpRequestStatus,
+  sendOtpRequestStatus => sendOtpRequestStatus === API_REQUEST_STATUS.PENDING
+);
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);
 
@@ -121,11 +139,7 @@ export const getOtpErrorPopUpI18nKeys = createSelector(
 export const getShouldShowLoader = createSelector(
   getIsOtpRequestStatusPending,
   getIsLoginRequestStatusPending,
-  (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
-);
-
-export const getShouldShowGuestOption = createSelector(
-  getIsGuestLoginDisabled,
-  getIsQrOrderingShippingType,
-  (isGuestLoginDisabled, isQrOrderingShippingType) => isQrOrderingShippingType && !isGuestLoginDisabled
+  getIsSendOtpRequestStatusPending,
+  (isOtpRequestStatusPending, isLoginRequestStatusPending, isSendOtpRequestStatusPending) =>
+    isOtpRequestStatusPending || isLoginRequestStatusPending || isSendOtpRequestStatusPending
 );

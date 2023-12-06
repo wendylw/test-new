@@ -25,7 +25,7 @@ const Routes = () => (
           path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.JOIN_MEMBERSHIP}`}
           component={MembershipFormProxy}
         />
-        <Route exact path={ROUTER_PATHS.LOGIN} component={Login} />
+        <Route exact path={ROUTER_PATHS.REWARDS_LOGIN} component={Login} />
         <Route path="*" component={NotFound} />
       </Switch>
     </Suspense>

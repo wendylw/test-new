@@ -1,11 +1,17 @@
+import i18next from 'i18next';
+import _isEmpty from 'lodash/isEmpty';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getApiRequestShippingType } from '../../../common/utils';
-import Utils from '../../../utils/utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 import logger from '../../../utils/monitoring/logger';
 import CleverTap from '../../../utils/clevertap';
 import { getUserLoginStatus, postUserLogin, getUserProfile, postLoginGuest } from './api-request';
-import { getConsumerId, getIsLogin } from './selectors';
+import { getConsumerId, getIsLogin, getIsLoginExpired } from './selectors';
+import Utils from '../../../utils/utils';
+import { getAccessToken } from '../../../utils/tng-utils';
+import { getTokenAsync, tokenExpiredAsync } from '../../../utils/native-methods';
+import { toast } from '../../../common/utils/feedback';
+import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
 
 const { getRegistrationTouchPoint, getRegistrationSource } = Utils;
 
@@ -116,4 +122,58 @@ export const loginUserAsGuest = createAsyncThunk('app/user/loginUserAsGuest', as
   const result = await postLoginGuest();
 
   return result;
+});
+
+export const loginUserByTngMiniProgram = createAsyncThunk(
+  'app/user/loginByTngMiniProgram',
+  async (business, { dispatch }) => {
+    if (!Utils.isTNGMiniProgram()) {
+      throw new Error('Not in tng mini program');
+    }
+
+    try {
+      const tokens = await getAccessToken({ business });
+
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+      await dispatch(syncUserLoginInfo({ accessToken, refreshToken }));
+    } catch (error) {
+      CleverTap.pushEvent('Login - login failed');
+
+      logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
+
+      throw error;
+    }
+  }
+);
+
+export const loginUserByBeepApp = createAsyncThunk('app/user/loginByBeepApp', async (_, { dispatch, getState }) => {
+  try {
+    const tokens = await getTokenAsync();
+    const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+    if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
+
+    const source = REGISTRATION_SOURCE.BEEP_APP;
+
+    await dispatch(syncUserLoginInfo({ accessToken, refreshToken, source }));
+
+    const isTokenExpired = getIsLoginExpired(getState());
+
+    if (isTokenExpired) {
+      const validTokens = await tokenExpiredAsync();
+
+      await dispatch(
+        syncUserLoginInfo({ accessToken: validTokens.access_token, refreshToken: validTokens.refresh_token, source })
+      );
+    }
+  } catch (e) {
+    if (e?.code === 'B0001') {
+      toast(i18next.t('ApiError:B0001Description'));
+    } else {
+      toast(i18next.t('Common:UnknownError'));
+    }
+
+    logger.error('Common_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
+  }
 });
