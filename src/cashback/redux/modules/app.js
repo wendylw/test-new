@@ -763,7 +763,7 @@ export const getLoginBannerPrompt = createSelector(getUser, userInfo => _get(use
 
 export const getIsUserLogin = createSelector(getUser, userInfo => _get(userInfo, 'isLogin', false));
 
-export const getUserCountry = createSelector(getUser, userInfo => _get(userInfo, 'country', false));
+export const getUserCountry = createSelector(getUser, userInfo => _get(userInfo, 'country', ''));
 
 export const getIsUserExpired = createSelector(getUser, userInfo => _get(userInfo, 'isExpired', false));
 

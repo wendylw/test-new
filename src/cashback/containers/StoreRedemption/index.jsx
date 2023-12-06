@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +14,7 @@ import {
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
 import { getUserCountry } from '../../redux/modules/app';
+import { getIsLoadCustomerRequestCompleted } from '../../redux/modules/customer/selectors';
 import {
   getIsStoreRedemptionNewCustomer,
   getIsDisplayStoreRedemptionContent,
@@ -37,40 +38,53 @@ import { ObjectFitImage } from '../../../common/components/Image';
 const StoreRedemptionNative = () => {
   const { t } = useTranslation('Cashback');
   const dispatch = useDispatch();
+  const isLoadCustomerRequestCompleted = useSelector(getIsLoadCustomerRequestCompleted);
   // get is display store redemption content
   const isDisplayStoreRedemptionContent = useSelector(getIsDisplayStoreRedemptionContent);
   const userCountry = useSelector(getUserCountry);
   const isAvailableToShareConsumerInfo = useSelector(getIsAvailableToShareConsumerInfo);
   const isStoreRedemptionNewCustomer = useSelector(getIsStoreRedemptionNewCustomer);
 
-  useMount(() => {
-    CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
-      country: userCountry,
-      page: isDisplayStoreRedemptionContent
-        ? 'With Cashback'
-        : `Without Cashback (${isStoreRedemptionNewCustomer ? 'New' : 'Returning'} Customer)`,
-    });
+  useEffect(() => {
+    if (isLoadCustomerRequestCompleted) {
+      CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
+        country: userCountry,
+        page: isDisplayStoreRedemptionContent
+          ? 'With Cashback'
+          : `Without Cashback (${isStoreRedemptionNewCustomer ? 'New' : 'Returning'} Customer)`,
+      });
 
-    if (isDisplayStoreRedemptionContent) {
-      alert(
-        <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">{t('StoreRedemptionCashRedeemAlert')}</p>,
-        {
-          id: 'StoreRedemptionInitialAlert',
-          onClose: () => {
-            CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
-              country: userCountry,
-            });
-          },
-        }
-      );
+      if (isDisplayStoreRedemptionContent) {
+        alert(
+          <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
+            {t('StoreRedemptionCashRedeemAlert')}
+          </p>,
+          {
+            id: 'StoreRedemptionInitialAlert',
+            onClose: () => {
+              CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
+                country: userCountry,
+              });
+            },
+          }
+        );
+      }
     }
-  });
+  }, [isDisplayStoreRedemptionContent, isLoadCustomerRequestCompleted, isStoreRedemptionNewCustomer, t, userCountry]);
 
   useEffect(() => {
     if (isAvailableToShareConsumerInfo) {
       dispatch(confirmToShareConsumerInfoRequests());
     }
   }, [dispatch, isAvailableToShareConsumerInfo]);
+
+  if (!isLoadCustomerRequestCompleted) {
+    return (
+      <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center">
+        <Loader className="tw-text-3xl tw-text-orange" weight="bold" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -116,7 +130,7 @@ const StoreRedemption = () => {
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
-  const handleGotoTNGApp = useCallback(() => {
+  const handleGotoTNGApp = () => {
     // It is the deep link of TNG. If TNG exists, it will jump directly.
     window.location.href = `${process.env.REACT_APP_TNG_APP_DEEP_LINK_DOMAIN}?mpid=${process.env.REACT_APP_TNG_MPID}&path=%2Fpages%2Findex%2Findex&qrValue=${window.location.href}`;
 
@@ -129,7 +143,7 @@ const StoreRedemption = () => {
         window.location.href = process.env.REACT_APP_TNG_DOWNLOAD_DEEP_LINK;
       }
     }, 500);
-  });
+  };
 
   useMount(async () => {
     if (isDisplayWebResult) {

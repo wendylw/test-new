@@ -5,7 +5,12 @@ import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 const initialState = {
   data: {
     customerId: null,
-    storeCreditsBalance: 0,
+    storeCreditInfo: {
+      cashbackClaimCount: 0,
+      lastCashbackClaimDate: null,
+      storeCreditsBalance: 0,
+      storeCreditsSpent: 0,
+    },
   },
   status: null,
   error: null,
@@ -23,10 +28,15 @@ const { reducer, actions } = createSlice({
       state.error = null;
     },
     [loadConsumerCustomerInfo.fulfilled.type]: (state, action) => {
-      const { customerId, storeCreditsBalance } = action.payload;
+      const { customerId, storeCreditInfo } = action.payload;
+      const { cashbackClaimCount, lastCashbackClaimDate, storeCreditsBalance, storeCreditsSpent } =
+        storeCreditInfo || {};
 
       state.data.customerId = customerId;
-      state.data.storeCreditsBalance = storeCreditsBalance;
+      state.data.storeCreditInfo.cashbackClaimCount = cashbackClaimCount;
+      state.data.storeCreditInfo.lastCashbackClaimDate = lastCashbackClaimDate;
+      state.data.storeCreditInfo.storeCreditsBalance = storeCreditsBalance;
+      state.data.storeCreditInfo.storeCreditsSpent = storeCreditsSpent;
 
       state.status = API_REQUEST_STATUS.FULFILLED;
       state.error = null;

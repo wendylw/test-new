@@ -7,7 +7,7 @@ export const getCustomer = state => state.customer;
 export const getCustomerId = createSelector(getCustomer, customerInfo => _get(customerInfo, 'data.customerId', null));
 
 export const getCustomerCashback = createSelector(getCustomer, customerInfo =>
-  _get(customerInfo, 'data.storeCreditsBalance', 0)
+  _get(customerInfo, 'data.storeCreditInfo.storeCreditsBalance', 0)
 );
 
 export const getLoadCustomerRequestStatus = createSelector(getCustomer, customerInfo => customerInfo.status);
