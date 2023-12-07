@@ -57,24 +57,20 @@ const StoreRedemptionNative = () => {
   }, [isDisplayStoreRedemptionContent, isLoadCustomerRequestCompleted, isStoreRedemptionNewCustomer, userCountry]);
 
   useEffect(() => {
-    if (isLoadCustomerRequestCompleted) {
-      if (isDisplayStoreRedemptionContent) {
-        alert(
-          <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
-            {t('StoreRedemptionCashRedeemAlert')}
-          </p>,
-          {
-            id: 'StoreRedemptionInitialAlert',
-            onClose: () => {
-              CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
-                country: userCountry,
-              });
-            },
-          }
-        );
-      }
+    if (isLoadCustomerRequestCompleted && isDisplayStoreRedemptionContent) {
+      alert(
+        <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">{t('StoreRedemptionCashRedeemAlert')}</p>,
+        {
+          id: 'StoreRedemptionInitialAlert',
+          onClose: () => {
+            CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
+              country: userCountry,
+            });
+          },
+        }
+      );
     }
-  }, [isDisplayStoreRedemptionContent, isLoadCustomerRequestCompleted, isStoreRedemptionNewCustomer, t, userCountry]);
+  }, [isDisplayStoreRedemptionContent, isLoadCustomerRequestCompleted, t, userCountry]);
 
   useEffect(() => {
     if (isAvailableToShareConsumerInfo) {
