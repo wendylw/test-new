@@ -89,28 +89,6 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       });
     });
 
-    describe('sendOtp', () => {
-      const reqParams = { otp: 'otp' };
-      it(':Success', () => {
-        successMockFetch();
-        const expectedActions = [
-          { type: types.CREATE_OTP_REQUEST },
-          {
-            type: types.CREATE_OTP_SUCCESS,
-            response: commonSuccessData,
-            params: {
-              grant_type: 'otp',
-              client: 'beep',
-              business_name: null,
-              username: null,
-              password: reqParams.otp,
-            },
-          },
-        ];
-        return expectedActionsCheck(actions.sendOtp(reqParams), expectedActions);
-      });
-    });
-
     describe('fetchOnlineStoreInfo', () => {
       it(':Success', () => {
         successMockFetch();

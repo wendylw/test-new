@@ -143,7 +143,11 @@ describe('utils/monitoring/logger', () => {
     });
     test('from beepit.com from site URL', () => {
       window.location.hostname = 'www.beep.local.shub.us';
+      const isSiteApp = jest.fn(() => true);
+
       expect(getMerchantID()).toBe('beepit.com');
+
+      isSiteApp.mockRestore();
     });
   });
 
