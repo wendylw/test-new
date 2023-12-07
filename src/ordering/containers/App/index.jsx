@@ -285,7 +285,7 @@ class App extends Component {
             closeButtonClassName={styles.UrlExpiredButton}
             closeButtonContent={t('UrlExpiredButton')}
             zIndex={1000}
-            onClose={handleExpiredUrlPageButtonClick}
+            onClose={this.handleExpiredUrlPageButtonClick}
           >
             <ResultContent
               content={t('UrlExpiredDescription')}
