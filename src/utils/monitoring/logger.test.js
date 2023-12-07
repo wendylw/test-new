@@ -141,13 +141,14 @@ describe('utils/monitoring/logger', () => {
       window.location.hostname = 'mickeymouseclubhouse.beep.test17.shub.us';
       expect(getMerchantID()).toBe('mickeymouseclubhouse');
     });
+
     test('from beepit.com from site URL', () => {
-      window.location.hostname = 'www.beep.local.shub.us';
-      const isSiteApp = jest.fn(() => true);
+      window.location.hostname = 'beepit.co';
+      process.env.REACT_APP_QR_SCAN_DOMAINS = 'beepit.co,www.beepit.co,beepit.com,www.beepit.com';
 
       expect(getMerchantID()).toBe('beepit.com');
 
-      isSiteApp.mockRestore();
+      delete process.env.REACT_APP_QR_SCAN_DOMAINS;
     });
   });
 
