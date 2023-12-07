@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
@@ -53,24 +53,24 @@ const StoreRedemptionNative = () => {
           ? 'With Cashback'
           : `Without Cashback (${isStoreRedemptionNewCustomer ? 'New' : 'Returning'} Customer)`,
       });
-
-      if (isDisplayStoreRedemptionContent) {
-        alert(
-          <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">
-            {t('StoreRedemptionCashRedeemAlert')}
-          </p>,
-          {
-            id: 'StoreRedemptionInitialAlert',
-            onClose: () => {
-              CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
-                country: userCountry,
-              });
-            },
-          }
-        );
-      }
     }
-  }, [isDisplayStoreRedemptionContent, isLoadCustomerRequestCompleted, isStoreRedemptionNewCustomer, t, userCountry]);
+  }, [isDisplayStoreRedemptionContent, isLoadCustomerRequestCompleted, isStoreRedemptionNewCustomer, userCountry]);
+
+  useEffect(() => {
+    if (isLoadCustomerRequestCompleted && isDisplayStoreRedemptionContent) {
+      alert(
+        <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">{t('StoreRedemptionCashRedeemAlert')}</p>,
+        {
+          id: 'StoreRedemptionInitialAlert',
+          onClose: () => {
+            CleverTap.pushEvent('POS Redemption Landing Page (Pop-up) - Click OKAY', {
+              country: userCountry,
+            });
+          },
+        }
+      );
+    }
+  }, [isDisplayStoreRedemptionContent, isLoadCustomerRequestCompleted, t, userCountry]);
 
   useEffect(() => {
     if (isAvailableToShareConsumerInfo) {
@@ -130,7 +130,26 @@ const StoreRedemption = () => {
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
-  const handleGotoTNGApp = () => {
+  const handleGotoBeepDownloadPage = useCallback(() => {
+    const downloadBeepAppDeepLink = process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK;
+
+    CleverTap.pushEvent('POS Redemption Landing Page - Click Beep App Logo', {
+      country: userCountry,
+      page: 'When users scan QR with phone camera (web)',
+    });
+
+    if (getIsDesktopClients(client)) {
+      window.open(downloadBeepAppDeepLink, '_blank');
+    } else {
+      window.location.href = downloadBeepAppDeepLink;
+    }
+  }, [client, userCountry]);
+  const handleGotoTNGApp = useCallback(() => {
+    CleverTap.pushEvent('POS Redemption Landing Page - Click TNG App Logo', {
+      country: userCountry,
+      page: 'When users scan QR with phone camera (web)',
+    });
+
     // It is the deep link of TNG. If TNG exists, it will jump directly.
     window.location.href = `${process.env.REACT_APP_TNG_APP_DEEP_LINK_DOMAIN}?mpid=${process.env.REACT_APP_TNG_MPID}&path=%2Fpages%2Findex%2Findex&qrValue=${window.location.href}`;
 
@@ -143,7 +162,7 @@ const StoreRedemption = () => {
         window.location.href = process.env.REACT_APP_TNG_DOWNLOAD_DEEP_LINK;
       }
     }, 500);
-  };
+  }, [userCountry]);
 
   useMount(async () => {
     if (isDisplayWebResult) {
@@ -174,21 +193,21 @@ const StoreRedemption = () => {
             className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl"
             role="button"
           >
-            <a
+            <Button
               className="tw-inline-flex tw-m-8 sm:tw-m-8px"
-              rel="noreferrer"
-              href={process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}
-              target={getIsDesktopClients(client) ? '_blank' : ''}
-              role="button"
+              type="text"
+              theme="ghost"
+              onClick={handleGotoBeepDownloadPage}
+              data-test-id="seamless-loyalty.beep-app-button"
             >
               <img src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
-            </a>
+            </Button>
             <Button
               className="tw-inline-flex tw-m-8 sm:tw-m-8px"
               type="text"
               theme="ghost"
               onClick={handleGotoTNGApp}
-              data-test-id="tng-app-button"
+              data-test-id="seamless-loyalty.tng-app-button"
             >
               <img src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
             </Button>
