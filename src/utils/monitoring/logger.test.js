@@ -143,8 +143,8 @@ describe('utils/monitoring/logger', () => {
     });
 
     test('from beepit.com from site URL', () => {
-      window.location.hostname = 'beepit.co';
-      process.env.REACT_APP_QR_SCAN_DOMAINS = 'beepit.co,www.beepit.co,beepit.com,www.beepit.com';
+      window.location.hostname = 'www.beep.local.shub.us';
+      process.env.REACT_APP_QR_SCAN_DOMAINS = 'beepit.co,www.beepit.co,beepit.com,www.beep.local.shub.us';
 
       expect(getMerchantID()).toBe('beepit.com');
 
