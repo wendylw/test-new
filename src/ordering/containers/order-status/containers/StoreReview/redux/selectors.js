@@ -20,6 +20,9 @@ export const getIsStoreThankYouModalVisible = state => state.orderStatus.storeRe
 
 export const getIsStoreSuccessToastVisible = state => state.orderStatus.storeReview.successToastVisible;
 
+export const getIsGoogleReviewRedirectIndicatorVisible = state =>
+  state.orderStatus.storeReview.googleReviewRedirectIndicatorVisible;
+
 export const getIsCommentEmpty = createSelector(getStoreComment, comment => _isEmpty(comment));
 
 export const getIsGoogleReviewURLAvailable = createSelector(

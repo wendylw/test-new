@@ -6,7 +6,6 @@ import {
   saveOrderStoreReview,
   showStoreReviewWarningModal,
   hideStoreReviewWarningModal,
-  showStoreReviewLoadingIndicator,
 } from '../../../redux/thunks';
 import {
   getIfStoreReviewInfoExists,
@@ -36,6 +35,16 @@ import { getSessionVariable, getQueryString } from '../../../../../../common/uti
 import { copyDataToClipboard } from '../../../../../../utils/utils';
 import CleverTap from '../../../../../../utils/clevertap';
 import logger from '../../../../../../utils/monitoring/logger';
+
+export const showGoogleReviewRedirectIndicator = createAsyncThunk(
+  'ordering/orderStatus/storeReview/showGoogleReviewRedirectIndicator',
+  async () => {}
+);
+
+export const hideGoogleReviewRedirectIndicator = createAsyncThunk(
+  'ordering/orderStatus/storeReview/hideGoogleReviewRedirectIndicator',
+  async () => {}
+);
 
 export const showStoreReviewThankYouModal = createAsyncThunk(
   'ordering/orderStatus/storeReview/showStoreReviewThankYouModal',
@@ -127,7 +136,7 @@ export const openGoogleReviewURL = createAsyncThunk(
     });
 
     if (!isWebview) {
-      await dispatch(showStoreReviewLoadingIndicator());
+      await dispatch(showGoogleReviewRedirectIndicator());
       window.location.href = googleReviewUrl;
       return;
     }
@@ -135,7 +144,7 @@ export const openGoogleReviewURL = createAsyncThunk(
     const hasOpenBrowserURLSupport = hasMethodInNative(BEEP_MODULE_METHODS.OPEN_BROWSER_URL);
 
     if (!hasOpenBrowserURLSupport) {
-      await dispatch(showStoreReviewLoadingIndicator());
+      await dispatch(showGoogleReviewRedirectIndicator());
       window.location.href = googleReviewUrl;
       return;
     }

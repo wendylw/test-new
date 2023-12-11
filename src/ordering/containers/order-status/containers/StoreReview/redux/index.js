@@ -5,12 +5,15 @@ import {
   hideStoreReviewThankYouModal,
   showStoreReviewSuccessToast,
   hideStoreReviewSuccessToast,
+  showGoogleReviewRedirectIndicator,
+  hideGoogleReviewRedirectIndicator,
 } from './thunks';
 
 const initialState = {
   offline: false,
   successToastVisible: false,
   thankYouModalVisible: false,
+  googleReviewRedirectIndicatorVisible: false,
 };
 
 export const { actions, reducer } = createSlice({
@@ -32,6 +35,12 @@ export const { actions, reducer } = createSlice({
     },
     [hideStoreReviewSuccessToast.fulfilled.type]: state => {
       state.successToastVisible = false;
+    },
+    [showGoogleReviewRedirectIndicator.fulfilled.type]: state => {
+      state.googleReviewRedirectIndicatorVisible = true;
+    },
+    [hideGoogleReviewRedirectIndicator.fulfilled.type]: state => {
+      state.googleReviewRedirectIndicatorVisible = false;
     },
   },
 });
