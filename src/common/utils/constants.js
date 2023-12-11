@@ -107,8 +107,6 @@ export const API_REQUEST_STATUS = {
   REJECTED: 'rejected',
 };
 
-export const TIME_SLOT_NOW = 'now';
-
 export const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export const SH_LOGISTICS_VALID_TIME = {

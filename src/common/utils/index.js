@@ -12,7 +12,7 @@ import {
   PRODUCT_STOCK_STATUS,
   SH_LOGISTICS_VALID_TIME,
   ADDRESS_RANGE,
-  TIME_SLOT_NOW,
+  TIME_SLOT,
   ORDER_SOURCE,
   REGISTRATION_TOUCH_POINT,
   REGISTRATION_SOURCE,
@@ -501,7 +501,7 @@ export const getFulfillDate = (businessUTCOffset = 480) => {
       return null;
     }
 
-    if (expectedFromTime === TIME_SLOT_NOW) {
+    if (expectedFromTime === TIME_SLOT.NOW) {
       return null;
     }
 
