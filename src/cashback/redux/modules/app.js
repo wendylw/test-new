@@ -30,6 +30,7 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo, getCoreBusinessInfo } from './api-request';
+import { getAllLoyaltyHistories } from '../../../redux/modules/entities/loyaltyHistories';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
 import { isJSON, isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
@@ -76,6 +77,7 @@ export const initialState = {
     },
     showLoginModal: false,
     loadConsumerCustomerStatus: null,
+    totalCredits: 0,
   },
   customerInfo: {},
   error: null, // network error
@@ -455,6 +457,20 @@ export const actions = {
       },
     },
   }),
+
+  getCashbackHistory: customerId => ({
+    [API_REQUEST]: {
+      types: [
+        types.GET_CASHBACK_HISTORIES_REQUEST,
+        types.GET_CASHBACK_HISTORIES_SUCCESS,
+        types.GET_CASHBACK_HISTORIES_FAILURE,
+      ],
+      ...Url.API_URLS.GET_CASHBACK_HISTORIES,
+      params: {
+        customerId,
+      },
+    },
+  }),
 };
 
 const user = (state = initialState.user, action) => {
@@ -467,6 +483,7 @@ const user = (state = initialState.user, action) => {
     customerId,
     access_token: accessToken,
     refresh_token: refreshToken,
+    totalCredits,
   } = response || {};
   const { storeCreditsBalance } = storeCreditInfo || {};
   const { data } = responseGql || {};
@@ -640,6 +657,20 @@ const user = (state = initialState.user, action) => {
           error,
         },
       };
+    case types.GET_CASHBACK_HISTORIES_REQUEST:
+      return {
+        ...state,
+      };
+    case types.GET_CASHBACK_HISTORIES_SUCCESS: {
+      return {
+        ...state,
+        totalCredits,
+      };
+    }
+    case types.GET_CASHBACK_HISTORIES_FAILURE:
+      return {
+        ...state,
+      };
     default:
       return state;
   }
@@ -757,6 +788,7 @@ export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
 export const getLoginTngRequest = state => state.app.user.loginTngRequest;
 export const getUserProfile = state => state.app.user.profile;
+export const getTotalCredits = state => _get(state.app, 'user.totalCredits', 0);
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
 export const getError = state => state.app.error;
@@ -948,3 +980,9 @@ export const getIsTngAuthorizationError = createSelector(
   getLoginTngRequestError,
   loginTngRequestError => (loginTngRequestError?.error || null) === 10
 );
+
+export const getCashbackHistory = createSelector(getUser, getAllLoyaltyHistories, (userInfo, allLoyaltyHistories) => {
+  const { customerId } = userInfo || {};
+
+  return allLoyaltyHistories[customerId];
+});

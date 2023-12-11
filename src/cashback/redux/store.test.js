@@ -51,6 +51,6 @@ it('src/cashback/redux/store.js', () => {
       products: {},
       stores: {},
     },
-    home: { cashbackHistorySummary: null, fetchState: true, receiptList: [] },
+    home: { fetchState: true, receiptList: [] },
   });
 });
