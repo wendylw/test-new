@@ -74,6 +74,7 @@ export const initialState = {
       status: null,
     },
     showLoginModal: false,
+    totalCredits: 0,
   },
   customerInfo: {},
   error: null, // network error
@@ -454,7 +455,8 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response, responseGql, prompt, error, payload } = action || {};
-  const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken } = response || {};
+  const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken, totalCredits } =
+    response || {};
   const { data } = responseGql || {};
   const { business, onlineStoreInfo } = data || {};
   const otpType = _get(payload, 'otpType', null);

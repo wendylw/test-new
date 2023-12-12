@@ -103,9 +103,9 @@ class RecentList extends React.Component {
 
   render() {
     const { fullScreen } = this.state;
-    const { cashbackHistory, customerId, t } = this.props;
+    const { cashbackHistory, userCustomerId, t } = this.props;
 
-    if (!Array.isArray(cashbackHistory) || !customerId) {
+    if (!Array.isArray(cashbackHistory) || !userCustomerId) {
       return null;
     }
 
