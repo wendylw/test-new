@@ -1,4 +1,5 @@
 import React from 'react';
+import qs from 'qs';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import PropTypes from 'prop-types';
@@ -8,15 +9,15 @@ import { IconLocation } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import prefetch from '../../../common/utils/prefetch-assets';
 import Utils from '../../../utils/utils';
-import { isWebview, getQueryString } from '../../../common/utils';
+import { isWebview } from '../../../common/utils';
 import Constants, { REGISTRATION_TOUCH_POINT } from '../../../utils/constants';
 import {
   actions as appActionCreators,
   getBusinessInfo,
   getOnlineStoreInfo,
   getIsUserLogin,
+  getUserCustomerId,
 } from '../../redux/modules/app';
-import { getCustomerId } from '../../redux/modules/customer/selectors';
 import {
   actions as claimActionCreators,
   getCashbackInfo,
@@ -33,8 +34,8 @@ class PageClaim extends React.Component {
   }
 
   async componentDidMount() {
-    const { t, appActions, claimActions, isUserLogin } = this.props;
-    const h = getQueryString('h');
+    const { t, history, appActions, claimActions, isUserLogin } = this.props;
+    const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     appActions.setLoginPrompt(t('ClaimCashbackTitle'));
     await claimActions.getCashbackReceiptNumber(encodeURIComponent(h));
@@ -88,12 +89,12 @@ class PageClaim extends React.Component {
       await this.setState({ claimed: true });
       await claimActions.createCashbackInfo(this.getOrderInfo());
 
-      const { cashbackInfo, customerId } = this.props;
-      const { customerId: cashbackCustomerId } = cashbackInfo || {};
+      const { cashbackInfo, userCustomerId } = this.props;
+      const { customerId } = cashbackInfo || {};
 
       history.replace({
         pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
-        search: `?customerId=${customerId || cashbackCustomerId || ''}`,
+        search: `?customerId=${userCustomerId || customerId || ''}`,
       });
     }
   }
@@ -198,7 +199,7 @@ class PageClaim extends React.Component {
 PageClaim.propTypes = {
   isFetching: PropTypes.bool,
   isUserLogin: PropTypes.bool,
-  customerId: PropTypes.string,
+  userCustomerId: PropTypes.string,
   receiptNumber: PropTypes.string,
   appActions: PropTypes.shape({
     setLoginPrompt: PropTypes.func,
@@ -219,7 +220,7 @@ PageClaim.propTypes = {
 PageClaim.defaultProps = {
   isFetching: false,
   isUserLogin: false,
-  customerId: '',
+  userCustomerId: '',
   receiptNumber: '',
   appActions: {
     setLoginPrompt: () => {},
@@ -242,7 +243,7 @@ export default compose(
   connect(
     state => ({
       isUserLogin: getIsUserLogin(state),
-      customerId: getCustomerId(state),
+      userCustomerId: getUserCustomerId(state),
       businessInfo: getBusinessInfo(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       cashbackInfo: getCashbackInfo(state),

@@ -111,4 +111,24 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       });
     });
   });
+
+  describe('getCashbackHistory', () => {
+    const reqParams = { customerId: '111111' };
+    it(':Success', () => {
+      successMockFetch();
+      const expectedActions = [
+        { type: types.GET_CASHBACK_HISTORIES_REQUEST },
+        { type: types.GET_CASHBACK_HISTORIES_SUCCESS, response: commonSuccessData, params: reqParams },
+      ];
+      return expectedActionsCheck(actions.getCashbackHistory(reqParams.customerId), expectedActions);
+    });
+    it(':Fail', () => {
+      failMockFetch();
+      const expectedActions = [
+        { type: types.GET_CASHBACK_HISTORIES_REQUEST },
+        { type: types.GET_CASHBACK_HISTORIES_FAILURE, code: mockErrorCode, message: mockErrorMsg },
+      ];
+      return expectedActionsCheck(actions.getCashbackHistory(reqParams.customerId), expectedActions);
+    });
+  });
 });

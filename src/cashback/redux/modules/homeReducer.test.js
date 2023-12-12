@@ -1,11 +1,4 @@
-import homeReducers, {
-  initialState,
-  getReceiptList,
-  getFetchState,
-  getCashbackHistorySummary,
-  getBusinessInfo,
-  getCashbackHistory,
-} from './home';
+import homeReducers, { initialState, getReceiptList, getFetchState, getBusinessInfo, getCashbackHistory } from './home';
 import rootReducer from './index';
 import { HOME_TYPES as types } from '../types';
 
@@ -37,32 +30,6 @@ describe('src/cashback/redux/modules/home.js:reducers', () => {
       ...initialState,
     };
     expect(homeReducers(undefined, action)).toEqual(expectedState);
-  });
-
-  it('GET_CASHBACK_HISTORIES_SUCCESS with no response', () => {
-    const action = {
-      type: types.GET_CASHBACK_HISTORIES_SUCCESS,
-    };
-    expect(homeReducers(undefined, action)).toEqual({
-      ...initialState,
-      cashbackHistorySummary: {
-        ...initialState.cashbackHistorySummary,
-      },
-    });
-  });
-
-  it('GET_CASHBACK_HISTORIES_SUCCESS', () => {
-    const action = {
-      type: types.GET_CASHBACK_HISTORIES_SUCCESS,
-      ...homeActionInfo,
-    };
-    expect(homeReducers(undefined, action)).toEqual({
-      ...initialState,
-      cashbackHistorySummary: {
-        ...initialState.cashbackHistorySummary,
-        totalCredits: 20,
-      },
-    });
   });
 
   it('FETCH_RECEIPT_LIST_SUCCESS with no response', () => {
@@ -111,10 +78,6 @@ describe('src/cashback/redux/modules/home.js:selectors', () => {
   it('getFetchState', () => {
     const expectedState = initialState.fetchState;
     expect(getFetchState(state)).toEqual(expectedState);
-  });
-  it('getCashbackHistorySummary', () => {
-    const expectedState = initialState.cashbackHistorySummary;
-    expect(getCashbackHistorySummary(state)).toEqual(expectedState);
   });
   it('getCashbackHistory', () => {
     expect(getCashbackHistory(state)).toEqual(undefined);
