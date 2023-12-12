@@ -61,7 +61,6 @@ it('src/cashback/redux/store.js', () => {
           status: null,
         },
         showLoginModal: false,
-        showLoginModal: false,
         storeCreditsBalance: 0,
         totalCredits: 0,
       },
