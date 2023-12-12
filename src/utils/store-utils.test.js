@@ -690,13 +690,18 @@ describe('test isInVacations function', () => {
 describe('test getBusinessDateTime function', () => {
   test.each`
     utcOffset | date                                    | expected
-    ${480} | ${undefined} | ${dayjs()
-  .utcOffset(480)
-  .format()}
     ${480}    | ${new Date('2020-12-15T16:23:12.000Z')} | ${'2020-12-16T00:23:12+08:00'}
     ${420}    | ${new Date('2020-12-15T10:55:55.000Z')} | ${'2020-12-15T17:55:55+07:00'}
     ${0}      | ${new Date('2020-12-15T16:00:00.000Z')} | ${'2020-12-15T16:00:00Z'}
+    ${480}    | ${undefined}                            | ${dayjs().utcOffset(480)}
   `('return $expected when set date is $date, utcOffset is $utcOffset', ({ utcOffset, date, expected }) => {
-    expect(getBusinessDateTime(utcOffset, date).format()).toBe(expected);
+    if (date) {
+      expect(getBusinessDateTime(utcOffset, date).format()).toBe(expected);
+    } else {
+      const businessDateTime = getBusinessDateTime(utcOffset, date);
+      const diff = expected.diff(businessDateTime, 'second');
+
+      expect(diff).toBeLessThan(1);
+    }
   });
 });

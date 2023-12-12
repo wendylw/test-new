@@ -129,7 +129,7 @@ const StoreRedemption = () => {
         window.location.href = process.env.REACT_APP_TNG_DOWNLOAD_DEEP_LINK;
       }
     }, 500);
-  });
+  }, []);
 
   useMount(async () => {
     if (isDisplayWebResult) {

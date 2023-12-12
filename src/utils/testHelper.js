@@ -26,7 +26,7 @@ const successMockFetch = () => {
 };
 
 const failMockFetch = () => {
-  fetch.mockRejectOnce(req => Promise.reject(commonFailResponse));
+  fetch.mockRejectOnce(() => Promise.reject(commonFailResponse));
 };
 
 function expectedActionsCheck(dispatchedAction, expectedActions) {
