@@ -53,11 +53,7 @@ const MembershipFormProxy = () => {
       {shouldShowSkeletonLoader ? (
         <SkeletonLoader />
       ) : shouldShowUnsupportedError ? (
-        <ErrorResult
-          title={t('MembershipUnavailableTitle')}
-          content={t('MembershipUnavailableDescription')}
-          isCloseButtonVisible={false}
-        />
+        <ErrorResult title={t('PageNotFound')} isCloseButtonVisible={false} />
       ) : shouldShowUnknownError ? (
         <ErrorResult
           title={t('SomethingWentWrongTitle')}
