@@ -611,7 +611,7 @@ const user = (state = initialState.user, action) => {
       };
     case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
       return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.REJECTED };
-    case type.RESET_CONSUMER_CUSTOMER_INFO:
+    case types.RESET_CONSUMER_CUSTOMER_INFO:
       return { ...state, loadConsumerCustomerStatus: null, storeCreditsBalance: 0, customerId: null };
     // fetch online store info success
     // fetch core business success

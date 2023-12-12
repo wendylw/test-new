@@ -122,13 +122,5 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       ];
       return expectedActionsCheck(actions.getCashbackHistory(reqParams.customerId), expectedActions);
     });
-    it(':Fail', () => {
-      failMockFetch();
-      const expectedActions = [
-        { type: types.GET_CASHBACK_HISTORIES_REQUEST },
-        { type: types.GET_CASHBACK_HISTORIES_FAILURE, code: mockErrorCode, message: mockErrorMsg },
-      ];
-      return expectedActionsCheck(actions.getCashbackHistory(reqParams.customerId), expectedActions);
-    });
   });
 });

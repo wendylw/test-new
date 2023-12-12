@@ -1,4 +1,4 @@
-import homeReducers, { initialState, getReceiptList, getFetchState, getBusinessInfo, getCashbackHistory } from './home';
+import homeReducers, { initialState, getReceiptList, getFetchState, getBusinessInfo } from './home';
 import rootReducer from './index';
 import { HOME_TYPES as types } from '../types';
 
@@ -78,8 +78,5 @@ describe('src/cashback/redux/modules/home.js:selectors', () => {
   it('getFetchState', () => {
     const expectedState = initialState.fetchState;
     expect(getFetchState(state)).toEqual(expectedState);
-  });
-  it('getCashbackHistory', () => {
-    expect(getCashbackHistory(state)).toEqual(undefined);
   });
 });
