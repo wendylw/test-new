@@ -1,4 +1,5 @@
 import qs from 'qs';
+import _isEmpty from 'lodash/isEmpty';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push } from 'connected-react-router';
 import {
@@ -18,8 +19,8 @@ import {
   getIsMerchantContactAllowable,
   getOffline,
 } from '../../../redux/selector';
-import { getIsWebview, getMerchantCountry } from '../../../../../redux/modules/app';
-import { getTransactionInfoForCleverTap, getShouldShowSuccessToast, getIsCommentEmpty } from './selectors';
+import { getIsTNGMiniProgram, getIsWebview, getMerchantCountry } from '../../../../../redux/modules/app';
+import { getTransactionInfoForCleverTap, getShouldShowSuccessToast, getIsGoogleReviewURLAvailable } from './selectors';
 import {
   goBack as nativeGoBack,
   openBrowserURL,
@@ -28,13 +29,12 @@ import {
   BEEP_MODULE_METHODS,
   gotoHome,
 } from '../../../../../../utils/native-methods';
-import { STORE_REVIEW_SOURCE_TYPE_MAPPING } from '../constants';
+import { STORE_REVIEW_SOURCE_TYPE_MAPPING, STORE_REVIEW_HIGHEST_RATING } from '../constants';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import { REFERRER_SOURCE_TYPES } from '../../../../../../utils/constants';
 import { getSessionVariable, getQueryString } from '../../../../../../common/utils';
 import { copyDataToClipboard } from '../../../../../../utils/utils';
 import CleverTap from '../../../../../../utils/clevertap';
-import logger from '../../../../../../utils/monitoring/logger';
 
 export const showGoogleReviewRedirectIndicator = createAsyncThunk(
   'ordering/orderStatus/storeReview/showGoogleReviewRedirectIndicator',
@@ -225,6 +225,8 @@ export const submitButtonClicked = createAsyncThunk(
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
     const offline = getOffline(state);
     const country = getMerchantCountry(state);
+    const isTNGMiniProgram = getIsTNGMiniProgram(state);
+    const isGoogleReviewURLAvailable = getIsGoogleReviewURLAvailable(state);
 
     CleverTap.pushEvent('Feedback Page - Click Submit', {
       rating,
@@ -232,32 +234,35 @@ export const submitButtonClicked = createAsyncThunk(
       ...transactionInfoCleverTap,
     });
 
-    try {
-      await dispatch(saveOrderStoreReview({ rating, comments, allowMerchantContact, offline })).unwrap();
+    // FIXME: We have to copy the comment to clipboard before any async action dispatch.
+    // WB-6945: This is a bad practice, please help fix it if you have time.
+    const isHighestRating = rating === STORE_REVIEW_HIGHEST_RATING;
+    const shouldCopyToClipboard =
+      !(_isEmpty(comments) || isTNGMiniProgram) && isGoogleReviewURLAvailable && isHighestRating;
 
-      const shouldShowSuccessToast = getShouldShowSuccessToast(getState());
-      const isCommentEmpty = getIsCommentEmpty(getState());
-
-      if (shouldShowSuccessToast) {
-        await dispatch(showStoreReviewSuccessToast());
-
-        !isCommentEmpty && (await copyDataToClipboard(comments));
-
-        const eventName = !comments
-          ? 'GMB Redirection Information toast - Without review'
-          : 'GMB Redirection Information toast - With review';
-
-        CleverTap.pushEvent(eventName, {
-          country,
-          ...transactionInfoCleverTap,
-        });
-        return;
-      }
-
-      await dispatch(showStoreReviewThankYouModal());
-    } catch (e) {
-      logger.error('Ordering_OrderStatus_SubmitStoreReviewFailed', { message: e?.message || '' });
+    if (shouldCopyToClipboard) {
+      await copyDataToClipboard(comments);
     }
+
+    await dispatch(saveOrderStoreReview({ rating, comments, allowMerchantContact, offline })).unwrap();
+
+    const shouldShowSuccessToast = getShouldShowSuccessToast(getState());
+
+    if (shouldShowSuccessToast) {
+      await dispatch(showStoreReviewSuccessToast());
+
+      const eventName = !comments
+        ? 'GMB Redirection Information toast - Without review'
+        : 'GMB Redirection Information toast - With review';
+
+      CleverTap.pushEvent(eventName, {
+        country,
+        ...transactionInfoCleverTap,
+      });
+      return;
+    }
+
+    await dispatch(showStoreReviewThankYouModal());
   }
 );
 
