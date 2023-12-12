@@ -13,6 +13,7 @@ const Toast = ({ className, message, clearError }) => {
         clearTimeout(timer);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

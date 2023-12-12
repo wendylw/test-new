@@ -26,7 +26,6 @@ describe('src/cashback/redux/modules/claim.js:reducers', () => {
       },
     };
     expect(claimReducers(undefined, { type: types.FETCH_CASHBACKINFO_REQUEST })).toEqual(expectedState);
-    expect(claimReducers(undefined, { type: types.CREATE_CASHBACKINFO_REQUEST })).toEqual(expectedState);
   });
 
   it('fetch and create cashback failure', () => {
@@ -37,7 +36,6 @@ describe('src/cashback/redux/modules/claim.js:reducers', () => {
       },
     };
     expect(claimReducers(undefined, { type: types.FETCH_CASHBACKINFO_FAILURE })).toEqual(expectedState);
-    expect(claimReducers(undefined, { type: types.CREATE_CASHBACKINFO_FAILURE })).toEqual(expectedState);
   });
 
   it('FETCH_RECEIPTNUMBER_REQUEST', () => {
@@ -65,24 +63,6 @@ describe('src/cashback/redux/modules/claim.js:reducers', () => {
     };
     const action = {
       type: types.FETCH_CASHBACKINFO_SUCCESS,
-      ...claimActionInfo,
-    };
-    expect(claimReducers(undefined, action)).toEqual(expectedState);
-  });
-
-  it('CREATE_CASHBACKINFO_SUCCESS', () => {
-    const expectedState = {
-      ...initialState,
-      cashbackInfo: {
-        ...initialState.cashbackInfo,
-        ...claimActionInfo.response,
-        isFetching: false,
-        loadedCashbackInfo: false,
-        createdCashbackInfo: true,
-      },
-    };
-    const action = {
-      type: types.CREATE_CASHBACKINFO_SUCCESS,
       ...claimActionInfo,
     };
     expect(claimReducers(undefined, action)).toEqual(expectedState);
