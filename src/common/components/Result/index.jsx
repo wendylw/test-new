@@ -59,21 +59,23 @@ const Result = props => {
   const renderContent = (
     <>
       {header}
-      <div className={`${styles.resultContent} ${className}`}>
-        <div ref={contentContainerRef}>{children}</div>
-        <div className={styles.resultFooter}>
-          <Button
-            type="primary"
-            size="small"
-            className={`${styles.closeButtonClassName} tw-uppercase${
-              closeButtonClassName ? ` ${closeButtonClassName}` : ''
-            }`}
-            onClick={onClose}
-            style={closeButtonStyle}
-            data-test-id="common.result.close-btn"
-          >
-            {closeButtonContent || t('Okay')}
-          </Button>
+      <div className={`${styles.result} ${className}`}>
+        <div ref={contentContainerRef} className={styles.resultContent}>
+          {children}
+          <div className={styles.resultFooter}>
+            <Button
+              type="primary"
+              size="small"
+              className={`${styles.closeButtonClassName} tw-uppercase${
+                closeButtonClassName ? ` ${closeButtonClassName}` : ''
+              }`}
+              onClick={onClose}
+              style={closeButtonStyle}
+              data-test-id="common.result.close-btn"
+            >
+              {closeButtonContent || t('Okay')}
+            </Button>
+          </div>
         </div>
       </div>
     </>

@@ -4,6 +4,11 @@
  * file to a reference to this file, so that each constant is defined only once.
  */
 
+export const URL_TYPES = {
+  STATIC: 'static',
+  DYNAMIC: 'dynamic',
+};
+
 export const SHIPPING_TYPES = {
   DELIVERY: 'delivery',
   PICKUP: 'pickup',
