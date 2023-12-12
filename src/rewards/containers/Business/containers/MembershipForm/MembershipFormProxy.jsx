@@ -52,8 +52,6 @@ const MembershipFormProxy = () => {
       />
       {shouldShowSkeletonLoader ? (
         <SkeletonLoader />
-      ) : shouldShowCongratulation ? (
-        <SuccessResult />
       ) : shouldShowUnsupportedError ? (
         <ErrorResult
           title={t('MembershipUnavailableTitle')}
@@ -68,6 +66,8 @@ const MembershipFormProxy = () => {
           imageSrc={BeepWarningImage}
           onCloseButtonClick={handleClickRetryButton}
         />
+      ) : shouldShowCongratulation ? (
+        <SuccessResult />
       ) : (
         <MembershipForm />
       )}
