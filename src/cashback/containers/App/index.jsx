@@ -18,6 +18,7 @@ import {
 import { getIsCashbackClaimRequestFulfilled } from '../../redux/modules/claim';
 import { getIsConfirmSharingConsumerInfoCompleted } from '../StoreRedemption/redux/selectors';
 import { getPageError } from '../../../redux/modules/entities/error';
+import { getIsLoadCustomerRequestCompleted } from '../../redux/modules/customer/selectors';
 import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
 import Constants from '../../../utils/constants';
 import { isTNGMiniProgram, isWebview } from '../../../common/utils';
@@ -132,6 +133,7 @@ class App extends Component {
       isUserLogin: currIsUserLogin,
       userConsumerId: currUserConsumerId,
       loadConsumerCustomerInfo,
+      isLoadCustomerRequestCompleted,
       isCashbackClaimRequestFulfilled: currIsCashbackClaimRequestFulfilled,
       isConfirmSharingConsumerInfoCompleted: currIsConfirmSharingConsumerInfoCompleted,
     } = this.props;
@@ -165,6 +167,10 @@ class App extends Component {
         currIsConfirmSharingConsumerInfoCompleted !== prevIsConfirmSharingConsumerInfoCompleted
       ) {
         isLoadCustomerAvailable = currIsConfirmSharingConsumerInfoCompleted;
+      }
+
+      if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_BASE) && !isLoadCustomerRequestCompleted) {
+        isLoadCustomerAvailable = true;
       }
 
       if (isLoadCustomerAvailable) {
@@ -232,6 +238,7 @@ App.propTypes = {
   isUserLogin: PropTypes.bool,
   isCashbackClaimRequestFulfilled: PropTypes.bool,
   isConfirmSharingConsumerInfoCompleted: PropTypes.bool,
+  isLoadCustomerRequestCompleted: PropTypes.bool,
   userConsumerId: PropTypes.string,
   onlineStoreInfoFavicon: PropTypes.string,
   error: PropTypes.shape({
@@ -266,6 +273,7 @@ App.defaultProps = {
   isUserLogin: false,
   isCashbackClaimRequestFulfilled: false,
   isConfirmSharingConsumerInfoCompleted: false,
+  isLoadCustomerRequestCompleted: false,
   userConsumerId: null,
   onlineStoreInfoFavicon: '',
   error: {},
@@ -286,6 +294,7 @@ export default compose(
       userConsumerId: getUserConsumerId(state),
       isCashbackClaimRequestFulfilled: getIsCashbackClaimRequestFulfilled(state),
       isConfirmSharingConsumerInfoCompleted: getIsConfirmSharingConsumerInfoCompleted(state),
+      isLoadCustomerRequestCompleted: getIsLoadCustomerRequestCompleted(state),
       isLoginModalShown: getIsLoginModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
