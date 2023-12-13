@@ -13,9 +13,7 @@ export const getMerchantDisplayName = createSelector(getMerchantData, merchantDa
   _get(merchantData, 'displayName', '')
 );
 
-export const getMerchantBusiness = createSelector(getMerchantData, merchantData =>
-  _get(merchantData, 'business', null)
-);
+export const getMerchantBusiness = createSelector(getMerchantData, merchantData => _get(merchantData, 'name', null));
 
 export const getMerchantCountry = createSelector(getMerchantData, merchantData => _get(merchantData, 'country', null));
 
@@ -25,14 +23,14 @@ export const getMerchantCurrency = createSelector(getMerchantData, merchantData 
 
 export const getMerchantLocale = createSelector(getMerchantData, merchantData => _get(merchantData, 'locale', null));
 
-export const getIsMerchantEnabledDelivery = createSelector(getMerchantData, merchantData =>
-  _get(merchantData, 'enableDelivery', false)
-);
-
 export const getIsMerchantEnabledOROrdering = createSelector(getMerchantData, merchantData =>
   _get(merchantData, 'isQROrderingEnabled', false)
 );
 
 export const getIsMerchantEnabledCashback = createSelector(getMerchantData, merchantData =>
   _get(merchantData, 'enableCashback', false)
+);
+
+export const getIsMerchantEnabledDelivery = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'qrOrderingSettings.enableDelivery', false)
 );

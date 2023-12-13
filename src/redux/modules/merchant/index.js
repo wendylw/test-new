@@ -8,15 +8,17 @@ const initialState = {
   business: getBusinessDefaultValue(),
   loadMerchantRequest: {
     data: {
-      business: getBusinessDefaultValue(),
+      name: getBusinessDefaultValue(),
       logo: null,
       displayName: '',
       country: null,
       locale: null,
       currency: null,
-      enableDelivery: false,
       isQROrderingEnabled: false,
       enableCashback: false,
+      qrOrderingSettings: {
+        enableDelivery: true,
+      },
     },
     status: null,
     error: null,
