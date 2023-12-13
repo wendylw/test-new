@@ -1,0 +1,38 @@
+import _get from 'lodash/get';
+import { createSelector } from 'reselect';
+
+export const getMerchantData = state => state.merchant.loadMerchantRequest.data;
+
+export const getLoadMerchantRequestStatus = state => state.merchant.loadMerchantRequest.status;
+
+export const getLoadMerchantRequestError = state => state.merchant.loadMerchantRequest.error;
+
+export const getMerchantLogo = createSelector(getMerchantData, merchantData => _get(merchantData, 'logo', null));
+
+export const getMerchantDisplayName = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'displayName', '')
+);
+
+export const getMerchantBusiness = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'business', null)
+);
+
+export const getMerchantCountry = createSelector(getMerchantData, merchantData => _get(merchantData, 'country', null));
+
+export const getMerchantCurrency = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'currency', null)
+);
+
+export const getMerchantLocale = createSelector(getMerchantData, merchantData => _get(merchantData, 'locale', null));
+
+export const getIsMerchantEnabledDelivery = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'enableDelivery', false)
+);
+
+export const getIsMerchantEnabledOROrdering = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'isQROrderingEnabled', false)
+);
+
+export const getIsMerchantEnabledCashback = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'enableCashback', false)
+);
