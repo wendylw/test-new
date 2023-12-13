@@ -1,0 +1,14 @@
+.businessProfile {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px;
+}
+
+.businessProfileLogo {
+  @apply tw-m-12 sm:tw-m-12px;
+
+  width: 22.35%;
+  max-width: 80px;
+}
+
+.businessProfileName {
+  @apply tw-text-center tw-text-xl tw-leading-relaxed tw-px-16 sm:tw-px-16px;
+}

@@ -240,7 +240,7 @@ class App extends Component {
 
     return (
       <main
-        id="ordering-app-container"
+        id="beep-app-container"
         className="table-ordering fixed-wrapper fixed-wrapper__main"
         data-test-id="ordering.app.container"
       >

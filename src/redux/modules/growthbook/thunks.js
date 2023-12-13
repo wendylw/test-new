@@ -1,7 +1,8 @@
+import _merge from 'lodash/merge';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import GrowthBook from '../../../utils/growthbook';
 import logger from '../../../utils/monitoring/logger';
-import { FEATURE_KEYS } from './constants';
+import { FEATURE_KEYS, DEFAULT_FEATURE_FLAG_RESULTS } from './constants';
 
 export const loadFeatureFlags = createAsyncThunk('app/growthbook/loadFeatureFlags', async () => {
   const growthbook = GrowthBook.getInstance();
@@ -48,8 +49,8 @@ export const updateFeatureFlagResults = createAsyncThunk('app/growthbook/updateF
 
   // Get the current feature flag results by iterating over the feature flag keys.
   const featureFlagResults = Object.values(FEATURE_KEYS)
-    .map(key => ({ key, value: GrowthBook.isOn(key) }))
+    .map(key => ({ key, value: GrowthBook.getFeatureValue(key, DEFAULT_FEATURE_FLAG_RESULTS[key]) }))
     .reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {});
 
-  return featureFlagResults;
+  return _merge({}, DEFAULT_FEATURE_FLAG_RESULTS, featureFlagResults);
 });
