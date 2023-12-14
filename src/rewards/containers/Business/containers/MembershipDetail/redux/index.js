@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
-import { fetchPromoList } from './thunks';
+import { fetchUniquePromoList } from './thunks';
 
 const initialState = {
-  loadPromoListRequest: {
+  loadUniquePromoListRequest: {
     data: null,
     status: null,
     error: null,
@@ -15,18 +15,18 @@ export const { reducer, actions } = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [fetchPromoList.pending.type]: state => {
-      state.loadPromoListRequest.status = API_REQUEST_STATUS.PENDING;
-      state.loadPromoListRequest.error = null;
+    [fetchUniquePromoList.pending.type]: state => {
+      state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.PENDING;
+      state.loadUniquePromoListRequest.error = null;
     },
-    [fetchPromoList.fulfilled.type]: (state, { payload }) => {
-      state.loadPromoListRequest.status = API_REQUEST_STATUS.SUCCESS;
-      state.loadPromoListRequest.data = payload;
-      state.loadPromoListRequest.error = null;
+    [fetchUniquePromoList.fulfilled.type]: (state, { payload }) => {
+      state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.SUCCESS;
+      state.loadUniquePromoListRequest.data = payload;
+      state.loadUniquePromoListRequest.error = null;
     },
-    [fetchPromoList.rejected.type]: (state, { error }) => {
-      state.loadPromoListRequest.status = API_REQUEST_STATUS.ERROR;
-      state.loadPromoListRequest.error = error;
+    [fetchUniquePromoList.rejected.type]: (state, { error }) => {
+      state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.ERROR;
+      state.loadUniquePromoListRequest.error = error;
     },
   },
 });
