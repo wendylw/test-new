@@ -35,6 +35,7 @@ import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
 import { isJSON, isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
+import { getCustomerId } from './customer/selectors';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const { AUTH_INFO, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
@@ -919,8 +920,8 @@ export const getIsTngAuthorizationError = createSelector(
   loginTngRequestError => (loginTngRequestError?.error || null) === 10
 );
 
-export const getCashbackHistory = createSelector(getUser, getAllLoyaltyHistories, (userInfo, allLoyaltyHistories) => {
-  const { customerId } = userInfo || {};
-
-  return allLoyaltyHistories[customerId];
-});
+export const getCashbackHistory = createSelector(
+  getCustomerId,
+  getAllLoyaltyHistories,
+  (customerId, allLoyaltyHistories) => allLoyaltyHistories[customerId]
+);
