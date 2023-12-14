@@ -3,7 +3,7 @@ import { getCustomerInfo } from './api-request';
 import { getConsumerId } from '../../../../redux/modules/user/selectors';
 
 export const fetchCustomerInfo = createAsyncThunk(
-  'app/merchant/fetchCustomerInfo',
+  'app/customer/fetchCustomerInfo',
   async ({ business }, { getState }) => {
     const state = getState();
     const consumerId = getConsumerId(state);
