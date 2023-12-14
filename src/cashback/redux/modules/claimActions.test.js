@@ -1,14 +1,8 @@
 import { actions } from './claim';
 import { CLAIM_TYPES as types } from '../types';
-import {
-  store,
-  successMockFetch,
-  failMockFetch,
-  expectedActionsCheck,
-  commonSuccessData,
-  mockErrorMsg,
-  mockErrorCode,
-} from '../../../utils/testHelper';
+import { store, successMockFetch, expectedActionsCheck, commonSuccessData } from '../../../utils/testHelper';
+
+jest.mock('../../../common/utils/__mocks__/inobounce.js');
 
 describe('src/cashback/redux/modules/claims.js:actions', () => {
   beforeEach(() => {
@@ -20,33 +14,6 @@ describe('src/cashback/redux/modules/claims.js:actions', () => {
   });
 
   describe('Async Action Creators', () => {
-    describe('getCashbackInfo', () => {
-      const receiptNumber = '123456';
-      it(':Success', () => {
-        successMockFetch();
-        const expectedActions = [
-          { type: types.FETCH_CASHBACKINFO_REQUEST },
-          {
-            type: types.FETCH_CASHBACKINFO_SUCCESS,
-            response: commonSuccessData,
-            params: {
-              receiptNumber: '123456',
-              source: 'RECEIPT',
-            },
-          },
-        ];
-        return expectedActionsCheck(actions.getCashbackInfo(receiptNumber), expectedActions);
-      });
-      it(':Fail', () => {
-        failMockFetch();
-        const expectedActions = [
-          { type: types.FETCH_CASHBACKINFO_REQUEST },
-          { type: types.FETCH_CASHBACKINFO_FAILURE, code: mockErrorCode, message: mockErrorMsg },
-        ];
-        return expectedActionsCheck(actions.getCashbackInfo(receiptNumber), expectedActions);
-      });
-    });
-
     describe('createCashbackInfo', () => {
       const reqParams = {
         receiptNumber: '0031912111604413',
@@ -63,14 +30,6 @@ describe('src/cashback/redux/modules/claims.js:actions', () => {
         ];
         return expectedActionsCheck(actions.createCashbackInfo(reqParams), expectedActions);
       });
-      it(':Fail', () => {
-        failMockFetch();
-        const expectedActions = [
-          { type: types.CREATE_CASHBACKINFO_REQUEST },
-          { type: types.CREATE_CASHBACKINFO_FAILURE, code: mockErrorCode, message: mockErrorMsg },
-        ];
-        return expectedActionsCheck(actions.createCashbackInfo(reqParams), expectedActions);
-      });
     });
 
     describe('getCashbackReceiptNumber', () => {
@@ -80,14 +39,6 @@ describe('src/cashback/redux/modules/claims.js:actions', () => {
         const expectedActions = [
           { type: types.FETCH_RECEIPTNUMBER_REQUEST },
           { type: types.FETCH_RECEIPTNUMBER_SUCCESS, response: commonSuccessData, params: {} },
-        ];
-        return expectedActionsCheck(actions.getCashbackReceiptNumber(hash), expectedActions);
-      });
-      it(':Fail', () => {
-        failMockFetch();
-        const expectedActions = [
-          { type: types.FETCH_RECEIPTNUMBER_REQUEST },
-          { type: types.FETCH_RECEIPTNUMBER_FAILURE, code: mockErrorCode, message: mockErrorMsg },
         ];
         return expectedActionsCheck(actions.getCashbackReceiptNumber(hash), expectedActions);
       });

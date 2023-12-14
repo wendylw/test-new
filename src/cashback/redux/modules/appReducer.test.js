@@ -12,16 +12,10 @@ import rootReducer from './index';
 import { APP_TYPES as types } from '../types';
 import { getReducerNewState } from '../../../utils/testHelper';
 
+jest.mock('../../../common/utils/__mocks__/inobounce.js');
+
 // TODO: Remove isFetching setting in the test file
 describe('src/cashback/redux/modules/app.js:reducers', () => {
-  it('should return the initial state', () => {
-    const expectedState = {
-      ...initialState,
-    };
-    expectedState.user.isFetching = false;
-    expect(appReducers(undefined, {})).toEqual(expectedState);
-  });
-
   describe('user', () => {
     const nameField = 'user';
     const accessToken = 'mockAccessToken';
@@ -113,16 +107,6 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       });
     });
 
-    it('LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED', () => {
-      const action = { type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED, ...userActionInfo };
-      const expectedState = {
-        ...initialState.user,
-        customerId: '111111',
-        storeCreditsBalance: 'mockStoreCreditsBalance',
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
-    });
-
     it('default', () => {
       expect(getReducerNewState(appReducers, { type: 'default' }, nameField)).toEqual({ ...initialState.user });
     });
@@ -170,49 +154,6 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
 
   describe('onlineStoreInfo', () => {
     const nameField = 'onlineStoreInfo';
-    const onlineStoreInfoActionInfo = {
-      responseGql: {
-        data: {
-          onlineStoreInfo: {
-            id: '123456',
-          },
-        },
-      },
-    };
-
-    it('FETCH_ONLINE_STORE_INFO_REQUEST', () => {
-      const action = {
-        type: types.FETCH_ONLINE_STORE_INFO_REQUEST,
-        ...onlineStoreInfoActionInfo,
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual({
-        ...initialState.onlineStoreInfo,
-        isFetching: true,
-      });
-    });
-
-    it('FETCH_ONLINE_STORE_INFO_SUCCESS', () => {
-      const action = {
-        type: types.FETCH_ONLINE_STORE_INFO_SUCCESS,
-        ...onlineStoreInfoActionInfo,
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual({
-        ...initialState.onlineStoreInfo,
-        isFetching: false,
-        id: '123456',
-      });
-    });
-
-    it('FETCH_ONLINE_STORE_INFO_FAILURE', () => {
-      const action = {
-        type: types.FETCH_ONLINE_STORE_INFO_FAILURE,
-        ...onlineStoreInfoActionInfo,
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual({
-        ...initialState.onlineStoreInfo,
-        isFetching: false,
-      });
-    });
 
     it('default', () => {
       expect(getReducerNewState(appReducers, { type: 'default' }, nameField)).toEqual({

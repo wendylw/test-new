@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
@@ -117,7 +117,7 @@ const StoreRedemption = () => {
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram();
-  const handleGotoTNGApp = () => {
+  const handleGotoTNGApp = useCallback(() => {
     // It is the deep link of TNG. If TNG exists, it will jump directly.
     window.location.href = `${process.env.REACT_APP_TNG_APP_DEEP_LINK_DOMAIN}?mpid=${process.env.REACT_APP_TNG_MPID}&path=%2Fpages%2Findex%2Findex&qrValue=${window.location.href}`;
 
@@ -130,7 +130,7 @@ const StoreRedemption = () => {
         window.location.href = process.env.REACT_APP_TNG_DOWNLOAD_DEEP_LINK;
       }
     }, 500);
-  };
+  }, []);
 
   useMount(async () => {
     if (isDisplayWebResult) {
