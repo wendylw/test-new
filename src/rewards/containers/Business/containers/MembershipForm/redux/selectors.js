@@ -11,9 +11,9 @@ export const getBusinessInfoRequest = state => state.business.membershipForm.fet
 
 export const getBusinessInfo = createSelector(getBusinessInfoRequest, businessInfoRequest => businessInfoRequest.data);
 
-export const getBusinessLogo = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'businessLogo', ''));
+export const getBusinessLogo = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'logo', ''));
 
-export const getBusinessName = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'businessName', ''));
+export const getBusinessName = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'displayName', ''));
 
 export const getIsBusinessMembershipEnabled = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'membershipEnabled', false)

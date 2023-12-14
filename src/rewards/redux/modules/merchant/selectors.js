@@ -1,5 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
+import { getBusinessDefaultValue } from './utils';
 
 export const getMerchantData = state => state.merchant.loadMerchantRequest.data;
 
@@ -13,7 +14,7 @@ export const getMerchantDisplayName = createSelector(getMerchantData, merchantDa
   _get(merchantData, 'displayName', '')
 );
 
-export const getMerchantBusiness = createSelector(getMerchantData, merchantData => _get(merchantData, 'name', null));
+export const getMerchantBusiness = () => getBusinessDefaultValue();
 
 export const getMerchantCountry = createSelector(getMerchantData, merchantData => _get(merchantData, 'country', null));
 

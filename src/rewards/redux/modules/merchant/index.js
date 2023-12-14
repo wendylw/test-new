@@ -1,25 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { API_REQUEST_STATUS } from '../../../utils/constants';
+import { API_REQUEST_STATUS } from '../../../../utils/constants';
 import { getBusinessDefaultValue } from './utils';
 import { fetchMerchantInfo } from './thunks';
 
 const initialState = {
   business: getBusinessDefaultValue(),
   loadMerchantRequest: {
-    data: {
-      name: getBusinessDefaultValue(),
-      logo: null,
-      displayName: '',
-      country: null,
-      locale: null,
-      currency: null,
-      isQROrderingEnabled: false,
-      enableCashback: false,
-      qrOrderingSettings: {
-        enableDelivery: true,
-      },
-    },
+    data: null,
     status: null,
     error: null,
   },
