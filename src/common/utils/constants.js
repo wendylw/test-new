@@ -171,3 +171,14 @@ export const REFERRER_SOURCE_TYPES = {
   LOGIN: 'login',
   THANK_YOU: 'thankyou',
 };
+
+export const BECOME_MERCHANT_MEMBER_METHODS = {
+  JOIN_MEMBERSHIP_URL_CLICK: 'JoinMembershipURL_ClickJoin',
+  THANK_YOU_CASHBACK_CLICK: 'BeepQR_ThankYou',
+  EARNED_CASHBACK_QR_SCAN: 'Receipt_CashbackQR',
+  MEMBERSHIP_QR_SCAN: 'Receipt_MembershipQR',
+  QR_ORDERING_ORDER_COMPLETED: 'BeepQR_Transaction',
+  DELIVERY_ORDERING_ORDER_COMPLETED: 'BeepDel_Transaction',
+  OFFLINE_STORE_ORDER_COMPLETE: 'POS_Transaction',
+  SEAMLESS_LOYALTY_QR_SCAN: 'POS_SeamlessLoyaltyQR',
+};

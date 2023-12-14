@@ -2,6 +2,11 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getQueryString } from '../../../../common/utils';
 
+/**
+ * @returns {string | null} business
+ */
+export const getMerchantBusiness = () => getQueryString('business');
+
 export const getMerchantData = state => state.merchant.loadMerchantRequest.data;
 
 export const getLoadMerchantRequestStatus = state => state.merchant.loadMerchantRequest.status;
@@ -13,11 +18,6 @@ export const getMerchantLogo = createSelector(getMerchantData, merchantData => _
 export const getMerchantDisplayName = createSelector(getMerchantData, merchantData =>
   _get(merchantData, 'displayName', '')
 );
-
-/**
- * @returns {string | null} business
- */
-export const getMerchantBusiness = () => getQueryString('business');
 
 export const getMerchantCountry = createSelector(getMerchantData, merchantData => _get(merchantData, 'country', ''));
 

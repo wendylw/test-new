@@ -416,3 +416,25 @@ export const isJSON = value => {
 
 export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
+
+export const getPrice = (number, { locale, currency, withCurrency = true }) => {
+  const isSafari = isSafari();
+  let price = null;
+
+  if (!(locale && currency)) {
+    return number;
+  }
+
+  if (!withCurrency && !isSafari) {
+    price = Intl.NumberFormat(locale, {
+      style: 'decimal',
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(parseFloat(number));
+  } else {
+    price = Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(number));
+  }
+
+  return (!price ? number : price).replace(/^(\D+)/, '$1 ');
+};
