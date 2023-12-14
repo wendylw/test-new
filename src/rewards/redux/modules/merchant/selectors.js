@@ -14,7 +14,7 @@ export const getMerchantDisplayName = createSelector(getMerchantData, merchantDa
   _get(merchantData, 'displayName', '')
 );
 
-export const getMerchantBusiness = () => getQueryString('business') || '';
+export const getMerchantBusiness = () => getQueryString('business');
 
 export const getMerchantCountry = createSelector(getMerchantData, merchantData => _get(merchantData, 'country', ''));
 
