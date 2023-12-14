@@ -16,7 +16,7 @@ export const getMerchantDisplayName = createSelector(getMerchantData, merchantDa
 
 export const getMerchantBusiness = () => getBusinessDefaultValue();
 
-export const getMerchantCountry = createSelector(getMerchantData, merchantData => _get(merchantData, 'country', null));
+export const getMerchantCountry = createSelector(getMerchantData, merchantData => _get(merchantData, 'country', ''));
 
 export const getMerchantCurrency = createSelector(getMerchantData, merchantData =>
   _get(merchantData, 'currency', null)
