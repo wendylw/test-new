@@ -157,6 +157,7 @@ class App extends Component {
 
       if (
         pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM) &&
+        currIsCashbackClaimRequestFulfilled &&
         currIsCashbackClaimRequestFulfilled !== prevIsCashbackClaimRequestFulfilled
       ) {
         isLoadCustomerAvailable = currIsCashbackClaimRequestFulfilled;
