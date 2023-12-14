@@ -1,11 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../utils/constants';
-import { getBusinessDefaultValue } from './utils';
 import { fetchMerchantInfo } from './thunks';
 
 const initialState = {
-  business: getBusinessDefaultValue(),
   loadMerchantRequest: {
     data: null,
     status: null,
