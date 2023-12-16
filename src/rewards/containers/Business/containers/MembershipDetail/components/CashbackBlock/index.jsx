@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import CashbackHistoryButtonIcon from '../../../../../../../images/membership-history.svg';
 import { formatTime } from '../../../../../../../utils/time-lib';
+import { getClassName } from '../../../../../../../common/utils/ui';
 import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { getMerchantBusiness, getIsMerchantEnabledCashback } from '../../../../../../redux/modules/merchant/selectors';
 import { getCashbackExpiredDate, getIsCashbackExpired } from '../../../../../../redux/modules/customer/selectors';
@@ -22,6 +23,14 @@ const CashbackBlock = () => {
     '%business%',
     merchantBusiness
   )}${PATH_NAME_MAPPING.CASHBACK_BASE}${PATH_NAME_MAPPING.CASHBACK_HISTORIES}`;
+  const cashbackBlockBalanceContainerClassName = getClassName([
+    styles.CashbackBlockBalanceContainer,
+    isCashbackExpired ? styles.CashbackBlockBalanceContainer__Expired : null,
+  ]);
+  const cashbackBlockExpiredDateClassName = getClassName([
+    styles.CashbackBlockExpiredDate,
+    isCashbackExpired ? styles.CashbackBlockExpiredDate__Expired : null,
+  ]);
 
   if (!isMerchantEnabledCashback) {
     return null;
@@ -32,7 +41,7 @@ const CashbackBlock = () => {
       <h2 className={styles.CashbackBlockSectionTitle}>{t('Cashback')}</h2>
       <div className={styles.CashbackBlock}>
         <div className={styles.CashbackBlockInfoTop}>
-          <div className={styles.CashbackBlockBalanceContainer}>
+          <div className={cashbackBlockBalanceContainerClassName}>
             <h4 className={styles.CashbackBlockBalanceTitle}>{t('CashbackBalanceTitle')} :</h4>
             <data className={styles.CashbackBlockBalance} value={customerCashbackPrice}>
               {customerCashbackPrice}
@@ -47,7 +56,7 @@ const CashbackBlock = () => {
           </a>
         </div>
         <div className={styles.CashbackBlockInfoBottom}>
-          <time className={styles.CashbackBlockExpiredDate}>
+          <time className={cashbackBlockExpiredDateClassName}>
             {formatTime(cashbackExpiredDate, 'MMMM D, YYYY')}Valid until Jan 07, 2024
           </time>
           {isCashbackExpired && <Tag className={styles.CashbackBlockExpiredTag}>{t('Expired')}</Tag>}
