@@ -47,7 +47,11 @@ const CashbackBlock = () => {
               {customerCashbackPrice}
             </data>
           </div>
-          <a className={styles.CashbackBlockHistoryLink} href={cashbackHistoryLogPageURL}>
+          <a
+            className={styles.CashbackBlockHistoryLink}
+            data-test-id="rewards.membership-detail.cashback-history-link"
+            href={cashbackHistoryLogPageURL}
+          >
             <img
               className={styles.CashbackBlockHistoryLinkImage}
               src={CashbackHistoryButtonIcon}
@@ -57,7 +61,9 @@ const CashbackBlock = () => {
         </div>
         <div className={styles.CashbackBlockInfoBottom}>
           <time className={cashbackBlockExpiredDateClassName}>
-            {formatTime(cashbackExpiredDate, 'MMMM D, YYYY')}Valid until Jan 07, 2024
+            {t('ValidUntil', {
+              date: formatTime(cashbackExpiredDate, 'MMMM D, YYYY'),
+            })}
           </time>
           {isCashbackExpired && <Tag className={styles.CashbackBlockExpiredTag}>{t('Expired')}</Tag>}
         </div>

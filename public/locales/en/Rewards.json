@@ -4,7 +4,13 @@
   "TermsAndConditionsDescription": "By tapping on Join Now, you agree to the <1>Term & Conditions</1>",
   "MembershipUnavailableTitle": "Oops, join membership for this store is unavailable yet",
   "MembershipUnavailableDescription": "Ask the merchant to enable the membership!",
+  "MembershipDetailPageTitle": "Store Membership Details",
   "CashbackBalanceTitle": "Cashback Balance",
+  "UniquePromoListTitle": "Exclusive Discounts",
+  "OrderRedeemButtonText": "Order & redeem now",
+  "DiscountValueText": "{{discount}} off",
   "History": "History",
-  "Expired": "Expired"
+  "Expired": "Expired",
+  "MinConsumption": "Min. spend {{amount}}",
+  "ValidUntil": "Valid until {{date}}"
 }

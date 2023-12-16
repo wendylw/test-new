@@ -1,6 +1,11 @@
 import { createSelector } from 'reselect';
-import { BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
+import {
+  BECOME_MERCHANT_MEMBER_METHODS,
+  PROMO_VOUCHER_DISCOUNT_TYPES,
+  PROMO_VOUCHER_STATUS,
+} from '../../../../../../common/utils/constants';
 import { getQueryString, getPrice } from '../../../../../../common/utils';
+import { formatTime } from '../../../../../../utils/time-lib';
 import {
   getMerchantCurrency,
   getMerchantLocale,
@@ -11,11 +16,12 @@ import { getCustomerCashback } from '../../../../../redux/modules/customer/selec
 
 export const getSource = () => getQueryString('source');
 
-export const getLoadPromoListData = state => state.business.membershipDetail.loadUniquePromoListRequest.data;
+export const getLoadUniquePromoListData = state =>
+  state.business.membershipDetail.loadUniquePromoListRequest.data || [];
 
-export const getLoadPromoListStatus = state => state.business.membershipDetail.loadUniquePromoListRequest.status;
+export const getLoadUniquePromoListStatus = state => state.business.membershipDetail.loadUniquePromoListRequest.status;
 
-export const getLoadPromoListError = state => state.business.membershipDetail.loadUniquePromoListRequest.error;
+export const getLoadUniquePromoListError = state => state.business.membershipDetail.loadUniquePromoListRequest.error;
 
 /**
  * Derived selectors
@@ -39,3 +45,41 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
 );
 
 // getIsReturningMember => TODO: pending confirming member is returning query && not from earned cashback QR scan
+
+export const getUniquePromoList = createSelector(
+  getMerchantCurrency,
+  getMerchantLocale,
+  getLoadUniquePromoListData,
+  (merchantCurrency, merchantLocale, uniquePromoList) =>
+    uniquePromoList.map(promo => {
+      if (!promo) {
+        return promo;
+      }
+
+      const { id, discountType, discountValue, name, validTo, status } = promo;
+
+      return {
+        id,
+        value:
+          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
+            ? `${discountValue}%`
+            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency }),
+        name,
+        status,
+        limitations: [
+          {
+            key: `unique-promo-${id}-limitation-0`,
+            i18nKey: 'MinConsumption',
+            // TODO: add amount
+            // params: {amount: getPrice(, { locale: merchantLocale, currency: merchantCurrency })},
+          },
+          {
+            key: `unique-promo-${id}-limitation-1`,
+            i18nKey: 'ValidUntil',
+            params: { date: formatTime(validTo, 'MMMM D, YYYY') },
+          },
+        ],
+        isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
+      };
+    })
+);
