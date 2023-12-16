@@ -418,22 +418,30 @@ export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
 
 export const getPrice = (number, { locale, currency, withCurrency = true }) => {
-  let price = null;
+  let price = '';
 
-  if (!(locale && currency)) {
-    return number;
+  try {
+    if (!number || !currency) {
+      return '';
+    }
+
+    if (!locale) {
+      return `${currency}${number}`;
+    }
+
+    if (!withCurrency && !isSafari()) {
+      price = Intl.NumberFormat(locale, {
+        style: 'decimal',
+        currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(parseFloat(number));
+    } else {
+      price = Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(number));
+    }
+
+    return (!price ? number : price).replace(/^(\D+)/, '$1 ');
+  } catch (error) {
+    return parseFloat(number).toFixed(2);
   }
-
-  if (!withCurrency && !isSafari()) {
-    price = Intl.NumberFormat(locale, {
-      style: 'decimal',
-      currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(parseFloat(number));
-  } else {
-    price = Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(number));
-  }
-
-  return (!price ? number : price).replace(/^(\D+)/, '$1 ');
 };

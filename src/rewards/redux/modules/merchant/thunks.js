@@ -7,5 +7,6 @@ export const fetchMerchantInfo = createAsyncThunk('app/merchant/fetchMerchantInf
   const business = getMerchantBusiness(state);
   const result = await getMerchantInfo(business);
 
-  return result;
+  // TODO: remove .data when backend fixed
+  return result.data;
 });

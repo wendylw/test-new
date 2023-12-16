@@ -1,0 +1,42 @@
+$member-card-color-light: #91f7e7;
+$member-card-color-dark: #7bb7ff;
+
+.MemberCardSection {
+  @apply tw-p-16 sm:tw-p-16px;
+}
+
+.MemberCard {
+  @apply tw-relative tw-rounded-xl;
+
+  background: linear-gradient(180deg, $member-card-color-light 0%, $member-card-color-dark 100%);
+
+  &::before {
+    @apply tw-block tw-top-0 tw-left-0 tw-w-full;
+
+    content: "";
+    padding-top: 52.478134%;
+  }
+}
+
+.MemberCardStoreName {
+  @apply tw-absolute tw-left-0 tw-top-0 tw-m-12 sm:tw-m-12px tw-leading-loose tw-text-base tw-font-bold;
+}
+
+.MemberCardLevelContainer {
+  @apply tw-absolute tw-right-0 tw-bottom-0 tw-flex tw-items-center tw-m-12 sm:tw-m-12px tw-space-x-12 sm:tw-space-x-12px;
+}
+
+.MemberCardLevelName {
+  @apply tw-text-xl tw-font-black tw-capitalize;
+}
+
+.MemberCardLevelIcon {
+  @apply tw-rounded-full;
+
+  width: 64px;
+  height: 64px;
+
+  > figure {
+    background-color: transparent;
+  }
+}

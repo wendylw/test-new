@@ -27,6 +27,7 @@ export const getCustomerTierLevelName = createSelector(getCustomerData, customer
 /**
  * Derived selectors
  */
-export const getIsCashbackExpired = createSelector(getCashbackExpiredDate, cashbackExpiredDate =>
-  getIsAfterDateTime(new Date(), cashbackExpiredDate)
+export const getIsCashbackExpired = createSelector(
+  getCashbackExpiredDate,
+  cashbackExpiredDate => cashbackExpiredDate && getIsAfterDateTime(new Date().toISOString(), cashbackExpiredDate)
 );
