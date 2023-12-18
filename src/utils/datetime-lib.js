@@ -258,3 +258,9 @@ export const getDifferenceInMilliseconds = (dateLeft, dateRight) => {
 
   return dateLeft.getTime() - dateRight.getTime();
 };
+
+export const getIsAfterDateTime = (date, dateCompare, unit = 'millisecond') => {
+  invariant(isValidDate(date) && isValidDate(dateCompare), 'invalid date object');
+
+  return dayjs(date).isAfter(dateCompare, unit);
+};
