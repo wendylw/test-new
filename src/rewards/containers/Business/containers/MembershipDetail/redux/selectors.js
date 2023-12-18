@@ -44,12 +44,11 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
   (isOROrderingEnabled, isDeliveryEnabled) => isOROrderingEnabled || isDeliveryEnabled
 );
 
-export const getIsNewMember = createSelector(
-  getIsFromEarnedCashbackQRScan,
-  isFromEarnedCashbackQRScan => !isFromEarnedCashbackQRScan && true
-);
+// TODO: pending confirming member is new query
+export const getIsNewMember = () => false;
 
-// getIsReturningMember => TODO: pending confirming member is returning query && not from earned cashback QR scan
+// TODO: pending confirming member is returning query
+export const getIsReturningMember = () => true;
 
 export const getUniquePromoList = createSelector(
   getMerchantCurrency,
@@ -61,7 +60,7 @@ export const getUniquePromoList = createSelector(
         return promo;
       }
 
-      const { id, discountType, discountValue, name, validTo, status } = promo;
+      const { id, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
 
       return {
         id,
@@ -75,8 +74,7 @@ export const getUniquePromoList = createSelector(
           {
             key: `unique-promo-${id}-limitation-0`,
             i18nKey: 'MinConsumption',
-            // TODO: add amount
-            // params: {amount: getPrice(, { locale: merchantLocale, currency: merchantCurrency })},
+            params: { amount: getPrice(minSpendAmount, { locale: merchantLocale, currency: merchantCurrency }) },
           },
           {
             key: `unique-promo-${id}-limitation-1`,

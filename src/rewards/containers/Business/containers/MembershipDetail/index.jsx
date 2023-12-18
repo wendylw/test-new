@@ -13,6 +13,7 @@ import CashbackBlock from './components/CashbackBlock';
 import UniquePromoList from './components/UniquePromoList';
 import MembershipDetailFooter from './components/MembershipDetailFooter';
 import NewMemberFeedback from './components/NewMemberFeedback';
+import ReturningMemberFeedback from './components/ReturningMemberFeedback';
 import styles from './MembershipDetail.module.scss';
 
 const MembershipDetail = () => {
@@ -46,6 +47,7 @@ const MembershipDetail = () => {
       <UniquePromoList />
       <MembershipDetailFooter />
       <NewMemberFeedback />
+      <ReturningMemberFeedback />
     </Frame>
   );
 };

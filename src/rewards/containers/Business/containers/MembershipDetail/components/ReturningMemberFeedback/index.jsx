@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { getIsReturningMember } from '../selectors';
+import { getIsReturningMember } from '../../redux/selectors';
 import { toast } from '../../../../../../../common/utils/feedback';
 
 const ReturningMemberFeedback = () => {
@@ -16,6 +16,8 @@ const ReturningMemberFeedback = () => {
       toast.success(content);
     }
   }, [isReturningMember]);
+
+  return <></>;
 };
 
 ReturningMemberFeedback.displayName = 'ReturningMemberFeedback';
