@@ -21,8 +21,7 @@ export const fetchUniquePromoList = createAsyncThunk(
     const business = getMerchantBusiness(state);
     const result = await getUniquePromoList({ consumerId, business });
 
-    // TODO: remove .data when backend fixed
-    return result.data;
+    return result;
   }
 );
 
