@@ -17,12 +17,7 @@ const MemberCard = () => {
         <div className={styles.MemberCardLevelContainer}>
           <span className={styles.MemberCardLevelName}>{customerTierLevelName}</span>
           <div className={styles.MemberCardLevelIcon}>
-            <ObjectFitImage
-              noCompression
-              className={styles.MemberCardLevelIcon}
-              src={MembershipLevelIcon}
-              alt="Store Membership Level Icon in StoreHub"
-            />
+            <ObjectFitImage noCompression src={MembershipLevelIcon} alt="Store Membership Level Icon in StoreHub" />
           </div>
         </div>
       </div>

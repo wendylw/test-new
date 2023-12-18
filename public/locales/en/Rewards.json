@@ -14,6 +14,7 @@
   "DiscountValueText": "{{discount}} off",
   "History": "History",
   "Expired": "Expired",
+  "Redeemed": "Redeemed",
   "MinConsumption": "Min. spend {{amount}}",
   "ValidUntil": "Valid until {{date}}"
 }

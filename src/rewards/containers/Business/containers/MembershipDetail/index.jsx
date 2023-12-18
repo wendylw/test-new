@@ -12,6 +12,7 @@ import MemberCard from './components/MemberCard';
 import CashbackBlock from './components/CashbackBlock';
 import UniquePromoList from './components/UniquePromoList';
 import MembershipDetailFooter from './components/MembershipDetailFooter';
+import NewMemberFeedback from './components/NewMemberFeedback';
 import styles from './MembershipDetail.module.scss';
 
 const MembershipDetail = () => {
@@ -44,6 +45,7 @@ const MembershipDetail = () => {
       <CashbackBlock />
       <UniquePromoList />
       <MembershipDetailFooter />
+      <NewMemberFeedback />
     </Frame>
   );
 };

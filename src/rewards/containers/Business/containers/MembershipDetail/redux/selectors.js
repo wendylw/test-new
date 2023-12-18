@@ -44,6 +44,11 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
   (isOROrderingEnabled, isDeliveryEnabled) => isOROrderingEnabled || isDeliveryEnabled
 );
 
+export const getIsNewMember = createSelector(
+  getIsFromEarnedCashbackQRScan,
+  isFromEarnedCashbackQRScan => !isFromEarnedCashbackQRScan && true
+);
+
 // getIsReturningMember => TODO: pending confirming member is returning query && not from earned cashback QR scan
 
 export const getUniquePromoList = createSelector(

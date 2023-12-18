@@ -37,6 +37,6 @@ $member-card-color-dark: #7bb7ff;
   height: 64px;
 
   > figure {
-    background-color: transparent;
+    @apply tw-bg-transparent;
   }
 }

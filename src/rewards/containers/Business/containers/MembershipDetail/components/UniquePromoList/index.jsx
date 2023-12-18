@@ -1,23 +1,28 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { PROMO_VOUCHER_STATUS } from '../../../../../../../common/utils/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import { getUniquePromoList } from '../../redux/selectors';
 import Tag from '../../../../../../../common/components/Tag';
 import styles from './UniquePromoList.module.scss';
 
+const UNIQUE_PROMO_STATUS_I18KEYS = {
+  [PROMO_VOUCHER_STATUS.EXPIRED]: 'Expired',
+  [PROMO_VOUCHER_STATUS.REDEEMED]: 'Redeemed',
+};
 const UniquePromoList = () => {
   const { t } = useTranslation(['Rewards']);
   const uniquePromoList = useSelector(getUniquePromoList);
-  const uniquePromoInfoTopClassList = [styles.UniquePromoInfoTop];
-  const uniquePromoInfoBottomClassList = [styles.UniquePromoInfoBottom];
-  const uniquePromoLimitationListClassList = [styles.UniquePromoLimitationList];
 
   return (
     <section className={styles.UniquePromoListSection}>
       <h2 className={styles.UniquePromoListSectionTitle}>{t('UniquePromoListTitle')}</h2>
       <ul className={styles.UniquePromoList}>
         {uniquePromoList.map(uniquePromo => {
+          const uniquePromoInfoTopClassList = [styles.UniquePromoInfoTop];
+          const uniquePromoInfoBottomClassList = [styles.UniquePromoInfoBottom];
+          const uniquePromoLimitationListClassList = [styles.UniquePromoLimitationList];
           const { id, value, name, limitations, status, isUnavailable } = uniquePromo;
 
           if (isUnavailable) {
@@ -42,7 +47,9 @@ const UniquePromoList = () => {
                     </li>
                   ))}
                 </ul>
-                {isUnavailable && <Tag className={styles.UniquePromoStatusTag}>{status}</Tag>}
+                {isUnavailable && (
+                  <Tag className={styles.UniquePromoStatusTag}>{t(UNIQUE_PROMO_STATUS_I18KEYS[status])}</Tag>
+                )}
               </div>
             </li>
           );
