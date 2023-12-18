@@ -86,16 +86,6 @@ export const submitPayLaterOrder = createAsyncThunk(
   async ({ receiptNumber, data }) => postPayLaterOrderSubmission(receiptNumber, data)
 );
 // Store Review
-export const showStoreReviewThankYouModal = createAsyncThunk(
-  'ordering/orderStatus/common/showStoreReviewThankYouModal',
-  async () => {}
-);
-
-export const hideStoreReviewThankYouModal = createAsyncThunk(
-  'ordering/orderStatus/common/hideStoreReviewThankYouModal',
-  async () => {}
-);
-
 export const showStoreReviewWarningModal = createAsyncThunk(
   'ordering/orderStatus/common/showStoreReviewWarningModal',
   async () => {}
@@ -138,7 +128,6 @@ export const saveOrderStoreReview = createAsyncThunk(
       await dispatch(showStoreReviewLoadingIndicator());
       await postOrderStoreReview({ orderId, rating, comments, allowMerchantContact, offline });
       await dispatch(hideStoreReviewLoadingIndicator());
-      await dispatch(showStoreReviewThankYouModal());
 
       return { rating, comments, allowMerchantContact };
     } catch (e) {
