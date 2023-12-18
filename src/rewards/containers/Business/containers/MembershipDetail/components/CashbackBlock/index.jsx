@@ -2,10 +2,14 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import CashbackHistoryButtonIcon from '../../../../../../../images/membership-history.svg';
-import { formatTime } from '../../../../../../../utils/time-lib';
+import { formatTimeToDateString } from '../../../../../../../utils/datetime-lib';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
-import { getMerchantBusiness, getIsMerchantEnabledCashback } from '../../../../../../redux/modules/merchant/selectors';
+import {
+  getMerchantBusiness,
+  getMerchantCountry,
+  getIsMerchantEnabledCashback,
+} from '../../../../../../redux/modules/merchant/selectors';
 import { getCashbackExpiredDate, getIsCashbackExpired } from '../../../../../../redux/modules/customer/selectors';
 import { getCustomerCashbackPrice } from '../../redux/selectors';
 import Tag from '../../../../../../../common/components/Tag';
@@ -15,6 +19,7 @@ const CashbackBlock = () => {
   // TODO: phase3 will add Expiring Remaining Days
   const { t } = useTranslation(['Rewards']);
   const merchantBusiness = useSelector(getMerchantBusiness);
+  const merchantCountry = useSelector(getMerchantCountry);
   const isMerchantEnabledCashback = useSelector(getIsMerchantEnabledCashback);
   const cashbackExpiredDate = useSelector(getCashbackExpiredDate);
   const isCashbackExpired = useSelector(getIsCashbackExpired);
@@ -62,7 +67,7 @@ const CashbackBlock = () => {
         <div className={styles.CashbackBlockInfoBottom}>
           <time className={cashbackBlockExpiredDateClassName}>
             {t('ValidUntil', {
-              date: formatTime(cashbackExpiredDate, 'MMMM D, YYYY'),
+              date: formatTimeToDateString(merchantCountry, cashbackExpiredDate),
             })}
           </time>
           {isCashbackExpired && <Tag className={styles.CashbackBlockExpiredTag}>{t('Expired')}</Tag>}

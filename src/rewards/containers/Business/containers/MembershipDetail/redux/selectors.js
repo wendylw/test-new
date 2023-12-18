@@ -5,12 +5,13 @@ import {
   PROMO_VOUCHER_STATUS,
 } from '../../../../../../common/utils/constants';
 import { getQueryString, getPrice } from '../../../../../../common/utils';
-import { formatTime } from '../../../../../../utils/time-lib';
+import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
   getMerchantCurrency,
   getMerchantLocale,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
+  getMerchantCountry,
 } from '../../../../../redux/modules/merchant/selectors';
 import { getCustomerCashback } from '../../../../../redux/modules/customer/selectors';
 
@@ -53,8 +54,9 @@ export const getIsReturningMember = () => true;
 export const getUniquePromoList = createSelector(
   getMerchantCurrency,
   getMerchantLocale,
+  getMerchantCountry,
   getLoadUniquePromoListData,
-  (merchantCurrency, merchantLocale, uniquePromoList) =>
+  (merchantCurrency, merchantLocale, merchantCountry, uniquePromoList) =>
     uniquePromoList.map(promo => {
       if (!promo) {
         return promo;
@@ -79,7 +81,7 @@ export const getUniquePromoList = createSelector(
           {
             key: `unique-promo-${id}-limitation-1`,
             i18nKey: 'ValidUntil',
-            params: { date: formatTime(validTo, 'MMMM D, YYYY') },
+            params: { date: formatTimeToDateString(merchantCountry, validTo) },
           },
         ],
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
