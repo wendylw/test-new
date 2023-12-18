@@ -10,21 +10,22 @@ import styles from './NewMemberFeedback.module.scss';
 const NewMemberFeedback = () => {
   const { t } = useTranslation(['Rewards']);
   const isNewMember = useSelector(getIsNewMember);
-  const content = (
-    <div className={styles.NewMemberFeedbackContent}>
-      <div className={styles.NewMemberFeedbackIcon}>
-        <ObjectFitImage noCompression src={MembershipLevelIcon} alt="Store New Member Icon in StoreHub" />
-      </div>
-      <h4 className={styles.NewMemberFeedbackTitle}>{t('DefaultNewMemberTitle')}</h4>
-      <p className={styles.NewMemberFeedbackContent}>{t('DefaultNewMemberDescription')}</p>
-    </div>
-  );
 
   useEffect(() => {
     if (isNewMember) {
+      const content = (
+        <div className={styles.NewMemberFeedbackContent}>
+          <div className={styles.NewMemberFeedbackIcon}>
+            <ObjectFitImage noCompression src={MembershipLevelIcon} alt="Store New Member Icon in StoreHub" />
+          </div>
+          <h4 className={styles.NewMemberFeedbackTitle}>{t('DefaultNewMemberTitle')}</h4>
+          <p className={styles.NewMemberFeedbackContent}>{t('DefaultNewMemberDescription')}</p>
+        </div>
+      );
+
       alert(content);
     }
-  }, [isNewMember]);
+  }, [isNewMember, t]);
 
   return <></>;
 };

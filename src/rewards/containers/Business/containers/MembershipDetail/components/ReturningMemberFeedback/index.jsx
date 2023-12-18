@@ -7,15 +7,14 @@ import { toast } from '../../../../../../../common/utils/feedback';
 const ReturningMemberFeedback = () => {
   const { t } = useTranslation(['Rewards']);
   const isReturningMember = useSelector(getIsReturningMember);
-  let content = null;
 
   useEffect(() => {
     if (isReturningMember) {
-      content = t('DefaultReturningMemberMessage');
+      const content = t('DefaultReturningMemberMessage');
 
       toast.success(content);
     }
-  }, [isReturningMember]);
+  }, [isReturningMember, t]);
 
   return <></>;
 };
