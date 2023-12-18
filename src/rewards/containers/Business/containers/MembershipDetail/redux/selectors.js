@@ -11,11 +11,11 @@ import { getCustomerCashback } from '../../../../../redux/modules/customer/selec
 
 export const getSource = () => getQueryString('source');
 
-export const getLoadPromoListData = () => state.business.membershipDetail.loadUniquePromoListRequest.data;
+export const getLoadPromoListData = state => state.business.membershipDetail.loadUniquePromoListRequest.data;
 
-export const getLoadPromoListStatus = () => state.business.membershipDetail.loadUniquePromoListRequest.status;
+export const getLoadPromoListStatus = state => state.business.membershipDetail.loadUniquePromoListRequest.status;
 
-export const getLoadPromoListError = () => state.business.membershipDetail.loadUniquePromoListRequest.error;
+export const getLoadPromoListError = state => state.business.membershipDetail.loadUniquePromoListRequest.error;
 
 /**
  * Derived selectors
