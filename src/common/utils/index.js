@@ -418,14 +418,13 @@ export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
 
 export const getPrice = (number, { locale, currency, withCurrency = true }) => {
-  const isSafari = isSafari();
   let price = null;
 
   if (!(locale && currency)) {
     return number;
   }
 
-  if (!withCurrency && !isSafari) {
+  if (!withCurrency && !isSafari()) {
     price = Intl.NumberFormat(locale, {
       style: 'decimal',
       currency,

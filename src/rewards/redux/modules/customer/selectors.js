@@ -1,6 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { getIsAfterDateTime } from '../../../../utils/datetime-lib';
+import { getIsAfterDateTime } from '../../../../utils/time-lib';
 
 export const getCustomerData = state => state.customer.loadCustomerRequest.data;
 
