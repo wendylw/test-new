@@ -16,6 +16,32 @@ import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
 const { getRegistrationTouchPoint, getRegistrationSource } = Utils;
 
 /**
+ * Serializes an error into a plain object.
+ * NOTE: this function is copied from redux-toolkit repo.
+ * DO NOT TOUCH THIS FUNCTION IF YOU DON'T KNOW WHAT YOU ARE DOING!
+ *
+ * @public
+ */
+export const serializeError = value => {
+  const commonProperties = ['name', 'message', 'stack', 'code', 'error'];
+
+  if (typeof value === 'object' && value !== null) {
+    const simpleError = {};
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const property of commonProperties) {
+      if (typeof value[property] === 'string') {
+        simpleError[property] = value[property];
+      }
+    }
+
+    return simpleError;
+  }
+
+  return { message: String(value) };
+};
+
+/**
  * @param {undefined}
  * @return {Object} { consumerId, login }
  */
@@ -57,58 +83,62 @@ export const initUserInfo = createAsyncThunk('app/user/initUserInfo', async (_, 
  * @param {Object} { accessToken, refreshToken, shippingType }
  * @return {Object} { consumerId, user }
  */
-export const loginUser = createAsyncThunk('app/user/loginUser', async ({ accessToken, refreshToken }) => {
-  const shippingType = getApiRequestShippingType();
+export const loginUser = createAsyncThunk(
+  'app/user/loginUser',
+  async ({ accessToken, refreshToken }) => {
+    const shippingType = getApiRequestShippingType();
 
-  try {
-    const { consumerId = null, user = null } = await postUserLogin({
-      accessToken,
-      refreshToken,
-      shippingType,
-      registrationTouchpoint: getRegistrationTouchPoint(),
-      registrationSource: getRegistrationSource(),
-    });
-
-    if (!consumerId) {
-      throw new Error('User login Response does not contain consumerId');
-    }
-
-    const { phone, firstName, email, birthday, isFirstLogin } = user || {};
-
-    CleverTap.pushEvent('Login - login successful', {
-      'new user': isFirstLogin,
-    });
-
-    CleverTap.onUserLogin({
-      Name: firstName,
-      Phone: phone,
-      Identity: consumerId,
-      Email: email,
-      DOB: birthday ? new Date(birthday) : undefined,
-    });
-
-    return { isFirstLogin };
-  } catch (error) {
-    CleverTap.pushEvent('Login - login failed');
-
-    logger.error(
-      'User_LoginFailed',
-      {
-        message: error?.message,
+    try {
+      const { consumerId = null, user = null } = await postUserLogin({
+        accessToken,
+        refreshToken,
         shippingType,
-      },
-      {
-        bizFlow: {
-          flow: KEY_EVENTS_FLOWS.LOGIN,
-          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SIGN_INTO_APP,
-        },
-        errorCategory: error?.category,
-      }
-    );
+        registrationTouchpoint: getRegistrationTouchPoint(),
+        registrationSource: getRegistrationSource(),
+      });
 
-    throw error;
-  }
-});
+      if (!consumerId) {
+        throw new Error('User login Response does not contain consumerId');
+      }
+
+      const { phone, firstName, email, birthday, isFirstLogin } = user || {};
+
+      CleverTap.pushEvent('Login - login successful', {
+        'new user': isFirstLogin,
+      });
+
+      CleverTap.onUserLogin({
+        Name: firstName,
+        Phone: phone,
+        Identity: consumerId,
+        Email: email,
+        DOB: birthday ? new Date(birthday) : undefined,
+      });
+
+      return { isFirstLogin };
+    } catch (error) {
+      CleverTap.pushEvent('Login - login failed');
+
+      logger.error(
+        'User_LoginFailed',
+        {
+          message: error?.message,
+          shippingType,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SIGN_INTO_APP,
+          },
+          errorCategory: error?.category,
+        }
+      );
+
+      throw error;
+    }
+  },
+  { serializeError }
+);
 
 export const syncUserLoginInfo = createAsyncThunk(
   'app/user/syncUserLoginInfo',
