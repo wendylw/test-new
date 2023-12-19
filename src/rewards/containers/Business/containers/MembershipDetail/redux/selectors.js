@@ -73,17 +73,17 @@ export const getUniquePromoList = createSelector(
         name,
         status,
         limitations: [
-          {
+          minSpendAmount && {
             key: `unique-promo-${id}-limitation-0`,
             i18nKey: 'MinConsumption',
             params: { amount: getPrice(minSpendAmount, { locale: merchantLocale, currency: merchantCurrency }) },
           },
-          {
+          validTo && {
             key: `unique-promo-${id}-limitation-1`,
             i18nKey: 'ValidUntil',
             params: { date: formatTimeToDateString(merchantCountry, validTo) },
           },
-        ],
+        ].filter(limitation => Boolean(limitation)),
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };
     })
