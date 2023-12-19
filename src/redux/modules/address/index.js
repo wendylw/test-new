@@ -31,12 +31,12 @@ const { reducer, actions } = createSlice({
   extraReducers: {
     [getAddressInfo.pending.type]: state => {
       state.addressInfo.status = API_REQUEST_STATUS.PENDING;
-      state.error = null;
+      state.addressInfo.error = null;
     },
     [getAddressInfo.fulfilled.type]: (state, { payload }) => {
       state.addressInfo.data = payload;
       state.addressInfo.status = API_REQUEST_STATUS.FULFILLED;
-      state.error = null;
+      state.addressInfo.error = null;
     },
     [getAddressInfo.rejected.type]: (state, { error }) => {
       state.addressInfo.status = API_REQUEST_STATUS.REJECTED;
@@ -44,12 +44,12 @@ const { reducer, actions } = createSlice({
     },
     [setAddressInfo.pending.type]: state => {
       state.addressInfo.status = API_REQUEST_STATUS.PENDING;
-      state.error = null;
+      state.addressInfo.error = null;
     },
     [setAddressInfo.fulfilled.type]: (state, { payload }) => {
       state.addressInfo.data = payload;
       state.addressInfo.status = API_REQUEST_STATUS.FULFILLED;
-      state.error = null;
+      state.addressInfo.error = null;
     },
     [setAddressInfo.rejected.type]: (state, { error }) => {
       state.addressInfo.status = API_REQUEST_STATUS.REJECTED;

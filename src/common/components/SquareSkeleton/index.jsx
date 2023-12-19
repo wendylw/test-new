@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Skeleton from 'react-loading-skeleton';
+import Skeleton from '../ReactLoadingSkeleton';
 
 const SquareSkeleton = ({ className, wrapperClassName, containerClassName, style }) => (
   <div className={wrapperClassName}>

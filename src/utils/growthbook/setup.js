@@ -1,17 +1,20 @@
 import { store as orderingStore } from '../../ordering/redux/store';
+import { store as rewardsStore } from '../../rewards/redux/store';
 import { loadFeatureFlags, refreshFeatureFlags, updateFeatureFlagResults } from '../../redux/modules/growthbook/thunks';
 import GrowthBook from '.';
 
+const stores = [orderingStore, rewardsStore];
+
 const dispatchLoadFeatureFlagsThunk = () => {
-  orderingStore.dispatch(loadFeatureFlags());
+  stores.forEach(store => store.dispatch(loadFeatureFlags()));
 };
 
 const dispatchRefreshFeatureFlagsThunk = () => {
-  orderingStore.dispatch(refreshFeatureFlags());
+  stores.forEach(store => store.dispatch(refreshFeatureFlags()));
 };
 
 const dispatchUpdateFeatureFlagResultsThunk = () => {
-  orderingStore.dispatch(updateFeatureFlagResults());
+  stores.forEach(store => store.dispatch(updateFeatureFlagResults()));
 };
 
 const onNavigationChange = () => {
