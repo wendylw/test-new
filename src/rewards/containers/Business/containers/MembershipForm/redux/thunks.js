@@ -1,9 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push } from 'connected-react-router';
-import { getBusinessInfo, getConsumerCustomerBusinessInfo } from './api-request';
+import { getBusinessInfo } from './api-request';
 import { goBack } from '../../../../../../utils/native-methods';
 import { getIsTNGMiniProgram, getIsWebview, getLocationSearch } from '../../../../../redux/modules/common/selectors';
-import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
+import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import Growthbook from '../../../../../../utils/growthbook';
 import {
   fetchUserLoginStatus,
@@ -33,12 +34,10 @@ export const fetchBusinessInfo = createAsyncThunk(
 
 export const fetchCustomerMembershipInfo = createAsyncThunk(
   'rewards/business/membershipForm/fetchCustomerMembershipInfo',
-  async (_, { getState }) => {
-    const state = getState();
-    const consumerId = getConsumerId(state);
+  async (_, { dispatch }) => {
     const business = getQueryString('business');
 
-    return getConsumerCustomerBusinessInfo({ consumerId, business });
+    await dispatch(fetchCustomerInfo({ business }));
   }
 );
 

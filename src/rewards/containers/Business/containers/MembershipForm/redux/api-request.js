@@ -6,10 +6,3 @@ export const getBusinessInfo = business =>
       business,
     },
   });
-
-export const getConsumerCustomerBusinessInfo = ({ consumerId, business }) =>
-  get(`/api/v3/consumers/${consumerId}/customer`, {
-    queryParams: {
-      business,
-    },
-  });
