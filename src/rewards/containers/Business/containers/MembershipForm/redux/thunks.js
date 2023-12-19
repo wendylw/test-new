@@ -4,7 +4,6 @@ import { getBusinessInfo } from './api-request';
 import { goBack } from '../../../../../../utils/native-methods';
 import { getIsTNGMiniProgram, getIsWebview, getLocationSearch } from '../../../../../redux/modules/common/selectors';
 import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
-import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import Growthbook from '../../../../../../utils/growthbook';
 import {
   fetchUserLoginStatus,
@@ -32,15 +31,6 @@ export const fetchBusinessInfo = createAsyncThunk(
   }
 );
 
-export const fetchCustomerMembershipInfo = createAsyncThunk(
-  'rewards/business/membershipForm/fetchCustomerMembershipInfo',
-  async (_, { dispatch }) => {
-    const business = getQueryString('business');
-
-    await dispatch(fetchCustomerInfo({ business }));
-  }
-);
-
 export const goToMembershipDetail = createAsyncThunk(
   'rewards/business/membershipForm/goToMembershipDetail',
   async (_, { dispatch, getState }) => {
@@ -48,14 +38,6 @@ export const goToMembershipDetail = createAsyncThunk(
     const search = getLocationSearch(state);
 
     dispatch(push(`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`));
-  }
-);
-
-export const becomeAMember = createAsyncThunk(
-  'rewards/business/membershipForm/becomeAMember',
-  async (_, { dispatch }) => {
-    await dispatch(joinMembership()).unwrap();
-    await dispatch(goToMembershipDetail());
   }
 );
 
@@ -78,7 +60,7 @@ export const mounted = createAsyncThunk(
     removeCookieVariable('__jm_source');
 
     if (from === REFERRER_SOURCE_TYPES.LOGIN) {
-      await dispatch(becomeAMember());
+      await dispatch(joinMembership());
     }
   }
 );
@@ -102,7 +84,7 @@ export const joinNowButtonClicked = createAsyncThunk(
     const search = getLocationSearch(state);
 
     if (isLogin) {
-      await dispatch(becomeAMember());
+      await dispatch(joinMembership());
       return;
     }
 
@@ -122,7 +104,7 @@ export const joinNowButtonClicked = createAsyncThunk(
     }
 
     if (getIsLogin(getState())) {
-      await dispatch(becomeAMember());
+      await dispatch(joinMembership());
     }
   }
 );

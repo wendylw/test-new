@@ -73,26 +73,10 @@ export const getCongratulationUrl = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.FOUNDATION_OF_TIERED_MEMBERSHIP).congratsURL;
 
 export const getShouldShowSkeletonLoader = createSelector(
-  getIsLogin,
   getIsCheckLoginRequestCompleted,
   getIsBusinessInfoRequestStatusCompleted,
-  getIsLoadCustomerRequestStatusCompleted,
-  (
-    isLogin,
-    isCheckLoginRequestCompleted,
-    isBusinessInfoRequestStatusCompleted,
-    isLoadCustomerRequestStatusCompleted
-  ) => {
-    if (isLogin) {
-      return !(
-        isCheckLoginRequestCompleted &&
-        isBusinessInfoRequestStatusCompleted &&
-        isLoadCustomerRequestStatusCompleted
-      );
-    }
-
-    return !(isCheckLoginRequestCompleted && isBusinessInfoRequestStatusCompleted);
-  }
+  (isCheckLoginRequestCompleted, isBusinessInfoRequestStatusCompleted) =>
+    !(isCheckLoginRequestCompleted && isBusinessInfoRequestStatusCompleted)
 );
 
 export const getShouldShowUnsupportedError = createSelector(
