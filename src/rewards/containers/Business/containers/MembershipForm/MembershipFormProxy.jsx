@@ -5,13 +5,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import ErrorResult from './components/ErrorResult';
-import SuccessResult from './components/SuccessResult';
 import SkeletonLoader from './components/SkeletonLoader';
+import PageRedirectingIndicator from './components/PageRedirectingIndicator';
 import {
   getShouldShowSkeletonLoader,
   getShouldShowUnsupportedError,
   getShouldShowUnknownError,
-  getShouldShowCongratulation,
   getShouldShowBackButton,
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
@@ -31,7 +30,6 @@ const MembershipFormProxy = () => {
   const shouldShowSkeletonLoader = useSelector(getShouldShowSkeletonLoader);
   const shouldShowUnsupportedError = useSelector(getShouldShowUnsupportedError);
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
-  const shouldShowCongratulation = useSelector(getShouldShowCongratulation);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
 
   useEffect(() => {
@@ -62,11 +60,10 @@ const MembershipFormProxy = () => {
           imageSrc={BeepWarningImage}
           onCloseButtonClick={handleClickRetryButton}
         />
-      ) : shouldShowCongratulation ? (
-        <SuccessResult />
       ) : (
         <MembershipForm />
       )}
+      <PageRedirectingIndicator />
     </Frame>
   );
 };

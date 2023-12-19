@@ -1,7 +1,6 @@
-import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push } from 'connected-react-router';
-import { postUserMembership, getBusinessInfo, getConsumerCustomerBusinessInfo } from './api-request';
+import { getBusinessInfo, getConsumerCustomerBusinessInfo } from './api-request';
 import { goBack } from '../../../../../../utils/native-methods';
 import { getIsTNGMiniProgram, getIsWebview, getLocationSearch } from '../../../../../redux/modules/common/selectors';
 import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
@@ -11,6 +10,7 @@ import {
   loginUserByBeepApp,
   loginUserByTngMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
+import { joinMembership } from '../../../redux/common/thunks';
 import { PATH_NAME_MAPPING, REFERRER_SOURCE_TYPES } from '../../../../../../common/utils/constants';
 import {
   getQueryString,
@@ -18,7 +18,6 @@ import {
   setCookieVariable,
   removeCookieVariable,
 } from '../../../../../../common/utils';
-import { alert } from '../../../../../../common/utils/feedback';
 
 export const fetchBusinessInfo = createAsyncThunk(
   'rewards/business/membershipForm/fetchBusinessInfo',
@@ -43,21 +42,21 @@ export const fetchCustomerMembershipInfo = createAsyncThunk(
   }
 );
 
-export const joinMembership = createAsyncThunk(
-  'rewards/business/membershipForm/joinMembership',
-  async (_, { getState }) => {
+export const goToMembershipDetail = createAsyncThunk(
+  'rewards/business/membershipForm/goToMembershipDetail',
+  async (_, { dispatch, getState }) => {
     const state = getState();
-    const consumerId = getConsumerId(state);
-    const business = getQueryString('business');
-    const source = getQueryString('source');
+    const search = getLocationSearch(state);
 
-    try {
-      await postUserMembership({ consumerId, business, source });
-    } catch (error) {
-      alert(i18next.t('UnknownErrorDescription'), {
-        title: i18next.t('UnknownErrorTitle'),
-      });
-    }
+    dispatch(push(`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`));
+  }
+);
+
+export const becomeAMember = createAsyncThunk(
+  'rewards/business/membershipForm/becomeAMember',
+  async (_, { dispatch }) => {
+    await dispatch(joinMembership()).unwrap();
+    await dispatch(goToMembershipDetail());
   }
 );
 
@@ -80,7 +79,7 @@ export const mounted = createAsyncThunk(
     removeCookieVariable('__jm_source');
 
     if (from === REFERRER_SOURCE_TYPES.LOGIN) {
-      await dispatch(joinMembership());
+      await dispatch(becomeAMember());
     }
   }
 );
@@ -104,7 +103,7 @@ export const joinNowButtonClicked = createAsyncThunk(
     const search = getLocationSearch(state);
 
     if (isLogin) {
-      await dispatch(joinMembership());
+      await dispatch(becomeAMember());
       return;
     }
 
@@ -124,7 +123,7 @@ export const joinNowButtonClicked = createAsyncThunk(
     }
 
     if (getIsLogin(getState())) {
-      await dispatch(joinMembership());
+      await dispatch(becomeAMember());
     }
   }
 );

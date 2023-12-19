@@ -140,25 +140,6 @@ export const getShouldShowUnknownError = createSelector(
   }
 );
 
-export const getJoinMembershipRequest = state => state.business.membershipForm.joinMembershipRequest;
-
-export const getJoinMembershipRequestStatus = createSelector(
-  getJoinMembershipRequest,
-  joinMembershipRequest => joinMembershipRequest.status
-);
-
-export const getIsJoinMembershipRequestStatusFulfilled = createSelector(
-  getJoinMembershipRequestStatus,
-  joinMembershipRequestStatus => joinMembershipRequestStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getShouldShowCongratulation = createSelector(
-  getHasUserJoinedBusinessMembership,
-  getIsJoinMembershipRequestStatusFulfilled,
-  (hasJoinedMembership, isJoinMembershipRequestStatusFulfilled) =>
-    hasJoinedMembership || isJoinMembershipRequestStatusFulfilled
-);
-
 export const getShouldShowBackButton = createSelector(getIsWebview, isInWebview => isInWebview);
 
 export const getIsJoinNowButtonDisabled = state => state.business.membershipForm.isJoinNowButtonDisabled;
