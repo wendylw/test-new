@@ -12,7 +12,7 @@ const initialState = {
 };
 
 const { reducer, actions } = createSlice({
-  name: 'app/merchant',
+  name: 'rewards/merchant',
   initialState,
   reducers: {},
   extraReducers: {

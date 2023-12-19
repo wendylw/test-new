@@ -11,7 +11,7 @@ const initialState = {
 };
 
 export const { reducer, actions } = createSlice({
-  name: 'app/customer',
+  name: 'rewards/customer',
   initialState,
   reducers: {},
   extraReducers: {
