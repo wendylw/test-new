@@ -51,6 +51,7 @@ export const PATH_NAME_MAPPING = {
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
+  STORE_REDEMPTION: '/store-redemption',
   // site
   SITE_HOME: '/home',
   QRSCAN: '/qrscan',

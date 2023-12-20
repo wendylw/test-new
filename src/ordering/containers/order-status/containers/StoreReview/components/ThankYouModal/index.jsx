@@ -3,43 +3,19 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import Modal from '../../../../../../../common/components/Modal';
 import Button from '../../../../../../../common/components/Button';
-import {
-  getIsCommentEmpty,
-  getIsHighRatedReview,
-  getShouldShowOkayButtonOnly,
-  getIsGoogleReviewURLAvailable,
-} from '../../redux/selectors';
-import { getIsStoreThankYouModalVisible } from '../../../../redux/selector';
-import { getIsTNGMiniProgram, getIsGCashMiniProgram } from '../../../../../../redux/modules/app';
-import {
-  thankYouModalOkayButtonClicked as okayButtonClicked,
-  noThanksButtonClicked,
-  rateNowButtonClicked,
-  copyRateButtonClicked,
-} from '../../redux/thunks';
+import { getIsHighestRating, getIsStoreThankYouModalVisible } from '../../redux/selectors';
+import { thankYouModalOkayButtonClicked as okayButtonClicked } from '../../redux/thunks';
 import styles from './ThankYouModal.module.scss';
 
 const ThankYouModal = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation('OrderingThankYou');
 
-  const isCommentEmpty = useSelector(getIsCommentEmpty);
-  const isTNGMiniProgram = useSelector(getIsTNGMiniProgram);
-  const isGCashMiniProgram = useSelector(getIsGCashMiniProgram);
-  const isHighRatedReview = useSelector(getIsHighRatedReview);
+  const isHighestRating = useSelector(getIsHighestRating);
   const isModalVisible = useSelector(getIsStoreThankYouModalVisible);
-  const shouldShowOkayButtonOnly = useSelector(getShouldShowOkayButtonOnly);
-  const isGoogleReviewURLAvailable = useSelector(getIsGoogleReviewURLAvailable);
 
   const { title, description } = useMemo(() => {
-    if (!isHighRatedReview) {
-      return {
-        title: t('ThankYouModalLowRatingTitle'),
-        description: t('ThankYouModalLowRatingDescription'),
-      };
-    }
-
-    if (isTNGMiniProgram || isGCashMiniProgram || !isGoogleReviewURLAvailable) {
+    if (isHighestRating) {
       return {
         title: <Trans t={t} i18nKey="ThankYouModalHighRatingTitle" components={[<br />]} />,
         description: null,
@@ -47,19 +23,10 @@ const ThankYouModal = () => {
     }
 
     return {
-      title: <Trans t={t} i18nKey="ThankYouModalHighRatingGoogleReviewTitle" components={[<br />]} />,
-      description: isCommentEmpty
-        ? t('ThankYouModalHighRatingGoogleReviewDescriptionWithoutComment')
-        : t('ThankYouModalHighRatingGoogleReviewDescriptionWithComment'),
+      title: t('ThankYouModalLowRatingTitle'),
+      description: t('ThankYouModalLowRatingDescription'),
     };
-  }, [isHighRatedReview, isTNGMiniProgram, isGCashMiniProgram, isGoogleReviewURLAvailable, t, isCommentEmpty]);
-
-  const clickRefuseButtonHandler = useCallback(async () => dispatch(noThanksButtonClicked()), [dispatch]);
-
-  const clickAcceptButtonHandler = useCallback(
-    async () => (isCommentEmpty ? dispatch(rateNowButtonClicked()) : dispatch(copyRateButtonClicked())),
-    [dispatch, isCommentEmpty]
-  );
+  }, [t, isHighestRating]);
 
   const clickOkayButtonHandler = useCallback(async () => dispatch(okayButtonClicked()), [dispatch]);
 
@@ -68,41 +35,16 @@ const ThankYouModal = () => {
       <h2 className={styles.ThankYouModalTitle}>{title}</h2>
       {description && <p className={styles.ThankYouModalDescription}>{description}</p>}
       <div className={styles.ThankYouModalButtonWrapper}>
-        {shouldShowOkayButtonOnly ? (
-          <Button
-            block
-            type="primary"
-            className={styles.ThankYouModalButton}
-            data-testid="OkayButton"
-            data-test-id="ordering.order-status.store-review.confirm.okay"
-            onClick={clickOkayButtonHandler}
-          >
-            {t('Okay')}
-          </Button>
-        ) : (
-          <>
-            <Button
-              block
-              type="secondary"
-              className={styles.ThankYouModalButton}
-              data-testid="refuseButton"
-              data-test-id="ordering.order-status.store-review.confirm.reject"
-              onClick={clickRefuseButtonHandler}
-            >
-              {t('NoThanks')}
-            </Button>
-            <Button
-              block
-              type="primary"
-              className={styles.ThankYouModalButton}
-              data-testid="acceptButton"
-              data-test-id="ordering.order-status.store-review.confirm.accept"
-              onClick={clickAcceptButtonHandler}
-            >
-              {isCommentEmpty ? t('RateNow') : t('CopyAndRate')}
-            </Button>
-          </>
-        )}
+        <Button
+          block
+          type="primary"
+          className={styles.ThankYouModalButton}
+          data-testid="OkayButton"
+          data-test-id="ordering.order-status.store-review.confirm.okay"
+          onClick={clickOkayButtonHandler}
+        >
+          {t('Okay')}
+        </Button>
       </div>
     </Modal>
   );

@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import dayjs from 'dayjs';
-import { getIsTNGMiniProgram, getIsGCashMiniProgram, getIsWebview } from '../../../../../redux/modules/app';
+import { getIsWebview, getIsTNGMiniProgram, getIsGCashMiniProgram } from '../../../../../redux/modules/app';
 import {
   getStoreRating,
   getStoreComment,
@@ -12,27 +12,22 @@ import {
   getStoreReviewLoadDataRequest,
   getOffline,
 } from '../../../redux/selector';
-import { STORE_REVIEW_HIGH_RATING, STORE_REVIEW_ERROR_CODES } from '../constants';
+import { STORE_REVIEW_ERROR_CODES, STORE_REVIEW_HIGHEST_RATING } from '../constants';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { isValidDate } from '../../../../../../utils/datetime-lib';
 
-export const getIsHighRatedReview = createSelector(getStoreRating, rating => rating >= STORE_REVIEW_HIGH_RATING);
+export const getIsStoreThankYouModalVisible = state => state.orderStatus.storeReview.thankYouModalVisible;
+
+export const getIsStoreSuccessToastVisible = state => state.orderStatus.storeReview.successToastVisible;
+
+export const getIsGoogleReviewRedirectIndicatorVisible = state =>
+  state.orderStatus.storeReview.googleReviewRedirectIndicatorVisible;
 
 export const getIsCommentEmpty = createSelector(getStoreComment, comment => _isEmpty(comment));
 
 export const getIsGoogleReviewURLAvailable = createSelector(
   getStoreGoogleReviewURL,
   googleReviewURL => !_isEmpty(googleReviewURL)
-);
-
-// TODO: Migrate isTNGMiniProgram || isGCashMiniProgram to isAlipayMiniProgram
-export const getShouldShowOkayButtonOnly = createSelector(
-  getIsTNGMiniProgram,
-  getIsGCashMiniProgram,
-  getIsHighRatedReview,
-  getIsGoogleReviewURLAvailable,
-  (isTNGMiniProgram, isGCashMiniProgram, isHighRatedReview, isGoogleReviewURLAvailable) =>
-    isTNGMiniProgram || isGCashMiniProgram || !(isHighRatedReview && isGoogleReviewURLAvailable)
 );
 
 // This selector is used for CleverTap only
@@ -80,4 +75,15 @@ export const getShouldShowBackButton = createSelector(
   getOffline,
   getIsWebview,
   (offline, isInWebview) => !offline || isInWebview
+);
+
+export const getIsHighestRating = createSelector(getStoreRating, rating => rating === STORE_REVIEW_HIGHEST_RATING);
+
+export const getShouldShowSuccessToast = createSelector(
+  getIsHighestRating,
+  getIsTNGMiniProgram,
+  getIsGCashMiniProgram,
+  getIsGoogleReviewURLAvailable,
+  (isHighestRating, isTNGMiniProgram, isGCashMiniProgram, isGoogleReviewURLAvailable) =>
+    isHighestRating && !isTNGMiniProgram && !isGCashMiniProgram && isGoogleReviewURLAvailable
 );
