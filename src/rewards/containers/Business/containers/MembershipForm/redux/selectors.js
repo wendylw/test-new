@@ -5,7 +5,7 @@ import { getIsWebview } from '../../../../../redux/modules/common/selectors';
 import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
-import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
 import {
   getCustomerData,
   getLoadCustomerRequestStatus,
@@ -100,6 +100,24 @@ export const getShouldShowUnknownError = createSelector(
     }
 
     return false;
+  }
+);
+
+export const getShouldShowFooter = createSelector(
+  getIsLogin,
+  getIsCheckLoginRequestCompleted,
+  getHasUserJoinedBusinessMembership,
+  getIsLoadCustomerRequestStatusCompleted,
+  (isLogin, isCheckLoginRequestCompleted, hasUserJoinedBusinessMembership, isLoadCustomerRequestStatusCompleted) => {
+    if (!isCheckLoginRequestCompleted) {
+      return false;
+    }
+
+    if (!isLogin) {
+      return true;
+    }
+
+    return isLoadCustomerRequestStatusCompleted && !hasUserJoinedBusinessMembership;
   }
 );
 

@@ -20,12 +20,12 @@ export const { reducer, actions } = createSlice({
       state.loadCustomerRequest.error = null;
     },
     [fetchCustomerInfo.fulfilled.type]: (state, { payload }) => {
-      state.loadCustomerRequest.status = API_REQUEST_STATUS.SUCCESS;
+      state.loadCustomerRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.loadCustomerRequest.data = payload;
       state.loadCustomerRequest.error = null;
     },
     [fetchCustomerInfo.rejected.type]: (state, { error }) => {
-      state.loadCustomerRequest.status = API_REQUEST_STATUS.ERROR;
+      state.loadCustomerRequest.status = API_REQUEST_STATUS.REJECTED;
       state.loadCustomerRequest.error = error;
     },
   },

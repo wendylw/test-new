@@ -21,11 +21,11 @@ const { reducer, actions } = createSlice({
       state.loadMerchantRequest.error = null;
     },
     [fetchMerchantInfo.fulfilled.type]: (state, { payload }) => {
-      state.loadMerchantRequest.status = API_REQUEST_STATUS.SUCCESS;
+      state.loadMerchantRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.loadMerchantRequest.data = payload;
     },
     [fetchMerchantInfo.rejected.type]: (state, { error }) => {
-      state.loadMerchantRequest.status = API_REQUEST_STATUS.FAILURE;
+      state.loadMerchantRequest.status = API_REQUEST_STATUS.REJECTED;
       state.loadMerchantRequest.error = error;
     },
   },
