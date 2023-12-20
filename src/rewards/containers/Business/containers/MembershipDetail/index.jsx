@@ -22,12 +22,10 @@ const MembershipDetail = () => {
   const isTNGMiniProgram = useSelector(getIsTNGMiniProgram);
   const isWeb = !isWebview && !isTNGMiniProgram;
   const handleClickHeaderBackButton = useCallback(() => {
-    if (isTNGMiniProgram && window.my.exitMiniProgram) {
-      window.my.exitMiniProgram();
-    } else if (isWebview) {
+    if (isWebview) {
       closeWebView();
     }
-  }, [isTNGMiniProgram, isWebview]);
+  }, [isWebview]);
 
   useMount(() => {
     dispatch(mounted());
