@@ -82,5 +82,3 @@ export const getUniquePromoList = createSelector(
       };
     })
 );
-
-// getIsReturningMember => TODO: pending confirming member is returning query && not from earned cashback QR scan
