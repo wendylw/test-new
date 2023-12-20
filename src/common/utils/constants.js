@@ -184,3 +184,14 @@ export const BECOME_MERCHANT_MEMBER_METHODS = {
   OFFLINE_STORE_ORDER_COMPLETE: 'POS_Transaction',
   SEAMLESS_LOYALTY_QR_SCAN: 'POS_SeamlessLoyaltyQR',
 };
+
+export const PROMO_VOUCHER_DISCOUNT_TYPES = {
+  PERCENTAGE: 'percentage',
+  ABSOLUTE: 'absolute',
+};
+
+export const PROMO_VOUCHER_STATUS = {
+  ACTIVE: 'active',
+  EXPIRED: 'expired',
+  REDEEMED: 'redeemed',
+};

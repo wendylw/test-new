@@ -1,9 +1,15 @@
 import { createSelector } from 'reselect';
-import { BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
+import {
+  BECOME_MERCHANT_MEMBER_METHODS,
+  PROMO_VOUCHER_DISCOUNT_TYPES,
+  PROMO_VOUCHER_STATUS,
+} from '../../../../../../common/utils/constants';
 import { getQueryString, getPrice } from '../../../../../../common/utils';
+import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
   getMerchantCurrency,
   getMerchantLocale,
+  getMerchantCountry,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
 } from '../../../../../redux/modules/merchant/selectors';
@@ -11,11 +17,12 @@ import { getCustomerCashback } from '../../../../../redux/modules/customer/selec
 
 export const getSource = () => getQueryString('source');
 
-export const getLoadPromoListData = state => state.business.membershipDetail.loadUniquePromoListRequest.data;
+export const getLoadUniquePromoListData = state =>
+  state.business.membershipDetail.loadUniquePromoListRequest.data || [];
 
-export const getLoadPromoListStatus = state => state.business.membershipDetail.loadUniquePromoListRequest.status;
+export const getLoadUniquePromoListStatus = state => state.business.membershipDetail.loadUniquePromoListRequest.status;
 
-export const getLoadPromoListError = state => state.business.membershipDetail.loadUniquePromoListRequest.error;
+export const getLoadUniquePromoListError = state => state.business.membershipDetail.loadUniquePromoListRequest.error;
 
 /**
  * Derived selectors
@@ -36,6 +43,44 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
   getIsMerchantEnabledOROrdering,
   getIsMerchantEnabledDelivery,
   (isOROrderingEnabled, isDeliveryEnabled) => isOROrderingEnabled || isDeliveryEnabled
+);
+
+export const getUniquePromoList = createSelector(
+  getMerchantCurrency,
+  getMerchantLocale,
+  getMerchantCountry,
+  getLoadUniquePromoListData,
+  (merchantCurrency, merchantLocale, merchantCountry, uniquePromoList) =>
+    uniquePromoList.map(promo => {
+      if (!promo) {
+        return promo;
+      }
+
+      const { id, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+
+      return {
+        id,
+        value:
+          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
+            ? `${discountValue}%`
+            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency }),
+        name,
+        status,
+        limitations: [
+          minSpendAmount && {
+            key: `unique-promo-${id}-limitation-0`,
+            i18nKey: 'MinConsumption',
+            params: { amount: getPrice(minSpendAmount, { locale: merchantLocale, currency: merchantCurrency }) },
+          },
+          validTo && {
+            key: `unique-promo-${id}-limitation-1`,
+            i18nKey: 'ValidUntil',
+            params: { date: formatTimeToDateString(merchantCountry, validTo) },
+          },
+        ].filter(limitation => Boolean(limitation)),
+        isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
+      };
+    })
 );
 
 // getIsReturningMember => TODO: pending confirming member is returning query && not from earned cashback QR scan
