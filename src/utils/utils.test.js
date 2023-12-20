@@ -1,6 +1,6 @@
 import Utils from './utils';
 import { LocalStorageMock, SessionStorageMock } from './test.mock';
-import { addressInfo, soldingProduct, soldoutProduct } from './__fixtures__/utils.fixtures';
+import { addressInfo } from './__fixtures__/utils.fixtures';
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -20,7 +20,6 @@ describe('utils/utils', () => {
     getSessionVariable,
     setSessionVariable,
     removeSessionVariable,
-    isProductSoldOut,
     getFormatPhoneNumber,
     DateFormatter,
     getValidAddress,
@@ -186,16 +185,6 @@ describe('utils/utils', () => {
       setSessionVariable('years', '10');
       removeSessionVariable('years');
       expect(getSessionVariable('years')).toBeNull();
-    });
-  });
-
-  describe('utils.isProductSoldOut', () => {
-    it('isProductSoldOut: should be soldout', () => {
-      expect(isProductSoldOut(soldoutProduct)).toBeTruthy();
-    });
-
-    it('isProductSoldOut: should not be soldout', () => {
-      expect(isProductSoldOut(soldingProduct)).toBeFalsy();
     });
   });
 

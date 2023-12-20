@@ -280,6 +280,17 @@ export const isBetween = (time, { minTime, maxTime }, inclusivity = '()') => {
 };
 
 /**
+ *  * indicates whether is same today
+ * @param {Dayjs} Dayjs object
+ * @returns {boolean} result
+ */
+export const isToday = date => {
+  invariant(dayjs.isDayjs(date), 'Not Dayjs object');
+
+  return dayjs().isSame(date, 'day');
+};
+
+/**
  * set dayjs hour and minute by time
  * @param {string} time
  * @param {Dayjs} date

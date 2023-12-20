@@ -1,19 +1,13 @@
 import { actions } from './app';
-import rootReducer from './index';
 import { APP_TYPES as types } from '../types';
 import {
   store,
-  configureMiddlewareStore,
   successMockFetch,
   failMockFetch,
   expectedActionsCheck,
   commonSuccessData,
   mockErrorMsg,
-  mockErrorCode,
 } from '../../../utils/testHelper';
-import RequestError from '../../../utils/api/request-error';
-
-const cashbackStore = rootReducer(undefined, {});
 
 describe('src/cashback/redux/modules/app.js:actions', () => {
   beforeEach(() => {
@@ -95,74 +89,12 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       });
     });
 
-    describe('sendOtp', () => {
-      const reqParams = { otp: 'otp' };
-      it(':Success', () => {
-        successMockFetch();
-        const expectedActions = [
-          { type: types.CREATE_OTP_REQUEST },
-          {
-            type: types.CREATE_OTP_SUCCESS,
-            response: commonSuccessData,
-            params: {
-              grant_type: 'otp',
-              client: 'beep',
-              business_name: null,
-              username: null,
-              password: reqParams.otp,
-            },
-          },
-        ];
-        return expectedActionsCheck(actions.sendOtp(reqParams), expectedActions);
-      });
-      it(':Fail', () => {
-        failMockFetch();
-        const expectedActions = [
-          { type: types.CREATE_OTP_REQUEST },
-          { type: types.CREATE_OTP_FAILURE, code: mockErrorCode, message: mockErrorMsg },
-        ];
-        return expectedActionsCheck(actions.sendOtp(reqParams), expectedActions);
-      });
-    });
-
-    describe('getLoginStatus', () => {
-      it(':Success', () => {
-        successMockFetch();
-        const expectedActions = [
-          { type: types.FETCH_LOGIN_STATUS_REQUEST },
-          { type: types.FETCH_LOGIN_STATUS_SUCCESS, response: commonSuccessData },
-        ];
-        return expectedActionsCheck(actions.getLoginStatus(), expectedActions);
-      });
-      it(':Fail', () => {
-        failMockFetch();
-        const expectedActions = [
-          {
-            type: types.FETCH_LOGIN_STATUS_REQUEST,
-          },
-          {
-            type: types.FETCH_LOGIN_STATUS_FAILURE,
-            error: new RequestError(mockErrorMsg, { code: mockErrorCode }),
-          },
-        ];
-        return expectedActionsCheck(actions.getLoginStatus(), expectedActions);
-      });
-    });
-
     describe('fetchOnlineStoreInfo', () => {
       it(':Success', () => {
         successMockFetch();
         const expectedActions = [
           { type: types.FETCH_ONLINE_STORE_INFO_REQUEST },
           { type: types.FETCH_ONLINE_STORE_INFO_SUCCESS, responseGql: commonSuccessData },
-        ];
-        return expectedActionsCheck(actions.fetchOnlineStoreInfo(), expectedActions);
-      });
-      it(':Fail', () => {
-        failMockFetch();
-        const expectedActions = [
-          { type: types.FETCH_ONLINE_STORE_INFO_REQUEST },
-          { type: types.FETCH_ONLINE_STORE_INFO_FAILURE, code: mockErrorCode, message: mockErrorMsg },
         ];
         return expectedActionsCheck(actions.fetchOnlineStoreInfo(), expectedActions);
       });
@@ -177,39 +109,18 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
         ];
         return expectedActionsCheck(actions.fetchCashbackBusiness(), expectedActions);
       });
-      it(':Fail', () => {
-        failMockFetch();
-        const expectedActions = [
-          { type: types.FETCH_CASHBACK_BUSINESS_REQUEST },
-          { type: types.FETCH_CASHBACK_BUSINESS_FAILURE, code: mockErrorCode, message: mockErrorMsg },
-        ];
-        return expectedActionsCheck(actions.fetchCashbackBusiness(), expectedActions);
-      });
     });
+  });
 
-    describe('loadConsumerCustomerInfo', () => {
-      it(':Success', () => {
-        successMockFetch();
-        const caseStore = configureMiddlewareStore(cashbackStore);
-        const expectedActions = [
-          { type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING },
-          { type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED, response: commonSuccessData, params: {} },
-        ];
-        return caseStore.dispatch(actions.loadConsumerCustomerInfo()).then(() => {
-          expect(caseStore.getActions()).toEqual(expectedActions);
-        });
-      });
-      it(':Fail', () => {
-        failMockFetch();
-        const caseStore = configureMiddlewareStore(cashbackStore);
-        const expectedActions = [
-          { type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING },
-          { type: types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED, code: mockErrorCode, message: mockErrorMsg },
-        ];
-        return caseStore.dispatch(actions.loadConsumerCustomerInfo()).then(() => {
-          expect(caseStore.getActions()).toEqual(expectedActions);
-        });
-      });
+  describe('getCashbackHistory', () => {
+    const reqParams = { customerId: '111111' };
+    it(':Success', () => {
+      successMockFetch();
+      const expectedActions = [
+        { type: types.GET_CASHBACK_HISTORIES_REQUEST },
+        { type: types.GET_CASHBACK_HISTORIES_SUCCESS, response: commonSuccessData, params: reqParams },
+      ];
+      return expectedActionsCheck(actions.getCashbackHistory(reqParams.customerId), expectedActions);
     });
   });
 });

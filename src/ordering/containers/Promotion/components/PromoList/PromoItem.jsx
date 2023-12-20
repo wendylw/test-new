@@ -83,11 +83,11 @@ class PromoItem extends Component {
       >
         <IconVoucherTicket className="ordering-promo-item__icon-ticket icon icon__smaller icon__white margin-top-bottom-small margin-left-right-smaller" />
         <div className="flex flex-space-between flex-middle ordering-promo-item__content margin-smaller">
-          <div>
+          <div className="ordering-promo-item__description">
             <h4 className="ordering-promo-item__title text-size-big text-weight-bolder margin-top-bottom-small margin-left-right-smaller">
               {this.getPromoDescription(promo)}
             </h4>
-            <p className="ordering-promo-item__text margin-top-bottom-small margin-left-right-smaller text-size-big">
+            <p className="ordering-promo-item__text margin-top-bottom-small margin-left-right-smaller text-size-big text-omit__multiple-line">
               {promo.name || promo.code}
             </p>
           </div>

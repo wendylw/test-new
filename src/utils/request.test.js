@@ -36,25 +36,6 @@ describe('utils/request', () => {
     expect(error.toString()).toContain('Not Permitted');
   });
 
-  it('get: should reject when encountered http error code', async () => {
-    fetch.mockResponseOnce(async () => ({
-      body: '{"ok":false}',
-      init: {
-        headers: { 'Content-Type': 'application/json' },
-        status: 404,
-      },
-    }));
-
-    let error;
-    try {
-      await get('/url');
-    } catch (e) {
-      error = e;
-    }
-    expect(error.message).toContain('Not Found');
-    expect(error.code).toBe(404);
-  });
-
   it('post: should be able to get data with correct settings', async () => {
     const req = { company: 'storehub' };
     const res = { greeting: 'hello' };
@@ -81,25 +62,6 @@ describe('utils/request', () => {
     expect(error.toString()).toContain('Internal Error');
   });
 
-  it('post: should reject when encountered http error code', async () => {
-    fetch.mockResponseOnce(async () => ({
-      body: '{"ok":false}',
-      init: {
-        headers: { 'Content-Type': 'application/json' },
-        status: 404,
-      },
-    }));
-
-    let error;
-    try {
-      await post('/url', { greeting: 'hello' });
-    } catch (e) {
-      error = e;
-    }
-    expect(error.message).toContain('Not Found');
-    expect(error.code).toBe(404);
-  });
-
   it('put: should be able to get data with correct settings', async () => {
     const req = { company: 'storehub' };
     const res = { greeting: 'hello' };
@@ -124,24 +86,5 @@ describe('utils/request', () => {
       error = e;
     }
     expect(error.toString()).toContain('Internal Error');
-  });
-
-  it('put: should reject when encountered http error code', async () => {
-    fetch.mockResponseOnce(async () => ({
-      body: '{"ok":false}',
-      init: {
-        headers: { 'Content-Type': 'application/json' },
-        status: 404,
-      },
-    }));
-
-    let error;
-    try {
-      await put('/url', { greeting: 'hello' });
-    } catch (e) {
-      error = e;
-    }
-    expect(error.message).toContain('Not Found');
-    expect(error.code).toBe(404);
   });
 });

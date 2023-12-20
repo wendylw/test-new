@@ -5,6 +5,10 @@ it('src/cashback/redux/store.js', () => {
   expect(state).toEqual({
     app: {
       business: null,
+      coreBusiness: {
+        enableCashback: true,
+        loadCoreBusinessStatus: null,
+      },
       error: null,
       messageInfo: {
         key: null,
@@ -14,6 +18,8 @@ it('src/cashback/redux/store.js', () => {
       onlineStoreInfo: {
         id: '',
         isFetching: false,
+        loadOnlineStoreInfoStatus: null,
+        logo: null,
       },
       requestInfo: {
         storeId: null,
@@ -26,7 +32,11 @@ it('src/cashback/redux/store.js', () => {
         isError: false,
         isExpired: false,
         isLogin: false,
-        isWebview: false,
+        loadConsumerCustomerStatus: null,
+        loginTngRequest: {
+          error: null,
+          status: null,
+        },
         noWhatsAppAccount: true,
         otpRequest: {
           data: {
@@ -36,8 +46,23 @@ it('src/cashback/redux/store.js', () => {
           status: null,
         },
         phone: null,
-        prompt: 'Do you have a Beep account? Login with your mobile phone number.',
+        prompt: null,
+        profile: {
+          id: '',
+          phone: '',
+          firstName: '',
+          lastName: '',
+          email: '',
+          gender: '',
+          birthday: '',
+          birthdayModifiedTime: '',
+          notificationSettings: '',
+          birthdayChangeAllowed: false,
+          status: null,
+        },
+        showLoginModal: false,
         storeCreditsBalance: 0,
+        totalCredits: 0,
       },
     },
     claim: { cashbackInfo: null, receiptNumber: null },
@@ -51,6 +76,26 @@ it('src/cashback/redux/store.js', () => {
       products: {},
       stores: {},
     },
-    home: { cashbackHistorySummary: null, fetchState: true, receiptList: [] },
+    home: { fetchState: true, receiptList: [] },
+    storeRedemption: {
+      requestId: null,
+      sharedInfoData: {
+        id: '',
+        merchantName: '',
+        expiredDate: '',
+        scannedDate: '',
+        source: '',
+        consumerId: '',
+        customerId: '',
+        sharedInfoDate: '',
+        isNewCustomer: false,
+      },
+      updateSharingConsumerInfo: {
+        status: null,
+      },
+      confirmSharingConsumerInfo: {
+        status: null,
+      },
+    },
   });
 });

@@ -312,5 +312,8 @@
   "AlcoholNotAllowed": "Aww, sorry... This store sells alcoholic beverages. If it is not suitable, you can check out the other stores instead. \uD83D\uDE42",
   "TableNumberUpdatedTitle": "Your table number has been successfully updated!",
   "TableNumberUpdatedDescription": "You may proceed with your order at the new table where you are currently seated.",
-  "TakeawayPackagingFee": "+ {{packagingFee}} for packaging"
+  "TakeawayPackagingFee": "+ {{packagingFee}} for packaging",
+  "UrlExpiredTitle": "Oops! This QR Code link has expired",
+  "UrlExpiredDescription": "Please request a new QR Code with the cashier & scan again",
+  "UrlExpiredButton": "Scan a new qr code"
 }

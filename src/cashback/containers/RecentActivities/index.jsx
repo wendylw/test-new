@@ -3,12 +3,17 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { toLocaleDateString } from '../../../../../utils/datetime-lib';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
-import { IconPending, IconChecked, IconEarned } from '../../../../../components/Icons';
-import HybridHeader from '../../../../../components/HybridHeader';
-import { getOnlineStoreInfo, getIsUserLogin, getUserCustomerId } from '../../../../redux/modules/app';
-import { actions as homeActionCreators, getCashbackHistory } from '../../../../redux/modules/home';
+import { toLocaleDateString } from '../../../utils/datetime-lib';
+import CurrencyNumber from '../../components/CurrencyNumber';
+import { IconPending, IconChecked, IconEarned } from '../../../components/Icons';
+import HybridHeader from '../../../components/HybridHeader';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getIsUserLogin,
+  getUserCustomerId,
+  getCashbackHistory,
+} from '../../redux/modules/app';
 import './RecentActivities.scss';
 
 const DATE_OPTIONS = {
@@ -47,10 +52,10 @@ class RecentActivities extends React.Component {
   }
 
   getLoyaltyHistory(customerId) {
-    const { homeActions } = this.props;
+    const { appActions } = this.props;
 
     if (customerId) {
-      homeActions.getCashbackHistory(customerId);
+      appActions.getCashbackHistory(customerId);
     }
   }
 
@@ -122,7 +127,7 @@ class RecentActivities extends React.Component {
   }
 
   render() {
-    const { t } = this.props;
+    const { t, history } = this.props;
 
     return (
       <>
@@ -132,6 +137,9 @@ class RecentActivities extends React.Component {
           contentClassName="flex-middle"
           isPage
           title={t('CashbackHistory')}
+          navFunc={() => {
+            history.goBack();
+          }}
         />
 
         <section className="recent-activities" data-test-id="cashback.home.recent-activities.container">
@@ -153,7 +161,7 @@ RecentActivities.propTypes = {
   onlineStoreInfo: PropTypes.shape({
     country: PropTypes.string,
   }),
-  homeActions: PropTypes.shape({
+  appActions: PropTypes.shape({
     getCashbackHistory: PropTypes.func,
   }),
 };
@@ -167,7 +175,7 @@ RecentActivities.defaultProps = {
   onlineStoreInfo: {
     country: '',
   },
-  homeActions: {
+  appActions: {
     getCashbackHistory: () => {},
   },
 };
@@ -182,7 +190,7 @@ export default compose(
       cashbackHistory: getCashbackHistory(state),
     }),
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(RecentActivities);
