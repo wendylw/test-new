@@ -6,7 +6,7 @@ import Constants from '../../../../utils/constants';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { alert } from '../../../../common/feedback';
 import { getBusinessUTCOffset } from '../app';
-import { CART_SUBMISSION_STATUS } from './constants';
+import { CART_SUBMISSION_STATUS, AVAILABLE_QUERY_CART_STATUS_ROUTES } from './constants';
 import { getCartVersion, getCartSource, getCartItems } from './selectors';
 import { actions as cartActionCreators } from '.';
 import Poller from '../../../../common/utils/poller';
@@ -84,25 +84,48 @@ export const loadCartStatus = createAsyncThunk(
   }
 );
 
-export const queryCartAndStatus = () => async dispatch => {
+// Diff page should use diff poller, otherwise can not stop poller correctly
+const CartStatusPollers = {
+  pollers: {
+    menu: null,
+    cart: null,
+  },
+  // eslint-disable-next-line object-shorthand
+  clearPoller: function() {
+    const keys = Object.keys(this.pollers);
+
+    keys.forEach(key => {
+      if (!this.pollers[key]) {
+        return;
+      }
+
+      this.pollers[key].stop();
+      this.pollers[key] = null;
+    });
+  },
+};
+export const queryCartAndStatus = pollerKey => async dispatch => {
+  CartStatusPollers.clearPoller();
   logger.log('Ordering_Cart_PollCartStatus', { action: 'start' });
+
   try {
-    const queryCartStatus = () => {
-      queryCartAndStatus.timer = setTimeout(async () => {
-        await dispatch(loadCartStatus());
+    CartStatusPollers.pollers[pollerKey] = new Poller({
+      fetchData: async () => {
+        const { pathname } = window.location;
 
-        // Loop has been stopped
-        if (!queryCartAndStatus.timer) {
-          logger.log('Ordering_Cart_PollCartStatus', { action: 'quit-silently' });
-          return;
+        // Add a judgment condition. There may be requests that have not been cleared before and are still being polled.
+        if (AVAILABLE_QUERY_CART_STATUS_ROUTES.includes(pathname)) {
+          await dispatch(loadCartStatus());
         }
+      },
+      onError: error => {
+        CartStatusPollers.pollers[pollerKey].stop();
+        logger.log('Ordering_Cart_PollCartStatus', { action: 'stop', error: error?.message });
+      },
+      interval: CART_VERSION_AND_STATUS_INTERVAL,
+    });
 
-        queryCartStatus();
-      }, CART_VERSION_AND_STATUS_INTERVAL);
-    };
-
-    await dispatch(loadCart());
-    queryCartStatus();
+    CartStatusPollers.pollers[pollerKey].start();
   } catch (error) {
     logger.error('Ordering_Cart_QueryCartAndStatusFailed', { message: error?.message });
 
@@ -111,9 +134,7 @@ export const queryCartAndStatus = () => async dispatch => {
 };
 
 export const clearQueryCartStatus = () => () => {
-  clearTimeout(queryCartAndStatus.timer);
   logger.log('Ordering_Cart_PollCartStatus', { action: 'stop' });
-  queryCartAndStatus.timer = null;
 };
 
 /**
@@ -303,7 +324,6 @@ export const queryCartSubmissionStatus = submissionId => async dispatch => {
           })
         );
       },
-      clearTimeoutTimerOnStop: true,
       timeout: TIMEOUT_CART_SUBMISSION_TIME,
       interval: CART_SUBMISSION_INTERVAL,
     });
