@@ -3,25 +3,25 @@ import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../../../../../../common/components/Loader';
 import { getIsJoinMembershipRequestStatusPending } from '../../../../redux/common/selectors';
-import styles from './PageRedirectingIndicator.module.scss';
+import styles from './JoiningIndicator.module.scss';
 
-const PageRedirectingIndicator = () => {
-  const { t } = useTranslation();
+const JoiningIndicator = () => {
+  const { t } = useTranslation('Rewards');
 
   const isVisible = useSelector(getIsJoinMembershipRequestStatusPending);
 
   if (!isVisible) return null;
 
   return (
-    <div className={styles.PageRedirectingContainer}>
-      <div className={styles.PageRedirectingIndicatorWrapper}>
+    <div className={styles.JoiningIndicatorContainer}>
+      <div className={styles.JoiningIndicatorWrapper}>
         <Loader size={30} color="white" />
-        <span className="tw-text-white tw-p-8 sm:tw-p-8px">{t('Redirecting')}</span>
+        <span className="tw-text-white tw-p-8 sm:tw-p-8px">{t('Joining')}</span>
       </div>
     </div>
   );
 };
 
-PageRedirectingIndicator.displayName = 'PageRedirectingIndicator';
+JoiningIndicator.displayName = 'JoiningIndicator';
 
-export default PageRedirectingIndicator;
+export default JoiningIndicator;

@@ -23,8 +23,9 @@ export const joinMembership = createAsyncThunk(
     const source = getQueryString('source');
 
     try {
-      await postUserMembership({ consumerId, business, source });
+      const result = await postUserMembership({ consumerId, business, source });
       await dispatch(loadCustomerInfo());
+      return result;
     } catch (error) {
       alert(i18next.t('UnknownErrorDescription'), {
         title: i18next.t('UnknownErrorTitle'),

@@ -7,11 +7,11 @@ import { toLocaleDateString } from '../../../utils/datetime-lib';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconPending, IconChecked, IconEarned } from '../../../components/Icons';
 import HybridHeader from '../../../components/HybridHeader';
+import { getCustomerId } from '../../redux/modules/customer/selectors';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getIsUserLogin,
-  getUserCustomerId,
   getCashbackHistory,
 } from '../../redux/modules/app';
 import './RecentActivities.scss';
@@ -25,17 +25,17 @@ const DATE_OPTIONS = {
 
 class RecentActivities extends React.Component {
   componentDidMount() {
-    const { isUserLogin, userCustomerId, onModalVisibilityChanged } = this.props;
+    const { isUserLogin, customerId, onModalVisibilityChanged } = this.props;
 
-    if (isUserLogin && userCustomerId) {
-      this.getLoyaltyHistory(userCustomerId);
+    if (isUserLogin && customerId) {
+      this.getLoyaltyHistory(customerId);
     }
     onModalVisibilityChanged(true);
   }
 
   componentDidUpdate(prevProps) {
-    const { userCustomerId: prevUserCustomerId } = prevProps;
-    const { userCustomerId: currUserCustomerId, isFetching, isUserLogin } = this.props;
+    const { customerId: prevUserCustomerId } = prevProps;
+    const { customerId: currUserCustomerId, isFetching, isUserLogin } = this.props;
 
     if (isFetching || !isUserLogin) {
       return;
@@ -155,7 +155,7 @@ RecentActivities.displayName = 'RecentActivities';
 RecentActivities.propTypes = {
   isFetching: PropTypes.bool,
   isUserLogin: PropTypes.bool,
-  userCustomerId: PropTypes.string,
+  customerId: PropTypes.string,
   onModalVisibilityChanged: PropTypes.func,
   cashbackHistory: PropTypes.arrayOf(PropTypes.object),
   onlineStoreInfo: PropTypes.shape({
@@ -169,7 +169,7 @@ RecentActivities.propTypes = {
 RecentActivities.defaultProps = {
   isFetching: false,
   isUserLogin: false,
-  userCustomerId: '',
+  customerId: '',
   onModalVisibilityChanged: () => {},
   cashbackHistory: [],
   onlineStoreInfo: {
@@ -185,7 +185,7 @@ export default compose(
   connect(
     state => ({
       isUserLogin: getIsUserLogin(state),
-      userCustomerId: getUserCustomerId(state),
+      customerId: getCustomerId(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       cashbackHistory: getCashbackHistory(state),
     }),

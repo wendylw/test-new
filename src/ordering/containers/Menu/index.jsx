@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMount } from 'react-use';
+import { useMount, useUnmount } from 'react-use';
 import usePrefetch from '../../../common/utils/hooks/usePrefetch';
 import Frame from '../../../common/components/Frame';
 import MenuShippingInfoBar from './components/MenuShippingInfoBar';
@@ -19,7 +19,7 @@ import {
   getIsSearchingBannerVisible,
   getShouldShowOfflineMenu,
 } from './redux/common/selectors';
-import { mounted } from './redux/common/thunks';
+import { mounted, willUnmount } from './redux/common/thunks';
 
 const Menu = () => {
   const dispatch = useDispatch();
@@ -30,6 +30,10 @@ const Menu = () => {
 
   useMount(() => {
     dispatch(mounted());
+  });
+
+  useUnmount(async () => {
+    await dispatch(willUnmount());
   });
 
   usePrefetch(['ORD_SC', 'ORD_TS'], ['OrderingCart', 'OrderingPromotion', 'OrderingTableSummary']);
