@@ -10,6 +10,8 @@ import {
   getUser,
   getApiError,
   getBusinessInfo,
+  getIsDynamicUrlExpired,
+  getIsDynamicUrl,
 } from '../../redux/modules/app';
 import {
   getAddressInfo as getAddressInfoThunk,
@@ -29,6 +31,10 @@ import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
 import { SOURCE_TYPE } from '../../../common/utils/constants';
 import { isURL } from '../../../common/utils';
+import BeepWarningImage from '../../../images/beep-warning.svg';
+import Result from '../../../common/components/Result';
+import ResultContent from '../../../common/components/Result/ResultContent';
+import styles from './App.module.scss';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -82,6 +88,10 @@ class App extends Component {
     this.visitErrorPage();
 
     try {
+      this.checkIfDineInUrlExpired();
+
+      window.addEventListener('sh-location-change', this.checkIfDineInUrlExpired);
+
       const initRequests = [this.initAddressInfo(), appActions.getLoginStatus(), appActions.fetchOnlineStoreInfo()];
 
       if (Utils.notHomeOrLocationPath(window.location.pathname)) {
@@ -116,18 +126,27 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { user, pageError } = this.props;
-    const { isExpired, isWebview } = user || {};
+    const { pageError } = this.props;
     const { code } = prevProps.pageError || {};
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
     }
-
-    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      // this.postAppMessage(user);
-    }
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('sh-location-change', this.checkIfDineInUrlExpired);
+  }
+
+  checkIfDineInUrlExpired = async () => {
+    const { appActions, isDynamicUrl } = this.props;
+
+    if (!isDynamicUrl) {
+      return;
+    }
+
+    await appActions.checkUrlsValidation();
+  };
 
   initAddressInfo = async () => {
     const { getAddressInfo, setAddressInfo } = this.props;
@@ -219,6 +238,14 @@ class App extends Component {
     }
   };
 
+  handleExpiredUrlPageButtonClick = () => {
+    if (Utils.isWebview()) {
+      NativeMethods.closeWebView();
+    } else {
+      window.location.href = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${ROUTER_PATHS.QRSCAN}`;
+    }
+  };
+
   visitErrorPage() {
     const { pageError } = this.props;
     const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${
@@ -235,7 +262,7 @@ class App extends Component {
   }
 
   render() {
-    const { onlineStoreInfo, apiError } = this.props;
+    const { t, onlineStoreInfo, apiError, isDynamicUrlExpired } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
@@ -252,7 +279,23 @@ class App extends Component {
             }}
           />
         ) : null}
-        <Routes />
+        {isDynamicUrlExpired ? (
+          <Result
+            customizeContent
+            closeButtonClassName={styles.UrlExpiredButton}
+            closeButtonContent={t('UrlExpiredButton')}
+            zIndex={1000}
+            onClose={this.handleExpiredUrlPageButtonClick}
+          >
+            <ResultContent
+              content={t('UrlExpiredDescription')}
+              title={t('UrlExpiredTitle')}
+              imageSrc={BeepWarningImage}
+            />
+          </Result>
+        ) : (
+          <Routes />
+        )}
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
     );
@@ -282,12 +325,15 @@ App.propTypes = {
     fetchOnlineStoreInfo: PropTypes.func,
     hideMessageModal: PropTypes.func,
     hideApiMessageModal: PropTypes.func,
+    checkUrlsValidation: PropTypes.func,
   }),
   /* eslint-disable react/forbid-prop-types */
   businessInfo: PropTypes.object,
   onlineStoreInfo: PropTypes.object,
   /* eslint-enable */
   ifAddressInfoExists: PropTypes.bool,
+  isDynamicUrlExpired: PropTypes.bool,
+  isDynamicUrl: PropTypes.bool,
   getAddressInfo: PropTypes.func,
   setAddressInfo: PropTypes.func,
 };
@@ -313,10 +359,13 @@ App.defaultProps = {
     fetchOnlineStoreInfo: () => {},
     hideMessageModal: () => {},
     hideApiMessageModal: () => {},
+    checkUrlsValidation: () => {},
   },
   businessInfo: {},
   onlineStoreInfo: {},
   ifAddressInfoExists: false,
+  isDynamicUrlExpired: false,
+  isDynamicUrl: false,
   getAddressInfo: () => {},
   setAddressInfo: () => {},
 };
@@ -332,6 +381,8 @@ export default compose(
       pageError: getPageError(state),
       apiError: getApiError(state),
       ifAddressInfoExists: getIfAddressInfoExists(state),
+      isDynamicUrlExpired: getIsDynamicUrlExpired(state),
+      isDynamicUrl: getIsDynamicUrl(state),
     }),
     dispatch => ({
       getAddressInfo: bindActionCreators(getAddressInfoThunk, dispatch),

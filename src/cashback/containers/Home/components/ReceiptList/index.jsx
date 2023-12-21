@@ -4,10 +4,10 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
+import { getCustomerId } from '../../../../redux/modules/customer/selectors';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
-  getUserCustomerId,
   getBusiness,
   getCashbackHistory,
 } from '../../../../redux/modules/app';
@@ -42,8 +42,8 @@ class RecentList extends React.Component {
     const { appActions, userCustomerId: currUserCustomerId } = this.props;
     const { userCustomerId: prevUserCustomerId } = prevProps || {};
 
-    // userCustomerId !== prevProps.userCustomerId instead of !prevProps.userCustomerId
-    // The 3rd MiniProgram cached the previous userCustomerId, so the userCustomerId is not the correct account
+    // customerId !== prevProps.customerId instead of !prevProps.customerId
+    // The 3rd MiniProgram cached the previous customerId, so the customerId is not the correct account
     if (currUserCustomerId && currUserCustomerId !== prevUserCustomerId) {
       appActions.getCashbackHistory(currUserCustomerId);
     }
@@ -181,7 +181,7 @@ export default compose(
   withTranslation(['Cashback']),
   connect(
     state => ({
-      userCustomerId: getUserCustomerId(state),
+      userCustomerId: getCustomerId(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       business: getBusiness(state),
       cashbackHistory: getCashbackHistory(state),

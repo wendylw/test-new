@@ -5,6 +5,10 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.resultImage {
+  @apply tw-flex tw-justify-center tw-p-16 sm:tw-p-16px;
+}
+
 .resultTitle {
   @apply tw-flex tw-justify-center tw-text-center tw-text-xl tw-leading-normal tw-font-bold;
 

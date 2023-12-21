@@ -29,12 +29,13 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
-import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo, getCoreBusinessInfo } from './api-request';
+import { getConsumerLoginStatus, getProfileInfo, getCoreBusinessInfo } from './api-request';
 import { getAllLoyaltyHistories } from '../../../redux/modules/entities/loyaltyHistories';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
 import { isJSON, isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
+import { getCustomerId } from './customer/selectors';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const { AUTH_INFO, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
@@ -44,8 +45,6 @@ export const initialState = {
     isLogin: false,
     isExpired: false,
     consumerId: config.consumerId,
-    customerId: '',
-    storeCreditsBalance: 0,
     isError: false,
     otpRequest: {
       data: {
@@ -76,7 +75,6 @@ export const initialState = {
       status: null,
     },
     showLoginModal: false,
-    loadConsumerCustomerStatus: null,
     totalCredits: 0,
   },
   customerInfo: {},
@@ -270,23 +268,6 @@ export const actions = {
     user,
   }),
 
-  loadConsumerCustomerInfo: () => async (dispatch, getState) => {
-    try {
-      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
-
-      const state = getState();
-      const consumerId = getUserConsumerId(state);
-      const result = await getConsumerCustomerInfo(consumerId);
-
-      dispatch({
-        type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED,
-        response: result,
-      });
-    } catch (error) {
-      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED });
-    }
-  },
-
   resetConsumerCustomerInfo: () => ({
     type: types.RESET_CONSUMER_CUSTOMER_INFO,
   }),
@@ -475,17 +456,8 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response, responseGql, prompt, error, payload } = action || {};
-  const {
-    login,
-    consumerId,
-    supportWhatsApp,
-    storeCreditInfo,
-    customerId,
-    access_token: accessToken,
-    refresh_token: refreshToken,
-    totalCredits,
-  } = response || {};
-  const { storeCreditsBalance } = storeCreditInfo || {};
+  const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken, totalCredits } =
+    response || {};
   const { data } = responseGql || {};
   const { business, onlineStoreInfo } = data || {};
   const otpType = _get(payload, 'otpType', null);
@@ -599,20 +571,6 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     }
-    // load consumer customer info
-    case types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING:
-      return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.PENDING };
-    case types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED:
-      return {
-        ...state,
-        loadConsumerCustomerStatus: API_REQUEST_STATUS.FULFILLED,
-        storeCreditsBalance,
-        customerId,
-      };
-    case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
-      return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.REJECTED };
-    case types.RESET_CONSUMER_CUSTOMER_INFO:
-      return { ...state, loadConsumerCustomerStatus: null, storeCreditsBalance: 0, customerId: null };
     // fetch online store info success
     // fetch core business success
     case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
@@ -788,7 +746,6 @@ export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
 export const getLoginTngRequest = state => state.app.user.loginTngRequest;
 export const getUserProfile = state => state.app.user.profile;
-export const getTotalCredits = state => _get(state.app, 'user.totalCredits', 0);
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
 export const getError = state => state.app.error;
@@ -838,7 +795,7 @@ export const getLoginBannerPrompt = createSelector(getUser, userInfo => _get(use
 
 export const getIsUserLogin = createSelector(getUser, userInfo => _get(userInfo, 'isLogin', false));
 
-export const getUserCountry = createSelector(getUser, userInfo => _get(userInfo, 'country', false));
+export const getUserCountry = createSelector(getUser, userInfo => _get(userInfo, 'country', ''));
 
 export const getIsUserExpired = createSelector(getUser, userInfo => _get(userInfo, 'isExpired', false));
 
@@ -846,27 +803,9 @@ export const getIsLoginModalShown = createSelector(getUser, userInfo => _get(use
 
 export const getUserConsumerId = createSelector(getUser, userInfo => _get(userInfo, 'consumerId', null));
 
-export const getUserCustomerId = createSelector(getUser, userInfo => _get(userInfo, 'customerId', null));
-
-export const getUserStoreCashback = createSelector(getUser, userInfo => _get(userInfo, 'storeCreditsBalance', 0));
-
 export const getIsLoginRequestFailed = createSelector(getUser, userInfo => _get(userInfo, 'isError', false));
 
 export const getIsLoginRequestStatusPending = createSelector(getUser, userInfo => _get(userInfo, 'isFetching', false));
-
-export const getLoadConsumerCustomerStatus = createSelector(getUser, userInfo =>
-  _get(userInfo, 'loadConsumerCustomerStatus', null)
-);
-
-export const getIsConsumerCustomerLoaded = createSelector(
-  getLoadConsumerCustomerStatus,
-  loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadConsumerCustomerFailed = createSelector(
-  getLoadConsumerCustomerStatus,
-  loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.REJECTED
-);
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);
 
@@ -981,8 +920,8 @@ export const getIsTngAuthorizationError = createSelector(
   loginTngRequestError => (loginTngRequestError?.error || null) === 10
 );
 
-export const getCashbackHistory = createSelector(getUser, getAllLoyaltyHistories, (userInfo, allLoyaltyHistories) => {
-  const { customerId } = userInfo || {};
-
-  return allLoyaltyHistories[customerId];
-});
+export const getCashbackHistory = createSelector(
+  getCustomerId,
+  getAllLoyaltyHistories,
+  (customerId, allLoyaltyHistories) => allLoyaltyHistories[customerId]
+);

@@ -4,6 +4,11 @@
  * file to a reference to this file, so that each constant is defined only once.
  */
 
+export const URL_TYPES = {
+  STATIC: 'static',
+  DYNAMIC: 'dynamic',
+};
+
 export const SHIPPING_TYPES = {
   DELIVERY: 'delivery',
   PICKUP: 'pickup',
@@ -51,6 +56,7 @@ export const PATH_NAME_MAPPING = {
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
+  STORE_REDEMPTION: '/store-redemption',
   // site
   SITE_BASE: '/',
   SITE_HOME: '/home',
