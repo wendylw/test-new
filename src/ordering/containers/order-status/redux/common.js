@@ -8,8 +8,6 @@ import {
   loadPayLaterOrderStatus,
   loadOrderStoreReview,
   saveOrderStoreReview,
-  showStoreReviewThankYouModal,
-  hideStoreReviewThankYouModal,
   showStoreReviewWarningModal,
   hideStoreReviewWarningModal,
   showStoreReviewLoadingIndicator,
@@ -59,7 +57,6 @@ const initialState = {
       status: null,
       error: null,
     },
-    thankYouModalVisible: false,
     warningModalVisible: false,
     loadingIndicatorVisible: false,
   },
@@ -235,12 +232,6 @@ const { reducer, actions } = createSlice({
     [saveOrderStoreReview.rejected.type]: (state, { error }) => {
       state.storeReviewInfo.saveDataRequest.status = API_REQUEST_STATUS.REJECTED;
       state.storeReviewInfo.saveDataRequest.error = error;
-    },
-    [showStoreReviewThankYouModal.fulfilled.type]: state => {
-      state.storeReviewInfo.thankYouModalVisible = true;
-    },
-    [hideStoreReviewThankYouModal.fulfilled.type]: state => {
-      state.storeReviewInfo.thankYouModalVisible = false;
     },
     [showStoreReviewWarningModal.fulfilled.type]: state => {
       state.storeReviewInfo.warningModalVisible = true;

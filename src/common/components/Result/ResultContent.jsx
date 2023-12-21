@@ -8,7 +8,7 @@ const ResultContent = props => {
 
   return (
     <div className={styles.resultBody} style={style}>
-      <div className="tw-flex tw-justify-center tw-p-16 sm:tw-p-16px">
+      <div className={styles.resultImage}>
         <img src={imageSrc || ResultErrorImage} alt="StoreHub full screen feedback" />
       </div>
       {title ? <h4 className={styles.resultTitle}>{title}</h4> : null}
