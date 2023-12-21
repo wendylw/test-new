@@ -1,5 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
+import { COUNTRIES_CURRENCIES, COUNTRIES_DEFAULT_LOCALE } from '../../../../common/utils/constants';
 import { getQueryString } from '../../../../common/utils';
 
 /**
@@ -37,4 +38,29 @@ export const getIsMerchantEnabledCashback = createSelector(getMerchantData, merc
 
 export const getIsMerchantEnabledDelivery = createSelector(getMerchantData, merchantData =>
   _get(merchantData, 'qrOrderingSettings.enableDelivery', false)
+);
+
+/**
+ * Derived selectors
+ */
+export const getMerchantDefaultCurrency = createSelector(
+  getMerchantCountry,
+  merchantCountry => merchantCountry && COUNTRIES_CURRENCIES[merchantCountry]
+);
+
+export const getMerchantDefaultLocale = createSelector(
+  getMerchantCountry,
+  merchantCountry => merchantCountry && COUNTRIES_DEFAULT_LOCALE[merchantCountry]
+);
+
+export const getMerchantCountryCurrency = createSelector(
+  getMerchantCurrency,
+  getMerchantDefaultCurrency,
+  (merchantCurrency, merchantDefaultCurrency) => merchantCurrency || merchantDefaultCurrency || null
+);
+
+export const getMerchantCountryLocale = createSelector(
+  getMerchantLocale,
+  getMerchantDefaultLocale,
+  (merchantLocale, merchantDefaultLocale) => merchantLocale || merchantDefaultLocale || null
 );

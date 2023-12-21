@@ -7,8 +7,8 @@ import {
 import { getQueryString, getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
-  getMerchantCurrency,
-  getMerchantLocale,
+  getMerchantCountryCurrency,
+  getMerchantCountryLocale,
   getMerchantCountry,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
@@ -29,8 +29,8 @@ export const getLoadUniquePromoListError = state => state.business.membershipDet
  */
 export const getCustomerCashbackPrice = createSelector(
   getCustomerCashback,
-  getMerchantLocale,
-  getMerchantCurrency,
+  getMerchantCountryLocale,
+  getMerchantCountryCurrency,
   (cashback, locale, currency) => getPrice(cashback, { locale, currency })
 );
 
@@ -46,11 +46,11 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
 );
 
 export const getUniquePromoList = createSelector(
-  getMerchantCurrency,
-  getMerchantLocale,
+  getMerchantCountryCurrency,
+  getMerchantCountryLocale,
   getMerchantCountry,
   getLoadUniquePromoListData,
-  (merchantCurrency, merchantLocale, merchantCountry, uniquePromoList) =>
+  (merchantCountryCurrency, merchantCountryLocale, merchantCountry, uniquePromoList) =>
     uniquePromoList.map(promo => {
       if (!promo) {
         return promo;
@@ -63,14 +63,16 @@ export const getUniquePromoList = createSelector(
         value:
           discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
             ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency }),
+            : getPrice(discountValue, { locale: merchantCountryLocale, currency: merchantCountryCurrency }),
         name,
         status,
         limitations: [
           minSpendAmount && {
             key: `unique-promo-${id}-limitation-0`,
             i18nKey: 'MinConsumption',
-            params: { amount: getPrice(minSpendAmount, { locale: merchantLocale, currency: merchantCurrency }) },
+            params: {
+              amount: getPrice(minSpendAmount, { locale: merchantCountryLocale, currency: merchantCountryCurrency }),
+            },
           },
           validTo && {
             key: `unique-promo-${id}-limitation-1`,

@@ -4,6 +4,30 @@
  * file to a reference to this file, so that each constant is defined only once.
  */
 
+export const COUNTRIES = {
+  MY: 'MY',
+  TH: 'TH',
+  PH: 'PH',
+  SG: 'SG',
+  CN: 'CN',
+};
+
+export const COUNTRIES_CURRENCIES = {
+  [COUNTRIES.MY]: 'MYR',
+  [COUNTRIES.TH]: 'THB',
+  [COUNTRIES.PH]: 'PHP',
+  [COUNTRIES.SG]: 'SGD',
+  [COUNTRIES.CN]: 'CNY',
+};
+
+export const COUNTRIES_DEFAULT_LOCALE = {
+  [COUNTRIES.MY]: 'MS-MY',
+  [COUNTRIES.TH]: 'TH-TH',
+  [COUNTRIES.PH]: 'EN-PH',
+  [COUNTRIES.SG]: 'EN-SG',
+  [COUNTRIES.CN]: 'ZH-CN',
+};
+
 export const SHIPPING_TYPES = {
   DELIVERY: 'delivery',
   PICKUP: 'pickup',
