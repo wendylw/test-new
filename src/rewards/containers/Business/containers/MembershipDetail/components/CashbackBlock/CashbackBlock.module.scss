@@ -7,11 +7,11 @@
 }
 
 .CashbackBlock {
-  @apply tw-p-12 sm:tw-p-12px tw-rounded-xl tw-bg-orange-light tw-bg-opacity-30 tw-divide-y tw-divide-solid tw-divide-gray-50;
+  @apply tw-p-12 sm:tw-p-12px tw-space-y-12 sm:tw-space-y-12px tw-rounded-xl tw-bg-orange-light tw-bg-opacity-30 tw-divide-y tw-divide-solid tw-divide-gray-50;
 }
 
 .CashbackBlockInfoTop {
-  @apply tw-flex tw-justify-between tw-items-start tw-pb-12 sm:tw-pb-12px;
+  @apply tw-flex tw-justify-between tw-items-start;
 }
 
 .CashbackBlockBalanceContainer {
@@ -40,6 +40,8 @@
 
 .CashbackBlockInfoBottom {
   @apply tw-flex tw-justify-between tw-items-center tw-pt-8 sm:tw-pt-8px tw-border-l-0 tw-border-r-0;
+
+  min-height: 28px;
 }
 
 .CashbackBlockExpiredDate {

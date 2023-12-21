@@ -28,17 +28,19 @@ const MembershipDetailFooter = () => {
   }
 
   return (
-    <PageFooter className={styles.MembershipDetailFooter}>
-      <Button
-        className={styles.MembershipDetailFooterButton}
-        block
-        loading={redirecting}
-        disabled={redirecting}
-        data-test-id="rewards.business.membership-detail.order-redeem-button"
-        onClick={handleClickOrderRedeemButton}
-      >
-        {t('OrderRedeemButtonText')}
-      </Button>
+    <PageFooter zIndex={50}>
+      <div className={styles.MembershipDetailFooterContent}>
+        <Button
+          className={styles.MembershipDetailFooterButton}
+          block
+          loading={redirecting}
+          disabled={redirecting}
+          data-test-id="rewards.business.membership-detail.order-redeem-button"
+          onClick={handleClickOrderRedeemButton}
+        >
+          {t('OrderRedeemButtonText')}
+        </Button>
+      </div>
     </PageFooter>
   );
 };
