@@ -8,7 +8,7 @@ import {
   CLIENTS,
   PRODUCT_STOCK_STATUS,
   COUNTRIES_DEFAULT_LOCALE,
-  COUNTRIES_CURRENCIES,
+  COUNTRIES_DEFAULT_CURRENCIES,
 } from './constants';
 import config from '../../config';
 
@@ -427,8 +427,8 @@ export const getIsThePageHidden = () =>
 
 export const getPrice = (number = 0, { locale, currency, country, withCurrency = true }) => {
   let price = '';
-  let countryLocale = locale || COUNTRIES_DEFAULT_LOCALE[country];
-  let countryCurrency = currency || COUNTRIES_DEFAULT_CURRENCIES[country];
+  const countryLocale = locale || COUNTRIES_DEFAULT_LOCALE[country];
+  const countryCurrency = currency || COUNTRIES_DEFAULT_CURRENCIES[country];
 
   try {
     if (!countryLocale || !countryCurrency) {
