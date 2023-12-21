@@ -1,3 +1,5 @@
+import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
+
 export const CART_SUBMISSION_STATUS = {
   PENDING: 'pending',
   COMPLETED: 'completed',
@@ -8,4 +10,16 @@ export const CART_STATUS = {
   CREATED: 0,
   FAILED: 1,
   COMPLETED: 2,
+};
+
+export const AVAILABLE_QUERY_CART_STATUS_ROUTES = [
+  PATH_NAME_MAPPING.ORDERING_BASE,
+  `${PATH_NAME_MAPPING.ORDERING_BASE}/`,
+  `${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_CART}`,
+  `${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_CART}/`,
+];
+
+export const AVAILABLE_QUERY_CART_PAGES = {
+  MENU: 'menu',
+  CART: 'cart',
 };

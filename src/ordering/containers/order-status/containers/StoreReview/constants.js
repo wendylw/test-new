@@ -1,11 +1,13 @@
 import { SHIPPING_TYPES, SOURCE_TYPE } from '../../../../../common/utils/constants';
 import { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants';
 
-export const STORE_REVIEW_HIGH_RATING = 4;
+export const STORE_REVIEW_HIGHEST_RATING = 5;
 
 export const STORE_REVIEW_COMMENT_CHAR_MAX = 4050;
 
-export const STORE_REVIEW_TEXT_COPIED_TIP_DURATION = 1000;
+export const STORE_REVIEW_ONE_SECOND_DELAY = 1000;
+
+export const STORE_REVIEW_SUCCESS_TOAST_DURATION = 5; // 5 seconds
 
 export const STORE_REVIEW_SHIPPING_TYPES = {
   [SHIPPING_TYPES.DINE_IN]: 'DineIn',

@@ -57,6 +57,7 @@ export const PATH_NAME_MAPPING = {
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
   CASHBACK_HISTORIES: '/activities',
+  STORE_REDEMPTION: '/store-redemption',
   // site
   SITE_BASE: '/',
   SITE_HOME: '/home',

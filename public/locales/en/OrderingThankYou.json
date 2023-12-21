@@ -121,12 +121,9 @@
   "RateNow": "Rate now",
   "CopyAndRate": "Copy & rate",
   "ReviewTextCopiedTip": "Text copied. Paste it on Google review",
-  "ThankYouModalLowRatingTitle": "Thanks for your feedback!",
-  "ThankYouModalLowRatingDescription": "We’ll make things better for your next order",
+  "ThankYouModalLowRatingTitle": "Thanks for the feedback!",
+  "ThankYouModalLowRatingDescription": "We will try our best to serve you better",
   "ThankYouModalHighRatingTitle": "That’s awesome!<0></0>Thanks for your feedback!",
-  "ThankYouModalHighRatingGoogleReviewTitle": "Thanks for your review!<0></0>How about rating us on Google?",
-  "ThankYouModalHighRatingGoogleReviewDescriptionWithComment": "It’ll really help us. Your text review will be automatically copied!",
-  "ThankYouModalHighRatingGoogleReviewDescriptionWithoutComment": "It’ll really help us",
   "SubmissionFailedTitle": "Submission Failed",
   "SubmissionFailedDescription": "We could not process your submission. Please check your network and try again",
   "Stay": "Stay",
@@ -140,5 +137,9 @@
   "Loading": "Loading...",
   "Retry": "Retry",
   "TableNumberUpdatedTitle": "Table Updated",
-  "TableNumberUpdatedDescription": "Your table number has been changed. Kindly check your new table number before paying."
+  "TableNumberUpdatedDescription": "Your table number has been changed. Kindly check your new table number before paying.",
+  "ThankYouFeedbackToastTitle": "Thanks for feedback! Rate us on Google. It’ll mean a lot to us!",
+  "ThankYouFeedbackToastContent": "Redirecting in {{count}}sec...",
+  "ThankYouFeedbackToastDescription": "(Review Copied to Clipboard)",
+  "RedirectingToGoogleReview": "Redirecting to Google Review..."
 }
