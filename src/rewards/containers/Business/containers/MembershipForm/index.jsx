@@ -2,6 +2,7 @@ import React from 'react';
 import BusinessProfile from './components/BusinessProfile';
 import BusinessRewards from './components/BusinessRewards';
 import Footer from './components/Footer';
+import JoiningIndicator from './components/JoiningIndicator';
 
 const MembershipForm = () => (
   <>
@@ -10,6 +11,7 @@ const MembershipForm = () => (
       <BusinessRewards />
     </section>
     <Footer />
+    <JoiningIndicator />
   </>
 );
 

@@ -1,0 +1,57 @@
+.CashbackBlockSection {
+  @apply tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-space-y-12 sm:tw-space-y-12px;
+}
+
+.CashbackBlockSectionTitle {
+  @apply tw-text-xl tw-leading-normal tw-font-bold;
+}
+
+.CashbackBlock {
+  @apply tw-p-12 sm:tw-p-12px tw-space-y-12 sm:tw-space-y-12px tw-rounded-xl tw-bg-orange-light tw-bg-opacity-30 tw-divide-y tw-divide-solid tw-divide-gray-50;
+}
+
+.CashbackBlockInfoTop {
+  @apply tw-flex tw-justify-between tw-items-start;
+}
+
+.CashbackBlockBalanceContainer {
+  @apply tw-flex tw-flex-col tw-gap-y-4 sm:tw-gap-y-4px;
+
+  &__Expired {
+    @apply tw-opacity-40;
+  }
+}
+
+.CashbackBlockBalanceTitle {
+  @apply tw-leading-loose;
+}
+
+.CashbackBlockBalance {
+  @apply tw-text-3xl tw-font-black;
+}
+
+.CashbackBlockHistoryLink {
+  @apply tw-inline-flex tw-p-12 sm:tw-p-12px tw--m-12 sm:tw--m-12px tw-no-underline;
+}
+
+.CashbackBlockHistoryLinkImage {
+  width: 80px;
+}
+
+.CashbackBlockInfoBottom {
+  @apply tw-flex tw-justify-between tw-items-center tw-pt-8 sm:tw-pt-8px tw-border-l-0 tw-border-r-0;
+
+  min-height: 28px;
+}
+
+.CashbackBlockExpiredDate {
+  @apply tw-text-sm tw-leading-loose tw-text-gray-700;
+
+  &__Expired {
+    @apply tw-opacity-40;
+  }
+}
+
+.CashbackBlockExpiredTag {
+  @apply tw-font-bold;
+}

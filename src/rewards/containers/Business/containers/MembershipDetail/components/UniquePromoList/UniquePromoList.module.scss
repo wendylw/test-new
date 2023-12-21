@@ -1,0 +1,55 @@
+.UniquePromoListSection {
+  @apply tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-space-y-12 sm:tw-space-y-12px;
+}
+
+.UniquePromoListSectionTitle {
+  @apply tw-text-xl tw-leading-normal tw-font-bold;
+}
+
+.UniquePromoList {
+  @apply tw-flex tw-flex-col tw-gap-y-12 sm:tw-gap-y-12px;
+}
+
+.UniquePromoCard {
+  @apply tw-bg-white tw-p-12 sm:tw-p-12px tw-border tw-border-gray-500 tw-border-solid tw-rounded-lg tw-divide-y tw-divide-gray-200 tw-divide-solid;
+}
+
+.UniquePromoInfoTop {
+  @apply tw-pb-8 sm:tw-pb-8px;
+
+  &__Unavailable {
+    @apply tw-opacity-40;
+  }
+}
+
+.UniquePromoDiscount {
+  @apply tw-leading-relaxed tw-font-bold tw-uppercase;
+}
+
+.UniquePromoDiscountName {
+  @apply tw-text-sm tw-leading-loose;
+}
+
+.UniquePromoInfoBottom {
+  @apply tw-flex tw-items-end tw-justify-between tw-pt-8 sm:tw-pt-8px tw-border-l-0 tw-border-r-0;
+
+  &__Unavailable {
+    @apply tw-border-opacity-40;
+  }
+}
+
+.UniquePromoLimitationList {
+  @apply tw-pl-12 sm:tw-pl-12px tw-list-inside tw-list-disc;
+
+  &__Unavailable {
+    @apply tw-opacity-40;
+  }
+}
+
+.UniquePromoDiscountLimitation {
+  @apply tw-text-sm tw-leading-loose tw-text-gray-700;
+}
+
+.UniquePromoStatusTag {
+  @apply tw-font-bold;
+}

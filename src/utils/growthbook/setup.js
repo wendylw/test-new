@@ -1,4 +1,5 @@
 import { store as orderingStore } from '../../ordering/redux/store';
+import { store as rewardsStore } from '../../rewards/redux/store';
 import { loadFeatureFlags, updateFeatureFlagResults } from '../../redux/modules/growthbook/thunks';
 import GrowthBook from '.';
 
