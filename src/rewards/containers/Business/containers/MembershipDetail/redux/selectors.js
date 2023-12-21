@@ -12,7 +12,6 @@ import {
   getMerchantCountry,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
-  getMerchantCountry,
 } from '../../../../../redux/modules/merchant/selectors';
 import { getCustomerCashback } from '../../../../../redux/modules/customer/selectors';
 
