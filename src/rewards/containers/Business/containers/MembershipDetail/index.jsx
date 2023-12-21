@@ -12,8 +12,7 @@ import MemberCard from './components/MemberCard';
 import CashbackBlock from './components/CashbackBlock';
 import UniquePromoList from './components/UniquePromoList';
 import MembershipDetailFooter from './components/MembershipDetailFooter';
-import NewMemberFeedback from './components/NewMemberFeedback';
-import ReturningMemberFeedback from './components/ReturningMemberFeedback';
+import MemberPrompt from './components/MemberPrompt';
 import styles from './MembershipDetail.module.scss';
 
 const MembershipDetail = () => {
@@ -23,12 +22,10 @@ const MembershipDetail = () => {
   const isTNGMiniProgram = useSelector(getIsTNGMiniProgram);
   const isWeb = !isWebview && !isTNGMiniProgram;
   const handleClickHeaderBackButton = useCallback(() => {
-    if (isTNGMiniProgram && window.my.exitMiniProgram) {
-      window.my.exitMiniProgram();
-    } else if (isWebview) {
+    if (isWebview) {
       closeWebView();
     }
-  }, [isTNGMiniProgram, isWebview]);
+  }, [isWebview]);
 
   useMount(() => {
     dispatch(mounted());
@@ -46,8 +43,7 @@ const MembershipDetail = () => {
       <CashbackBlock />
       <UniquePromoList />
       <MembershipDetailFooter />
-      <NewMemberFeedback />
-      <ReturningMemberFeedback />
+      <MemberPrompt />
     </Frame>
   );
 };

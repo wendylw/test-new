@@ -1,0 +1,25 @@
+.NewMemberContent {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center;
+}
+
+.NewMemberIcon {
+  @apply tw-mb-8 sm:tw-mb-8px tw-rounded-full tw-overflow-hidden;
+
+  width: 80px;
+  height: 80px;
+
+  > figure {
+    @apply tw-bg-transparent;
+  }
+}
+
+.NewMemberTitle {
+  @apply tw-flex tw-justify-center tw-text-center tw-m-auto tw-text-xl tw-leading-normal tw-text-gray-800 tw-font-bold;
+
+  max-width: 264px;
+  word-break: break-word;
+}
+
+.NewMemberContent {
+  @apply tw-leading-loose;
+}

@@ -9,6 +9,7 @@ import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
   getMerchantCurrency,
   getMerchantLocale,
+  getMerchantCountry,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
   getMerchantCountry,
@@ -44,12 +45,6 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
   getIsMerchantEnabledDelivery,
   (isOROrderingEnabled, isDeliveryEnabled) => isOROrderingEnabled || isDeliveryEnabled
 );
-
-// TODO: pending confirming member is new query
-export const getIsNewMember = () => false;
-
-// TODO: pending confirming member is returning query
-export const getIsReturningMember = () => true;
 
 export const getUniquePromoList = createSelector(
   getMerchantCurrency,
