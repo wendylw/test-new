@@ -417,15 +417,11 @@ export const isJSON = value => {
 export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
 
-export const getPrice = (number, { locale, currency, withCurrency = true }) => {
+export const getPrice = (number = 0, { locale, currency, withCurrency = true }) => {
   let price = '';
 
   try {
-    if (!currency || !number) {
-      return '0.00';
-    }
-
-    if (!locale) {
+    if (!currency || !locale) {
       return parseFloat(number).toFixed(2);
     }
 
