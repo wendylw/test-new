@@ -421,12 +421,12 @@ export const getPrice = (number, { locale, currency, withCurrency = true }) => {
   let price = '';
 
   try {
-    if (!number || !currency) {
-      return '';
+    if (!currency || !number) {
+      return '0.00';
     }
 
     if (!locale) {
-      return `${currency}${number}`;
+      return parseFloat(number).toFixed(2);
     }
 
     if (!withCurrency && !isSafari()) {

@@ -28,7 +28,7 @@ const MembershipDetailFooter = () => {
   }
 
   return (
-    <PageFooter className={styles.MembershipDetailFooter}>
+    <PageFooter className={`${styles.MembershipDetailFooter} footer`} zIndex={50}>
       <Button
         className={styles.MembershipDetailFooterButton}
         block

@@ -65,11 +65,14 @@ const CashbackBlock = () => {
           </a>
         </div>
         <div className={styles.CashbackBlockInfoBottom}>
-          <time className={cashbackBlockExpiredDateClassName}>
-            {t('ValidUntil', {
-              date: formatTimeToDateString(merchantCountry, cashbackExpiredDate),
-            })}
-          </time>
+          {cashbackExpiredDate && (
+            <time className={cashbackBlockExpiredDateClassName}>
+              {t('ValidUntil', {
+                date: formatTimeToDateString(merchantCountry, cashbackExpiredDate),
+              })}
+            </time>
+          )}
+
           {isCashbackExpired && <Tag className={styles.CashbackBlockExpiredTag}>{t('Expired')}</Tag>}
         </div>
       </div>
