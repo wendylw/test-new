@@ -12,7 +12,7 @@ export const COUNTRIES = {
   CN: 'CN',
 };
 
-export const COUNTRIES_CURRENCIES = {
+export const COUNTRIES_DEFAULT_CURRENCIES = {
   [COUNTRIES.MY]: 'MYR',
   [COUNTRIES.TH]: 'THB',
   [COUNTRIES.PH]: 'PHP',

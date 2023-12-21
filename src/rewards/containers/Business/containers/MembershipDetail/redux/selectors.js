@@ -7,8 +7,8 @@ import {
 import { getQueryString, getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
-  getMerchantCountryCurrency,
-  getMerchantCountryLocale,
+  getMerchantCurrency,
+  getMerchantLocale,
   getMerchantCountry,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
@@ -29,9 +29,10 @@ export const getLoadUniquePromoListError = state => state.business.membershipDet
  */
 export const getCustomerCashbackPrice = createSelector(
   getCustomerCashback,
-  getMerchantCountryLocale,
-  getMerchantCountryCurrency,
-  (cashback, locale, currency) => getPrice(cashback, { locale, currency })
+  getMerchantLocale,
+  getMerchantCurrency,
+  getMerchantCountry,
+  (cashback, locale, currency, country) => getPrice(cashback, { locale, currency, country })
 );
 
 export const getIsFromEarnedCashbackQRScan = createSelector(
@@ -46,11 +47,11 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
 );
 
 export const getUniquePromoList = createSelector(
-  getMerchantCountryCurrency,
-  getMerchantCountryLocale,
+  getMerchantCurrency,
+  getMerchantLocale,
   getMerchantCountry,
   getLoadUniquePromoListData,
-  (merchantCountryCurrency, merchantCountryLocale, merchantCountry, uniquePromoList) =>
+  (merchantCurrency, merchantLocale, merchantCountry, uniquePromoList) =>
     uniquePromoList.map(promo => {
       if (!promo) {
         return promo;
@@ -63,7 +64,7 @@ export const getUniquePromoList = createSelector(
         value:
           discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
             ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantCountryLocale, currency: merchantCountryCurrency }),
+            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
         name,
         status,
         limitations: [
@@ -71,7 +72,11 @@ export const getUniquePromoList = createSelector(
             key: `unique-promo-${id}-limitation-0`,
             i18nKey: 'MinConsumption',
             params: {
-              amount: getPrice(minSpendAmount, { locale: merchantCountryLocale, currency: merchantCountryCurrency }),
+              amount: getPrice(minSpendAmount, {
+                locale: merchantLocale,
+                currency: merchantCurrency,
+                country: merchantCountry,
+              }),
             },
           },
           validTo && {

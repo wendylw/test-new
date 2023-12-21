@@ -1,7 +1,15 @@
 import qs from 'qs';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
-import { WEB_VIEW_SOURCE, SHIPPING_TYPES, PATH_NAME_MAPPING, CLIENTS, PRODUCT_STOCK_STATUS } from './constants';
+import {
+  WEB_VIEW_SOURCE,
+  SHIPPING_TYPES,
+  PATH_NAME_MAPPING,
+  CLIENTS,
+  PRODUCT_STOCK_STATUS,
+  COUNTRIES_DEFAULT_LOCALE,
+  COUNTRIES_CURRENCIES,
+} from './constants';
 import config from '../../config';
 
 // todo: make old legacy utils to import function from here, rather than define same functions twice
@@ -417,23 +425,25 @@ export const isJSON = value => {
 export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
 
-export const getPrice = (number = 0, { locale, currency, withCurrency = true }) => {
+export const getPrice = (number = 0, { locale, currency, country, withCurrency = true }) => {
   let price = '';
+  let countryLocale = locale || COUNTRIES_DEFAULT_LOCALE[country];
+  let countryCurrency = currency || COUNTRIES_DEFAULT_CURRENCIES[country];
 
   try {
-    if (!currency || !locale) {
+    if (!countryLocale || !countryCurrency) {
       return parseFloat(number).toFixed(2);
     }
 
     if (!withCurrency && !isSafari()) {
-      price = Intl.NumberFormat(locale, {
+      price = Intl.NumberFormat(countryLocale, {
         style: 'decimal',
-        currency,
+        currency: countryCurrency,
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }).format(parseFloat(number));
     } else {
-      price = Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(number));
+      price = Intl.NumberFormat(countryLocale, { style: 'currency', countryCurrency }).format(parseFloat(number));
     }
 
     return (!price ? number : price).replace(/^(\D+)/, '$1 ');
