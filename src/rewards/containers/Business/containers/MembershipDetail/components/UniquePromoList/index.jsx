@@ -15,6 +15,10 @@ const UniquePromoList = () => {
   const { t } = useTranslation(['Rewards']);
   const uniquePromoList = useSelector(getUniquePromoList);
 
+  if (uniquePromoList.length <= 0) {
+    return null;
+  }
+
   return (
     <section className={styles.UniquePromoListSection}>
       <h2 className={styles.UniquePromoListSectionTitle}>{t('UniquePromoListTitle')}</h2>
