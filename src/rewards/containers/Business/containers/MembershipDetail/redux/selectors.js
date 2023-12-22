@@ -31,7 +31,8 @@ export const getCustomerCashbackPrice = createSelector(
   getCustomerCashback,
   getMerchantLocale,
   getMerchantCurrency,
-  (cashback, locale, currency) => getPrice(cashback, { locale, currency })
+  getMerchantCountry,
+  (cashback, locale, currency, country) => getPrice(cashback, { locale, currency, country })
 );
 
 export const getIsFromEarnedCashbackQRScan = createSelector(
@@ -63,14 +64,20 @@ export const getUniquePromoList = createSelector(
         value:
           discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
             ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency }),
+            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
         name,
         status,
         limitations: [
           minSpendAmount && {
             key: `unique-promo-${id}-limitation-0`,
             i18nKey: 'MinConsumption',
-            params: { amount: getPrice(minSpendAmount, { locale: merchantLocale, currency: merchantCurrency }) },
+            params: {
+              amount: getPrice(minSpendAmount, {
+                locale: merchantLocale,
+                currency: merchantCurrency,
+                country: merchantCountry,
+              }),
+            },
           },
           validTo && {
             key: `unique-promo-${id}-limitation-1`,
