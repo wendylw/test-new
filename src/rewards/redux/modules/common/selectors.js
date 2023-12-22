@@ -6,6 +6,12 @@ export const getIsWebview = () => Utils.isWebview();
 
 export const getIsTNGMiniProgram = () => Utils.isTNGMiniProgram();
 
+export const getIsWeb = createSelector(
+  getIsWebview,
+  getIsTNGMiniProgram,
+  (isWebview, isTNGMiniProgram) => !isWebview && !isTNGMiniProgram
+);
+
 /** Router */
 export const getRouter = state => state.router;
 
