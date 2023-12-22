@@ -429,10 +429,11 @@ export const getPrice = (number = 0, { locale, currency, country, withCurrency =
   let price = '';
   const countryLocale = locale || COUNTRIES_DEFAULT_LOCALE[country];
   const countryCurrency = currency || COUNTRIES_DEFAULT_CURRENCIES[country];
+  const numberToFixed = value => parseFloat(value).toFixed(2);
 
   try {
     if (!countryLocale || !countryCurrency) {
-      return parseFloat(number).toFixed(2);
+      return numberToFixed(number);
     }
 
     if (!withCurrency && !isSafari()) {
@@ -443,11 +444,13 @@ export const getPrice = (number = 0, { locale, currency, country, withCurrency =
         maximumFractionDigits: 2,
       }).format(parseFloat(number));
     } else {
-      price = Intl.NumberFormat(countryLocale, { style: 'currency', countryCurrency }).format(parseFloat(number));
+      price = Intl.NumberFormat(countryLocale, { style: 'currency', currency: countryCurrency }).format(
+        parseFloat(number)
+      );
     }
 
-    return (!price ? number : price).replace(/^(\D+)/, '$1 ');
+    return (!price ? numberToFixed(number) : price).replace(/^(\D+)/, '$1 ');
   } catch (error) {
-    return parseFloat(number).toFixed(2);
+    return numberToFixed(number);
   }
 };
