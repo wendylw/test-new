@@ -31,7 +31,6 @@ import {
   getBusinessInfo,
   getUserIsLogin,
   getOnlineStoreInfo,
-  getAllowAnonymousQROrdering,
   getIsWebview,
 } from '../../../../../redux/modules/app';
 
@@ -181,17 +180,12 @@ export const getShouldShowCashbackBanner = createSelector(
   getHasOrderPaid,
   getHasCashbackClaimed,
   getOrderShippingType,
-  getAllowAnonymousQROrdering,
-  getIsPayLater,
-  (isLogin, hasOrderPaid, hasCashbackClaimed, orderShippingType, allowAnonymousQROrdering, isPayLater) =>
+  (isLogin, hasOrderPaid, hasCashbackClaimed, orderShippingType) =>
     hasOrderPaid &&
     !isLogin &&
     !hasCashbackClaimed &&
     // Only Dine In order will display the cashback banner
-    orderShippingType === DELIVERY_METHOD.DINE_IN &&
-    // Only the store support allowAnonymousQROrdering will display the cashback banner
-    // The pay later order support allow Anonymous QR Ordering on default
-    (allowAnonymousQROrdering || isPayLater)
+    orderShippingType === DELIVERY_METHOD.DINE_IN
 );
 
 export const getShouldShowCashbackCard = createSelector(
