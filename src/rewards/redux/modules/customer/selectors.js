@@ -16,6 +16,10 @@ export const getCashbackExpiredDate = createSelector(getCustomerData, customerDa
   _get(customerData, 'storeCreditInfo.cashbackExpirationDate', null)
 );
 
+export const getCustomerTier = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier', null)
+);
+
 export const getCustomerTierLevel = createSelector(getCustomerData, customerData =>
   _get(customerData, 'customerTier.level', null)
 );
