@@ -4,8 +4,9 @@ import {
   PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
 } from '../../../../../../common/utils/constants';
-import { getQueryString, getPrice } from '../../../../../../common/utils';
+import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
+import { getSource } from '../../../redux/common/selectors';
 import {
   getMerchantCurrency,
   getMerchantLocale,
@@ -14,8 +15,6 @@ import {
   getIsMerchantEnabledOROrdering,
 } from '../../../../../redux/modules/merchant/selectors';
 import { getCustomerCashback } from '../../../../../redux/modules/customer/selectors';
-
-export const getSource = () => getQueryString('source');
 
 export const getLoadUniquePromoListData = state =>
   state.business.membershipDetail.loadUniquePromoListRequest.data || [];

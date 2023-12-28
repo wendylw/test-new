@@ -1,12 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { getSeamlessLoyaltyPlatform } from '../utils';
+import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
 import {
   initUserInfo,
   loginUserByBeepApp,
   loginUserByTngMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getSeamlessLoyaltyPlatform } from '../utils';
 import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
+import { getIsWebview, getIsTNGMiniProgram } from '../../../../../redux/modules/common/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { patchSharingConsumerInfo, postSharingConsumerInfoToMerchant } from './api-request';
 import { getSeamlessLoyaltyRequestId } from './selectors';
@@ -27,7 +29,7 @@ export const confirmToShareConsumerInfoRequests = createAsyncThunk(
   'rewards/business/seamlessLoyalty/confirmToShareConsumerInfoRequests',
   async (_, { getState }) => {
     const state = getState();
-    const requestId = getStoreRedemptionRequestId(state);
+    const requestId = getSeamlessLoyaltyRequestId(state);
     const result = await postSharingConsumerInfoToMerchant(requestId);
 
     return result;
@@ -51,11 +53,11 @@ export const mounted = createAsyncThunk('loyalty/storeRedemption/mounted', async
   }
 
   const isLogin = getIsLogin(getState());
-  const requestId = getStoreRedemptionRequestId(getState());
+  const requestId = getSeamlessLoyaltyRequestId(getState());
 
   if (isLogin) {
     if (requestId) {
-      await dispatch(updateShareConsumerInfoRequests());
+      await dispatch(updateSharingConsumerInfo());
       await dispatch(confirmToShareConsumerInfoRequests());
     }
 

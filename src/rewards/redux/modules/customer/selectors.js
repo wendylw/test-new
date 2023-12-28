@@ -1,6 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getIsAfterDateTime } from '../../../../utils/datetime-lib';
+import { API_REQUEST_STATUS } from '../../../../coomon/utils/constants';
 
 export const getCustomerData = state => state.customer.loadCustomerRequest.data;
 
@@ -34,4 +35,9 @@ export const getCustomerTierLevelName = createSelector(getCustomerData, customer
 export const getIsCashbackExpired = createSelector(
   getCashbackExpiredDate,
   cashbackExpiredDate => cashbackExpiredDate && getIsAfterDateTime(new Date(), new Date(cashbackExpiredDate))
+);
+
+export const getLoadCustomerRequestCompleted = createSelector(
+  getLoadCustomerRequestStatus,
+  status => status === API_REQUEST_STATUS.FULFILLED || status === API_REQUEST_STATUS.REJECTED
 );

@@ -5,7 +5,8 @@ import { useHistory } from 'react-router-dom';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { getMerchantBusiness } from '../../../../redux/modules/merchant/selectors';
 import { getIsWeb } from '../../../../redux/modules/common/selectors';
-import { getSource, getIsMember } from './redux/selectors';
+import { getSource } from '../../redux/common/selectors';
+import { getIsRedirectToSeamlessLoyalty, getIsRedirectToMembershipDetail } from './redux/selectors';
 import { mounted } from './redux/thunks';
 
 const SeamlessLoyaltyProxy = () => {
@@ -13,15 +14,12 @@ const SeamlessLoyaltyProxy = () => {
   const merchantBusiness = useSelector(getMerchantBusiness);
   const isWeb = useSelector(getIsWeb);
   const source = useSelector(getSource);
-  const isMember = useSelector(getIsMember);
+  const isRedirectToSeamlessLoyalty = useSelector(getIsRedirectToSeamlessLoyalty);
+  const isRedirectToMembershipDetail = useSelector(getIsRedirectToMembershipDetail);
   const seamlessLoyaltyURL = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace(
     '%business%',
     merchantBusiness
   )}/loyalty/store-redemption`;
-  const joinMemberHistory = {
-    path: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.JOIN_MEMBERSHIP}`,
-    search: `?business=${merchantBusiness}&source=${source}`,
-  };
   const membershipDetailHistory = {
     path: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
     search: `?business=${merchantBusiness}&source=${source}`,
@@ -35,26 +33,19 @@ const SeamlessLoyaltyProxy = () => {
     }
   });
 
-  // TODO: useEffect merchant disabled membership feature
-  // useEffect(() => {
-  // if (!enabledMembership) {
-  //   window.location.href = seamlessLoyaltyURL;
-  // }
-  // }, [enabledMembership]);
+  // useEffect merchant disabled membership feature
+  useEffect(() => {
+    if (isRedirectToSeamlessLoyalty) {
+      window.location.href = seamlessLoyaltyURL;
+    }
+  }, [isRedirectToSeamlessLoyalty]);
 
-  // TODO: useEffect check if customer is not member and merchant enabled membership feature
-  // useEffect(() => {
-  // if (!isMember && enabledMembership) {
-  //   history.push(joinMemberHistory)
-  // }
-  // }, [isMember, enabledMembership]);
-
-  // TODO: useEffect check if customer is member and enabled membership feature
-  // useEffect(() => {
-  // if (isMember && enabledMembership) {
-  //   history.push(membershipDetailHistory)
-  // }
-  // }, [isMember, enabledMembership]);
+  // useEffect check if customer is member and enabled membership feature
+  useEffect(() => {
+    if (isRedirectToMembershipDetail) {
+      history.push(membershipDetailHistory);
+    }
+  }, [isRedirectToMembershipDetail]);
 
   return <></>;
 };
