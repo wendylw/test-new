@@ -11,9 +11,9 @@ import {
   getShouldShowUnsupportedError,
   getShouldShowUnknownError,
   getShouldShowBackButton,
-  getHasUserJoinedBusinessMembership,
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
+import { getHasUserJoinedBusinessMembership } from '../../../../redux/modules/customer/selectors';
 import { loadCustomerInfo } from '../../redux/common/thunks';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail } from './redux/thunks';
 import MembershipForm from '.';

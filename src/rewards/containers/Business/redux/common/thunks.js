@@ -2,9 +2,10 @@ import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { alert } from '../../../../../common/utils/feedback';
 import { getQueryString } from '../../../../../common/utils';
-import { postUserMembership } from './api-request';
+import { postUserMembership, getBusinessInfo } from './api-request';
 import { getConsumerId } from '../../../../../redux/modules/user/selectors';
 import { fetchCustomerInfo } from '../../../../redux/modules/customer/thunks';
+import Growthbook from '../../../../../utils/growthbook';
 
 export const loadCustomerInfo = createAsyncThunk(
   'rewards/business/common/loadCustomerInfo',
@@ -32,5 +33,17 @@ export const joinMembership = createAsyncThunk(
       });
       throw error;
     }
+  }
+);
+
+export const fetchBusinessInfo = createAsyncThunk(
+  'rewards/business/membershipForm/fetchBusinessInfo',
+  async business => {
+    const result = await getBusinessInfo(business);
+    const { country } = result || {};
+
+    Growthbook.patchAttributes({ country });
+
+    return result;
   }
 );

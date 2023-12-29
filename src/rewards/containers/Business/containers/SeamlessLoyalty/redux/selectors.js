@@ -1,22 +1,36 @@
 import { createSelector } from 'reselect';
 import { getQueryString } from '../../../../../../common/utils';
-import { getIsMerchantEnabledMembership } from '../../../../../redux/modules/merchant/selectors';
-import { getCustomerTier, getLoadCustomerRequestCompleted } from '../../../../../redux/modules/customer/selectors';
+import {
+  getIsBusinessMembershipEnabled,
+  getIsBusinessInfoRequestStatusCompleted,
+} from '../../../redux/common/selectors';
+import {
+  getHasUserJoinedBusinessMembership,
+  getIsLoadCustomerRequestCompleted,
+} from '../../../../../redux/modules/customer/selectors';
 
 export const getSeamlessLoyaltyRequestId = getQueryString('shareInfoReqId');
 
 export const getIsRedirectToSeamlessLoyalty = createSelector(
-  getIsMerchantEnabledMembership,
-  getLoadCustomerRequestCompleted,
-  (isMerchantEnabledMembership, loadMerchantRequestCompleted) =>
-    loadMerchantRequestCompleted && !isMerchantEnabledMembership
+  getIsBusinessMembershipEnabled,
+  getIsBusinessInfoRequestStatusCompleted,
+  (isBusinessMembershipEnabled, isBusinessInfoRequestStatusCompleted) =>
+    isBusinessInfoRequestStatusCompleted && isBusinessMembershipEnabled
 );
 
 export const getIsRedirectToMembershipDetail = createSelector(
-  getIsMerchantEnabledMembership,
-  getLoadMerchantRequestCompleted,
-  getCustomerTier,
-  getLoadCustomerRequestCompleted,
-  (isMerchantEnabledMembership, loadMerchantRequestCompleted, customerTier, loadCustomerRequestCompleted) =>
-    loadMerchantRequestCompleted && isMerchantEnabledMembership && loadCustomerRequestCompleted && customerTier
+  getIsBusinessMembershipEnabled,
+  getIsLoadCustomerRequestCompleted,
+  getHasUserJoinedBusinessMembership,
+  getIsBusinessInfoRequestStatusCompleted,
+  (
+    isBusinessMembershipEnabled,
+    isLoadCustomerRequestCompleted,
+    hasUserJoinedBusinessMembership,
+    isBusinessInfoRequestStatusCompleted
+  ) =>
+    isBusinessInfoRequestStatusCompleted &&
+    isBusinessMembershipEnabled &&
+    isLoadCustomerRequestCompleted &&
+    hasUserJoinedBusinessMembership
 );

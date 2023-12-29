@@ -33,3 +33,36 @@ export const getIsJoinMembershipRequestStatusCompleted = createSelector(
 export const getIsNewMember = createSelector(getJoinMembershipRequestInfo, joinMembershipRequestInfo =>
   _get(joinMembershipRequestInfo, 'isNewMember', false)
 );
+
+export const getBusinessInfoRequest = state => state.business.membershipForm.fetchBusinessInfoRequest;
+
+export const getBusinessInfo = createSelector(getBusinessInfoRequest, businessInfoRequest => businessInfoRequest.data);
+
+export const getBusinessLogo = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'logo', ''));
+
+export const getBusinessName = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'displayName', ''));
+
+export const getIsBusinessMembershipEnabled = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'membershipEnabled', false)
+);
+
+export const getBusinessInfoRequestStatus = createSelector(
+  getBusinessInfoRequest,
+  businessInfoRequest => businessInfoRequest.status
+);
+
+export const getIsBusinessInfoRequestStatusFulfilled = createSelector(
+  getBusinessInfoRequestStatus,
+  businessInfoRequestStatus => businessInfoRequestStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsBusinessInfoRequestStatusRejected = createSelector(
+  getBusinessInfoRequestStatus,
+  businessInfoRequestStatus => businessInfoRequestStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getIsBusinessInfoRequestStatusCompleted = createSelector(
+  getBusinessInfoRequestStatus,
+  businessInfoRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(businessInfoRequestStatus)
+);
