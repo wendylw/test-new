@@ -1,6 +1,3 @@
-// This file is copied from https://github.com/dvtng/react-loading-skeleton.
-// DON'T MODIFY THIS FILE IF YOU DON'T KNOW WHAT YOU ARE DOING!
-
 import React from 'react';
 import Skeleton, { SkeletonTheme } from '../../../../../../../common/components/ReactLoadingSkeleton';
 import SquareSkeleton from '../../../../../../../common/components/SquareSkeleton';
