@@ -160,6 +160,6 @@ const backendProxy = (req, res, next) => {
 module.exports = function(app) {
   app.use(backendProxy);
 
-  // only '/' or '/ordering*' need set cookie
-  app.get(/^(\/|\/ordering(.*))$/i, setCookie);
+  // only '/', '/ordering*' or '/rewards' need set cookie
+  app.get(/^(\/|\/ordering(.*)|\/rewards(.*))$/i, setCookie);
 };
