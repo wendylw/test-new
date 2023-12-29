@@ -13,7 +13,7 @@ const SeamlessLoyaltyProxy = () => {
     }
   }, [isAllInitialRequestsCompleted]);
 
-  return !isAllInitialRequestsCompleted && <div>loader</div>;
+  return <div>loader</div>;
 };
 
 SeamlessLoyaltyProxy.displayName = 'SeamlessLoyaltyProxy';
