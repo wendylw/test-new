@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
-import { getBusinessLogo, getBusinessName } from '../../redux/selectors';
+import { getBusinessLogo, getBusinessName } from '../../../../redux/common/selectors';
 import BeepLogo from '../../../../../../../images/beep-logo.png';
 import styles from './BusinessProfile.module.scss';
 

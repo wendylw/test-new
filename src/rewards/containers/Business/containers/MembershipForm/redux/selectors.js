@@ -1,4 +1,3 @@
-import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
 import { getIsWebview } from '../../../../../redux/modules/common/selectors';
@@ -7,48 +6,16 @@ import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constan
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
 import {
-  getCustomerData,
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
+  getHasUserJoinedBusinessMembership,
 } from '../../../../../redux/modules/customer/selectors';
-
-export const getBusinessInfoRequest = state => state.business.membershipForm.fetchBusinessInfoRequest;
-
-export const getBusinessInfo = createSelector(getBusinessInfoRequest, businessInfoRequest => businessInfoRequest.data);
-
-export const getBusinessLogo = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'logo', ''));
-
-export const getBusinessName = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'displayName', ''));
-
-export const getIsBusinessMembershipEnabled = createSelector(getBusinessInfo, businessInfo =>
-  _get(businessInfo, 'membershipEnabled', false)
-);
-
-export const getBusinessInfoRequestStatus = createSelector(
-  getBusinessInfoRequest,
-  businessInfoRequest => businessInfoRequest.status
-);
-
-export const getIsBusinessInfoRequestStatusFulfilled = createSelector(
-  getBusinessInfoRequestStatus,
-  businessInfoRequestStatus => businessInfoRequestStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsBusinessInfoRequestStatusRejected = createSelector(
-  getBusinessInfoRequestStatus,
-  businessInfoRequestStatus => businessInfoRequestStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getIsBusinessInfoRequestStatusCompleted = createSelector(
-  getBusinessInfoRequestStatus,
-  businessInfoRequestStatus =>
-    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(businessInfoRequestStatus)
-);
-
-export const getHasUserJoinedBusinessMembership = createSelector(
-  getCustomerData,
-  customerData => !!_get(customerData, 'customerTier', null)
-);
+import {
+  getIsBusinessMembershipEnabled,
+  getIsBusinessInfoRequestStatusFulfilled,
+  getIsBusinessInfoRequestStatusRejected,
+  getIsBusinessInfoRequestStatusCompleted,
+} from '../../../redux/common/selectors';
 
 export const getIsLoadCustomerRequestStatusRejected = createSelector(
   getLoadCustomerRequestStatus,
