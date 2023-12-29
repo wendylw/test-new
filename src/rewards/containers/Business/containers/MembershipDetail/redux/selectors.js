@@ -6,6 +6,7 @@ import {
 } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
+import { getSource } from '../../../redux/common/selectors';
 import {
   getMerchantCurrency,
   getMerchantLocale,

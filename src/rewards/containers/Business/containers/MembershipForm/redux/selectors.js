@@ -8,7 +8,7 @@ import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../r
 import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
-  getHasUserJoinedBusinessMembership,
+  getHasUserJoinedMerchantMembership,
 } from '../../../../../redux/modules/customer/selectors';
 import {
   getIsBusinessMembershipEnabled,
@@ -73,9 +73,9 @@ export const getShouldShowUnknownError = createSelector(
 export const getShouldShowFooter = createSelector(
   getIsLogin,
   getIsCheckLoginRequestCompleted,
-  getHasUserJoinedBusinessMembership,
+  getHasUserJoinedMerchantMembership,
   getIsLoadCustomerRequestStatusCompleted,
-  (isLogin, isCheckLoginRequestCompleted, hasUserJoinedBusinessMembership, isLoadCustomerRequestStatusCompleted) => {
+  (isLogin, isCheckLoginRequestCompleted, hasUserJoinedMerchantMembership, isLoadCustomerRequestStatusCompleted) => {
     if (!isCheckLoginRequestCompleted) {
       return false;
     }
@@ -84,7 +84,7 @@ export const getShouldShowFooter = createSelector(
       return true;
     }
 
-    return isLoadCustomerRequestStatusCompleted && !hasUserJoinedBusinessMembership;
+    return isLoadCustomerRequestStatusCompleted && !hasUserJoinedMerchantMembership;
   }
 );
 

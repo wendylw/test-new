@@ -1,7 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getIsAfterDateTime } from '../../../../utils/datetime-lib';
-import { API_REQUEST_STATUS } from '../../../../utils/constants';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
 export const getCustomerData = state => state.customer.loadCustomerRequest.data;
 
@@ -17,9 +17,8 @@ export const getCashbackExpiredDate = createSelector(getCustomerData, customerDa
   _get(customerData, 'storeCreditInfo.cashbackExpirationDate', null)
 );
 
-export const getHasUserJoinedBusinessMembership = createSelector(
-  getCustomerData,
-  customerData => !!_get(customerData, 'customerTier', null)
+export const getCustomerTier = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier', null)
 );
 
 export const getCustomerTierLevel = createSelector(getCustomerData, customerData =>
@@ -42,4 +41,10 @@ export const getIsLoadCustomerRequestCompleted = createSelector(
   getLoadCustomerRequestStatus,
   loadCustomerRequestStatus =>
     [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadCustomerRequestStatus)
+);
+
+export const getHasUserJoinedMerchantMembership = createSelector(
+  getCustomerTier,
+  getIsLoadCustomerRequestCompleted,
+  (customerTier, isLoadCustomerRequestCompleted) => customerTier && isLoadCustomerRequestCompleted
 );
