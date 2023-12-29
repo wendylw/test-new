@@ -1,0 +1,11 @@
+.PageLoaderContainer {
+  @apply tw-fixed tw-left-0 tw-top-0 tw-h-full tw-w-full tw-flex tw-items-center tw-justify-center tw-z-50;
+}
+
+.PageLoaderIndicatorWrapper {
+  @apply tw-fixed tw-rounded-lg tw-flex tw-flex-col tw-items-center tw-justify-center tw-z-100 tw-bg-black tw-bg-opacity-40;
+  height: 100px;
+  width: 100px;
+  top: calc(50% - 50px);
+  left: calc(50% - 50px);
+}

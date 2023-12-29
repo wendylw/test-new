@@ -7,9 +7,9 @@ import '../../styles/base.scss';
 const FlexLayoutFrame = ({ children }) => {
   useEffect(() => {
     document.body.style.position = 'static';
-    document.getElementById('ordering-app-container').setAttribute('style', 'min-height: auto;');
+    document.getElementById('beep-app-container').setAttribute('style', 'min-height: auto;');
     return () => {
-      document.getElementById('ordering-app-container').removeAttribute('style');
+      document.getElementById('beep-app-container').removeAttribute('style');
     };
   }, []);
 
