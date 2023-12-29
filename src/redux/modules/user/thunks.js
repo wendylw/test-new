@@ -6,7 +6,7 @@ import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/co
 import logger from '../../../utils/monitoring/logger';
 import CleverTap from '../../../utils/clevertap';
 import { getUserLoginStatus, postUserLogin, getUserProfile, postLoginGuest } from './api-request';
-import { getConsumerId, getIsLogin, getIsLoginExpired } from './selectors';
+import { getConsumerId, getIsLogin, getIsLoginExpired, getUserCountry } from './selectors';
 import Utils from '../../../utils/utils';
 import { getAccessToken } from '../../../utils/tng-utils';
 import { getTokenAsync, tokenExpiredAsync } from '../../../utils/native-methods';
@@ -156,7 +156,10 @@ export const loginUserAsGuest = createAsyncThunk('app/user/loginUserAsGuest', as
 
 export const loginUserByTngMiniProgram = createAsyncThunk(
   'app/user/loginByTngMiniProgram',
-  async (business, { dispatch }) => {
+  async (business, { dispatch, getState }) => {
+    const state = getState();
+    const userCountry = getUserCountry(state);
+
     if (!Utils.isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
     }
@@ -171,9 +174,9 @@ export const loginUserByTngMiniProgram = createAsyncThunk(
       const isJSONErrorMessage = isJSON(error?.message);
 
       if (isJSONErrorMessage) {
-        const { error } = JSON.parse(error.message) || {};
+        const { error: errorCode } = JSON.parse(error.message) || {};
 
-        error === 10 &&
+        errorCode === 10 &&
           confirm(i18next.t('ApiError:UnexpectedErrorOccurred'), {
             closeByBackButton: false,
             closeByBackDrop: false,
@@ -182,17 +185,17 @@ export const loginUserByTngMiniProgram = createAsyncThunk(
             onSelection: async confirmStatus => {
               if (confirmStatus) {
                 // try again
-                Clevertap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Try Again', {
+                CleverTap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Try Again', {
                   country: userCountry,
                 });
-                await loginByTngMiniProgram();
+                await loginUserByTngMiniProgram();
               } else {
                 // cancel
                 if (window.my.exitMiniProgram) {
                   window.my.exitMiniProgram();
                 }
 
-                Clevertap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Cancel', {
+                CleverTap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Cancel', {
                   country: userCountry,
                 });
               }
