@@ -13,7 +13,7 @@ import {
   getShouldShowBackButton,
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
-import { getHasUserJoinedBusinessMembership } from '../../../../redux/modules/customer/selectors';
+import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
 import { loadCustomerInfo } from '../../redux/common/thunks';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail } from './redux/thunks';
 import MembershipForm from '.';
@@ -32,7 +32,7 @@ const MembershipFormProxy = () => {
   const shouldShowUnsupportedError = useSelector(getShouldShowUnsupportedError);
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
-  const hasJoinedMembership = useSelector(getHasUserJoinedBusinessMembership);
+  const hasJoinedMembership = useSelector(getHasUserJoinedMerchantMembership);
 
   useEffect(() => {
     if (isLogin) {

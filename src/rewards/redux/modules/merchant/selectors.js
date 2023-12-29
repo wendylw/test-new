@@ -48,7 +48,14 @@ export const getIsMerchantEnabledDelivery = createSelector(getMerchantData, merc
  * Derived selectors
  */
 
-export const getLoadMerchantRequestCompleted = createSelector(
+export const getIsLoadMerchantRequestCompleted = createSelector(
   getLoadMerchantRequestStatus,
   [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadCustomerRequestStatus)
+);
+
+export const getIsMerchantMembershipTurnOn = createSelector(
+  getIsMerchantEnabledMembership,
+  getIsLoadMerchantRequestCompleted,
+  (isMerchantEnabledMembership, isLoadMerchantRequestCompleted) =>
+    isLoadMerchantRequestCompleted && isMerchantEnabledMembership
 );
