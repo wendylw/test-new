@@ -43,8 +43,4 @@ export const getIsLoadCustomerRequestCompleted = createSelector(
     [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadCustomerRequestStatus)
 );
 
-export const getHasUserJoinedMerchantMembership = createSelector(
-  getCustomerTier,
-  getIsLoadCustomerRequestCompleted,
-  (customerTier, isLoadCustomerRequestCompleted) => customerTier && isLoadCustomerRequestCompleted
-);
+export const getHasUserJoinedMerchantMembership = createSelector(getCustomerTier, customerTier => !!customerTier);
