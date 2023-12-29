@@ -9,7 +9,9 @@ import {
   loginUserByBeepApp,
   loginUserByTngMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { joinMembership, fetchBusinessInfo } from '../../../redux/common/thunks';
+import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
+import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
+import { joinMembership } from '../../../redux/common/thunks';
 import { PATH_NAME_MAPPING, REFERRER_SOURCE_TYPES } from '../../../../../../common/utils/constants';
 import {
   getQueryString,
@@ -34,7 +36,14 @@ export const mounted = createAsyncThunk(
     const business = getQueryString('business');
 
     Growthbook.patchAttributes({ business });
-    await dispatch(fetchBusinessInfo(business));
+    await dispatch(fetchMerchantInfo());
+
+    const merchantCountry = getMerchantCountry(getState());
+
+    if (merchantCountry) {
+      Growthbook.patchAttributes({ country: merchantCountry });
+    }
+
     await dispatch(fetchUserLoginStatus());
 
     const isLogin = getIsLogin(getState());

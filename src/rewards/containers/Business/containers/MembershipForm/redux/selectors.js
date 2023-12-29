@@ -6,16 +6,16 @@ import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constan
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
 import {
+  getIsMerchantEnabledMembership,
+  getIsLoadMerchantRequestStatusFulfilled,
+  getIsLoadMerchantRequestStatusRejected,
+  getIsLoadMerchantRequestCompleted,
+} from '../../../../../redux/modules/merchant/selectors';
+import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
   getHasUserJoinedMerchantMembership,
 } from '../../../../../redux/modules/customer/selectors';
-import {
-  getIsBusinessMembershipEnabled,
-  getIsBusinessInfoRequestStatusFulfilled,
-  getIsBusinessInfoRequestStatusRejected,
-  getIsBusinessInfoRequestStatusCompleted,
-} from '../../../redux/common/selectors';
 
 export const getIsLoadCustomerRequestStatusRejected = createSelector(
   getLoadCustomerRequestStatus,
@@ -40,24 +40,24 @@ export const getCongratulationUrl = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.FOUNDATION_OF_TIERED_MEMBERSHIP).congratsURL;
 
 export const getShouldShowSkeletonLoader = createSelector(
-  getIsBusinessInfoRequestStatusCompleted,
-  isBusinessInfoRequestStatusCompleted => !isBusinessInfoRequestStatusCompleted
+  getIsLoadMerchantRequestCompleted,
+  isLoadMerchantRequestCompleted => !isLoadMerchantRequestCompleted
 );
 
 export const getShouldShowUnsupportedError = createSelector(
-  getIsBusinessInfoRequestStatusFulfilled,
-  getIsBusinessMembershipEnabled,
-  (isBusinessInfoRequestStatusFulfilled, isBusinessMembershipEnabled) =>
-    isBusinessInfoRequestStatusFulfilled && !isBusinessMembershipEnabled
+  getIsLoadMerchantRequestStatusFulfilled,
+  getIsMerchantEnabledMembership,
+  (isLoadMerchantRequestStatusFulfilled, isMerchantEnabledMembership) =>
+    isLoadMerchantRequestStatusFulfilled && !isMerchantEnabledMembership
 );
 
 export const getShouldShowUnknownError = createSelector(
   getIsLogin,
   getIsCustomerNotFoundError,
-  getIsBusinessInfoRequestStatusRejected,
+  getIsLoadMerchantRequestStatusRejected,
   getIsLoadCustomerRequestStatusRejected,
-  (isLogin, isCustomerNotFoundError, isBusinessInfoRequestStatusRejected, isLoadCustomerRequestStatusRejected) => {
-    if (isBusinessInfoRequestStatusRejected) {
+  (isLogin, isCustomerNotFoundError, isLoadMerchantRequestStatusRejected, isLoadCustomerRequestStatusRejected) => {
+    if (isLoadMerchantRequestStatusRejected) {
       return true;
     }
 
