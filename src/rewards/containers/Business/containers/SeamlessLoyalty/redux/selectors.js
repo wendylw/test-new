@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { getQueryString } from '../../../../../../common/utils';
 import {
+  getIsMerchantEnabledMembership,
   getIsLoadMerchantRequestCompleted,
   getIsMerchantMembershipTurnOn,
 } from '../../../../../redux/modules/merchant/selectors';
