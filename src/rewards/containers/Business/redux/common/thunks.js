@@ -36,14 +36,11 @@ export const joinMembership = createAsyncThunk(
   }
 );
 
-export const fetchBusinessInfo = createAsyncThunk(
-  'rewards/business/membershipForm/fetchBusinessInfo',
-  async business => {
-    const result = await getBusinessInfo(business);
-    const { country } = result || {};
+export const fetchBusinessInfo = createAsyncThunk('rewards/business/common/fetchBusinessInfo', async business => {
+  const result = await getBusinessInfo(business);
+  const { country } = result || {};
 
-    Growthbook.patchAttributes({ country });
+  Growthbook.patchAttributes({ country });
 
-    return result;
-  }
-);
+  return result;
+});

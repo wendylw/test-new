@@ -37,7 +37,7 @@ export const getIsNewMember = createSelector(getJoinMembershipRequestInfo, joinM
   _get(joinMembershipRequestInfo, 'isNewMember', false)
 );
 
-export const getBusinessInfoRequest = state => state.business.membershipForm.fetchBusinessInfoRequest;
+export const getBusinessInfoRequest = state => state.business.common.fetchBusinessInfoRequest;
 
 export const getBusinessInfo = createSelector(getBusinessInfoRequest, businessInfoRequest => businessInfoRequest.data);
 

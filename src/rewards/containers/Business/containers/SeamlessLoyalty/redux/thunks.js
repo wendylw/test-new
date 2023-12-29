@@ -1,17 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getSeamlessLoyaltyPlatform } from '../utils';
-import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
 import {
   initUserInfo,
   loginUserByBeepApp,
   loginUserByTngMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
 import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
-import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getIsTNGMiniProgram } from '../../../../../redux/modules/common/selectors';
-import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { patchSharingConsumerInfo, postSharingConsumerInfoToMerchant } from './api-request';
-import { getSeamlessLoyaltyRequestId } from './selectors';
+import { getSeamlessLoyaltyRequestId, getIsSharingConsumerInfoEnabled } from './selectors';
 
 export const updateSharingConsumerInfo = createAsyncThunk(
   'rewards/business/seamlessLoyalty/updateSharingConsumerInfo',
@@ -36,32 +33,32 @@ export const confirmToShareConsumerInfoRequests = createAsyncThunk(
   }
 );
 
-export const mounted = createAsyncThunk('loyalty/storeRedemption/mounted', async (_, { dispatch, getState }) => {
-  const state = getState();
-  const business = getMerchantBusiness(state);
-  const isWebview = getIsWebview(state);
-  const isTNGMiniProgram = getIsTNGMiniProgram(state);
+export const mounted = createAsyncThunk(
+  'rewards/business/seamlessLoyalty/mounted',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const isWebview = getIsWebview(state);
+    const isTNGMiniProgram = getIsTNGMiniProgram(state);
 
-  await dispatch(initUserInfo());
+    dispatch(fetchMerchantInfo());
+    await dispatch(initUserInfo());
 
-  if (isWebview) {
-    await dispatch(loginUserByBeepApp());
-  }
+    if (isWebview) {
+      await dispatch(loginUserByBeepApp());
+    }
 
-  if (isTNGMiniProgram) {
-    await dispatch(loginUserByTngMiniProgram());
-  }
+    if (isTNGMiniProgram) {
+      await dispatch(loginUserByTngMiniProgram());
+    }
 
-  const isLogin = getIsLogin(getState());
-  const requestId = getSeamlessLoyaltyRequestId(getState());
+    const isSharingConsumerInfoEnabled = getIsSharingConsumerInfoEnabled(getState());
 
-  if (isLogin) {
-    if (requestId) {
+    // No need to get Customer data.
+    // Completed the Shared Consumer Info request to Merchant,
+    // Back-End completed creating customer and member events on the server side.
+    if (isSharingConsumerInfoEnabled) {
       await dispatch(updateSharingConsumerInfo());
       await dispatch(confirmToShareConsumerInfoRequests());
     }
-
-    dispatch(fetchMerchantInfo());
-    dispatch(fetchCustomerInfo(business));
   }
-});
+);
