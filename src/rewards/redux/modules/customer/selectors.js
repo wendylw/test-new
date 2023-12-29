@@ -37,7 +37,8 @@ export const getIsCashbackExpired = createSelector(
   cashbackExpiredDate => cashbackExpiredDate && getIsAfterDateTime(new Date(), new Date(cashbackExpiredDate))
 );
 
-export const getLoadCustomerRequestCompleted = createSelector(
+export const getIsLoadCustomerRequestCompleted = createSelector(
   getLoadCustomerRequestStatus,
-  status => status === API_REQUEST_STATUS.FULFILLED || status === API_REQUEST_STATUS.REJECTED
+  loadCustomerRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadCustomerRequestStatus)
 );

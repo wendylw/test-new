@@ -50,5 +50,5 @@ export const getIsMerchantEnabledDelivery = createSelector(getMerchantData, merc
 
 export const getLoadMerchantRequestCompleted = createSelector(
   getLoadMerchantRequestStatus,
-  status => status === API_REQUEST_STATUS.FULFILLED || status === API_REQUEST_STATUS.REJECTED
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadCustomerRequestStatus)
 );
