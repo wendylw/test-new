@@ -6,8 +6,10 @@ import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
 
 export const getSeamlessLoyaltyRequestId = () => getQueryString('shareInfoReqId');
 
+export const getSeamlessLoyaltyPageHashCode = () => getQueryString('h');
+
 export const getConfirmSharingConsumerInfoStatus = state =>
-  state.rewards.business.seamlessLoyalty.confirmSharingConsumerInfo.status;
+  state.business.seamlessLoyalty.confirmSharingConsumerInfo.status;
 
 /**
  * Derived selectors
