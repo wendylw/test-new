@@ -2,59 +2,39 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
-import { BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../../common/utils/constants';
-import MembershipLevelIcon from '../../../../../../../images/membership-level.svg';
-import RewardsEarnedCashbackIcon from '../../../../../../../images/rewards-earned-cashback.svg';
-import { getSource, getIsNewMember } from '../../../../redux/common/selectors';
-import { getIsFromJoinMembershipUrlClick } from '../../redux/selectors';
+import {
+  NEW_MEMBER_ICONS,
+  NEW_MEMBER_I18N_KEYS,
+  RETURNING_MEMBER_ICONS,
+  RETURNING_MEMBER_I18N_KEYS,
+} from '../../utils/constants';
+import { getIsNewMember } from '../../../../redux/common/selectors';
+import {
+  getIsFromJoinMembershipUrlClick,
+  getNewMemberPromptCategory,
+  getReturningMemberPromptCategory,
+} from '../../redux/selectors';
 import { alert, toast } from '../../../../../../../common/utils/feedback';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './MemberPrompt.module.scss';
 
-const NEW_MEMBER_I18N_KEYS = {
-  [BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN]: {
-    titleKey: 'SeamlessLoyaltyNewMemberTitle',
-    descriptionKey: 'SeamlessLoyaltyNewMemberDescription',
-  },
-  [BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK]: {
-    titleKey: 'DefaultNewMemberTitle',
-    descriptionKey: 'DefaultNewMemberDescription',
-  },
-};
-
-const NEW_MEMBER_ICONS = {
-  [BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN]: RewardsEarnedCashbackIcon,
-  [BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK]: MembershipLevelIcon,
-};
-
-const RETURNING_MEMBER_I18N_KEYS = {
-  [BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN]: {
-    messageKey: 'SeamlessLoyaltyReturningMemberMessage',
-  },
-  [BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK]: {
-    messageKey: 'DefaultReturningMemberMessage',
-  },
-};
-
-const RETURNING_MEMBER_ICONS = {
-  [BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN]: RewardsEarnedCashbackIcon,
-};
-
 const NewMember = () => {
   const { t } = useTranslation(['Rewards']);
-  const source = useSelector(getSource);
-  const newMemberIcon = NEW_MEMBER_ICONS[source] || MembershipLevelIcon;
-  const newMemberTitle = t(NEW_MEMBER_I18N_KEYS[source]?.titleKey || 'DefaultNewMemberTitle');
-  const newMemberDescription = t(NEW_MEMBER_I18N_KEYS[source]?.descriptionKey || 'DefaultNewMemberDescription');
+  const newMemberPromptCategory = useSelector(getNewMemberPromptCategory);
+  const newMemberIcon = NEW_MEMBER_ICONS[newMemberPromptCategory];
+  const newMemberContentI18nKeys = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory];
+  const { titleI18Key, descriptionI18Key } = newMemberContentI18nKeys || {};
 
   useMount(() => {
     const content = (
       <div className={styles.NewMemberContent}>
-        <div className={styles.NewMemberIcon}>
-          <ObjectFitImage noCompression src={newMemberIcon} alt="Store New Member Icon in StoreHub" />
-        </div>
-        <h4 className={styles.NewMemberTitle}>{newMemberTitle}</h4>
-        <p className={styles.NewMemberDescription}>{newMemberDescription}</p>
+        {newMemberIcon && (
+          <div className={styles.NewMemberIcon}>
+            <ObjectFitImage noCompression src={newMemberIcon} alt="Store New Member Icon in StoreHub" />
+          </div>
+        )}
+        {titleI18Key && <h4 className={styles.NewMemberTitle}>{t(titleI18Key)}</h4>}
+        {descriptionI18Key && <p className={styles.NewMemberDescription}>{t(descriptionI18Key)}</p>}
       </div>
     );
 
@@ -68,10 +48,11 @@ NewMember.displayName = 'NewMember';
 
 const ReturningMember = () => {
   const { t } = useTranslation(['Rewards']);
-  const source = useSelector(getSource);
   const isFromJoinMembershipUrlClick = useSelector(getIsFromJoinMembershipUrlClick);
-  const returningMemberIcon = RETURNING_MEMBER_ICONS[source];
-  const returningMemberMessage = t(RETURNING_MEMBER_I18N_KEYS[source]?.titleKey || 'DefaultReturningMemberMessage');
+  const returningMemberPromptCategory = useSelector(getReturningMemberPromptCategory);
+  const returningMemberIcon = RETURNING_MEMBER_ICONS[returningMemberPromptCategory];
+  const returningMemberContentI18nKeys = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory];
+  const { titleI18Key, descriptionI18Key } = returningMemberContentI18nKeys;
 
   useMount(() => {
     const content = (
@@ -81,11 +62,12 @@ const ReturningMember = () => {
             <ObjectFitImage noCompression src={returningMemberIcon} alt="Store Returning Member Icon in StoreHub" />
           </div>
         )}
-        <h4 className={styles.ReturningMemberTitle}>{returningMemberMessage}</h4>
+        {titleI18Key && <h4 className={styles.ReturningMemberTitle}>{t(titleI18Key)}</h4>}
+        {descriptionI18Key && <p className={styles.ReturningMemberDescription}>{t(descriptionI18Key)}</p>}
       </div>
     );
 
-    isFromJoinMembershipUrlClick ? toast.success(t('DefaultReturningMemberMessage')) : alert(content);
+    isFromJoinMembershipUrlClick ? toast.success(t(titleI18Key)) : alert(content);
   });
 
   return <></>;
