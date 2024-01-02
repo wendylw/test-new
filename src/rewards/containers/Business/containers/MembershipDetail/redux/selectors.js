@@ -39,6 +39,11 @@ export const getIsFromEarnedCashbackQRScan = createSelector(
   source => source === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
 );
 
+export const getIsFromJoinMembershipUrlClick = createSelector(
+  getSource,
+  source => source === BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK
+);
+
 export const getIsOrderAndRedeemButtonDisplay = createSelector(
   getIsMerchantEnabledOROrdering,
   getIsMerchantEnabledDelivery,
