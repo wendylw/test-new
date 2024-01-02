@@ -9,6 +9,7 @@ import { alert, toast } from '../../../../../../../common/utils/feedback';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './MemberPrompt.module.scss';
 
+const CELEBRATION_ANIMATION_TIME = 3600;
 const NewMember = () => {
   const { t } = useTranslation(['Rewards']);
   const [celebrationAnimateImage, setCelebrationAnimateImage] = React.useState(NewMemberCelebrationAnimateImage);
@@ -26,7 +27,7 @@ const NewMember = () => {
 
     setTimeout(() => {
       setCelebrationAnimateImage(null);
-    }, 3600);
+    }, CELEBRATION_ANIMATION_TIME);
 
     alert(content);
   });
