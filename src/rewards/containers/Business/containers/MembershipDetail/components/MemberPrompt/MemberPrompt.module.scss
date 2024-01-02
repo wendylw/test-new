@@ -1,5 +1,5 @@
 .NewMemberContent {
-  @apply tw-flex tw-flex-col tw-items-center tw-justify-center;
+  @apply tw-relative tw-flex tw-flex-col tw-items-center tw-justify-center;
 }
 
 .NewMemberIcon {
@@ -22,4 +22,15 @@
 
 .NewMemberContent {
   @apply tw-leading-loose;
+}
+
+.NewMemberCelebrationAnimateImageContainer {
+  @apply tw-absolute tw-top-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center tw-m-auto tw-pointer-events-none;
+
+  max-width: 414px;
+  z-index: 400;
+}
+
+.NewMemberCelebrationAnimateImage {
+  @apply tw-pointer-events-none;
 }
