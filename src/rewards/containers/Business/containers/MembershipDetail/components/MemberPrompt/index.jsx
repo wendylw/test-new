@@ -28,10 +28,10 @@ const NEW_MEMBER_ICONS = {
 
 const RETURNING_MEMBER_I18N_KEYS = {
   [BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN]: {
-    messageKey: 'SeamlessLoyaltyReturningMemberTitle',
+    messageKey: 'SeamlessLoyaltyReturningMemberMessage',
   },
   [BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK]: {
-    messageKey: 'DefaultReturningMemberTitle',
+    messageKey: 'DefaultReturningMemberMessage',
   },
 };
 
@@ -70,7 +70,7 @@ const ReturningMember = () => {
   const source = useSelector(getSource);
   const isFromJoinMembershipUrlClick = source === BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK;
   const returningMemberIcon = RETURNING_MEMBER_ICONS[source];
-  const returningMemberMessage = t(RETURNING_MEMBER_I18N_KEYS[source]?.titleKey || 'DefaultReturningMemberTitle');
+  const returningMemberMessage = t(RETURNING_MEMBER_I18N_KEYS[source]?.titleKey || 'DefaultReturningMemberMessage');
 
   useMount(() => {
     const content = (
