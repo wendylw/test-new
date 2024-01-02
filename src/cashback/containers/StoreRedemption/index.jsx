@@ -27,13 +27,14 @@ import Button from '../../../common/components/Button';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
 import NativeHeader from '../../../components/NativeHeader';
+import EarnedCashbackIcon from '../../../images/rewards-earned-cashback.svg';
 import PowerByStoreHubLogo from '../../../images/power-by-storehub-logo.svg';
 import BeepAppLogo from '../../../images/app-beep-logo.svg';
 import TNGAppLogo from '../../../images/app-tng-logo.svg';
 import StoreRedemptionImage from '../../../images/store-redemption.png';
+import { ObjectFitImage } from '../../../common/components/Image';
 import '../../../common/styles/base.scss';
 import styles from './StoreRedemption.module.scss';
-import { ObjectFitImage } from '../../../common/components/Image';
 
 const StoreRedemptionNative = () => {
   const { t } = useTranslation('Cashback');
@@ -59,7 +60,12 @@ const StoreRedemptionNative = () => {
   useEffect(() => {
     if (isLoadCustomerRequestCompleted && isDisplayStoreRedemptionContent) {
       alert(
-        <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">{t('StoreRedemptionCashRedeemAlert')}</p>,
+        <div className={styles.StoreRedemptionAlertContent}>
+          <div className={styles.StoreRedemptionAlertIcon}>
+            <ObjectFitImage noCompression src={EarnedCashbackIcon} alt="Store New Member Icon in StoreHub" />
+          </div>
+          <h4 className={styles.StoreRedemptionAlertTitle}>{t('StoreRedemptionCashRedeemAlert')}</h4>
+        </div>,
         {
           id: 'StoreRedemptionInitialAlert',
           onClose: () => {
@@ -165,7 +171,7 @@ const StoreRedemption = () => {
   }, [userCountry]);
 
   useMount(async () => {
-    if (isDisplayWebResult) {
+    if (!isDisplayWebResult) {
       CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
         country: userCountry,
         page: 'When users scan QR with phone camera (web)',
@@ -175,7 +181,7 @@ const StoreRedemption = () => {
     }
   });
 
-  if (isDisplayWebResult) {
+  if (!isDisplayWebResult) {
     // Use createPortal to load the page because the Login Modal in App/index level DOM needs to be covered
     return createPortal(
       <div className={`${styles.StoreRedemptionWeb} tw-flex tw-flex-col`}>
