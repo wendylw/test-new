@@ -1,0 +1,67 @@
+@import "../../../Variables.scss";
+
+.page-login {
+  height: 100vh;
+
+  &__container {
+    height: 100%;
+    width: 100%;
+  }
+
+  &__image-container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 50%;
+  }
+
+  &__button-link {
+    color: $theme-color;
+  }
+
+  &__disabled {
+    max-width: 180px;
+  }
+
+  &__icon--hide {
+    display: none;
+  }
+
+  &__terms-privacy {
+    color: $gray-3;
+  }
+
+  &.qr-ordering {
+    position: absolute;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+
+  &.qr-ordering &__container {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+    padding-bottom: 24px;
+    overflow: auto;
+  }
+
+  &.qr-ordering &__image-container {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    align-items: center;
+    height: calc(100% - 265px);
+  }
+
+  &.qr-ordering &__terms-privacy {
+    padding-top: 48px;
+  }
+}

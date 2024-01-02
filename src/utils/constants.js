@@ -588,13 +588,7 @@ export const ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING = {
 
 export const { PROMOTION_CLIENT_TYPES } = ConstantsV2;
 
-export const REFERRER_SOURCE_TYPES = {
-  PAYMENT: 'payment',
-  CASHBACK: 'cashback',
-  PAY_AT_COUNTER: 'payAtCounter',
-  LOGIN: 'login',
-  THANK_YOU: 'thankyou',
-};
+export const { REFERRER_SOURCE_TYPES } = ConstantsV2;
 
 const LOGISTICS_RIDER_TYPE = {
   GRAB: 'grab',

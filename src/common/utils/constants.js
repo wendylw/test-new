@@ -53,6 +53,7 @@ export const PATH_NAME_MAPPING = {
   CASHBACK_CLAIM: '/claim',
   STORE_REDEMPTION: '/store-redemption',
   // site
+  SITE_BASE: '/',
   SITE_HOME: '/home',
   QRSCAN: '/qrscan',
   SCAN: '/scan',
@@ -65,6 +66,12 @@ export const PATH_NAME_MAPPING = {
   VOUCHER_THANK_YOU: '/voucher/thank-you',
   VOUCHER_SORRY: '/voucher/sorry',
   VOUCHER_PAYMENT: '/ordering/payment',
+  // rewards App basename
+  REWARDS_BASE: '/rewards',
+  REWARDS_HOME: '/',
+  REWARDS_BUSINESS: '/business',
+  JOIN_MEMBERSHIP: '/join-membership',
+  REWARDS_LOGIN: '/login',
   // dine
   DINE: '/dine',
   FOOD_COURT: '/food-court',
@@ -212,4 +219,12 @@ export const ORDER_STATUS = {
    * if shipping type is self-pickup, pickedUp means picked up by customer
    * */
   PICKED_UP: 'pickedUp',
+};
+
+export const REFERRER_SOURCE_TYPES = {
+  PAYMENT: 'payment',
+  CASHBACK: 'cashback',
+  PAY_AT_COUNTER: 'payAtCounter',
+  LOGIN: 'login',
+  THANK_YOU: 'thankyou',
 };

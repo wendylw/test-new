@@ -22,11 +22,11 @@ const NormalLayout = props => {
   useEffect(() => {
     const outerBodyStyle = document.body.getAttribute('style');
     document.body.setAttribute('style', '');
-    const appContainerClassName = document.getElementById('ordering-app-container').getAttribute('class');
-    document.getElementById('ordering-app-container').setAttribute('class', '');
+    const appContainerClassName = document.getElementById('beep-app-container').getAttribute('class');
+    document.getElementById('beep-app-container').setAttribute('class', '');
     return () => {
       document.body.setAttribute('style', outerBodyStyle);
-      document.getElementById('ordering-app-container').setAttribute('class', appContainerClassName);
+      document.getElementById('beep-app-container').setAttribute('class', appContainerClassName);
     };
   }, []);
   return (

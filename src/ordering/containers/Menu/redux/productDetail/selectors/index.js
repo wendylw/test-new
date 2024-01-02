@@ -23,7 +23,7 @@ import {
   getHasSelectedProductItemInfo,
   getIsLocationConfirmModalVisible,
 } from '../../common/selectors';
-import { getIsFeatureEnabled } from '../../../../../../redux/modules/growthbook/selectors';
+import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { PRODUCT_UNABLE_ADD_TO_CART_REASONS, PRODUCT_VARIATION_TYPE } from '../../../constants';
 import { variationStructuredSelector } from './variationSelector';
@@ -281,7 +281,7 @@ export const getFormattedTakeawayCharge = createSelector(
     _isNil(takeawayCharge) ? '' : formatCurrency(takeawayCharge, { hiddenCurrency: true })
 );
 
-export const getIsQRTakeawayFeatureEnabled = state => getIsFeatureEnabled(state, FEATURE_KEYS.QR_TAKEAWAY);
+export const getIsQRTakeawayFeatureEnabled = state => getFeatureFlagResult(state, FEATURE_KEYS.QR_TAKEAWAY);
 
 export const getIsTakeawayVariantAvailable = createSelector(
   getIsDineType,
