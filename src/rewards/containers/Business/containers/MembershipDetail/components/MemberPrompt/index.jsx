@@ -6,6 +6,7 @@ import { BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../../common/util
 import MembershipLevelIcon from '../../../../../../../images/membership-level.svg';
 import RewardsEarnedCashbackIcon from '../../../../../../../images/rewards-earned-cashback.svg';
 import { getSource, getIsNewMember } from '../../../../redux/common/selectors';
+import { getIsFromJoinMembershipUrlClick } from '../../redux/selectors';
 import { alert, toast } from '../../../../../../../common/utils/feedback';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './MemberPrompt.module.scss';
@@ -68,7 +69,7 @@ NewMember.displayName = 'NewMember';
 const ReturningMember = () => {
   const { t } = useTranslation(['Rewards']);
   const source = useSelector(getSource);
-  const isFromJoinMembershipUrlClick = source === BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK;
+  const isFromJoinMembershipUrlClick = useSelector(getIsFromJoinMembershipUrlClick);
   const returningMemberIcon = RETURNING_MEMBER_ICONS[source];
   const returningMemberMessage = t(RETURNING_MEMBER_I18N_KEYS[source]?.titleKey || 'DefaultReturningMemberMessage');
 
