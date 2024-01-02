@@ -65,9 +65,8 @@ export class TermsPrivacy extends Component {
 
   handleClickBack = () => {
     const { history } = this.props;
-    const isWebview = Utils.isWebview();
 
-    if (isWebview) {
+    if (isWebview()) {
       goBack();
       return;
     }
