@@ -18,7 +18,7 @@ import { getIsLogin } from '../../../../../redux/modules/user/selectors';
 import { loadCustomerInfo } from '../../redux/common/thunks';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail } from './redux/thunks';
 import MembershipForm from '.';
-import BeepWarningImage from '../../../../../images/beep-warning.png';
+import BeepWarningImage from '../../../../../images/beep-warning.svg';
 
 const MembershipFormProxy = () => {
   const dispatch = useDispatch();
