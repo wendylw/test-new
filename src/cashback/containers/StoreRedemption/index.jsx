@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
+import { CaretRight } from 'phosphor-react';
 import { alert } from '../../../common/utils/feedback';
 import {
   isWebview,
@@ -131,6 +132,7 @@ const StoreRedemptionNative = () => {
 StoreRedemptionNative.displayName = 'StoreRedemptionNative';
 
 const StoreRedemption = () => {
+  const { t } = useTranslation('Cashback');
   const dispatch = useDispatch();
   const client = judgeClient();
   const userCountry = useSelector(getUserCountry);
@@ -171,7 +173,7 @@ const StoreRedemption = () => {
   }, [userCountry]);
 
   useMount(async () => {
-    if (!isDisplayWebResult) {
+    if (isDisplayWebResult) {
       CleverTap.pushEvent('POS Redemption Landing Page - View Page', {
         country: userCountry,
         page: 'When users scan QR with phone camera (web)',
@@ -181,7 +183,7 @@ const StoreRedemption = () => {
     }
   });
 
-  if (!isDisplayWebResult) {
+  if (isDisplayWebResult) {
     // Use createPortal to load the page because the Login Modal in App/index level DOM needs to be covered
     return createPortal(
       <div className={`${styles.StoreRedemptionWeb} tw-flex tw-flex-col`}>
@@ -191,31 +193,43 @@ const StoreRedemption = () => {
           </h1>
         </header>
         <section className={styles.StoreRedemptionWebContent}>
-          <h2 className="tw-text-center tw-text-3xl tw-leading-normal tw-text-gray-50 tw-font-bold">
-            Oops... <br />
-            Please scan with
+          <h2 className={styles.StoreRedemptionWebContentTitle}>
+            <Trans i18nKey="SeamlessLoyaltyWebTitle">
+              Please choose the
+              <br />
+              app below to continue{' '}
+            </Trans>
           </h2>
-          <div
-            className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl"
-            role="button"
-          >
+          <div className={styles.StoreRedemptionWebLogoButtons}>
             <Button
-              className="tw-inline-flex tw-m-8 sm:tw-m-8px"
+              block
+              contentClassName={styles.StoreRedemptionWebLogoButtonContent}
               type="text"
               theme="ghost"
               onClick={handleGotoBeepDownloadPage}
               data-test-id="seamless-loyalty.beep-app-button"
             >
-              <img src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
+              <div className={styles.StoreRedemptionWebLogoButtonImage}>
+                <ObjectFitImage noCompression src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
+              </div>
+              <span className={styles.StoreRedemptionWebLogoButtonText}>{t('SeamlessLoyaltyBeepAppButtonText')}</span>
+              <CaretRight size={24} />
             </Button>
             <Button
-              className="tw-inline-flex tw-m-8 sm:tw-m-8px"
+              block
+              contentClassName={styles.StoreRedemptionWebLogoButtonContent}
               type="text"
               theme="ghost"
               onClick={handleGotoTNGApp}
               data-test-id="seamless-loyalty.tng-app-button"
             >
-              <img src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+              <div className={styles.StoreRedemptionWebLogoButtonImage}>
+                <ObjectFitImage noCompression src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+              </div>
+              <span className={styles.StoreRedemptionWebLogoButtonText}>
+                {t('SeamlessLoyaltyTNGMiniProgramButtonText')}
+              </span>
+              <CaretRight size={24} />
             </Button>
           </div>
         </section>
