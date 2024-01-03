@@ -13,6 +13,7 @@
   "Sorry": "Sorry",
   "Processing": "Processing",
   "Loading": "Loading",
+  "Redirecting": "Redirecting",
   "BackToHome": "Back to home",
   "Save": "Save",
   "Free": "Free",
@@ -315,6 +316,7 @@
   "Retry": "Retry",
   "SomethingWentWrongTitle": "Sorry, something went wrong",
   "SomethingWentWrongDescription": "Try reloading the page, we are working hard to fix this as soon as possible",
+  "Redirecting": "Redirecting...",
   "UrlExpiredTitle": "Oops! This QR Code link has expired",
   "UrlExpiredDescription": "Please request a new QR Code with the cashier & scan again",
   "UrlExpiredButton": "Scan a new qr code"

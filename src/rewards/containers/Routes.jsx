@@ -16,6 +16,12 @@ const MembershipDetail = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_MER_DETL" */ './Business/containers/MembershipDetail'))
 );
 
+const SeamlessLoyalty = lazy(() =>
+  Utils.attemptLoad(() =>
+    import(/* webpackChunkName: "RWD_SL" */ './Business/containers/SeamlessLoyalty/SeamlessLoyaltyProxy')
+  )
+);
+
 const Login = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_Login" */ './Login')));
 
 const { ROUTER_PATHS } = Constants;
@@ -33,6 +39,11 @@ const Routes = () => (
           exact
           path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.MEMBERSHIP_DETAIL}`}
           component={MembershipDetail}
+        />
+        <Route
+          exact
+          path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.SEAMLESS_LOYALTY}`}
+          component={SeamlessLoyalty}
         />
         <Route exact path={ROUTER_PATHS.REWARDS_LOGIN} component={Login} />
         <Route path="*" component={NotFound} />

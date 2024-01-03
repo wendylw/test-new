@@ -1,29 +1,30 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useMount } from 'react-use';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { getMerchantBusiness, getIsMerchantEnabledMembership } from '../../../../redux/modules/merchant/selectors';
 import { getIsWeb } from '../../../../redux/modules/common/selectors';
 import { getSource } from '../../redux/common/selectors';
-import { getIsAllInitialRequestsCompleted } from './redux/selectors';
+import { getSeamlessLoyaltyPageHashCode, getIsAllInitialRequestsCompleted } from './redux/selectors';
 import { mounted } from './redux/thunks';
+import PageToast from '../../../../../common/components/PageToast';
+import Loader from '../../../../../common/components/Loader';
 
 const SeamlessLoyaltyProxy = () => {
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
   const history = useHistory();
   const merchantBusiness = useSelector(getMerchantBusiness);
   const isWeb = useSelector(getIsWeb);
   const source = useSelector(getSource);
+  const seamlessLoyaltyPageHashCode = useSelector(getSeamlessLoyaltyPageHashCode);
   const isMerchantEnabledMembership = useSelector(getIsMerchantEnabledMembership);
   const isAllInitialRequestsCompleted = useSelector(getIsAllInitialRequestsCompleted);
-  const seamlessLoyaltyURL = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace(
-    '%business%',
-    merchantBusiness
-  )}/loyalty/store-redemption`;
-  const membershipDetailHistory = {
-    path: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
-    search: `?business=${merchantBusiness}&source=${source}`,
-  };
+  const seamlessLoyaltyURL = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace('%business%', merchantBusiness)}${
+    PATH_NAME_MAPPING.CASHBACK_BASE
+  }${PATH_NAME_MAPPING.STORE_REDEMPTION}?h=${seamlessLoyaltyPageHashCode}`;
 
   useMount(() => {
     if (isWeb) {
@@ -35,11 +36,23 @@ const SeamlessLoyaltyProxy = () => {
 
   useEffect(() => {
     if (isAllInitialRequestsCompleted) {
+      const membershipDetailHistory = {
+        path: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
+        search: `?business=${merchantBusiness}&source=${source}`,
+      };
+
       isMerchantEnabledMembership ? history.push(membershipDetailHistory) : (window.location.href = seamlessLoyaltyURL);
     }
-  }, [isAllInitialRequestsCompleted]);
+  }, [
+    isAllInitialRequestsCompleted,
+    isMerchantEnabledMembership,
+    history,
+    seamlessLoyaltyURL,
+    merchantBusiness,
+    source,
+  ]);
 
-  return <div>loader</div>;
+  return <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{t('Redirecting')}</PageToast>;
 };
 
 SeamlessLoyaltyProxy.displayName = 'SeamlessLoyaltyProxy';
