@@ -10,7 +10,7 @@ export const loadCustomerInfo = createAsyncThunk(
   'rewards/business/common/loadCustomerInfo',
   async (_, { dispatch }) => {
     const business = getQueryString('business');
-    await dispatch(fetchCustomerInfo({ business }));
+    await dispatch(fetchCustomerInfo(business));
   }
 );
 

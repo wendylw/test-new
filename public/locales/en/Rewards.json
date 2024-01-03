@@ -3,5 +3,18 @@
   "JoinOurMembership": "Join our Membership",
   "TermsAndConditionsDescription": "By tapping on Join Now, you agree to the <1>Term & Conditions</1>",
   "MembershipUnavailableTitle": "Oops, join membership for this store is unavailable yet",
-  "MembershipUnavailableDescription": "Ask the merchant to enable the membership!"
+  "MembershipUnavailableDescription": "Ask the merchant to enable the membership!",
+  "MembershipDetailPageTitle": "Store Membership Details",
+  "CashbackBalanceTitle": "Cashback Balance",
+  "UniquePromoListTitle": "Exclusive Discounts",
+  "OrderRedeemButtonText": "Order & redeem now",
+  "DefaultNewMemberTitle": "Yay! You are now a Member!",
+  "DefaultNewMemberDescription": "Enjoy the rewards especially for you.",
+  "DefaultReturningMemberMessage": "You are already a Member. Enjoy your rewards!",
+  "DiscountValueText": "{{discount}} off",
+  "History": "History",
+  "Expired": "Expired",
+  "Redeemed": "Redeemed",
+  "MinConsumption": "Min. spend {{amount}}",
+  "ValidUntil": "Valid until {{date}}"
 }

@@ -4,6 +4,30 @@
  * file to a reference to this file, so that each constant is defined only once.
  */
 
+export const COUNTRIES = {
+  MY: 'MY',
+  TH: 'TH',
+  PH: 'PH',
+  SG: 'SG',
+  CN: 'CN',
+};
+
+export const COUNTRIES_DEFAULT_CURRENCIES = {
+  [COUNTRIES.MY]: 'MYR',
+  [COUNTRIES.TH]: 'THB',
+  [COUNTRIES.PH]: 'PHP',
+  [COUNTRIES.SG]: 'SGD',
+  [COUNTRIES.CN]: 'CNY',
+};
+
+export const COUNTRIES_DEFAULT_LOCALE = {
+  [COUNTRIES.MY]: 'MS-MY',
+  [COUNTRIES.TH]: 'TH-TH',
+  [COUNTRIES.PH]: 'EN-PH',
+  [COUNTRIES.SG]: 'EN-SG',
+  [COUNTRIES.CN]: 'ZH-CN',
+};
+
 export const URL_TYPES = {
   STATIC: 'static',
   DYNAMIC: 'dynamic',
@@ -56,6 +80,7 @@ export const PATH_NAME_MAPPING = {
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
+  CASHBACK_HISTORIES: '/activities',
   STORE_REDEMPTION: '/store-redemption',
   // site
   SITE_BASE: '/',
@@ -188,4 +213,15 @@ export const BECOME_MERCHANT_MEMBER_METHODS = {
   DELIVERY_ORDERING_ORDER_COMPLETED: 'BeepDel_Transaction',
   OFFLINE_STORE_ORDER_COMPLETE: 'POS_Transaction',
   SEAMLESS_LOYALTY_QR_SCAN: 'POS_SeamlessLoyaltyQR',
+};
+
+export const PROMO_VOUCHER_DISCOUNT_TYPES = {
+  PERCENTAGE: 'percentage',
+  ABSOLUTE: 'absolute',
+};
+
+export const PROMO_VOUCHER_STATUS = {
+  ACTIVE: 'active',
+  EXPIRED: 'expired',
+  REDEEMED: 'redeemed',
 };
