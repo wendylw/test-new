@@ -93,7 +93,7 @@ const ReturningMember = () => {
 ReturningMember.displayName = 'ReturningMember';
 
 const MemberPrompt = () => {
-  const isNewMember = useSelector(getIsNewMember) || true;
+  const isNewMember = useSelector(getIsNewMember);
 
   return isNewMember ? <NewMember /> : <ReturningMember />;
 };
