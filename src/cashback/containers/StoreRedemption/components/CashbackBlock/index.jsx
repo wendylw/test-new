@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { getUserStoreCashback } from '../../../../redux/modules/app';
+import { getCustomerCashback } from '../../../../redux/modules/customer/selectors';
 import { Image } from '../../../../../common/components/Image';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import StoreRDMCashback from '../../../../../images/store-rdm-cashback.svg';
 
 const CashbackBlock = () => {
   const { t } = useTranslation('Cashback');
-  const userStoreCashback = useSelector(getUserStoreCashback);
+  const customerCashback = useSelector(getCustomerCashback);
 
   return (
     <div className="tw-bg-gray-50 tw-rounded-xl tw-shadow">
@@ -18,7 +18,7 @@ const CashbackBlock = () => {
       </h2>
       <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-p-16 sm:tw-p-16px">
         <h4 className="tw-my-2 sm:tw-my-2px tw-leading-loose">{t('StoreRedemptionCashbackDescription')}</h4>
-        <CurrencyNumber className="tw-my-2 sm:tw-my-2px tw-text-3xl tw-font-bold" money={userStoreCashback} />
+        <CurrencyNumber className="tw-my-2 sm:tw-my-2px tw-text-3xl tw-font-bold" money={customerCashback} />
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Constants from '../../../../../../utils/constants';
+import { getIsTakeawayType } from '../../../../../redux/modules/app';
 import {
   getOrder,
   getOrderStatus,
@@ -67,9 +68,17 @@ OrderDetails.defaultProps = {
   shippingType: '',
 };
 
-function PendingPaymentOrderDetail({ order, promotion, items, serviceCharge, displayDiscount, orderStatus }) {
+function PendingPaymentOrderDetail({
+  order,
+  promotion,
+  items,
+  serviceCharge,
+  displayDiscount,
+  orderStatus,
+  isTakeawayType,
+}) {
   const { t } = useTranslation(['OrderingThankYou', 'OrderingDelivery']);
-  const { id, shippingFee, shippingType, subtotal, total, tax, productsManualDiscount } = order || {};
+  const { id, shippingFee, shippingType, subtotal, total, tax, takeawayCharges, productsManualDiscount } = order || {};
   const invalidStatus = [
     ORDER_STATUS.CREATED,
     ORDER_STATUS.PENDING_PAYMENT,
@@ -96,6 +105,12 @@ function PendingPaymentOrderDetail({ order, promotion, items, serviceCharge, dis
           <span className="padding-top-bottom-small text-opacity">{t('Tax')}</span>
           <CurrencyNumber className="padding-top-bottom-small text-opacity" money={tax || 0} />
         </li>
+        {isTakeawayType && takeawayCharges > 0 && (
+          <li className="flex flex-space-between flex-middle">
+            <span className="padding-top-bottom-small text-opacity">{t('OrderingDelivery:TakeawayCharge')}</span>
+            <CurrencyNumber className="padding-top-bottom-small text-opacity" money={takeawayCharges || 0} />
+          </li>
+        )}
         <li className="flex flex-space-between flex-middle">
           <span className="padding-top-bottom-small text-opacity">{t('OrderingDelivery:DeliveryCharge')}</span>
           <CurrencyNumber className="padding-top-bottom-small text-opacity" money={shippingFee || 0} />
@@ -160,6 +175,7 @@ PendingPaymentOrderDetail.propTypes = {
   serviceCharge: PropTypes.number,
   displayDiscount: PropTypes.number,
   orderStatus: PropTypes.oneOf(Object.values(ORDER_STATUS)),
+  isTakeawayType: PropTypes.bool,
 };
 
 PendingPaymentOrderDetail.defaultProps = {
@@ -169,6 +185,7 @@ PendingPaymentOrderDetail.defaultProps = {
   serviceCharge: 0,
   displayDiscount: 0,
   orderStatus: null,
+  isTakeawayType: false,
 };
 
 export default connect(state => ({
@@ -178,4 +195,5 @@ export default connect(state => ({
   serviceCharge: getServiceCharge(state),
   displayDiscount: getDisplayDiscount(state),
   orderStatus: getOrderStatus(state),
+  isTakeawayType: getIsTakeawayType(state),
 }))(PendingPaymentOrderDetail);

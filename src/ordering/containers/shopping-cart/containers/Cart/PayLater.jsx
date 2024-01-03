@@ -7,6 +7,7 @@ import _replace from 'lodash/replace';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import CartList from '../../components/CartList';
+import { AVAILABLE_QUERY_CART_PAGES } from '../../../../redux/modules/cart/constants';
 import {
   queryCartAndStatus as queryCartAndStatusThunk,
   clearQueryCartStatus as clearQueryCartStatusThunk,
@@ -63,7 +64,7 @@ class PayLater extends Component {
       await this.handleSubmitCart();
     }
 
-    await queryCartAndStatus();
+    await queryCartAndStatus(AVAILABLE_QUERY_CART_PAGES.CART);
 
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
