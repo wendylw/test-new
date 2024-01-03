@@ -13,3 +13,8 @@ export const getSearchPromotionInfo = ({ consumerId, business, promoCode }) =>
   });
 
 export const postLoginGuest = () => post('/api/login/guest');
+
+export const getUrlsValidation = h =>
+  get('/api/v3/urls/validation', {
+    queryParams: { h },
+  });
