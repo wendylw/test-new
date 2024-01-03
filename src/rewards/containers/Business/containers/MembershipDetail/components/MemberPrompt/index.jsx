@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
+import NewMemberCelebrationAnimateImage from '../../../../../../../images/succeed-animation.gif';
 import {
   NEW_MEMBER_ICONS,
   NEW_MEMBER_I18N_KEYS,
@@ -18,12 +19,14 @@ import { alert, toast } from '../../../../../../../common/utils/feedback';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './MemberPrompt.module.scss';
 
+const CELEBRATION_ANIMATION_TIME = 3600;
 const NewMember = () => {
   const { t } = useTranslation(['Rewards']);
   const newMemberPromptCategory = useSelector(getNewMemberPromptCategory);
   const newMemberIcon = NEW_MEMBER_ICONS[newMemberPromptCategory];
   const newMemberContentI18nKeys = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory];
   const { titleI18Key, descriptionI18Key } = newMemberContentI18nKeys || {};
+  const [celebrationAnimateImage, setCelebrationAnimateImage] = React.useState(NewMemberCelebrationAnimateImage);
 
   useMount(() => {
     const content = (
@@ -38,10 +41,24 @@ const NewMember = () => {
       </div>
     );
 
+    setTimeout(() => {
+      setCelebrationAnimateImage(null);
+    }, CELEBRATION_ANIMATION_TIME);
+
     alert(content);
   });
 
-  return <></>;
+  return (
+    celebrationAnimateImage && (
+      <div className={styles.NewMemberCelebrationAnimateImageContainer}>
+        <img
+          className={styles.NewMemberCelebrationAnimateImage}
+          src={celebrationAnimateImage}
+          alt="New Member Celebration in StoreHub"
+        />
+      </div>
+    )
+  );
 };
 
 NewMember.displayName = 'NewMember';
