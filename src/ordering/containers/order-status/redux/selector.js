@@ -154,11 +154,6 @@ export const getPayLaterStoreHash = createSelector(
 // Store Review
 export const getStoreReviewInfo = state => state.orderStatus.common.storeReviewInfo;
 
-export const getIsStoreThankYouModalVisible = createSelector(
-  getStoreReviewInfo,
-  storeReviewInfo => storeReviewInfo.thankYouModalVisible
-);
-
 export const getIsStoreWarningModalVisible = createSelector(
   getStoreReviewInfo,
   storeReviewInfo => storeReviewInfo.warningModalVisible

@@ -28,11 +28,9 @@ it('src/cashback/redux/store.js', () => {
       user: {
         consumerId: null,
         country: 'US',
-        customerId: '',
         isError: false,
         isExpired: false,
         isLogin: false,
-        loadConsumerCustomerStatus: null,
         loginTngRequest: {
           error: null,
           status: null,
@@ -61,11 +59,23 @@ it('src/cashback/redux/store.js', () => {
           status: null,
         },
         showLoginModal: false,
-        storeCreditsBalance: 0,
         totalCredits: 0,
       },
     },
     claim: { cashbackInfo: null, receiptNumber: null },
+    customer: {
+      data: {
+        customerId: null,
+        storeCreditInfo: {
+          cashbackClaimCount: 0,
+          lastCashbackClaimDate: null,
+          storeCreditsBalance: 0,
+          storeCreditsSpent: 0,
+        },
+      },
+      error: null,
+      status: null,
+    },
     entities: {
       businesses: {},
       categories: {},
