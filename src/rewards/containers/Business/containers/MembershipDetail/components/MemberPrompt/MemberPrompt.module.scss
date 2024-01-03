@@ -22,3 +22,18 @@
   max-width: 264px;
   word-break: break-word;
 }
+
+.NewMemberContent {
+  @apply tw-leading-loose;
+}
+
+.NewMemberCelebrationAnimateImageContainer {
+  @apply tw-absolute tw-top-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center tw-m-auto tw-pointer-events-none;
+
+  max-width: 414px;
+  z-index: 400;
+}
+
+.NewMemberCelebrationAnimateImage {
+  @apply tw-pointer-events-none;
+}
