@@ -79,8 +79,8 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 
 ```sh
 (sudo) vim /etc/hosts (on Mac)
-127.0.0.1 {business}.local.beep.shub.us
-127.0.0.1 scan.local.beep.shub.us
+127.0.0.1 {business}.beep.local.shub.us
+127.0.0.1 scan.beep.local.shub.us
 ```
 
 <a name="start-ordering-loyalty"></a>
@@ -89,7 +89,7 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 
 1. Update .env
 
-   > 1. Update to `HOST={business}.local.beep.shub.us` on `frontend/.env` (1. local domain)
+   > 1. Update to `HOST={business}.beep.local.shub.us` on `frontend/.env` (1. local domain)
    > 2. Update `REACT_APP_GOOGLE_MAPS_API_KEY`, `REACT_APP_CLEVER_TAP_ID` and `REACT_APP_CLEVER_TAP_SCRIPT_REGION` on `frontend/.env` (2. from Apollo FAT)
 
 2. Start project
@@ -99,8 +99,8 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 
   > 1. Update `PROXY=https://{business}.beep.test{11~20}.shub.us` of `frontend/.env` (please confirm with project owner)
   > 2. `cd frontend/ && yarn start`
-  > 3. Visiting URL: `{business}.local.beep.shub.us:3000`
-  > 4. In `{business}.local.beep.shub.us:3000/ordering/location`.If you need to fill in location, please enter KLCC
+  > 3. Visiting URL: `{business}.beep.local.shub.us:3000`
+  > 4. In `{business}.beep.local.shub.us:3000/ordering/location`.If you need to fill in location, please enter KLCC
   > 5. Set \_\_s to local ordering page cookie from PROXY testing environment (optional)
   > 6. Set deliveryAddress to local sessionStorage from PROXY testing environment (optional)
 
@@ -121,7 +121,7 @@ Please contact the project administrator to access apollo https://apollo.shub.us
   > 1. Update `PROXY=http://localhost:7000` of `frontend/.env`
   > 2. `yarn build` on frontend folder
   > 3. [Set up and Run Backend](https://github.com/storehubnet/beep-v1-web/tree/master/backend#beep)
-  > 4. Visiting URL: {business}.local.beep.shub.us:7000
+  > 4. Visiting URL: {business}.beep.local.shub.us:7000
 
 <a name="beep-entrance"></a>
 
@@ -130,8 +130,8 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 1. Update .env
 
    > 1. Update to `REACT_APP_MERCHANT_STORE_URL=http://%business%.beep.local.shub.us:3000` on `frontend/.env` (1. local domain)
-   > 2. Update to `REACT_APP_QR_SCAN_DOMAINS={business}.local.beep.shub.us` on `frontend/.env` (1. local domain)
-   > 3. Update to `HOST=scan.local.beep.shub.us` on `frontend/.env` (1. local domain)
+   > 2. Update to `REACT_APP_QR_SCAN_DOMAINS={business}.beep.local.shub.us` on `frontend/.env` (1. local domain)
+   > 3. Update to `HOST=scan.beep.local.shub.us` on `frontend/.env` (1. local domain)
 
 2. Start site
 
@@ -140,9 +140,9 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 
   > 1. Update `PROXY=https://scan.beep.test{11~20}.shub.us` of `frontend/.env` (please confirm with project owner)
   > 2. `cd frontend/ && yarn start`
-  > 3. Visiting Site URL: scan.local.beep.shub.us:3000/home
-  > 4. In `scan.local.beep.shub.us:3000/ordering/location`.If you need to fill in location, please enter KLCC
-  > 5. Visiting Scan Page URL: scan.local.beep.shub.us:3000/qrscan
+  > 3. Visiting Site URL: scan.beep.local.shub.us:3000/home
+  > 4. In `scan.beep.local.shub.us:3000/ordering/location`.If you need to fill in location, please enter KLCC
+  > 5. Visiting Scan Page URL: scan.beep.local.shub.us:3000/qrscan
 
 - Start ordering using local backend (Same as F&B && Loyalty)
 
