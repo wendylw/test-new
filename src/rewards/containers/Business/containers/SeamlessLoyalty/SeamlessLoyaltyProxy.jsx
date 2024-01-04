@@ -43,7 +43,7 @@ const SeamlessLoyaltyProxy = () => {
   useEffect(() => {
     if (isAllInitialRequestsCompleted) {
       const membershipDetailHistory = {
-        path: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
+        pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
         search: `?business=${merchantBusiness}&source=${source}`,
       };
 
