@@ -42,9 +42,10 @@
     <script>
       var userAgent = navigator.userAgent || '';
       var isInTngMiniProgram = userAgent.indexOf('TNGKit') > -1 && userAgent.indexOf('MiniProgram') > -1;
-      var isInTngIDE = userAgent.indexOf('AlipayIDE') > -1 && userAgent.indexOf('AlipayClient') > -1;
+      var isInGCashMiniProgram = userAgent.indexOf('GCash') > -1 && userAgent.indexOf('MiniProgram') > -1;
+      var isInAlipayIDE = userAgent.indexOf('AlipayIDE') > -1 && userAgent.indexOf('AlipayClient') > -1;
 
-      if (window._isTNGMiniProgram_) {
+      if (isInTngMiniProgram || isInGCashMiniProgram || isInAlipayIDE) {
         // alipay global doc: https://global.alipay.com/docs/
         // All alipay supported companies docs and diffs
         document.writeln('<script src="https://appx/web-view.min.js"></' + 'script>');
