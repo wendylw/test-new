@@ -52,7 +52,7 @@ const SeamlessLoyaltyProxy = () => {
     source,
   ]);
 
-  return <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{t('Redirecting')}</PageToast>;
+  return <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>;
 };
 
 SeamlessLoyaltyProxy.displayName = 'SeamlessLoyaltyProxy';
