@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import dayjs from 'dayjs';
-import { getIsWebview, getIsAlipayMiniProgram } from '../../../../../redux/modules/app';
+import { getIsWebview, getIsTNGMiniProgram } from '../../../../../redux/modules/app';
 import {
   getStoreRating,
   getStoreComment,
@@ -81,8 +81,8 @@ export const getIsHighestRating = createSelector(getStoreRating, rating => ratin
 
 export const getShouldShowSuccessToast = createSelector(
   getIsHighestRating,
-  getIsAlipayMiniProgram,
+  getIsTNGMiniProgram,
   getIsGoogleReviewURLAvailable,
-  (isHighestRating, isAlipayMiniProgram, isGoogleReviewURLAvailable) =>
-    isHighestRating && !isAlipayMiniProgram && isGoogleReviewURLAvailable
+  (isHighestRating, isTNGMiniProgram, isGoogleReviewURLAvailable) =>
+    isHighestRating && !isTNGMiniProgram && isGoogleReviewURLAvailable
 );

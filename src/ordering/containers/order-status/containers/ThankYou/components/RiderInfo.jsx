@@ -8,7 +8,6 @@ import Utils, { isValidUrl, copyDataToClipboard } from '../../../../../../utils/
 import logger from '../../../../../../utils/monitoring/logger';
 import { formatCompletePhoneNumber } from '../utils';
 import { getOrderStoreName, getOrderDeliveryInfo } from '../redux/selector';
-import { getIsAlipayMiniProgram } from '../../../../../redux/modules/app';
 import { getOrderStatus, getIsUseStorehubLogistics, getOrder, getOrderStoreInfo } from '../../../redux/selector';
 import Image from '../../../../../../components/Image';
 import Modal from '../../../../../../components/Modal';
@@ -115,7 +114,6 @@ function RiderInfo({
   storeInfo,
   inApp,
   visitReportPage,
-  isAlipayMiniProgram,
 }) {
   const { t } = useTranslation('OrderingThankYou');
   const { trackingUrl, courier, driverPhone, bestLastMileETA, worstLastMileETA } = orderDeliveryInfo || {};
@@ -180,7 +178,7 @@ function RiderInfo({
       title: t('SelfDeliveryDescription'),
     },
   };
-  const callStoreDisplayState = !isUseStorehubLogistics || inApp || Utils.isTNGMiniProgram() || isAlipayMiniProgram;
+  const callStoreDisplayState = !isUseStorehubLogistics || inApp || Utils.isTNGMiniProgram();
   const handleCopyPhoneNumber = (phone, phoneName) => {
     const result = copyDataToClipboard(phone);
 
@@ -318,7 +316,6 @@ RiderInfo.propTypes = {
     phone: PropTypes.string,
   }),
   inApp: PropTypes.bool,
-  isAlipayMiniProgram: PropTypes.bool,
   visitReportPage: PropTypes.func,
 };
 
@@ -327,7 +324,6 @@ RiderInfo.defaultProps = {
   storeLogo: null,
   storeName: null,
   inApp: false,
-  isAlipayMiniProgram: false,
   order: {},
   storeInfo: {
     phone: null,
@@ -350,5 +346,4 @@ export default connect(state => ({
   storeName: getOrderStoreName(state),
   isUseStorehubLogistics: getIsUseStorehubLogistics(state),
   orderDeliveryInfo: getOrderDeliveryInfo(state),
-  isAlipayMiniProgram: getIsAlipayMiniProgram(state),
 }))(RiderInfo);

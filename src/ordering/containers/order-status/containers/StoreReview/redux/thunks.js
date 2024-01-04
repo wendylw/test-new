@@ -19,7 +19,7 @@ import {
   getIsMerchantContactAllowable,
   getOffline,
 } from '../../../redux/selector';
-import { getIsAlipayMiniProgram, getIsWebview, getMerchantCountry } from '../../../../../redux/modules/app';
+import { getIsTNGMiniProgram, getIsWebview, getMerchantCountry } from '../../../../../redux/modules/app';
 import { getTransactionInfoForCleverTap, getShouldShowSuccessToast, getIsGoogleReviewURLAvailable } from './selectors';
 import {
   goBack as nativeGoBack,
@@ -225,7 +225,7 @@ export const submitButtonClicked = createAsyncThunk(
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
     const offline = getOffline(state);
     const country = getMerchantCountry(state);
-    const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
+    const isTNGMiniProgram = getIsTNGMiniProgram(state);
     const isGoogleReviewURLAvailable = getIsGoogleReviewURLAvailable(state);
 
     CleverTap.pushEvent('Feedback Page - Click Submit', {
@@ -238,7 +238,7 @@ export const submitButtonClicked = createAsyncThunk(
     // WB-6945: This is a bad practice, please help fix it if you have time.
     const isHighestRating = rating === STORE_REVIEW_HIGHEST_RATING;
     const shouldCopyToClipboard =
-      !(_isEmpty(comments) || isAlipayMiniProgram) && isGoogleReviewURLAvailable && isHighestRating;
+      !(_isEmpty(comments) || isTNGMiniProgram) && isGoogleReviewURLAvailable && isHighestRating;
 
     if (shouldCopyToClipboard) {
       await copyDataToClipboard(comments);

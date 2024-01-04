@@ -37,7 +37,6 @@ import {
   getUserConsumerId,
   getUser,
   getUserIsLogin,
-  getIsGCashMiniProgram,
 } from '../../../../redux/modules/app';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
@@ -53,15 +52,7 @@ class ReportDriver extends Component {
   inputRefOfEmail = null;
 
   componentDidMount = async () => {
-    const {
-      receiptNumber,
-      loadOrder,
-      fetchReport,
-      userIsLogin,
-      loginByTngMiniProgram,
-      loginByAlipayMiniProgram,
-      isGCashMiniProgram,
-    } = this.props;
+    const { receiptNumber, loadOrder, fetchReport, userIsLogin, loginByTngMiniProgram } = this.props;
 
     await loadOrder(receiptNumber);
 
@@ -77,13 +68,8 @@ class ReportDriver extends Component {
         }
       }
 
-      // TODO: Migrate isTNGMiniProgram to loginByAlipayMiniProgram
       if (Utils.isTNGMiniProgram()) {
         await loginByTngMiniProgram();
-      }
-
-      if (isGCashMiniProgram) {
-        await loginByAlipayMiniProgram();
       }
     }
 
@@ -522,7 +508,6 @@ ReportDriver.propTypes = {
   }),
   submittable: PropTypes.bool,
   userIsLogin: PropTypes.bool,
-  isGCashMiniProgram: PropTypes.bool,
   showPageLoader: PropTypes.bool,
   inputEmailIsValid: PropTypes.bool,
   isSubmitButtonDisabled: PropTypes.bool,
@@ -550,7 +535,6 @@ ReportDriver.propTypes = {
   setUploadPhotoFile: PropTypes.func,
   inputEmailCompleted: PropTypes.func,
   loginByTngMiniProgram: PropTypes.func,
-  loginByAlipayMiniProgram: PropTypes.func,
   removeUploadPhotoFile: PropTypes.func,
 };
 
@@ -566,7 +550,6 @@ ReportDriver.defaultProps = {
   },
   submittable: false,
   userIsLogin: false,
-  isGCashMiniProgram: false,
   showPageLoader: false,
   inputEmailIsValid: false,
   isSubmitButtonDisabled: false,
@@ -592,7 +575,6 @@ ReportDriver.defaultProps = {
   setUploadPhotoFile: () => {},
   inputEmailCompleted: () => {},
   loginByTngMiniProgram: () => {},
-  loginByAlipayMiniProgram: () => {},
   removeUploadPhotoFile: () => {},
 };
 
@@ -616,7 +598,6 @@ export default compose(
       isSubmitButtonDisabled: getIsSubmitButtonDisabled(state),
       inputEmailIsValid: getInputEmailIsValid(state),
       user: getUser(state),
-      isGCashMiniProgram: getIsGCashMiniProgram(state),
       userIsLogin: getUserIsLogin(state),
     }),
     {

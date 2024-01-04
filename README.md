@@ -16,10 +16,9 @@
 6. [I18N JSON File Style Guide](#i18n-json-style-guide)
 7. [Style Guide](#style-guide)
 8. [Analyzing bundle size](#analyzing-bundle-size)
-9. [GTM settings for 3rd-party(TNGD & GCash) providers from Alipay MP](#gtm-settings-for-alipay-mp)
-10. [Trouble Shooting](#trouble-shooting)
-11. [data-test-id name convention for log](https://storehub.atlassian.net/wiki/spaces/TS/pages/617087695/data-test-id+name+convention)
-12. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
+9. [Trouble Shooting](#trouble-shooting)
+10. [data-test-id name convention for log](https://storehub.atlassian.net/wiki/spaces/TS/pages/617087695/data-test-id+name+convention)
+11. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
 
 <a name="abstraction"></a>
 
@@ -245,32 +244,6 @@ cd ./frontend
 ```shell script
 yarn build && yarn analyze
 ```
-
-<a name="gtm-settings-for-alipay-mp"></a>
-
-## GTM settings for 3rd-party(TNGD & GCash) providers from Alipay MP
-
-If you don't have permission of GTM, you can ask project owner to help update.
-
-1. Add a new trigger in GTM test triggers[https://tagmanager.google.com/#/container/accounts/4702164145/containers/30716619/workspaces/4/triggers]
-
-- Name: User Agent - {Provider Name}
-- Trigger Type: Page View
-- This trigger fires on: Some Page Views
-- Fire this trigger when an Event occurs and all of these conditions are true:
-  a. jv – userAgent contains {ProviderName in userAgent}
-  b. jv – userAgent contains MiniProgram
-
-2. Add Triggering for `TT - Beepit.com Tiktok Pixel`
-
-- Click Exceptions and Click `+` button
-- Search 1. trigger name, and selected
-- Save changes and submit the tags
-
-* otherwise provider devtools response
-  `Error Number: 305 Error Message: Embedded web view cannot load this URL. Solution The embedded web view of mini program xxxxxx canot load bytedance%3%2F%2Fdispatch_message%2F, because it's not an http(s) URL`
-
-* Production configuration need PM to update and publish
 
 <a name="trouble-shooting"></a>
 

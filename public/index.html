@@ -40,18 +40,16 @@
 
     <script id="PRELOAD_LINKS_PLACEHOLDER"></script>
     <script>
-      var userAgent = navigator.userAgent || '';
-      var searchQueryString = window.location.search || '';
-      var isAlipayIDE = userAgent.indexOf('AlipayIDE') > -1 && userAgent.indexOf('AlipayClient') > -1;
+      var userAgent = navigator.userAgent || "";
+      var isInTngMiniProgram = userAgent.indexOf('TNGKit') > -1 && userAgent.indexOf('MiniProgram') > -1;
+      var isInTngIDE = userAgent.indexOf('AlipayIDE') > -1 && userAgent.indexOf('AlipayClient') > -1;
 
-      window._isTNGMiniProgram_ = (userAgent.indexOf('TNGKit') > -1 && userAgent.indexOf('MiniProgram') > -1) || (isAlipayIDE && searchQueryString.indexOf('tngd') > -1);
-      window._isGCashMiniProgram_ = (userAgent.indexOf('GCash') > -1 && userAgent.indexOf('MiniProgram') > -1) || (isAlipayIDE && searchQueryString.indexOf('gcash') > -1);
+      window._isTNGMiniProgram_ = isInTngMiniProgram || isInTngIDE;
 
-      if (window._isTNGMiniProgram_ || window._isGCashMiniProgram_) {
-        // alipay global doc: https://global.alipay.com/docs/
-        // All alipay supported companies docs and diffs
+      if(window._isTNGMiniProgram_) {
         document.writeln('<script src="https://appx/web-view.min.js"></' + 'script>');
       }
+
     </script>
     <script>
       if (document.cookie.indexOf('sh_devtools_enabled=true') > -1) {

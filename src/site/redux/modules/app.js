@@ -1,12 +1,10 @@
 /* eslint-disable no-use-before-define */
 import { createSelector } from 'reselect';
 import { get } from '../../../utils/request';
+import Utils from '../../../utils/utils';
 import * as TngUtils from '../../../utils/tng-utils';
 import * as ApiRequest from '../../../utils/api-request';
 import { API_REQUEST_STATUS } from '../../../utils/constants';
-import { isGCashMiniProgram, isTNGMiniProgram } from '../../../common/utils';
-import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
-import logger from '../../../utils/monitoring/logger';
 
 const initialState = {
   error: '',
@@ -46,9 +44,8 @@ const actions = {
     await dispatch(queryPing());
   },
 
-  // TODO: Migrate loginByTngMiniProgram to loginByAlipayMiniProgram
   loginByTngMiniProgram: () => async (dispatch, getState) => {
-    if (!isTNGMiniProgram()) {
+    if (!Utils.isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
     }
 
@@ -70,46 +67,13 @@ const actions = {
         type: types.LOGIN_SUCCESS,
         payload: data,
       });
-    } catch (error) {
-      logger.error('Site_LoginByAlipayMiniProgram', { message: error?.message });
+    } catch (e) {
+      // TODO: prompt user login failed
+      console.error(`Fail to login Tng Mini Program: ${e.message || ''}`);
 
       dispatch({
         type: types.LOGIN_FAILURE,
-        error,
-      });
-
-      return false;
-    }
-
-    return getUserIsLogin(getState());
-  },
-
-  loginByAlipayMiniProgram: () => async (dispatch, getState) => {
-    if (!isAlipayMiniProgram()) {
-      throw new Error('Not in alipay mini program');
-    }
-
-    try {
-      dispatch({
-        type: types.LOGIN_REQUEST,
-      });
-
-      const { access_token: accessToken, refresh_token: refreshToken } = await getAccessToken({ business: '' });
-      const data = await ApiRequest.login({
-        accessToken,
-        refreshToken,
-      });
-
-      dispatch({
-        type: types.LOGIN_SUCCESS,
-        payload: data,
-      });
-    } catch (error) {
-      logger.error('Site_LoginByAlipayMiniProgramFailed', { message: error?.message });
-
-      dispatch({
-        type: types.LOGIN_FAILURE,
-        error,
+        error: e,
       });
 
       return false;
@@ -218,8 +182,4 @@ export const getIsPingRequestDone = createSelector(
   pingStatus => pingStatus === API_REQUEST_STATUS.FULFILLED || pingStatus === API_REQUEST_STATUS.REJECTED
 );
 
-export const getIsTNGMiniProgram = () => isTNGMiniProgram();
-
-export const getIsGCashMiniProgram = () => isGCashMiniProgram();
-
-export const getIsAlipayMiniProgram = () => isAlipayMiniProgram();
+export const getIsTNGMiniProgram = () => Utils.isTNGMiniProgram();

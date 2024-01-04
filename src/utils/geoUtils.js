@@ -4,7 +4,6 @@ import { captureException } from '@sentry/react';
 import { Loader } from '@googlemaps/js-api-loader';
 import { computeDistanceBetween } from 'spherical-geometry-js';
 import Utils from './utils';
-import { isAlipayMiniProgram, getLocationForAlipayMiniProgram } from '../common/utils/alipay-miniprogram-client';
 import { get, post } from './request';
 import logger from './monitoring/logger';
 import { getLocation as getLocationFromTNG } from './tng-utils';
@@ -197,7 +196,6 @@ export const getDeviceCoordinates = option =>
   });
 
 export const tryGetDeviceCoordinates = async () => {
-  // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
   if (Utils.isTNGMiniProgram()) {
     const location = await getLocationFromTNG();
     return {
@@ -205,15 +203,6 @@ export const tryGetDeviceCoordinates = async () => {
       longitude: location.longitude,
     };
   }
-
-  if (isAlipayMiniProgram()) {
-    const location = await getLocationForAlipayMiniProgram();
-    return {
-      latitude: location.latitude,
-      longitude: location.longitude,
-    };
-  }
-
   try {
     const result = await getDeviceCoordinates({
       enableHighAccuracy: true,

@@ -5,7 +5,7 @@ import _get from 'lodash/get';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
-import { getIsTNGMiniProgram, getIsAlipayMiniProgram } from './app';
+import { getIsTNGMiniProgram } from './app';
 import { getStoreById, storesActionCreators } from './entities/stores';
 import {
   getAddressCoords,
@@ -208,11 +208,8 @@ export const getPaginationInfo = state => state.home.paginationInfo;
 export const getAllCurrentStores = state => state.home.storeIds.map(storeId => getStoreById(state, storeId));
 export const getStoreLinkInfo = state => state.home.storeLinkInfo;
 
-// TODO: Migrate getIsTNGMiniProgram to getIsAlipayMiniProgram
 export const getShouldShowCampaignBar = createSelector(
   getIsMalaysianAddress,
   getIsTNGMiniProgram,
-  getIsAlipayMiniProgram,
-  (isMalaysianAddress, isTNGMiniProgram, isAlipayMiniProgram) =>
-    isMalaysianAddress && !isTNGMiniProgram && !isAlipayMiniProgram
+  (isMalaysianAddress, isTNGMiniProgram) => isMalaysianAddress && !isTNGMiniProgram
 );

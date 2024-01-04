@@ -3,7 +3,7 @@
   "SubmitOrderPromptDescription": "Cart will be locked until payment is completed",
   "OrderPlaced": "Order placed",
   "PendingPayment": "Pending payment",
-  "AlipayMiniProgramAndPayByCashOnly": "Proceed to the counter to pay",
+  "TnGAndPayByCashOnly": "Proceed to the counter to pay",
   "SelectPaymentMethod": "Select payment method",
   "CreatedOrderTime": "Created at {{submittedTime}}",
   "UnableBackMenuTitle": "Want to view the menu?",

@@ -19,7 +19,6 @@ import {
   getLocationSearch,
   getIsWebview,
   getIsTNGMiniProgram,
-  getIsGCashMiniProgram,
   getIsInBrowser,
   getIsInAppOrMiniProgram,
   getURLQueryObject,
@@ -874,7 +873,6 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
   const state = getState();
   const isWebview = getIsWebview(state);
   const isTNGMiniProgram = getIsTNGMiniProgram(state);
-  const isGCashMiniProgram = getIsGCashMiniProgram(state);
   const isInBrowser = getIsInBrowser(state);
   const isInAppOrMiniProgram = getIsInAppOrMiniProgram(state);
   const isLogin = getUserIsLogin(state);
@@ -910,14 +908,9 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
     return;
   }
 
-  // TODO: Migrate isTNGMiniProgram to loginByAlipayMiniProgram
   // Force a login for Beep app & Beep TnG MP
   if (isTNGMiniProgram) {
     await dispatch(appActions.loginByTngMiniProgram());
-  }
-
-  if (isGCashMiniProgram) {
-    await dispatch(appActions.loginByAlipayMiniProgram());
   }
 
   if (isWebview) {

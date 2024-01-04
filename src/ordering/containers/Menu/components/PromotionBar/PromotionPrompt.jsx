@@ -3,7 +3,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { PROMOTIONS_SHIPPING_TYPES_MAPPING } from '../../constants';
 import { SHIPPING_TYPES, PROMOTION_CLIENT_TYPES } from '../../../../../common/utils/constants';
-import { isTNGMiniProgram, isGCashMiniProgram, isWebview } from '../../../../../common/utils';
+import { isTNGMiniProgram, isWebview } from '../../../../../common/utils';
 import PromotionShape from './PromotionShape';
 
 const appDownloadLink = 'https://dl.beepit.com/ocNj';
@@ -38,10 +38,6 @@ const ADDITIONAL_MAPPING = components => ({
 const getCurrentPromotionClientType = () => {
   if (isTNGMiniProgram()) {
     return PROMOTION_CLIENT_TYPES.TNG_MINI_PROGRAM;
-  }
-
-  if (isGCashMiniProgram()) {
-    return PROMOTION_CLIENT_TYPES.GCASH_MINI_PROGRAM;
   }
 
   if (isWebview()) {

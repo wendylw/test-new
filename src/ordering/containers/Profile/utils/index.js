@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import _once from 'lodash/once';
 import { isValidDate } from '../../../../utils/datetime-lib';
-import { isSafari, isTNGMiniProgram, isGCashMiniProgram } from '../../../../common/utils';
+import { isSafari, isTNGMiniProgram } from '../../../../common/utils';
 // TODO: Migrate to v2
 import Utils from '../../../../utils/utils';
 
@@ -35,7 +35,7 @@ export const getIsDateInputOnUpperLayer = _once(() => {
   }
 
   // TODO: Migrate to isAlipayMiniProgram()
-  if (Utils.judgeClient() === 'iOS' && (isTNGMiniProgram() || isGCashMiniProgram())) {
+  if (Utils.judgeClient() === 'iOS' && isTNGMiniProgram()) {
     return true;
   }
 

@@ -14,10 +14,10 @@ import {
   getUser,
   getIsCoreBusinessAPIPending,
   getIsUserLoginRequestStatusInPending,
-  getIsTNGMiniProgram,
-  getIsGCashMiniProgram,
 } from '../../../../redux/modules/app';
-import { PAYMENT_PROVIDERS, API_REQUEST_STATUS } from '../../../../../common/utils/constants';
+import Constants, { API_REQUEST_STATUS } from '../../../../../utils/constants';
+
+const { PAYMENT_PROVIDERS } = Constants;
 
 export const getSelectedPaymentProvider = ({ payments }) => payments.common.selectedOptionProvider;
 export const getPayByCashPromptDisplayStatus = ({ payments }) => payments.common.payByCashPromptDisplay;
@@ -171,20 +171,4 @@ export const getInitPaymentRequestErrorCategory = createSelector(getInitPaymentR
 export const getIsInitPaymentRequestStatusRejected = createSelector(
   getInitPaymentRequestStatus,
   initRequestStatus => initRequestStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getMiniProgramPaymentProvider = createSelector(
-  getIsGCashMiniProgram,
-  getIsTNGMiniProgram,
-  (isGCashMiniProgram, isTNGMiniProgram) => {
-    if (isTNGMiniProgram) {
-      return PAYMENT_PROVIDERS.TNG_MINI_PROGRAM;
-    }
-
-    if (isGCashMiniProgram) {
-      return PAYMENT_PROVIDERS.GCASH_MINI_PROGRAM;
-    }
-
-    return null;
-  }
 );

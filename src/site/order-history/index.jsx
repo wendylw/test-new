@@ -7,7 +7,7 @@ import { withTranslation } from 'react-i18next';
 import PullToRefresh from 'react-simple-pull-to-refresh';
 import InfiniteScroll from 'react-infinite-scroller';
 import Utils from '../../utils/utils';
-import { appActionCreators, getUserIsLogin, getIsPingRequestDone, getIsGCashMiniProgram } from '../redux/modules/app';
+import { appActionCreators, getUserIsLogin, getIsPingRequestDone } from '../redux/modules/app';
 import PageLoader from '../../components/PageLoader';
 import {
   loadNextOrderHistoryData as loadNextOrderHistoryDataThunk,
@@ -63,14 +63,10 @@ class OrderHistory extends React.Component {
   }
 
   login = async () => {
-    const { loginByTngMiniProgram, loginByAlipayMiniProgram, isGCashMiniProgram } = this.props;
+    const { loginByTngMiniProgram } = this.props;
 
     if (Utils.isTNGMiniProgram()) {
       await loginByTngMiniProgram();
-    }
-
-    if (isGCashMiniProgram) {
-      await loginByAlipayMiniProgram();
     }
   };
 
@@ -206,10 +202,8 @@ OrderHistory.propTypes = {
   pageLoaderVisibility: PropTypes.bool,
   isPingRequestDone: PropTypes.bool,
   isRequestOrderDataInPending: PropTypes.bool,
-  isGCashMiniProgram: PropTypes.bool,
   initOrderHistoryData: PropTypes.func,
   loginByTngMiniProgram: PropTypes.func,
-  loginByAlipayMiniProgram: PropTypes.func,
   loadNextOrderHistoryData: PropTypes.func,
 };
 
@@ -222,10 +216,8 @@ OrderHistory.defaultProps = {
   pageLoaderVisibility: true,
   isPingRequestDone: false,
   isRequestOrderDataInPending: false,
-  isGCashMiniProgram: false,
   initOrderHistoryData: () => {},
   loginByTngMiniProgram: () => {},
-  loginByAlipayMiniProgram: () => {},
   loadNextOrderHistoryData: () => {},
 };
 
@@ -241,11 +233,9 @@ export default compose(
       page: getPage(state),
       isRequestOrderDataDone: getIsRequestOrderDataDone(state),
       pageLoaderVisibility: getPageLoaderVisibility(state),
-      isGCashMiniProgram: getIsGCashMiniProgram(state),
     }),
     {
       loginByTngMiniProgram: appActionCreators.loginByTngMiniProgram,
-      loginByAlipayMiniProgram: appActionCreators.loginByAlipayMiniProgram,
       initOrderHistoryData: initOrderHistoryDataThunk,
       loadNextOrderHistoryData: loadNextOrderHistoryDataThunk,
     }
