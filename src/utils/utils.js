@@ -1,14 +1,11 @@
-import _get from 'lodash/get';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import Constants, { REGISTRATION_SOURCE, REGISTRATION_TOUCH_POINT, ORDER_SOURCE } from './constants';
-import * as timeLib from './time-lib';
+import Constants from './constants';
 import * as UtilsV2 from '../common/utils';
-import { SOURCE_TYPE } from '../common/utils/constants';
 
 dayjs.extend(utc);
 
-const { SH_LOGISTICS_VALID_TIME, ROUTER_PATHS } = Constants;
+const { SH_LOGISTICS_VALID_TIME } = Constants;
 const Utils = {};
 
 Utils.getQueryString = UtilsV2.getQueryString;
@@ -380,29 +377,7 @@ Utils.getContainerElementHeight = (headerEls, footerEl) => {
   return windowHeight - headerFooterHeight;
 };
 
-Utils.getFulfillDate = (businessUTCOffset = 480) => {
-  try {
-    const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
-    const expectedDate = _get(date, 'date', null);
-    const expectedFromTime = _get(hour, 'from', null);
-
-    if (!expectedDate || !expectedFromTime) {
-      return null;
-    }
-
-    if (expectedFromTime === Constants.TIME_SLOT_NOW) {
-      return null;
-    }
-
-    const expectedDayjs = dayjs(new Date(expectedDate)).utcOffset(businessUTCOffset);
-    const fulfillDayjs = timeLib.setDateTime(expectedFromTime, expectedDayjs);
-
-    return fulfillDayjs.toISOString();
-  } catch (error) {
-    console.error('Common Utils getFulfillDate:', error?.message || '');
-    return null;
-  }
-};
+Utils.getFulfillDate = UtilsV2.getFulfillDate;
 
 // This function only retry when the error is ChunkLoadError, do NOT use it as a common promise retry util!
 Utils.attemptLoad = (fn, retriesLeft = 5, interval = 1500) =>
@@ -478,34 +453,9 @@ Utils.formatHour = (hourString = '') => {
 
 Utils.getOpeningHours = UtilsV2.getOpeningHours;
 
-Utils.getOrderSource = () => {
-  if (Utils.isTNGMiniProgram()) {
-    return ORDER_SOURCE.TNG_MINI_PROGRAM;
-  }
+Utils.getOrderSource = UtilsV2.getOrderSource;
 
-  if (Utils.isWebview()) {
-    return ORDER_SOURCE.BEEP_APP;
-  }
-
-  if (Utils.isFromBeepSite()) {
-    return ORDER_SOURCE.BEEP_SITE;
-  }
-
-  return ORDER_SOURCE.BEEP_STORE;
-};
-
-Utils.getOrderSourceForCleverTab = () => {
-  const orderSource = Utils.getOrderSource();
-
-  const mapping = {
-    [ORDER_SOURCE.TNG_MINI_PROGRAM]: 'TNG Mini Program',
-    [ORDER_SOURCE.BEEP_APP]: 'App',
-    [ORDER_SOURCE.BEEP_SITE]: 'beepit.com',
-    [ORDER_SOURCE.BEEP_STORE]: 'Store URL',
-  };
-
-  return mapping[orderSource];
-};
+Utils.getOrderSourceForCleverTap = UtilsV2.getOrderSourceForCleverTap;
 
 Utils.getClient = UtilsV2.getClient;
 
@@ -538,58 +488,9 @@ export const copyDataToClipboard = async text => {
 
 Utils.isFromBeepSite = UtilsV2.isFromBeepSite;
 
-Utils.getRegistrationTouchPoint = () => {
-  const isOnCashbackPage = window.location.pathname.startsWith(ROUTER_PATHS.CASHBACK_BASE);
-  const isOnOrderHistory = window.location.pathname.startsWith(ROUTER_PATHS.ORDER_HISTORY);
+Utils.getRegistrationTouchPoint = UtilsV2.getRegistrationTouchPoint;
 
-  if (isOnCashbackPage) {
-    return REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK;
-  }
-
-  if (Utils.isQROrder()) {
-    return REGISTRATION_TOUCH_POINT.QR_ORDER;
-  }
-
-  if (Utils.isTNGMiniProgram() && isOnOrderHistory) {
-    return REGISTRATION_TOUCH_POINT.TNG;
-  }
-
-  return REGISTRATION_TOUCH_POINT.ONLINE_ORDER;
-};
-
-Utils.getRegistrationSource = () => {
-  const registrationTouchPoint = Utils.getRegistrationTouchPoint();
-
-  switch (registrationTouchPoint) {
-    case REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK:
-      return Utils.isWebview() ? REGISTRATION_SOURCE.BEEP_APP : REGISTRATION_SOURCE.RECEIPT;
-
-    case REGISTRATION_TOUCH_POINT.QR_ORDER:
-      if (Utils.isSharedLink()) {
-        return REGISTRATION_SOURCE.SHARED_LINK;
-      }
-    // eslint-disable-next-line no-fallthrough
-    case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
-      if (Utils.isSharedLink()) {
-        return REGISTRATION_SOURCE.SHARED_LINK;
-      }
-    // eslint-disable-next-line no-fallthrough
-    default:
-      if (Utils.isTNGMiniProgram()) {
-        return REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
-      }
-
-      if (Utils.isWebview()) {
-        return REGISTRATION_SOURCE.BEEP_APP;
-      }
-
-      if (Utils.isFromBeepSite()) {
-        return REGISTRATION_SOURCE.BEEP_SITE;
-      }
-
-      return REGISTRATION_SOURCE.BEEP_STORE;
-  }
-};
+Utils.getRegistrationSource = UtilsV2.getRegistrationSource;
 
 Utils.getMainDomain = () => {
   const hostName = window.location.hostname;
@@ -608,7 +509,7 @@ Utils.removeCookieVariable = UtilsV2.removeCookieVariable;
 
 Utils.isTNGMiniProgram = UtilsV2.isTNGMiniProgram;
 
-Utils.isSharedLink = () => Utils.getSessionVariable('BeepOrderingSource') === SOURCE_TYPE.SHARED_LINK;
+Utils.isSharedLink = UtilsV2.isSharedLink;
 
 Utils.saveSourceUrlToSessionStorage = UtilsV2.saveSourceUrlToSessionStorage;
 

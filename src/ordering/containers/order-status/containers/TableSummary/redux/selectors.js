@@ -8,6 +8,8 @@ import {
   getMerchantCountry,
   getShippingType,
   getIsTNGMiniProgram,
+  getIsAlipayMiniProgram,
+  getIsGCashMiniProgram,
 } from '../../../../../redux/modules/app';
 import {
   getPayLaterOrderInfoData as getOrder,
@@ -148,10 +150,13 @@ export const getShouldShowRedirectLoader = state => state.orderStatus.tableSumma
 
 export const getShouldShowProcessingLoader = state => state.orderStatus.tableSummary.processingLoaderVisible;
 
+// TODO: Migrate getIsTNGMiniProgram getIsGCashMiniProgram to getIsAlipayMiniProgram
 export const getShouldShowPayNowButton = createSelector(
   getIsTNGMiniProgram,
+  getIsGCashMiniProgram,
   getIsOrderPendingPayment,
-  (isTNGMiniProgram, isOrderPendingPayment) => isTNGMiniProgram || !isOrderPendingPayment
+  (isTNGMiniProgram, isGCashMiniProgram, isOrderPendingPayment) =>
+    isTNGMiniProgram || isGCashMiniProgram || !isOrderPendingPayment
 );
 
 export const getShouldShowSwitchButton = createSelector(
@@ -182,6 +187,15 @@ export const getIsPayByCouponsRequestPending = createSelector(
 export const getIsPayByCouponsRequestFulfilled = createSelector(
   getPayByCouponsRequest,
   request => request.status === API_REQUEST_STATUS.FULFILLED
+);
+
+// TODO: Migrate isTNGMiniProgram to shouldRemoveFooter
+export const getShouldRemoveFooter = createSelector(
+  getIsTNGMiniProgram,
+  getIsAlipayMiniProgram,
+  getIsStorePayByCashOnly,
+  (isTNGMiniProgram, isAlipayMiniProgram, isStorePayByCashOnly) =>
+    (isTNGMiniProgram || isAlipayMiniProgram) && isStorePayByCashOnly
 );
 
 export const getShouldDisablePayButton = createSelector(
