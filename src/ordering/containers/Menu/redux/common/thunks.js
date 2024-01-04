@@ -905,10 +905,16 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
     dispatch(push(`${PATH_NAME_MAPPING.ORDERING_CART}${search}`));
   };
 
+  console.log(isInAppOrMiniProgram);
+  console.log(isLogin);
+
   if (isInBrowser || (isInAppOrMiniProgram && isLogin)) {
     gotoReviewCartPage();
     return;
   }
+
+  console.log(isTNGMiniProgram);
+  console.log(isGCashMiniProgram);
 
   // TODO: Migrate isTNGMiniProgram to loginByAlipayMiniProgram
   // Force a login for Beep app & Beep TnG MP
