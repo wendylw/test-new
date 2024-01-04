@@ -7,8 +7,13 @@ import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { getMerchantBusiness, getIsMerchantEnabledMembership } from '../../../../redux/modules/merchant/selectors';
 import { getIsWeb } from '../../../../redux/modules/common/selectors';
 import { getSource } from '../../redux/common/selectors';
-import { getSeamlessLoyaltyPageHashCode, getIsAllInitialRequestsCompleted } from './redux/selectors';
+import {
+  getSeamlessLoyaltyPageHashCode,
+  getIsAllInitialRequestsCompleted,
+  getAnyInitialRequestError,
+} from './redux/selectors';
 import { mounted } from './redux/thunks';
+import { result } from '../../../../../common/utils/feedback';
 import PageToast from '../../../../../common/components/PageToast';
 import Loader from '../../../../../common/components/Loader';
 
@@ -22,6 +27,7 @@ const SeamlessLoyaltyProxy = () => {
   const seamlessLoyaltyPageHashCode = useSelector(getSeamlessLoyaltyPageHashCode);
   const isMerchantEnabledMembership = useSelector(getIsMerchantEnabledMembership);
   const isAllInitialRequestsCompleted = useSelector(getIsAllInitialRequestsCompleted);
+  const anyInitialRequestError = useSelector(getAnyInitialRequestError);
   const seamlessLoyaltyURL = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace('%business%', merchantBusiness)}${
     PATH_NAME_MAPPING.CASHBACK_BASE
   }${PATH_NAME_MAPPING.STORE_REDEMPTION}?h=${seamlessLoyaltyPageHashCode}`;
@@ -51,6 +57,18 @@ const SeamlessLoyaltyProxy = () => {
     merchantBusiness,
     source,
   ]);
+
+  useEffect(() => {
+    if (anyInitialRequestError) {
+      result(t('SomethingWentWrongDescription'), {
+        title: t('SomethingWentWrongTitle'),
+        closeButtonContent: t('Retry'),
+        onClose: () => {
+          dispatch(mounted());
+        },
+      });
+    }
+  }, [anyInitialRequestError]);
 
   return <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>;
 };

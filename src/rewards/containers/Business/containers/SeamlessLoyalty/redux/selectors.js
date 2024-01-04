@@ -1,15 +1,24 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { getQueryString } from '../../../../../../common/utils';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import { getIsLoadMerchantRequestCompleted } from '../../../../../redux/modules/merchant/selectors';
+import {
+  getLoadMerchantRequestError,
+  getIsLoadMerchantRequestCompleted,
+} from '../../../../../redux/modules/merchant/selectors';
 import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
 
 export const getSeamlessLoyaltyRequestId = () => getQueryString('shareInfoReqId');
 
 export const getSeamlessLoyaltyPageHashCode = () => getQueryString('h');
 
+export const getUpdateSharingConsumerInfoError = state =>
+  state.business.seamlessLoyalty.updateSharingConsumerInfo.error;
+
 export const getConfirmSharingConsumerInfoStatus = state =>
   state.business.seamlessLoyalty.confirmSharingConsumerInfo.status;
+
+export const getConfirmSharingConsumerInfoError = state =>
+  state.business.seamlessLoyalty.confirmSharingConsumerInfo.error;
 
 /**
  * Derived selectors
@@ -31,4 +40,12 @@ export const getIsAllInitialRequestsCompleted = createSelector(
   getIsLoadMerchantRequestCompleted,
   (isConfirmSharingConsumerInfoCompleted, isLoadMerchantRequestCompleted) =>
     isConfirmSharingConsumerInfoCompleted && isLoadMerchantRequestCompleted
+);
+
+export const getAnyInitialRequestError = createSelector(
+  getUpdateSharingConsumerInfoError,
+  getConfirmSharingConsumerInfoError,
+  getLoadMerchantRequestError,
+  (updateSharingConsumerInfoError, confirmSharingConsumerInfoError, loadMerchantRequestError) =>
+    updateSharingConsumerInfoError || confirmSharingConsumerInfoError || loadMerchantRequestError
 );
