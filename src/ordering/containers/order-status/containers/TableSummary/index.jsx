@@ -779,7 +779,7 @@ export class TableSummary extends React.Component {
         </div>
         {isTNGMiniProgram && isStorePayByCashOnly ? (
           <div className="table-summary__pay-by-cash-only flex flex-center padding-normal">
-            <p className="text-uppercase text-bold">{t('TnGAndPayByCashOnly')}</p>
+            <p className="text-uppercase text-bold">{t('AlipayMiniProgramAndPayByCashOnly')}</p>
           </div>
         ) : null}
         {isTNGMiniProgram && isStorePayByCashOnly ? null : (
