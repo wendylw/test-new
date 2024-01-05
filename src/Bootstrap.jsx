@@ -160,7 +160,7 @@ class Bootstrap extends Component {
   try {
     const alipayMiniProgramResult = await isRequiredAlipayMiniProgramDevTools();
 
-    if (result || alipayMiniProgramResult) {
+    if (alipayMiniProgramResult) {
       initDevTools();
     }
   } catch {
