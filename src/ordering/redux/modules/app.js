@@ -785,19 +785,9 @@ export const actions = {
 
       const businessUTCOffset = getBusinessUTCOffset(getState());
 
-      console.log('businessUTCOffset', businessUTCOffset);
-
       const tokens = await TngUtils.getAccessToken({ business });
 
-      console.log('tokens', tokens);
-
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
-
-      console.log('params', {
-        accessToken,
-        refreshToken,
-        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-      });
 
       const result = await ApiRequest.login({
         accessToken,
@@ -805,15 +795,11 @@ export const actions = {
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
       });
 
-      console.log('result', result);
-
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
         payload: result,
       });
     } catch (error) {
-      console.log('error', error);
-
       CleverTap.pushEvent('Login - login failed');
 
       dispatch({
@@ -1055,20 +1041,6 @@ const user = (state = initialState.user, action) => {
       if (state.refreshToken) {
         delete state.refreshToken;
       }
-
-      console.log('CREATE_LOGIN_SUCCESS', {
-        consumerId: userConsumerId,
-        // WB-5109: If login status refactor, please to remove profile data,
-        // BE has any update profile field should update this reducer for api/login
-        profile: {
-          ...state.profile,
-          phone: userInfo.phone,
-          name: userInfo.firstName,
-          email: userInfo.email,
-          birthday: userInfo.birthday,
-          status: API_REQUEST_STATUS.FULFILLED,
-        },
-      });
 
       return {
         ...state,
