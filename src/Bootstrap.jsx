@@ -26,6 +26,8 @@ const AsyncSite = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName:
 
 const AsyncVoucher = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "VOU" */ './voucher')));
 
+const AsyncRewards = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD" */ './rewards')));
+
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class Bootstrap extends Component {
@@ -80,7 +82,10 @@ class Bootstrap extends Component {
 
   renderSitePages = () => (
     <Suspense fallback={<div className="loader theme full-page" />}>
-      <AsyncSite />
+      <Switch>
+        <Route path={ROUTER_PATHS.REWARDS_BASE} component={AsyncRewards} />
+        <Route path="*" component={AsyncSite} />
+      </Switch>
     </Suspense>
   );
 

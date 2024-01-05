@@ -1,21 +1,16 @@
 import { store as orderingStore } from '../../ordering/redux/store';
-import { loadFeatureFlags, refreshFeatureFlags, updateFeatureFlagResults } from '../../redux/modules/growthbook/thunks';
+import { store as rewardsStore } from '../../rewards/redux/store';
+import { loadFeatureFlags, updateFeatureFlagResults } from '../../redux/modules/growthbook/thunks';
 import GrowthBook from '.';
 
-const dispatchLoadFeatureFlagsThunk = () => {
-  orderingStore.dispatch(loadFeatureFlags());
-};
+const stores = [orderingStore, rewardsStore];
 
-const dispatchRefreshFeatureFlagsThunk = () => {
-  orderingStore.dispatch(refreshFeatureFlags());
+const dispatchLoadFeatureFlagsThunk = () => {
+  stores.forEach(store => store.dispatch(loadFeatureFlags()));
 };
 
 const dispatchUpdateFeatureFlagResultsThunk = () => {
-  orderingStore.dispatch(updateFeatureFlagResults());
-};
-
-const onNavigationChange = () => {
-  dispatchRefreshFeatureFlagsThunk();
+  stores.forEach(store => store.dispatch(updateFeatureFlagResults()));
 };
 
 const onFeatureChange = () => {
@@ -29,6 +24,3 @@ dispatchLoadFeatureFlagsThunk();
 
 // Re-render when features change
 GrowthBook.setRenderer(onFeatureChange);
-
-// Refresh the features when a navigation event occurs
-window.addEventListener('sh-location-change', onNavigationChange);

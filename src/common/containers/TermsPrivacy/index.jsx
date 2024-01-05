@@ -6,6 +6,7 @@ import { isAlipayMiniProgram } from '../../utils/alipay-miniprogram-client';
 import '../../../Common.scss';
 import { getUserAgentInfo, isWebview } from '../../utils';
 import HybridHeader from '../../../components/HybridHeader';
+import { goBack } from '../../../utils/native-methods';
 import { getFiles } from './api-request';
 import './TermsPrivacy.scss';
 import logger from '../../../utils/monitoring/logger';
@@ -62,6 +63,17 @@ export class TermsPrivacy extends Component {
     }
   };
 
+  handleClickBack = () => {
+    const { history } = this.props;
+
+    if (isWebview()) {
+      goBack();
+      return;
+    }
+
+    history.goBack();
+  };
+
   render() {
     const { t } = this.props;
     const { termsPrivacyData } = this.state;
@@ -70,8 +82,8 @@ export class TermsPrivacy extends Component {
 
     return (
       <DocumentHeadInfo title={t('Beep')}>
-        {headerVisible && <HybridHeader title={this.getHeaderTitle()} />}
-        {/* remove link style in tng or gcash mini program */}
+        {headerVisible && <HybridHeader title={this.getHeaderTitle()} navFunc={this.handleClickBack} />}
+        {/* remove link style in tng mini program */}
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
           className={isAlipayMiniProgram() ? 'terms-privacy__remove-link-style' : ''}

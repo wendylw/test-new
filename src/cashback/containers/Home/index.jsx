@@ -13,12 +13,8 @@ import ReceiptList from './components/ReceiptList';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import DownloadBanner from '../../../components/DownloadBanner';
 import NativeHeader from '../../../components/NativeHeader';
-import {
-  actions as appActionCreators,
-  getOnlineStoreInfo,
-  getBusinessInfo,
-  getTotalCredits,
-} from '../../redux/modules/app';
+import { getCustomerCashback } from '../../redux/modules/customer/selectors';
+import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
 import './LoyaltyHome.scss';
 
 const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
@@ -145,7 +141,7 @@ export default compose(
     state => ({
       businessInfo: getBusinessInfo(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
-      totalCredits: getTotalCredits(state),
+      totalCredits: getCustomerCashback(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

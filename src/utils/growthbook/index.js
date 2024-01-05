@@ -89,10 +89,32 @@ const isOn = key => {
   return gb.isOn(key);
 };
 
+const getFeatureValue = (key, defaultValue) => {
+  const gb = getInstance();
+  // In a disabled environment, the feature will always be evaluated by its default value.
+  if (!gb) {
+    return defaultValue;
+  }
+  return gb.getFeatureValue(key, defaultValue);
+};
+
 const setRenderer = renderer => {
   const gb = getInstance();
 
   return gb?.setRenderer(renderer);
+};
+
+const patchAttributes = attrs => {
+  const gb = getInstance();
+
+  if (!gb) {
+    return;
+  }
+
+  gb.setAttributes({
+    ...gb.getAttributes(),
+    ...attrs,
+  });
 };
 
 export default {
@@ -101,4 +123,6 @@ export default {
   setRenderer,
   loadFeatures,
   refreshFeatures,
+  getFeatureValue,
+  patchAttributes,
 };
