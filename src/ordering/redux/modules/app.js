@@ -810,6 +810,8 @@ export const actions = {
         payload: result,
       });
     } catch (error) {
+      console.log('error', error);
+
       CleverTap.pushEvent('Login - login failed');
 
       dispatch({
