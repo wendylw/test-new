@@ -52,13 +52,18 @@ const getMessagePortal = () => {
 
 export const callMessagePortal = async (method, data) => {
   try {
+    console.log(method, 'method');
+    console.log(data, 'data');
     debug('[TNG utils] before call method: %s\n parameter: %o', method, data);
     const messagePortal = getMessagePortal();
+    console.log(messagePortal, 'messagePortal');
     const result = await messagePortal.call(method, data);
+    console.log(result, 'messagePortal.call.result');
     debug('[TNG utils] call success method: %s\n parameter: %o\n result: %o', method, data, result);
     logger.log('Utils_MessagePortal_CallAPISucceeded', { method });
     return result;
   } catch (error) {
+    console.log(error, 'messagePortal.call.error');
     debug('[TNG utils] call fail method: %s\n parameter: %o\n error: %o', method, data, error);
     const errorData = getMessagePortalErrorData(error?.message);
 
