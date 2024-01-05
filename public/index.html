@@ -40,17 +40,26 @@
 
     <script id="PRELOAD_LINKS_PLACEHOLDER"></script>
     <script>
-      var userAgent = navigator.userAgent || '';
+      // var userAgent = navigator.userAgent || '';
+      // var isInTngMiniProgram = userAgent.indexOf('TNGKit') > -1 && userAgent.indexOf('MiniProgram') > -1;
+      // var isInGCashMiniProgram = userAgent.indexOf('GCash') > -1 && userAgent.indexOf('MiniProgram') > -1;
+      // var isInAlipayIDE = userAgent.indexOf('AlipayIDE') > -1 && userAgent.indexOf('AlipayClient') > -1;
+
+      // window._isTNGMiniProgram_ = isInTngMiniProgram;
+      // window._isGCashMiniProgram_ = isInGCashMiniProgram;
+
+      // if (window._isTNGMiniProgram_ || window._isGCashMiniProgram_ || isInAlipayIDE) {
+      //   // alipay global doc: https://global.alipay.com/docs/
+      //   // All alipay supported companies docs and diffs
+      //   document.writeln('<script src="https://appx/web-view.min.js"></' + 'script>');
+      // }
+      var userAgent = navigator.userAgent || "";
       var isInTngMiniProgram = userAgent.indexOf('TNGKit') > -1 && userAgent.indexOf('MiniProgram') > -1;
-      var isInGCashMiniProgram = userAgent.indexOf('GCash') > -1 && userAgent.indexOf('MiniProgram') > -1;
-      var isInAlipayIDE = userAgent.indexOf('AlipayIDE') > -1 && userAgent.indexOf('AlipayClient') > -1;
+      var isInTngIDE = userAgent.indexOf('AlipayIDE') > -1 && userAgent.indexOf('AlipayClient') > -1;
 
-      window._isTNGMiniProgram_ = isInTngMiniProgram;
-      window._isGCashMiniProgram_ = isInGCashMiniProgram;
+      window._isTNGMiniProgram_ = isInTngMiniProgram || isInTngIDE;
 
-      if (window._isTNGMiniProgram_ || window._isGCashMiniProgram_ || isInAlipayIDE) {
-        // alipay global doc: https://global.alipay.com/docs/
-        // All alipay supported companies docs and diffs
+      if(window._isTNGMiniProgram_) {
         document.writeln('<script src="https://appx/web-view.min.js"></' + 'script>');
       }
     </script>
