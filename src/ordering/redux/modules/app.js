@@ -1052,6 +1052,20 @@ const user = (state = initialState.user, action) => {
         delete state.refreshToken;
       }
 
+      console.log('CREATE_LOGIN_SUCCESS', {
+        consumerId: userConsumerId,
+        // WB-5109: If login status refactor, please to remove profile data,
+        // BE has any update profile field should update this reducer for api/login
+        profile: {
+          ...state.profile,
+          phone: userInfo.phone,
+          name: userInfo.firstName,
+          email: userInfo.email,
+          birthday: userInfo.birthday,
+          status: API_REQUEST_STATUS.FULFILLED,
+        },
+      });
+
       return {
         ...state,
         consumerId: userConsumerId,
