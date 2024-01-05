@@ -48,7 +48,7 @@
       window._isTNGMiniProgram_ = isInTngMiniProgram;
       window._isGCashMiniProgram_ = isInGCashMiniProgram;
 
-      if (isInTngMiniProgram || isInGCashMiniProgram || isInAlipayIDE) {
+      if (window._isTNGMiniProgram_ || window._isGCashMiniProgram_ || isInAlipayIDE) {
         // alipay global doc: https://global.alipay.com/docs/
         // All alipay supported companies docs and diffs
         document.writeln('<script src="https://appx/web-view.min.js"></' + 'script>');
