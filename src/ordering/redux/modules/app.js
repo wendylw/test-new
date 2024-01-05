@@ -789,6 +789,8 @@ export const actions = {
 
       const tokens = await TngUtils.getAccessToken({ business });
 
+      console.log('tokens', tokens);
+
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
       console.log('params', {
