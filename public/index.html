@@ -42,11 +42,13 @@
     <script>
       var userAgent = navigator.userAgent || "";
       var isInTngMiniProgram = userAgent.indexOf('TNGKit') > -1 && userAgent.indexOf('MiniProgram') > -1;
-      var isInTngIDE = userAgent.indexOf('AlipayIDE') > -1 && userAgent.indexOf('AlipayClient') > -1;
+      var isInGCashMiniProgram = userAgent.indexOf('GCashMiniProgram') > -1 && userAgent.indexOf('MiniProgram') > -1;
+      var isInMiniprogramPayIDE = userAgent.indexOf('AlipayIDE') > -1 && userAgent.indexOf('AlipayClient') > -1;
 
-      window._isTNGMiniProgram_ = isInTngMiniProgram || isInTngIDE;
+      window._isTNGMiniProgram_ = isInTngMiniProgram;
+      window._isGCashMiniProgram_ = isInGCashMiniProgram;
 
-      if(window._isTNGMiniProgram_) {
+      if(window._isTNGMiniProgram_ || window._isGCashMiniProgram_ || isInMiniprogramPayIDE) {
         document.writeln('<script src="https://appx/web-view.min.js"></' + 'script>');
       }
 
