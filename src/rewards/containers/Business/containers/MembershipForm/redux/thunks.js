@@ -9,7 +9,7 @@ import Growthbook from '../../../../../../utils/growthbook';
 import {
   fetchUserLoginStatus,
   loginUserByBeepApp,
-  loginUserByTngMiniProgram,
+  loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
 import { PATH_NAME_MAPPING, REFERRER_SOURCE_TYPES } from '../../../../../../common/utils/constants';
 import {
@@ -116,7 +116,7 @@ export const joinNowButtonClicked = createAsyncThunk(
 
     // Force a login for Beep app & Beep TnG MP
     if (isTNGMiniProgram) {
-      await dispatch(loginUserByTngMiniProgram());
+      await dispatch(loginUserByAlipayMiniProgram());
     }
 
     if (isWebview) {

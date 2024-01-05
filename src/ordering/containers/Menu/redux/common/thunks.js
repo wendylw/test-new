@@ -908,7 +908,7 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
     return;
   }
 
-  // Force a login for Beep app & Beep TnG MP
+  // Force a login for Beep app & Beep Alipay MP
   if (isAlipayMiniProgram) {
     await dispatch(appActions.loginByAlipayMiniProgram());
   }
