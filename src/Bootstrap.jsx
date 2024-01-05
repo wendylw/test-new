@@ -14,6 +14,7 @@ import * as NativeMethods from './utils/native-methods';
 import logger from './utils/monitoring/logger';
 import { initDevTools } from './utils/dev-tools';
 import { isRequiredDevTools } from './utils/tng-utils';
+import { isRequiredAlipayMiniProgramDevTools } from './common/utils/alipay-miniprogram-client';
 import './utils/growthbook/setup';
 
 const AsyncStoresApp = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "STO" */ './stores')));
@@ -159,7 +160,9 @@ class Bootstrap extends Component {
 (async () => {
   try {
     const result = await isRequiredDevTools();
-    if (result) {
+    const alipayMiniProgramResult = await isRequiredAlipayMiniProgramDevTools();
+
+    if (result || alipayMiniProgramResult) {
       initDevTools();
     }
   } catch {
