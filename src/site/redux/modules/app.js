@@ -3,7 +3,6 @@ import { createSelector } from 'reselect';
 import { get } from '../../../utils/request';
 import * as ApiRequest from '../../../utils/api-request';
 import { API_REQUEST_STATUS } from '../../../utils/constants';
-import { isGCashMiniProgram, isTNGMiniProgram } from '../../../common/utils';
 import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
 import logger from '../../../utils/monitoring/logger';
 
@@ -178,9 +177,5 @@ export const getIsPingRequestDone = createSelector(
   getPingStatus,
   pingStatus => pingStatus === API_REQUEST_STATUS.FULFILLED || pingStatus === API_REQUEST_STATUS.REJECTED
 );
-
-export const getIsTNGMiniProgram = () => isTNGMiniProgram();
-
-export const getIsGCashMiniProgram = () => isGCashMiniProgram();
 
 export const getIsAlipayMiniProgram = () => isAlipayMiniProgram();

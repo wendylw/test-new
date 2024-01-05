@@ -7,7 +7,7 @@ import { withTranslation } from 'react-i18next';
 import PullToRefresh from 'react-simple-pull-to-refresh';
 import InfiniteScroll from 'react-infinite-scroller';
 import Utils from '../../utils/utils';
-import { appActionCreators, getUserIsLogin, getIsPingRequestDone, getIsGCashMiniProgram } from '../redux/modules/app';
+import { appActionCreators, getUserIsLogin, getIsPingRequestDone, getIsAlipayMiniProgram } from '../redux/modules/app';
 import PageLoader from '../../components/PageLoader';
 import {
   loadNextOrderHistoryData as loadNextOrderHistoryDataThunk,
@@ -235,7 +235,7 @@ export default compose(
       page: getPage(state),
       isRequestOrderDataDone: getIsRequestOrderDataDone(state),
       pageLoaderVisibility: getPageLoaderVisibility(state),
-      isGCashMiniProgram: getIsGCashMiniProgram(state),
+      isAlipayMiniProgram: getIsAlipayMiniProgram(state),
     }),
     {
       loginByAlipayMiniProgram: appActionCreators.loginByAlipayMiniProgram,

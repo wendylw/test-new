@@ -1,10 +1,11 @@
 import { createSelector } from 'reselect';
-import Utils from '../../../../utils/utils';
+import { isWebview } from '../../../../common/utils';
+import { getIsAliMiniProgram } from '../../../../common/utils/alipay-miniprogram-client';
 
 /** Utils */
-export const getIsWebview = () => Utils.isWebview();
+export const getIsWebview = () => isWebview();
 
-export const getIsTNGMiniProgram = () => Utils.isTNGMiniProgram();
+export const getIsAliMiniProgram = () => getIsAliMiniProgram();
 
 /** Router */
 export const getRouter = state => state.router;
