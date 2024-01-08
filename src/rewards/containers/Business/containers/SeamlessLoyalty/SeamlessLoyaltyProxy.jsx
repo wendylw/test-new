@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useMount } from 'react-use';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import BeepWarningImage from '../../../../../images/beep-warning.svg';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { closeWebView } from '../../../../../utils/native-methods';
 import { getMerchantBusiness, getIsMerchantEnabledMembership } from '../../../../redux/modules/merchant/selectors';
@@ -19,6 +20,7 @@ import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import PageToast from '../../../../../common/components/PageToast';
 import Loader from '../../../../../common/components/Loader';
+import ResultContent from '../../../../../common/components/Result/ResultContent';
 
 const SeamlessLoyaltyProxy = () => {
   const { t } = useTranslation();
@@ -71,13 +73,20 @@ const SeamlessLoyaltyProxy = () => {
 
   useEffect(() => {
     if (anyInitialRequestError) {
-      result(t('SomethingWentWrongDescription'), {
-        title: t('SomethingWentWrongTitle'),
-        closeButtonContent: t('Retry'),
-        onClose: () => {
-          dispatch(mounted());
-        },
-      });
+      result(
+        <ResultContent
+          imageSrc={BeepWarningImage}
+          content={t('SomethingWentWrongDescription')}
+          title={t('SomethingWentWrongTitle')}
+        />,
+        {
+          customizeContent: true,
+          closeButtonContent: t('Retry'),
+          onClose: () => {
+            dispatch(mounted());
+          },
+        }
+      );
     }
   }, [anyInitialRequestError, dispatch, t]);
 
