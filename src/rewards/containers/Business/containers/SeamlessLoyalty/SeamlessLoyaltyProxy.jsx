@@ -50,7 +50,9 @@ const SeamlessLoyaltyProxy = () => {
         search: `?business=${merchantBusiness}&source=${source}`,
       };
 
-      isMerchantEnabledMembership ? history.push(membershipDetailHistory) : (window.location.href = seamlessLoyaltyURL);
+      isMerchantEnabledMembership
+        ? history.replace(membershipDetailHistory)
+        : (window.location.href = seamlessLoyaltyURL);
     }
   }, [
     isAllInitialRequestsCompleted,
