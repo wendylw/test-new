@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../../../../../../common/components/Loader';
-import { getIsJoinMembershipRequestStatusPending } from '../../../../redux/common/selectors';
+import { getIsJoinMembershipRequestStatusPending } from '../../../../../../../redux/modules/membership/selectors';
 import styles from './JoiningIndicator.module.scss';
 
 const JoiningIndicator = () => {

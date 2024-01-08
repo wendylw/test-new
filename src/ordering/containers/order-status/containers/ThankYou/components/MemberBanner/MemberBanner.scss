@@ -1,0 +1,33 @@
+@import "../../../../../../../Variables.scss";
+
+$member-card-color-light: #ff9419;
+$member-card-color-dark: #c955ff;
+
+.member-banner {
+  &__card-wrapper {
+    background-color: transparent;
+    position: relative;
+  }
+
+  &__card-container {
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    background: linear-gradient(90deg, $member-card-color-light 0%, $member-card-color-dark 100%);
+  }
+
+  &__card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+
+    > figure {
+      background-color: transparent;
+    }
+  }
+
+  &__card-title {
+    flex-grow: 1;
+    color: $white;
+  }
+}

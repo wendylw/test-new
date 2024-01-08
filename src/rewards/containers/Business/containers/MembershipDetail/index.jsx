@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../common/utils/ui';
-import { closeWebView } from '../../../../../utils/native-methods';
-import { mounted } from './redux/thunks';
+import { mounted, backButtonClicked } from './redux/thunks';
+import { getShouldShowBackButton } from './redux/selectors';
 import { getIsWebview, getIsTNGMiniProgram } from '../../../../redux/modules/common/selectors';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
@@ -21,11 +21,8 @@ const MembershipDetail = () => {
   const isWebview = useSelector(getIsWebview);
   const isTNGMiniProgram = useSelector(getIsTNGMiniProgram);
   const isWeb = !isWebview && !isTNGMiniProgram;
-  const handleClickHeaderBackButton = useCallback(() => {
-    if (isWebview) {
-      closeWebView();
-    }
-  }, [isWebview]);
+  const shouldShowBackButton = useSelector(getShouldShowBackButton);
+  const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
 
   useMount(() => {
     dispatch(mounted());
@@ -35,7 +32,7 @@ const MembershipDetail = () => {
     <Frame>
       <PageHeader
         className={getClassName([isWeb && styles.MembershipDetailWebPageHeader])}
-        isShowBackButton={!isWeb}
+        isShowBackButton={shouldShowBackButton}
         title={t('MembershipDetailPageTitle')}
         onBackArrowClick={handleClickHeaderBackButton}
       />

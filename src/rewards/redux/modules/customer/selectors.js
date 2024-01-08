@@ -31,3 +31,8 @@ export const getIsCashbackExpired = createSelector(
   getCashbackExpiredDate,
   cashbackExpiredDate => cashbackExpiredDate && getIsAfterDateTime(new Date(), new Date(cashbackExpiredDate))
 );
+
+export const getHasUserJoinedBusinessMembership = createSelector(
+  getCustomerData,
+  customerData => !!_get(customerData, 'customerTier', null)
+);

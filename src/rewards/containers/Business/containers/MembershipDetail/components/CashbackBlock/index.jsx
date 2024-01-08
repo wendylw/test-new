@@ -9,7 +9,7 @@ import {
   getMerchantBusiness,
   getMerchantCountry,
   getIsMerchantEnabledCashback,
-} from '../../../../../../redux/modules/merchant/selectors';
+} from '../../../../../../../redux/modules/merchant/selectors';
 import { getCashbackExpiredDate, getIsCashbackExpired } from '../../../../../../redux/modules/customer/selectors';
 import { getCustomerCashbackPrice } from '../../redux/selectors';
 import Tag from '../../../../../../../common/components/Tag';

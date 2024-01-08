@@ -1,6 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { getQueryString } from '../../../../common/utils';
+import { getQueryString } from '../../../common/utils';
 
 /**
  * @returns {string | null} business
@@ -37,4 +37,8 @@ export const getIsMerchantEnabledCashback = createSelector(getMerchantData, merc
 
 export const getIsMerchantEnabledDelivery = createSelector(getMerchantData, merchantData =>
   _get(merchantData, 'qrOrderingSettings.enableDelivery', false)
+);
+
+export const getIsMerchantMembershipEnabled = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'membershipEnabled', false)
 );

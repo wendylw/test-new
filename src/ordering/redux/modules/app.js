@@ -36,7 +36,7 @@ import {
   getIsAddressRequestStatusFulfilled,
 } from '../../../redux/modules/address/selectors';
 import { getCartItems as getNewCartItems } from './cart/selectors';
-import { getProfileInfo, postLoginGuest, getUrlsValidation } from './api-request';
+import { getProfileInfo, postLoginGuest, getUrlsValidation, getCustomerInfo } from './api-request';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
@@ -143,6 +143,11 @@ export const initialState = {
       notificationSettings: '',
       birthdayChangeAllowed: false,
       status: null,
+    },
+    loadCustomerRequest: {
+      data: null,
+      status: null,
+      error: null,
     },
     loginReferrerSource: null,
   },
@@ -333,6 +338,8 @@ export const actions = {
         type: types.CREATE_LOGIN_SUCCESS,
         payload: { ...result, source },
       });
+
+      dispatch(actions.getLoginStatus());
     } catch (error) {
       CleverTap.pushEvent('Login - login failed');
 
@@ -477,6 +484,8 @@ export const actions = {
         }
 
         try {
+          dispatch(actions.loadCustomerInfo(consumerId));
+
           await dispatch(actions.loadProfileInfo(consumerId));
 
           const profile = getUserProfile(getState());
@@ -926,13 +935,31 @@ export const actions = {
       referrerSource,
     },
   }),
+  loadCustomerInfo: consumerId => async (dispatch, getState) => {
+    const business = getBusiness(getState());
+
+    try {
+      dispatch({ type: types.LOAD_CONSUMER_INFO_PENDING });
+
+      const result = await getCustomerInfo({ consumerId, business });
+
+      dispatch({
+        type: types.LOAD_CONSUMER_INFO_FULFILLED,
+        payload: result,
+      });
+    } catch (error) {
+      dispatch({
+        type: types.LOAD_CONSUMER_INFO_REJECTED,
+        error,
+      });
+    }
+  },
 };
 
 const user = (state = initialState.user, action) => {
   const { type, response, prompt, error, responseGql, payload } = action;
   const { consumerId, login, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken } = response || {};
 
-  const userConsumerId = _get(payload, 'consumerId', '');
   const userInfo = _get(payload, 'user', {});
   const { data } = responseGql || {};
   const { business, onlineStoreInfo } = data || {};
@@ -1019,7 +1046,6 @@ const user = (state = initialState.user, action) => {
 
       return {
         ...state,
-        consumerId: userConsumerId,
         // WB-5109: If login status refactor, please to remove profile data,
         // BE has any update profile field should update this reducer for api/login
         profile: {
@@ -1030,7 +1056,6 @@ const user = (state = initialState.user, action) => {
           birthday: userInfo.birthday,
           status: API_REQUEST_STATUS.FULFILLED,
         },
-        isLogin: true,
         isExpired: false,
         isFetching: false,
         loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
@@ -1123,6 +1148,21 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         loginReferrerSource,
+      };
+    case types.LOAD_CONSUMER_INFO_PENDING:
+      return {
+        ...state,
+        loadCustomerRequest: { ...state.loadCustomerRequest, status: API_REQUEST_STATUS.PENDING, error: null },
+      };
+    case types.LOAD_CONSUMER_INFO_FULFILLED:
+      return {
+        ...state,
+        loadCustomerRequest: { data: { ...payload }, status: API_REQUEST_STATUS.FULFILLED, error: null },
+      };
+    case types.LOAD_CONSUMER_INFO_REJECTED:
+      return {
+        ...state,
+        loadCustomerRequest: { ...state.loadCustomerRequest, status: API_REQUEST_STATUS.REJECTED, error },
       };
     default:
       return state;
@@ -2145,4 +2185,40 @@ export const getIsDynamicUrlExpired = createSelector(
   getIsQrCodeInfoUrlExpired,
   getIsDynamicUrl,
   (isDynamicQrCodeUrlExpired, isDynamicUrl) => isDynamicQrCodeUrlExpired && isDynamicUrl
+);
+
+/* Tiered Membership */
+export const getCustomerData = createSelector(getUser, userInfo => userInfo.loadCustomerRequest.data);
+
+export const getLoadCustomerRequestStatus = createSelector(getUser, userInfo => userInfo.loadCustomerRequest.status);
+
+export const getLoadCustomerRequestError = createSelector(getUser, userInfo => userInfo.loadCustomerRequest.error);
+
+export const getIsLoadCustomerRequestPending = createSelector(
+  getLoadCustomerRequestStatus,
+  loadCustomerRequestStatus => loadCustomerRequestStatus === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsLoadCustomerRequestCompleted = createSelector(
+  getLoadCustomerRequestStatus,
+  loadCustomerRequestStatus =>
+    loadCustomerRequestStatus === API_REQUEST_STATUS.FULFILLED ||
+    loadCustomerRequestStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getCustomerCashback = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'storeCreditInfo.storeCreditsBalance', 0)
+);
+
+export const getCustomerTierLevel = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier.level', null)
+);
+
+export const getCustomerTierLevelName = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier.name', null)
+);
+
+export const getHasUserJoinedBusinessMembership = createSelector(
+  getCustomerData,
+  customerData => !!_get(customerData, 'customerTier', null)
 );

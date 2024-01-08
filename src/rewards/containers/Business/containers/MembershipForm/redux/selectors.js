@@ -1,15 +1,16 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
-import { getIsWebview } from '../../../../../redux/modules/common/selectors';
+import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
+import { BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
 import {
-  getCustomerData,
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
+  getHasUserJoinedBusinessMembership,
 } from '../../../../../redux/modules/customer/selectors';
 
 export const getBusinessInfoRequest = state => state.business.membershipForm.fetchBusinessInfoRequest;
@@ -43,11 +44,6 @@ export const getIsBusinessInfoRequestStatusCompleted = createSelector(
   getBusinessInfoRequestStatus,
   businessInfoRequestStatus =>
     [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(businessInfoRequestStatus)
-);
-
-export const getHasUserJoinedBusinessMembership = createSelector(
-  getCustomerData,
-  customerData => !!_get(customerData, 'customerTier', null)
 );
 
 export const getIsLoadCustomerRequestStatusRejected = createSelector(
@@ -121,6 +117,14 @@ export const getShouldShowFooter = createSelector(
   }
 );
 
-export const getShouldShowBackButton = createSelector(getIsWebview, isInWebview => isInWebview);
+export const getIsUserFromOrdering = createSelector(getSource, source =>
+  [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
+);
+
+export const getShouldShowBackButton = createSelector(
+  getIsWebview,
+  getIsUserFromOrdering,
+  (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
+);
 
 export const getIsJoinNowButtonDisabled = state => state.business.membershipForm.isJoinNowButtonDisabled;

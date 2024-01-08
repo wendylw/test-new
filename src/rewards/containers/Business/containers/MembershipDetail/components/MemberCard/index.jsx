@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import MembershipLevelIcon from '../../../../../../../images/membership-level.svg';
-import { getMerchantDisplayName } from '../../../../../../redux/modules/merchant/selectors';
+import { getMerchantDisplayName } from '../../../../../../../redux/modules/merchant/selectors';
 import { getCustomerTierLevelName } from '../../../../../../redux/modules/customer/selectors';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './MemberCard.module.scss';

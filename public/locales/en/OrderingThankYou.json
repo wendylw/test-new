@@ -141,5 +141,7 @@
   "ThankYouFeedbackToastTitle": "Thanks for feedback! Rate us on Google. It’ll mean a lot to us!",
   "ThankYouFeedbackToastContent": "Redirecting in {{count}}sec...",
   "ThankYouFeedbackToastDescription": "(Review Copied to Clipboard)",
-  "RedirectingToGoogleReview": "Redirecting to Google Review..."
+  "RedirectingToGoogleReview": "Redirecting to Google Review...",
+  "GotCashBackAndBeMemberDescription": "Login or sign up below to claim your cashback & be our member now!",
+  "NewMemberInvitation": "Be our member & unlock your rewards!"
 }

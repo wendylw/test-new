@@ -15,6 +15,8 @@ import CashbackInfo from './components/CashbackInfo';
 import StoreReviewInfo from './components/StoreReviewInfo';
 import CashbackBanner from './components/CashbackBanner';
 import OrderSummary from './components/OrderSummary';
+import MemberBanner from './components/MemberBanner';
+import MemberCard from './components/MemberCard';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
 import config from '../../../../../config';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -76,6 +78,9 @@ import {
   initProfilePage as initProfilePageThunk,
   hideProfileModal as hideProfileModalThunk,
   updateRedirectFrom as updateRedirectFromThunk,
+  joinBusinessMembership as joinBusinessMembershipThunk,
+  loadBusinessMembershipInfo as loadBusinessMembershipInfoThunk,
+  goToJoinMembershipPage as goToJoinMembershipPageThunk,
 } from './redux/thunks';
 import {
   getCashback,
@@ -97,6 +102,10 @@ import {
   getFoodCourtId,
   getFoodCourtHashCode,
   getFoodCourtMerchantName,
+  getShouldJoinBusinessMembership,
+  getIsRewardInfoReady,
+  getShouldShowMemberBanner,
+  getShouldShowMemberCard,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -125,8 +134,17 @@ export class ThankYou extends PureComponent {
   }
 
   componentDidMount = async () => {
-    const { user, loadCashbackInfo, loadOrderStoreReview, initProfilePage, updateRedirectFrom } = this.props;
+    const {
+      user,
+      loadCashbackInfo,
+      loadOrderStoreReview,
+      initProfilePage,
+      updateRedirectFrom,
+      loadBusinessMembershipInfo,
+    } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
+
+    loadBusinessMembershipInfo();
 
     if (receiptNumber) {
       loadCashbackInfo(receiptNumber);
@@ -137,7 +155,11 @@ export class ThankYou extends PureComponent {
 
     await updateRedirectFrom();
 
-    const { isInitProfilePageEnabled } = this.props;
+    const { isInitProfilePageEnabled, shouldJoinBusinessMembership, joinBusinessMembership } = this.props;
+
+    if (shouldJoinBusinessMembership) {
+      joinBusinessMembership();
+    }
 
     if (isInitProfilePageEnabled) {
       await initProfilePage();
@@ -617,6 +639,12 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  handleJoinMembership = () => {
+    const { goToJoinMembershipPage } = this.props;
+
+    goToJoinMembershipPage();
+  };
+
   setContainerHeight() {
     if (
       Utils.isIOSWebview() &&
@@ -969,6 +997,21 @@ export class ThankYou extends PureComponent {
     );
   }
 
+  renderRewardInfo() {
+    const { shouldShowMemberBanner, shouldShowMemberCard, shouldShowCashbackCard, isRewardInfoReady } = this.props;
+
+    if (!isRewardInfoReady) {
+      return null;
+    }
+
+    return (
+      <>
+        {shouldShowMemberBanner && <MemberBanner onJoinMembershipClick={this.handleJoinMembership} />}
+        {shouldShowMemberCard ? <MemberCard /> : shouldShowCashbackCard ? <CashbackInfo /> : null}
+      </>
+    );
+  }
+
   render() {
     const {
       t,
@@ -979,7 +1022,6 @@ export class ThankYou extends PureComponent {
       storeRating,
       businessUTCOffset,
       onlineStoreInfo,
-      shouldShowCashbackCard,
       shouldShowStoreReviewCard,
       shouldShowCashbackBanner,
       profileModalVisibility,
@@ -1034,7 +1076,7 @@ export class ThankYou extends PureComponent {
             {shouldShowStoreReviewCard && (
               <StoreReviewInfo rating={storeRating} onRatingChanged={this.handleChangeStoreRating} />
             )}
-            {shouldShowCashbackCard && <CashbackInfo />}
+            {this.renderRewardInfo()}
             {this.renderDeliveryInfo()}
             {this.renderPickupTakeAwayDineInInfo()}
             <OrderSummary
@@ -1111,6 +1153,9 @@ ThankYou.propTypes = {
   foodCourtMerchantName: PropTypes.string,
   loadOrder: PropTypes.func,
   cancelOrder: PropTypes.func,
+  joinBusinessMembership: PropTypes.func,
+  loadBusinessMembershipInfo: PropTypes.func,
+  goToJoinMembershipPage: PropTypes.func,
   loadOrderStatus: PropTypes.func,
   initProfilePage: PropTypes.func,
   hideProfileModal: PropTypes.func,
@@ -1120,10 +1165,13 @@ ThankYou.propTypes = {
   loadStoreIdHashCode: PropTypes.func,
   loadOrderStoreReview: PropTypes.func,
   loadFoodCourtIdHashCode: PropTypes.func,
+  isRewardInfoReady: PropTypes.bool,
   isOrderCancellable: PropTypes.bool,
   isCashbackAvailable: PropTypes.bool,
   isUseStorehubLogistics: PropTypes.bool,
   profileModalVisibility: PropTypes.bool,
+  shouldShowMemberCard: PropTypes.bool,
+  shouldShowMemberBanner: PropTypes.bool,
   shouldShowCashbackCard: PropTypes.bool,
   shouldShowCashbackBanner: PropTypes.bool,
   isInitProfilePageEnabled: PropTypes.bool,
@@ -1132,6 +1180,7 @@ ThankYou.propTypes = {
   loadStoreIdTableIdHashCode: PropTypes.func,
   isCoreBusinessAPICompleted: PropTypes.bool,
   isCancelOrderRequestFailed: PropTypes.bool,
+  shouldJoinBusinessMembership: PropTypes.bool,
   cancelOrderRequestErrorMessage: PropTypes.string,
   isUpdateShippingTypeRequestFailed: PropTypes.bool,
   orderCancellationReasonAsideVisible: PropTypes.bool,
@@ -1165,6 +1214,9 @@ ThankYou.defaultProps = {
   foodCourtMerchantName: null,
   loadOrder: () => {},
   cancelOrder: () => {},
+  joinBusinessMembership: () => {},
+  loadBusinessMembershipInfo: () => {},
+  goToJoinMembershipPage: () => {},
   loadOrderStatus: () => {},
   initProfilePage: () => {},
   hideProfileModal: () => {},
@@ -1172,8 +1224,11 @@ ThankYou.defaultProps = {
   updateRedirectFrom: () => {},
   loadStoreIdHashCode: () => {},
   loadOrderStoreReview: () => {},
+  isRewardInfoReady: false,
   isOrderCancellable: false,
   isCashbackAvailable: false,
+  shouldShowMemberCard: false,
+  shouldShowMemberBanner: false,
   isUseStorehubLogistics: false,
   profileModalVisibility: false,
   shouldShowCashbackCard: false,
@@ -1184,6 +1239,7 @@ ThankYou.defaultProps = {
   isFromBeepSiteOrderHistory: false,
   isCoreBusinessAPICompleted: false,
   isCancelOrderRequestFailed: false,
+  shouldJoinBusinessMembership: false,
   cancelOrderRequestErrorMessage: '',
   loadStoreIdTableIdHashCode: () => {},
   isUpdateShippingTypeRequestFailed: false,
@@ -1235,6 +1291,10 @@ export default compose(
       updateShippingTypRequestErrorMessage: getUpdateShippingTypeRequestErrorMessage(state),
       isInitProfilePageEnabled: getIsInitProfilePageEnabled(state),
       redirectFrom: getRedirectFrom(state),
+      isRewardInfoReady: getIsRewardInfoReady(state),
+      shouldShowMemberBanner: getShouldShowMemberBanner(state),
+      shouldShowMemberCard: getShouldShowMemberCard(state),
+      shouldJoinBusinessMembership: getShouldJoinBusinessMembership(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
@@ -1252,6 +1312,9 @@ export default compose(
       initProfilePage: bindActionCreators(initProfilePageThunk, dispatch),
       hideProfileModal: bindActionCreators(hideProfileModalThunk, dispatch),
       updateRedirectFrom: bindActionCreators(updateRedirectFromThunk, dispatch),
+      joinBusinessMembership: bindActionCreators(joinBusinessMembershipThunk, dispatch),
+      loadBusinessMembershipInfo: bindActionCreators(loadBusinessMembershipInfoThunk, dispatch),
+      goToJoinMembershipPage: bindActionCreators(goToJoinMembershipPageThunk, dispatch),
     })
   )
 )(ThankYou);

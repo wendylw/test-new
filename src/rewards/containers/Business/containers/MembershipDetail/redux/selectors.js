@@ -4,18 +4,17 @@ import {
   PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
 } from '../../../../../../common/utils/constants';
-import { getQueryString, getPrice } from '../../../../../../common/utils';
+import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
+import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
 import {
   getMerchantCurrency,
   getMerchantLocale,
   getMerchantCountry,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
-} from '../../../../../redux/modules/merchant/selectors';
+} from '../../../../../../redux/modules/merchant/selectors';
 import { getCustomerCashback } from '../../../../../redux/modules/customer/selectors';
-
-export const getSource = () => getQueryString('source');
 
 export const getLoadUniquePromoListData = state =>
   state.business.membershipDetail.loadUniquePromoListRequest.data || [];
@@ -40,10 +39,16 @@ export const getIsFromEarnedCashbackQRScan = createSelector(
   source => source === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
 );
 
+export const getIsUserFromOrdering = createSelector(getSource, source =>
+  [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
+);
+
 export const getIsOrderAndRedeemButtonDisplay = createSelector(
   getIsMerchantEnabledOROrdering,
   getIsMerchantEnabledDelivery,
-  (isOROrderingEnabled, isDeliveryEnabled) => isOROrderingEnabled && isDeliveryEnabled
+  getIsUserFromOrdering,
+  (isOROrderingEnabled, isDeliveryEnabled, isUserFromOrdering) =>
+    !isUserFromOrdering && isOROrderingEnabled && isDeliveryEnabled
 );
 
 export const getUniquePromoList = createSelector(
@@ -88,4 +93,10 @@ export const getUniquePromoList = createSelector(
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };
     })
+);
+
+export const getShouldShowBackButton = createSelector(
+  getIsWebview,
+  getIsUserFromOrdering,
+  (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
 );

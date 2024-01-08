@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { joinMembership } from './thunks';
-import { API_REQUEST_STATUS } from '../../../../../utils/constants';
+import { API_REQUEST_STATUS } from '../../../utils/constants';
 
 const initialState = {
   joinMembershipRequest: {
@@ -11,7 +11,7 @@ const initialState = {
 };
 
 export const { actions, reducer } = createSlice({
-  name: 'rewards/business/common',
+  name: 'app/membership',
   initialState,
   extraReducers: {
     [joinMembership.pending.type]: state => {

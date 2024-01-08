@@ -4,7 +4,7 @@ import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import NewMemberCelebrationAnimateImage from '../../../../../../../images/succeed-animation.gif';
 import MembershipLevelIcon from '../../../../../../../images/membership-level.svg';
-import { getIsNewMember } from '../../../../redux/common/selectors';
+import { getIsNewMember } from '../../../../../../../redux/modules/membership/selectors';
 import { alert, toast } from '../../../../../../../common/utils/feedback';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './MemberPrompt.module.scss';
