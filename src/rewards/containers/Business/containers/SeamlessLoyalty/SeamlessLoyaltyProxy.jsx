@@ -8,8 +8,13 @@ import { closeWebView } from '../../../../../utils/native-methods';
 import { getMerchantBusiness, getIsMerchantEnabledMembership } from '../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getIsWeb } from '../../../../redux/modules/common/selectors';
 import { getSource } from '../../redux/common/selectors';
-import { getSeamlessLoyaltyPageHashCode, getIsAllInitialRequestsCompleted } from './redux/selectors';
+import {
+  getSeamlessLoyaltyPageHashCode,
+  getIsAllInitialRequestsCompleted,
+  getAnyInitialRequestError,
+} from './redux/selectors';
 import { mounted } from './redux/thunks';
+import { result } from '../../../../../common/utils/feedback';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import PageToast from '../../../../../common/components/PageToast';
@@ -26,6 +31,7 @@ const SeamlessLoyaltyProxy = () => {
   const seamlessLoyaltyPageHashCode = useSelector(getSeamlessLoyaltyPageHashCode);
   const isMerchantEnabledMembership = useSelector(getIsMerchantEnabledMembership);
   const isAllInitialRequestsCompleted = useSelector(getIsAllInitialRequestsCompleted);
+  const anyInitialRequestError = useSelector(getAnyInitialRequestError);
   const seamlessLoyaltyURL = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace('%business%', merchantBusiness)}${
     PATH_NAME_MAPPING.CASHBACK_BASE
   }${PATH_NAME_MAPPING.STORE_REDEMPTION}?h=${seamlessLoyaltyPageHashCode}`;
@@ -46,7 +52,7 @@ const SeamlessLoyaltyProxy = () => {
   useEffect(() => {
     if (isAllInitialRequestsCompleted) {
       const membershipDetailHistory = {
-        path: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
+        pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
         search: `?business=${merchantBusiness}&source=${source}`,
       };
 
@@ -62,6 +68,18 @@ const SeamlessLoyaltyProxy = () => {
     merchantBusiness,
     source,
   ]);
+
+  useEffect(() => {
+    if (anyInitialRequestError) {
+      result(t('SomethingWentWrongDescription'), {
+        title: t('SomethingWentWrongTitle'),
+        closeButtonContent: t('Retry'),
+        onClose: () => {
+          dispatch(mounted());
+        },
+      });
+    }
+  }, [anyInitialRequestError]);
 
   return (
     <Frame>
