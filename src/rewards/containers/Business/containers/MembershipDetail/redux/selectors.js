@@ -105,21 +105,16 @@ export const getUniquePromoList = createSelector(
 
 export const getNewMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
-  getCustomerCashbackPrice,
+  getCustomerCashback,
   getIsFromJoinMembershipUrlClick,
   getIsFromSeamlessLoyaltyQrScan,
-  (
-    isLoadCustomerRequestCompleted,
-    customerCashbackPrice,
-    isFromJoinMembershipUrlClick,
-    isFromSeamlessLoyaltyQrScan
-  ) => {
+  (isLoadCustomerRequestCompleted, customerCashback, isFromJoinMembershipUrlClick, isFromSeamlessLoyaltyQrScan) => {
     if (isFromJoinMembershipUrlClick) {
       return NEW_MEMBER_TYPES.DEFAULT;
     }
 
     if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
-      return customerCashbackPrice > 0 ? NEW_MEMBER_TYPES.REDEEM_CASHBACK : NEW_MEMBER_TYPES.DEFAULT;
+      return customerCashback > 0 ? NEW_MEMBER_TYPES.REDEEM_CASHBACK : NEW_MEMBER_TYPES.DEFAULT;
     }
 
     return null;
@@ -128,21 +123,16 @@ export const getNewMemberPromptCategory = createSelector(
 
 export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
-  getCustomerCashbackPrice,
+  getCustomerCashback,
   getIsFromJoinMembershipUrlClick,
   getIsFromSeamlessLoyaltyQrScan,
-  (
-    isLoadCustomerRequestCompleted,
-    customerCashbackPrice,
-    isFromJoinMembershipUrlClick,
-    isFromSeamlessLoyaltyQrScan
-  ) => {
+  (isLoadCustomerRequestCompleted, customerCashback, isFromJoinMembershipUrlClick, isFromSeamlessLoyaltyQrScan) => {
     if (isFromJoinMembershipUrlClick) {
       return RETURNING_MEMBER_TYPES.DEFAULT;
     }
 
     if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
-      return customerCashbackPrice > 0 ? RETURNING_MEMBER_TYPES.REDEEM_CASHBACK : NEW_MEMBER_TYPES.DEFAULT;
+      return customerCashback > 0 ? RETURNING_MEMBER_TYPES.REDEEM_CASHBACK : NEW_MEMBER_TYPES.DEFAULT;
     }
 
     return null;
