@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../common/utils/ui';
 import { closeWebView } from '../../../../../utils/native-methods';
 import { mounted } from './redux/thunks';
-import { getIsWebview, getIsTNGMiniProgram } from '../../../../redux/modules/common/selectors';
+import { getIsWebview, getIsWeb } from '../../../../redux/modules/common/selectors';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MemberCard from './components/MemberCard';
@@ -19,8 +19,7 @@ const MembershipDetail = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
   const isWebview = useSelector(getIsWebview);
-  const isTNGMiniProgram = useSelector(getIsTNGMiniProgram);
-  const isWeb = !isWebview && !isTNGMiniProgram;
+  const isWeb = useSelector(getIsWeb);
   const handleClickHeaderBackButton = useCallback(() => {
     if (isWebview) {
       closeWebView();
