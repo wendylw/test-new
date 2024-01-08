@@ -79,7 +79,7 @@ const SeamlessLoyaltyProxy = () => {
         },
       });
     }
-  }, [anyInitialRequestError]);
+  }, [anyInitialRequestError, dispatch, t]);
 
   return (
     <Frame>
