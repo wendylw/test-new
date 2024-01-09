@@ -6,7 +6,6 @@ import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import ErrorResult from './components/ErrorResult';
 import SkeletonLoader from './components/SkeletonLoader';
-import PageRedirectingIndicator from './components/PageRedirectingIndicator';
 import {
   getShouldShowSkeletonLoader,
   getShouldShowUnsupportedError,
@@ -72,7 +71,6 @@ const MembershipFormProxy = () => {
       ) : (
         <MembershipForm />
       )}
-      <PageRedirectingIndicator />
     </Frame>
   );
 };
