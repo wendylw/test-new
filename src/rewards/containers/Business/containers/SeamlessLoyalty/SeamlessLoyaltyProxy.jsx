@@ -3,17 +3,24 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useMount } from 'react-use';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import BeepWarningImage from '../../../../../images/beep-warning.svg';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { closeWebView } from '../../../../../utils/native-methods';
 import { getMerchantBusiness, getIsMerchantEnabledMembership } from '../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getIsWeb } from '../../../../redux/modules/common/selectors';
 import { getSource } from '../../redux/common/selectors';
-import { getSeamlessLoyaltyPageHashCode, getIsAllInitialRequestsCompleted } from './redux/selectors';
+import {
+  getSeamlessLoyaltyPageHashCode,
+  getIsAllInitialRequestsCompleted,
+  getAnyInitialRequestError,
+} from './redux/selectors';
 import { mounted } from './redux/thunks';
+import { result } from '../../../../../common/utils/feedback';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import PageToast from '../../../../../common/components/PageToast';
 import Loader from '../../../../../common/components/Loader';
+import ResultContent from '../../../../../common/components/Result/ResultContent';
 
 const SeamlessLoyaltyProxy = () => {
   const { t } = useTranslation();
@@ -26,6 +33,7 @@ const SeamlessLoyaltyProxy = () => {
   const seamlessLoyaltyPageHashCode = useSelector(getSeamlessLoyaltyPageHashCode);
   const isMerchantEnabledMembership = useSelector(getIsMerchantEnabledMembership);
   const isAllInitialRequestsCompleted = useSelector(getIsAllInitialRequestsCompleted);
+  const anyInitialRequestError = useSelector(getAnyInitialRequestError);
   const seamlessLoyaltyURL = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace('%business%', merchantBusiness)}${
     PATH_NAME_MAPPING.CASHBACK_BASE
   }${PATH_NAME_MAPPING.STORE_REDEMPTION}?h=${seamlessLoyaltyPageHashCode}`;
@@ -36,7 +44,7 @@ const SeamlessLoyaltyProxy = () => {
   }, [isWebview]);
 
   useMount(() => {
-    if (isWeb) {
+    if (!isWeb) {
       window.location.href = seamlessLoyaltyURL;
     } else {
       dispatch(mounted());
@@ -46,7 +54,7 @@ const SeamlessLoyaltyProxy = () => {
   useEffect(() => {
     if (isAllInitialRequestsCompleted) {
       const membershipDetailHistory = {
-        path: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
+        pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
         search: `?business=${merchantBusiness}&source=${source}`,
       };
 
@@ -62,6 +70,25 @@ const SeamlessLoyaltyProxy = () => {
     merchantBusiness,
     source,
   ]);
+
+  useEffect(() => {
+    if (anyInitialRequestError) {
+      result(
+        <ResultContent
+          imageSrc={BeepWarningImage}
+          content={t('SomethingWentWrongDescription')}
+          title={t('SomethingWentWrongTitle')}
+        />,
+        {
+          customizeContent: true,
+          closeButtonContent: t('Retry'),
+          onClose: () => {
+            dispatch(mounted());
+          },
+        }
+      );
+    }
+  }, [anyInitialRequestError, dispatch, t]);
 
   return (
     <Frame>

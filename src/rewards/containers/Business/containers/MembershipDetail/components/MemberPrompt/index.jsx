@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import NewMemberCelebrationAnimateImage from '../../../../../../../images/succeed-animation.gif';
 import {
@@ -28,25 +27,27 @@ const NewMember = () => {
   const { titleI18Key, descriptionI18Key } = newMemberContentI18nKeys || {};
   const [celebrationAnimateImage, setCelebrationAnimateImage] = React.useState(NewMemberCelebrationAnimateImage);
 
-  useMount(() => {
-    const content = (
-      <div className={styles.NewMemberContent}>
-        {newMemberIcon && (
-          <div className={styles.NewMemberIcon}>
-            <ObjectFitImage noCompression src={newMemberIcon} alt="Store New Member Icon in StoreHub" />
-          </div>
-        )}
-        {titleI18Key && <h4 className={styles.NewMemberTitle}>{t(titleI18Key)}</h4>}
-        {descriptionI18Key && <p className={styles.NewMemberDescription}>{t(descriptionI18Key)}</p>}
-      </div>
-    );
+  useEffect(() => {
+    if (newMemberContentI18nKeys) {
+      const content = (
+        <div className={styles.NewMemberContent}>
+          {newMemberIcon && (
+            <div className={styles.NewMemberIcon}>
+              <ObjectFitImage noCompression src={newMemberIcon} alt="Store New Member Icon in StoreHub" />
+            </div>
+          )}
+          {titleI18Key && <h4 className={styles.NewMemberTitle}>{t(titleI18Key)}</h4>}
+          {descriptionI18Key && <p className={styles.NewMemberDescription}>{t(descriptionI18Key)}</p>}
+        </div>
+      );
 
-    setTimeout(() => {
-      setCelebrationAnimateImage(null);
-    }, CELEBRATION_ANIMATION_TIME);
+      setTimeout(() => {
+        setCelebrationAnimateImage(null);
+      }, CELEBRATION_ANIMATION_TIME);
 
-    alert(content);
-  });
+      alert(content);
+    }
+  }, [newMemberContentI18nKeys, t, titleI18Key, descriptionI18Key, newMemberIcon]);
 
   return (
     celebrationAnimateImage && (
@@ -69,23 +70,32 @@ const ReturningMember = () => {
   const returningMemberPromptCategory = useSelector(getReturningMemberPromptCategory);
   const returningMemberIcon = RETURNING_MEMBER_ICONS[returningMemberPromptCategory];
   const returningMemberContentI18nKeys = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory];
-  const { titleI18Key, descriptionI18Key } = returningMemberContentI18nKeys;
+  const { titleI18Key, descriptionI18Key } = returningMemberContentI18nKeys || {};
 
-  useMount(() => {
-    const content = (
-      <div className={styles.ReturningMemberContent}>
-        {returningMemberIcon && (
-          <div className={styles.ReturningMemberIcon}>
-            <ObjectFitImage noCompression src={returningMemberIcon} alt="Store Returning Member Icon in StoreHub" />
-          </div>
-        )}
-        {titleI18Key && <h4 className={styles.ReturningMemberTitle}>{t(titleI18Key)}</h4>}
-        {descriptionI18Key && <p className={styles.ReturningMemberDescription}>{t(descriptionI18Key)}</p>}
-      </div>
-    );
+  useEffect(() => {
+    if (returningMemberContentI18nKeys) {
+      const content = (
+        <div className={styles.ReturningMemberContent}>
+          {returningMemberIcon && (
+            <div className={styles.ReturningMemberIcon}>
+              <ObjectFitImage noCompression src={returningMemberIcon} alt="Store Returning Member Icon in StoreHub" />
+            </div>
+          )}
+          {titleI18Key && <h4 className={styles.ReturningMemberTitle}>{t(titleI18Key)}</h4>}
+          {descriptionI18Key && <p className={styles.ReturningMemberDescription}>{t(descriptionI18Key)}</p>}
+        </div>
+      );
 
-    isFromJoinMembershipUrlClick ? toast.success(t(titleI18Key)) : alert(content);
-  });
+      isFromJoinMembershipUrlClick ? toast.success(t(titleI18Key)) : alert(content);
+    }
+  }, [
+    returningMemberContentI18nKeys,
+    isFromJoinMembershipUrlClick,
+    t,
+    titleI18Key,
+    descriptionI18Key,
+    returningMemberIcon,
+  ]);
 
   return <></>;
 };
