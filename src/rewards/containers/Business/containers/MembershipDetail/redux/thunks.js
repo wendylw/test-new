@@ -34,9 +34,6 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
 
   await dispatch(initUserInfo());
 
-  const isLogin = getIsLogin(getState());
-  const isNotLoginInWeb = !isLogin && !isWebview && !isTNGMiniProgram;
-
   if (isWebview) {
     await dispatch(loginUserByBeepApp());
   }
@@ -44,6 +41,9 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   if (isTNGMiniProgram) {
     await dispatch(loginUserByTngMiniProgram());
   }
+
+  const isLogin = getIsLogin(getState());
+  const isNotLoginInWeb = !isLogin && !isWebview && !isTNGMiniProgram;
 
   if (isNotLoginInWeb) {
     dispatch(push(`${PATH_NAME_MAPPING.REWARDS_LOGIN}${search}`, { shouldGoBack: true }));
