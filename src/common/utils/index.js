@@ -425,7 +425,7 @@ export const isJSON = value => {
 export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
 
-export const getDecimalNumber = (number = 0, decimal = 2) => {
+export const getDecimalNumber = (number = 0) => {
   const scientificNotationRegex = /^[+-]?\d+(\.\d+)?[eE][+-]?\d+$/;
   const isScientificNotation = scientificNotationRegex.test(number);
 
@@ -433,7 +433,7 @@ export const getDecimalNumber = (number = 0, decimal = 2) => {
     return number;
   }
 
-  return parseFloat(number).toFixed(decimal);
+  return Math.round(number * 100) / 100;
 };
 
 export const getPrice = (number = 0, { locale, currency, country, withCurrency = true }) => {
