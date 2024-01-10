@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { push } from 'connected-react-router';
+import { push, replace } from 'connected-react-router';
 import { getBusinessInfo } from './api-request';
 import { goBack } from '../../../../../../utils/native-methods';
 import { getIsTNGMiniProgram, getIsWebview, getLocationSearch } from '../../../../../redux/modules/common/selectors';
@@ -37,7 +37,7 @@ export const goToMembershipDetail = createAsyncThunk(
     const state = getState();
     const search = getLocationSearch(state);
 
-    dispatch(push(`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`));
+    dispatch(replace(`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`));
   }
 );
 
