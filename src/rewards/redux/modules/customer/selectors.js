@@ -1,7 +1,8 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { getIsAfterDateTime } from '../../../../utils/datetime-lib';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import { getDecimalNumber } from '../../../../common/utils';
+import { getIsAfterDateTime } from '../../../../utils/datetime-lib';
 
 export const getCustomerData = state => state.customer.loadCustomerRequest.data;
 
@@ -10,7 +11,7 @@ export const getLoadCustomerRequestStatus = state => state.customer.loadCustomer
 export const getLoadCustomerRequestError = state => state.customer.loadCustomerRequest.error;
 
 export const getCustomerCashback = createSelector(getCustomerData, customerData =>
-  _get(customerData, 'storeCreditInfo.storeCreditsBalance', 0)
+  getDecimalNumber(_get(customerData, 'storeCreditInfo.storeCreditsBalance', 0))
 );
 
 export const getCashbackExpiredDate = createSelector(getCustomerData, customerData =>
