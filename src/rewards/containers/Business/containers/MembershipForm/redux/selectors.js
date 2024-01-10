@@ -6,14 +6,19 @@ import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
+import {
+  getCustomerData,
+  getLoadCustomerRequestStatus,
+  getLoadCustomerRequestError,
+} from '../../../../../redux/modules/customer/selectors';
 
 export const getBusinessInfoRequest = state => state.business.membershipForm.fetchBusinessInfoRequest;
 
 export const getBusinessInfo = createSelector(getBusinessInfoRequest, businessInfoRequest => businessInfoRequest.data);
 
-export const getBusinessLogo = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'businessLogo', ''));
+export const getBusinessLogo = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'logo', ''));
 
-export const getBusinessName = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'businessName', ''));
+export const getBusinessName = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'displayName', ''));
 
 export const getIsBusinessMembershipEnabled = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'membershipEnabled', false)
@@ -40,44 +45,25 @@ export const getIsBusinessInfoRequestStatusCompleted = createSelector(
     [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(businessInfoRequestStatus)
 );
 
-export const getConsumerCustomerBusinessInfoRequest = state =>
-  state.business.membershipForm.fetchConsumerCustomerBusinessInfoRequest;
-
-export const getConsumerCustomerBusinessInfo = createSelector(
-  getConsumerCustomerBusinessInfoRequest,
-  consumerCustomerBusinessInfoRequest => consumerCustomerBusinessInfoRequest.data
-);
-
 export const getHasUserJoinedBusinessMembership = createSelector(
-  getConsumerCustomerBusinessInfo,
-  consumerCustomerBusinessInfo => !!_get(consumerCustomerBusinessInfo, 'customerTier', null)
+  getCustomerData,
+  customerData => !!_get(customerData, 'customerTier', null)
 );
 
-export const getConsumerCustomerBusinessInfoRequestStatus = createSelector(
-  getConsumerCustomerBusinessInfoRequest,
-  consumerCustomerBusinessInfoRequest => consumerCustomerBusinessInfoRequest.status
+export const getIsLoadCustomerRequestStatusRejected = createSelector(
+  getLoadCustomerRequestStatus,
+  loadCustomerRequestStatus => loadCustomerRequestStatus === API_REQUEST_STATUS.REJECTED
 );
 
-export const getIsConsumerCustomerBusinessInfoRequestStatusRejected = createSelector(
-  getConsumerCustomerBusinessInfoRequestStatus,
-  consumerCustomerBusinessInfoRequest => consumerCustomerBusinessInfoRequest === API_REQUEST_STATUS.REJECTED
-);
-
-export const getIsConsumerCustomerBusinessInfoRequestStatusCompleted = createSelector(
-  getConsumerCustomerBusinessInfoRequestStatus,
-  consumerCustomerBusinessInfoRequest =>
-    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(consumerCustomerBusinessInfoRequest)
-);
-
-export const getConsumerCustomerBusinessInfoRequestError = createSelector(
-  getConsumerCustomerBusinessInfoRequest,
-  consumerCustomerBusinessInfoRequest => consumerCustomerBusinessInfoRequest.error
+export const getIsLoadCustomerRequestStatusCompleted = createSelector(
+  getLoadCustomerRequestStatus,
+  loadCustomerRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadCustomerRequestStatus)
 );
 
 export const getIsCustomerNotFoundError = createSelector(
-  getConsumerCustomerBusinessInfoRequestError,
-  consumerCustomerBusinessInfoRequestError =>
-    consumerCustomerBusinessInfoRequestError?.code === CUSTOMER_NOT_FOUND_ERROR_CODE
+  getLoadCustomerRequestError,
+  loadCustomerRequestError => loadCustomerRequestError?.code === CUSTOMER_NOT_FOUND_ERROR_CODE
 );
 
 export const getBusinessRewardsUrl = state =>
@@ -87,26 +73,8 @@ export const getCongratulationUrl = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.FOUNDATION_OF_TIERED_MEMBERSHIP).congratsURL;
 
 export const getShouldShowSkeletonLoader = createSelector(
-  getIsLogin,
-  getIsCheckLoginRequestCompleted,
   getIsBusinessInfoRequestStatusCompleted,
-  getIsConsumerCustomerBusinessInfoRequestStatusCompleted,
-  (
-    isLogin,
-    isCheckLoginRequestCompleted,
-    isBusinessInfoRequestStatusCompleted,
-    isConsumerCustomerBusinessInfoRequestStatusCompleted
-  ) => {
-    if (isLogin) {
-      return !(
-        isCheckLoginRequestCompleted &&
-        isBusinessInfoRequestStatusCompleted &&
-        isConsumerCustomerBusinessInfoRequestStatusCompleted
-      );
-    }
-
-    return !(isCheckLoginRequestCompleted && isBusinessInfoRequestStatusCompleted);
-  }
+  isBusinessInfoRequestStatusCompleted => !isBusinessInfoRequestStatusCompleted
 );
 
 export const getShouldShowUnsupportedError = createSelector(
@@ -120,43 +88,37 @@ export const getShouldShowUnknownError = createSelector(
   getIsLogin,
   getIsCustomerNotFoundError,
   getIsBusinessInfoRequestStatusRejected,
-  getIsConsumerCustomerBusinessInfoRequestStatusRejected,
-  (
-    isLogin,
-    isCustomerNotFoundError,
-    isBusinessInfoRequestStatusRejected,
-    isConsumerCustomerBusinessInfoRequestStatusRejected
-  ) => {
+  getIsLoadCustomerRequestStatusRejected,
+  (isLogin, isCustomerNotFoundError, isBusinessInfoRequestStatusRejected, isLoadCustomerRequestStatusRejected) => {
     if (isBusinessInfoRequestStatusRejected) {
       return true;
     }
 
     if (isLogin) {
       // NOTE: customer could login from other business so we need to consider this special case.
-      return isConsumerCustomerBusinessInfoRequestStatusRejected && !isCustomerNotFoundError;
+      return isLoadCustomerRequestStatusRejected && !isCustomerNotFoundError;
     }
 
     return false;
   }
 );
 
-export const getJoinMembershipRequest = state => state.business.membershipForm.joinMembershipRequest;
-
-export const getJoinMembershipRequestStatus = createSelector(
-  getJoinMembershipRequest,
-  joinMembershipRequest => joinMembershipRequest.status
-);
-
-export const getIsJoinMembershipRequestStatusFulfilled = createSelector(
-  getJoinMembershipRequestStatus,
-  joinMembershipRequestStatus => joinMembershipRequestStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getShouldShowCongratulation = createSelector(
+export const getShouldShowFooter = createSelector(
+  getIsLogin,
+  getIsCheckLoginRequestCompleted,
   getHasUserJoinedBusinessMembership,
-  getIsJoinMembershipRequestStatusFulfilled,
-  (hasJoinedMembership, isJoinMembershipRequestStatusFulfilled) =>
-    hasJoinedMembership || isJoinMembershipRequestStatusFulfilled
+  getIsLoadCustomerRequestStatusCompleted,
+  (isLogin, isCheckLoginRequestCompleted, hasUserJoinedBusinessMembership, isLoadCustomerRequestStatusCompleted) => {
+    if (!isCheckLoginRequestCompleted) {
+      return false;
+    }
+
+    if (!isLogin) {
+      return true;
+    }
+
+    return isLoadCustomerRequestStatusCompleted && !hasUserJoinedBusinessMembership;
+  }
 );
 
 export const getShouldShowBackButton = createSelector(getIsWebview, isInWebview => isInWebview);

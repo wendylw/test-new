@@ -5,17 +5,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import ErrorResult from './components/ErrorResult';
-import SuccessResult from './components/SuccessResult';
 import SkeletonLoader from './components/SkeletonLoader';
 import {
   getShouldShowSkeletonLoader,
   getShouldShowUnsupportedError,
   getShouldShowUnknownError,
-  getShouldShowCongratulation,
   getShouldShowBackButton,
+  getHasUserJoinedBusinessMembership,
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
-import { mounted, backButtonClicked, retryButtonClicked, fetchCustomerMembershipInfo } from './redux/thunks';
+import { loadCustomerInfo } from '../../redux/common/thunks';
+import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail } from './redux/thunks';
 import MembershipForm from '.';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 
@@ -31,14 +31,20 @@ const MembershipFormProxy = () => {
   const shouldShowSkeletonLoader = useSelector(getShouldShowSkeletonLoader);
   const shouldShowUnsupportedError = useSelector(getShouldShowUnsupportedError);
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
-  const shouldShowCongratulation = useSelector(getShouldShowCongratulation);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
+  const hasJoinedMembership = useSelector(getHasUserJoinedBusinessMembership);
 
   useEffect(() => {
     if (isLogin) {
-      dispatch(fetchCustomerMembershipInfo());
+      dispatch(loadCustomerInfo());
     }
   }, [dispatch, isLogin]);
+
+  useEffect(() => {
+    if (hasJoinedMembership) {
+      dispatch(goToMembershipDetail());
+    }
+  }, [dispatch, hasJoinedMembership]);
 
   const handleClickBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickRetryButton = useCallback(() => dispatch(retryButtonClicked()), [dispatch]);
@@ -62,8 +68,6 @@ const MembershipFormProxy = () => {
           imageSrc={BeepWarningImage}
           onCloseButtonClick={handleClickRetryButton}
         />
-      ) : shouldShowCongratulation ? (
-        <SuccessResult />
       ) : (
         <MembershipForm />
       )}
