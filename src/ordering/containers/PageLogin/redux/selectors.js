@@ -8,12 +8,13 @@ import Constants, {
   OTP_SERVER_ERROR_I18N_KEYS,
   OTP_ERROR_POPUP_I18N_KEYS,
 } from '../../../../utils/constants';
-import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import { API_REQUEST_STATUS, REFERRER_SOURCE_TYPES } from '../../../../common/utils/constants';
 import {
   getOtpRequest,
   getIsLoginRequestStatusPending,
   getIsQrOrderingShippingType,
   getIsGuestLoginDisabled,
+  getLoginReferrerSource,
 } from '../../../redux/modules/app';
 import { ERROR_TYPES } from '../../../../utils/api/constants';
 
@@ -124,8 +125,15 @@ export const getShouldShowLoader = createSelector(
   (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
 );
 
+export const getIsUserFromThankYouPage = createSelector(
+  getLoginReferrerSource,
+  loginReferrerSource => loginReferrerSource === REFERRER_SOURCE_TYPES.THANK_YOU
+);
+
 export const getShouldShowGuestOption = createSelector(
   getIsGuestLoginDisabled,
+  getIsUserFromThankYouPage,
   getIsQrOrderingShippingType,
-  (isGuestLoginDisabled, isQrOrderingShippingType) => isQrOrderingShippingType && !isGuestLoginDisabled
+  (isGuestLoginDisabled, isUserFromThankYouPage, isQrOrderingShippingType) =>
+    !isUserFromThankYouPage && isQrOrderingShippingType && !isGuestLoginDisabled
 );

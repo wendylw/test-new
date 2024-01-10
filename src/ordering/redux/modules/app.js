@@ -144,6 +144,7 @@ export const initialState = {
       birthdayChangeAllowed: false,
       status: null,
     },
+    loginReferrerSource: null,
   },
   error: null, // network error
   apiError: {
@@ -919,6 +920,12 @@ export const actions = {
       });
     }
   },
+  updateLoginReferrerSource: referrerSource => ({
+    type: types.UPDATE_LOGIN_SOURCE,
+    payload: {
+      referrerSource,
+    },
+  }),
 };
 
 const user = (state = initialState.user, action) => {
@@ -931,6 +938,7 @@ const user = (state = initialState.user, action) => {
   const { business, onlineStoreInfo } = data || {};
   const source = _get(payload, 'source', null);
   const otpType = _get(payload, 'otpType', null);
+  const loginReferrerSource = _get(payload, 'referrerSource', null);
   const isFromBeepApp = source === REGISTRATION_SOURCE.BEEP_APP;
   const loginByBeepAppStatus = isFromBeepApp ? API_REQUEST_STATUS.REJECTED : null;
 
@@ -1110,6 +1118,11 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         profile: { ...state.profile, ...payload },
+      };
+    case types.UPDATE_LOGIN_SOURCE:
+      return {
+        ...state,
+        loginReferrerSource,
       };
     default:
       return state;
@@ -1483,6 +1496,8 @@ export const getIsGuestModeRequestRejected = createSelector(
   getIsGuestModeRequestStatus,
   status => status === API_REQUEST_STATUS.REJECTED
 );
+
+export const getLoginReferrerSource = createSelector(getUser, userInfo => _get(userInfo, 'loginReferrerSource', null));
 
 export const getUserIsLogin = createSelector(getUser, userInfo => _get(userInfo, 'isLogin', false));
 

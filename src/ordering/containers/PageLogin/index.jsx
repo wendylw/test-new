@@ -58,19 +58,24 @@ class PageLogin extends React.Component {
     };
   }
 
-  componentDidMount() {
-    const { shouldShowGuestOption } = this.props;
+  componentDidMount = async () => {
+    const { appActions, location } = this.props;
+    const { referrerSource } = location.state || {};
 
     if (Utils.isTNGMiniProgram()) {
       this.loginInTngMiniProgram();
     }
+
+    await appActions.updateLoginReferrerSource(referrerSource);
+
+    const { shouldShowGuestOption } = this.props;
 
     if (shouldShowGuestOption) {
       this.setState({ imageStyle: { height: `${getWebQRImageHeight()}px` } });
     }
 
     prefetch(['ORD_MNU'], ['OrderingDelivery']);
-  }
+  };
 
   componentDidUpdate(prevProps, prevState) {
     const { imageStyle: prevImageStyle } = prevState;
@@ -550,6 +555,7 @@ PageLogin.propTypes = {
     sendOtp: PropTypes.func,
     loginApp: PropTypes.func,
     updateUser: PropTypes.func,
+    updateLoginReferrerSource: PropTypes.func,
     setConsumerAsGuest: PropTypes.func,
     resetGetOtpRequest: PropTypes.func,
     resetSendOtpRequest: PropTypes.func,
@@ -583,6 +589,7 @@ PageLogin.defaultProps = {
     sendOtp: () => {},
     loginApp: () => {},
     updateUser: () => {},
+    updateLoginReferrerSource: () => {},
     setConsumerAsGuest: () => {},
     resetGetOtpRequest: () => {},
     resetSendOtpRequest: () => {},

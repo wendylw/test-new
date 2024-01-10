@@ -38,6 +38,8 @@ export const APP_TYPES = {
 
   UPDATE_CONSUMER_PROFILE: 'ordering/profile/updateProfile',
 
+  UPDATE_LOGIN_SOURCE: 'ordering/updateLoginSource',
+
   // get OTP
   RESET_GET_OTP_REQUEST: 'ORDERING/APP/RESET_GET_OTP_REQUEST',
   GET_OTP_REQUEST: 'ORDERING/APP/GET_OTP_REQUEST',
