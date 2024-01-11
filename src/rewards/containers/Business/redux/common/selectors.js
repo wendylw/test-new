@@ -37,11 +37,13 @@ export const getIsJoinMembershipNewMember = createSelector(getJoinMembershipRequ
   _get(joinMembershipRequestInfo, 'isNewMember', false)
 );
 
-export const getConfirmSharingConsumerInfoData = state => state.business.common.confirmSharingConsumerInfo.data;
+export const getConfirmSharingConsumerInfoData = state => state.business.common.confirmSharingConsumerInfoRequest.data;
 
-export const getConfirmSharingConsumerInfoStatus = state => state.business.common.confirmSharingConsumerInfo.status;
+export const getConfirmSharingConsumerInfoStatus = state =>
+  state.business.common.confirmSharingConsumerInfoRequest.status;
 
-export const getConfirmSharingConsumerInfoError = state => state.business.common.confirmSharingConsumerInfo.error;
+export const getConfirmSharingConsumerInfoError = state =>
+  state.business.common.confirmSharingConsumerInfoRequest.error;
 
 export const getIsConfirmSharingNewMember = createSelector(
   getConfirmSharingConsumerInfoData,
