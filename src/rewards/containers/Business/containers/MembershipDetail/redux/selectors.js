@@ -56,7 +56,7 @@ export const getIsFromSeamlessLoyaltyQrScan = createSelector(
 export const getIsOrderAndRedeemButtonDisplay = createSelector(
   getIsMerchantEnabledOROrdering,
   getIsMerchantEnabledDelivery,
-  (isOROrderingEnabled, isDeliveryEnabled) => isOROrderingEnabled || isDeliveryEnabled
+  (isOROrderingEnabled, isDeliveryEnabled) => isOROrderingEnabled && isDeliveryEnabled
 );
 
 export const getUniquePromoList = createSelector(
