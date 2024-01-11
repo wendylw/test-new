@@ -35,14 +35,14 @@ export const mounted = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     const business = getQueryString('business');
 
-    Growthbook.patchAttributes({ business });
     await dispatch(fetchMerchantInfo());
 
-    const merchantCountry = getMerchantCountry(getState());
+    const country = getMerchantCountry(getState());
 
-    if (merchantCountry) {
-      Growthbook.patchAttributes({ country: merchantCountry });
-    }
+    Growthbook.patchAttributes({
+      country,
+      business,
+    });
 
     await dispatch(fetchUserLoginStatus());
 
