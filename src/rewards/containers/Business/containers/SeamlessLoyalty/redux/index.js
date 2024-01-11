@@ -1,13 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import { updateSharingConsumerInfo, confirmToShareConsumerInfoRequests } from './thunks';
+import { updateSharingConsumerInfo } from './thunks';
 
 const initialState = {
   updateSharingConsumerInfo: {
-    status: null,
-    error: null,
-  },
-  confirmSharingConsumerInfo: {
     status: null,
     error: null,
   },
@@ -29,18 +25,6 @@ export const { reducer, actions } = createSlice({
     [updateSharingConsumerInfo.rejected.type]: (state, { error }) => {
       state.updateSharingConsumerInfo.status = API_REQUEST_STATUS.REJECTED;
       state.updateSharingConsumerInfo.error = error;
-    },
-    [confirmToShareConsumerInfoRequests.pending.type]: state => {
-      state.confirmSharingConsumerInfo.status = API_REQUEST_STATUS.PENDING;
-      state.confirmSharingConsumerInfo.error = null;
-    },
-    [confirmToShareConsumerInfoRequests.fulfilled.type]: state => {
-      state.confirmSharingConsumerInfo.status = API_REQUEST_STATUS.FULFILLED;
-      state.confirmSharingConsumerInfo.error = null;
-    },
-    [confirmToShareConsumerInfoRequests.rejected.type]: (state, { error }) => {
-      state.confirmSharingConsumerInfo.status = API_REQUEST_STATUS.REJECTED;
-      state.confirmSharingConsumerInfo.error = error;
     },
   },
 });

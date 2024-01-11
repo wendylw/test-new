@@ -33,6 +33,23 @@ export const getIsJoinMembershipRequestStatusCompleted = createSelector(
     [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(joinMembershipRequestStatus)
 );
 
-export const getIsNewMember = createSelector(getJoinMembershipRequestInfo, joinMembershipRequestInfo =>
+export const getIsJoinMembershipNewMember = createSelector(getJoinMembershipRequestInfo, joinMembershipRequestInfo =>
   _get(joinMembershipRequestInfo, 'isNewMember', false)
+);
+
+export const getConfirmSharingConsumerInfoData = state => state.business.common.confirmSharingConsumerInfo.data;
+
+export const getConfirmSharingConsumerInfoStatus = state => state.business.common.confirmSharingConsumerInfo.status;
+
+export const getConfirmSharingConsumerInfoError = state => state.business.common.confirmSharingConsumerInfo.error;
+
+export const getIsConfirmSharingNewMember = createSelector(
+  getConfirmSharingConsumerInfoData,
+  confirmSharingConsumerInfoData => _get(confirmSharingConsumerInfoData, 'joinMembershipResult.isNewMember', false)
+);
+
+export const getIsNewMember = createSelector(
+  getIsJoinMembershipNewMember,
+  getIsConfirmSharingNewMember,
+  (isJoinMembershipNewMember, isConfirmSharingNewMember) => isJoinMembershipNewMember || isConfirmSharingNewMember
 );

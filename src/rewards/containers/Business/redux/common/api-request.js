@@ -5,3 +5,6 @@ export const postUserMembership = ({ consumerId, business, source }) =>
     business,
     source,
   });
+
+export const postSharingConsumerInfoToMerchant = ({ requestId, business: businessName }) =>
+  post(`/api/v3/share-info-requests/${requestId}/confirmation`, { businessName });

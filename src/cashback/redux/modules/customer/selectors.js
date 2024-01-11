@@ -1,13 +1,14 @@
 import _get from 'lodash/get';
 import { createSelector } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import { getDecimalNumber } from '../../../../common/utils';
 
 export const getCustomer = state => state.customer;
 
 export const getCustomerId = createSelector(getCustomer, customerInfo => _get(customerInfo, 'data.customerId', null));
 
 export const getCustomerCashback = createSelector(getCustomer, customerInfo =>
-  _get(customerInfo, 'data.storeCreditInfo.storeCreditsBalance', 0)
+  getDecimalNumber(_get(customerInfo, 'data.storeCreditInfo.storeCreditsBalance', 0))
 );
 
 export const getLoadCustomerRequestStatus = createSelector(getCustomer, customerInfo => customerInfo.status);
