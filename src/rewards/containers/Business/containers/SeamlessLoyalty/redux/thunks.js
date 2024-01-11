@@ -8,7 +8,7 @@ import {
 import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getIsTNGMiniProgram } from '../../../../../redux/modules/common/selectors';
-import { confirmToShareConsumerInfoRequests } from '../../../redux/common/thunks';
+import { confirmToShareConsumerInfo } from '../../../redux/common/thunks';
 import { patchSharingConsumerInfo } from './api-request';
 import { getSeamlessLoyaltyRequestId, getIsSharingConsumerInfoEnabled } from './selectors';
 
@@ -51,7 +51,7 @@ export const mounted = createAsyncThunk(
     // Back-End completed creating customer and member events on the server side.
     if (isSharingConsumerInfoEnabled) {
       await dispatch(updateSharingConsumerInfo());
-      await dispatch(confirmToShareConsumerInfoRequests(requestId));
+      await dispatch(confirmToShareConsumerInfo(requestId));
     }
   }
 );

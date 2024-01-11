@@ -36,8 +36,8 @@ export const joinMembership = createAsyncThunk(
   }
 );
 
-export const confirmToShareConsumerInfoRequests = createAsyncThunk(
-  'rewards/business/seamlessLoyalty/confirmToShareConsumerInfoRequests',
+export const confirmToShareConsumerInfo = createAsyncThunk(
+  'rewards/business/common/confirmToShareConsumerInfo',
   async (requestId, { getState }) => {
     const state = getState();
     const merchantBusiness = getMerchantBusiness(state);

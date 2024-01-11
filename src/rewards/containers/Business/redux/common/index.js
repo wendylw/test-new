@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { joinMembership, confirmToShareConsumerInfoRequests } from './thunks';
+import { joinMembership, confirmToShareConsumerInfo } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
 const initialState = {
@@ -31,18 +31,18 @@ export const { actions, reducer } = createSlice({
       state.joinMembershipRequest.status = API_REQUEST_STATUS.REJECTED;
       state.joinMembershipRequest.error = error;
     },
-    [confirmToShareConsumerInfoRequests.pending.type]: state => {
-      state.confirmSharingConsumerInfo.status = API_REQUEST_STATUS.PENDING;
-      state.confirmSharingConsumerInfo.error = null;
+    [confirmToShareConsumerInfo.pending.type]: state => {
+      state.confirmSharingConsumerInfoRequest.status = API_REQUEST_STATUS.PENDING;
+      state.confirmSharingConsumerInfoRequest.error = null;
     },
-    [confirmToShareConsumerInfoRequests.fulfilled.type]: (state, { payload }) => {
-      state.confirmSharingConsumerInfo.data = payload;
-      state.confirmSharingConsumerInfo.status = API_REQUEST_STATUS.FULFILLED;
-      state.confirmSharingConsumerInfo.error = null;
+    [confirmToShareConsumerInfo.fulfilled.type]: (state, { payload }) => {
+      state.confirmSharingConsumerInfoRequest.data = payload;
+      state.confirmSharingConsumerInfoRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.confirmSharingConsumerInfoRequest.error = null;
     },
-    [confirmToShareConsumerInfoRequests.rejected.type]: (state, { error }) => {
-      state.confirmSharingConsumerInfo.status = API_REQUEST_STATUS.REJECTED;
-      state.confirmSharingConsumerInfo.error = error;
+    [confirmToShareConsumerInfo.rejected.type]: (state, { error }) => {
+      state.confirmSharingConsumerInfoRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.confirmSharingConsumerInfoRequest.error = error;
     },
   },
 });
