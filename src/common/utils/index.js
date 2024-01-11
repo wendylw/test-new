@@ -425,6 +425,17 @@ export const isJSON = value => {
 export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
 
+export const getDecimalNumber = (number = 0) => {
+  const scientificNotationRegex = /^[+-]?\d+(\.\d+)?[eE][+-]?\d+$/;
+  const isScientificNotation = scientificNotationRegex.test(number);
+
+  if (!isScientificNotation) {
+    return number;
+  }
+
+  return Math.round(number * 100) / 100;
+};
+
 export const getPrice = (number = 0, { locale, currency, country, withCurrency = true }) => {
   let price = '';
   const countryLocale = locale || COUNTRIES_DEFAULT_LOCALE[country];

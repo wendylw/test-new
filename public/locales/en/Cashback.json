@@ -21,5 +21,8 @@
   "StoreRedemptionCashRedeemAlert": "Your cashback balance will be auto redeemed at the cashier",
   "LoginBannerPrompt": "Do you have a Beep account? Login with your mobile phone number.",
   "Redirecting": "Redirecting...",
-  "UnexpectedErrorOccurred": "Oops! An unexpected error has occurred"
+  "UnexpectedErrorOccurred": "Oops! An unexpected error has occurred",
+  "SeamlessLoyaltyWebTitle": "Please choose the<0></0>app below to continue",
+  "SeamlessLoyaltyBeepAppButtonText": "Scan with Beep App",
+  "SeamlessLoyaltyTNGMiniProgramButtonText": "Scan with TNG eWallet App"
 }
