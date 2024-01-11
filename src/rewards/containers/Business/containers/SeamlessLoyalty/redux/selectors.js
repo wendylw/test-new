@@ -6,6 +6,10 @@ import {
   getIsLoadMerchantRequestCompleted,
 } from '../../../../../redux/modules/merchant/selectors';
 import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import {
+  getConfirmSharingConsumerInfoStatus,
+  getConfirmSharingConsumerInfoError,
+} from '../../../redux/common/selectors';
 
 export const getSeamlessLoyaltyRequestId = () => getQueryString('shareInfoReqId');
 
@@ -13,12 +17,6 @@ export const getSeamlessLoyaltyPageHashCode = () => getQueryString('h');
 
 export const getUpdateSharingConsumerInfoError = state =>
   state.business.seamlessLoyalty.updateSharingConsumerInfo.error;
-
-export const getConfirmSharingConsumerInfoStatus = state =>
-  state.business.seamlessLoyalty.confirmSharingConsumerInfo.status;
-
-export const getConfirmSharingConsumerInfoError = state =>
-  state.business.seamlessLoyalty.confirmSharingConsumerInfo.error;
 
 /**
  * Derived selectors

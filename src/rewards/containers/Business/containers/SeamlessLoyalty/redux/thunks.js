@@ -8,7 +8,8 @@ import {
 import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getIsTNGMiniProgram } from '../../../../../redux/modules/common/selectors';
-import { patchSharingConsumerInfo, postSharingConsumerInfoToMerchant } from './api-request';
+import { confirmToShareConsumerInfoRequests } from '../../../redux/common/thunks';
+import { patchSharingConsumerInfo } from './api-request';
 import { getSeamlessLoyaltyRequestId, getIsSharingConsumerInfoEnabled } from './selectors';
 
 export const updateSharingConsumerInfo = createAsyncThunk(
@@ -24,24 +25,13 @@ export const updateSharingConsumerInfo = createAsyncThunk(
   }
 );
 
-export const confirmToShareConsumerInfoRequests = createAsyncThunk(
-  'rewards/business/seamlessLoyalty/confirmToShareConsumerInfoRequests',
-  async (_, { getState }) => {
-    const state = getState();
-    const merchantBusiness = getMerchantBusiness(state);
-    const requestId = getSeamlessLoyaltyRequestId(state);
-    const result = await postSharingConsumerInfoToMerchant({ requestId, business: merchantBusiness });
-
-    return result;
-  }
-);
-
 export const mounted = createAsyncThunk(
   'rewards/business/seamlessLoyalty/mounted',
   async (_, { dispatch, getState }) => {
     const state = getState();
     const isWebview = getIsWebview(state);
     const isTNGMiniProgram = getIsTNGMiniProgram(state);
+    const requestId = getSeamlessLoyaltyRequestId(state);
 
     dispatch(fetchMerchantInfo());
     await dispatch(initUserInfo());
@@ -61,7 +51,7 @@ export const mounted = createAsyncThunk(
     // Back-End completed creating customer and member events on the server side.
     if (isSharingConsumerInfoEnabled) {
       await dispatch(updateSharingConsumerInfo());
-      await dispatch(confirmToShareConsumerInfoRequests());
+      await dispatch(confirmToShareConsumerInfoRequests(requestId));
     }
   }
 );
