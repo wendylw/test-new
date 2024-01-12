@@ -32,7 +32,11 @@ import {
   getUserIsLogin,
   getOnlineStoreInfo,
   getIsWebview,
+  getHasUserJoinedBusinessMembership,
+  getIsFetchLoginStatusComplete,
+  getIsLoadCustomerRequestCompleted,
 } from '../../../../../redux/modules/app';
+import { getIsMerchantMembershipEnabled } from '../../../../../../redux/modules/merchant/selectors';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
@@ -250,4 +254,81 @@ export const getStatusDescriptionImage = createSelector(
 
     return showMapInApp ? null : delayByBadWeatherImageSource || ImageSource;
   }
+);
+
+export const getUpdateRedirectFromStatus = state => state.orderStatus.thankYou.updateRedirectFromStatus;
+
+export const getIsUpdateRedirectFromStatusCompleted = createSelector(
+  getUpdateRedirectFromStatus,
+  updateRedirectFromStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(updateRedirectFromStatus)
+);
+
+/* Tiered Membership */
+export const getJoinBusinessMembershipRequest = state => state.orderStatus.thankYou.joinBusinessMembershipRequest;
+
+export const getJoinBusinessMembershipRequestStatus = createSelector(
+  getJoinBusinessMembershipRequest,
+  joinBusinessMembershipRequest => joinBusinessMembershipRequest.status
+);
+
+export const getIsJoinBusinessMembershipRequestCompleted = createSelector(
+  getJoinBusinessMembershipRequestStatus,
+  joinBusinessMembershipRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(joinBusinessMembershipRequestStatus)
+);
+
+export const getShouldJoinBusinessMembership = createSelector(
+  getUserIsLogin,
+  getRedirectFrom,
+  getIsMerchantMembershipEnabled,
+  (isLogin, redirectFrom, isMerchantMembershipEnabled) =>
+    isLogin && isMerchantMembershipEnabled && redirectFrom === REFERRER_SOURCE_TYPES.LOGIN
+);
+
+export const getIsRewardInfoReady = createSelector(
+  getUserIsLogin,
+  getIsFetchLoginStatusComplete,
+  getShouldJoinBusinessMembership,
+  getIsLoadCustomerRequestCompleted,
+  getIsUpdateRedirectFromStatusCompleted,
+  getIsJoinBusinessMembershipRequestCompleted,
+  (
+    isLogin,
+    isFetchLoginStatusComplete,
+    shouldJoinBusinessMembership,
+    isLoadCustomerRequestCompleted,
+    isUpdateRedirectFromStatusCompleted,
+    isJoinBusinessMembershipRequestCompleted
+  ) => {
+    if (!(isFetchLoginStatusComplete && isUpdateRedirectFromStatusCompleted)) {
+      return false;
+    }
+
+    if (!isLogin) {
+      return true;
+    }
+
+    if (shouldJoinBusinessMembership) {
+      return isJoinBusinessMembershipRequestCompleted;
+    }
+
+    return isLoadCustomerRequestCompleted;
+  }
+);
+
+export const getShouldShowMemberBanner = createSelector(
+  getUserIsLogin,
+  getIsMerchantMembershipEnabled,
+  getHasUserJoinedBusinessMembership,
+  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership) =>
+    isLogin && isMerchantMembershipEnabled && !hasUserJoinedBusinessMembership
+);
+
+export const getShouldShowMemberCard = createSelector(
+  getUserIsLogin,
+  getIsMerchantMembershipEnabled,
+  getHasUserJoinedBusinessMembership,
+  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership) =>
+    isLogin && isMerchantMembershipEnabled && hasUserJoinedBusinessMembership
 );

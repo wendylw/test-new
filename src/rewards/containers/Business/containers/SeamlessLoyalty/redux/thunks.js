@@ -5,8 +5,8 @@ import {
   loginUserByBeepApp,
   loginUserByTngMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
-import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
+import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
+import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getIsTNGMiniProgram } from '../../../../../redux/modules/common/selectors';
 import { confirmToShareConsumerInfo } from '../../../redux/common/thunks';
 import { patchSharingConsumerInfo } from './api-request';
@@ -31,9 +31,10 @@ export const mounted = createAsyncThunk(
     const state = getState();
     const isWebview = getIsWebview(state);
     const isTNGMiniProgram = getIsTNGMiniProgram(state);
+    const merchantBusiness = getMerchantBusiness(state);
     const requestId = getSeamlessLoyaltyRequestId(state);
 
-    dispatch(fetchMerchantInfo());
+    dispatch(fetchMerchantInfo(merchantBusiness));
     await dispatch(initUserInfo());
 
     if (isWebview) {

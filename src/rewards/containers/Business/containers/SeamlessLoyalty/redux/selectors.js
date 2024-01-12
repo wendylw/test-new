@@ -4,7 +4,7 @@ import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import {
   getLoadMerchantRequestError,
   getIsLoadMerchantRequestCompleted,
-} from '../../../../../redux/modules/merchant/selectors';
+} from '../../../../../../redux/modules/merchant/selectors';
 import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
 import {
   getConfirmSharingConsumerInfoStatus,

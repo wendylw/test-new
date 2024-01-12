@@ -7,14 +7,14 @@ import {
 import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import { NEW_MEMBER_TYPES, RETURNING_MEMBER_TYPES } from '../utils/constants';
-import { getSource } from '../../../redux/common/selectors';
+import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
 import {
   getMerchantCurrency,
   getMerchantLocale,
   getMerchantCountry,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
-} from '../../../../../redux/modules/merchant/selectors';
+} from '../../../../../../redux/modules/merchant/selectors';
 import {
   getCustomerCashback,
   getIsLoadCustomerRequestCompleted,
@@ -53,10 +53,16 @@ export const getIsFromSeamlessLoyaltyQrScan = createSelector(
   source => source === BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN
 );
 
+export const getIsUserFromOrdering = createSelector(getSource, source =>
+  [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
+);
+
 export const getIsOrderAndRedeemButtonDisplay = createSelector(
   getIsMerchantEnabledOROrdering,
   getIsMerchantEnabledDelivery,
-  (isOROrderingEnabled, isDeliveryEnabled) => isOROrderingEnabled && isDeliveryEnabled
+  getIsUserFromOrdering,
+  (isOROrderingEnabled, isDeliveryEnabled, isUserFromOrdering) =>
+    !isUserFromOrdering && isOROrderingEnabled && isDeliveryEnabled
 );
 
 export const getUniquePromoList = createSelector(
@@ -137,4 +143,10 @@ export const getReturningMemberPromptCategory = createSelector(
 
     return null;
   }
+);
+
+export const getShouldShowBackButton = createSelector(
+  getIsWebview,
+  getIsUserFromOrdering,
+  (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
 );

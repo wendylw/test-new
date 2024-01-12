@@ -14,8 +14,7 @@ import {
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
 import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
-import { loadCustomerInfo } from '../../redux/common/thunks';
-import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail } from './redux/thunks';
+import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
 import MembershipForm from '.';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 

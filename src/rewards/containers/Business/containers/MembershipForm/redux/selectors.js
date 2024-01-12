@@ -1,16 +1,17 @@
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
-import { getIsWebview } from '../../../../../redux/modules/common/selectors';
+import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
+import { BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
 import {
-  getIsMerchantEnabledMembership,
+  getIsMerchantMembershipEnabled,
   getIsLoadMerchantRequestStatusFulfilled,
   getIsLoadMerchantRequestStatusRejected,
   getIsLoadMerchantRequestCompleted,
-} from '../../../../../redux/modules/merchant/selectors';
+} from '../../../../../../redux/modules/merchant/selectors';
 import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
@@ -46,9 +47,9 @@ export const getShouldShowSkeletonLoader = createSelector(
 
 export const getShouldShowUnsupportedError = createSelector(
   getIsLoadMerchantRequestStatusFulfilled,
-  getIsMerchantEnabledMembership,
-  (isLoadMerchantRequestStatusFulfilled, isMerchantEnabledMembership) =>
-    isLoadMerchantRequestStatusFulfilled && !isMerchantEnabledMembership
+  getIsMerchantMembershipEnabled,
+  (isLoadMerchantRequestStatusFulfilled, isMerchantMembershipEnabled) =>
+    isLoadMerchantRequestStatusFulfilled && !isMerchantMembershipEnabled
 );
 
 export const getShouldShowUnknownError = createSelector(
@@ -88,6 +89,14 @@ export const getShouldShowFooter = createSelector(
   }
 );
 
-export const getShouldShowBackButton = createSelector(getIsWebview, isInWebview => isInWebview);
+export const getIsUserFromOrdering = createSelector(getSource, source =>
+  [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
+);
+
+export const getShouldShowBackButton = createSelector(
+  getIsWebview,
+  getIsUserFromOrdering,
+  (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
+);
 
 export const getIsJoinNowButtonDisabled = state => state.business.membershipForm.isJoinNowButtonDisabled;

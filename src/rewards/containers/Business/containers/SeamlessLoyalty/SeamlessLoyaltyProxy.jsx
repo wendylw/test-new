@@ -6,9 +6,8 @@ import { useTranslation } from 'react-i18next';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { closeWebView } from '../../../../../utils/native-methods';
-import { getMerchantBusiness, getIsMerchantEnabledMembership } from '../../../../redux/modules/merchant/selectors';
-import { getIsWebview, getIsWeb } from '../../../../redux/modules/common/selectors';
-import { getSource } from '../../redux/common/selectors';
+import { getMerchantBusiness, getIsMerchantMembershipEnabled } from '../../../../../redux/modules/merchant/selectors';
+import { getIsWebview, getIsWeb, getSource } from '../../../../redux/modules/common/selectors';
 import {
   getSeamlessLoyaltyPageHashCode,
   getIsAllInitialRequestsCompleted,
@@ -31,7 +30,7 @@ const SeamlessLoyaltyProxy = () => {
   const isWeb = useSelector(getIsWeb);
   const source = useSelector(getSource);
   const seamlessLoyaltyPageHashCode = useSelector(getSeamlessLoyaltyPageHashCode);
-  const isMerchantEnabledMembership = useSelector(getIsMerchantEnabledMembership);
+  const isMerchantMembershipEnabled = useSelector(getIsMerchantMembershipEnabled);
   const isAllInitialRequestsCompleted = useSelector(getIsAllInitialRequestsCompleted);
   const anyInitialRequestError = useSelector(getAnyInitialRequestError);
   const seamlessLoyaltyURL = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace('%business%', merchantBusiness)}${
@@ -58,13 +57,13 @@ const SeamlessLoyaltyProxy = () => {
         search: `?business=${merchantBusiness}&source=${source}`,
       };
 
-      isMerchantEnabledMembership
+      isMerchantMembershipEnabled
         ? history.replace(membershipDetailHistory)
         : (window.location.href = seamlessLoyaltyURL);
     }
   }, [
     isAllInitialRequestsCompleted,
-    isMerchantEnabledMembership,
+    isMerchantMembershipEnabled,
     history,
     seamlessLoyaltyURL,
     merchantBusiness,
