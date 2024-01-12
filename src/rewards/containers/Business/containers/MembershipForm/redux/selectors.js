@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
+import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
 import { BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
