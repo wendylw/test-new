@@ -1,14 +1,9 @@
-$member-card-color-light: #91f7e7;
-$member-card-color-dark: #7bb7ff;
-
 .MemberCardSection {
   @apply tw-p-16 sm:tw-p-16px;
 }
 
 .MemberCard {
   @apply tw-relative tw-rounded-xl;
-
-  background: linear-gradient(180deg, $member-card-color-light 0%, $member-card-color-dark 100%);
 
   &::before {
     @apply tw-block tw-top-0 tw-left-0 tw-w-full;

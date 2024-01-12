@@ -72,7 +72,6 @@ const { reducer, actions } = createSlice({
         ...state.cashbackInfo,
         ...payload,
         updateCashbackInfoStatus: API_REQUEST_STATUS.FULFILLED,
-        createdCashbackInfo: false,
       };
     },
     [loadCashbackInfo.rejected.type]: (state, { error }) => {
@@ -87,7 +86,6 @@ const { reducer, actions } = createSlice({
         ...state.cashbackInfo,
         ...payload,
         updateCashbackInfoStatus: API_REQUEST_STATUS.FULFILLED,
-        createdCashbackInfo: true,
       };
     },
     [createCashbackInfo.rejected.type]: (state, { error }) => {

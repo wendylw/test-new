@@ -8,3 +8,4 @@ export { FlagIcon } from './FlagIcon';
 export { StoreIcon } from './StoreIcon';
 export { DateIcon } from './DateIcon';
 export { TimeIcon } from './TimeIcon';
+export { MemberIcon } from './MemberIcon';

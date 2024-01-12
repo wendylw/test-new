@@ -20,8 +20,9 @@ import {
   getUserProfile,
   getIsWebview,
   getBusiness,
+  getUserPhone,
 } from '../../../../../redux/modules/app';
-import { getOrder } from '../../../redux/selector';
+import { getOrder, getReceiptNumber } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
 import { joinMembership } from '../../../../../../redux/modules/membership/thunks';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
@@ -52,6 +53,16 @@ export const createCashbackInfo = createAsyncThunk(
     });
 
     return result;
+  }
+);
+
+export const claimCashback = createAsyncThunk(
+  'ordering/orderStatus/thankYou/claimCashback',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const phone = getUserPhone(state);
+    const receiptNumber = getReceiptNumber(state);
+    await dispatch(createCashbackInfo({ receiptNumber, phone }));
   }
 );
 
@@ -257,5 +268,16 @@ export const goToJoinMembershipPage = createAsyncThunk(
     const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
 
     window.location.href = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.JOIN_MEMBERSHIP}?business=${business}&source=${source}`;
+  }
+);
+
+export const goToMembershipDetailPage = createAsyncThunk(
+  'ordering/orderStatus/thankYou/goToMembershipDetailPage',
+  async (_, { getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+    const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
+
+    window.location.href = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}?business=${business}&source=${source}`;
   }
 );

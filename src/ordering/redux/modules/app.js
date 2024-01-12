@@ -12,7 +12,7 @@ import _cloneDeep from 'lodash/cloneDeep';
 import { replace } from 'connected-react-router';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants, { API_REQUEST_STATUS, REGISTRATION_SOURCE } from '../../../utils/constants';
-import { URL_TYPES } from '../../../common/utils/constants';
+import { URL_TYPES, MEMBER_LEVELS, MEMBER_CARD_COLOR_PALETTES } from '../../../common/utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
 import config from '../../../config';
@@ -2222,3 +2222,25 @@ export const getHasUserJoinedBusinessMembership = createSelector(
   getCustomerData,
   customerData => !!_get(customerData, 'customerTier', null)
 );
+
+export const getUserCustomerId = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerId', null)
+);
+
+// If the level is not by design, use member style by default.
+export const getMemberColorPalettes = createSelector(
+  getCustomerTierLevel,
+  customerTierLevel => MEMBER_CARD_COLOR_PALETTES[customerTierLevel] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER]
+);
+
+export const getMemberCardStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+  color: memberCardColorPalettes.font,
+  background: `linear-gradient(120deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 58%,${memberCardColorPalettes.background.endColor} 97%)`,
+}));
+
+export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+  crownStartColor: memberCardColorPalettes.icon.crown.startColor,
+  crownEndColor: memberCardColorPalettes.icon.crown.endColor,
+  backgroundStartColor: memberCardColorPalettes.icon.background.startColor,
+  backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
+}));
