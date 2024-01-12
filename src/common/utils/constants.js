@@ -197,6 +197,12 @@ export const ORDER_STATUS = {
   PICKED_UP: 'pickedUp',
 };
 
+export const CASHBACK_SOURCE = {
+  REGISTER: 'REGISTER',
+  RECEIPT: 'RECEIPT',
+  QR_ORDERING: 'QR_ORDERING',
+};
+
 export const REFERRER_SOURCE_TYPES = {
   PAYMENT: 'payment',
   CASHBACK: 'cashback',
