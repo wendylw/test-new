@@ -1,17 +1,12 @@
 import { createSelector } from 'reselect';
-import { getQueryString } from '../../../../common/utils';
-import Utils from '../../../../utils/utils';
+import { getQueryString, isWebview, isTNGMiniProgram } from '../../../../common/utils';
 
 /** Utils */
-export const getIsWebview = () => Utils.isWebview();
+export const getIsWebview = () => isWebview();
 
-export const getIsTNGMiniProgram = () => Utils.isTNGMiniProgram();
+export const getIsTNGMiniProgram = () => isTNGMiniProgram();
 
-export const getIsWeb = createSelector(
-  getIsWebview,
-  getIsTNGMiniProgram,
-  (isWebview, isTNGMiniProgram) => !isWebview && !isTNGMiniProgram
-);
+export const getIsWeb = () => !isWebview() && !isTNGMiniProgram();
 
 export const getSource = () => getQueryString('source');
 

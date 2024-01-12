@@ -1,8 +1,6 @@
 import { createSelector } from 'reselect';
-import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
+import { API_REQUEST_STATUS, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
 import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
-import { BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
@@ -12,6 +10,7 @@ import {
   getIsLoadMerchantRequestStatusRejected,
   getIsLoadMerchantRequestCompleted,
 } from '../../../../../../redux/modules/merchant/selectors';
+import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
