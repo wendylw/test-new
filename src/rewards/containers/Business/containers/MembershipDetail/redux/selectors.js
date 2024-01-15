@@ -115,18 +115,14 @@ export const getUniquePromoList = createSelector(
 export const getNewMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
   getCustomerCashback,
-  getIsFromJoinMembershipUrlClick,
   getIsFromSeamlessLoyaltyQrScan,
-  (isLoadCustomerRequestCompleted, customerCashback, isFromJoinMembershipUrlClick, isFromSeamlessLoyaltyQrScan) => {
-    if (isFromJoinMembershipUrlClick) {
-      return NEW_MEMBER_TYPES.DEFAULT;
-    }
-
+  (isLoadCustomerRequestCompleted, customerCashback, isFromSeamlessLoyaltyQrScan) => {
     if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
       return customerCashback > 0 ? NEW_MEMBER_TYPES.REDEEM_CASHBACK : NEW_MEMBER_TYPES.DEFAULT;
     }
 
-    return null;
+    // WB-6499: show default new member prompt.
+    return NEW_MEMBER_TYPES.DEFAULT;
   }
 );
 

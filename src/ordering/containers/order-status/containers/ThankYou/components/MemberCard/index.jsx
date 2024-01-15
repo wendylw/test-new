@@ -59,7 +59,7 @@ const MemberCard = ({
             <Image className="tw-m-4 sm:tw-m-4px" noCompression src={EarnedCashbackIcon} alt="StoreHub Cashback" />
           </i>
           {shouldShowEarnedCashback && (
-            <p className="member-card__card-footer__cashback-title">
+            <p className="member-card__card-footer__cashback-title text-left padding-left-right-smaller">
               <Trans i18nKey="EarnedCashback">
                 You’ve earned
                 <CurrencyNumber className="text-weight-bolder padding-left-right-smaller" money={cashback} />
