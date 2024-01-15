@@ -2,6 +2,11 @@ import _get from 'lodash/get';
 import { createSelector } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { getDecimalNumber } from '../../../../common/utils';
+import {
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+} from '../../../../redux/modules/merchant/selectors';
 
 export const getCustomer = state => state.customer;
 
@@ -25,4 +30,12 @@ export const getIsLoadCustomerRequestCompleted = createSelector(
   loadCustomerRequestStatus =>
     loadCustomerRequestStatus === API_REQUEST_STATUS.FULFILLED ||
     loadCustomerRequestStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getCustomerCashbackPrice = createSelector(
+  getCustomerCashback,
+  getMerchantLocale,
+  getMerchantCurrency,
+  getMerchantCountry,
+  (cashback, locale, currency, country) => getPrice(cashback, { locale, currency, country })
 );

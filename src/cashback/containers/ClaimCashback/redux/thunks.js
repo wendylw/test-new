@@ -3,6 +3,8 @@ import { CASHBACK_SOURCE } from '../../../../common/utils/constants';
 import Utils from '../../../../utils/utils';
 import { getIsLogin, getUserPhoneNumber } from '../../../../redux/modules/user/selectors';
 import { getMerchantBusiness } from '../../../../redux/modules/merchant/selectors';
+import { loadConsumerCustomerInfo } from '../../../redux/modules/customer/thunks';
+import { actions as appActions } from '../../../redux/modules/app';
 import { getOrderReceiptNumber, getOrderCashbackInfo } from './api-request';
 import { getClaimCashbackPageHash, getOrderReceiptNumber as getOrderReceiptNumberSelector } from './selectors';
 
@@ -62,6 +64,7 @@ export const mounted = createAsyncThunk('cashback/claimCashback/mounted', async 
   }
 
   if (isLogin && orderReceiptNumber) {
-    dispatch(createClaimedCashbackForCustomer());
+    await dispatch(createClaimedCashbackForCustomer());
+    dispatch(loadConsumerCustomerInfo());
   }
 });

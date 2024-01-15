@@ -24,7 +24,6 @@ import {
   isFetchingCashbackInfo,
 } from '../../redux/modules/claim';
 import NativeHeader from '../../../components/NativeHeader';
-import './LoyaltyClaim.scss';
 
 class PageClaim extends React.Component {
   constructor(props) {
