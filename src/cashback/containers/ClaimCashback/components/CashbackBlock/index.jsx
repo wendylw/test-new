@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getCustomerCashbackPrice } from '../../../../redux/modules/customer/selectors';
 
-const ClaimCashback = () => {
+const CashbackBlock = () => {
   const { t } = useTranslation();
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
 
@@ -15,4 +15,6 @@ const ClaimCashback = () => {
   );
 };
 
-export default ClaimCashback;
+CashbackBlock.displayName = 'CashbackBlock';
+
+export default CashbackBlock;

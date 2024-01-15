@@ -4,7 +4,7 @@ import { getMerchantLogo, getMerchantDisplayName } from '../../../../../redux/mo
 import { getOrderCashbackStoreCity } from '../../redux/selectors';
 import { ObjectFitImage } from '../../../../../common/components/Image';
 
-const ClaimCashback = () => {
+const MerchantInfo = () => {
   const merchantLogo = useSelector(getMerchantLogo);
   const merchantDisplayName = useSelector(getMerchantDisplayName);
   const city = useSelector(getOrderCashbackStoreCity);
@@ -22,4 +22,6 @@ const ClaimCashback = () => {
   );
 };
 
-export default ClaimCashback;
+MerchantInfo.displayName = 'MerchantInfo';
+
+export default MerchantInfo;

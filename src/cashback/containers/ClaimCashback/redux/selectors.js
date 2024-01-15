@@ -1,3 +1,4 @@
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getDecimalNumber, getPrice, getQueryString } from '../../../../common/utils';
 

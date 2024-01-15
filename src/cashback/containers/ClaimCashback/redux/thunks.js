@@ -4,7 +4,6 @@ import Utils from '../../../../utils/utils';
 import { getIsLogin, getUserPhoneNumber } from '../../../../redux/modules/user/selectors';
 import { getMerchantBusiness } from '../../../../redux/modules/merchant/selectors';
 import { loadConsumerCustomerInfo } from '../../../redux/modules/customer/thunks';
-import { actions as appActions } from '../../../redux/modules/app';
 import { getOrderReceiptNumber, getOrderCashbackInfo } from './api-request';
 import { getClaimCashbackPageHash, getOrderReceiptNumber as getOrderReceiptNumberSelector } from './selectors';
 
