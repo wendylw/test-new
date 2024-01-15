@@ -31,14 +31,14 @@ export const actions = {
     },
   }),
 
-  createCashbackInfo: ({ receiptNumber, phone, source }) => ({
+  createCashbackInfo: receiptNumber => ({
     [API_REQUEST]: {
       types: [types.CREATE_CASHBACKINFO_REQUEST, types.CREATE_CASHBACKINFO_SUCCESS, types.CREATE_CASHBACKINFO_FAILURE],
       ...Url.API_URLS.POST_CASHBACK,
       payload: {
         receiptNumber,
-        phone,
-        source,
+        phone: Utils.getLocalStorageVariable('user.p'),
+        source: Constants.CASHBACK_SOURCE.RECEIPT,
         registrationTouchpoint: Utils.getRegistrationTouchPoint(),
         registrationSource: Utils.getRegistrationSource(),
       },
@@ -52,6 +52,21 @@ export const actions = {
     },
   }),
 
+  claimCashbackForConsumer: receiptNumber => async (dispatch, getState) => {
+    if (receiptNumber) {
+      dispatch(actions.getCashbackInfo(receiptNumber));
+    }
+
+    if (receiptNumber) {
+      await dispatch(actions.createCashbackInfo(receiptNumber));
+
+      // eslint-disable-next-line no-use-before-define
+      const customerId = getClaimedCashbackCustomerId(getState());
+
+      customerId && dispatch(replace(`${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`));
+    }
+  },
+
   mounted: () => async (dispatch, getState) => {
     const { hash } = getQueryString('h');
 
@@ -63,25 +78,22 @@ export const actions = {
       // eslint-disable-next-line no-use-before-define
       const receiptNumber = getReceiptNumber(getState());
       const isLogin = getIsUserLogin(getState());
-      const phone = Utils.getLocalStorageVariable('user.p');
-      const source = Constants.CASHBACK_SOURCE.RECEIPT;
 
       if (receiptNumber) {
         dispatch(actions.getCashbackInfo(receiptNumber));
       }
 
-      if (isLogin && receiptNumber && phone) {
-        await dispatch(actions.createCashbackInfo({ receiptNumber, phone, source }));
-
-        // eslint-disable-next-line no-use-before-define
-        const customerId = getCustomerId(getState()) || getOrderCustomerId(getState());
-
-        customerId && dispatch(replace(`${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`));
+      if (isLogin && receiptNumber) {
+        await dispatch(actions.claimCashbackForConsumer(receiptNumber));
       }
     } catch (error) {
       console.error(error);
     }
   },
+
+  resetData: () => ({
+    type: types.RESET_CLAIM_INFO_REQUEST,
+  }),
 };
 
 // reducer
@@ -161,6 +173,8 @@ const reducer = (state = initialState, action) => {
         receiptNumber,
       };
     }
+    case types.RESET_CLAIM_INFO_REQUEST:
+      return initialState;
     default:
       return state;
   }
@@ -219,4 +233,10 @@ export const getOrderCashbackValue = createSelector(
 
     return isNumber ? orderCashbackPrice : orderCashbackPercentage;
   }
+);
+
+export const getClaimedCashbackCustomerId = createSelector(
+  getCustomerId,
+  getOrderCustomerId,
+  (customerId, orderCustomerId) => customerId || orderCustomerId
 );
