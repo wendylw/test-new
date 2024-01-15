@@ -22,7 +22,7 @@ const MemberBanner = ({ onJoinMembershipClick }) => {
         <div className="member-banner__card-icon">
           <ObjectFitImage noCompression src={MembershipNonMemberIcon} alt="StoreHub Non-member Icon" />
         </div>
-        <p className="member-banner__card-title text-center padding-left-right-small">{t('NewMemberInvitation')}</p>
+        <p className="member-banner__card-title text-left padding-left-right-small">{t('NewMemberInvitation')}</p>
         <CaretRight size={24} weight="light" color="white" />
       </button>
     </div>
