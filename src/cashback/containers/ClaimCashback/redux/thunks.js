@@ -1,9 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { CASHBACK_SOURCE } from '../../../../common/utils/constants';
 import Utils from '../../../../utils/utils';
-import { getUserPhoneNumber } from '../../../../redux/modules/user/selectors';
+import { getIsLogin, getUserPhoneNumber } from '../../../../redux/modules/user/selectors';
+import { getMerchantBusiness } from '../../../../redux/modules/merchant/selectors';
 import { getOrderReceiptNumber, getOrderCashbackInfo } from './api-request';
-import { getClaimCashbackPageHash } from './selectors';
+import { getClaimCashbackPageHash, getOrderReceiptNumber as getOrderReceiptNumberSelector } from './selectors';
 
 export const fetchOrderReceiptNumber = createAsyncThunk(
   'cashback/claimCashback/fetchOrderReceiptNumber',
@@ -46,13 +47,21 @@ export const createClaimedCashbackForCustomer = createAsyncThunk(
 );
 
 export const mounted = createAsyncThunk('cashback/claimCashback/mounted', async (_, { getState, dispatch }) => {
-  // TODO: fetch merchant
-  // TODO: logined intialize user and profile
-  await dispatch(fetchOrderReceiptNumber());
+  const state = getState();
+  const merchantBusiness = getMerchantBusiness(state);
 
-  const orderReceiptNumber = getOrderReceiptNumber(getState());
+  dispatch(fetchMerchantInfo(merchantBusiness));
+  await dispatch(fetchOrderReceiptNumber());
+  await dispatch(initUserInfo());
+
+  const orderReceiptNumber = getOrderReceiptNumberSelector(getState());
+  const isLogin = getIsLogin(getState());
 
   if (orderReceiptNumber) {
     await dispatch(fetchOrderCashbackInfo());
+  }
+
+  if (isLogin) {
+    await dispatch(createClaimedCashbackForCustomer());
   }
 });

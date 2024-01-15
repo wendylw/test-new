@@ -1,12 +1,12 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
-import { getQueryString } from '../../../common/utils';
+import { getQueryString, getHostNameSubDomain } from '../../../common/utils';
 
 /**
  * @returns {string | null} business
  */
-export const getMerchantBusiness = () => getQueryString('business');
+export const getMerchantBusiness = () => getQueryString('business') || getHostNameSubDomain();
 
 export const getMerchantData = state => state.merchant.loadMerchantRequest.data;
 
