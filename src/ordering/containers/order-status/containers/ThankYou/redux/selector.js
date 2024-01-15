@@ -25,6 +25,7 @@ import {
   getIsStoreReviewable,
   getOrderDelayReason,
   getIsPreOrder,
+  getOrderCustomerId,
 } from '../../../redux/selector';
 import {
   getMerchantCountry,
@@ -35,6 +36,7 @@ import {
   getHasUserJoinedBusinessMembership,
   getIsFetchLoginStatusComplete,
   getIsLoadCustomerRequestCompleted,
+  getUserCustomerId,
 } from '../../../../../redux/modules/app';
 import { getIsMerchantMembershipEnabled } from '../../../../../../redux/modules/merchant/selectors';
 
@@ -258,10 +260,8 @@ export const getStatusDescriptionImage = createSelector(
 
 export const getUpdateRedirectFromStatus = state => state.orderStatus.thankYou.updateRedirectFromStatus;
 
-export const getIsUpdateRedirectFromStatusCompleted = createSelector(
-  getUpdateRedirectFromStatus,
-  updateRedirectFromStatus =>
-    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(updateRedirectFromStatus)
+export const getIsUpdateRedirectFromCompleted = createSelector(getUpdateRedirectFromStatus, updateRedirectFromStatus =>
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(updateRedirectFromStatus)
 );
 
 /* Tiered Membership */
@@ -291,7 +291,7 @@ export const getIsRewardInfoReady = createSelector(
   getIsFetchLoginStatusComplete,
   getShouldJoinBusinessMembership,
   getIsLoadCustomerRequestCompleted,
-  getIsUpdateRedirectFromStatusCompleted,
+  getIsUpdateRedirectFromCompleted,
   getIsJoinBusinessMembershipRequestCompleted,
   (
     isLogin,
@@ -331,4 +331,14 @@ export const getShouldShowMemberCard = createSelector(
   getHasUserJoinedBusinessMembership,
   (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership) =>
     isLogin && isMerchantMembershipEnabled && hasUserJoinedBusinessMembership
+);
+
+export const getShouldShowEarnedCashback = createSelector(
+  getHasCashback,
+  getHasOrderPaid,
+  getUserCustomerId,
+  getOrderCustomerId,
+  getHasCashbackClaimed,
+  (hasCashback, hasOrderPaid, userCustomerId, orderCustomerId, hasCashbackClaimed) =>
+    hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === orderCustomerId
 );

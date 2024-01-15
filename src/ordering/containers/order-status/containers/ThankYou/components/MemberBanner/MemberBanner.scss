@@ -1,7 +1,7 @@
 @import "../../../../../../../Variables.scss";
 
-$member-card-color-light: #ff9419;
-$member-card-color-dark: #c955ff;
+$member-banner-color-light: #ff9419;
+$member-banner-color-dark: #c955ff;
 
 .member-banner {
   &__card-wrapper {
@@ -13,7 +13,7 @@ $member-card-color-dark: #c955ff;
     border: none;
     width: 100%;
     cursor: pointer;
-    background: linear-gradient(90deg, $member-card-color-light 0%, $member-card-color-dark 100%);
+    background: linear-gradient(90deg, $member-banner-color-light 0%, $member-banner-color-dark 100%);
   }
 
   &__card-icon {

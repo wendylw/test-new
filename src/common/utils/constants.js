@@ -232,3 +232,85 @@ export const PROMO_VOUCHER_STATUS = {
   EXPIRED: 'expired',
   REDEEMED: 'redeemed',
 };
+
+export const MEMBER_LEVELS = {
+  MEMBER: 1,
+  SLIVER: 2,
+  GOLD: 3,
+  PLATINUM: 4,
+};
+
+export const MEMBER_CARD_COLOR_PALETTES = {
+  [MEMBER_LEVELS.MEMBER]: {
+    icon: {
+      crown: {
+        startColor: '#91F7E7',
+        endColor: '#52A1FF',
+      },
+      background: {
+        startColor: '#DCFCFF',
+        endColor: '#D2DEFF',
+      },
+    },
+    background: {
+      startColor: '#91F7E7',
+      midColor: '#7BB7FF',
+      endColor: '#7BB7FF',
+    },
+    font: '#303030',
+  },
+  [MEMBER_LEVELS.SLIVER]: {
+    icon: {
+      crown: {
+        startColor: '#AFAFAF',
+        endColor: '#AFAFAF',
+      },
+      background: {
+        startColor: '#F3F3F3',
+        endColor: '#CCCCCC',
+      },
+    },
+    background: {
+      startColor: '#AFAFAF',
+      midColor: '#E0E0E0',
+      endColor: '#CCC',
+    },
+    font: '#303030',
+  },
+  [MEMBER_LEVELS.GOLD]: {
+    icon: {
+      crown: {
+        startColor: '#FFF143',
+        endColor: '#FFCF43',
+      },
+      background: {
+        startColor: '#FFFBE6',
+        endColor: '#FFFEAD',
+      },
+    },
+    background: {
+      startColor: '#FFF143',
+      midColor: '#FFBD17',
+      endColor: '#FFCF43',
+    },
+    font: '#303030',
+  },
+  [MEMBER_LEVELS.PLATINUM]: {
+    icon: {
+      crown: {
+        startColor: '#000000',
+        endColor: '#000000',
+      },
+      background: {
+        startColor: '#AFAFAF',
+        endColor: '#CCCCCC',
+      },
+    },
+    background: {
+      startColor: '#3A3A3A',
+      midColor: '#353535',
+      endColor: '#000000',
+    },
+    font: '#FFFFFF',
+  },
+};

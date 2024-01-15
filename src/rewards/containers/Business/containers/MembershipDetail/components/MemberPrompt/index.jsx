@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import NewMemberCelebrationAnimateImage from '../../../../../../../images/succeed-animation.gif';
@@ -25,7 +25,8 @@ const NewMember = () => {
   const newMemberIcon = NEW_MEMBER_ICONS[newMemberPromptCategory];
   const newMemberContentI18nKeys = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory];
   const { titleI18Key, descriptionI18Key } = newMemberContentI18nKeys || {};
-  const [celebrationAnimateImage, setCelebrationAnimateImage] = React.useState(NewMemberCelebrationAnimateImage);
+  const [celebrationAnimateImage, setCelebrationAnimateImage] = useState(NewMemberCelebrationAnimateImage);
+  const isCelebrationAnimationDisplay = celebrationAnimateImage && newMemberPromptCategory;
 
   useEffect(() => {
     if (newMemberContentI18nKeys) {
@@ -50,7 +51,7 @@ const NewMember = () => {
   }, [newMemberContentI18nKeys, t, titleI18Key, descriptionI18Key, newMemberIcon]);
 
   return (
-    celebrationAnimateImage && (
+    isCelebrationAnimationDisplay && (
       <div className={styles.NewMemberCelebrationAnimateImageContainer}>
         <img
           className={styles.NewMemberCelebrationAnimateImage}

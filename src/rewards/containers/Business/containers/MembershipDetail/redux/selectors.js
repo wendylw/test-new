@@ -3,6 +3,8 @@ import {
   BECOME_MERCHANT_MEMBER_METHODS,
   PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
+  MEMBER_LEVELS,
+  MEMBER_CARD_COLOR_PALETTES,
 } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
@@ -17,6 +19,7 @@ import {
 } from '../../../../../../redux/modules/merchant/selectors';
 import {
   getCustomerCashback,
+  getCustomerTierLevel,
   getIsLoadCustomerRequestCompleted,
 } from '../../../../../redux/modules/customer/selectors';
 
@@ -150,3 +153,21 @@ export const getShouldShowBackButton = createSelector(
   getIsUserFromOrdering,
   (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
 );
+
+// If the level is not by design, use member style by default.
+export const getMemberColorPalettes = createSelector(
+  getCustomerTierLevel,
+  customerTierLevel => MEMBER_CARD_COLOR_PALETTES[customerTierLevel] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER]
+);
+
+export const getMemberCardStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+  color: memberCardColorPalettes.font,
+  background: `linear-gradient(120deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 58%,${memberCardColorPalettes.background.endColor} 97%)`,
+}));
+
+export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+  crownStartColor: memberCardColorPalettes.icon.crown.startColor,
+  crownEndColor: memberCardColorPalettes.icon.crown.endColor,
+  backgroundStartColor: memberCardColorPalettes.icon.background.startColor,
+  backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
+}));

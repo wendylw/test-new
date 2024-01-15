@@ -2,8 +2,7 @@ import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { CaretRight } from 'phosphor-react';
 import { useTranslation } from 'react-i18next';
-import { ObjectFitImage } from '../../../../../../../common/components/Image';
-import MembershipNonMemberIcon from '../../../../../../../images/membership/membership-icon_non-member.svg';
+import { MemberIcon } from '../../../../../../../common/components/Icons';
 import './MemberBanner.scss';
 
 const MemberBanner = ({ onJoinMembershipClick }) => {
@@ -19,9 +18,13 @@ const MemberBanner = ({ onJoinMembershipClick }) => {
         className="member-banner__card-container flex flex-middle flex-space-between padding-top-bottom-small padding-left-right-normal"
         onClick={clickHandler}
       >
-        <div className="member-banner__card-icon">
-          <ObjectFitImage noCompression src={MembershipNonMemberIcon} alt="StoreHub Non-member Icon" />
-        </div>
+        <MemberIcon
+          className="member-banner__card-icon"
+          crownStartColor="#F3F3F3"
+          crownEndColor="#F3F3F3"
+          backgroundStartColor="#CCCCCC"
+          backgroundEndColor="#CCCCCC"
+        />
         <p className="member-banner__card-title text-center padding-left-right-small">{t('NewMemberInvitation')}</p>
         <CaretRight size={24} weight="light" color="white" />
       </button>
