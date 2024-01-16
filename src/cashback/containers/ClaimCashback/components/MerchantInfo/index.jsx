@@ -1,20 +1,21 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { getMerchantLogo, getMerchantDisplayName } from '../../../../../redux/modules/merchant/selectors';
-import { getOrderCashbackStoreCity } from '../../redux/selectors';
+import { getOnlineStoreInfoLogo, getBusinessDisplayName } from '../../../../redux/modules/app';
+import { getOrderCashbackStoreCity } from '../../../../redux/modules/claim';
 import { ObjectFitImage } from '../../../../../common/components/Image';
+import styles from './MerchantInfo.module.scss';
 
 const MerchantInfo = () => {
-  const merchantLogo = useSelector(getMerchantLogo);
-  const merchantDisplayName = useSelector(getMerchantDisplayName);
+  const merchantLogo = useSelector(getOnlineStoreInfoLogo);
+  const merchantDisplayName = useSelector(getBusinessDisplayName);
   const city = useSelector(getOrderCashbackStoreCity);
 
   return (
-    <section>
-      <div>
+    <section className={styles.MerchantInfo}>
+      <div className={styles.MerchantInfoLogoContainer}>
         <ObjectFitImage className="tw-rounded" src={merchantLogo} />
       </div>
-      <h1>
+      <h1 className={styles.MerchantInfoTitle}>
         {merchantDisplayName}
         {city ? `, ${city}` : ''}
       </h1>
