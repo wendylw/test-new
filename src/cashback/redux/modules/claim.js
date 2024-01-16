@@ -53,14 +53,16 @@ export const actions = {
   }),
 
   claimCashbackForConsumer: receiptNumber => async (dispatch, getState) => {
-    if (receiptNumber) {
-      await dispatch(actions.createCashbackInfo(receiptNumber));
-
-      // eslint-disable-next-line no-use-before-define
-      const customerId = getClaimedCashbackCustomerId(getState());
-
-      customerId && dispatch(replace(`${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`));
+    if (!receiptNumber) {
+      return;
     }
+
+    await dispatch(actions.createCashbackInfo(receiptNumber));
+
+    // eslint-disable-next-line no-use-before-define
+    const customerId = getClaimedCashbackCustomerId(getState());
+
+    customerId && dispatch(replace(`${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`));
   },
 
   mounted: () => async (dispatch, getState) => {
