@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 import Utils from '../../../../utils/utils';
+import { getQueryString } from '../../../../common/utils';
 
 /** Utils */
 export const getIsWebview = () => Utils.isWebview();

@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { API_REQUEST_STATUS } from '../../../../utils/constants';
+import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { claimUniquePromo } from './thunks';
 
 const initialState = {
+  isClaimPromotionClicked: false,
   claimPromoRequest: {
     data: null,
     status: null,
@@ -13,7 +14,11 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'rewards/business/claimUniquePromo',
   initialState,
-  reducers: {},
+  reducers: {
+    setIsClaimPromotionClicked: (state, { payload }) => {
+      state.isClaimPromotionClicked = payload;
+    },
+  },
   extraReducers: {
     [claimUniquePromo.pending.type]: state => {
       state.claimPromoRequest.status = API_REQUEST_STATUS.PENDING;

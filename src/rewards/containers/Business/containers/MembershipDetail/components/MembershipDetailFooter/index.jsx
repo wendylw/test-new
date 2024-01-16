@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useUnmount } from 'react-use';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ const MembershipDetailFooter = () => {
   const { t } = useTranslation(['Rewards']);
   const merchantBusiness = useSelector(getMerchantBusiness);
   const isOrderAndRedeemButtonDisplay = useSelector(getIsOrderAndRedeemButtonDisplay);
-  const [redirecting, setRedirecting] = React.useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const merchantMenuPageDomain = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace('%business%', merchantBusiness)}`;
   const handleClickOrderRedeemButton = useCallback(() => {
     setRedirecting(true);

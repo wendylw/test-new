@@ -1,0 +1,9 @@
+.DownloadBanner {
+  @apply tw-text-black tw-no-underline tw-rounded tw-bg-no-repeat tw-bg-cover;
+
+  background-image: url("../../../../images/beep-app-download-background.jpg");
+}
+
+.DownloadBannerAppStoreIcon {
+  height: 50px;
+}

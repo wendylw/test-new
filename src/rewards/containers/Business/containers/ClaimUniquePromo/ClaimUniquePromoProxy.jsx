@@ -4,9 +4,8 @@ import { useMount } from 'react-use';
 import { initUserInfo } from '../../../../../redux/modules/user/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
-import ClaimUniquePromoFooter from './components/ClaimUniquePromoFooter';
 
-const ClaimUniquePromo = () => {
+const ClaimUniquePromoProxy = () => {
   const dispatch = useDispatch();
 
   useMount(async () => {
@@ -16,11 +15,10 @@ const ClaimUniquePromo = () => {
   return (
     <Frame>
       <PageHeader />
-      <ClaimUniquePromoFooter />
     </Frame>
   );
 };
 
-ClaimUniquePromo.displayName = 'ClaimUniquePromo';
+ClaimUniquePromoProxy.displayName = 'ClaimUniquePromo';
 
-export default ClaimUniquePromo;
+export default ClaimUniquePromoProxy;

@@ -17,5 +17,6 @@
   "Redeemed": "Redeemed",
   "MinConsumption": "Min. spend {{amount}}",
   "ValidUntil": "Valid until {{date}}",
-  "Joining": "Joining..."
+  "Joining": "Joining...",
+  "ClaimPromotion": "Claim Promotion"
 }
