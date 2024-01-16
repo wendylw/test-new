@@ -202,6 +202,11 @@ export const getCashbackClaimRequestStatus = createSelector(getCashbackInfo, cas
   _get(cashbackInfo, 'cashbackClaimStatus', null)
 );
 
+export const getIsCashbackClaimRequestPending = createSelector(
+  getCashbackClaimRequestStatus,
+  cashbackClaimRequestStatus => cashbackClaimRequestStatus === API_REQUEST_STATUS.PENDING
+);
+
 export const getIsCashbackClaimRequestFulfilled = createSelector(
   getCashbackClaimRequestStatus,
   cashbackClaimRequestStatus => cashbackClaimRequestStatus === API_REQUEST_STATUS.FULFILLED

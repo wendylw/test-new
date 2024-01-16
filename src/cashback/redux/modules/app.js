@@ -958,5 +958,5 @@ export const getBusinessLocale = createSelector(
 
 export const getBusinessDisplayName = createSelector(
   getBusinessInfo,
-  businessInfo => businessInfo?.displayName || businessInfo?.name || ''
+  businessInfo => businessInfo?.displayBusinessName || businessInfo?.name || ''
 );
