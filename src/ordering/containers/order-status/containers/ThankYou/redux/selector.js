@@ -33,6 +33,7 @@ import {
   getUserIsLogin,
   getOnlineStoreInfo,
   getIsWebview,
+  getIsUserLoginRequestCompleted,
   getHasUserJoinedBusinessMembership,
   getIsFetchLoginStatusComplete,
   getIsLoadCustomerRequestCompleted,
@@ -283,10 +284,10 @@ export const getIsJoinBusinessMembershipRequestCompleted = createSelector(
 
 export const getShouldJoinBusinessMembership = createSelector(
   getUserIsLogin,
-  getRedirectFrom,
+  getIsUserLoginRequestCompleted,
   getIsMerchantMembershipEnabled,
-  (isLogin, redirectFrom, isMerchantMembershipEnabled) =>
-    isLogin && isMerchantMembershipEnabled && redirectFrom === REFERRER_SOURCE_TYPES.LOGIN
+  (isLogin, isUserLoginRequestCompleted, isMerchantMembershipEnabled) =>
+    isUserLoginRequestCompleted && isLogin && isMerchantMembershipEnabled
 );
 
 export const getIsRewardInfoReady = createSelector(

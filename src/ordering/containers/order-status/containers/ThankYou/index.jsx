@@ -40,6 +40,7 @@ import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import {
+  actions as appActionCreators,
   getBusiness,
   getBusinessInfo,
   getBusinessUTCOffset,
@@ -224,6 +225,7 @@ export class ThankYou extends PureComponent {
       hasOrderPaid: prevHasOrderPaid,
       isCashbackClaimable: prevIsCashbackClaimable,
       isInitProfilePageEnabled: prevIsInitProfilePageEnabled,
+      shouldJoinBusinessMembership: prevShouldJoinBusinessMembership,
     } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const {
@@ -236,10 +238,12 @@ export class ThankYou extends PureComponent {
       isCoreBusinessAPICompleted,
       claimCashback,
       loadOrderStoreReview,
+      joinBusinessMembership,
       hasOrderPaid: currHasOrderPaid,
       initProfilePage,
       isCashbackClaimable: currIsCashbackClaimable,
       isInitProfilePageEnabled: currIsInitProfilePageEnabled,
+      shouldJoinBusinessMembership: currShouldJoinBusinessMembership,
     } = this.props;
     const { storeId } = order || {};
 
@@ -277,6 +281,10 @@ export class ThankYou extends PureComponent {
 
     if (!prevIsCashbackClaimable && currIsCashbackClaimable) {
       claimCashback();
+    }
+
+    if (!prevShouldJoinBusinessMembership && currShouldJoinBusinessMembership) {
+      joinBusinessMembership();
     }
 
     this.setContainerHeight();
@@ -499,9 +507,16 @@ export class ThankYou extends PureComponent {
     });
   };
 
-  handleClickLoginButton = () => {
-    const { history } = this.props;
+  handleClickLoginButton = async () => {
+    const { history, appActions } = this.props;
     const { ROUTER_PATHS } = Constants;
+    const isWebview = Utils.isWebview();
+
+    // WB-6449: In case users can click this button in the beep apps, we need to call the native login method.
+    if (isWebview) {
+      await appActions.loginByBeepApp();
+      return;
+    }
 
     CleverTap.pushEvent('Thank you page - Click I want cashback button');
     Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.LOGIN);
@@ -1163,6 +1178,9 @@ ThankYou.propTypes = {
   orderStoreInfo: PropTypes.object,
   onlineStoreInfo: PropTypes.object,
   /* eslint-enable */
+  appActions: PropTypes.shape({
+    loginByBeepApp: PropTypes.func,
+  }),
   cashback: PropTypes.number,
   isPayLater: PropTypes.bool,
   business: PropTypes.string,
@@ -1280,6 +1298,9 @@ ThankYou.defaultProps = {
   orderCancellationReasonAsideVisible: false,
   updateShippingTypeRequestErrorCategory: '',
   updateCancellationReasonVisibleState: () => {},
+  appActions: {
+    loginByBeepApp: () => {},
+  },
 };
 
 export default compose(
@@ -1351,6 +1372,7 @@ export default compose(
       goToJoinMembershipPage: bindActionCreators(goToJoinMembershipPageThunk, dispatch),
       goToMembershipDetailPage: bindActionCreators(goToMembershipDetailPageThunk, dispatch),
       claimCashback: bindActionCreators(createCashbackInfoThunk, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(ThankYou);

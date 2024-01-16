@@ -339,7 +339,7 @@ export const actions = {
         payload: { ...result, source },
       });
 
-      dispatch(actions.getLoginStatus());
+      await dispatch(actions.getLoginStatus());
     } catch (error) {
       CleverTap.pushEvent('Login - login failed');
 
@@ -782,34 +782,13 @@ export const actions = {
 
     try {
       const business = getBusiness(getState());
-
-      dispatch({
-        type: types.CREATE_LOGIN_REQUEST,
-      });
-
-      const businessUTCOffset = getBusinessUTCOffset(getState());
-
       const tokens = await TngUtils.getAccessToken({ business });
-
+      const source = REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
-      const result = await ApiRequest.login({
-        accessToken,
-        refreshToken,
-        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-      });
-
-      dispatch({
-        type: types.CREATE_LOGIN_SUCCESS,
-        payload: result,
-      });
+      await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
     } catch (error) {
       CleverTap.pushEvent('Login - login failed');
-
-      dispatch({
-        type: types.CREATE_LOGIN_FAILURE,
-        error,
-      });
 
       logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
 
@@ -1597,6 +1576,10 @@ export const getUserProfileStatus = state => state.app.user.profile.status;
 export const getIsUserLoginRequestStatusInPending = createSelector(
   getUserLoginRequestStatus,
   status => status === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsUserLoginRequestCompleted = createSelector(getUserLoginRequestStatus, status =>
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(status)
 );
 
 export const getIsUserProfileStatusFulfilled = createSelector(
