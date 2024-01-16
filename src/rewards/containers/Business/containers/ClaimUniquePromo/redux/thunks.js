@@ -1,4 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import { initUserInfo } from '../../../../../../redux/modules/user/thunks';
 import { postClaimUniquePromo } from './api-request';
 
 export const claimUniquePromo = createAsyncThunk(
@@ -11,5 +13,18 @@ export const claimUniquePromo = createAsyncThunk(
     });
 
     return result;
+  }
+);
+
+export const mounted = createAsyncThunk(
+  'rewards/business/claimUniquePromo/mounted',
+  async (_, { getState, dispatch }) => {
+    await dispatch(initUserInfo());
+
+    const isLogin = getIsLogin(getState());
+
+    if (!isLogin) {
+      dispatch(claimUniquePromo());
+    }
   }
 );
