@@ -1,5 +1,4 @@
 import _get from 'lodash/get';
-import { replace } from 'connected-react-router';
 import { createSelector } from 'reselect';
 import i18next from 'i18next';
 import Url from '../../../utils/url';
@@ -60,7 +59,7 @@ export const actions = {
     },
   }),
 
-  claimCashbackForConsumer: receiptNumber => async (dispatch, getState) => {
+  claimCashbackForConsumer: ({ receiptNumber, history }) => async (dispatch, getState) => {
     if (!receiptNumber) {
       return;
     }
@@ -70,31 +69,28 @@ export const actions = {
     // eslint-disable-next-line no-use-before-define
     const customerId = getClaimedCashbackCustomerId(getState());
 
-    customerId && dispatch(replace(`${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`));
+    // The replace of connected-react-router cannot take effect here. The new method will be used in WB-6450.
+    customerId && history.replace(`${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`);
   },
 
-  mounted: () => async (dispatch, getState) => {
+  mounted: history => async (dispatch, getState) => {
     dispatch(appActions.setLoginPrompt(i18next.t('Common:ClaimCashbackTitle')));
     const hash = getEncodeURIComponent(getQueryString('h'));
 
-    try {
-      if (hash) {
-        await dispatch(actions.getCashbackReceiptNumber(hash));
-      }
+    if (hash) {
+      await dispatch(actions.getCashbackReceiptNumber(hash));
+    }
 
-      // eslint-disable-next-line no-use-before-define
-      const receiptNumber = getReceiptNumber(getState());
-      const isLogin = getIsUserLogin(getState());
+    // eslint-disable-next-line no-use-before-define
+    const receiptNumber = getReceiptNumber(getState());
+    const isLogin = getIsUserLogin(getState());
 
-      if (receiptNumber) {
-        dispatch(actions.getCashbackInfo(receiptNumber));
-      }
+    if (receiptNumber) {
+      dispatch(actions.getCashbackInfo(receiptNumber));
+    }
 
-      if (isLogin && receiptNumber) {
-        await dispatch(actions.claimCashbackForConsumer(receiptNumber));
-      }
-    } catch (error) {
-      console.error(error);
+    if (isLogin && receiptNumber) {
+      await dispatch(actions.claimCashbackForConsumer({ receiptNumber, history }));
     }
   },
 
