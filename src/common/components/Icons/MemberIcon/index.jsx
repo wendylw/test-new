@@ -3,21 +3,21 @@ import PropTypes from 'prop-types';
 
 export const MemberIcon = ({ className, crownStartColor, crownEndColor, backgroundStartColor, backgroundEndColor }) => (
   <i className={className}>
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
       <path
-        d="M31.9998 61.7464C48.4283 61.7464 61.7462 48.4285 61.7462 32C61.7462 15.5716 48.4283 2.25366 31.9998 2.25366C15.5713 2.25366 2.25342 15.5716 2.25342 32C2.25342 48.4285 15.5713 61.7464 31.9998 61.7464Z"
-        fill="url(#paint0_linear_2901_4924)"
+        d="M32 61.7464C48.4285 61.7464 61.7464 48.4285 61.7464 32C61.7464 15.5716 48.4285 2.25366 32 2.25366C15.5715 2.25366 2.25363 15.5716 2.25363 32C2.25363 48.4285 15.5715 61.7464 32 61.7464Z"
+        fill="url(#paint0_linear_3397_27287)"
       />
       <path
         d="M18.4699 43.8388H45.5301L48.9126 26.9262L38.765 30.3087L32 20.1611L25.235 30.3087L15.0874 27.2154L18.4699 43.8388Z"
-        fill="url(#paint1_linear_2901_4924)"
+        fill="url(#paint1_linear_3397_27287)"
       />
       <defs>
         <linearGradient
-          id="paint0_linear_2901_4924"
-          x1="31.9998"
+          id="paint0_linear_3397_27287"
+          x1="32"
           y1="2.69277"
-          x2="31.9998"
+          x2="32"
           y2="61.024"
           gradientUnits="userSpaceOnUse"
         >
@@ -25,11 +25,11 @@ export const MemberIcon = ({ className, crownStartColor, crownEndColor, backgrou
           <stop offset="1" stopColor={backgroundEndColor} />
         </linearGradient>
         <linearGradient
-          id="paint1_linear_2901_4924"
-          x1="32"
-          y1="20.3359"
-          x2="32"
-          y2="43.5514"
+          id="paint1_linear_3397_27287"
+          x1="16"
+          y1="19.9999"
+          x2="48"
+          y2="43.9999"
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor={crownStartColor} />
