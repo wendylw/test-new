@@ -1,7 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { getDecimalNumber } from '../../../../common/utils';
+import { getPrice, getDecimalNumber } from '../../../../common/utils';
 import {
   getMerchantCountry,
   getMerchantCurrency,

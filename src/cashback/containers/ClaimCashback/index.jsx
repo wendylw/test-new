@@ -12,7 +12,7 @@ import MerchantInfo from './components/MerchantInfo';
 import CashbackBlock from './components/CashbackBlock';
 import styles from './ClaimCashback.module.scss';
 
-const ClaimCashback = () => {
+const ClaimCashback = ({ history }) => {
   const { t } = useTranslation(['Cashback']);
   const dispatch = useDispatch();
   const isWeb = useSelector(getIsWeb);
@@ -29,7 +29,7 @@ const ClaimCashback = () => {
   usePrefetch(['CB_HM'], ['Cashback']);
 
   useMount(() => {
-    dispatch(claimActions.mounted());
+    dispatch(claimActions.mounted(history));
   });
 
   useUnmount(() => {
@@ -38,9 +38,9 @@ const ClaimCashback = () => {
 
   useEffect(() => {
     if (isUserLogin && receiptNumber && !claimRequestStatus) {
-      dispatch(claimActions.claimCashbackForConsumer(receiptNumber));
+      dispatch(claimActions.claimCashbackForConsumer({ receiptNumber, history }));
     }
-  }, [isUserLogin, claimRequestStatus, receiptNumber, dispatch]);
+  }, [isUserLogin, claimRequestStatus, receiptNumber, dispatch, history]);
 
   return (
     <Frame>
