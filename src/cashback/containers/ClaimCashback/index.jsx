@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount, useUnmount } from 'react-use';
-import { getIsUserLogin } from '../../redux/modules/app';
+import { useTranslation } from 'react-i18next';
+import { closeWebView } from '../../../utils/native-methods';
+import { getIsWeb, getIsWebview, getIsUserLogin } from '../../redux/modules/app';
 import { actions as claimActions, getReceiptNumber, getCashbackClaimRequestStatus } from '../../redux/modules/claim';
 import Frame from '../../../common/components/Frame';
 import PageHeader from '../../../common/components/PageHeader';
@@ -9,10 +11,18 @@ import MerchantInfo from './components/MerchantInfo';
 import CashbackBlock from './components/CashbackBlock';
 
 const ClaimCashback = () => {
+  const { t } = useTranslation(['Cashback']);
   const dispatch = useDispatch();
+  const isWeb = useSelector(getIsWeb);
+  const isWebview = useSelector(getIsWebview);
   const isUserLogin = useSelector(getIsUserLogin);
   const receiptNumber = useSelector(getReceiptNumber);
   const claimRequestStatus = useSelector(getCashbackClaimRequestStatus);
+  const handleClickHeaderBackButton = useCallback(() => {
+    if (isWebview) {
+      closeWebView();
+    }
+  }, [isWebview]);
 
   useMount(() => {
     dispatch(claimActions.mounted());
@@ -30,7 +40,11 @@ const ClaimCashback = () => {
 
   return (
     <Frame>
-      <PageHeader />
+      <PageHeader
+        title={t('EarnCashbackPageTitle')}
+        isShowBackButton={!isWeb}
+        onBackArrowClick={handleClickHeaderBackButton}
+      />
       <MerchantInfo />
       <CashbackBlock />
     </Frame>

@@ -465,3 +465,17 @@ export const getPrice = (number = 0, { locale, currency, country, withCurrency =
     return numberToFixed(number);
   }
 };
+
+export const getEncodeURIComponent = value => {
+  try {
+    const decodedValue = decodeURIComponent(value);
+
+    if (decodedValue !== value) {
+      return value;
+    }
+
+    return encodeURIComponent(value);
+  } catch (error) {
+    return value;
+  }
+};

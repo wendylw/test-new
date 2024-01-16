@@ -1,14 +1,22 @@
 import _get from 'lodash/get';
 import { replace } from 'connected-react-router';
 import { createSelector } from 'reselect';
+import i18next from 'i18next';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import { CLAIM_TYPES } from '../types';
 import Constants from '../../../utils/constants';
-import { getPrice, getQueryString } from '../../../common/utils';
+import { getPrice, getQueryString, getEncodeURIComponent } from '../../../common/utils';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { getBusiness, getBusinessLocale, getBusinessCurrency, getBusinessCountry, getIsUserLogin } from './app';
+import {
+  actions as appActions,
+  getBusiness,
+  getBusinessLocale,
+  getBusinessCurrency,
+  getBusinessCountry,
+  getIsUserLogin,
+} from './app';
 import { getCustomerId } from './customer/selectors';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 
@@ -66,7 +74,8 @@ export const actions = {
   },
 
   mounted: () => async (dispatch, getState) => {
-    const { hash } = getQueryString('h');
+    dispatch(appActions.setLoginPrompt(i18next.t('Common:ClaimCashbackTitle')));
+    const hash = getEncodeURIComponent(getQueryString('h'));
 
     try {
       if (hash) {

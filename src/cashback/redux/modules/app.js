@@ -36,7 +36,7 @@ import {
   COUNTRIES_DEFAULT_CURRENCIES,
   COUNTRIES_DEFAULT_LOCALE,
 } from '../../../common/utils/constants';
-import { isJSON, isTNGMiniProgram } from '../../../common/utils';
+import { isJSON, isWebview, isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 import { getCustomerId } from './customer/selectors';
@@ -746,6 +746,8 @@ export default combineReducers({
 });
 
 // selectors
+export const getIsWeb = () => !isWebview() && !isTNGMiniProgram();
+export const getIsWebview = () => isWebview();
 export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
 export const getLoginTngRequest = state => state.app.user.loginTngRequest;
