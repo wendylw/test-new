@@ -951,10 +951,10 @@ export const getBusinessLocale = createSelector(
   getBusinessInfo,
   getBusinessCountry,
   (info, businessInfo, businessCountry) =>
-    info.locale || businessInfo.locale || COUNTRIES_DEFAULT_LOCALE[businessCountry]
+    info?.locale || businessInfo?.locale || COUNTRIES_DEFAULT_LOCALE[businessCountry]
 );
 
 export const getBusinessDisplayName = createSelector(
   getBusinessInfo,
-  businessInfo => businessInfo.displayName || businessInfo.name || ''
+  businessInfo => businessInfo?.displayName || businessInfo?.name || ''
 );
