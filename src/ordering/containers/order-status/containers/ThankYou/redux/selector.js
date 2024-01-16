@@ -197,7 +197,10 @@ export const getShouldShowCashbackBanner = createSelector(
 export const getShouldShowCashbackCard = createSelector(
   getIsCashbackClaimable,
   getHasCashbackClaimed,
-  (isCashbackClaimable, hasCashbackClaimed) => isCashbackClaimable || hasCashbackClaimed
+  getUserCustomerId,
+  getOrderCustomerId,
+  (isCashbackClaimable, hasCashbackClaimed, userCustomerId, orderCustomerId) =>
+    (isCashbackClaimable || hasCashbackClaimed) && userCustomerId === orderCustomerId
 );
 
 export const getFoodCourtId = createSelector(getOrder, order => _get(order, 'foodCourtId', null));

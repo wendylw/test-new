@@ -158,7 +158,7 @@ export const getMemberColorPalettes = createSelector(
 
 export const getMemberCardStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
   color: memberCardColorPalettes.font,
-  background: `linear-gradient(120deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 58%,${memberCardColorPalettes.background.endColor} 97%)`,
+  background: `linear-gradient(105deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 50%,${memberCardColorPalettes.background.endColor} 100%)`,
 }));
 
 export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
