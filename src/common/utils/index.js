@@ -16,6 +16,8 @@ import {
   SOURCE_TYPE,
   ORDER_SOURCE,
   REGISTRATION_SOURCE,
+  COUNTRIES_DEFAULT_LOCALE,
+  COUNTRIES_DEFAULT_CURRENCIES,
 } from './constants';
 
 // todo: make old legacy utils to import function from here, rather than define same functions twice
@@ -561,3 +563,33 @@ export const isJSON = value => {
 
 export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
+
+export const getPrice = (number = 0, { locale, currency, country, withCurrency = true }) => {
+  let price = '';
+  const countryLocale = locale || COUNTRIES_DEFAULT_LOCALE[country];
+  const countryCurrency = currency || COUNTRIES_DEFAULT_CURRENCIES[country];
+  const numberToFixed = value => parseFloat(value).toFixed(2);
+
+  try {
+    if (!countryLocale || !countryCurrency) {
+      return numberToFixed(number);
+    }
+
+    if (!withCurrency && !isSafari()) {
+      price = Intl.NumberFormat(countryLocale, {
+        style: 'decimal',
+        currency: countryCurrency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(parseFloat(number));
+    } else {
+      price = Intl.NumberFormat(countryLocale, { style: 'currency', currency: countryCurrency }).format(
+        parseFloat(number)
+      );
+    }
+
+    return (!price ? numberToFixed(number) : price).replace(/^(\D+)/, '$1 ');
+  } catch (error) {
+    return numberToFixed(number);
+  }
+};

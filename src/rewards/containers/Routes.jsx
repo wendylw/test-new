@@ -12,6 +12,10 @@ const MembershipFormProxy = lazy(() =>
   )
 );
 
+const MembershipDetail = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_MER_DETL" */ './Business/containers/MembershipDetail'))
+);
+
 const Login = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_Login" */ './Login')));
 
 const { ROUTER_PATHS } = Constants;
@@ -24,6 +28,11 @@ const Routes = () => (
           exact
           path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.JOIN_MEMBERSHIP}`}
           component={MembershipFormProxy}
+        />
+        <Route
+          exact
+          path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.MEMBERSHIP_DETAIL}`}
+          component={MembershipDetail}
         />
         <Route exact path={ROUTER_PATHS.REWARDS_LOGIN} component={Login} />
         <Route path="*" component={NotFound} />
