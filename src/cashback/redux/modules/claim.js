@@ -54,10 +54,6 @@ export const actions = {
 
   claimCashbackForConsumer: receiptNumber => async (dispatch, getState) => {
     if (receiptNumber) {
-      dispatch(actions.getCashbackInfo(receiptNumber));
-    }
-
-    if (receiptNumber) {
       await dispatch(actions.createCashbackInfo(receiptNumber));
 
       // eslint-disable-next-line no-use-before-define
