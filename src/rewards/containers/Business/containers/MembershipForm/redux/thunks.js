@@ -49,7 +49,11 @@ export const goToMembershipDetail = createAsyncThunk(
     const state = getState();
     const search = getLocationSearch(state);
 
-    dispatch(replace(`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`));
+    dispatch(
+      replace(
+        `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`
+      )
+    );
   }
 );
 

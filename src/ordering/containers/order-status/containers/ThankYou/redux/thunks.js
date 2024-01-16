@@ -266,7 +266,7 @@ export const goToJoinMembershipPage = createAsyncThunk(
     const state = getState();
     const business = getBusiness(state);
     const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
-    const redirectUrl = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.JOIN_MEMBERSHIP}?business=${business}&source=${source}`;
+    const redirectUrl = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.SIGN_UP}?business=${business}&source=${source}`;
 
     submitForm('/go2page', {
       target: redirectUrl,
@@ -280,7 +280,7 @@ export const goToMembershipDetailPage = createAsyncThunk(
     const state = getState();
     const business = getBusiness(state);
     const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
-    const redirectUrl = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}?business=${business}&source=${source}`;
+    const redirectUrl = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}?business=${business}&source=${source}`;
 
     submitForm('/go2page', {
       target: redirectUrl,
