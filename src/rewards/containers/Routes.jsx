@@ -16,6 +16,10 @@ const MembershipDetail = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_MER_DETL" */ './Business/containers/MembershipDetail'))
 );
 
+const ClaimUniquePromo = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_CL_UQ_PROM" */ './Business/containers/ClaimUniquePromo'))
+);
+
 const Login = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_Login" */ './Login')));
 
 const { ROUTER_PATHS } = Constants;
@@ -33,6 +37,11 @@ const Routes = () => (
           exact
           path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.MEMBERSHIP_DETAIL}`}
           component={MembershipDetail}
+        />
+        <Route
+          exact
+          path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.CLAIM_UNIQUE_PROMO}`}
+          component={ClaimUniquePromo}
         />
         <Route exact path={ROUTER_PATHS.REWARDS_LOGIN} component={Login} />
         <Route path="*" component={NotFound} />

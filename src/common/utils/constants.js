@@ -102,6 +102,7 @@ export const PATH_NAME_MAPPING = {
   REWARDS_BUSINESS: '/business',
   JOIN_MEMBERSHIP: '/join-membership',
   MEMBERSHIP_DETAIL: '/membership-detail',
+  CLAIM_UNIQUE_PROMO: '/promo/promo-claim',
   REWARDS_LOGIN: '/login',
   // dine
   DINE: '/dine',
