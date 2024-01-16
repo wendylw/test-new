@@ -5,7 +5,7 @@ import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import { CLAIM_TYPES } from '../types';
 import Constants from '../../../utils/constants';
-import { getPrice, getQueryString, getEncodeURIComponent } from '../../../common/utils';
+import { getPrice, getQueryString } from '../../../common/utils';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import {
@@ -60,10 +60,6 @@ export const actions = {
   }),
 
   claimCashbackForConsumer: ({ receiptNumber, history }) => async (dispatch, getState) => {
-    if (!receiptNumber) {
-      return;
-    }
-
     await dispatch(actions.createCashbackInfo(receiptNumber));
 
     // eslint-disable-next-line no-use-before-define
@@ -75,7 +71,7 @@ export const actions = {
 
   mounted: history => async (dispatch, getState) => {
     dispatch(appActions.setLoginPrompt(i18next.t('Common:ClaimCashbackTitle')));
-    const hash = getEncodeURIComponent(getQueryString('h'));
+    const hash = encodeURIComponent(decodeURIComponent(getQueryString('h')));
 
     if (hash) {
       await dispatch(actions.getCashbackReceiptNumber(hash));
