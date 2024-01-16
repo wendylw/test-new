@@ -218,6 +218,10 @@ export const getOrderCustomerId = createSelector(getCashbackInfo, cashbackInfo =
   _get(cashbackInfo, 'customerId', null)
 );
 
+export const getOrderCashbackStatus = createSelector(getCashbackInfo, cashbackInfo =>
+  _get(cashbackInfo, 'status', null)
+);
+
 export const getOrderCashbackPrice = createSelector(
   getOrderCashback,
   getBusinessLocale,
