@@ -32,7 +32,7 @@ const MemberCard = ({
   const { crownStartColor, crownEndColor, backgroundStartColor, backgroundEndColor } = memberCardIconColors;
 
   return (
-    <div className="card member-card__card-wrapper margin-small">
+    <div className="member-card__card-wrapper margin-small border-radius-base">
       <button
         data-test-id="ordering.thank-you.member-card"
         className="member-card__card-container flex flex__fluid-content flex-column flex-space-between"
