@@ -19,5 +19,6 @@
   "ValidUntil": "Valid until {{date}}",
   "Joining": "Joining...",
   "ClaimPromotion": "Claim Promotion",
+  "UniquePromoHeaderTitle": "Promotion - {{merchantDisplayName}}",
   "UniquePromoDownloadBannerText": "Get reminder for your promotions on Beep app now"
 }

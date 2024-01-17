@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { closeWebView } from '../../../../../utils/native-methods';
+import { getMerchantDisplayName } from '../../../../redux/modules/merchant/selectors';
 import { getIsWeb, getIsWebview } from '../../../../redux/modules/common/selectors';
 import { getIsClaimUniquePromoRequestFulfilled } from './redux/selectors';
 import { mounted } from './redux/thunks';
@@ -14,6 +15,7 @@ import ClaimUniquePromo from '.';
 const ClaimUniquePromoProxy = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
+  const merchantDisplayName = useSelector(getMerchantDisplayName);
   const isWeb = useSelector(getIsWeb);
   const isWebview = useSelector(getIsWebview);
   const isClaimUniquePromoRequestFulfilled = useSelector(getIsClaimUniquePromoRequestFulfilled);
@@ -31,7 +33,7 @@ const ClaimUniquePromoProxy = () => {
     <Frame>
       <PageHeader
         isShowBackButton={!isWeb}
-        title={t('MembershipDetailPageTitle')}
+        title={t('UniquePromoHeaderTitle', { merchantDisplayName })}
         onBackArrowClick={handleClickHeaderBackButton}
       />
       <ClaimUniquePromo />

@@ -1,10 +1,10 @@
 import React from 'react';
-// import UniquePromoCongratulation from './components/UniquePromoCongratulation';
+import UniquePromoCongratulation from './components/UniquePromoCongratulation';
 import UniquePromCongratulationFooter from './components/UniquePromCongratulationFooter';
 
 const ClaimSuccess = () => (
   <>
-    {/* <UniquePromoCongratulation /> */}
+    <UniquePromoCongratulation />
     <UniquePromCongratulationFooter />
   </>
 );
