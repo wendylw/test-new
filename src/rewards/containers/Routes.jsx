@@ -16,8 +16,10 @@ const MembershipDetail = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_MER_DETL" */ './Business/containers/MembershipDetail'))
 );
 
-const ClaimUniquePromo = lazy(() =>
-  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_CL_UQ_PROM" */ './Business/containers/ClaimUniquePromo'))
+const ClaimUniquePromoProxy = lazy(() =>
+  Utils.attemptLoad(() =>
+    import(/* webpackChunkName: "RWD_CL_UQ_PROM" */ './Business/containers/ClaimUniquePromo/ClaimUniquePromoProxy')
+  )
 );
 
 const Login = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_Login" */ './Login')));
@@ -41,7 +43,7 @@ const Routes = () => (
         <Route
           exact
           path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.UNIQUE_PROMO}${ROUTER_PATHS.CLAIM}`}
-          component={ClaimUniquePromo}
+          component={ClaimUniquePromoProxy}
         />
         <Route exact path={ROUTER_PATHS.REWARDS_LOGIN} component={Login} />
         <Route path="*" component={NotFound} />
