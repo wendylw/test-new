@@ -2,8 +2,6 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useMount } from 'react-use';
 import { initUserInfo } from '../../../../../redux/modules/user/thunks';
-import Frame from '../../../../../common/components/Frame';
-import PageHeader from '../../../../../common/components/PageHeader';
 import ClaimUniquePromoFooter from './components/ClaimUniquePromoFooter';
 
 const ClaimUniquePromo = () => {
@@ -13,12 +11,7 @@ const ClaimUniquePromo = () => {
     await dispatch(initUserInfo());
   });
 
-  return (
-    <Frame>
-      <PageHeader />
-      <ClaimUniquePromoFooter />
-    </Frame>
-  );
+  return <ClaimUniquePromoFooter />;
 };
 
 ClaimUniquePromo.displayName = 'ClaimUniquePromo';
