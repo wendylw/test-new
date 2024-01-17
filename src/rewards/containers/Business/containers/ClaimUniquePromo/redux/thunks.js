@@ -1,9 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push } from 'connected-react-router';
-import { setCookieVariable } from '../../../../../../common/utils';
+import { setCookieVariable, getCookieVariable, removeCookieVariable } from '../../../../../../common/utils';
 import { REFERRER_SOURCE_TYPES, PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
-import { loginUserByBeepApp, loginUserByTngMiniProgram } from '../../../../../../redux/modules/user/thunks';
+import {
+  initUserInfo,
+  loginUserByBeepApp,
+  loginUserByTngMiniProgram,
+} from '../../../../../../redux/modules/user/thunks';
+import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
 import {
   getIsWeb,
   getIsWebview,
@@ -23,6 +28,27 @@ export const claimUniquePromo = createAsyncThunk(
     });
 
     return result;
+  }
+);
+
+export const mounted = createAsyncThunk(
+  'rewards/business/claimUniquePromo/mounted',
+  async (_, { getState, dispatch }) => {
+    dispatch(fetchMerchantInfo());
+    await dispatch(initUserInfo());
+
+    const isLogin = getIsLogin(getState());
+
+    if (!isLogin) {
+      return;
+    }
+
+    const from = getCookieVariable('__jm_source');
+    removeCookieVariable('__jm_source');
+
+    if (from === REFERRER_SOURCE_TYPES.LOGIN) {
+      dispatch(claimUniquePromo());
+    }
   }
 );
 

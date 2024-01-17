@@ -1,16 +1,16 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useMount } from 'react-use';
-import { initUserInfo } from '../../../../../redux/modules/user/thunks';
+import { mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
-import ClaimUniquePromo from './';
+import ClaimUniquePromo from '.';
 
 const ClaimUniquePromoProxy = () => {
   const dispatch = useDispatch();
 
-  useMount(async () => {
-    await dispatch(initUserInfo());
+  useMount(() => {
+    dispatch(mounted());
   });
 
   return (
