@@ -8,6 +8,7 @@ import { alert } from '../../../common/utils/feedback';
 import {
   isWebview,
   isTNGMiniProgram,
+  isGCashMiniProgram,
   judgeClient,
   getIsThePageHidden,
   getIsDesktopClients,
@@ -137,7 +138,7 @@ const StoreRedemption = () => {
   const client = judgeClient();
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
-  const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
+  const isDisplayWebResult = !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram();
   const handleGotoBeepDownloadPage = useCallback(() => {
     const downloadBeepAppDeepLink = process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK;
 

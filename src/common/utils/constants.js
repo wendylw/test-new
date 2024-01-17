@@ -41,11 +41,6 @@ export const SHIPPING_TYPES = {
   DIGITAL: 'digital',
 };
 
-export const WEB_VIEW_SOURCE = {
-  IOS: 'iOS',
-  Android: 'Android',
-};
-
 export const PATH_NAME_MAPPING = {
   TERMS_OF_USE: '/terms-of-use',
   THANK_YOU: '/thank-you',
@@ -112,6 +107,7 @@ export const PATH_NAME_MAPPING = {
 
 export const PROMOTION_CLIENT_TYPES = {
   TNG_MINI_PROGRAM: 'tngMiniProgram',
+  GCASH_MINI_PROGRAM: 'gcashMiniProgram',
   APP: 'app',
   WEB: 'web',
 };
@@ -143,6 +139,11 @@ export const SOURCE_TYPE = {
   SMS: 'SMS',
 };
 
+export const WEB_VIEW_SOURCE = {
+  IOS: 'iOS',
+  Android: 'Android',
+};
+
 export const CLIENTS = {
   WEB: 'web',
   IOS: 'iOS',
@@ -150,6 +151,15 @@ export const CLIENTS = {
   MAC: 'Mac',
   PC: 'PC',
   TNG_MINI_PROGRAM: 'tngMiniProgram',
+  GCASH_MINI_PROGRAM: 'gcashMiniProgram',
+};
+
+export const REGISTRATION_TOUCH_POINT = {
+  CLAIM_CASHBACK: 'ClaimCashback',
+  ONLINE_ORDER: 'OnlineOrder',
+  QR_ORDER: 'QROrder',
+  TNG: 'TNG',
+  GCash: 'GCash',
 };
 
 export const REGISTRATION_SOURCE = {
@@ -158,8 +168,49 @@ export const REGISTRATION_SOURCE = {
   BEEP_STORE: 'BeepStore',
   BEEP_SITE: 'BeepSite',
   TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
+  GCASH_MINI_PROGRAM: 'BeepGCashMiniProgram',
   SHARED_LINK: 'SharedLink',
 };
+
+export const ORDER_SOURCE = {
+  TNG_MINI_PROGRAM: 'BeepTngMiniProgram',
+  GCASH_MINI_PROGRAM: 'BeepGCashMiniProgram',
+  BEEP_APP: 'BeepApp',
+  BEEP_SITE: 'BeepSite',
+  BEEP_STORE: 'BeepStore',
+};
+
+export const PAYMENT_METHOD_LABELS = {
+  STRIPE: 'stripe',
+  ONLINE_BANKING_PAY: 'OnlineBanking',
+  CREDIT_CARD_PAY: 'CreditAndDebitCard',
+  GRAB_PAY: 'GrabPay',
+  BOOST_PAY: 'Boost',
+  TNG_PAY: 'TouchNGo',
+  GCASH_PAY: 'GCash',
+  LINE_PAY: 'Line',
+  GETZ_PAY: 'GetzPay',
+  APPLE_PAY: 'ApplePay',
+};
+
+export const PAYMENT_PROVIDERS = {
+  STRIPE: 'Stripe',
+  APPLE_PAY: 'StripeApplePay',
+  STRIPE_FPX: 'StripeFPX',
+  TNG_ONLINE: 'TnGOnline',
+  BOOST: 'Boost',
+  GRAB_PAY: 'GrabPay',
+  BEEP_TH_CREDIT_CARD: 'BeepTHCreditCard',
+  BEEP_TH_ONLINE_BANKING: 'BeepTHOnlineBanking',
+  BEEP_TH_LINE_PAY: 'BeepTHLinePay',
+  BEEP_PH_CREDIT_CARD: 'BeepPHCreditCard',
+  BEEP_PH_CCPP_GCASH: 'BeepPHCCPPGcash',
+  SH_OFFLINE_PAYMENT: 'SHOfflinePayment', // Pay at counter
+  TNG_MINI_PROGRAM: 'TNGMiniProgram',
+  GCASH_MINI_PROGRAM: 'GCashMiniProgram',
+};
+
+export const TIME_SLOT_NOW = 'now';
 
 export const PRODUCT_STOCK_STATUS = {
   NOT_TRACK_INVENTORY: 'notTrackInventory',
