@@ -19,6 +19,7 @@ const ClaimUniquePromoFooter = () => {
     <PageFooter zIndex={50}>
       <div className={styles.ClaimUniquePromoFooterContent}>
         <Button
+          className={styles.ClaimUniquePromoFooterButton}
           block
           loading={isClaimUniquePromoRequestPending}
           disabled={isClaimUniquePromoRequestPending}
