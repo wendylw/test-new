@@ -4,6 +4,7 @@ import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { closeWebView } from '../../../../../utils/native-methods';
 import { getIsWeb, getIsWebview } from '../../../../redux/modules/common/selectors';
+import { getIsClaimUniquePromoRequestFulfilled } from './redux/selectors';
 import { mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
@@ -15,6 +16,7 @@ const ClaimUniquePromoProxy = () => {
   const dispatch = useDispatch();
   const isWeb = useSelector(getIsWeb);
   const isWebview = useSelector(getIsWebview);
+  const isClaimUniquePromoRequestFulfilled = useSelector(getIsClaimUniquePromoRequestFulfilled);
   const handleClickHeaderBackButton = useCallback(() => {
     if (isWebview) {
       closeWebView();
@@ -33,7 +35,7 @@ const ClaimUniquePromoProxy = () => {
         onBackArrowClick={handleClickHeaderBackButton}
       />
       <ClaimUniquePromo />
-      <ClaimSuccess />
+      {isClaimUniquePromoRequestFulfilled && <ClaimSuccess />}
     </Frame>
   );
 };
