@@ -36,8 +36,8 @@ const ClaimUniquePromoProxy = () => {
         title={t('UniquePromoHeaderTitle', { merchantDisplayName })}
         onBackArrowClick={handleClickHeaderBackButton}
       />
-      <ClaimUniquePromo />
-      {isClaimUniquePromoRequestFulfilled && <ClaimSuccess />}
+
+      {isClaimUniquePromoRequestFulfilled ? <ClaimSuccess /> : <ClaimUniquePromo />}
     </Frame>
   );
 };
