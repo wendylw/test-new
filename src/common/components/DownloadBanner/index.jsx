@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import beepAppAppleStore from '../../../images/beep-app-apple-store.svg';
 import beepAppGooglePlay from '../../../images/beep-app-google-play.svg';
-import { judgeClient, getIsDesktopClients } from '../../../common/utils';
+import { judgeClient, getIsDesktopClients } from '../../utils';
 import { ObjectFitImage } from '../Image';
 import styles from './DownloadBanner.module.scss';
 
-const DownloadBanner = ({ link = '', text = '' }) => {
+const DownloadBanner = ({ link, text }) => {
   const isDesktopClient = getIsDesktopClients(judgeClient());
 
   return (
@@ -22,5 +23,15 @@ const DownloadBanner = ({ link = '', text = '' }) => {
 };
 
 DownloadBanner.displayName = 'DownloadBanner';
+
+DownloadBanner.propTypes = {
+  link: PropTypes.string,
+  text: PropTypes.string,
+};
+
+DownloadBanner.defaultProps = {
+  link: '',
+  text: '',
+};
 
 export default DownloadBanner;
