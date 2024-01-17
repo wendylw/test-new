@@ -17,11 +17,11 @@ export const getUniquePromosRewardsUrl = state => getFeatureFlagResult(state, FE
 export const getUniquePromosCongratulationUrl = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.CLAIM_UNIQUE_PROMO).congratsURL;
 
-export const getClaimUniquePromoRequestData = state => state.rewards.business.claimUniquePromo.data;
+export const getClaimUniquePromoRequestData = state => state.business.claimUniquePromo.claimUniquePromoRequest.data;
 
-export const getClaimUniquePromoRequestStatus = state => state.rewards.business.claimUniquePromo.status;
+export const getClaimUniquePromoRequestStatus = state => state.business.claimUniquePromo.claimUniquePromoRequest.status;
 
-export const getClaimUniquePromoRequestError = state => state.rewards.business.claimUniquePromo.error;
+export const getClaimUniquePromoRequestError = state => state.business.claimUniquePromo.claimUniquePromoRequest.error;
 
 /**
  * Derived selectors

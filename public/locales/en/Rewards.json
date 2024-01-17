@@ -18,5 +18,6 @@
   "MinConsumption": "Min. spend {{amount}}",
   "ValidUntil": "Valid until {{date}}",
   "Joining": "Joining...",
-  "ClaimPromotion": "Claim Promotion"
+  "ClaimPromotion": "Claim Promotion",
+  "UniquePromoDownloadBannerText": "Get reminder for your promotions on Beep app now"
 }

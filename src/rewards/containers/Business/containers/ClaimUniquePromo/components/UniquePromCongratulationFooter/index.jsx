@@ -31,10 +31,13 @@ const UniquePromCongratulationFooter = () => {
   }
 
   return (
-    <PageFooter zIndex={50}>
+    <PageFooter className={isWeb && styles.UniquePromCongratulationFooter} zIndex={50}>
       <div className={styles.UniquePromCongratulationFooterContent}>
         {isWeb ? (
-          <DownloadBanner />
+          <DownloadBanner
+            link={process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}
+            text={t('UniquePromoDownloadBannerText')}
+          />
         ) : (
           <Button
             className={styles.UniquePromCongratulationFooterButton}

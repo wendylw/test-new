@@ -11,7 +11,7 @@ const DownloadBanner = ({ link, text }) => {
 
   return (
     <a className={styles.DownloadBanner} href={link} rel="noreferrer" target={isDesktopClient ? '_blank' : ''}>
-      <span>{text}</span>
+      <span className={styles.DownloadBannerText}>{text}</span>
       <div className={styles.DownloadBannerAppStoreIcon}>
         <ObjectFitImage noCompression src={beepAppAppleStore} alt="Beep Apple Store Download" />
       </div>

@@ -1,3 +1,11 @@
-.ClaimUniquePromoFooterContent {
+.UniquePromCongratulationFooter {
+  @apply tw-bg-transparent tw-shadow-none;
+}
+
+.UniquePromCongratulationFooterContent {
   @apply tw-px-16 sm:tw-px-16px tw-py-8 sm:tw-py-8px;
+}
+
+.UniquePromCongratulationFooterButton {
+  @apply tw-uppercase;
 }

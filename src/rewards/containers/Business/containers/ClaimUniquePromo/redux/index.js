@@ -3,7 +3,7 @@ import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { claimUniquePromo } from './thunks';
 
 const initialState = {
-  claimPromoRequest: {
+  claimUniquePromoRequest: {
     data: null,
     status: null,
     error: null,
@@ -16,17 +16,17 @@ export const { reducer, actions } = createSlice({
   reducers: {},
   extraReducers: {
     [claimUniquePromo.pending.type]: state => {
-      state.claimPromoRequest.status = API_REQUEST_STATUS.PENDING;
-      state.claimPromoRequest.error = null;
+      state.claimUniquePromoRequest.status = API_REQUEST_STATUS.PENDING;
+      state.claimUniquePromoRequest.error = null;
     },
     [claimUniquePromo.fulfilled.type]: (state, { payload }) => {
-      state.claimPromoRequest.data = payload;
-      state.claimPromoRequest.status = API_REQUEST_STATUS.SUCCESS;
-      state.claimPromoRequest.error = null;
+      state.claimUniquePromoRequest.data = payload;
+      state.claimUniquePromoRequest.status = API_REQUEST_STATUS.SUCCESS;
+      state.claimUniquePromoRequest.error = null;
     },
     [claimUniquePromo.rejected.type]: (state, { error }) => {
-      state.claimPromoRequest.status = API_REQUEST_STATUS.ERROR;
-      state.claimPromoRequest.error = error;
+      state.claimUniquePromoRequest.status = API_REQUEST_STATUS.ERROR;
+      state.claimUniquePromoRequest.error = error;
     },
   },
 });

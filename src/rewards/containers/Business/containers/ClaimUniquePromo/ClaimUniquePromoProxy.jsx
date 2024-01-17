@@ -5,7 +5,7 @@ import { mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import ClaimSuccess from './ClaimSuccess';
-import ClaimUniquePromo from '.';
+// import ClaimUniquePromo from '.';
 
 const ClaimUniquePromoProxy = () => {
   const dispatch = useDispatch();
@@ -17,7 +17,7 @@ const ClaimUniquePromoProxy = () => {
   return (
     <Frame>
       <PageHeader />
-      <ClaimUniquePromo />
+      {/* <ClaimUniquePromo /> */}
       <ClaimSuccess />
     </Frame>
   );
