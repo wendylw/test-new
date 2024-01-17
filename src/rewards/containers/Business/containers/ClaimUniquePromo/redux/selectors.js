@@ -4,6 +4,11 @@ import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { CLAIM_UNIQUE_PROMO_ERROR_CODES } from '../utils/constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
+import {
+  getIsMerchantEnabledDelivery,
+  getIsMerchantEnabledOROrdering,
+} from '../../../../../redux/modules/merchant/selectors';
+import { getIsWeb } from '../../../../../redux/modules/common/selectors';
 
 export const getUniquePromoRewardsSetId = getQueryString('rewardsSetId');
 
@@ -18,6 +23,9 @@ export const getClaimUniquePromoRequestStatus = state => state.rewards.business.
 
 export const getClaimUniquePromoRequestError = state => state.rewards.business.claimUniquePromo.error;
 
+/**
+ * Derived selectors
+ */
 export const getIsClaimUniquePromoRequestPending = createSelector(
   getClaimUniquePromoRequestStatus,
   claimUniquePromoRequestStatus => claimUniquePromoRequestStatus === API_REQUEST_STATUS.PENDING
@@ -32,4 +40,11 @@ export const getIsClaimUniquePromoRequestDuplicated = createSelector(
   getClaimUniquePromoRequestError,
   claimUniquePromoRequestError =>
     claimUniquePromoRequestError?.code === CLAIM_UNIQUE_PROMO_ERROR_CODES.DUPLICATED_PROMO_CODE
+);
+
+export const getIsCongratulationFooterDisplay = createSelector(
+  getIsWeb,
+  getIsMerchantEnabledOROrdering,
+  getIsMerchantEnabledDelivery,
+  (isWeb, isOROrderingEnabled, isDeliveryEnabled) => isWeb || (isOROrderingEnabled && isDeliveryEnabled)
 );

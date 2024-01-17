@@ -1,12 +1,12 @@
 import React from 'react';
 import UniquePromoCongratulation from './components/UniquePromoCongratulation';
-import ClaimUniquePromoFooter from './components/ClaimUniquePromoFooter';
+import UniquePromCongratulationFooter from './components/UniquePromCongratulationFooter';
 
 const ClaimSuccess = () => {
   return (
     <>
       <UniquePromoCongratulation />
-      <ClaimUniquePromoFooter />
+      <UniquePromCongratulationFooter />
     </>
   );
 };

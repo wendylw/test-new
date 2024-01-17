@@ -4,6 +4,7 @@ import { useMount } from 'react-use';
 import { mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
+import ClaimSuccess from './components/ClaimSuccess';
 import ClaimUniquePromo from '.';
 
 const ClaimUniquePromoProxy = () => {
@@ -17,6 +18,7 @@ const ClaimUniquePromoProxy = () => {
     <Frame>
       <PageHeader />
       <ClaimUniquePromo />
+      <ClaimSuccess />
     </Frame>
   );
 };
