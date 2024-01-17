@@ -40,7 +40,7 @@ const Routes = () => (
         />
         <Route
           exact
-          path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.CLAIM_UNIQUE_PROMO}`}
+          path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.UNIQUE_PROMO}${ROUTER_PATHS.CLAIM}`}
           component={ClaimUniquePromo}
         />
         <Route exact path={ROUTER_PATHS.REWARDS_LOGIN} component={Login} />
