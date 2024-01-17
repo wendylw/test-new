@@ -4,7 +4,12 @@ import { getFoodCourtId } from './selectors';
 import { fetchFoodCourtStoreList } from './api-request';
 import { isWebview, isTNGMiniProgram, getQueryString } from '../../../../../common/utils';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
-import { actions as appActions, getUserIsLogin, getShippingType } from '../../../../redux/modules/app';
+import {
+  actions as appActions,
+  getUserIsLogin,
+  getShippingType,
+  getIsGCashMiniProgram,
+} from '../../../../redux/modules/app';
 import logger from '../../../../../utils/monitoring/logger';
 
 /**
@@ -48,6 +53,7 @@ export const selectedOneStore = createAsyncThunk(
     const state = getState();
     const userSignedIn = getUserIsLogin(state);
     const shippingType = getShippingType(state);
+    const isGCashMiniProgram = getIsGCashMiniProgram(state);
     const hostList = window.location.host.split('.');
 
     hostList[0] = businessName;
@@ -62,8 +68,19 @@ export const selectedOneStore = createAsyncThunk(
       return;
     }
 
+    // TODO: Migrate isTNGMiniProgram to loginByAlipayMiniProgram
     if (isTNGMiniProgram()) {
       await dispatch(appActions.loginByTngMiniProgram());
+
+      if (getUserIsLogin(getState())) {
+        window.location.href = redirectLocation;
+      }
+
+      return;
+    }
+
+    if (isGCashMiniProgram) {
+      await dispatch(appActions.loginByAlipayMiniProgram());
 
       if (getUserIsLogin(getState())) {
         window.location.href = redirectLocation;
