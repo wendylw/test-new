@@ -45,7 +45,7 @@ const SeamlessLoyaltyProxy = () => {
   }, [isWebview]);
 
   useMount(() => {
-    if (!isWeb) {
+    if (isWeb) {
       window.location.href = seamlessLoyaltyURL;
     } else {
       dispatch(mounted());
