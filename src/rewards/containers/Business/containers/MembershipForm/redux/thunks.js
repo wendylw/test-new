@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, replace, goBack as historyGoBack } from 'connected-react-router';
 import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
 import {
-  getIsTNGMiniProgram,
+  getIsAlipayMiniProgram,
   getIsWebview,
   getLocationSearch,
   getSource,
@@ -13,7 +13,7 @@ import Growthbook from '../../../../../../utils/growthbook';
 import {
   fetchUserLoginStatus,
   loginUserByBeepApp,
-  loginUserByTngMiniProgram,
+  loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
 import { getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
@@ -112,7 +112,7 @@ export const joinNowButtonClicked = createAsyncThunk(
     const state = getState();
     const isLogin = getIsLogin(state);
     const isWebview = getIsWebview(state);
-    const isTNGMiniProgram = getIsTNGMiniProgram(state);
+    const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
     const search = getLocationSearch(state);
 
     if (isLogin) {
@@ -120,15 +120,15 @@ export const joinNowButtonClicked = createAsyncThunk(
       return;
     }
 
-    if (!(isTNGMiniProgram || isWebview)) {
+    if (!(isAlipayMiniProgram || isWebview)) {
       setCookieVariable('__jm_source', REFERRER_SOURCE_TYPES.LOGIN);
       dispatch(push(`${PATH_NAME_MAPPING.REWARDS_LOGIN}${search}`, { shouldGoBack: true }));
       return;
     }
 
     // Force a login for Beep app & Beep TnG MP
-    if (isTNGMiniProgram) {
-      await dispatch(loginUserByTngMiniProgram());
+    if (isAlipayMiniProgram) {
+      await dispatch(loginUserByAlipayMiniProgram());
     }
 
     if (isWebview) {
