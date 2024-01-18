@@ -8,6 +8,7 @@ import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { closeWebView } from '../../../../../utils/native-methods';
 import { getMerchantBusiness, getIsMerchantMembershipEnabled } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getIsWeb, getSource } from '../../../../redux/modules/common/selectors';
+import { getIsConfirmSharingNewCustomer } from '../../redux/common/selectors.js';
 import {
   getSeamlessLoyaltyPageHashCode,
   getIsAllInitialRequestsCompleted,
