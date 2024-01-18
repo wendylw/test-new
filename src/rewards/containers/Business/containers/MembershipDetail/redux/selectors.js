@@ -14,6 +14,7 @@ import {
   getMerchantCurrency,
   getMerchantLocale,
   getMerchantCountry,
+  getIsMerchantEnabledCashback,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
 } from '../../../../../../redux/modules/merchant/selectors';
@@ -114,11 +115,14 @@ export const getUniquePromoList = createSelector(
 
 export const getNewMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
+  getIsMerchantEnabledCashback,
   getCustomerCashback,
   getIsFromSeamlessLoyaltyQrScan,
-  (isLoadCustomerRequestCompleted, customerCashback, isFromSeamlessLoyaltyQrScan) => {
+  (isLoadCustomerRequestCompleted, isMerchantEnabledCashback, customerCashback, isFromSeamlessLoyaltyQrScan) => {
     if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
-      return customerCashback > 0 ? NEW_MEMBER_TYPES.REDEEM_CASHBACK : NEW_MEMBER_TYPES.DEFAULT;
+      return isMerchantEnabledCashback && customerCashback > 0
+        ? NEW_MEMBER_TYPES.REDEEM_CASHBACK
+        : NEW_MEMBER_TYPES.DEFAULT;
     }
 
     // WB-6499: show default new member prompt.
@@ -128,16 +132,25 @@ export const getNewMemberPromptCategory = createSelector(
 
 export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
+  getIsMerchantEnabledCashback,
   getCustomerCashback,
   getIsFromJoinMembershipUrlClick,
   getIsFromSeamlessLoyaltyQrScan,
-  (isLoadCustomerRequestCompleted, customerCashback, isFromJoinMembershipUrlClick, isFromSeamlessLoyaltyQrScan) => {
+  (
+    isLoadCustomerRequestCompleted,
+    isMerchantEnabledCashback,
+    customerCashback,
+    isFromJoinMembershipUrlClick,
+    isFromSeamlessLoyaltyQrScan
+  ) => {
     if (isFromJoinMembershipUrlClick) {
       return RETURNING_MEMBER_TYPES.DEFAULT;
     }
 
     if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
-      return customerCashback > 0 ? RETURNING_MEMBER_TYPES.REDEEM_CASHBACK : RETURNING_MEMBER_TYPES.THANKS_COMING_BACK;
+      return isMerchantEnabledCashback && customerCashback > 0
+        ? RETURNING_MEMBER_TYPES.REDEEM_CASHBACK
+        : RETURNING_MEMBER_TYPES.THANKS_COMING_BACK;
     }
 
     return null;
