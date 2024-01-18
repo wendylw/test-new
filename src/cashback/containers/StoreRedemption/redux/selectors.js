@@ -11,6 +11,7 @@ import {
 } from '../../../redux/modules/app';
 import { getCustomerCashback } from '../../../redux/modules/customer/selectors';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import { getQueryString } from '../../../../common/utils';
 
 /**
  * get store redemption request id
@@ -25,7 +26,7 @@ export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 
  * @returns boolean | null
  */
 export const getIsStoreRedemptionNewCustomer = state =>
-  _get(state.storeRedemption, 'sharedInfoData.isNewCustomer', false);
+  getQueryString('isNewCustomer') || _get(state.storeRedemption, 'sharedInfoData.isNewCustomer', false);
 
 /**
  *
