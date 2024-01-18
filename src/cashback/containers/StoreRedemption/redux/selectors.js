@@ -1,5 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from '@reduxjs/toolkit';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import { getQueryString } from '../../../../common/utils';
 import {
   getOnlineStoreInfo,
   getIsCoreBusinessLoaded,
@@ -10,7 +12,6 @@ import {
   getIsUserLogin,
 } from '../../../redux/modules/app';
 import { getCustomerCashback } from '../../../redux/modules/customer/selectors';
-import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
 /**
  * get store redemption request id
@@ -25,7 +26,7 @@ export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 
  * @returns boolean | null
  */
 export const getIsStoreRedemptionNewCustomer = state =>
-  _get(state.storeRedemption, 'sharedInfoData.isNewCustomer', false);
+  getQueryString('isNewCustomer') || _get(state.storeRedemption, 'sharedInfoData.isNewCustomer', false);
 
 /**
  *

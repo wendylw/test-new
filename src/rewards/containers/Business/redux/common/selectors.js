@@ -10,6 +10,11 @@ export const getConfirmSharingConsumerInfoStatus = state =>
 export const getConfirmSharingConsumerInfoError = state =>
   state.business.common.confirmSharingConsumerInfoRequest.error;
 
+export const getIsConfirmSharingNewCustomer = createSelector(
+  getConfirmSharingConsumerInfoData,
+  confirmSharingConsumerInfoData => _get(confirmSharingConsumerInfoData, 'isNewCustomer', false)
+);
+
 export const getIsConfirmSharingNewMember = createSelector(
   getConfirmSharingConsumerInfoData,
   confirmSharingConsumerInfoData => _get(confirmSharingConsumerInfoData, 'joinMembershipResult.isNewMember', false)
