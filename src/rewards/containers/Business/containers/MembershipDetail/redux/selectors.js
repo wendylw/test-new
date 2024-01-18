@@ -132,7 +132,7 @@ export const getReturningMemberPromptCategory = createSelector(
     }
 
     if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
-      return customerCashback > 0 ? RETURNING_MEMBER_TYPES.REDEEM_CASHBACK : NEW_MEMBER_TYPES.DEFAULT;
+      return customerCashback > 0 ? RETURNING_MEMBER_TYPES.REDEEM_CASHBACK : RETURNING_MEMBER_TYPES.THANKS_COMING_BACK;
     }
 
     return null;
