@@ -111,9 +111,9 @@ const StoreRedemptionNative = () => {
               t('StoreRedemptionNewUserGreetings')
             ) : (
               <Trans i18nKey="StoreRedemptionUserGreetings">
-                Thanks for visiting our store.
+                Thanks for coming back! Visit us
                 <br />
-                See you again!
+                again next time.
               </Trans>
             )}
           </h2>
