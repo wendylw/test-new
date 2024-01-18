@@ -3156,7 +3156,7 @@ describe('getPrice', () => {
       withCurrency: true,
     };
     const result = getPrice(number, options);
-    expect(result).toEqual('$10.99');
+    expect(result).toEqual('$ 10.99');
   });
 
   it('should return the formatted price without currency', () => {
