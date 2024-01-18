@@ -26,7 +26,7 @@ export const getStoreRedemptionRequestId = state => _get(state.storeRedemption, 
  * @returns boolean | null
  */
 export const getIsStoreRedemptionNewCustomer = state =>
-  getQueryString('isNewCustomer') || _get(state.storeRedemption, 'sharedInfoData.isNewCustomer', false);
+  getQueryString('isNewCustomer') === 'true' || _get(state.storeRedemption, 'sharedInfoData.isNewCustomer', false);
 
 /**
  *
