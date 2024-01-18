@@ -1,9 +1,12 @@
+import _get from 'lodash/get';
 import qs from 'qs';
 import dayjs from 'dayjs';
 import _get from 'lodash/get';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
 import { formatTime, setDateTime } from '../../utils/time-lib';
+import config from '../../config';
+import { setDateTime } from '../../utils/time-lib';
 import {
   WEB_VIEW_SOURCE,
   SHIPPING_TYPES,
@@ -17,8 +20,9 @@ import {
   REGISTRATION_TOUCH_POINT,
   REGISTRATION_SOURCE,
   SOURCE_TYPE,
+  COUNTRIES_DEFAULT_LOCALE,
+  COUNTRIES_DEFAULT_CURRENCIES,
 } from './constants';
-import config from '../../config';
 
 // Common Utils
 export const attemptLoad = (fn, retriesLeft = 5, interval = 1500) =>
@@ -219,9 +223,16 @@ export const isWebview = () => isAndroidWebview() || isIOSWebview();
 // eslint-disable-next-line no-underscore-dangle
 export const isTNGMiniProgram = () => window._isTNGMiniProgram_;
 
+// eslint-disable-next-line no-underscore-dangle
+export const isGCashMiniProgram = () => window._isGCashMiniProgram_;
+
 export const getClient = () => {
   if (isTNGMiniProgram()) {
     return CLIENTS.TNG_MINI_PROGRAM;
+  }
+
+  if (isGCashMiniProgram()) {
+    return CLIENTS.GCASH_MINI_PROGRAM;
   }
 
   if (isAndroidWebview()) {
@@ -659,6 +670,10 @@ export const getOrderSource = () => {
     return ORDER_SOURCE.TNG_MINI_PROGRAM;
   }
 
+  if (isGCashMiniProgram()) {
+    return ORDER_SOURCE.GCASH_MINI_PROGRAM;
+  }
+
   if (isWebview()) {
     return ORDER_SOURCE.BEEP_APP;
   }
@@ -675,6 +690,7 @@ export const getOrderSourceForCleverTap = () => {
 
   const mapping = {
     [ORDER_SOURCE.TNG_MINI_PROGRAM]: 'TNG Mini Program',
+    [ORDER_SOURCE.GCASH_MINI_PROGRAM]: 'GCash Mini Program',
     [ORDER_SOURCE.BEEP_APP]: 'App',
     [ORDER_SOURCE.BEEP_SITE]: 'beepit.com',
     [ORDER_SOURCE.BEEP_STORE]: 'Store URL',
@@ -697,6 +713,10 @@ export const getRegistrationTouchPoint = () => {
 
   if (isTNGMiniProgram() && isOnOrderHistory) {
     return REGISTRATION_TOUCH_POINT.TNG;
+  }
+
+  if (isGCashMiniProgram() && isOnOrderHistory) {
+    return REGISTRATION_TOUCH_POINT.GCash;
   }
 
   return REGISTRATION_TOUCH_POINT.ONLINE_ORDER;
@@ -722,6 +742,10 @@ export const getRegistrationSource = () => {
     default:
       if (isTNGMiniProgram()) {
         return REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
+      }
+
+      if (isGCashMiniProgram()) {
+        return REGISTRATION_SOURCE.GCASH_MINI_PROGRAM;
       }
 
       if (isWebview()) {
@@ -787,3 +811,33 @@ export const containerHeight = ({ headerEls, footerEls }) =>
 
 export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
+
+export const getPrice = (number = 0, { locale, currency, country, withCurrency = true }) => {
+  let price = '';
+  const countryLocale = locale || COUNTRIES_DEFAULT_LOCALE[country];
+  const countryCurrency = currency || COUNTRIES_DEFAULT_CURRENCIES[country];
+  const numberToFixed = value => parseFloat(value).toFixed(2);
+
+  try {
+    if (!countryLocale || !countryCurrency) {
+      return numberToFixed(number);
+    }
+
+    if (!withCurrency && !isSafari()) {
+      price = Intl.NumberFormat(countryLocale, {
+        style: 'decimal',
+        currency: countryCurrency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(parseFloat(number));
+    } else {
+      price = Intl.NumberFormat(countryLocale, { style: 'currency', currency: countryCurrency }).format(
+        parseFloat(number)
+      );
+    }
+
+    return (!price ? numberToFixed(number) : price).replace(/^(\D+)/, '$1 ');
+  } catch (error) {
+    return numberToFixed(number);
+  }
+};

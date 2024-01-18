@@ -12,7 +12,12 @@ import _cloneDeep from 'lodash/cloneDeep';
 import { replace } from 'connected-react-router';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants, { API_REQUEST_STATUS, REGISTRATION_SOURCE } from '../../../utils/constants';
+import { URL_TYPES } from '../../../common/utils/constants';
 import Utils from '../../../utils/utils';
+import {
+  isAlipayMiniProgram as isAlipayMiniProgramUtil,
+  getAccessToken,
+} from '../../../common/utils/alipay-miniprogram-client';
 import * as VoucherUtils from '../../../voucher/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
@@ -35,13 +40,20 @@ import {
   getIsAddressRequestStatusFulfilled,
 } from '../../../redux/modules/address/selectors';
 import { getCartItems as getNewCartItems } from './cart/selectors';
-import { getProfileInfo, postLoginGuest } from './api-request';
+import { getProfileInfo, postLoginGuest, getUrlsValidation } from './api-request';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
-import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt, isProductSoldOut } from '../../../common/utils';
+import {
+  getQueryString,
+  isFromBeepSite,
+  isFromBeepSiteOrderHistory,
+  isFromFoodCourt,
+  isProductSoldOut,
+  isGCashMiniProgram,
+} from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 
@@ -195,6 +207,14 @@ export const initialState = {
     postCode: '',
     countryCode: '',
     fetchRequestStatus: null,
+  },
+  qrCodeInfo: {
+    data: {
+      urlType: config.urlType,
+      isUrlExpired: config.isUrlExpired,
+    },
+    status: null,
+    error: null,
   },
 };
 
@@ -750,6 +770,7 @@ export const actions = {
     }
   },
 
+  // TODO: Migrate loginByTngMiniProgram to loginByAlipayMiniProgram
   loginByTngMiniProgram: () => async (dispatch, getState) => {
     if (!Utils.isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
@@ -787,6 +808,33 @@ export const actions = {
       });
 
       logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
+
+      return false;
+    }
+
+    return getUserIsLogin(getState());
+  },
+
+  // TODO: Migrate isTNGMiniProgram to here
+  loginByAlipayMiniProgram: () => async (dispatch, getState) => {
+    if (!isAlipayMiniProgramUtil()) {
+      throw new Error('Not in alipay mini program');
+    }
+
+    try {
+      const business = getBusiness(getState());
+      const { access_token: accessToken, refresh_token: refreshToken } = await getAccessToken({ business });
+
+      await dispatch(
+        actions.loginApp({
+          accessToken,
+          refreshToken,
+          source: REGISTRATION_SOURCE.GCASH_MINI_PROGRAM,
+        })
+      );
+    } catch (error) {
+      // TODO: Migrate isTNGMiniProgram to add provider data
+      logger.error('Common_LoginByAlipayMiniProgramFailed', { message: error?.message });
 
       return false;
     }
@@ -882,6 +930,28 @@ export const actions = {
       birthday,
     },
   }),
+
+  checkUrlsValidation: () => async dispatch => {
+    dispatch({
+      type: types.CHECK_URL_VALIDATION_REQUEST,
+    });
+    try {
+      const h = getQueryString('h');
+      const { isExpired: isUrlExpired } = await getUrlsValidation(h);
+
+      dispatch({
+        type: types.CHECK_URL_VALIDATION_SUCCESS,
+        payload: {
+          isUrlExpired,
+        },
+      });
+    } catch (error) {
+      dispatch({
+        type: types.CHECK_URL_VALIDATION_FAILURE,
+        error,
+      });
+    }
+  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -1372,6 +1442,37 @@ const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
   }
 };
 
+const qrCodeInfo = (state = initialState.qrCodeInfo, action) => {
+  const isUrlExpired = _get(action.payload, 'isUrlExpired', false);
+
+  switch (action.type) {
+    case types.CHECK_URL_VALIDATION_REQUEST: {
+      return {
+        ...state,
+        status: API_REQUEST_STATUS.PENDING,
+      };
+    }
+    case types.CHECK_URL_VALIDATION_SUCCESS: {
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          isUrlExpired,
+        },
+        status: API_REQUEST_STATUS.FULFILLED,
+      };
+    }
+    case types.CHECK_URL_VALIDATION_FAILURE: {
+      return {
+        ...state,
+        status: API_REQUEST_STATUS.REJECTED,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   user,
   error,
@@ -1387,6 +1488,7 @@ export default combineReducers({
   onlineCategory,
   coreStores,
   productDetail,
+  qrCodeInfo,
 });
 
 // selectors
@@ -1395,6 +1497,7 @@ export const getOtpRequest = state => state.app.user.otpRequest;
 export const getUserIsExpired = state => state.app.user.isExpired;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
+export const getQrCodeInfo = state => state.app.qrCodeInfo;
 
 export const getIsGuestMode = createSelector(getUser, userInfo =>
   _get(userInfo, 'guestModeRequest.isGuestMode', false)
@@ -1855,6 +1958,8 @@ export const getCategoryProductList = createSelector(
 
 // TODO: add Utils methods to state rather than using Utils
 export const getIsTNGMiniProgram = () => Utils.isTNGMiniProgram();
+export const getIsGCashMiniProgram = () => isGCashMiniProgram();
+export const getIsAlipayMiniProgram = () => isAlipayMiniProgramUtil();
 export const getIsDigitalType = () => Utils.isDigitalType();
 export const getIsDeliveryOrder = () => Utils.isDeliveryOrder();
 export const getIsQROrder = () => Utils.isQROrder();
@@ -1863,7 +1968,8 @@ export const getIsInBrowser = () => Utils.getClient() === CLIENTS.WEB;
 export const getIsInAppOrMiniProgram = createSelector(
   getIsWebview,
   getIsTNGMiniProgram,
-  (isWebview, isTNGMiniProgram) => isWebview || isTNGMiniProgram
+  getIsAlipayMiniProgram,
+  (isWebview, isTNGMiniProgram, isAlipayMiniProgram) => isWebview || isTNGMiniProgram || isAlipayMiniProgram
 );
 export const getIsFromBeepSite = () => isFromBeepSite();
 export const getIsFromBeepSiteOrderHistory = () => isFromBeepSiteOrderHistory();
@@ -1930,10 +2036,12 @@ export const getIsFreeOrder = createSelector(getCartBilling, cartBilling => {
   return billingTotal === 0;
 });
 
+// TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
 export const getIsValidCreateOrder = createSelector(
   getIsFreeOrder,
   getIsTNGMiniProgram,
-  (isFreeOrder, isTNGMiniProgram) => isTNGMiniProgram || isFreeOrder
+  getIsAlipayMiniProgram,
+  (isFreeOrder, isTNGMiniProgram, isAlipayMiniProgram) => isTNGMiniProgram || isAlipayMiniProgram || isFreeOrder
 );
 
 export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCartInfo => {
@@ -2043,4 +2151,21 @@ export const getIsAddOrUpdateShoppingCartItemRejected = createSelector(
   getAddOrUpdateShoppingCartItemStatus,
   addOrUpdateShoppingCartItemStatus => addOrUpdateShoppingCartItemStatus === API_REQUEST_STATUS.REJECTED
 );
+
 export const getShouldShowCashbackSwitchButton = createSelector(getCartCashback, cashback => cashback > 0);
+
+export const getQrCodeInfoUrlType = createSelector(getQrCodeInfo, qrCodeInfoDetail =>
+  _get(qrCodeInfoDetail, 'data.urlType', null)
+);
+
+export const getIsQrCodeInfoUrlExpired = createSelector(getQrCodeInfo, qrCodeInfoDetail =>
+  _get(qrCodeInfoDetail, 'data.isUrlExpired', false)
+);
+
+export const getIsDynamicUrl = createSelector(getQrCodeInfoUrlType, urlType => urlType === URL_TYPES.DYNAMIC);
+
+export const getIsDynamicUrlExpired = createSelector(
+  getIsQrCodeInfoUrlExpired,
+  getIsDynamicUrl,
+  (isDynamicQrCodeUrlExpired, isDynamicUrl) => isDynamicQrCodeUrlExpired && isDynamicUrl
+);

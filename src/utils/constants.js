@@ -37,34 +37,9 @@ const DOCUMENT_TITLE = {
   PRIVACY: 'Privacy',
 };
 
-const PAYMENT_METHOD_LABELS = {
-  STRIPE: 'stripe',
-  ONLINE_BANKING_PAY: 'OnlineBanking',
-  CREDIT_CARD_PAY: 'CreditAndDebitCard',
-  GRAB_PAY: 'GrabPay',
-  BOOST_PAY: 'Boost',
-  TNG_PAY: 'TouchNGo',
-  GCASH_PAY: 'GCash',
-  LINE_PAY: 'Line',
-  GETZ_PAY: 'GetzPay',
-  APPLE_PAY: 'ApplePay',
-};
+const { PAYMENT_METHOD_LABELS } = ConstantsV2;
 
-const PAYMENT_PROVIDERS = {
-  STRIPE: 'Stripe',
-  STRIPE_FPX: 'StripeFPX',
-  APPLE_PAY: 'StripeApplePay',
-  TNG_ONLINE: 'TnGOnline',
-  BOOST: 'Boost',
-  GRAB_PAY: 'GrabPay',
-  BEEP_TH_CREDIT_CARD: 'BeepTHCreditCard',
-  BEEP_TH_ONLINE_BANKING: 'BeepTHOnlineBanking',
-  BEEP_TH_LINE_PAY: 'BeepTHLinePay',
-  BEEP_PH_CREDIT_CARD: 'BeepPHCreditCard',
-  BEEP_PH_CCPP_GCASH: 'BeepPHCCPPGcash',
-  SH_OFFLINE_PAYMENT: 'SHOfflinePayment', // Pay at counter
-  TNG_MINI_PROGRAM: 'TNGMiniProgram',
-};
+const { PAYMENT_PROVIDERS } = ConstantsV2;
 
 const CREDIT_CARD_BRANDS = {
   VISA: 'Visa',
@@ -610,13 +585,7 @@ export const ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING = {
 
 export const { PROMOTION_CLIENT_TYPES } = ConstantsV2;
 
-export const REFERRER_SOURCE_TYPES = {
-  PAYMENT: 'payment',
-  CASHBACK: 'cashback',
-  PAY_AT_COUNTER: 'payAtCounter',
-  LOGIN: 'login',
-  THANK_YOU: 'thankyou',
-};
+export const { REFERRER_SOURCE_TYPES } = ConstantsV2;
 
 const LOGISTICS_RIDER_TYPE = {
   GRAB: 'grab',

@@ -1,4 +1,8 @@
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import * as UtilsV2 from '../common/utils';
+
+dayjs.extend(utc);
 
 const Utils = {};
 

@@ -13,7 +13,7 @@ import './Bootstrap.scss';
 import * as NativeMethods from './utils/native-methods';
 import logger from './utils/monitoring/logger';
 import { initDevTools } from './utils/dev-tools';
-import { isRequiredDevTools } from './utils/tng-utils';
+import { isRequiredAlipayMiniProgramDevTools } from './common/utils/alipay-miniprogram-client';
 import './utils/growthbook/setup';
 
 const AsyncStoresApp = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "STO" */ './stores')));
@@ -25,6 +25,8 @@ const AsyncCashbackApp = lazy(() => Utils.attemptLoad(() => import(/* webpackChu
 const AsyncSite = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "SITE" */ './site')));
 
 const AsyncVoucher = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "VOU" */ './voucher')));
+
+const AsyncRewards = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD" */ './rewards')));
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -80,7 +82,10 @@ class Bootstrap extends Component {
 
   renderSitePages = () => (
     <Suspense fallback={<div className="loader theme full-page" />}>
-      <AsyncSite />
+      <Switch>
+        <Route path={ROUTER_PATHS.REWARDS_BASE} component={AsyncRewards} />
+        <Route path="*" component={AsyncSite} />
+      </Switch>
     </Suspense>
   );
 
@@ -153,8 +158,9 @@ class Bootstrap extends Component {
 // enable dev-tools in tng mini-program
 (async () => {
   try {
-    const result = await isRequiredDevTools();
-    if (result) {
+    const alipayMiniProgramResult = await isRequiredAlipayMiniProgramDevTools();
+
+    if (alipayMiniProgramResult) {
       initDevTools();
     }
   } catch {

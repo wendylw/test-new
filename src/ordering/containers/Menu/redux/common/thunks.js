@@ -1,6 +1,7 @@
 import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push, replace } from 'connected-react-router';
+import { AVAILABLE_QUERY_CART_PAGES } from '../../../../redux/modules/cart/constants';
 import {
   actions as appActions,
   getBusinessUTCOffset,
@@ -18,6 +19,7 @@ import {
   getLocationSearch,
   getIsWebview,
   getIsTNGMiniProgram,
+  getIsGCashMiniProgram,
   getIsInBrowser,
   getIsInAppOrMiniProgram,
   getURLQueryObject,
@@ -377,7 +379,9 @@ const initializeForBeepQR = async ({ dispatch, getState }) => {
     const enablePayLater = getIsEnablePayLater(getState());
 
     if (storeId) {
-      enablePayLater ? dispatch(queryCartAndStatus()) : dispatch(appActions.loadShoppingCart());
+      enablePayLater
+        ? dispatch(queryCartAndStatus(AVAILABLE_QUERY_CART_PAGES.MENU))
+        : dispatch(appActions.loadShoppingCart());
     }
 
     // There must be a log for the error of loadShoppingCart. If there is no cart, the footer of the review cart button will not be displayed.
@@ -623,6 +627,7 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
  */
 export const willUnmount = createAsyncThunk('ordering/menu/common/willUnmount', async (_, { dispatch, getState }) => {
   // clear resources if need
+
   const state = getState();
   const enablePayLater = getIsEnablePayLater(state);
 
@@ -869,6 +874,7 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
   const state = getState();
   const isWebview = getIsWebview(state);
   const isTNGMiniProgram = getIsTNGMiniProgram(state);
+  const isGCashMiniProgram = getIsGCashMiniProgram(state);
   const isInBrowser = getIsInBrowser(state);
   const isInAppOrMiniProgram = getIsInAppOrMiniProgram(state);
   const isLogin = getUserIsLogin(state);
@@ -904,9 +910,14 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
     return;
   }
 
+  // TODO: Migrate isTNGMiniProgram to loginByAlipayMiniProgram
   // Force a login for Beep app & Beep TnG MP
   if (isTNGMiniProgram) {
     await dispatch(appActions.loginByTngMiniProgram());
+  }
+
+  if (isGCashMiniProgram) {
+    await dispatch(appActions.loginByAlipayMiniProgram());
   }
 
   if (isWebview) {

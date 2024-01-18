@@ -31,10 +31,11 @@ import {
   getStoreInfoForCleverTap,
   getDeliveryDetails,
   getIsTNGMiniProgram,
+  getIsAlipayMiniProgram,
 } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
 import { actions as customerInfoActionCreators } from './redux';
-import { getCustomerError, getShouldGoToAddNewAddressPage } from './redux/selectors';
+import { getCustomerError, getShouldGoToAddNewAddressPage, getIsDisabledWebPayment } from './redux/selectors';
 import { withAddressInfo } from '../../../Location/withAddressInfo';
 import { withAvailableAddressDetails } from './withAvailableAddressDetails';
 import './CustomerInfo.scss';
@@ -174,12 +175,12 @@ class CustomerInfo extends Component {
   };
 
   handleAfterCreateOrder = orderId => {
-    const { isTNGMiniProgram } = this.props;
+    const { isDisabledWebPayment } = this.props;
 
     this.setState({ processing: !!orderId });
 
     // FB-4206: TnG MP won't go to the payment page
-    if (isTNGMiniProgram) {
+    if (isDisabledWebPayment) {
       return;
     }
 
@@ -383,6 +384,7 @@ class CustomerInfo extends Component {
       customerError,
       storeInfoForCleverTap,
       isTNGMiniProgram,
+      isAlipayMiniProgram,
     } = this.props;
     const { addressChange, processing } = this.state;
     const { username, phone } = deliveryDetails;
@@ -392,7 +394,10 @@ class CustomerInfo extends Component {
       : '';
     const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
     const { total, shippingFee } = cartBilling || {};
-    const shouldShowRedirectLoader = isTNGMiniProgram && processing;
+    // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
+    const isAlipayOrTNGMiniProgram = isTNGMiniProgram || isAlipayMiniProgram;
+    const shouldShowRedirectLoader = isAlipayOrTNGMiniProgram && processing;
+    const isValidToCreateOrder = (isAlipayOrTNGMiniProgram || !total) && !this.validateFields().show;
 
     // FB-4026: For TnG MP, we won't go to the payment page once the user clicks the continue button, we will immediately create an order and call TnG payment API.
     // For such a case, we will show a redirect loader page to prevent users' further interaction and also provide the same payment flow as dine.
@@ -507,7 +512,7 @@ class CustomerInfo extends Component {
             data-testid="customerContinue"
             data-test-id="ordering.customer.continue-btn"
             disabled={processing}
-            validCreateOrder={(isTNGMiniProgram || !total) && !this.validateFields().show}
+            validCreateOrder={isValidToCreateOrder}
             beforeCreateOrder={() => {
               CleverTap.pushEvent('Checkout page - click continue', storeInfoForCleverTap);
               this.handleBeforeCreateOrder();
@@ -516,7 +521,7 @@ class CustomerInfo extends Component {
             loaderText={t('Processing')}
             processing={processing}
           >
-            {processing ? t('Processing') : isTNGMiniProgram ? t('PayNow') : t('Continue')}
+            {processing ? t('Processing') : isAlipayMiniProgram ? t('PayNow') : t('Continue')}
           </CreateOrderButton>
         </footer>
         {customerError.show ? (
@@ -560,6 +565,8 @@ CustomerInfo.propTypes = {
   /* eslint-enable */
   isTNGMiniProgram: PropTypes.bool,
   shouldGoToAddNewAddressPage: PropTypes.bool,
+  isDisabledWebPayment: PropTypes.bool,
+  isAlipayMiniProgram: PropTypes.bool,
   deliveryDetails: PropTypes.shape({
     username: PropTypes.string,
     phone: PropTypes.string,
@@ -603,6 +610,8 @@ CustomerInfo.defaultProps = {
   storeInfoForCleverTap: null,
   isTNGMiniProgram: false,
   shouldGoToAddNewAddressPage: false,
+  isDisabledWebPayment: false,
+  isAlipayMiniProgram: false,
   deliveryDetails: {
     username: '',
     phone: '',
@@ -645,6 +654,8 @@ export default compose(
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       shouldGoToAddNewAddressPage: getShouldGoToAddNewAddressPage(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
+      isAlipayMiniProgram: getIsAlipayMiniProgram(state),
+      isDisabledWebPayment: getIsDisabledWebPayment(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

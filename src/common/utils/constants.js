@@ -4,6 +4,30 @@
  * file to a reference to this file, so that each constant is defined only once.
  */
 
+export const COUNTRIES = {
+  MY: 'MY',
+  TH: 'TH',
+  PH: 'PH',
+  SG: 'SG',
+  CN: 'CN',
+};
+
+export const COUNTRIES_DEFAULT_CURRENCIES = {
+  [COUNTRIES.MY]: 'MYR',
+  [COUNTRIES.TH]: 'THB',
+  [COUNTRIES.PH]: 'PHP',
+  [COUNTRIES.SG]: 'SGD',
+  [COUNTRIES.CN]: 'CNY',
+};
+
+export const COUNTRIES_DEFAULT_LOCALE = {
+  [COUNTRIES.MY]: 'MS-MY',
+  [COUNTRIES.TH]: 'TH-TH',
+  [COUNTRIES.PH]: 'EN-PH',
+  [COUNTRIES.SG]: 'EN-SG',
+  [COUNTRIES.CN]: 'ZH-CN',
+};
+
 export const WEB_VIEW_SOURCE = {
   IOS: 'iOS',
   Android: 'Android',
@@ -23,6 +47,7 @@ export const CLIENTS = {
   MAC: 'Mac',
   PC: 'PC',
   TNG_MINI_PROGRAM: 'tngMiniProgram',
+  GCASH_MINI_PROGRAM: 'gcashMiniProgram',
 };
 
 export const REGISTRATION_SOURCE = {
@@ -31,7 +56,13 @@ export const REGISTRATION_SOURCE = {
   BEEP_STORE: 'BeepStore',
   BEEP_SITE: 'BeepSite',
   TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
+  GCASH_MINI_PROGRAM: 'BeepGCashMiniProgram',
   SHARED_LINK: 'SharedLink',
+};
+
+export const URL_TYPES = {
+  STATIC: 'static',
+  DYNAMIC: 'dynamic',
 };
 
 export const SHIPPING_TYPES = {
@@ -76,7 +107,10 @@ export const PATH_NAME_MAPPING = {
   CASHBACK_BASE: '/loyalty',
   CASHBACK_HOME: '/',
   CASHBACK_CLAIM: '/claim',
+  CASHBACK_HISTORIES: '/activities',
+  STORE_REDEMPTION: '/store-redemption',
   // site
+  SITE_BASE: '/',
   SITE_HOME: '/home',
   QRSCAN: '/qrscan',
   SCAN: '/scan',
@@ -89,6 +123,13 @@ export const PATH_NAME_MAPPING = {
   VOUCHER_THANK_YOU: '/voucher/thank-you',
   VOUCHER_SORRY: '/voucher/sorry',
   VOUCHER_PAYMENT: '/ordering/payment',
+  // rewards App basename
+  REWARDS_BASE: '/rewards',
+  REWARDS_HOME: '/',
+  REWARDS_BUSINESS: '/business',
+  JOIN_MEMBERSHIP: '/join-membership',
+  MEMBERSHIP_DETAIL: '/membership-detail',
+  REWARDS_LOGIN: '/login',
   // dine
   DINE: '/dine',
   FOOD_COURT: '/food-court',
@@ -97,6 +138,7 @@ export const PATH_NAME_MAPPING = {
 
 export const PROMOTION_CLIENT_TYPES = {
   TNG_MINI_PROGRAM: 'tngMiniProgram',
+  GCASH_MINI_PROGRAM: 'gcashMiniProgram',
   APP: 'app',
   WEB: 'web',
 };
@@ -126,6 +168,39 @@ export const ADDRESS_RANGE = {
   COUNTRY: 6,
 };
 
+export const PAYMENT_METHOD_LABELS = {
+  STRIPE: 'stripe',
+  ONLINE_BANKING_PAY: 'OnlineBanking',
+  CREDIT_CARD_PAY: 'CreditAndDebitCard',
+  GRAB_PAY: 'GrabPay',
+  BOOST_PAY: 'Boost',
+  TNG_PAY: 'TouchNGo',
+  GCASH_PAY: 'GCash',
+  LINE_PAY: 'Line',
+  GETZ_PAY: 'GetzPay',
+  APPLE_PAY: 'ApplePay',
+};
+
+export const PAYMENT_PROVIDERS = {
+  STRIPE: 'Stripe',
+  APPLE_PAY: 'StripeApplePay',
+  STRIPE_FPX: 'StripeFPX',
+  TNG_ONLINE: 'TnGOnline',
+  BOOST: 'Boost',
+  GRAB_PAY: 'GrabPay',
+  BEEP_TH_CREDIT_CARD: 'BeepTHCreditCard',
+  BEEP_TH_ONLINE_BANKING: 'BeepTHOnlineBanking',
+  BEEP_TH_LINE_PAY: 'BeepTHLinePay',
+  BEEP_PH_CREDIT_CARD: 'BeepPHCreditCard',
+  BEEP_PH_CCPP_GCASH: 'BeepPHCCPPGcash',
+  SH_OFFLINE_PAYMENT: 'SHOfflinePayment', // Pay at counter
+  TNG_MINI_PROGRAM: 'TNGMiniProgram',
+  GCASH_MINI_PROGRAM: 'GCashMiniProgram',
+};
+
+// TODO: remove this after we have a better solution
+export const TIME_SLOT_NOW = 'now';
+
 export const PRODUCT_STOCK_STATUS = {
   NOT_TRACK_INVENTORY: 'notTrackInventory',
   IN_STOCK: 'inStock',
@@ -136,6 +211,7 @@ export const PRODUCT_STOCK_STATUS = {
 
 export const ORDER_SOURCE = {
   TNG_MINI_PROGRAM: 'BeepTngMiniProgram',
+  GCASH_MINI_PROGRAM: 'BeepGCashMiniProgram',
   BEEP_APP: 'BeepApp',
   BEEP_SITE: 'BeepSite',
   BEEP_STORE: 'BeepStore',
@@ -168,10 +244,41 @@ export const REGISTRATION_TOUCH_POINT = {
   ONLINE_ORDER: 'OnlineOrder',
   QR_ORDER: 'QROrder',
   TNG: 'TNG',
+  GCash: 'GCash',
 };
 
 export const TIME_SLOT = {
   NOW: 'now',
   TODAY: 'Today',
   TOMORROW: 'Tomorrow',
+};
+
+export const REFERRER_SOURCE_TYPES = {
+  PAYMENT: 'payment',
+  CASHBACK: 'cashback',
+  PAY_AT_COUNTER: 'payAtCounter',
+  LOGIN: 'login',
+  THANK_YOU: 'thankyou',
+};
+
+export const BECOME_MERCHANT_MEMBER_METHODS = {
+  JOIN_MEMBERSHIP_URL_CLICK: 'JoinMembershipURL_ClickJoin',
+  THANK_YOU_CASHBACK_CLICK: 'BeepQR_ThankYou',
+  EARNED_CASHBACK_QR_SCAN: 'Receipt_CashbackQR',
+  MEMBERSHIP_QR_SCAN: 'Receipt_MembershipQR',
+  QR_ORDERING_ORDER_COMPLETED: 'BeepQR_Transaction',
+  DELIVERY_ORDERING_ORDER_COMPLETED: 'BeepDel_Transaction',
+  OFFLINE_STORE_ORDER_COMPLETE: 'POS_Transaction',
+  SEAMLESS_LOYALTY_QR_SCAN: 'POS_SeamlessLoyaltyQR',
+};
+
+export const PROMO_VOUCHER_DISCOUNT_TYPES = {
+  PERCENTAGE: 'percentage',
+  ABSOLUTE: 'absolute',
+};
+
+export const PROMO_VOUCHER_STATUS = {
+  ACTIVE: 'active',
+  EXPIRED: 'expired',
+  REDEEMED: 'redeemed',
 };

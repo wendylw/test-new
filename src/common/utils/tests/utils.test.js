@@ -74,6 +74,7 @@ import {
   mainTop,
   marginBottom,
   containerHeight,
+  getPrice,
 } from '../index';
 
 dayjs.extend(utc);
@@ -3142,5 +3143,85 @@ describe('containerHeight', function() {
     const footerEls = ['footer1', 'footer2'];
     const expectedHeight = `${window.innerHeight - mainTop({ headerEls }) - marginBottom({ footerEls })}px`;
     expect(containerHeight({ headerEls, footerEls })).toEqual(expectedHeight);
+  });
+});
+
+describe('getPrice', () => {
+  it('should return the formatted price with currency', () => {
+    const number = 10.99;
+    const options = {
+      locale: 'en-US',
+      currency: 'USD',
+      country: 'US',
+      withCurrency: true,
+    };
+    const result = getPrice(number, options);
+    expect(result).toEqual('$10.99');
+  });
+
+  it('should return the formatted price without currency', () => {
+    const number = 10.99;
+    const options = {
+      locale: 'en-US',
+      currency: 'USD',
+      country: 'US',
+      withCurrency: false,
+    };
+    const result = getPrice(number, options);
+    expect(result).toEqual('10.99');
+  });
+
+  it('should return the formatted price with default locale and currency', () => {
+    const number = 10.99;
+    const options = {};
+    const result = getPrice(number, options);
+    expect(result).toEqual('10.99');
+  });
+
+  it('should return the formatted price with default locale and currency when country is not provided', () => {
+    const number = 10.99;
+    const options = {
+      country: 'Unknown',
+    };
+    const result = getPrice(number, options);
+    expect(result).toEqual('10.99');
+  });
+
+  it('should return the formatted price with default locale and currency when locale or currency is not provided', () => {
+    const number = 10.99;
+    const options = {
+      locale: 'en-US',
+    };
+    const result = getPrice(number, options);
+    expect(result).toEqual('10.99');
+  });
+
+  it('should return the formatted price with default locale and currency when locale or currency is not provided', () => {
+    const number = 10.99;
+    const options = {
+      currency: 'USD',
+    };
+    const result = getPrice(number, options);
+    expect(result).toEqual('10.99');
+  });
+
+  it('should return the formatted price with default locale and currency when locale and currency are not provided', () => {
+    const number = 10.99;
+    const options = {
+      locale: undefined,
+      currency: undefined,
+    };
+    const result = getPrice(number, options);
+    expect(result).toEqual('10.99');
+  });
+
+  it('should return the formatted price with default locale and currency when locale and currency are not provided', () => {
+    const number = 10.99;
+    const options = {
+      locale: null,
+      currency: null,
+    };
+    const result = getPrice(number, options);
+    expect(result).toEqual('10.99');
   });
 });

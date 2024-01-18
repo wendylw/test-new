@@ -20,6 +20,7 @@ import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
 import Url from '../../../utils/url';
 import * as TngUtils from '../../../utils/tng-utils';
+import { getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
 import * as ApiRequest from '../../../utils/api-request';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
@@ -29,11 +30,13 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
-import { getConsumerLoginStatus, getProfileInfo, getConsumerCustomerInfo, getCoreBusinessInfo } from './api-request';
+import { getConsumerLoginStatus, getProfileInfo, getCoreBusinessInfo } from './api-request';
+import { getAllLoyaltyHistories } from '../../../redux/modules/entities/loyaltyHistories';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
-import { isJSON, isTNGMiniProgram } from '../../../common/utils';
+import { isJSON, isTNGMiniProgram, isGCashMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
+import { getCustomerId } from './customer/selectors';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const { AUTH_INFO, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
@@ -43,8 +46,6 @@ export const initialState = {
     isLogin: false,
     isExpired: false,
     consumerId: config.consumerId,
-    customerId: '',
-    storeCreditsBalance: 0,
     isError: false,
     otpRequest: {
       data: {
@@ -75,7 +76,7 @@ export const initialState = {
       status: null,
     },
     showLoginModal: false,
-    loadConsumerCustomerStatus: null,
+    totalCredits: 0,
   },
   customerInfo: {},
   error: null, // network error
@@ -268,23 +269,6 @@ export const actions = {
     user,
   }),
 
-  loadConsumerCustomerInfo: () => async (dispatch, getState) => {
-    try {
-      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING });
-
-      const state = getState();
-      const consumerId = getUserConsumerId(state);
-      const result = await getConsumerCustomerInfo(consumerId);
-
-      dispatch({
-        type: types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED,
-        response: result,
-      });
-    } catch (error) {
-      dispatch({ type: types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED });
-    }
-  },
-
   resetConsumerCustomerInfo: () => ({
     type: types.RESET_CONSUMER_CUSTOMER_INFO,
   }),
@@ -339,6 +323,7 @@ export const actions = {
     }
   },
 
+  // TODO: Migrate loginByTngMiniProgram to loginByAlipayMiniProgram
   loginByTngMiniProgram: () => async (dispatch, getState) => {
     try {
       dispatch({
@@ -367,6 +352,38 @@ export const actions = {
       });
 
       logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
+
+      return false;
+    }
+
+    return getIsUserLogin(getState());
+  },
+
+  loginByAlipayMiniProgram: () => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: types.CREATE_LOGIN_ALIPAY_REQUEST,
+      });
+
+      if (!isGCashMiniProgram()) {
+        throw new Error('Not in alipay mini program');
+      }
+
+      const business = getBusiness(getState());
+      const tokens = await getAccessToken({ business });
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+      await dispatch(actions.loginApp({ accessToken, refreshToken }));
+
+      dispatch({
+        type: types.CREATE_LOGIN_ALIPAY_SUCCESS,
+      });
+    } catch (error) {
+      dispatch({
+        type: types.CREATE_LOGIN_ALIPAY_FAILURE,
+      });
+
+      logger.error('Cashback_LoginByAlipayMiniProgram', { message: error?.message });
 
       return false;
     }
@@ -455,20 +472,26 @@ export const actions = {
       },
     },
   }),
+
+  getCashbackHistory: customerId => ({
+    [API_REQUEST]: {
+      types: [
+        types.GET_CASHBACK_HISTORIES_REQUEST,
+        types.GET_CASHBACK_HISTORIES_SUCCESS,
+        types.GET_CASHBACK_HISTORIES_FAILURE,
+      ],
+      ...Url.API_URLS.GET_CASHBACK_HISTORIES,
+      params: {
+        customerId,
+      },
+    },
+  }),
 };
 
 const user = (state = initialState.user, action) => {
   const { type, response, responseGql, prompt, error, payload } = action || {};
-  const {
-    login,
-    consumerId,
-    supportWhatsApp,
-    storeCreditInfo,
-    customerId,
-    access_token: accessToken,
-    refresh_token: refreshToken,
-  } = response || {};
-  const { storeCreditsBalance } = storeCreditInfo || {};
+  const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken, totalCredits } =
+    response || {};
   const { data } = responseGql || {};
   const { business, onlineStoreInfo } = data || {};
   const otpType = _get(payload, 'otpType', null);
@@ -582,20 +605,6 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     }
-    // load consumer customer info
-    case types.LOAD_CONSUMER_CUSTOMER_INFO_PENDING:
-      return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.PENDING };
-    case types.LOAD_CONSUMER_CUSTOMER_INFO_FULFILLED:
-      return {
-        ...state,
-        loadConsumerCustomerStatus: API_REQUEST_STATUS.FULFILLED,
-        storeCreditsBalance,
-        customerId,
-      };
-    case types.LOAD_CONSUMER_CUSTOMER_INFO_REJECTED:
-      return { ...state, loadConsumerCustomerStatus: API_REQUEST_STATUS.REJECTED };
-    case type.RESET_CONSUMER_CUSTOMER_INFO:
-      return { ...state, loadConsumerCustomerStatus: null, storeCreditsBalance: 0, customerId: null };
     // fetch online store info success
     // fetch core business success
     case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
@@ -639,6 +648,20 @@ const user = (state = initialState.user, action) => {
           status: API_REQUEST_STATUS.REJECTED,
           error,
         },
+      };
+    case types.GET_CASHBACK_HISTORIES_REQUEST:
+      return {
+        ...state,
+      };
+    case types.GET_CASHBACK_HISTORIES_SUCCESS: {
+      return {
+        ...state,
+        totalCredits,
+      };
+    }
+    case types.GET_CASHBACK_HISTORIES_FAILURE:
+      return {
+        ...state,
       };
     default:
       return state;
@@ -806,7 +829,7 @@ export const getLoginBannerPrompt = createSelector(getUser, userInfo => _get(use
 
 export const getIsUserLogin = createSelector(getUser, userInfo => _get(userInfo, 'isLogin', false));
 
-export const getUserCountry = createSelector(getUser, userInfo => _get(userInfo, 'country', false));
+export const getUserCountry = createSelector(getUser, userInfo => _get(userInfo, 'country', ''));
 
 export const getIsUserExpired = createSelector(getUser, userInfo => _get(userInfo, 'isExpired', false));
 
@@ -814,27 +837,9 @@ export const getIsLoginModalShown = createSelector(getUser, userInfo => _get(use
 
 export const getUserConsumerId = createSelector(getUser, userInfo => _get(userInfo, 'consumerId', null));
 
-export const getUserCustomerId = createSelector(getUser, userInfo => _get(userInfo, 'customerId', null));
-
-export const getUserStoreCashback = createSelector(getUser, userInfo => _get(userInfo, 'storeCreditsBalance', 0));
-
 export const getIsLoginRequestFailed = createSelector(getUser, userInfo => _get(userInfo, 'isError', false));
 
 export const getIsLoginRequestStatusPending = createSelector(getUser, userInfo => _get(userInfo, 'isFetching', false));
-
-export const getLoadConsumerCustomerStatus = createSelector(getUser, userInfo =>
-  _get(userInfo, 'loadConsumerCustomerStatus', null)
-);
-
-export const getIsConsumerCustomerLoaded = createSelector(
-  getLoadConsumerCustomerStatus,
-  loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadConsumerCustomerFailed = createSelector(
-  getLoadConsumerCustomerStatus,
-  loadConsumerCustomerStatus => loadConsumerCustomerStatus === API_REQUEST_STATUS.REJECTED
-);
 
 export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);
 
@@ -947,4 +952,10 @@ export const getLoginTngRequestError = createSelector(getLoginTngRequest, loginT
 export const getIsTngAuthorizationError = createSelector(
   getLoginTngRequestError,
   loginTngRequestError => (loginTngRequestError?.error || null) === 10
+);
+
+export const getCashbackHistory = createSelector(
+  getCustomerId,
+  getAllLoyaltyHistories,
+  (customerId, allLoyaltyHistories) => allLoyaltyHistories[customerId]
 );

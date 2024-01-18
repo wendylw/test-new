@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import { isWebview, isTNGMiniProgram } from '../../../common/utils';
+import { isWebview, isTNGMiniProgram, isGCashMiniProgram } from '../../../common/utils';
 import { closeWebView } from '../../../utils/native-methods';
 import Image from '../../../components/Image';
 import RedeemInfo from '../../components/RedeemInfo';
@@ -12,8 +12,8 @@ import ReceiptList from './components/ReceiptList';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import DownloadBanner from '../../../components/DownloadBanner';
 import NativeHeader from '../../../components/NativeHeader';
+import { getCustomerCashback } from '../../redux/modules/customer/selectors';
 import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
-import { getCashbackHistorySummary } from '../../redux/modules/home';
 import './LoyaltyHome.scss';
 
 const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
@@ -38,14 +38,13 @@ class PageLoyalty extends React.Component {
   }
 
   renderCashback() {
-    const { history, cashbackHistorySummary } = this.props;
-    const { totalCredits } = cashbackHistorySummary || {};
+    const { history, totalCredits } = this.props;
 
     return (
       <div>
         <CurrencyNumber
           className="loyalty-home__money-currency padding-left-right-small text-size-large"
-          money={totalCredits || 0}
+          money={totalCredits}
         />
         <span
           role="button"
@@ -65,7 +64,7 @@ class PageLoyalty extends React.Component {
     const { history, businessInfo, onlineStoreInfo, t } = this.props;
     const { displayBusinessName, name } = businessInfo || {};
     const { logo } = onlineStoreInfo || {};
-    const hideDownloadBanner = isWebview() || isTNGMiniProgram();
+    const hideDownloadBanner = isWebview() || isTNGMiniProgram() || isGCashMiniProgram();
 
     return (
       <>
@@ -113,8 +112,7 @@ PageLoyalty.propTypes = {
   onlineStoreInfo: PropTypes.shape({
     logo: PropTypes.string,
   }),
-  // eslint-disable-next-line react/forbid-prop-types
-  cashbackHistorySummary: PropTypes.object,
+  totalCredits: PropTypes.number,
   appActions: PropTypes.shape({
     showMessageInfo: PropTypes.func,
     setCashbackMessage: PropTypes.func,
@@ -129,7 +127,7 @@ PageLoyalty.defaultProps = {
   onlineStoreInfo: {
     logo: '',
   },
-  cashbackHistorySummary: null,
+  totalCredits: 0,
   appActions: {
     showMessageInfo: () => {},
     setCashbackMessage: () => {},
@@ -142,7 +140,7 @@ export default compose(
     state => ({
       businessInfo: getBusinessInfo(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
-      cashbackHistorySummary: getCashbackHistorySummary(state),
+      totalCredits: getCustomerCashback(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

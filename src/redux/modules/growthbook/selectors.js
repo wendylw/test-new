@@ -1,6 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../utils/constants';
+import { DEFAULT_FEATURE_FLAG_RESULTS } from './constants';
 
 export const getFeatureFlagInfo = state => state.growthbook.featureFlagInfo;
 
@@ -15,13 +16,13 @@ export const getFeatureKey = (_, fgKey) => fgKey;
  *
  * @param state RootState
  * @param fgKey FEATURE_KEY
- * @returns boolean
+ * @returns any
  *
  * @example
- * const isFeatureEnabled = useSelector(state => getIsFeatureEnabled(state, FEATURE_KEY));
+ * const featureFlagResult = useSelector(state => getFeatureFlagResult(state, FEATURE_KEY));
  */
-export const getIsFeatureEnabled = createSelector([getFeatureFlagResults, getFeatureKey], (data, key) =>
-  _get(data, key, false)
+export const getFeatureFlagResult = createSelector([getFeatureFlagResults, getFeatureKey], (data, key) =>
+  _get(data, key, DEFAULT_FEATURE_FLAG_RESULTS[key])
 );
 
 export const getIsLoadFeatureRequestFulfilled = createSelector(
