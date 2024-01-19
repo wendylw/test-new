@@ -43,8 +43,8 @@ export const mounted = createAsyncThunk(
       return;
     }
 
-    const from = getCookieVariable('__jm_source');
-    removeCookieVariable('__jm_source');
+    const from = getCookieVariable('__cp_source');
+    removeCookieVariable('__cp_source');
 
     if (from === REFERRER_SOURCE_TYPES.LOGIN) {
       dispatch(claimUniquePromo());
@@ -72,7 +72,7 @@ export const claimPromotionClicked = createAsyncThunk(
     const isLogin = getIsLogin(getState());
 
     if (isWeb && !isLogin) {
-      setCookieVariable('__jm_source', REFERRER_SOURCE_TYPES.LOGIN);
+      setCookieVariable('__cp_source', REFERRER_SOURCE_TYPES.LOGIN);
       dispatch(push(`${PATH_NAME_MAPPING.REWARDS_LOGIN}${search}`, { shouldGoBack: true }));
 
       return;
