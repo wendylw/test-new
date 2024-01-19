@@ -38,8 +38,7 @@ export const getIsClaimUniquePromoRequestFulfilled = createSelector(
 
 export const getIsClaimUniquePromoRequestDuplicated = createSelector(
   getClaimUniquePromoRequestError,
-  claimUniquePromoRequestError =>
-    claimUniquePromoRequestError?.code === CLAIM_UNIQUE_PROMO_ERROR_CODES.DUPLICATED_PROMO_CODE
+  claimUniquePromoRequestError => claimUniquePromoRequestError?.code === CLAIM_UNIQUE_PROMO_ERROR_CODES.DUPLICATED_CLAIM
 );
 
 export const getIsCongratulationFooterDisplay = createSelector(
