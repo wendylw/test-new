@@ -14,7 +14,7 @@ export const RETURNING_MEMBER_TYPES = {
 
 export const NEW_MEMBER_ICONS = {
   [NEW_MEMBER_TYPES.DEFAULT]: MembershipLevelIcon,
-  [NEW_MEMBER_TYPES.REDEEM_CASHBACK]: RewardsEarnedCashbackIcon,
+  [NEW_MEMBER_TYPES.REDEEM_CASHBACK]: MembershipLevelIcon,
 };
 
 export const NEW_MEMBER_I18N_KEYS = {
