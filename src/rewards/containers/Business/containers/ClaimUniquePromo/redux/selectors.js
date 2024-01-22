@@ -7,10 +7,12 @@ import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook
 import {
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
+  getIsLoadMerchantRequestCompleted,
 } from '../../../../../redux/modules/merchant/selectors';
+import { getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
 import { getIsWeb } from '../../../../../redux/modules/common/selectors';
 
-export const getUniquePromoRewardsSetId = getQueryString('rewardsSetId');
+export const getUniquePromoRewardsSetId = () => getQueryString('rewardsSetId');
 
 export const getUniquePromosRewardsUrl = state => getFeatureFlagResult(state, FEATURE_KEYS.CLAIM_UNIQUE_PROMO).introURL;
 
@@ -26,6 +28,13 @@ export const getClaimUniquePromoRequestError = state => state.business.claimUniq
 /**
  * Derived selectors
  */
+export const getIsSkeletonLoaderShow = createSelector(
+  getIsLoadMerchantRequestCompleted,
+  getIsCheckLoginRequestCompleted,
+  (isLoadMerchantRequestCompleted, isCheckLoginRequestCompleted) =>
+    !isLoadMerchantRequestCompleted || !isCheckLoginRequestCompleted
+);
+
 export const getIsClaimUniquePromoRequestPending = createSelector(
   getClaimUniquePromoRequestStatus,
   claimUniquePromoRequestStatus => claimUniquePromoRequestStatus === API_REQUEST_STATUS.PENDING

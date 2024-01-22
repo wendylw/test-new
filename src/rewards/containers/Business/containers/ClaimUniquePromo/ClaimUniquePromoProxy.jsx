@@ -5,10 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { closeWebView } from '../../../../../utils/native-methods';
 import { getMerchantDisplayName } from '../../../../redux/modules/merchant/selectors';
 import { getIsWeb, getIsWebview } from '../../../../redux/modules/common/selectors';
-import { getIsClaimUniquePromoRequestFulfilled } from './redux/selectors';
+import { getIsSkeletonLoaderShow, getIsClaimUniquePromoRequestFulfilled } from './redux/selectors';
 import { mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
+import SkeletonLoader from './components/SkeletonLoader';
 import ClaimSuccess from './ClaimSuccess';
 import ClaimUniquePromo from '.';
 
@@ -18,6 +19,7 @@ const ClaimUniquePromoProxy = () => {
   const merchantDisplayName = useSelector(getMerchantDisplayName);
   const isWeb = useSelector(getIsWeb);
   const isWebview = useSelector(getIsWebview);
+  const isSkeletonLoaderShow = useSelector(getIsSkeletonLoaderShow);
   const isClaimUniquePromoRequestFulfilled = useSelector(getIsClaimUniquePromoRequestFulfilled);
   const handleClickHeaderBackButton = useCallback(() => {
     if (isWebview) {
@@ -36,8 +38,13 @@ const ClaimUniquePromoProxy = () => {
         title={t('UniquePromoHeaderTitle', { merchantDisplayName })}
         onBackArrowClick={handleClickHeaderBackButton}
       />
-
-      {isClaimUniquePromoRequestFulfilled ? <ClaimSuccess /> : <ClaimUniquePromo />}
+      {isSkeletonLoaderShow ? (
+        <SkeletonLoader />
+      ) : isClaimUniquePromoRequestFulfilled ? (
+        <ClaimSuccess />
+      ) : (
+        <ClaimUniquePromo />
+      )}
     </Frame>
   );
 };

@@ -23,6 +23,7 @@ export const claimUniquePromo = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState();
     const rewardsSetId = getUniquePromoRewardsSetId(state);
+
     const result = await postClaimUniquePromo({
       id: rewardsSetId,
     });
