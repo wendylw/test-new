@@ -9,7 +9,7 @@ const UniquePromoCongratulation = () => {
 
   return (
     <div className={styles.uniquePromosRewards}>
-      <SmartIframe id="" title="" src={iframeUrl} />
+      <SmartIframe id="claim-unique-promo-congratulation" title="Claim Unique Promo Congratulation" src={iframeUrl} />
     </div>
   );
 };
