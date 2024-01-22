@@ -11,6 +11,7 @@ export const DEFAULT_FEATURE_FLAG_RESULTS = {
     congratsURL: 'https://lp.storehub.com/beep-membership-welcome',
   },
   [FEATURE_KEYS.CLAIM_UNIQUE_PROMO]: {
+    // TODO: will be replaced after marketing set
     introURL: 'https://lp.storehub.com/beep-test-join-membership',
     congratsURL: 'https://lp.storehub.com/beep-membership-welcome',
   },
