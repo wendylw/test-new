@@ -21,11 +21,11 @@ export const { reducer, actions } = createSlice({
     },
     [claimUniquePromo.fulfilled.type]: (state, { payload }) => {
       state.claimUniquePromoRequest.data = payload;
-      state.claimUniquePromoRequest.status = API_REQUEST_STATUS.SUCCESS;
+      state.claimUniquePromoRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.claimUniquePromoRequest.error = null;
     },
     [claimUniquePromo.rejected.type]: (state, { error }) => {
-      state.claimUniquePromoRequest.status = API_REQUEST_STATUS.ERROR;
+      state.claimUniquePromoRequest.status = API_REQUEST_STATUS.REJECTED;
       state.claimUniquePromoRequest.error = error;
     },
   },
