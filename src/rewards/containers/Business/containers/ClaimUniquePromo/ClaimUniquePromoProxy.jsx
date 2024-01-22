@@ -35,7 +35,7 @@ const ClaimUniquePromoProxy = () => {
     <Frame>
       <PageHeader
         isShowBackButton={!isWeb}
-        title={`${t('UniquePromoHeaderTitle')}${!isSkeletonLoaderShow ? '' : ` - ${merchantDisplayName}`}`}
+        title={`${t('UniquePromoHeaderTitle')}${isSkeletonLoaderShow ? '' : ` - ${merchantDisplayName}`}`}
         onBackArrowClick={handleClickHeaderBackButton}
       />
       {isSkeletonLoaderShow ? (
