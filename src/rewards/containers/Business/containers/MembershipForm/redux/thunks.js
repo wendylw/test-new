@@ -11,7 +11,7 @@ import {
 import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
 import Growthbook from '../../../../../../utils/growthbook';
 import {
-  fetchUserLoginStatus,
+  initUserInfo,
   loginUserByBeepApp,
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
@@ -19,16 +19,15 @@ import { getMerchantCountry } from '../../../../../../redux/modules/merchant/sel
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { joinMembership } from '../../../../../../redux/modules/membership/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
+import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
+import { getShouldShowProfileForm } from './selectors';
 import { PATH_NAME_MAPPING, REFERRER_SOURCE_TYPES } from '../../../../../../common/utils/constants';
 import { getCookieVariable, setCookieVariable, removeCookieVariable } from '../../../../../../common/utils';
+import logger from '../../../../../../utils/monitoring/logger';
 
-export const loadCustomerInfo = createAsyncThunk(
-  'rewards/business/membershipForm/loadCustomerInfo',
-  async (_, { dispatch, getState }) => {
-    const business = getBusiness(getState());
-    await dispatch(fetchCustomerInfo(business));
-  }
-);
+export const showProfileForm = createAsyncThunk('rewards/business/membershipForm/showProfileForm', async () => {});
+
+export const hideProfileForm = createAsyncThunk('rewards/business/membershipForm/hideProfileForm', async () => {});
 
 export const joinBusinessMembership = createAsyncThunk(
   'rewards/business/membershipForm/joinBusinessMembership',
@@ -40,6 +39,22 @@ export const joinBusinessMembership = createAsyncThunk(
 
     await dispatch(joinMembership({ business, source, consumerId }));
     await dispatch(fetchCustomerInfo(business));
+  }
+);
+
+export const skipProfileButtonClicked = createAsyncThunk(
+  'rewards/business/membershipForm/skipProfileButtonClicked',
+  async (_, { dispatch }) => {
+    await dispatch(hideProfileForm());
+    await dispatch(joinBusinessMembership());
+  }
+);
+
+export const saveProfileButtonClicked = createAsyncThunk(
+  'rewards/business/membershipForm/saveProfileButtonClicked',
+  async (_, { dispatch }) => {
+    await dispatch(hideProfileForm());
+    await dispatch(joinBusinessMembership());
   }
 );
 
@@ -57,6 +72,37 @@ export const goToMembershipDetail = createAsyncThunk(
   }
 );
 
+export const continueJoinMembership = createAsyncThunk(
+  'rewards/business/membershipForm/continueJoinMembership',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+
+    await dispatch(fetchCustomerInfo(business));
+
+    const hasUserJoinedMerchantMembership = getHasUserJoinedMerchantMembership(getState());
+
+    if (hasUserJoinedMerchantMembership) {
+      // NOTE: this case has been handled in MembershipFormProxy useEffect. No need to do any manual redirect here.
+      return;
+    }
+
+    const shouldShowProfileForm = getShouldShowProfileForm(getState());
+
+    try {
+      if (shouldShowProfileForm) {
+        await dispatch(showProfileForm());
+        throw new Error('Incomplete user profile');
+      }
+
+      await dispatch(joinBusinessMembership());
+    } catch (error) {
+      logger.error('Rewards_Business_JoinMembershipFailed', { message: error?.message });
+      throw error;
+    }
+  }
+);
+
 export const mounted = createAsyncThunk(
   'rewards/business/membershipForm/mounted',
   async (_, { dispatch, getState }) => {
@@ -71,7 +117,7 @@ export const mounted = createAsyncThunk(
       business,
     });
 
-    await dispatch(fetchUserLoginStatus());
+    await dispatch(initUserInfo());
 
     const isLogin = getIsLogin(getState());
 
@@ -83,8 +129,11 @@ export const mounted = createAsyncThunk(
     removeCookieVariable('__jm_source');
 
     if (from === REFERRER_SOURCE_TYPES.LOGIN) {
-      await dispatch(joinBusinessMembership());
+      await dispatch(continueJoinMembership());
+      return;
     }
+
+    dispatch(fetchCustomerInfo(business));
   }
 );
 
@@ -116,7 +165,7 @@ export const joinNowButtonClicked = createAsyncThunk(
     const search = getLocationSearch(state);
 
     if (isLogin) {
-      await dispatch(joinBusinessMembership());
+      await dispatch(continueJoinMembership());
       return;
     }
 
@@ -136,7 +185,7 @@ export const joinNowButtonClicked = createAsyncThunk(
     }
 
     if (getIsLogin(getState())) {
-      await dispatch(joinBusinessMembership());
+      await dispatch(continueJoinMembership());
     }
   }
 );
