@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, replace } from 'connected-react-router';
-import { getBusinessInfo } from './api-request';
 import { goBack } from '../../../../../../utils/native-methods';
 import { getIsTNGMiniProgram, getIsWebview, getLocationSearch } from '../../../../../redux/modules/common/selectors';
 import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
@@ -10,6 +9,8 @@ import {
   loginUserByBeepApp,
   loginUserByTngMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
+import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
+import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
 import { joinMembership } from '../../../redux/common/thunks';
 import { PATH_NAME_MAPPING, REFERRER_SOURCE_TYPES } from '../../../../../../common/utils/constants';
 import {
@@ -18,18 +19,6 @@ import {
   setCookieVariable,
   removeCookieVariable,
 } from '../../../../../../common/utils';
-
-export const fetchBusinessInfo = createAsyncThunk(
-  'rewards/business/membershipForm/fetchBusinessInfo',
-  async business => {
-    const result = await getBusinessInfo(business);
-    const { country } = result || {};
-
-    Growthbook.patchAttributes({ country });
-
-    return result;
-  }
-);
 
 export const goToMembershipDetail = createAsyncThunk(
   'rewards/business/membershipForm/goToMembershipDetail',
@@ -46,8 +35,15 @@ export const mounted = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     const business = getQueryString('business');
 
-    Growthbook.patchAttributes({ business });
-    await dispatch(fetchBusinessInfo(business));
+    await dispatch(fetchMerchantInfo());
+
+    const country = getMerchantCountry(getState());
+
+    Growthbook.patchAttributes({
+      country,
+      business,
+    });
+
     await dispatch(fetchUserLoginStatus());
 
     const isLogin = getIsLogin(getState());

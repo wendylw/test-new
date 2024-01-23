@@ -7,11 +7,15 @@ export const getIsWebview = () => Utils.isWebview();
 
 export const getIsTNGMiniProgram = () => Utils.isTNGMiniProgram();
 
-export const getIsWeb = () => !Utils.isWebview() && !Utils.isTNGMiniProgram();
-
 export const getSource = () => getQueryString('source');
 
 export const getBusiness = () => getQueryString('business');
+
+export const getIsWeb = createSelector(
+  getIsWebview,
+  getIsTNGMiniProgram,
+  (isWebview, isTNGMiniProgram) => !isWebview && !isTNGMiniProgram
+);
 
 /** Router */
 export const getRouter = state => state.router;

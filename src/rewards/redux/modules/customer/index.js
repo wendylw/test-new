@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { API_REQUEST_STATUS } from '../../../../utils/constants';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { fetchCustomerInfo } from './thunks';
 
 const initialState = {

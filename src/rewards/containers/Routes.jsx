@@ -16,6 +16,12 @@ const MembershipDetail = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_MER_DETL" */ './Business/containers/MembershipDetail'))
 );
 
+const SeamlessLoyalty = lazy(() =>
+  Utils.attemptLoad(() =>
+    import(/* webpackChunkName: "RWD_SL" */ './Business/containers/SeamlessLoyalty/SeamlessLoyaltyProxy')
+  )
+);
+
 const ClaimUniquePromoProxy = lazy(() =>
   Utils.attemptLoad(() =>
     import(/* webpackChunkName: "RWD_CL_UQ_PROM" */ './Business/containers/ClaimUniquePromo/ClaimUniquePromoProxy')
@@ -39,6 +45,11 @@ const Routes = () => (
           exact
           path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.MEMBERSHIP_DETAIL}`}
           component={MembershipDetail}
+        />
+        <Route
+          exact
+          path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.SEAMLESS_LOYALTY}`}
+          component={SeamlessLoyalty}
         />
         <Route
           exact
