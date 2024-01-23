@@ -73,7 +73,7 @@ const ClaimUniquePromoProxy = () => {
           customizeContent: true,
           onClose: () => {
             if (!isWebview) {
-              window.location.href = `${process.env.REACT_APP_QR_SCAN_DOMAINS}${PATH_NAME_MAPPING.QRSCAN}`;
+              window.location.href = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${PATH_NAME_MAPPING.QRSCAN}`;
             } else {
               closeWebView();
             }
