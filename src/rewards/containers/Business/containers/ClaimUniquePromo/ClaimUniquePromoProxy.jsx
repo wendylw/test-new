@@ -72,7 +72,11 @@ const ClaimUniquePromoProxy = () => {
         {
           customizeContent: true,
           onClose: () => {
-            window.location.href = `${process.env.REACT_APP_QR_SCAN_DOMAINS}${PATH_NAME_MAPPING.QRSCAN}`;
+            if (!isWebview) {
+              window.location.href = `${process.env.REACT_APP_QR_SCAN_DOMAINS}${PATH_NAME_MAPPING.QRSCAN}`;
+            } else {
+              closeWebView();
+            }
           },
         }
       );
