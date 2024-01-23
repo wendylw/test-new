@@ -1,9 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { getQueryString } from '../../../../../common/utils';
 import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
-
-export const getSource = () => getQueryString('source');
 
 export const getJoinMembershipRequest = state => state.business.common.joinMembershipRequest;
 

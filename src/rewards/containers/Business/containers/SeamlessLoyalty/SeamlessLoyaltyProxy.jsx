@@ -7,8 +7,8 @@ import BeepWarningImage from '../../../../../images/beep-warning.svg';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { closeWebView } from '../../../../../utils/native-methods';
 import { getMerchantBusiness, getIsMerchantEnabledMembership } from '../../../../redux/modules/merchant/selectors';
-import { getIsWebview, getIsWeb } from '../../../../redux/modules/common/selectors';
-import { getSource, getIsConfirmSharingNewCustomer } from '../../redux/common/selectors';
+import { getIsWebview, getIsWeb, getSource } from '../../../../redux/modules/common/selectors';
+import { getIsConfirmSharingNewCustomer } from '../../redux/common/selectors';
 import {
   getSeamlessLoyaltyPageHashCode,
   getIsAllInitialRequestsCompleted,

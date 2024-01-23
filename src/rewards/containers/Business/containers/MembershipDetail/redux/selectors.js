@@ -7,7 +7,7 @@ import {
 import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import { NEW_MEMBER_TYPES, RETURNING_MEMBER_TYPES } from '../utils/constants';
-import { getSource } from '../../../redux/common/selectors';
+import { getSource } from '../../../../../redux/modules/common/selectors';
 import {
   getMerchantCurrency,
   getMerchantLocale,

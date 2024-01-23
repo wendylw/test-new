@@ -15,6 +15,7 @@ import {
   getIsWebview,
   getIsTNGMiniProgram,
   getLocationSearch,
+  getSource,
 } from '../../../../../redux/modules/common/selectors';
 import { postClaimUniquePromo } from './api-request';
 import { getUniquePromoRewardsSetId } from './selectors';
@@ -25,11 +26,13 @@ export const claimUniquePromo = createAsyncThunk(
     const state = getState();
     const rewardsSetId = getUniquePromoRewardsSetId(state);
     const consumerId = getConsumerId(state);
+    const source = getSource(state);
     const merchantBusiness = getMerchantBusiness(state);
 
     const result = await postClaimUniquePromo({
       id: rewardsSetId,
       consumerId,
+      source,
       business: merchantBusiness,
     });
 
