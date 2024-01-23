@@ -62,7 +62,7 @@ const ClaimUniquePromoProxy = () => {
   }, [anyInitialRequestError, dispatch, t]);
 
   useEffect(() => {
-    if (!isClaimUniquePromoRequestDuplicated) {
+    if (isClaimUniquePromoRequestDuplicated) {
       result(
         <ResultContent
           imageSrc={BeepWarningImage}
