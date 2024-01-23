@@ -8,8 +8,13 @@ import {
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
   getIsLoadMerchantRequestCompleted,
+  getLoadMerchantRequestError,
 } from '../../../../../redux/modules/merchant/selectors';
-import { getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
+import {
+  getIsCheckLoginRequestCompleted,
+  getCheckLoginRequestError,
+  getUserProfileRequestError,
+} from '../../../../../../redux/modules/user/selectors';
 import { getIsWeb } from '../../../../../redux/modules/common/selectors';
 
 export const getUniquePromoRewardsSetId = () => getQueryString('rewardsSetId');
@@ -55,4 +60,12 @@ export const getIsCongratulationFooterDisplay = createSelector(
   getIsMerchantEnabledOROrdering,
   getIsMerchantEnabledDelivery,
   (isWeb, isOROrderingEnabled, isDeliveryEnabled) => isWeb || (isOROrderingEnabled && isDeliveryEnabled)
+);
+
+export const getAnyInitialRequestError = createSelector(
+  getLoadMerchantRequestError,
+  getCheckLoginRequestError,
+  getUserProfileRequestError,
+  (loadMerchantRequestError, checkLoginRequestError, userProfileRequestError) =>
+    loadMerchantRequestError || checkLoginRequestError || userProfileRequestError
 );

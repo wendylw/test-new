@@ -25,5 +25,7 @@
   "Joining": "Joining...",
   "ClaimPromotion": "Claim Promotion",
   "UniquePromoHeaderTitle": "Promotion",
-  "UniquePromoDownloadBannerText": "Get reminder for your promotions on Beep app now"
+  "UniquePromoDownloadBannerText": "Get reminder for your promotions on Beep app now",
+  "UniquePromoDuplicatedTitle": "Please try another QR code to claim promotion",
+  "UniquePromoDuplicatedDescription": "This promotion has been claimed"
 }
