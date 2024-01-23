@@ -1,3 +1,7 @@
 import { post } from '../../../../../../utils/api/api-fetch';
 
-export const postClaimUniquePromo = ({ id }) => post(`/api/v3/rewards-sets/${id}/redeem`);
+export const postClaimUniquePromo = ({ id, consumerId, business: businessName }) =>
+  post(`/api/v3/rewards-sets/${id}/redeem`, {
+    consumerId,
+    businessName,
+  });

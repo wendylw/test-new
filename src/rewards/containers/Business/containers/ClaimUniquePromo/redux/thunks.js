@@ -2,12 +2,13 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push } from 'connected-react-router';
 import { setCookieVariable, getCookieVariable, removeCookieVariable } from '../../../../../../common/utils';
 import { REFERRER_SOURCE_TYPES, PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
-import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
 import {
   initUserInfo,
   loginUserByBeepApp,
   loginUserByTngMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
+import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
 import {
   getIsWeb,
@@ -23,9 +24,13 @@ export const claimUniquePromo = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState();
     const rewardsSetId = getUniquePromoRewardsSetId(state);
+    const consumerId = getConsumerId(state);
+    const merchantBusiness = getMerchantBusiness(state);
 
     const result = await postClaimUniquePromo({
       id: rewardsSetId,
+      consumerId,
+      business: merchantBusiness,
     });
 
     return result;
