@@ -81,7 +81,7 @@ const ClaimUniquePromoProxy = () => {
         }
       );
     }
-  }, [isClaimUniquePromoRequestDuplicated, t]);
+  }, [isClaimUniquePromoRequestDuplicated, t, isWebview]);
 
   return (
     <Frame>
