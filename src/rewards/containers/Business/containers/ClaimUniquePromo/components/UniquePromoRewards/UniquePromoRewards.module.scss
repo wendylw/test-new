@@ -1,5 +1,5 @@
 .UniquePromosRewards {
-  @apply tw-flex-1 tw-p-16 sm:tw-p-16px;
+  @apply tw-flex-1 tw-p-16 sm:tw-p-16px tw-mb-16 tw-;
 
   height: 100vh;
 
@@ -8,9 +8,10 @@
   }
 }
 
-@media only screen and (orientation: portrait) and (-webkit-device-pixel-ratio: 3) {
+@supports ((height: constant(safe-area-inset-bottom)) or (height: env(safe-area-inset-bottom))) and
+  (-webkit-overflow-scrolling: touch) {
   .UniquePromosRewards {
-    padding-bottom: constant(safe-area-inset-bottom);
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: calc(16px + constant(safe-area-inset-bottom));
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
 }
