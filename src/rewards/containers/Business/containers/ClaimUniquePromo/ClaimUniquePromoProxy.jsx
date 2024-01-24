@@ -4,8 +4,10 @@ import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
+import { getClient } from '../../../../../common/utils';
 import { closeWebView } from '../../../../../utils/native-methods';
-import { getMerchantDisplayName } from '../../../../redux/modules/merchant/selectors';
+import CleverTap from '../../../../../utils/clevertap';
+import { getMerchantBusiness, getMerchantDisplayName } from '../../../../redux/modules/merchant/selectors';
 import { getIsWeb, getIsWebview } from '../../../../redux/modules/common/selectors';
 import {
   getIsSkeletonLoaderShow,
@@ -26,6 +28,7 @@ const ClaimUniquePromoProxy = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
   const merchantDisplayName = useSelector(getMerchantDisplayName);
+  const merchantBusiness = useSelector(getMerchantBusiness);
   const isWeb = useSelector(getIsWeb);
   const isWebview = useSelector(getIsWebview);
   const isSkeletonLoaderShow = useSelector(getIsSkeletonLoaderShow);
@@ -40,6 +43,11 @@ const ClaimUniquePromoProxy = () => {
 
   useMount(() => {
     dispatch(mounted());
+
+    CleverTap.pushEvent('Claim Unique Promo Landing Page - View Page', {
+      'account name': merchantBusiness,
+      source: getClient(),
+    });
   });
 
   useEffect(() => {

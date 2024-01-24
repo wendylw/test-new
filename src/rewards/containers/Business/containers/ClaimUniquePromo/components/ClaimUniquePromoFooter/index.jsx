@@ -1,6 +1,9 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import CleverTap from '../../../../../../../utils/clevertap';
+import { getClient } from '../../../../../../../common/utils';
+import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { getIsClaimUniquePromoRequestPending } from '../../redux/selectors';
 import { claimPromotionClicked } from '../../redux/thunks';
 import PageFooter from '../../../../../../../common/components/PageFooter';
@@ -10,10 +13,16 @@ import styles from './ClaimUniquePromoFooter.module.scss';
 const ClaimUniquePromoFooter = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
+  const merchantBusiness = useSelector(getMerchantBusiness);
   const isClaimUniquePromoRequestPending = useSelector(getIsClaimUniquePromoRequestPending);
   const handleClickClaimUniquePromoButton = useCallback(() => {
     dispatch(claimPromotionClicked());
-  }, [dispatch]);
+
+    CleverTap.pushEvent('Claim Unique Promo Landing Page - Click Claim Promotion Button', {
+      'account name': merchantBusiness,
+      source: getClient(),
+    });
+  }, [dispatch, merchantBusiness]);
 
   return (
     <PageFooter zIndex={50}>
