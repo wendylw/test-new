@@ -1,9 +1,16 @@
 .UniquePromosRewards {
-  @apply tw-p-16 sm:tw-p-16px;
+  @apply tw-flex-1 tw-p-16 sm:tw-p-16px;
 
   height: 100vh;
 
   iframe {
     max-width: 100%;
+  }
+}
+
+@media only screen and (orientation: portrait) and (-webkit-device-pixel-ratio: 3) {
+  .UniquePromosRewards {
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
