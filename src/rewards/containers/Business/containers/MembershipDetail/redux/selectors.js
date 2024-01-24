@@ -118,7 +118,18 @@ export const getNewMemberPromptCategory = createSelector(
   getIsMerchantEnabledCashback,
   getCustomerCashback,
   getIsFromSeamlessLoyaltyQrScan,
-  (isLoadCustomerRequestCompleted, isMerchantEnabledCashback, customerCashback, isFromSeamlessLoyaltyQrScan) => {
+  getIsFromJoinMembershipUrlClick,
+  (
+    isLoadCustomerRequestCompleted,
+    isMerchantEnabledCashback,
+    customerCashback,
+    isFromSeamlessLoyaltyQrScan,
+    isFromJoinMembershipUrlClick
+  ) => {
+    if (isFromJoinMembershipUrlClick) {
+      return NEW_MEMBER_TYPES.DEFAULT;
+    }
+
     if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
       return isMerchantEnabledCashback && customerCashback > 0
         ? NEW_MEMBER_TYPES.REDEEM_CASHBACK
@@ -134,6 +145,7 @@ export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
   getIsMerchantEnabledCashback,
   getCustomerCashback,
+  getIsMerchantEnabledCashback,
   getIsFromJoinMembershipUrlClick,
   getIsFromSeamlessLoyaltyQrScan,
   (
