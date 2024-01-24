@@ -55,6 +55,11 @@ export const getIsClaimUniquePromoRequestDuplicated = createSelector(
   claimUniquePromoRequestError => claimUniquePromoRequestError?.code === CLAIM_UNIQUE_PROMO_ERROR_CODES.DUPLICATED_CLAIM
 );
 
+export const getIsClaimUniquePromoRequestExpired = createSelector(
+  getClaimUniquePromoRequestError,
+  claimUniquePromoRequestError => claimUniquePromoRequestError?.code === CLAIM_UNIQUE_PROMO_ERROR_CODES.EXPIRED
+);
+
 export const getIsCongratulationFooterDisplay = createSelector(
   getIsWeb,
   getIsMerchantEnabledOROrdering,
@@ -62,10 +67,45 @@ export const getIsCongratulationFooterDisplay = createSelector(
   (isWeb, isOROrderingEnabled, isDeliveryEnabled) => isWeb || (isOROrderingEnabled && isDeliveryEnabled)
 );
 
-export const getAnyInitialRequestError = createSelector(
+export const getAnyRequestError = createSelector(
   getLoadMerchantRequestError,
   getCheckLoginRequestError,
   getUserProfileRequestError,
-  (loadMerchantRequestError, checkLoginRequestError, userProfileRequestError) =>
-    loadMerchantRequestError || checkLoginRequestError || userProfileRequestError
+  getClaimUniquePromoRequestError,
+  getIsClaimUniquePromoRequestDuplicated,
+  getIsClaimUniquePromoRequestExpired,
+  (
+    loadMerchantRequestError,
+    checkLoginRequestError,
+    userProfileRequestError,
+    claimUniquePromoRequestError,
+    isClaimUniquePromoRequestDuplicated,
+    isClaimUniquePromoRequestExpired
+  ) =>
+    loadMerchantRequestError ||
+    checkLoginRequestError ||
+    userProfileRequestError ||
+    (claimUniquePromoRequestError && !isClaimUniquePromoRequestDuplicated && !isClaimUniquePromoRequestExpired)
+);
+
+export const getUniquePromoQRcodeInvalidError = createSelector(
+  getIsClaimUniquePromoRequestDuplicated,
+  getIsClaimUniquePromoRequestExpired,
+  (isClaimUniquePromoRequestDuplicated, isClaimUniquePromoRequestExpired) => {
+    if (isClaimUniquePromoRequestDuplicated) {
+      return {
+        titleKey: 'UniquePromoDuplicatedTitle',
+        descriptionKey: 'UniquePromoDuplicatedDescription',
+      };
+    }
+
+    if (isClaimUniquePromoRequestExpired) {
+      return {
+        titleKey: 'UniquePromoExpiredTitle',
+        descriptionKey: 'UniquePromoExpiredDescription',
+      };
+    }
+
+    return null;
+  }
 );

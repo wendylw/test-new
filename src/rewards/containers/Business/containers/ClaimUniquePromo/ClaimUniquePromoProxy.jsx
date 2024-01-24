@@ -10,8 +10,8 @@ import { getIsWeb, getIsWebview } from '../../../../redux/modules/common/selecto
 import {
   getIsSkeletonLoaderShow,
   getIsClaimUniquePromoRequestFulfilled,
-  getIsClaimUniquePromoRequestDuplicated,
-  getAnyInitialRequestError,
+  getAnyRequestError,
+  getUniquePromoQRcodeInvalidError,
 } from './redux/selectors';
 import { mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
@@ -30,8 +30,8 @@ const ClaimUniquePromoProxy = () => {
   const isWebview = useSelector(getIsWebview);
   const isSkeletonLoaderShow = useSelector(getIsSkeletonLoaderShow);
   const isClaimUniquePromoRequestFulfilled = useSelector(getIsClaimUniquePromoRequestFulfilled);
-  const anyInitialRequestError = useSelector(getAnyInitialRequestError);
-  const isClaimUniquePromoRequestDuplicated = useSelector(getIsClaimUniquePromoRequestDuplicated);
+  const anyRequestError = useSelector(getAnyRequestError);
+  const uniquePromoQRcodeInvalidError = useSelector(getUniquePromoQRcodeInvalidError);
   const handleClickHeaderBackButton = useCallback(() => {
     if (isWebview) {
       closeWebView();
@@ -43,7 +43,7 @@ const ClaimUniquePromoProxy = () => {
   });
 
   useEffect(() => {
-    if (anyInitialRequestError) {
+    if (anyRequestError) {
       result(
         <ResultContent
           imageSrc={BeepWarningImage}
@@ -59,15 +59,15 @@ const ClaimUniquePromoProxy = () => {
         }
       );
     }
-  }, [anyInitialRequestError, dispatch, t]);
+  }, [anyRequestError, dispatch, t]);
 
   useEffect(() => {
-    if (isClaimUniquePromoRequestDuplicated) {
+    if (uniquePromoQRcodeInvalidError) {
       result(
         <ResultContent
           imageSrc={BeepWarningImage}
-          content={t('UniquePromoDuplicatedDescription')}
-          title={t('UniquePromoDuplicatedTitle')}
+          content={t(uniquePromoQRcodeInvalidError.descriptionKey)}
+          title={t(uniquePromoQRcodeInvalidError.titleKey)}
         />,
         {
           customizeContent: true,
@@ -81,7 +81,7 @@ const ClaimUniquePromoProxy = () => {
         }
       );
     }
-  }, [isClaimUniquePromoRequestDuplicated, t, isWebview]);
+  }, [uniquePromoQRcodeInvalidError, t, isWebview]);
 
   return (
     <Frame>

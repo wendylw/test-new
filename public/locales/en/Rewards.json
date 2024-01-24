@@ -27,5 +27,7 @@
   "UniquePromoHeaderTitle": "Promotion",
   "UniquePromoDownloadBannerText": "Get reminder for your promotions on Beep app now",
   "UniquePromoDuplicatedTitle": "Please try another QR code to claim promotion",
-  "UniquePromoDuplicatedDescription": "This promotion has been claimed"
+  "UniquePromoDuplicatedDescription": "This promotion has been claimed",
+  "UniquePromoExpiredTitle": "Please try another QR code to claim promotion",
+  "UniquePromoExpiredDescription": "Failed to claim. Promotion expired."
 }
