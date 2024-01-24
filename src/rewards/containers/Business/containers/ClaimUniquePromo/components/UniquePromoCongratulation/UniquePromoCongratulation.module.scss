@@ -1,3 +1,7 @@
 .UniquePromoCongratulation {
   @apply tw-w-full;
+
+  iframe {
+    max-width: 100%;
+  }
 }

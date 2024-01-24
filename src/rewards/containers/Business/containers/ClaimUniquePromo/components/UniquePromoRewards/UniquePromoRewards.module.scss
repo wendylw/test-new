@@ -1,3 +1,7 @@
 .UniquePromosRewards {
   @apply tw-p-16 sm:tw-p-16px tw-w-full;
+
+  iframe {
+    max-width: 100%;
+  }
 }
