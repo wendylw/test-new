@@ -23,6 +23,7 @@ import { result } from '../../../../../common/utils/feedback';
 import SkeletonLoader from './components/SkeletonLoader';
 import ClaimSuccess from './ClaimSuccess';
 import ClaimUniquePromo from '.';
+import styles from './ClaimUniquePromoProxy.module.scss';
 
 const ClaimUniquePromoProxy = () => {
   const { t } = useTranslation(['Rewards']);
@@ -94,6 +95,7 @@ const ClaimUniquePromoProxy = () => {
   return (
     <Frame>
       <PageHeader
+        className={styles.ClaimUniquePromoProxyHeader}
         isShowBackButton={!isWeb}
         title={`${t('UniquePromoHeaderTitle')}${isSkeletonLoaderShow ? '' : ` - ${merchantDisplayName}`}`}
         onBackArrowClick={handleClickHeaderBackButton}
