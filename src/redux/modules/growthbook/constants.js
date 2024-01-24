@@ -12,7 +12,7 @@ export const DEFAULT_FEATURE_FLAG_RESULTS = {
   },
   [FEATURE_KEYS.CLAIM_UNIQUE_PROMO]: {
     // TODO: will be replaced after marketing set
-    introURL: 'https://lp.storehub.com/beep-test-join-membership',
+    introURL: 'https://lp.storehub.com/claim-promo-url-centreplacecafe',
     congratsURL: 'https://lp.storehub.com/beep-membership-welcome',
   },
 };
