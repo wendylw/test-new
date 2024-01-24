@@ -8,7 +8,7 @@ const UniquePromoRewards = () => {
   const iframeUrl = useSelector(getUniquePromosRewardsUrl);
 
   return (
-    <div className={styles.uniquePromosRewards}>
+    <div className={styles.UniquePromosRewards}>
       <SmartIframe id="claim-unique-promo-rewards" title="Claim Unique Promo Rewards" src={iframeUrl} />
     </div>
   );
