@@ -2,8 +2,8 @@ import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { CaretRight } from 'phosphor-react';
 import { useTranslation } from 'react-i18next';
-import MembershipNonMemberIcon from '../../../../../../../images/non-member-level.svg';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
+import MembershipNonMemberIcon from '../../../../../../../images/non-member-level.svg';
 import './MemberBanner.scss';
 
 const MemberBanner = ({ onJoinMembershipClick }) => {
