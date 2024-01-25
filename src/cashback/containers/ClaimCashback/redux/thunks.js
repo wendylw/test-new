@@ -2,9 +2,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { CASHBACK_SOURCE, PATH_NAME_MAPPING, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../common/utils/constants';
 import { getRegistrationTouchPoint, getRegistrationSource } from '../../../../common/utils';
 import { getIsLogin, getUserPhoneNumber } from '../../../../redux/modules/user/selectors';
-import { initUserInfo } from '../../../../redux/modules/user/thunks';
+import { initUserInfo, loginUserByBeepApp, loginUserByAlipayMiniProgram } from '../../../../redux/modules/user/thunks';
 import { getMerchantBusiness, getIsMerchantMembershipEnabled } from '../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../redux/modules/merchant/thunks';
+import { getIsWebview, getIsAlipayMiniProgram } from '../../../redux/modules/common/selectors';
 import { loadConsumerCustomerInfo } from '../../../redux/modules/customer/thunks';
 import { getOrderReceiptNumber, getOrderCashbackInfo, postClaimedCashbackForCustomer } from './api-request';
 import {
@@ -80,6 +81,8 @@ export const claimedCashbackForCustomer = createAsyncThunk(
 
 export const mounted = createAsyncThunk('cashback/claimCashback/mounted', async (_, { getState, dispatch }) => {
   const state = getState();
+  const isWebview = getIsWebview(state);
+  const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
   const merchantBusiness = getMerchantBusiness(state);
 
   dispatch(fetchMerchantInfo(merchantBusiness));
@@ -92,6 +95,14 @@ export const mounted = createAsyncThunk('cashback/claimCashback/mounted', async 
   }
 
   await dispatch(initUserInfo());
+
+  if (isWebview) {
+    await dispatch(loginUserByBeepApp());
+  }
+
+  if (isAlipayMiniProgram) {
+    await dispatch(loginUserByAlipayMiniProgram());
+  }
 
   const isLogin = getIsLogin(getState());
 
