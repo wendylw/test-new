@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push } from 'connected-react-router';
 import { setCookieVariable, getCookieVariable, removeCookieVariable } from '../../../../../../common/utils';
 import { REFERRER_SOURCE_TYPES, PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
+import Growthbook from '../../../../../../utils/growthbook';
 import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
 import {
   initUserInfo,
@@ -43,7 +44,13 @@ export const claimUniquePromo = createAsyncThunk(
 export const mounted = createAsyncThunk(
   'rewards/business/claimUniquePromo/mounted',
   async (_, { getState, dispatch }) => {
-    dispatch(fetchMerchantInfo());
+    await dispatch(fetchMerchantInfo());
+
+    const business = getMerchantBusiness(getState());
+    const country = getMerchantCountry(getState());
+
+    Growthbook.patchAttributes({ business, country });
+
     await dispatch(initUserInfo());
 
     const isLogin = getIsLogin(getState());
