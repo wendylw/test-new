@@ -9,7 +9,7 @@ import {
   loginUserByBeepApp,
   loginUserByTngMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
+import { getMerchantBusiness, getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
 import {
   getIsWeb,
