@@ -59,20 +59,12 @@ export const claimedCashbackForCustomer = createAsyncThunk(
 
     if (isClaimedCashbackForCustomerFulfilled) {
       const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
-      const {
-        REWARDS_BASE,
-        REWARDS_BUSINESS,
-        REWARDS_MEMBERSHIP,
-        REWARDS_MEMBERSHIP_DETAIL,
-        REWARDS_CASHBACK,
-        CASHBACK_DETAIL,
-      } = PATH_NAME_MAPPING;
+      const { REWARDS_BASE, REWARDS_BUSINESS, REWARDS_MEMBERSHIP, REWARDS_MEMBERSHIP_DETAIL } = PATH_NAME_MAPPING;
       const rewardsBaseRoute = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${REWARDS_BASE}${REWARDS_BUSINESS}`;
-      const pathName = isMerchantMembershipEnabled
-        ? `${REWARDS_MEMBERSHIP}${REWARDS_MEMBERSHIP_DETAIL}`
-        : `${REWARDS_CASHBACK}${CASHBACK_DETAIL}`;
 
-      window.location.href = `${rewardsBaseRoute}${pathName}?business=${merchantBusiness}&source=${BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN}&status=${claimedOrderCashbackStatus}&cashback=${orderCashbackValue}`;
+      if (isMerchantMembershipEnabled) {
+        window.location.href = `${rewardsBaseRoute}${REWARDS_MEMBERSHIP}${REWARDS_MEMBERSHIP_DETAIL}?business=${merchantBusiness}&source=${BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN}&status=${claimedOrderCashbackStatus}&cashback=${orderCashbackValue}`;
+      }
     }
 
     return result;
