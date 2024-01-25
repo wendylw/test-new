@@ -616,17 +616,3 @@ export const getHostNameSubDomain = () => {
 
   return hostnameSubDomain;
 };
-
-export const getEncodeURIComponent = value => {
-  try {
-    const decodedValue = decodeURIComponent(value);
-
-    if (decodedValue !== value) {
-      return value;
-    }
-
-    return encodeURIComponent(value);
-  } catch (error) {
-    return value;
-  }
-};
