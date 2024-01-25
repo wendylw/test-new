@@ -5,7 +5,7 @@ import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import { CLAIM_TYPES } from '../types';
 import Constants from '../../../utils/constants';
-import { getPrice, getQueryString, getEncodeURIComponent } from '../../../common/utils';
+import { getPrice, getQueryString } from '../../../common/utils';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import {
@@ -60,43 +60,33 @@ export const actions = {
   }),
 
   claimCashbackForConsumer: ({ receiptNumber, history }) => async (dispatch, getState) => {
-    if (!receiptNumber) {
-      return;
-    }
-
     await dispatch(actions.createCashbackInfo(receiptNumber));
 
     // eslint-disable-next-line no-use-before-define
     const customerId = getClaimedCashbackCustomerId(getState());
 
     // The replace of connected-react-router cannot take effect here. The new method will be used in WB-6450.
-    if (customerId) {
-      history.replace(`${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`);
-    }
+    customerId && history.replace(`${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`);
   },
 
   mounted: history => async (dispatch, getState) => {
     dispatch(appActions.setLoginPrompt(i18next.t('Common:ClaimCashbackTitle')));
-    const hash = getEncodeURIComponent(getQueryString('h'));
+    const hash = encodeURIComponent(decodeURIComponent(getQueryString('h')));
 
-    try {
-      if (hash) {
-        await dispatch(actions.getCashbackReceiptNumber(hash));
-      }
+    if (hash) {
+      await dispatch(actions.getCashbackReceiptNumber(hash));
+    }
 
-      // eslint-disable-next-line no-use-before-define
-      const receiptNumber = getReceiptNumber(getState());
-      const isLogin = getIsUserLogin(getState());
+    // eslint-disable-next-line no-use-before-define
+    const receiptNumber = getReceiptNumber(getState());
+    const isLogin = getIsUserLogin(getState());
 
-      if (receiptNumber) {
-        dispatch(actions.getCashbackInfo(receiptNumber));
-      }
+    if (receiptNumber) {
+      dispatch(actions.getCashbackInfo(receiptNumber));
+    }
 
-      if (isLogin && receiptNumber) {
-        await dispatch(actions.claimCashbackForConsumer({ receiptNumber, history }));
-      }
-    } catch (error) {
-      console.error(error);
+    if (isLogin && receiptNumber) {
+      await dispatch(actions.claimCashbackForConsumer({ receiptNumber, history }));
     }
   },
 
@@ -222,6 +212,10 @@ export const getOrderCashback = createSelector(getCashbackInfo, cashbackInfo => 
 
 export const getOrderCustomerId = createSelector(getCashbackInfo, cashbackInfo =>
   _get(cashbackInfo, 'customerId', null)
+);
+
+export const getOrderCashbackStatus = createSelector(getCashbackInfo, cashbackInfo =>
+  _get(cashbackInfo, 'status', null)
 );
 
 export const getOrderCashbackPrice = createSelector(

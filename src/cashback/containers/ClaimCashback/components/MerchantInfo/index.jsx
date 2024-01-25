@@ -12,9 +12,12 @@ const MerchantInfo = () => {
 
   return (
     <section className={styles.MerchantInfo}>
-      <div className={styles.MerchantInfoLogoContainer}>
-        <ObjectFitImage className="tw-rounded" src={merchantLogo} />
-      </div>
+      {merchantLogo && (
+        <div className={styles.MerchantInfoLogoContainer}>
+          <ObjectFitImage className="tw-rounded" src={merchantLogo} />
+        </div>
+      )}
+
       <h1 className={styles.MerchantInfoTitle}>
         {merchantDisplayName}
         {city ? `, ${city}` : ''}

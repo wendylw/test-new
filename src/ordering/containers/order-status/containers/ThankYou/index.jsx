@@ -40,6 +40,7 @@ import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import {
+  actions as appActionCreators,
   getBusiness,
   getBusinessInfo,
   getBusinessUTCOffset,
@@ -48,6 +49,7 @@ import {
   getFoodTagsForCleverTap,
   getIsCoreBusinessAPICompleted,
   getIsFromBeepSiteOrderHistory,
+  getIsAlipayMiniProgram,
 } from '../../../../redux/modules/app';
 import {
   loadOrder as loadOrderThunk,
@@ -224,6 +226,7 @@ export class ThankYou extends PureComponent {
       hasOrderPaid: prevHasOrderPaid,
       isCashbackClaimable: prevIsCashbackClaimable,
       isInitProfilePageEnabled: prevIsInitProfilePageEnabled,
+      shouldJoinBusinessMembership: prevShouldJoinBusinessMembership,
     } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const {
@@ -236,10 +239,12 @@ export class ThankYou extends PureComponent {
       isCoreBusinessAPICompleted,
       claimCashback,
       loadOrderStoreReview,
+      joinBusinessMembership,
       hasOrderPaid: currHasOrderPaid,
       initProfilePage,
       isCashbackClaimable: currIsCashbackClaimable,
       isInitProfilePageEnabled: currIsInitProfilePageEnabled,
+      shouldJoinBusinessMembership: currShouldJoinBusinessMembership,
     } = this.props;
     const { storeId } = order || {};
 
@@ -277,6 +282,10 @@ export class ThankYou extends PureComponent {
 
     if (!prevIsCashbackClaimable && currIsCashbackClaimable) {
       claimCashback();
+    }
+
+    if (!prevShouldJoinBusinessMembership && currShouldJoinBusinessMembership) {
+      joinBusinessMembership();
     }
 
     this.setContainerHeight();
@@ -499,9 +508,16 @@ export class ThankYou extends PureComponent {
     });
   };
 
-  handleClickLoginButton = () => {
-    const { history } = this.props;
+  handleClickLoginButton = async () => {
+    const { history, appActions } = this.props;
     const { ROUTER_PATHS } = Constants;
+    const isWebview = Utils.isWebview();
+
+    // WB-6449: In case users can click this button in the beep apps, we need to call the native login method.
+    if (isWebview) {
+      await appActions.loginByBeepApp();
+      return;
+    }
 
     CleverTap.pushEvent('Thank you page - Click I want cashback button');
     Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.LOGIN);
@@ -589,6 +605,7 @@ export class ThankYou extends PureComponent {
       isPayLater,
       foodCourtId,
       isFromBeepSiteOrderHistory,
+      isAlipayMiniProgram,
       hideProfileModal,
     } = this.props;
     const isWebview = Utils.isWebview();
@@ -622,7 +639,7 @@ export class ThankYou extends PureComponent {
       return;
     }
 
-    if (Utils.isTNGMiniProgram() && sourceUrl) {
+    if (isAlipayMiniProgram && sourceUrl) {
       window.location.href = sourceUrl;
       return;
     }
@@ -849,7 +866,7 @@ export class ThankYou extends PureComponent {
       'Store Name': _get(order, 'storeInfo.name', ''),
       'Charged ID': order.orderId,
       Items: itemsList,
-      'Order Source': Utils.getOrderSourceForCleverTab(),
+      'Order Source': Utils.getOrderSourceForCleverTap(),
       'Pre-order Period': preOrderPeriod,
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
@@ -1002,8 +1019,8 @@ export class ThankYou extends PureComponent {
   }
 
   renderDownloadBanner() {
-    const { shippingType } = this.props;
-    const hideDownloadBanner = Utils.isTNGMiniProgram() || Utils.isWebview();
+    const { shippingType, isAlipayMiniProgram } = this.props;
+    const hideDownloadBanner = isAlipayMiniProgram || Utils.isWebview();
 
     if (hideDownloadBanner) {
       return null;
@@ -1051,6 +1068,7 @@ export class ThankYou extends PureComponent {
       onlineStoreInfo,
       shouldShowStoreReviewCard,
       shouldShowCashbackBanner,
+      isAlipayMiniProgram,
       profileModalVisibility,
       hideProfileModal,
       orderCancellationReasonAsideVisible,
@@ -1120,7 +1138,7 @@ export class ThankYou extends PureComponent {
               className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
             >
               <span>&copy; {date.getFullYear()} </span>
-              {Utils.isTNGMiniProgram() ? (
+              {isAlipayMiniProgram ? (
                 <span className="padding-small">{t('StoreHub')}</span>
               ) : (
                 <a
@@ -1163,6 +1181,9 @@ ThankYou.propTypes = {
   orderStoreInfo: PropTypes.object,
   onlineStoreInfo: PropTypes.object,
   /* eslint-enable */
+  appActions: PropTypes.shape({
+    loginByBeepApp: PropTypes.func,
+  }),
   cashback: PropTypes.number,
   isPayLater: PropTypes.bool,
   business: PropTypes.string,
@@ -1195,6 +1216,7 @@ ThankYou.propTypes = {
   loadOrderStoreReview: PropTypes.func,
   loadFoodCourtIdHashCode: PropTypes.func,
   isRewardInfoReady: PropTypes.bool,
+  isAlipayMiniProgram: PropTypes.bool,
   isOrderCancellable: PropTypes.bool,
   isCashbackAvailable: PropTypes.bool,
   isCashbackClaimable: PropTypes.bool,
@@ -1257,6 +1279,7 @@ ThankYou.defaultProps = {
   loadStoreIdHashCode: () => {},
   loadOrderStoreReview: () => {},
   isRewardInfoReady: false,
+  isAlipayMiniProgram: false,
   isOrderCancellable: false,
   isCashbackClaimable: false,
   isCashbackAvailable: false,
@@ -1280,6 +1303,9 @@ ThankYou.defaultProps = {
   orderCancellationReasonAsideVisible: false,
   updateShippingTypeRequestErrorCategory: '',
   updateCancellationReasonVisibleState: () => {},
+  appActions: {
+    loginByBeepApp: () => {},
+  },
 };
 
 export default compose(
@@ -1322,6 +1348,7 @@ export default compose(
       isUpdateShippingTypeRequestFailed: getIsUpdateShippingTypeRequestRejected(state),
       updateShippingTypeRequestErrorCategory: getUpdateShippingTypeRequestErrorCategory(state),
       updateShippingTypRequestErrorMessage: getUpdateShippingTypeRequestErrorMessage(state),
+      isAlipayMiniProgram: getIsAlipayMiniProgram(state),
       isInitProfilePageEnabled: getIsInitProfilePageEnabled(state),
       redirectFrom: getRedirectFrom(state),
       isRewardInfoReady: getIsRewardInfoReady(state),
@@ -1351,6 +1378,7 @@ export default compose(
       goToJoinMembershipPage: bindActionCreators(goToJoinMembershipPageThunk, dispatch),
       goToMembershipDetailPage: bindActionCreators(goToMembershipDetailPageThunk, dispatch),
       claimCashback: bindActionCreators(createCashbackInfoThunk, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(ThankYou);

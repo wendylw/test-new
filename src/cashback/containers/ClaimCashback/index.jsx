@@ -4,8 +4,13 @@ import { useMount, useUnmount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { closeWebView } from '../../../utils/native-methods';
 import usePrefetch from '../../../common/utils/hooks/usePrefetch';
-import { getIsWeb, getIsWebview, getIsUserLogin } from '../../redux/modules/app';
-import { actions as claimActions, getReceiptNumber, getCashbackClaimRequestStatus } from '../../redux/modules/claim';
+import { actions as appActions, getIsWeb, getIsWebview, getIsUserLogin } from '../../redux/modules/app';
+import {
+  actions as claimActions,
+  getReceiptNumber,
+  getCashbackClaimRequestStatus,
+  getOrderCashbackStatus,
+} from '../../redux/modules/claim';
 import Frame from '../../../common/components/Frame';
 import PageHeader from '../../../common/components/PageHeader';
 import MerchantInfo from './components/MerchantInfo';
@@ -20,6 +25,7 @@ const ClaimCashback = ({ history }) => {
   const isUserLogin = useSelector(getIsUserLogin);
   const receiptNumber = useSelector(getReceiptNumber);
   const claimRequestStatus = useSelector(getCashbackClaimRequestStatus);
+  const orderCashbackStatus = useSelector(getOrderCashbackStatus);
   const handleClickHeaderBackButton = useCallback(() => {
     if (isWebview) {
       closeWebView();
@@ -41,6 +47,12 @@ const ClaimCashback = ({ history }) => {
       dispatch(claimActions.claimCashbackForConsumer({ receiptNumber, history }));
     }
   }, [isUserLogin, claimRequestStatus, receiptNumber, dispatch, history]);
+
+  useEffect(() => {
+    if (orderCashbackStatus) {
+      dispatch(appActions.setMessageInfo({ key: orderCashbackStatus }));
+    }
+  }, [orderCashbackStatus, dispatch]);
 
   return (
     <Frame>

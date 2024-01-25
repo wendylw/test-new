@@ -33,6 +33,7 @@ import {
   getUserIsLogin,
   getOnlineStoreInfo,
   getIsWebview,
+  getIsUserLoginRequestCompleted,
   getHasUserJoinedBusinessMembership,
   getIsFetchLoginStatusComplete,
   getIsLoadCustomerRequestCompleted,
@@ -197,7 +198,10 @@ export const getShouldShowCashbackBanner = createSelector(
 export const getShouldShowCashbackCard = createSelector(
   getIsCashbackClaimable,
   getHasCashbackClaimed,
-  (isCashbackClaimable, hasCashbackClaimed) => isCashbackClaimable || hasCashbackClaimed
+  getUserCustomerId,
+  getOrderCustomerId,
+  (isCashbackClaimable, hasCashbackClaimed, userCustomerId, orderCustomerId) =>
+    (isCashbackClaimable || hasCashbackClaimed) && userCustomerId === orderCustomerId
 );
 
 export const getFoodCourtId = createSelector(getOrder, order => _get(order, 'foodCourtId', null));
@@ -280,10 +284,10 @@ export const getIsJoinBusinessMembershipRequestCompleted = createSelector(
 
 export const getShouldJoinBusinessMembership = createSelector(
   getUserIsLogin,
-  getRedirectFrom,
+  getIsUserLoginRequestCompleted,
   getIsMerchantMembershipEnabled,
-  (isLogin, redirectFrom, isMerchantMembershipEnabled) =>
-    isLogin && isMerchantMembershipEnabled && redirectFrom === REFERRER_SOURCE_TYPES.LOGIN
+  (isLogin, isUserLoginRequestCompleted, isMerchantMembershipEnabled) =>
+    isUserLoginRequestCompleted && isLogin && isMerchantMembershipEnabled
 );
 
 export const getIsRewardInfoReady = createSelector(

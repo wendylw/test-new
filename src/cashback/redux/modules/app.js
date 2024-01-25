@@ -20,6 +20,7 @@ import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
 import Url from '../../../utils/url';
 import * as TngUtils from '../../../utils/tng-utils';
+import { getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
 import * as ApiRequest from '../../../utils/api-request';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
@@ -36,7 +37,7 @@ import {
   COUNTRIES_DEFAULT_CURRENCIES,
   COUNTRIES_DEFAULT_LOCALE,
 } from '../../../common/utils/constants';
-import { isJSON, isWebview, isTNGMiniProgram } from '../../../common/utils';
+import { isJSON, isWebview, isTNGMiniProgram, isGCashMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 import { getCustomerId } from './customer/selectors';
@@ -326,6 +327,7 @@ export const actions = {
     }
   },
 
+  // TODO: Migrate loginByTngMiniProgram to loginByAlipayMiniProgram
   loginByTngMiniProgram: () => async (dispatch, getState) => {
     try {
       dispatch({
@@ -354,6 +356,38 @@ export const actions = {
       });
 
       logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
+
+      return false;
+    }
+
+    return getIsUserLogin(getState());
+  },
+
+  loginByAlipayMiniProgram: () => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: types.CREATE_LOGIN_ALIPAY_REQUEST,
+      });
+
+      if (!isGCashMiniProgram()) {
+        throw new Error('Not in alipay mini program');
+      }
+
+      const business = getBusiness(getState());
+      const tokens = await getAccessToken({ business });
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+      await dispatch(actions.loginApp({ accessToken, refreshToken }));
+
+      dispatch({
+        type: types.CREATE_LOGIN_ALIPAY_SUCCESS,
+      });
+    } catch (error) {
+      dispatch({
+        type: types.CREATE_LOGIN_ALIPAY_FAILURE,
+      });
+
+      logger.error('Cashback_LoginByAlipayMiniProgram', { message: error?.message });
 
       return false;
     }

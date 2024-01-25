@@ -1,16 +1,24 @@
+import _get from 'lodash/get';
 import qs from 'qs';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
+import dayjs from 'dayjs';
+import config from '../../config';
+import { setDateTime } from '../../utils/time-lib';
 import {
   WEB_VIEW_SOURCE,
   SHIPPING_TYPES,
   PATH_NAME_MAPPING,
   CLIENTS,
   PRODUCT_STOCK_STATUS,
+  TIME_SLOT_NOW,
+  REGISTRATION_TOUCH_POINT,
+  SOURCE_TYPE,
+  ORDER_SOURCE,
+  REGISTRATION_SOURCE,
   COUNTRIES_DEFAULT_LOCALE,
   COUNTRIES_DEFAULT_CURRENCIES,
 } from './constants';
-import config from '../../config';
 
 // todo: make old legacy utils to import function from here, rather than define same functions twice
 
@@ -87,9 +95,16 @@ export const isSiteApp = (domain = window.location.hostname) => {
 // eslint-disable-next-line no-underscore-dangle
 export const isTNGMiniProgram = () => window._isTNGMiniProgram_;
 
+// eslint-disable-next-line no-underscore-dangle
+export const isGCashMiniProgram = () => window._isGCashMiniProgram_;
+
 export const getClient = () => {
   if (isTNGMiniProgram()) {
     return CLIENTS.TNG_MINI_PROGRAM;
+  }
+
+  if (isGCashMiniProgram()) {
+    return CLIENTS.GCASH_MINI_PROGRAM;
   }
 
   if (isAndroidWebview()) {
@@ -329,6 +344,30 @@ export const getFilteredQueryString = (keys, queryString = window.location.searc
   return qs.stringify(query, { addQueryPrefix: true });
 };
 
+export const getFulfillDate = (businessUTCOffset = 480) => {
+  try {
+    const { date, hour } = getExpectedDeliveryDateFromSession();
+    const expectedDate = _get(date, 'date', null);
+    const expectedFromTime = _get(hour, 'from', null);
+
+    if (!expectedDate || !expectedFromTime) {
+      return null;
+    }
+
+    if (expectedFromTime === TIME_SLOT_NOW) {
+      return null;
+    }
+
+    const expectedDayjs = dayjs(new Date(expectedDate)).utcOffset(businessUTCOffset);
+    const fulfillDayjs = setDateTime(expectedFromTime, expectedDayjs);
+
+    return fulfillDayjs.toISOString();
+  } catch (error) {
+    console.error('Common Utils getFulfillDate:', error?.message || '');
+    return null;
+  }
+};
+
 export const getOpeningHours = ({
   breakTimeFrom,
   breakTimeTo,
@@ -400,6 +439,106 @@ export const getCountry = (phone, language, countries, defaultCountry) => {
   }
 
   return undefined;
+};
+
+export const getRegistrationTouchPoint = () => {
+  const isOnCashbackPage = window.location.pathname.startsWith(PATH_NAME_MAPPING.CASHBACK_BASE);
+  const isOnOrderHistory = window.location.pathname.startsWith(PATH_NAME_MAPPING.ORDER_HISTORY);
+
+  if (isOnCashbackPage) {
+    return REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK;
+  }
+
+  if (isQROrder()) {
+    return REGISTRATION_TOUCH_POINT.QR_ORDER;
+  }
+
+  if (isTNGMiniProgram() && isOnOrderHistory) {
+    return REGISTRATION_TOUCH_POINT.TNG;
+  }
+
+  if (isGCashMiniProgram() && isOnOrderHistory) {
+    return REGISTRATION_TOUCH_POINT.GCash;
+  }
+
+  return REGISTRATION_TOUCH_POINT.ONLINE_ORDER;
+};
+
+export const isSharedLink = () => getSessionVariable('BeepOrderingSource') === SOURCE_TYPE.SHARED_LINK;
+
+export const getRegistrationSource = () => {
+  const registrationTouchPoint = getRegistrationTouchPoint();
+
+  switch (registrationTouchPoint) {
+    case REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK:
+      if (isWebview()) {
+        return REGISTRATION_SOURCE.BEEP_APP;
+      }
+
+      return REGISTRATION_SOURCE.RECEIPT;
+    case REGISTRATION_TOUCH_POINT.QR_ORDER:
+      if (isSharedLink()) {
+        return REGISTRATION_SOURCE.SHARED_LINK;
+      }
+    // eslint-disable-next-line no-fallthrough
+    case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
+      if (isSharedLink()) {
+        return REGISTRATION_SOURCE.SHARED_LINK;
+      }
+    // eslint-disable-next-line no-fallthrough
+    default:
+      if (isTNGMiniProgram()) {
+        return REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
+      }
+
+      if (isGCashMiniProgram()) {
+        return REGISTRATION_SOURCE.GCASH_MINI_PROGRAM;
+      }
+
+      if (isWebview()) {
+        return REGISTRATION_SOURCE.BEEP_APP;
+      }
+
+      if (isFromBeepSite()) {
+        return REGISTRATION_SOURCE.BEEP_SITE;
+      }
+
+      return REGISTRATION_SOURCE.BEEP_STORE;
+  }
+};
+
+export const getOrderSource = () => {
+  if (isTNGMiniProgram()) {
+    return ORDER_SOURCE.TNG_MINI_PROGRAM;
+  }
+
+  if (isGCashMiniProgram()) {
+    return ORDER_SOURCE.GCASH_MINI_PROGRAM;
+  }
+
+  if (isWebview()) {
+    return ORDER_SOURCE.BEEP_APP;
+  }
+
+  if (isFromBeepSite()) {
+    return ORDER_SOURCE.BEEP_SITE;
+  }
+
+  return ORDER_SOURCE.BEEP_STORE;
+};
+
+export const getOrderSourceForCleverTap = () => {
+  const orderSource = getOrderSource();
+
+  const mapping = {
+    [ORDER_SOURCE.TNG_MINI_PROGRAM]: 'TNG Mini Program',
+    [ORDER_SOURCE.GCASH_MINI_PROGRAM]: 'GCash Mini Program',
+    [ORDER_SOURCE.BEEP_APP]: 'App',
+    [ORDER_SOURCE.BEEP_SITE]: 'beepit.com',
+    [ORDER_SOURCE.BEEP_STORE]: 'Store URL',
+  };
+
+  return mapping[orderSource];
 };
 
 export const extractDataAttributes = (props = {}) => {

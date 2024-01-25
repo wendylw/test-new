@@ -17,6 +17,7 @@ import {
   getUser,
   getIsLoginRequestFailed,
   getStoreInfoForCleverTap,
+  getIsAlipayMiniProgram,
 } from '../../redux/modules/app';
 import {
   getOtpRequestError,
@@ -59,11 +60,11 @@ class PageLogin extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { appActions, location } = this.props;
+    const { appActions, location, isAlipayMiniProgram } = this.props;
     const { referrerSource } = location.state || {};
 
-    if (Utils.isTNGMiniProgram()) {
-      this.loginInTngMiniProgram();
+    if (isAlipayMiniProgram) {
+      this.loginInAlipayMiniProgram();
     }
 
     await appActions.updateLoginReferrerSource(referrerSource);
@@ -381,9 +382,9 @@ class PageLogin extends React.Component {
     });
   };
 
-  loginInTngMiniProgram = async () => {
+  loginInAlipayMiniProgram = async () => {
     const { appActions } = this.props;
-    const isLogin = await appActions.loginByTngMiniProgram();
+    const isLogin = await appActions.loginByAlipayMiniProgram();
 
     if (!isLogin) {
       this.goBack();
@@ -445,12 +446,14 @@ class PageLogin extends React.Component {
       isOtpRequestPending,
       isOtpErrorFieldVisible,
       shouldShowGuestOption,
+      isAlipayMiniProgram,
     } = this.props;
     const { isPhoneNumberValid, imageStyle } = this.state;
     const { isLogin, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
 
-    if (Utils.isTNGMiniProgram()) {
+    // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
+    if (Utils.isTNGMiniProgram() || isAlipayMiniProgram) {
       return <PageLoader />;
     }
 
@@ -540,6 +543,7 @@ PageLogin.propTypes = {
   shouldShowErrorPopUp: PropTypes.bool,
   shouldShowGuestOption: PropTypes.bool,
   isOtpErrorFieldVisible: PropTypes.bool,
+  isAlipayMiniProgram: PropTypes.bool,
   /* eslint-disable react/forbid-prop-types */
   user: PropTypes.object,
   otpError: PropTypes.object,
@@ -559,7 +563,7 @@ PageLogin.propTypes = {
     setConsumerAsGuest: PropTypes.func,
     resetGetOtpRequest: PropTypes.func,
     resetSendOtpRequest: PropTypes.func,
-    loginByTngMiniProgram: PropTypes.func,
+    loginByAlipayMiniProgram: PropTypes.func,
     getPhoneWhatsAppSupport: PropTypes.func,
   }),
 };
@@ -579,6 +583,7 @@ PageLogin.defaultProps = {
   shouldShowErrorPopUp: false,
   shouldShowGuestOption: false,
   isOtpErrorFieldVisible: false,
+  isAlipayMiniProgram: false,
   storeInfoForCleverTap: null,
   errorPopUpI18nKeys: {
     title: '',
@@ -593,7 +598,7 @@ PageLogin.defaultProps = {
     setConsumerAsGuest: () => {},
     resetGetOtpRequest: () => {},
     resetSendOtpRequest: () => {},
-    loginByTngMiniProgram: () => {},
+    loginByAlipayMiniProgram: () => {},
     getPhoneWhatsAppSupport: () => {},
   },
 };
@@ -615,6 +620,7 @@ export default compose(
       isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
       shouldShowGuestOption: getShouldShowGuestOption(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      isAlipayMiniProgram: getIsAlipayMiniProgram(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

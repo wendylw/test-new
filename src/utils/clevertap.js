@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import Utils from './utils';
+import { isTNGMiniProgram, isGCashMiniProgram } from '../common/utils';
 import config from '../config';
 import debug from './debug';
 
@@ -60,10 +61,18 @@ const pushEvent = (eventName, attributes) => {
         }
       }
     } else {
+      let source = 'Web';
+
+      if (isTNGMiniProgram()) {
+        source = 'TNG Mini Program';
+      } else if (isGCashMiniProgram()) {
+        source = 'GCash Mini Program';
+      }
+
       window.clevertap?.event.push(eventName, {
         ...attributes,
         'account name': businessName,
-        Source: Utils.isTNGMiniProgram() ? 'TNG Mini Program' : 'Web',
+        Source: source,
       });
     }
   } catch (error) {

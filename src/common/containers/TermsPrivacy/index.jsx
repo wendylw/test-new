@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import DocumentHeadInfo from '../../../components/DocumentHeadInfo';
 
 import '../../../Common.scss';
-import Utils from '../../../utils/utils';
+import { getUserAgentInfo, isTNGMiniProgram, isGCashMiniProgram, isWebview } from '../../utils';
 import HybridHeader from '../../../components/HybridHeader';
 import { goBack } from '../../../utils/native-methods';
 import { getFiles } from './api-request';
@@ -20,7 +20,7 @@ export class TermsPrivacy extends Component {
   // remove fixed style in beepit.com
   constructor(props) {
     super(props);
-    if (Utils.getUserAgentInfo().browser.includes('Safari')) {
+    if (getUserAgentInfo().browser.includes('Safari')) {
       document.body.style.position = '';
       document.body.style.overflow = '';
     }
@@ -56,7 +56,7 @@ export class TermsPrivacy extends Component {
   handleContentClick = event => {
     if (event.target?.nodeName.toLowerCase() === 'a') {
       // block link in beep tng mini program because user can't back this page from third page
-      if (Utils.isTNGMiniProgram()) {
+      if (isTNGMiniProgram() || isGCashMiniProgram()) {
         event.preventDefault();
         event.stopPropagation();
       }
@@ -65,9 +65,8 @@ export class TermsPrivacy extends Component {
 
   handleClickBack = () => {
     const { history } = this.props;
-    const isWebview = Utils.isWebview();
 
-    if (isWebview) {
+    if (isWebview()) {
       goBack();
       return;
     }
@@ -79,7 +78,7 @@ export class TermsPrivacy extends Component {
     const { t } = this.props;
     const { termsPrivacyData } = this.state;
     const content = { __html: termsPrivacyData };
-    const headerVisible = Utils.isTNGMiniProgram() || Utils.isWebview();
+    const headerVisible = isTNGMiniProgram() || isGCashMiniProgram() || isWebview();
 
     return (
       <DocumentHeadInfo title={t('Beep')}>
@@ -87,7 +86,7 @@ export class TermsPrivacy extends Component {
         {/* remove link style in tng mini program */}
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
-          className={Utils.isTNGMiniProgram() ? 'terms-privacy__remove-link-style' : ''}
+          className={isTNGMiniProgram() || isGCashMiniProgram() ? 'terms-privacy__remove-link-style' : ''}
           onClick={this.handleContentClick}
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={content}

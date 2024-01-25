@@ -8,6 +8,7 @@ import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { closeWebView } from '../../../../../utils/native-methods';
 import { getMerchantBusiness, getIsMerchantMembershipEnabled } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getIsWeb, getSource } from '../../../../redux/modules/common/selectors';
+import { getIsConfirmSharingNewCustomer } from '../../redux/common/selectors';
 import {
   getSeamlessLoyaltyPageHashCode,
   getIsAllInitialRequestsCompleted,
@@ -33,9 +34,10 @@ const SeamlessLoyaltyProxy = () => {
   const isMerchantMembershipEnabled = useSelector(getIsMerchantMembershipEnabled);
   const isAllInitialRequestsCompleted = useSelector(getIsAllInitialRequestsCompleted);
   const anyInitialRequestError = useSelector(getAnyInitialRequestError);
+  const isConfirmSharingNewCustomer = useSelector(getIsConfirmSharingNewCustomer);
   const seamlessLoyaltyURL = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace('%business%', merchantBusiness)}${
     PATH_NAME_MAPPING.CASHBACK_BASE
-  }${PATH_NAME_MAPPING.STORE_REDEMPTION}?h=${seamlessLoyaltyPageHashCode}`;
+  }${PATH_NAME_MAPPING.STORE_REDEMPTION}?h=${seamlessLoyaltyPageHashCode}&isNewCustomer=${isConfirmSharingNewCustomer}`;
   const handleClickHeaderBackButton = useCallback(() => {
     if (isWebview) {
       closeWebView();
@@ -53,7 +55,7 @@ const SeamlessLoyaltyProxy = () => {
   useEffect(() => {
     if (isAllInitialRequestsCompleted) {
       const membershipDetailHistory = {
-        pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
+        pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
         search: `?business=${merchantBusiness}&source=${source}`,
       };
 
