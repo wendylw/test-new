@@ -1,5 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { getQueryString } from '../../../../common/utils';
 
 /**
@@ -35,6 +36,29 @@ export const getIsMerchantEnabledCashback = createSelector(getMerchantData, merc
   _get(merchantData, 'enableCashback', false)
 );
 
+export const getIsMerchantEnabledMembership = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'membershipEnabled', false)
+);
+
 export const getIsMerchantEnabledDelivery = createSelector(getMerchantData, merchantData =>
   _get(merchantData, 'qrOrderingSettings.enableDelivery', false)
+);
+
+/**
+ * Derived selectors
+ */
+export const getIsLoadMerchantRequestStatusFulfilled = createSelector(
+  getLoadMerchantRequestStatus,
+  loadMerchantRequestStatus => loadMerchantRequestStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsLoadMerchantRequestStatusRejected = createSelector(
+  getLoadMerchantRequestStatus,
+  loadMerchantRequestStatus => loadMerchantRequestStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getIsLoadMerchantRequestCompleted = createSelector(
+  getLoadMerchantRequestStatus,
+  loadMerchantRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadMerchantRequestStatus)
 );

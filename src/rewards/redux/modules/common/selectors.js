@@ -7,6 +7,12 @@ export const getIsWebview = () => isWebview();
 
 export const getIsAliMiniProgram = () => getIsAliMiniProgram();
 
+export const getIsWeb = createSelector(
+  getIsWebview,
+  getIsTNGMiniProgram,
+  (isWebview, isTNGMiniProgram) => !isWebview && !isTNGMiniProgram
+);
+
 /** Router */
 export const getRouter = state => state.router;
 

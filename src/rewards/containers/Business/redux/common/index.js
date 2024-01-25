@@ -1,9 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { joinMembership } from './thunks';
+import { joinMembership, confirmToShareConsumerInfo } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
 const initialState = {
   joinMembershipRequest: {
+    data: null,
+    status: null,
+    error: null,
+  },
+  confirmSharingConsumerInfoRequest: {
     data: null,
     status: null,
     error: null,
@@ -25,6 +30,19 @@ export const { actions, reducer } = createSlice({
     [joinMembership.rejected.type]: (state, { error }) => {
       state.joinMembershipRequest.status = API_REQUEST_STATUS.REJECTED;
       state.joinMembershipRequest.error = error;
+    },
+    [confirmToShareConsumerInfo.pending.type]: state => {
+      state.confirmSharingConsumerInfoRequest.status = API_REQUEST_STATUS.PENDING;
+      state.confirmSharingConsumerInfoRequest.error = null;
+    },
+    [confirmToShareConsumerInfo.fulfilled.type]: (state, { payload }) => {
+      state.confirmSharingConsumerInfoRequest.data = payload;
+      state.confirmSharingConsumerInfoRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.confirmSharingConsumerInfoRequest.error = null;
+    },
+    [confirmToShareConsumerInfo.rejected.type]: (state, { error }) => {
+      state.confirmSharingConsumerInfoRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.confirmSharingConsumerInfoRequest.error = error;
     },
   },
 });

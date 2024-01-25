@@ -1,16 +1,16 @@
 import i18next from 'i18next';
 import _isEmpty from 'lodash/isEmpty';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getApiRequestShippingType } from '../../../common/utils';
+import { getApiRequestShippingType, isJSON } from '../../../common/utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 import logger from '../../../utils/monitoring/logger';
 import CleverTap from '../../../utils/clevertap';
 import { getUserLoginStatus, postUserLogin, getUserProfile, postLoginGuest } from './api-request';
-import { getConsumerId, getIsLogin, getIsLoginExpired } from './selectors';
+import { getConsumerId, getIsLogin, getIsLoginExpired, getUserCountry } from './selectors';
 import Utils from '../../../utils/utils';
 import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
 import { getTokenAsync, tokenExpiredAsync } from '../../../utils/native-methods';
-import { toast } from '../../../common/utils/feedback';
+import { toast, confirm } from '../../../common/utils/feedback';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
 
 const { getRegistrationTouchPoint, getRegistrationSource } = Utils;
@@ -156,7 +156,10 @@ export const loginUserAsGuest = createAsyncThunk('app/user/loginUserAsGuest', as
 
 export const loginUserByAlipayMiniProgram = createAsyncThunk(
   'app/user/loginUserByAlipayMiniProgram',
-  async (business, { dispatch }) => {
+  async (business, { dispatch, getState }) => {
+    const state = getState();
+    const userCountry = getUserCountry(state);
+
     if (!isAlipayMiniProgram()) {
       throw new Error('Not in alipay mini program');
     }
@@ -168,6 +171,38 @@ export const loginUserByAlipayMiniProgram = createAsyncThunk(
 
       await dispatch(syncUserLoginInfo({ accessToken, refreshToken }));
     } catch (error) {
+      const isJSONErrorMessage = isJSON(error?.message);
+
+      if (isJSONErrorMessage) {
+        const { error: errorCode } = JSON.parse(error.message) || {};
+
+        errorCode === 10 &&
+          confirm(i18next.t('ApiError:UnexpectedErrorOccurred'), {
+            closeByBackButton: false,
+            closeByBackDrop: false,
+            cancelButtonContent: i18next.t('Common:Cancel'),
+            confirmButtonContent: i18next.t('Common:TryAgain'),
+            onSelection: async confirmStatus => {
+              if (confirmStatus) {
+                // try again
+                CleverTap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Try Again', {
+                  country: userCountry,
+                });
+                await loginUserByTngMiniProgram();
+              } else {
+                // cancel
+                if (window.my.exitMiniProgram) {
+                  window.my.exitMiniProgram();
+                }
+
+                CleverTap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Cancel', {
+                  country: userCountry,
+                });
+              }
+            },
+          });
+      }
+
       CleverTap.pushEvent('Login - login failed');
 
       logger.error('Common_LoginByAlipayMiniProgramFailed', { message: error?.message });

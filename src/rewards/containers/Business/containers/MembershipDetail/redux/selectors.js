@@ -4,18 +4,22 @@ import {
   PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
 } from '../../../../../../common/utils/constants';
-import { getQueryString, getPrice } from '../../../../../../common/utils';
+import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
+import { NEW_MEMBER_TYPES, RETURNING_MEMBER_TYPES } from '../utils/constants';
+import { getSource } from '../../../redux/common/selectors';
 import {
   getMerchantCurrency,
   getMerchantLocale,
   getMerchantCountry,
+  getIsMerchantEnabledCashback,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
 } from '../../../../../redux/modules/merchant/selectors';
-import { getCustomerCashback } from '../../../../../redux/modules/customer/selectors';
-
-export const getSource = () => getQueryString('source');
+import {
+  getCustomerCashback,
+  getIsLoadCustomerRequestCompleted,
+} from '../../../../../redux/modules/customer/selectors';
 
 export const getLoadUniquePromoListData = state =>
   state.business.membershipDetail.loadUniquePromoListRequest.data || [];
@@ -38,6 +42,16 @@ export const getCustomerCashbackPrice = createSelector(
 export const getIsFromEarnedCashbackQRScan = createSelector(
   getSource,
   source => source === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
+);
+
+export const getIsFromJoinMembershipUrlClick = createSelector(
+  getSource,
+  source => source === BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK
+);
+
+export const getIsFromSeamlessLoyaltyQrScan = createSelector(
+  getSource,
+  source => source === BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN
 );
 
 export const getIsOrderAndRedeemButtonDisplay = createSelector(
@@ -88,4 +102,58 @@ export const getUniquePromoList = createSelector(
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };
     })
+);
+
+export const getNewMemberPromptCategory = createSelector(
+  getIsLoadCustomerRequestCompleted,
+  getCustomerCashback,
+  getIsMerchantEnabledCashback,
+  getIsFromJoinMembershipUrlClick,
+  getIsFromSeamlessLoyaltyQrScan,
+  (
+    isLoadCustomerRequestCompleted,
+    customerCashback,
+    isMerchantEnabledCashback,
+    isFromJoinMembershipUrlClick,
+    isFromSeamlessLoyaltyQrScan
+  ) => {
+    if (isFromJoinMembershipUrlClick) {
+      return NEW_MEMBER_TYPES.DEFAULT;
+    }
+
+    if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
+      return isMerchantEnabledCashback && customerCashback > 0
+        ? NEW_MEMBER_TYPES.REDEEM_CASHBACK
+        : NEW_MEMBER_TYPES.DEFAULT;
+    }
+
+    return null;
+  }
+);
+
+export const getReturningMemberPromptCategory = createSelector(
+  getIsLoadCustomerRequestCompleted,
+  getCustomerCashback,
+  getIsMerchantEnabledCashback,
+  getIsFromJoinMembershipUrlClick,
+  getIsFromSeamlessLoyaltyQrScan,
+  (
+    isLoadCustomerRequestCompleted,
+    customerCashback,
+    isMerchantEnabledCashback,
+    isFromJoinMembershipUrlClick,
+    isFromSeamlessLoyaltyQrScan
+  ) => {
+    if (isFromJoinMembershipUrlClick) {
+      return RETURNING_MEMBER_TYPES.DEFAULT;
+    }
+
+    if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
+      return isMerchantEnabledCashback && customerCashback > 0
+        ? RETURNING_MEMBER_TYPES.REDEEM_CASHBACK
+        : RETURNING_MEMBER_TYPES.THANKS_COMING_BACK;
+    }
+
+    return null;
+  }
 );

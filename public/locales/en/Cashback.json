@@ -16,10 +16,13 @@
   "Login": "Login",
   "CashbackLoginTip": "Login here to claim your cashback",
   "StoreRedemptionCashbackDescription": "Total balance to redeem",
-  "StoreRedemptionUserGreetings": "Thanks for visiting our store.<1></1>See you again!",
+  "StoreRedemptionUserGreetings": "Thanks for coming back! Visit us<1></1>again next time.",
   "StoreRedemptionNewUserGreetings": "Thanks for signing up with us!",
   "StoreRedemptionCashRedeemAlert": "Your cashback balance will be auto redeemed at the cashier",
   "LoginBannerPrompt": "Do you have a Beep account? Login with your mobile phone number.",
   "Redirecting": "Redirecting...",
-  "UnexpectedErrorOccurred": "Oops! An unexpected error has occurred"
+  "UnexpectedErrorOccurred": "Oops! An unexpected error has occurred",
+  "SeamlessLoyaltyWebTitle": "Please choose the<0></0>app below to continue",
+  "SeamlessLoyaltyBeepAppButtonText": "Scan with Beep App",
+  "SeamlessLoyaltyTNGMiniProgramButtonText": "Scan with TNG eWallet App"
 }
