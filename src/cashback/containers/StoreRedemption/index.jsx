@@ -8,6 +8,7 @@ import { alert } from '../../../common/utils/feedback';
 import {
   isWebview,
   isTNGMiniProgram,
+  isGCashMiniProgram,
   judgeClient,
   getIsThePageHidden,
   getIsDesktopClients,
@@ -111,9 +112,9 @@ const StoreRedemptionNative = () => {
               t('StoreRedemptionNewUserGreetings')
             ) : (
               <Trans i18nKey="StoreRedemptionUserGreetings">
-                Thanks for visiting our store.
+                Thanks for coming back! Visit us
                 <br />
-                See you again!
+                again next time.
               </Trans>
             )}
           </h2>
@@ -137,7 +138,7 @@ const StoreRedemption = () => {
   const client = judgeClient();
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
-  const isDisplayWebResult = !isWebview() && !isTNGMiniProgram();
+  const isDisplayWebResult = !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram();
   const handleGotoBeepDownloadPage = useCallback(() => {
     const downloadBeepAppDeepLink = process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK;
 

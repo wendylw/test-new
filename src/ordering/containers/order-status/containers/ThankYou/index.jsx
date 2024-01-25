@@ -48,6 +48,7 @@ import {
   getFoodTagsForCleverTap,
   getIsCoreBusinessAPICompleted,
   getIsFromBeepSiteOrderHistory,
+  getIsGCashMiniProgram,
 } from '../../../../redux/modules/app';
 import {
   loadOrder as loadOrderThunk,
@@ -589,6 +590,7 @@ export class ThankYou extends PureComponent {
       isPayLater,
       foodCourtId,
       isFromBeepSiteOrderHistory,
+      isGCashMiniProgram,
       hideProfileModal,
     } = this.props;
     const isWebview = Utils.isWebview();
@@ -622,7 +624,8 @@ export class ThankYou extends PureComponent {
       return;
     }
 
-    if (Utils.isTNGMiniProgram() && sourceUrl) {
+    // TODO: Migrate (Utils.isTNGMiniProgram() || isGCashMiniProgram) to isAlipayMiniProgram
+    if ((Utils.isTNGMiniProgram() || isGCashMiniProgram) && sourceUrl) {
       window.location.href = sourceUrl;
       return;
     }
@@ -849,7 +852,7 @@ export class ThankYou extends PureComponent {
       'Store Name': _get(order, 'storeInfo.name', ''),
       'Charged ID': order.orderId,
       Items: itemsList,
-      'Order Source': Utils.getOrderSourceForCleverTab(),
+      'Order Source': Utils.getOrderSourceForCleverTap(),
       'Pre-order Period': preOrderPeriod,
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
@@ -1002,8 +1005,9 @@ export class ThankYou extends PureComponent {
   }
 
   renderDownloadBanner() {
-    const { shippingType } = this.props;
-    const hideDownloadBanner = Utils.isTNGMiniProgram() || Utils.isWebview();
+    const { shippingType, isGCashMiniProgram } = this.props;
+    // TODO: Migrate Utils.isTNGMiniProgram() || isGCashMiniProgram to isAlipayMiniProgram
+    const hideDownloadBanner = Utils.isTNGMiniProgram() || isGCashMiniProgram || Utils.isWebview();
 
     if (hideDownloadBanner) {
       return null;
@@ -1051,6 +1055,7 @@ export class ThankYou extends PureComponent {
       onlineStoreInfo,
       shouldShowStoreReviewCard,
       shouldShowCashbackBanner,
+      isGCashMiniProgram,
       profileModalVisibility,
       hideProfileModal,
       orderCancellationReasonAsideVisible,
@@ -1120,7 +1125,8 @@ export class ThankYou extends PureComponent {
               className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
             >
               <span>&copy; {date.getFullYear()} </span>
-              {Utils.isTNGMiniProgram() ? (
+              {/* TODO: Migrate Utils.isTNGMiniProgram() || isGCashMiniProgram to isAlipayMiniProgram */}
+              {Utils.isTNGMiniProgram() || isGCashMiniProgram ? (
                 <span className="padding-small">{t('StoreHub')}</span>
               ) : (
                 <a
@@ -1195,6 +1201,7 @@ ThankYou.propTypes = {
   loadOrderStoreReview: PropTypes.func,
   loadFoodCourtIdHashCode: PropTypes.func,
   isRewardInfoReady: PropTypes.bool,
+  isGCashMiniProgram: PropTypes.bool,
   isOrderCancellable: PropTypes.bool,
   isCashbackAvailable: PropTypes.bool,
   isCashbackClaimable: PropTypes.bool,
@@ -1257,6 +1264,7 @@ ThankYou.defaultProps = {
   loadStoreIdHashCode: () => {},
   loadOrderStoreReview: () => {},
   isRewardInfoReady: false,
+  isGCashMiniProgram: false,
   isOrderCancellable: false,
   isCashbackClaimable: false,
   isCashbackAvailable: false,
@@ -1322,6 +1330,7 @@ export default compose(
       isUpdateShippingTypeRequestFailed: getIsUpdateShippingTypeRequestRejected(state),
       updateShippingTypeRequestErrorCategory: getUpdateShippingTypeRequestErrorCategory(state),
       updateShippingTypRequestErrorMessage: getUpdateShippingTypeRequestErrorMessage(state),
+      isGCashMiniProgram: getIsGCashMiniProgram(state),
       isInitProfilePageEnabled: getIsInitProfilePageEnabled(state),
       redirectFrom: getRedirectFrom(state),
       isRewardInfoReady: getIsRewardInfoReady(state),
