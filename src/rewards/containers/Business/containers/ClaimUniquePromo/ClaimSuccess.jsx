@@ -9,7 +9,7 @@ import UniquePromoCongratulation from './components/UniquePromoCongratulation';
 import UniquePromCongratulationFooter from './components/UniquePromCongratulationFooter';
 
 const ClaimSuccess = () => {
-  const userCountry = getUserCountry();
+  const userCountry = useSelector(getUserCountry);
   const merchantBusiness = useSelector(getMerchantBusiness);
 
   useMount(() => {
