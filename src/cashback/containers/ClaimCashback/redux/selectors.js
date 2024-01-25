@@ -1,8 +1,9 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { getDecimalNumber, getPrice, getQueryString } from '../../../../common/utils';
 
-export const getClaimCashbackPageHash = () => getQueryString('h');
+export const getClaimCashbackPageHash = () => encodeURIComponent(decodeURIComponent(getQueryString('h')));
 
 export const getLoadOrderReceiptNumberData = state => state.claimCashback.loadOrderReceiptNumberRequest.data;
 
@@ -22,6 +23,11 @@ export const getLoadOrderCashbackInfoError = state => state.claimCashback.loadOr
 
 export const getOrderCashback = createSelector(getLoadOrderCashbackInfoData, loadOrderCashbackInfoData =>
   getDecimalNumber(_get(loadOrderCashbackInfoData, 'cashback', 0))
+);
+
+export const getOrderCashbackDefaultLoyaltyRatio = createSelector(
+  getLoadOrderCashbackInfoData,
+  loadOrderCashbackInfoData => _get(loadOrderCashbackInfoData, 'defaultLoyaltyRatio', 0)
 );
 
 export const getOrderCashbackMerchantCountry = createSelector(getLoadOrderCashbackInfoData, loadOrderCashbackInfoData =>
@@ -48,13 +54,39 @@ export const getClaimedCashbackForCustomerStatus = state =>
 
 export const getClaimedCashbackForCustomerError = state => state.claimCashback.claimedCashbackForCustomerRequest.error;
 
+export const getClaimedOrderCashbackStatus = createSelector(
+  getClaimedCashbackForCustomerData,
+  claimedCashbackForCustomerData => _get(claimedCashbackForCustomerData, 'status', null)
+);
+
 /**
  * Derived selectors
  */
+export const getIsClaimedCashbackForCustomerFulfilled = createSelector(
+  getClaimedCashbackForCustomerStatus,
+  claimedCashbackForCustomerStatus => claimedCashbackForCustomerStatus === API_REQUEST_STATUS.FULFILLED
+);
+
 export const getOrderCashbackPrice = createSelector(
   getOrderCashback,
   getOrderCashbackMerchantLocale,
   getOrderCashbackMerchantCurrency,
   getOrderCashbackMerchantCountry,
   (cashback, locale, currency, country) => getPrice(cashback, { locale, currency, country })
+);
+
+export const getOrderCashbackPercentage = createSelector(
+  getOrderCashbackDefaultLoyaltyRatio,
+  defaultLoyaltyRatio => `${defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5}%`
+);
+
+export const getOrderCashbackValue = createSelector(
+  getOrderCashback,
+  getOrderCashbackPrice,
+  getOrderCashbackPercentage,
+  (cashback, orderCashbackPrice, orderCashbackPercentage) => {
+    const isNumber = Number(cashback) && !Number.isNaN(Number(cashback));
+
+    return isNumber ? orderCashbackPrice : orderCashbackPercentage;
+  }
 );

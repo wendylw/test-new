@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { fetchOrderReceiptNumber, fetchOrderCashbackInfo, createClaimedCashbackForCustomer } from './thunks';
+import { fetchOrderReceiptNumber, fetchOrderCashbackInfo, claimedCashbackForCustomer } from './thunks';
 
 const initialState = {
   loadOrderReceiptNumberRequest: {
@@ -23,7 +23,9 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'cashback/claimCashback',
   initialState,
-  reducers: {},
+  reducers: {
+    resetClaimCashback: () => initialState,
+  },
   extraReducers: {
     [fetchOrderReceiptNumber.pending.type]: state => {
       state.loadOrderReceiptNumberRequest.status = API_REQUEST_STATUS.PENDING;
@@ -51,16 +53,16 @@ export const { reducer, actions } = createSlice({
       state.loadOrderCashbackInfoRequest.status = API_REQUEST_STATUS.REJECTED;
       state.loadOrderCashbackInfoRequest.error = error;
     },
-    [createClaimedCashbackForCustomer.pending.type]: state => {
+    [claimedCashbackForCustomer.pending.type]: state => {
       state.claimedCashbackForCustomerRequest.status = API_REQUEST_STATUS.PENDING;
       state.claimedCashbackForCustomerRequest.error = null;
     },
-    [createClaimedCashbackForCustomer.fulfilled.type]: (state, { payload }) => {
+    [claimedCashbackForCustomer.fulfilled.type]: (state, { payload }) => {
       state.claimedCashbackForCustomerRequest.data = payload;
       state.claimedCashbackForCustomerRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.claimedCashbackForCustomerRequest.error = null;
     },
-    [createClaimedCashbackForCustomer.rejected.type]: (state, { error }) => {
+    [claimedCashbackForCustomer.rejected.type]: (state, { error }) => {
       state.claimedCashbackForCustomerRequest.status = API_REQUEST_STATUS.REJECTED;
       state.claimedCashbackForCustomerRequest.error = error;
     },

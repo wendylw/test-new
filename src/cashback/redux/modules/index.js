@@ -4,6 +4,8 @@ import app from './app';
 import customer from './customer';
 import home from './home';
 import claim from './claim';
+import user from '../../../redux/modules/user';
+import merchant from '../../../redux/modules/merchant';
 import storeRedemption from '../../containers/StoreRedemption/redux';
 
 const rootReducer = combineReducers({
@@ -12,6 +14,8 @@ const rootReducer = combineReducers({
   customer,
   home,
   claim,
+  user,
+  merchant,
   storeRedemption,
 });
 

@@ -1,11 +1,19 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { CASHBACK_SOURCE } from '../../../../common/utils/constants';
-import Utils from '../../../../utils/utils';
+import { CASHBACK_SOURCE, PATH_NAME_MAPPING, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../common/utils/constants';
+import { getRegistrationTouchPoint, getRegistrationSource } from '../../../../common/utils';
 import { getIsLogin, getUserPhoneNumber } from '../../../../redux/modules/user/selectors';
-import { getMerchantBusiness } from '../../../../redux/modules/merchant/selectors';
+import { initUserInfo } from '../../../../redux/modules/user/thunks';
+import { getMerchantBusiness, getIsMerchantMembershipEnabled } from '../../../../redux/modules/merchant/selectors';
+import { fetchMerchantInfo } from '../../../../redux/modules/merchant/thunks';
 import { loadConsumerCustomerInfo } from '../../../redux/modules/customer/thunks';
-import { getOrderReceiptNumber, getOrderCashbackInfo } from './api-request';
-import { getClaimCashbackPageHash, getOrderReceiptNumber as getOrderReceiptNumberSelector } from './selectors';
+import { getOrderReceiptNumber, getOrderCashbackInfo, postClaimedCashbackForCustomer } from './api-request';
+import {
+  getClaimCashbackPageHash,
+  getOrderReceiptNumber as getOrderReceiptNumberSelector,
+  getOrderCashbackValue,
+  getClaimedOrderCashbackStatus,
+  getIsClaimedCashbackForCustomerFulfilled,
+} from './selectors';
 
 export const fetchOrderReceiptNumber = createAsyncThunk(
   'cashback/claimCashback/fetchOrderReceiptNumber',
@@ -29,19 +37,42 @@ export const fetchOrderCashbackInfo = createAsyncThunk(
   }
 );
 
-export const createClaimedCashbackForCustomer = createAsyncThunk(
-  'cashback/claimCashback/createClaimedCashbackForCustomer',
-  async () => {
+export const claimedCashbackForCustomer = createAsyncThunk(
+  'cashback/claimCashback/claimedCashbackForCustomer',
+  async (_, { getState }) => {
     const state = getState();
+    const merchantBusiness = getMerchantBusiness(state);
+    const isMerchantMembershipEnabled = getIsMerchantMembershipEnabled(state);
     const receiptNumber = getOrderReceiptNumber(state);
+    const orderCashbackValue = getOrderCashbackValue(state);
     const userPhoneNumber = getUserPhoneNumber(state);
-    const result = await getOrderCashbackInfo({
+    const result = await postClaimedCashbackForCustomer({
       receiptNumber,
       phone: userPhoneNumber,
       source: CASHBACK_SOURCE.RECEIPT,
-      registrationTouchpoint: Utils.getRegistrationTouchPoint(),
-      registrationSource: Utils.getRegistrationSource(),
+      registrationTouchpoint: getRegistrationTouchPoint(),
+      registrationSource: getRegistrationSource(),
     });
+
+    const isClaimedCashbackForCustomerFulfilled = getIsClaimedCashbackForCustomerFulfilled(getState());
+
+    if (isClaimedCashbackForCustomerFulfilled) {
+      const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
+      const {
+        REWARDS_BASE,
+        REWARDS_BUSINESS,
+        REWARDS_MEMBERSHIP,
+        REWARDS_MEMBERSHIP_DETAIL,
+        REWARDS_CASHBACK,
+        CASHBACK_DETAIL,
+      } = PATH_NAME_MAPPING;
+      const rewardsBaseRoute = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${REWARDS_BASE}${REWARDS_BUSINESS}`;
+      const pathName = isMerchantMembershipEnabled
+        ? `${REWARDS_MEMBERSHIP}${REWARDS_MEMBERSHIP_DETAIL}`
+        : `${REWARDS_CASHBACK}${CASHBACK_DETAIL}`;
+
+      window.location.href = `${rewardsBaseRoute}${pathName}?business=${merchantBusiness}&source=${BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN}&status=${claimedOrderCashbackStatus}&cashback=${orderCashbackValue}`;
+    }
 
     return result;
   }
@@ -53,17 +84,19 @@ export const mounted = createAsyncThunk('cashback/claimCashback/mounted', async 
 
   dispatch(fetchMerchantInfo(merchantBusiness));
   await dispatch(fetchOrderReceiptNumber());
-  await dispatch(initUserInfo());
 
   const orderReceiptNumber = getOrderReceiptNumberSelector(getState());
-  const isLogin = getIsLogin(getState());
 
   if (orderReceiptNumber) {
     dispatch(fetchOrderCashbackInfo());
   }
 
+  await dispatch(initUserInfo());
+
+  const isLogin = getIsLogin(getState());
+
   if (isLogin && orderReceiptNumber) {
-    await dispatch(createClaimedCashbackForCustomer());
+    await dispatch(claimedCashbackForCustomer());
     dispatch(loadConsumerCustomerInfo());
   }
 });

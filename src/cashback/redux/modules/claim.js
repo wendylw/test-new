@@ -5,17 +5,10 @@ import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import { CLAIM_TYPES } from '../types';
 import Constants from '../../../utils/constants';
-import { getPrice, getQueryString } from '../../../common/utils';
+import { getQueryString } from '../../../common/utils';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import {
-  actions as appActions,
-  getBusiness,
-  getBusinessLocale,
-  getBusinessCurrency,
-  getBusinessCountry,
-  getIsUserLogin,
-} from './app';
+import { actions as appActions, getBusiness, getIsUserLogin } from './app';
 import { getCustomerId } from './customer/selectors';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 
@@ -216,31 +209,6 @@ export const getOrderCustomerId = createSelector(getCashbackInfo, cashbackInfo =
 
 export const getOrderCashbackStatus = createSelector(getCashbackInfo, cashbackInfo =>
   _get(cashbackInfo, 'status', null)
-);
-
-export const getOrderCashbackPrice = createSelector(
-  getOrderCashback,
-  getBusinessLocale,
-  getBusinessCurrency,
-  getBusinessCountry,
-  (cashback, locale, currency, country) => getPrice(cashback, { locale, currency, country })
-);
-
-export const getOrderCashbackPercentage = createSelector(getCashbackInfo, cashbackInfo => {
-  const { defaultLoyaltyRatio } = cashbackInfo || {};
-
-  return `${defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5}%`;
-});
-
-export const getOrderCashbackValue = createSelector(
-  getOrderCashback,
-  getOrderCashbackPrice,
-  getOrderCashbackPercentage,
-  (cashback, orderCashbackPrice, orderCashbackPercentage) => {
-    const isNumber = Number(cashback) && !Number.isNaN(Number(cashback));
-
-    return isNumber ? orderCashbackPrice : orderCashbackPercentage;
-  }
 );
 
 export const getClaimedCashbackCustomerId = createSelector(

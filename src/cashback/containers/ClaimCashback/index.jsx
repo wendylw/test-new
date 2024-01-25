@@ -4,28 +4,25 @@ import { useMount, useUnmount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { closeWebView } from '../../../utils/native-methods';
 import usePrefetch from '../../../common/utils/hooks/usePrefetch';
-import { actions as appActions, getIsWeb, getIsWebview, getIsUserLogin } from '../../redux/modules/app';
-import {
-  actions as claimActions,
-  getReceiptNumber,
-  getCashbackClaimRequestStatus,
-  getOrderCashbackStatus,
-} from '../../redux/modules/claim';
+import { getIsWeb, getIsWebview } from '../../redux/modules/app';
+import { getIsLogin } from '../../../redux/modules/user/selectors';
+import { getOrderReceiptNumber, getClaimedCashbackForCustomerStatus } from './redux/selectors';
+import { actions as claimCashbackActions } from './redux';
+import { mounted, claimedCashbackForCustomer } from './redux/thunks';
 import Frame from '../../../common/components/Frame';
 import PageHeader from '../../../common/components/PageHeader';
 import MerchantInfo from './components/MerchantInfo';
 import CashbackBlock from './components/CashbackBlock';
 import styles from './ClaimCashback.module.scss';
 
-const ClaimCashback = ({ history }) => {
+const ClaimCashback = () => {
   const { t } = useTranslation(['Cashback']);
   const dispatch = useDispatch();
   const isWeb = useSelector(getIsWeb);
   const isWebview = useSelector(getIsWebview);
-  const isUserLogin = useSelector(getIsUserLogin);
-  const receiptNumber = useSelector(getReceiptNumber);
-  const claimRequestStatus = useSelector(getCashbackClaimRequestStatus);
-  const orderCashbackStatus = useSelector(getOrderCashbackStatus);
+  const isLogin = useSelector(getIsLogin);
+  const orderReceiptNumber = useSelector(getOrderReceiptNumber);
+  const claimedCashbackForCustomerStatus = useSelector(getClaimedCashbackForCustomerStatus);
   const handleClickHeaderBackButton = useCallback(() => {
     if (isWebview) {
       closeWebView();
@@ -35,24 +32,18 @@ const ClaimCashback = ({ history }) => {
   usePrefetch(['CB_HM'], ['Cashback']);
 
   useMount(() => {
-    dispatch(claimActions.mounted(history));
+    dispatch(mounted());
   });
 
   useUnmount(() => {
-    dispatch(claimActions.resetData());
+    dispatch(claimCashbackActions.resetClaimCashback());
   });
 
   useEffect(() => {
-    if (isUserLogin && receiptNumber && !claimRequestStatus) {
-      dispatch(claimActions.claimCashbackForConsumer({ receiptNumber, history }));
+    if (isLogin && orderReceiptNumber && !claimedCashbackForCustomerStatus) {
+      dispatch(claimedCashbackForCustomer());
     }
-  }, [isUserLogin, claimRequestStatus, receiptNumber, dispatch, history]);
-
-  useEffect(() => {
-    if (orderCashbackStatus) {
-      dispatch(appActions.setMessageInfo({ key: orderCashbackStatus }));
-    }
-  }, [orderCashbackStatus, dispatch]);
+  }, [isLogin, claimedCashbackForCustomerStatus, orderReceiptNumber, dispatch]);
 
   return (
     <Frame>
@@ -63,7 +54,7 @@ const ClaimCashback = ({ history }) => {
       />
       <MerchantInfo />
       <CashbackBlock />
-      {!isUserLogin && <div className={styles.ClaimCashbackNotLoginBackground} />}
+      {!isLogin && <div className={styles.ClaimCashbackNotLoginBackground} />}
     </Frame>
   );
 };
