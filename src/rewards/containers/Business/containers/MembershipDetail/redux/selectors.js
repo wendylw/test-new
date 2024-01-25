@@ -115,16 +115,16 @@ export const getUniquePromoList = createSelector(
 
 export const getNewMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
-  getCustomerCashback,
   getIsMerchantEnabledCashback,
-  getIsFromJoinMembershipUrlClick,
+  getCustomerCashback,
   getIsFromSeamlessLoyaltyQrScan,
+  getIsFromJoinMembershipUrlClick,
   (
     isLoadCustomerRequestCompleted,
-    customerCashback,
     isMerchantEnabledCashback,
-    isFromJoinMembershipUrlClick,
-    isFromSeamlessLoyaltyQrScan
+    customerCashback,
+    isFromSeamlessLoyaltyQrScan,
+    isFromJoinMembershipUrlClick
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return NEW_MEMBER_TYPES.DEFAULT;
@@ -136,20 +136,22 @@ export const getNewMemberPromptCategory = createSelector(
         : NEW_MEMBER_TYPES.DEFAULT;
     }
 
-    return null;
+    // WB-6499: show default new member prompt.
+    return NEW_MEMBER_TYPES.DEFAULT;
   }
 );
 
 export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
+  getIsMerchantEnabledCashback,
   getCustomerCashback,
   getIsMerchantEnabledCashback,
   getIsFromJoinMembershipUrlClick,
   getIsFromSeamlessLoyaltyQrScan,
   (
     isLoadCustomerRequestCompleted,
-    customerCashback,
     isMerchantEnabledCashback,
+    customerCashback,
     isFromJoinMembershipUrlClick,
     isFromSeamlessLoyaltyQrScan
   ) => {
@@ -181,7 +183,7 @@ export const getMemberColorPalettes = createSelector(
 
 export const getMemberCardStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
   color: memberCardColorPalettes.font,
-  background: `linear-gradient(120deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 58%,${memberCardColorPalettes.background.endColor} 97%)`,
+  background: `linear-gradient(105deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 50%,${memberCardColorPalettes.background.endColor} 100%)`,
 }));
 
 export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({

@@ -4,6 +4,7 @@
   &__card-wrapper {
     background-color: transparent;
     position: relative;
+    overflow: hidden;
   }
 
   &__card-container {
@@ -24,6 +25,7 @@
 
   &__card-content {
     &__member-level {
+      font-size: 18px;
       font-weight: 900;
     }
   }
@@ -32,6 +34,10 @@
     width: 100%;
     color: $basic-text-basic;
     background-color: $status-yellow-1;
+
+    &__cashback-title {
+      flex-grow: 1;
+    }
 
     &__cashback-icon {
       width: 24px;

@@ -95,7 +95,8 @@ export const PATH_NAME_MAPPING = {
   REWARDS_BASE: '/rewards',
   REWARDS_HOME: '/',
   REWARDS_BUSINESS: '/business',
-  JOIN_MEMBERSHIP: '/join-membership',
+  REWARDS_MEMBERSHIP: '/membership',
+  SIGN_UP: '/sign-up',
   MEMBERSHIP_DETAIL: '/membership-detail',
   SEAMLESS_LOYALTY: '/seamless-loyalty',
   REWARDS_LOGIN: '/login',
@@ -299,8 +300,8 @@ export const MEMBER_CARD_COLOR_PALETTES = {
     },
     background: {
       startColor: '#91F7E7',
-      midColor: '#7BB7FF',
-      endColor: '#7BB7FF',
+      midColor: '#99C8FF',
+      endColor: '#52A1FF',
     },
     font: '#303030',
   },
@@ -326,7 +327,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
     icon: {
       crown: {
         startColor: '#FFF143',
-        endColor: '#FFCF43',
+        endColor: '#FFBD17',
       },
       background: {
         startColor: '#FFFBE6',
@@ -347,13 +348,13 @@ export const MEMBER_CARD_COLOR_PALETTES = {
         endColor: '#000000',
       },
       background: {
-        startColor: '#AFAFAF',
-        endColor: '#CCCCCC',
+        startColor: '#EAEAEA',
+        endColor: '#AFAFAF',
       },
     },
     background: {
-      startColor: '#3A3A3A',
-      midColor: '#353535',
+      startColor: '#000000',
+      midColor: '#4E4E4E',
       endColor: '#000000',
     },
     font: '#FFFFFF',

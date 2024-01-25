@@ -344,7 +344,7 @@ export const actions = {
         payload: { ...result, source },
       });
 
-      dispatch(actions.getLoginStatus());
+      await dispatch(actions.getLoginStatus());
     } catch (error) {
       CleverTap.pushEvent('Login - login failed');
 
@@ -788,34 +788,13 @@ export const actions = {
 
     try {
       const business = getBusiness(getState());
-
-      dispatch({
-        type: types.CREATE_LOGIN_REQUEST,
-      });
-
-      const businessUTCOffset = getBusinessUTCOffset(getState());
-
       const tokens = await TngUtils.getAccessToken({ business });
-
+      const source = REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
-      const result = await ApiRequest.login({
-        accessToken,
-        refreshToken,
-        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-      });
-
-      dispatch({
-        type: types.CREATE_LOGIN_SUCCESS,
-        payload: result,
-      });
+      await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
     } catch (error) {
       CleverTap.pushEvent('Login - login failed');
-
-      dispatch({
-        type: types.CREATE_LOGIN_FAILURE,
-        error,
-      });
 
       logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
 
@@ -1632,6 +1611,10 @@ export const getIsUserLoginRequestStatusInPending = createSelector(
   status => status === API_REQUEST_STATUS.PENDING
 );
 
+export const getIsUserLoginRequestCompleted = createSelector(getUserLoginRequestStatus, status =>
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(status)
+);
+
 export const getIsUserProfileStatusFulfilled = createSelector(
   getUserProfileStatus,
   status => status === API_REQUEST_STATUS.FULFILLED
@@ -2273,7 +2256,7 @@ export const getMemberColorPalettes = createSelector(
 
 export const getMemberCardStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
   color: memberCardColorPalettes.font,
-  background: `linear-gradient(120deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 58%,${memberCardColorPalettes.background.endColor} 97%)`,
+  background: `linear-gradient(105deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 50%,${memberCardColorPalettes.background.endColor} 100%)`,
 }));
 
 export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({

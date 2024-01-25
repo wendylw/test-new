@@ -5,10 +5,10 @@ import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import {
   initUserInfo,
   loginUserByBeepApp,
-  loginUserByTngMiniProgram,
+  loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
 import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
-import { getIsWebview, getIsTNGMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
+import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
@@ -30,7 +30,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   const state = getState();
   const business = getMerchantBusiness(state);
   const isWebview = getIsWebview(state);
-  const isTNGMiniProgram = getIsTNGMiniProgram(state);
+  const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
   const search = getLocationSearch(state);
 
   await dispatch(initUserInfo());
@@ -39,12 +39,12 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     await dispatch(loginUserByBeepApp());
   }
 
-  if (isTNGMiniProgram) {
-    await dispatch(loginUserByTngMiniProgram());
+  if (isAlipayMiniProgram) {
+    await dispatch(loginUserByAlipayMiniProgram());
   }
 
   const isLogin = getIsLogin(getState());
-  const isNotLoginInWeb = !isLogin && !isWebview && !isTNGMiniProgram;
+  const isNotLoginInWeb = !isLogin && !isWebview && !isAlipayMiniProgram;
 
   if (isNotLoginInWeb) {
     dispatch(push(`${PATH_NAME_MAPPING.REWARDS_LOGIN}${search}`, { shouldGoBack: true }));

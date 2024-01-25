@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
-import { getCookieVariable, removeCookieVariable } from '../../../../../../common/utils';
+import { getCookieVariable, removeCookieVariable, submitForm } from '../../../../../../common/utils';
 import { alert } from '../../../../../../common/feedback';
 import { API_INFO, postFoodCourtIdHashCode } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
@@ -266,8 +266,11 @@ export const goToJoinMembershipPage = createAsyncThunk(
     const state = getState();
     const business = getBusiness(state);
     const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
+    const redirectUrl = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.SIGN_UP}?business=${business}&source=${source}`;
 
-    window.location.href = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.JOIN_MEMBERSHIP}?business=${business}&source=${source}`;
+    submitForm('/go2page', {
+      target: redirectUrl,
+    });
   }
 );
 
@@ -277,7 +280,10 @@ export const goToMembershipDetailPage = createAsyncThunk(
     const state = getState();
     const business = getBusiness(state);
     const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
+    const redirectUrl = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}?business=${business}&source=${source}`;
 
-    window.location.href = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}?business=${business}&source=${source}`;
+    submitForm('/go2page', {
+      target: redirectUrl,
+    });
   }
 );
