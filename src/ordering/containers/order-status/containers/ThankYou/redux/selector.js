@@ -158,6 +158,10 @@ export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInf
 
 export const getCashbackStatus = createSelector(getCashbackInfo, cashbackInfo => _get(cashbackInfo, 'status', null));
 
+export const getCashbackCustomerId = createSelector(getCashbackInfo, cashbackInfo =>
+  _get(cashbackInfo, 'customerId', null)
+);
+
 export const getCanCashbackClaim = createSelector(getCashbackStatus, cashbackStatus =>
   CASHBACK_CAN_CLAIM_STATUS_LIST.includes(cashbackStatus)
 );
@@ -337,12 +341,14 @@ export const getShouldShowMemberCard = createSelector(
     isLogin && isMerchantMembershipEnabled && hasUserJoinedBusinessMembership
 );
 
+// WB-7383: we need to consider the consumerId from cashbackInfo to make user able to see cashback card immediately
 export const getShouldShowEarnedCashback = createSelector(
   getHasCashback,
   getHasOrderPaid,
   getUserCustomerId,
   getOrderCustomerId,
+  getCashbackCustomerId,
   getHasCashbackClaimed,
-  (hasCashback, hasOrderPaid, userCustomerId, orderCustomerId, hasCashbackClaimed) =>
-    hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === orderCustomerId
+  (hasCashback, hasOrderPaid, userCustomerId, orderCustomerId, cashbackCustomerId, hasCashbackClaimed) =>
+    hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === (orderCustomerId || cashbackCustomerId)
 );
