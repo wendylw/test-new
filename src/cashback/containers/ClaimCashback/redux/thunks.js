@@ -21,7 +21,6 @@ export const fetchOrderReceiptNumber = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState();
     const claimCashbackPageHash = getClaimCashbackPageHash(state);
-    console.log(claimCashbackPageHash);
     const result = await getOrderQRReceiptNumber(claimCashbackPageHash);
 
     return result;
