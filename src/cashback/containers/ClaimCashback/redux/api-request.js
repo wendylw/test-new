@@ -1,6 +1,9 @@
 import { get, post } from '../../../../utils/api/api-fetch';
 
-export const getOrderReceiptNumber = hash => get(`/api/cashback/hash/${hash}/decode`);
+export const getOrderQRReceiptNumber = hash => {
+  console.log(hash);
+  return get(`/api/cashback/hash/${hash}/decode`);
+};
 
 export const getOrderCashbackInfo = ({ receiptNumber, source }) =>
   get('/api/cashback/', {

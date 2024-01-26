@@ -124,6 +124,9 @@ async function _fetch(url, opts) {
       status,
     });
 
+    console.log('errorMessage', errorMessage);
+    console.log('errorOptions', errorOptions);
+
     throw new ApiFetchError(errorMessage, errorOptions);
   }
 }

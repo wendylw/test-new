@@ -7,10 +7,10 @@ import { getMerchantBusiness, getIsMerchantMembershipEnabled } from '../../../..
 import { fetchMerchantInfo } from '../../../../redux/modules/merchant/thunks';
 import { getIsWebview, getIsAlipayMiniProgram } from '../../../redux/modules/common/selectors';
 import { loadConsumerCustomerInfo } from '../../../redux/modules/customer/thunks';
-import { getOrderReceiptNumber, getOrderCashbackInfo, postClaimedCashbackForCustomer } from './api-request';
+import { getOrderQRReceiptNumber, getOrderCashbackInfo, postClaimedCashbackForCustomer } from './api-request';
 import {
   getClaimCashbackPageHash,
-  getOrderReceiptNumber as getOrderReceiptNumberSelector,
+  getOrderReceiptNumber,
   getOrderCashbackValue,
   getClaimedOrderCashbackStatus,
   getIsClaimedCashbackForCustomerFulfilled,
@@ -21,7 +21,8 @@ export const fetchOrderReceiptNumber = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState();
     const claimCashbackPageHash = getClaimCashbackPageHash(state);
-    const result = await getOrderReceiptNumber(claimCashbackPageHash);
+    console.log(claimCashbackPageHash);
+    const result = await getOrderQRReceiptNumber(claimCashbackPageHash);
 
     return result;
   }
@@ -80,7 +81,7 @@ export const mounted = createAsyncThunk('cashback/claimCashback/mounted', async 
   dispatch(fetchMerchantInfo(merchantBusiness));
   await dispatch(fetchOrderReceiptNumber());
 
-  const orderReceiptNumber = getOrderReceiptNumberSelector(getState());
+  const orderReceiptNumber = getOrderReceiptNumber(getState());
 
   if (orderReceiptNumber) {
     dispatch(fetchOrderCashbackInfo());

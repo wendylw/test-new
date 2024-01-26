@@ -6,6 +6,7 @@ import home from './home';
 import claim from './claim';
 import user from '../../../redux/modules/user';
 import merchant from '../../../redux/modules/merchant';
+import claimCashback from '../../containers/ClaimCashback/redux';
 import storeRedemption from '../../containers/StoreRedemption/redux';
 
 const rootReducer = combineReducers({
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   claim,
   user,
   merchant,
+  claimCashback,
   storeRedemption,
 });
 
