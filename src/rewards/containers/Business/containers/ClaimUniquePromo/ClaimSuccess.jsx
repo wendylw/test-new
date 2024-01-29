@@ -4,7 +4,7 @@ import { useMount } from 'react-use';
 import { getClient } from '../../../../../common/utils';
 import CleverTap from '../../../../../utils/clevertap';
 import { getUserCountry } from '../../../../../redux/modules/user/selectors';
-import { getMerchantBusiness } from '../../../../redux/modules/merchant/selectors';
+import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import UniquePromoCongratulation from './components/UniquePromoCongratulation';
 import UniquePromCongratulationFooter from './components/UniquePromCongratulationFooter';
 

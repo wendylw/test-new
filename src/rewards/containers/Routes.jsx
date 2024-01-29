@@ -51,10 +51,10 @@ const Routes = () => (
         />
         <Route
           exact
-          path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.UNIQUE_PROMO}${ROUTER_PATHS.CLAIM}`}
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.CLAIM}`}
           component={ClaimUniquePromoProxy}
         />
-        <Route exact path={ROUTER_PATHS.REWARDS_LOGIN} component={Login} />
+        <Route exact path={PATH_NAME_MAPPING.REWARDS_LOGIN} component={Login} />
         <Route path="*" component={NotFound} />
       </Switch>
     </Suspense>

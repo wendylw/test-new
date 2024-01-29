@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import CleverTap from '../../../../../../../utils/clevertap';
 import { getClient } from '../../../../../../../common/utils';
-import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
+import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import { getIsClaimUniquePromoRequestCompleted } from '../../redux/selectors';
 import { claimPromotionClicked } from '../../redux/thunks';
 import PageFooter from '../../../../../../../common/components/PageFooter';

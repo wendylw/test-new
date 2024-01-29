@@ -9,7 +9,7 @@ import {
   getIsMerchantEnabledOROrdering,
   getIsLoadMerchantRequestCompleted,
   getLoadMerchantRequestError,
-} from '../../../../../redux/modules/merchant/selectors';
+} from '../../../../../../redux/modules/merchant/selectors';
 import {
   getIsCheckLoginRequestCompleted,
   getCheckLoginRequestError,

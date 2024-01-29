@@ -7,16 +7,16 @@ import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/
 import {
   initUserInfo,
   loginUserByBeepApp,
-  loginUserByTngMiniProgram,
+  loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getMerchantBusiness, getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
-import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
+import { getMerchantBusiness, getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
+import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import {
   getIsWeb,
   getIsWebview,
-  getIsTNGMiniProgram,
   getLocationSearch,
   getSource,
+  getIsAlipayMiniProgram,
 } from '../../../../../redux/modules/common/selectors';
 import { postClaimUniquePromo } from './api-request';
 import { getUniquePromoRewardsSetId } from './selectors';
@@ -73,7 +73,7 @@ export const claimPromotionClicked = createAsyncThunk(
   async (_, { getState, dispatch }) => {
     const state = getState();
     const isWebview = getIsWebview(state);
-    const isTNGMiniProgram = getIsTNGMiniProgram(state);
+    const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
     const isWeb = getIsWeb(state);
     const search = getLocationSearch(state);
 
@@ -81,8 +81,8 @@ export const claimPromotionClicked = createAsyncThunk(
       await dispatch(loginUserByBeepApp());
     }
 
-    if (isTNGMiniProgram) {
-      await dispatch(loginUserByTngMiniProgram());
+    if (isAlipayMiniProgram) {
+      await dispatch(loginUserByAlipayMiniProgram());
     }
 
     const isLogin = getIsLogin(getState());
