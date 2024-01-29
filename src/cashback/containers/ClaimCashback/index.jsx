@@ -6,8 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 import { closeWebView } from '../../../utils/native-methods';
 import usePrefetch from '../../../common/utils/hooks/usePrefetch';
-import { getIsWeb, getIsWebview } from '../../redux/modules/app';
+import { getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
+import { getIsWeb, getIsWebview } from '../../redux/modules/common/selectors';
 import { getIsLogin } from '../../../redux/modules/user/selectors';
+import { initUserInfo } from '../../../redux/modules/user/thunks';
 import { getCustomerId } from '../../redux/modules/customer/selectors';
 import {
   getOrderReceiptNumber,
@@ -26,6 +28,7 @@ const ClaimCashback = () => {
   const { t } = useTranslation(['Cashback']);
   const dispatch = useDispatch();
   const history = useHistory();
+  const isAppUserLogin = useSelector(getIsAppUserLogin);
   const isWeb = useSelector(getIsWeb);
   const isWebview = useSelector(getIsWebview);
   const isLogin = useSelector(getIsLogin);
@@ -61,6 +64,13 @@ const ClaimCashback = () => {
       history.push(`${PATH_NAME_MAPPING.CASHBACK_BASE}?customerId=${customerId}`);
     }
   }, [isClaimedCashbackForCustomerFulfilled, customerId, history]);
+
+  // TODO: WB-6994: remove this useEffect after we have a better solution
+  useEffect(() => {
+    if (isAppUserLogin) {
+      dispatch(initUserInfo());
+    }
+  }, [isAppUserLogin]);
 
   return (
     <Frame>
