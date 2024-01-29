@@ -42,8 +42,9 @@
   "ThankYouForPickingUpForUS": "Thank you for ordering with us! The pick up details are below, please do be on time to pick up your food",
   "ThankYouForAlreadyPickUp": "Thank you for ordering with us! We hope you enjoy your food",
   "ThankYouForUpdatedToPickingUpForUS": "You've switched to self-pickup. The pickup details are below, we hope you enjoy your food!",
-  "EarnedCashBackTitle": "You’ve earned cash back",
+  "EarnedCashBackTitle": "You’ve earned cashback",
   "EarnedCashBackDescription": "This can be used when you buy from us again!",
+  "EarnedCashback": "You’ve earned <1/> <2/>",
   "GotCashBackTitle": "You’ve got {{currency}} cashback",
   "GotCashBackDescription": "Login or sign up below to claim your cashback now!",
   "WantCashBackTitle": "I want cashback",
@@ -141,5 +142,9 @@
   "ThankYouFeedbackToastTitle": "Thanks for feedback! Rate us on Google. It’ll mean a lot to us!",
   "ThankYouFeedbackToastContent": "Redirecting in {{count}}sec...",
   "ThankYouFeedbackToastDescription": "(Review Copied to Clipboard)",
-  "RedirectingToGoogleReview": "Redirecting to Google Review..."
+  "RedirectingToGoogleReview": "Redirecting to Google Review...",
+  "GotCashBackAndBeMemberDescription": "Login or sign up below to claim your cashback & be our member now!",
+  "NewMemberInvitation": "Be our member & unlock your rewards!",
+  "View": "View",
+  "ViewRewards": "View Rewards"
 }

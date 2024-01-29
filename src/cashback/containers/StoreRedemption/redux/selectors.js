@@ -1,5 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from '@reduxjs/toolkit';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import { getQueryString } from '../../../../common/utils';
 import {
   getOnlineStoreInfo,
   getIsCoreBusinessLoaded,
@@ -10,8 +12,6 @@ import {
   getIsUserLogin,
 } from '../../../redux/modules/app';
 import { getCustomerCashback } from '../../../redux/modules/customer/selectors';
-import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { getQueryString } from '../../../../common/utils';
 
 /**
  * get store redemption request id

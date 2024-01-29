@@ -2,30 +2,19 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { getCashback, getIsCashbackClaimable } from '../redux/selector';
-import { createCashbackInfo } from '../redux/thunks';
+import { getCashback } from '../redux/selector';
 import IconCelebration from '../../../../../../images/icon-celebration.svg';
-import Utils from '../../../../../../utils/utils';
 import cashbackSuccessImage from '../../../../../../images/succeed-animation.gif';
 import CurrencyNumber from '../../../../../components/CurrencyNumber';
 
 const ANIMATION_TIME = 3600;
 
-function CashbackInfo({ cashback, isCashbackClaimable, claimCashback }) {
+function CashbackInfo({ cashback }) {
   const timeoutRef = useRef(null);
   const { t } = useTranslation('OrderingThankYou');
   const [cashbackSuccessImageVisibility, setCashbackSuccessImageVisibility] = useState(true);
   const [imgLoaded, setImageLoaded] = useState(false);
   const handleHideCashbackSuccessImage = useCallback(() => setCashbackSuccessImageVisibility(false), []);
-  const phone = Utils.getLocalStorageVariable('user.p');
-  const receiptNumber = Utils.getQueryString('receiptNumber') || '';
-
-  useEffect(() => {
-    if (isCashbackClaimable) {
-      claimCashback({ phone, receiptNumber });
-    }
-  }, [phone, receiptNumber, isCashbackClaimable, claimCashback]);
 
   useEffect(() => {
     if (imgLoaded) {
@@ -65,24 +54,13 @@ function CashbackInfo({ cashback, isCashbackClaimable, claimCashback }) {
 CashbackInfo.displayName = 'CashbackInfo';
 
 CashbackInfo.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   cashback: PropTypes.number,
-  isCashbackClaimable: PropTypes.bool,
-  claimCashback: PropTypes.func,
 };
 
 CashbackInfo.defaultProps = {
   cashback: 0,
-  isCashbackClaimable: false,
-  claimCashback: () => {},
 };
 
-export default connect(
-  state => ({
-    cashback: getCashback(state),
-    isCashbackClaimable: getIsCashbackClaimable(state),
-  }),
-  dispatch => ({
-    claimCashback: bindActionCreators(createCashbackInfo, dispatch),
-  })
-)(CashbackInfo);
+export default connect(state => ({
+  cashback: getCashback(state),
+}))(CashbackInfo);

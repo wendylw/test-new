@@ -3,11 +3,11 @@ import { getSeamlessLoyaltyPlatform } from '../utils';
 import {
   initUserInfo,
   loginUserByBeepApp,
-  loginUserByTngMiniProgram,
+  loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { fetchMerchantInfo } from '../../../../../redux/modules/merchant/thunks';
-import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
-import { getIsWebview, getIsTNGMiniProgram } from '../../../../../redux/modules/common/selectors';
+import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
+import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
+import { getIsWebview, getIsAlipayMiniProgram } from '../../../../../redux/modules/common/selectors';
 import { confirmToShareConsumerInfo } from '../../../redux/common/thunks';
 import { patchSharingConsumerInfo } from './api-request';
 import { getSeamlessLoyaltyRequestId, getIsSharingConsumerInfoEnabled } from './selectors';
@@ -30,18 +30,19 @@ export const mounted = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     const state = getState();
     const isWebview = getIsWebview(state);
-    const isTNGMiniProgram = getIsTNGMiniProgram(state);
+    const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
+    const merchantBusiness = getMerchantBusiness(state);
     const requestId = getSeamlessLoyaltyRequestId(state);
 
-    dispatch(fetchMerchantInfo());
+    dispatch(fetchMerchantInfo(merchantBusiness));
     await dispatch(initUserInfo());
 
     if (isWebview) {
       await dispatch(loginUserByBeepApp());
     }
 
-    if (isTNGMiniProgram) {
-      await dispatch(loginUserByTngMiniProgram());
+    if (isAlipayMiniProgram) {
+      await dispatch(loginUserByAlipayMiniProgram());
     }
 
     const isSharingConsumerInfoEnabled = getIsSharingConsumerInfoEnabled(getState());

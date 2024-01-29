@@ -90,7 +90,6 @@ const CartStatusPollers = {
     menu: null,
     cart: null,
   },
-  // eslint-disable-next-line object-shorthand
   clearPoller() {
     const keys = Object.keys(this.pollers);
 

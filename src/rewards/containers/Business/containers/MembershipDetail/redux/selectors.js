@@ -3,11 +3,13 @@ import {
   BECOME_MERCHANT_MEMBER_METHODS,
   PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
+  MEMBER_LEVELS,
+  MEMBER_CARD_COLOR_PALETTES,
 } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import { NEW_MEMBER_TYPES, RETURNING_MEMBER_TYPES } from '../utils/constants';
-import { getSource } from '../../../../../redux/modules/common/selectors';
+import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
 import {
   getMerchantCurrency,
   getMerchantLocale,
@@ -15,9 +17,10 @@ import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
-} from '../../../../../redux/modules/merchant/selectors';
+} from '../../../../../../redux/modules/merchant/selectors';
 import {
   getCustomerCashback,
+  getCustomerTierLevel,
   getIsLoadCustomerRequestCompleted,
 } from '../../../../../redux/modules/customer/selectors';
 
@@ -54,10 +57,16 @@ export const getIsFromSeamlessLoyaltyQrScan = createSelector(
   source => source === BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN
 );
 
+export const getIsUserFromOrdering = createSelector(getSource, source =>
+  [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
+);
+
 export const getIsOrderAndRedeemButtonDisplay = createSelector(
   getIsMerchantEnabledOROrdering,
   getIsMerchantEnabledDelivery,
-  (isOROrderingEnabled, isDeliveryEnabled) => isOROrderingEnabled && isDeliveryEnabled
+  getIsUserFromOrdering,
+  (isOROrderingEnabled, isDeliveryEnabled, isUserFromOrdering) =>
+    !isUserFromOrdering && isOROrderingEnabled && isDeliveryEnabled
 );
 
 export const getUniquePromoList = createSelector(
@@ -106,16 +115,16 @@ export const getUniquePromoList = createSelector(
 
 export const getNewMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
-  getCustomerCashback,
   getIsMerchantEnabledCashback,
-  getIsFromJoinMembershipUrlClick,
+  getCustomerCashback,
   getIsFromSeamlessLoyaltyQrScan,
+  getIsFromJoinMembershipUrlClick,
   (
     isLoadCustomerRequestCompleted,
-    customerCashback,
     isMerchantEnabledCashback,
-    isFromJoinMembershipUrlClick,
-    isFromSeamlessLoyaltyQrScan
+    customerCashback,
+    isFromSeamlessLoyaltyQrScan,
+    isFromJoinMembershipUrlClick
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return NEW_MEMBER_TYPES.DEFAULT;
@@ -127,20 +136,22 @@ export const getNewMemberPromptCategory = createSelector(
         : NEW_MEMBER_TYPES.DEFAULT;
     }
 
-    return null;
+    // WB-6499: show default new member prompt.
+    return NEW_MEMBER_TYPES.DEFAULT;
   }
 );
 
 export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
+  getIsMerchantEnabledCashback,
   getCustomerCashback,
   getIsMerchantEnabledCashback,
   getIsFromJoinMembershipUrlClick,
   getIsFromSeamlessLoyaltyQrScan,
   (
     isLoadCustomerRequestCompleted,
-    customerCashback,
     isMerchantEnabledCashback,
+    customerCashback,
     isFromJoinMembershipUrlClick,
     isFromSeamlessLoyaltyQrScan
   ) => {
@@ -157,3 +168,27 @@ export const getReturningMemberPromptCategory = createSelector(
     return null;
   }
 );
+
+export const getShouldShowBackButton = createSelector(
+  getIsWebview,
+  getIsUserFromOrdering,
+  (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
+);
+
+// If the level is not by design, use member style by default.
+export const getMemberColorPalettes = createSelector(
+  getCustomerTierLevel,
+  customerTierLevel => MEMBER_CARD_COLOR_PALETTES[customerTierLevel] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER]
+);
+
+export const getMemberCardStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+  color: memberCardColorPalettes.font,
+  background: `linear-gradient(105deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 50%,${memberCardColorPalettes.background.endColor} 100%)`,
+}));
+
+export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+  crownStartColor: memberCardColorPalettes.icon.crown.startColor,
+  crownEndColor: memberCardColorPalettes.icon.crown.endColor,
+  backgroundStartColor: memberCardColorPalettes.icon.background.startColor,
+  backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
+}));

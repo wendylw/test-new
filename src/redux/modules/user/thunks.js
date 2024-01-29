@@ -8,7 +8,7 @@ import CleverTap from '../../../utils/clevertap';
 import { getUserLoginStatus, postUserLogin, getUserProfile, postLoginGuest } from './api-request';
 import { getConsumerId, getIsLogin, getIsLoginExpired, getUserCountry } from './selectors';
 import Utils from '../../../utils/utils';
-import { getAccessToken } from '../../../utils/tng-utils';
+import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
 import { getTokenAsync, tokenExpiredAsync } from '../../../utils/native-methods';
 import { toast, confirm } from '../../../common/utils/feedback';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
@@ -154,14 +154,14 @@ export const loginUserAsGuest = createAsyncThunk('app/user/loginUserAsGuest', as
   return result;
 });
 
-export const loginUserByTngMiniProgram = createAsyncThunk(
-  'app/user/loginByTngMiniProgram',
+export const loginUserByAlipayMiniProgram = createAsyncThunk(
+  'app/user/loginUserByAlipayMiniProgram',
   async (business, { dispatch, getState }) => {
     const state = getState();
     const userCountry = getUserCountry(state);
 
-    if (!Utils.isTNGMiniProgram()) {
-      throw new Error('Not in tng mini program');
+    if (!isAlipayMiniProgram()) {
+      throw new Error('Not in Alipay mini program');
     }
 
     try {
@@ -188,7 +188,7 @@ export const loginUserByTngMiniProgram = createAsyncThunk(
                 CleverTap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Try Again', {
                   country: userCountry,
                 });
-                await loginUserByTngMiniProgram();
+                await dispatch(loginUserByAlipayMiniProgram());
               } else {
                 // cancel
                 if (window.my.exitMiniProgram) {

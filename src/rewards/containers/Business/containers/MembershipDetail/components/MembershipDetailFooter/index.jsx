@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useUnmount } from 'react-use';
 import { useTranslation } from 'react-i18next';
-import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
+import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import { getIsOrderAndRedeemButtonDisplay } from '../../redux/selectors';
 import PageFooter from '../../../../../../../common/components/PageFooter';
 import Button from '../../../../../../../common/components/Button';

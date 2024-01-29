@@ -95,7 +95,8 @@ export const PATH_NAME_MAPPING = {
   REWARDS_BASE: '/rewards',
   REWARDS_HOME: '/',
   REWARDS_BUSINESS: '/business',
-  JOIN_MEMBERSHIP: '/join-membership',
+  REWARDS_MEMBERSHIP: '/membership',
+  SIGN_UP: '/sign-up',
   MEMBERSHIP_DETAIL: '/membership-detail',
   SEAMLESS_LOYALTY: '/seamless-loyalty',
   UNIQUE_PROMO: '/promo',
@@ -278,4 +279,86 @@ export const PROMO_VOUCHER_STATUS = {
   ACTIVE: 'active',
   EXPIRED: 'expired',
   REDEEMED: 'redeemed',
+};
+
+export const MEMBER_LEVELS = {
+  MEMBER: 1,
+  SLIVER: 2,
+  GOLD: 3,
+  PLATINUM: 4,
+};
+
+export const MEMBER_CARD_COLOR_PALETTES = {
+  [MEMBER_LEVELS.MEMBER]: {
+    icon: {
+      crown: {
+        startColor: '#91F7E7',
+        endColor: '#52A1FF',
+      },
+      background: {
+        startColor: '#DCFCFF',
+        endColor: '#D2DEFF',
+      },
+    },
+    background: {
+      startColor: '#91F7E7',
+      midColor: '#99C8FF',
+      endColor: '#52A1FF',
+    },
+    font: '#303030',
+  },
+  [MEMBER_LEVELS.SLIVER]: {
+    icon: {
+      crown: {
+        startColor: '#AFAFAF',
+        endColor: '#AFAFAF',
+      },
+      background: {
+        startColor: '#F3F3F3',
+        endColor: '#CCCCCC',
+      },
+    },
+    background: {
+      startColor: '#AFAFAF',
+      midColor: '#E0E0E0',
+      endColor: '#CCC',
+    },
+    font: '#303030',
+  },
+  [MEMBER_LEVELS.GOLD]: {
+    icon: {
+      crown: {
+        startColor: '#FFF143',
+        endColor: '#FFBD17',
+      },
+      background: {
+        startColor: '#FFFBE6',
+        endColor: '#FFFEAD',
+      },
+    },
+    background: {
+      startColor: '#FFF143',
+      midColor: '#FFBD17',
+      endColor: '#FFCF43',
+    },
+    font: '#303030',
+  },
+  [MEMBER_LEVELS.PLATINUM]: {
+    icon: {
+      crown: {
+        startColor: '#000000',
+        endColor: '#000000',
+      },
+      background: {
+        startColor: '#EAEAEA',
+        endColor: '#AFAFAF',
+      },
+    },
+    background: {
+      startColor: '#000000',
+      midColor: '#4E4E4E',
+      endColor: '#000000',
+    },
+    font: '#FFFFFF',
+  },
 };
