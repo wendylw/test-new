@@ -15,31 +15,47 @@ import PhoneInput, {
 import 'react-phone-number-input/style.css';
 import { getClassName } from '../../../utils/ui';
 import { COUNTRIES } from '../../../common/utils/constants';
+import { ERROR_TYPES, PHONE_NUMBER_INPUT_STATUS } from './constants';
 import styles from './PhoneNumberInput.module.scss';
 
-const PhoneNumberInput = ({ className, placeholder, country, phone, onFocus, onBlur, onChange, onCountryChange }) => {
+const PhoneNumberInput = ({
+  className,
+  placeholder,
+  country,
+  phone,
+  onFocus,
+  onBlur,
+  onChange,
+  onCountryChange,
+  onError,
+}) => {
   const { t } = useTranslation();
   const phoneNumberInputRef = useRef(null);
   const [currentPhone, setCurrentPhone] = useState(phone);
   const [currentCountry, setCurrentCountry] = useState(country);
-  const handleChangePhoneNumber = updatedPhone => {
-    let number = '';
+  const handleChangePhoneNumber = changedPhone => {
+    if (!Boolean(changedPhone)) {
+      onChange({ phone: changedPhone, status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE });
 
-    if (updatedPhone) {
-      number = parsePhoneNumber(updatedPhone)?.number ? parsePhoneNumber(updatedPhone).number : updatedPhone;
+      return;
     }
 
-    setCurrentPhone(number);
-    onChange({ phone: number });
+    const { number } = parsePhoneNumber(changedPhone) || {};
+
+    onChange({ phone: number, status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE });
   };
-  const handleChangeCountry = updatedCountry => {
-    setCurrentCountry(updatedCountry);
-    onCountryChange({ country: updatedCountry });
+  const handleChangeCountry = changedCountry => {
+    if (changedCountry && changedCountry !== country) {
+      onChange({ phone: '', status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE_COUNTRY });
+      onCountryChange({ country: updatedCountry, status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE_COUNTRY });
+    }
   };
   const handleBlurPhoneNumberInput = event => {
-    setProcessing(false);
     handleChangePhoneNumber(event.target.value);
-    handleChangeCountry(currentCountry);
+    handleChangeCountry(country);
+  };
+  const handleFocusPhoneNumberInput = event => {
+    onFocus({ phone: currentPhone, status: PHONE_NUMBER_INPUT_STATUS.ON_FOCUS });
   };
 
   useMount(() => {
@@ -67,7 +83,7 @@ const PhoneNumberInput = ({ className, placeholder, country, phone, onFocus, onB
       placeholder={placeholder || t('EnterPhoneNumber')}
       className={getClassName([styles.PhoneNumberInput, className])}
       value={formatPhoneNumberIntl(currentPhone)}
-      defaultCountry={currentCountry}
+      defaultCountry={currentPhone}
       country={currentCountry}
       countries={Object.keys(COUNTRIES)}
       onChange={handleChangePhoneNumber}
