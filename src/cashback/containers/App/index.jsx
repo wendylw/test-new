@@ -15,7 +15,6 @@ import {
   getUserConsumerId,
   getIsTngAuthorizationError,
 } from '../../redux/modules/app';
-import { getIsCashbackClaimRequestFulfilled } from '../../redux/modules/claim';
 import { getIsConfirmSharingConsumerInfoCompleted } from '../StoreRedemption/redux/selectors';
 import { getPageError } from '../../../redux/modules/entities/error';
 import { getIsLoadCustomerRequestCompleted } from '../../redux/modules/customer/selectors';
@@ -92,12 +91,7 @@ class App extends Component {
 
       await appActions.loadConsumerLoginStatus();
 
-      const {
-        isUserLogin,
-        userConsumerId,
-        isCashbackClaimRequestFulfilled,
-        isConfirmSharingConsumerInfoCompleted,
-      } = this.props;
+      const { isUserLogin, userConsumerId, isConfirmSharingConsumerInfoCompleted } = this.props;
 
       if (isWebview()) {
         await appActions.syncLoginFromBeepApp();
@@ -115,7 +109,7 @@ class App extends Component {
         let isLoadCustomerAvailable = true;
 
         if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM)) {
-          isLoadCustomerAvailable = isCashbackClaimRequestFulfilled;
+          isLoadCustomerAvailable = false;
         }
 
         if (pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION)) {
@@ -139,13 +133,11 @@ class App extends Component {
       userConsumerId: currUserConsumerId,
       loadConsumerCustomerInfo,
       isLoadCustomerRequestCompleted,
-      isCashbackClaimRequestFulfilled: currIsCashbackClaimRequestFulfilled,
       isConfirmSharingConsumerInfoCompleted: currIsConfirmSharingConsumerInfoCompleted,
     } = this.props;
     const {
       pageError: prevPageError,
       isUserLogin: prevIsUserLogin,
-      isCashbackClaimRequestFulfilled: prevIsCashbackClaimRequestFulfilled,
       isConfirmSharingConsumerInfoCompleted: prevIsConfirmSharingConsumerInfoCompleted,
     } = prevProps;
     const { code } = prevPageError || {};
@@ -160,12 +152,8 @@ class App extends Component {
     if (currIsUserLogin && currUserConsumerId) {
       let isLoadCustomerAvailable = false;
 
-      if (
-        pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM) &&
-        currIsCashbackClaimRequestFulfilled &&
-        currIsCashbackClaimRequestFulfilled !== prevIsCashbackClaimRequestFulfilled
-      ) {
-        isLoadCustomerAvailable = currIsCashbackClaimRequestFulfilled;
+      if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM)) {
+        isLoadCustomerAvailable = false;
       }
 
       if (
@@ -242,7 +230,6 @@ App.propTypes = {
   userCountry: PropTypes.string,
   loginBannerPrompt: PropTypes.string,
   isUserLogin: PropTypes.bool,
-  isCashbackClaimRequestFulfilled: PropTypes.bool,
   isConfirmSharingConsumerInfoCompleted: PropTypes.bool,
   isLoadCustomerRequestCompleted: PropTypes.bool,
   userConsumerId: PropTypes.string,
@@ -278,7 +265,6 @@ App.defaultProps = {
   userCountry: null,
   loginBannerPrompt: null,
   isUserLogin: false,
-  isCashbackClaimRequestFulfilled: false,
   isConfirmSharingConsumerInfoCompleted: false,
   isLoadCustomerRequestCompleted: false,
   userConsumerId: null,
@@ -299,7 +285,6 @@ export default compose(
       isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
       isUserLogin: getIsUserLogin(state),
       userConsumerId: getUserConsumerId(state),
-      isCashbackClaimRequestFulfilled: getIsCashbackClaimRequestFulfilled(state),
       isConfirmSharingConsumerInfoCompleted: getIsConfirmSharingConsumerInfoCompleted(state),
       isLoadCustomerRequestCompleted: getIsLoadCustomerRequestCompleted(state),
       isLoginModalShown: getIsLoginModalShown(state),

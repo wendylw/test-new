@@ -100,6 +100,5 @@ export const mounted = createAsyncThunk('cashback/claimCashback/mounted', async 
 
   if (isLogin && orderReceiptNumber) {
     await dispatch(claimedCashbackForCustomer());
-    dispatch(loadConsumerCustomerInfo());
   }
 });
