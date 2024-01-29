@@ -214,7 +214,11 @@ class App extends Component {
           />
         ) : null}
         <Message />
-        {isLoginModalShown && !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram() ? (
+        {isLoginModalShown &&
+        !isWebview() &&
+        !isTNGMiniProgram() &&
+        !isGCashMiniProgram() &&
+        !pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM) ? (
           <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
         ) : null}
         <Routes />
