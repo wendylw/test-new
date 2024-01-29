@@ -40,14 +40,15 @@ export const getIsSkeletonLoaderShow = createSelector(
     !isLoadMerchantRequestCompleted || !isCheckLoginRequestCompleted
 );
 
-export const getIsClaimUniquePromoRequestPending = createSelector(
-  getClaimUniquePromoRequestStatus,
-  claimUniquePromoRequestStatus => claimUniquePromoRequestStatus === API_REQUEST_STATUS.PENDING
-);
-
 export const getIsClaimUniquePromoRequestFulfilled = createSelector(
   getClaimUniquePromoRequestStatus,
   claimUniquePromoRequestStatus => claimUniquePromoRequestStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsClaimUniquePromoRequestCompleted = createSelector(
+  getClaimUniquePromoRequestStatus,
+  claimUniquePromoRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(claimUniquePromoRequestStatus)
 );
 
 export const getIsClaimUniquePromoRequestDuplicated = createSelector(
