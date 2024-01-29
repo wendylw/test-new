@@ -201,6 +201,7 @@ class App extends Component {
   render() {
     const { t, error, loginBannerPrompt, onlineStoreInfoFavicon, isLoginModalShown, appActions } = this.props;
     const { message } = error || {};
+    const { pathname } = window.location;
 
     return (
       <main id="beep-app-container" className="loyalty fixed-wrapper__main fixed-wrapper">
