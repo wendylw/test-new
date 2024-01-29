@@ -17,8 +17,8 @@ const ClaimUniquePromoFooter = () => {
   const merchantBusiness = useSelector(getMerchantBusiness);
   const isClaimUniquePromoRequestCompleted = useSelector(getIsClaimUniquePromoRequestCompleted);
   const handleClickClaimUniquePromoButton = useCallback(() => {
-    setProcessing(true);
     dispatch(claimPromotionClicked());
+    setProcessing(true);
 
     CleverTap.pushEvent('Claim Unique Promo Landing Page - Click Claim Promotion Button', {
       'account name': merchantBusiness,
