@@ -63,8 +63,6 @@ export const claimCashback = createAsyncThunk(
     const phone = getUserPhone(state);
     const receiptNumber = getReceiptNumber(state);
     await dispatch(createCashbackInfo({ receiptNumber, phone }));
-    // WB-7407: We need to reload cashback info since cashback rate may be changed after login.
-    await dispatch(loadCashbackInfo(receiptNumber));
   }
 );
 
