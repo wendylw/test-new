@@ -44,9 +44,10 @@ export const claimUniquePromo = createAsyncThunk(
 export const mounted = createAsyncThunk(
   'rewards/business/claimUniquePromo/mounted',
   async (_, { getState, dispatch }) => {
-    await dispatch(fetchMerchantInfo());
-
     const business = getMerchantBusiness(getState());
+
+    await dispatch(fetchMerchantInfo(business));
+
     const country = getMerchantCountry(getState());
 
     Growthbook.patchAttributes({ business, country });
