@@ -320,5 +320,6 @@
   "Redirecting": "Redirecting...",
   "UrlExpiredTitle": "Oops! This QR Code link has expired",
   "UrlExpiredDescription": "Please request a new QR Code with the cashier & scan again",
-  "UrlExpiredButton": "Scan a new qr code"
+  "UrlExpiredButton": "Scan a new qr code",
+  "UnexpectedErrorOccurred": "Oops! An unexpected error has occurred"
 }

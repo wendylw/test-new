@@ -191,7 +191,7 @@ export const loginUserByAlipayMiniProgram = createAsyncThunk(
         const { error: errorCode } = JSON.parse(error.message) || {};
 
         errorCode === 10 &&
-          confirm(i18next.t('ApiError:UnexpectedErrorOccurred'), {
+          confirm(i18next.t('Common:UnexpectedErrorOccurred'), {
             closeByBackButton: false,
             closeByBackDrop: false,
             cancelButtonContent: i18next.t('Common:Cancel'),
