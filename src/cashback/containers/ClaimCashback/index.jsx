@@ -23,7 +23,7 @@ import PageHeader from '../../../common/components/PageHeader';
 import MerchantInfo from './components/MerchantInfo';
 import CashbackBlock from './components/CashbackBlock';
 import PhoneNumberInput from '../../../common/components/Input/PhoneNumberInput/PhoneNumberInput';
-// import styles from './ClaimCashback.module.scss';
+import styles from './ClaimCashback.module.scss';
 
 const ClaimCashback = () => {
   const { t } = useTranslation(['Cashback']);
@@ -83,7 +83,7 @@ const ClaimCashback = () => {
       <MerchantInfo />
       <CashbackBlock />
       <PhoneNumberInput />
-      {/* {!isLogin && <div className={styles.ClaimCashbackNotLoginBackground} />} */}
+      {!isLogin && <div className={styles.ClaimCashbackNotLoginBackground} />}
     </Frame>
   );
 };

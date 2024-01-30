@@ -224,8 +224,11 @@ class App extends Component {
           />
         ) : null}
         <Message />
-        {isLoginModalShown && !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram() && !isClaimCashbackPage ? (
-          <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
+        {isLoginModalShown && !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram() ? (
+          <Login
+            className="aside fixed-wrapper"
+            title={isClaimCashbackPage ? t('CashbackLoginText') : loginBannerPrompt || t('LoginBannerPrompt')}
+          />
         ) : null}
         <Routes />
         <DocumentFavicon icon={onlineStoreInfoFavicon || faviconImage} />
