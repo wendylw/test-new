@@ -1,20 +1,19 @@
-import React, { useCallback, useMemo, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
-import { init, callNativeProfile } from './redux/thunk';
+import { init } from './redux/thunk';
 import ProfileRewardsImage from '../../../images/profile-rewards.svg';
 import { actions as profileActions } from './redux';
 import { getShouldShowSkipButton } from './redux/selectors';
-import { getIsWebview } from '../../redux/modules/common/selectors';
 import CleverTap from '../../../utils/clevertap';
 import Frame from '../../../common/components/Frame';
 import ProfileFooter from './ProfileFooter';
 import ProfileFields from './ProfileFields';
 import './Profile.scss';
 
-const WebProfile = ({ show, onSave, onSkip }) => {
+const Profile = ({ show, onSave, onSkip }) => {
   const { t } = useTranslation(['Profile']);
   const dispatch = useDispatch();
   const shouldShowSkipButton = useSelector(getShouldShowSkipButton);
@@ -62,8 +61,8 @@ const WebProfile = ({ show, onSave, onSkip }) => {
                 alt="StoreHub profile rewards"
               />
               <div className="padding-smaller">
-                <h4 className="profile__tip-title text-weight-bolder">{t('GetRewarded')}</h4>
-                <p className="profile__tip">{t('CompleteProfileTip')}</p>
+                <h4 className="profile__tip-title text-weight-bolder">{t('UnlockRewards')}</h4>
+                <p className="profile__tip">{t('UnlockMemberRewardsTip')}</p>
               </div>
             </div>
             <div className="padding-left-right-normal">
@@ -75,38 +74,6 @@ const WebProfile = ({ show, onSave, onSkip }) => {
       </aside>
     </Frame>
   );
-};
-
-WebProfile.displayName = 'WebProfile';
-
-WebProfile.propTypes = {
-  show: PropTypes.bool,
-  onSave: PropTypes.func,
-  onSkip: PropTypes.func,
-};
-
-WebProfile.defaultProps = {
-  show: false,
-  onSave: () => {},
-  onSkip: () => {},
-};
-
-const Profile = ({ show, onSave, onSkip }) => {
-  const dispatch = useDispatch();
-  const isWebview = useSelector(getIsWebview);
-  const shouldShowNativeProfile = useMemo(() => show && isWebview, [show, isWebview]);
-
-  useEffect(() => {
-    if (shouldShowNativeProfile) {
-      dispatch(callNativeProfile({ saveCallback: onSave, skipCallback: onSkip }));
-    }
-  }, [shouldShowNativeProfile, onSave, onSkip, dispatch]);
-
-  if (shouldShowNativeProfile) {
-    return null;
-  }
-
-  return <WebProfile show={show} onSkip={onSkip} onSave={onSave} />;
 };
 
 Profile.displayName = 'Profile';

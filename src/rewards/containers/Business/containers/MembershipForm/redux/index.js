@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { joinNowButtonClicked, showProfileForm, hideProfileForm, joinBusinessMembership } from './thunks';
+import { joinNowButtonClicked, showWebProfileForm, hideWebProfileForm, joinBusinessMembership } from './thunks';
 
 const initialState = {
   isProfileFormVisible: false,
@@ -28,10 +28,10 @@ export const { actions, reducer } = createSlice({
     [joinBusinessMembership.rejected.type]: state => {
       state.isJoinNowButtonDisabled = false;
     },
-    [showProfileForm.fulfilled.type]: state => {
+    [showWebProfileForm.fulfilled.type]: state => {
       state.isProfileFormVisible = true;
     },
-    [hideProfileForm.fulfilled.type]: state => {
+    [hideWebProfileForm.fulfilled.type]: state => {
       state.isProfileFormVisible = false;
     },
   },

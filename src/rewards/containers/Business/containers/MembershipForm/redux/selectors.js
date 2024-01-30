@@ -104,6 +104,13 @@ export const getShouldShowBackButton = createSelector(
 
 export const getIsJoinNowButtonDisabled = state => state.business.membershipForm.isJoinNowButtonDisabled;
 
+// WB-7279: fix iOS swipe back no response issue.
+export const getShouldDisableJoinNowButton = createSelector(
+  getIsWebview,
+  getIsJoinNowButtonDisabled,
+  (isWebview, isJoinNowButtonDisabled) => !isWebview && isJoinNowButtonDisabled
+);
+
 export const getIsProfileFormVisible = state => state.business.membershipForm.isProfileFormVisible;
 
 export const getShouldShowProfileForm = createSelector(

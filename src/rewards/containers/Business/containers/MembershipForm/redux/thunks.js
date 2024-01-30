@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, replace, goBack as historyGoBack } from 'connected-react-router';
-import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
+import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
 import {
   getIsAlipayMiniProgram,
   getIsWebview,
@@ -25,9 +25,15 @@ import { PATH_NAME_MAPPING, REFERRER_SOURCE_TYPES } from '../../../../../../comm
 import { getCookieVariable, setCookieVariable, removeCookieVariable } from '../../../../../../common/utils';
 import logger from '../../../../../../utils/monitoring/logger';
 
-export const showProfileForm = createAsyncThunk('rewards/business/membershipForm/showProfileForm', async () => {});
+export const showWebProfileForm = createAsyncThunk(
+  'rewards/business/membershipForm/showWebProfileForm',
+  async () => {}
+);
 
-export const hideProfileForm = createAsyncThunk('rewards/business/membershipForm/hideProfileForm', async () => {});
+export const hideWebProfileForm = createAsyncThunk(
+  'rewards/business/membershipForm/hideWebProfileForm',
+  async () => {}
+);
 
 export const joinBusinessMembership = createAsyncThunk(
   'rewards/business/membershipForm/joinBusinessMembership',
@@ -42,10 +48,32 @@ export const joinBusinessMembership = createAsyncThunk(
   }
 );
 
+export const showNativeProfileForm = createAsyncThunk(
+  'rewards/business/membershipForm/showNativeProfileForm',
+  async (_, { dispatch }) => {
+    await showCompleteProfilePageAsync();
+    await dispatch(joinBusinessMembership());
+  }
+);
+
+export const showProfileForm = createAsyncThunk(
+  'rewards/business/membershipForm/showProfileForm',
+  async (_, { dispatch, getState }) => {
+    const isWebview = getIsWebview(getState());
+
+    if (isWebview) {
+      await dispatch(showNativeProfileForm());
+      return;
+    }
+
+    await dispatch(showWebProfileForm());
+  }
+);
+
 export const skipProfileButtonClicked = createAsyncThunk(
   'rewards/business/membershipForm/skipProfileButtonClicked',
   async (_, { dispatch }) => {
-    await dispatch(hideProfileForm());
+    await dispatch(hideWebProfileForm());
     await dispatch(joinBusinessMembership());
   }
 );
@@ -53,7 +81,7 @@ export const skipProfileButtonClicked = createAsyncThunk(
 export const saveProfileButtonClicked = createAsyncThunk(
   'rewards/business/membershipForm/saveProfileButtonClicked',
   async (_, { dispatch }) => {
-    await dispatch(hideProfileForm());
+    await dispatch(hideWebProfileForm());
     await dispatch(joinBusinessMembership());
   }
 );
