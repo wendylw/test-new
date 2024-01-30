@@ -5,3 +5,5 @@ import { isAlipayMiniProgram } from '../../../../common/utils/alipay-miniprogram
 export const getIsWebview = () => isWebview();
 
 export const getIsAlipayMiniProgram = () => isAlipayMiniProgram();
+
+export const getIsWeb = () => !isWebview() && !isAlipayMiniProgram();
