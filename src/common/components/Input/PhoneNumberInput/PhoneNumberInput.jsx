@@ -48,14 +48,14 @@ const PhoneNumberInput = ({
       return;
     }
 
-    const { number, country } = parseNumberObject;
+    const { number, country: parsedCountry } = parseNumberObject;
     const isValidNumber = isValidPhoneNumber(number);
 
     onChange({ phone: number, status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE });
 
-    if (isValidNumber && COUNTRIES[country]) {
+    if (isValidNumber && COUNTRIES[parsedCountry]) {
       onError(null);
-    } else if (country && !COUNTRIES[country]) {
+    } else if (parsedCountry && !COUNTRIES[parsedCountry]) {
       onError({ type: ERROR_TYPES.NOT_SUPPORTED_COUNTRY });
     } else {
       onError({ type: ERROR_TYPES.INVALID_PHONE_NUMBER });
@@ -86,14 +86,14 @@ const PhoneNumberInput = ({
       return;
     }
 
-    const { number, country } = parseNumberObject;
+    const { number, country: parsedCountry } = parseNumberObject;
     const isValidNumber = isValidPhoneNumber(number);
 
     onBlur({ phone: number, status: PHONE_NUMBER_INPUT_STATUS.ON_BLUR });
 
     if (isValidNumber) {
       onError(null);
-    } else if (country && !COUNTRIES[country]) {
+    } else if (parsedCountry && !COUNTRIES[parsedCountry]) {
       onError({ type: ERROR_TYPES.NOT_SUPPORTED_COUNTRY });
     } else {
       onError({ type: ERROR_TYPES.INVALID_PHONE_NUMBER });
