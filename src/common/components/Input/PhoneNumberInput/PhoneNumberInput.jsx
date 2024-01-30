@@ -48,13 +48,15 @@ const PhoneNumberInput = ({
       return;
     }
 
-    const { number } = parseNumberObject;
+    const { number, country } = parseNumberObject;
     const isValidNumber = isValidPhoneNumber(number);
 
     onChange({ phone: number, status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE });
 
-    if (isValidNumber) {
+    if (isValidNumber && COUNTRIES[country]) {
       onError(null);
+    } else if (country && !COUNTRIES[country]) {
+      onError({ type: ERROR_TYPES.NOT_SUPPORTED_COUNTRY });
     } else {
       onError({ type: ERROR_TYPES.INVALID_PHONE_NUMBER });
     }
@@ -63,7 +65,6 @@ const PhoneNumberInput = ({
     if (changedCountry && changedCountry !== country) {
       onChange({ phone: '', status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE_COUNTRY });
       onCountryChange({ country: changedCountry, status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE_COUNTRY });
-      onError({ type: ERROR_TYPES.EMPTY_PHONE_NUMBER });
     }
   };
   const handleBlurPhoneNumberInput = event => {
@@ -76,13 +77,24 @@ const PhoneNumberInput = ({
       return;
     }
 
-    const { number } = parsePhoneNumber(onBlurPhone) || {};
+    const parseNumberObject = parsePhoneNumber(onBlurPhone);
+
+    if (!parseNumberObject) {
+      onBlur({ phone: onBlurPhone, status: PHONE_NUMBER_INPUT_STATUS.ON_BLUR });
+      onError({ type: ERROR_TYPES.INVALID_PHONE_NUMBER });
+
+      return;
+    }
+
+    const { number, country } = parseNumberObject;
     const isValidNumber = isValidPhoneNumber(number);
 
-    onChange({ phone: number, status: PHONE_NUMBER_INPUT_STATUS.ON_BLUR });
+    onBlur({ phone: number, status: PHONE_NUMBER_INPUT_STATUS.ON_BLUR });
 
     if (isValidNumber) {
       onError(null);
+    } else if (country && !COUNTRIES[country]) {
+      onError({ type: ERROR_TYPES.NOT_SUPPORTED_COUNTRY });
     } else {
       onError({ type: ERROR_TYPES.INVALID_PHONE_NUMBER });
     }
