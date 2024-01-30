@@ -6,7 +6,6 @@ import { initUserInfo, loginUserByBeepApp, loginUserByAlipayMiniProgram } from '
 import { getMerchantBusiness, getIsMerchantMembershipEnabled } from '../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../redux/modules/merchant/thunks';
 import { getIsWebview, getIsAlipayMiniProgram } from '../../../redux/modules/common/selectors';
-import { loadConsumerCustomerInfo } from '../../../redux/modules/customer/thunks';
 import { getOrderQRReceiptNumber, getOrderCashbackInfo, postClaimedCashbackForCustomer } from './api-request';
 import {
   getClaimCashbackPageHash,
@@ -100,6 +99,5 @@ export const mounted = createAsyncThunk('cashback/claimCashback/mounted', async 
 
   if (isLogin && orderReceiptNumber) {
     await dispatch(claimedCashbackForCustomer());
-    dispatch(loadConsumerCustomerInfo());
   }
 });
