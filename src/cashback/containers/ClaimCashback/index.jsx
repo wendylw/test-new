@@ -22,7 +22,6 @@ import Frame from '../../../common/components/Frame';
 import PageHeader from '../../../common/components/PageHeader';
 import MerchantInfo from './components/MerchantInfo';
 import CashbackBlock from './components/CashbackBlock';
-import PhoneNumberInput from '../../../common/components/Input/PhoneNumberInput/PhoneNumberInput';
 import styles from './ClaimCashback.module.scss';
 
 const ClaimCashback = () => {
@@ -82,7 +81,6 @@ const ClaimCashback = () => {
       />
       <MerchantInfo />
       <CashbackBlock />
-      <PhoneNumberInput />
       {!isLogin && <div className={styles.ClaimCashbackNotLoginBackground} />}
     </Frame>
   );
