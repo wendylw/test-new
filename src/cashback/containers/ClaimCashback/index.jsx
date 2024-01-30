@@ -70,7 +70,7 @@ const ClaimCashback = () => {
     if (isAppUserLogin) {
       dispatch(initUserInfo());
     }
-  }, [isAppUserLogin]);
+  }, [isAppUserLogin, dispatch]);
 
   return (
     <Frame>
