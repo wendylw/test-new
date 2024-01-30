@@ -138,7 +138,7 @@
   "Retry": "Retry",
   "TableNumberUpdatedTitle": "Table Updated",
   "TableNumberUpdatedDescription": "Your table number has been changed. Kindly check your new table number before paying.",
-  "ThankYouFeedbackToastTitle": "Thanks for feedback! Rate us on Google. It’ll mean a lot to us!",
+  "ThankYouFeedbackToastTitle": "Thanks for the feedback! Rate us on Google. It’ll mean a lot to us!",
   "ThankYouFeedbackToastContent": "Redirecting in {{count}}sec...",
   "ThankYouFeedbackToastDescription": "(Review Copied to Clipboard)",
   "RedirectingToGoogleReview": "Redirecting to Google Review..."
