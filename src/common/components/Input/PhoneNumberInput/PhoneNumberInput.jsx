@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,7 @@ import PhoneInput, {
 } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import { getClassName } from '../../../utils/ui';
-import { COUNTRIES } from '../../../common/utils/constants';
+import { COUNTRIES } from '../../../utils/constants';
 import { ERROR_TYPES, PHONE_NUMBER_INPUT_STATUS } from './constants';
 import styles from './PhoneNumberInput.module.scss';
 
@@ -31,31 +31,64 @@ const PhoneNumberInput = ({
 }) => {
   const { t } = useTranslation();
   const phoneNumberInputRef = useRef(null);
-  const [currentPhone, setCurrentPhone] = useState(phone);
-  const [currentCountry, setCurrentCountry] = useState(country);
   const handleChangePhoneNumber = changedPhone => {
-    if (!Boolean(changedPhone)) {
+    if (!changedPhone) {
       onChange({ phone: changedPhone, status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE });
+      onError({ type: ERROR_TYPES.EMPTY_PHONE_NUMBER });
 
       return;
     }
 
-    const { number } = parsePhoneNumber(changedPhone) || {};
+    const parseNumberObject = parsePhoneNumber(changedPhone);
+
+    if (!parseNumberObject) {
+      onChange({ phone: changedPhone, status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE });
+      onError({ type: ERROR_TYPES.INVALID_PHONE_NUMBER });
+
+      return;
+    }
+
+    const { number } = parseNumberObject;
+    const isValidNumber = isValidPhoneNumber(number);
 
     onChange({ phone: number, status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE });
+
+    if (isValidNumber) {
+      onError(null);
+    } else {
+      onError({ type: ERROR_TYPES.INVALID_PHONE_NUMBER });
+    }
   };
   const handleChangeCountry = changedCountry => {
     if (changedCountry && changedCountry !== country) {
       onChange({ phone: '', status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE_COUNTRY });
-      onCountryChange({ country: updatedCountry, status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE_COUNTRY });
+      onCountryChange({ country: changedCountry, status: PHONE_NUMBER_INPUT_STATUS.ON_CHANGE_COUNTRY });
+      onError({ type: ERROR_TYPES.EMPTY_PHONE_NUMBER });
     }
   };
   const handleBlurPhoneNumberInput = event => {
-    handleChangePhoneNumber(event.target.value);
-    handleChangeCountry(country);
+    const { value: onBlurPhone } = event.target;
+
+    if (!onBlurPhone) {
+      onBlur({ phone: onBlurPhone, status: PHONE_NUMBER_INPUT_STATUS.ON_BLUR });
+      onError({ type: ERROR_TYPES.EMPTY_PHONE_NUMBER });
+
+      return;
+    }
+
+    const { number } = parsePhoneNumber(onBlurPhone) || {};
+    const isValidNumber = isValidPhoneNumber(number);
+
+    onChange({ phone: number, status: PHONE_NUMBER_INPUT_STATUS.ON_BLUR });
+
+    if (isValidNumber) {
+      onError(null);
+    } else {
+      onError({ type: ERROR_TYPES.INVALID_PHONE_NUMBER });
+    }
   };
-  const handleFocusPhoneNumberInput = event => {
-    onFocus({ phone: currentPhone, status: PHONE_NUMBER_INPUT_STATUS.ON_FOCUS });
+  const handleFocusPhoneNumberInput = () => {
+    onFocus({ status: PHONE_NUMBER_INPUT_STATUS.ON_FOCUS });
   };
 
   useMount(() => {
@@ -63,14 +96,6 @@ const PhoneNumberInput = ({
       phoneNumberInputRef.current?.focus();
     });
   });
-
-  useEffect(() => {
-    setCurrentPhone(phone);
-  }, [phone]);
-
-  useEffect(() => {
-    setCurrentCountry(country);
-  }, [country]);
 
   return (
     <PhoneInput
@@ -82,9 +107,9 @@ const PhoneNumberInput = ({
       smartCaret={false}
       placeholder={placeholder || t('EnterPhoneNumber')}
       className={getClassName([styles.PhoneNumberInput, className])}
-      value={formatPhoneNumberIntl(currentPhone)}
-      defaultCountry={currentPhone}
-      country={currentCountry}
+      value={formatPhoneNumberIntl(phone)}
+      defaultCountry={phone}
+      country={country}
       countries={Object.keys(COUNTRIES)}
       onChange={handleChangePhoneNumber}
       onCountryChange={handleChangeCountry}
@@ -101,6 +126,8 @@ PhoneNumberInput.propTypes = {
   country: PropTypes.string,
   onChange: PropTypes.func,
   onCountryChange: PropTypes.func,
+  onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
   onError: PropTypes.func,
 };
 
@@ -111,6 +138,8 @@ PhoneNumberInput.defaultProps = {
   country: 'MY',
   onChange: () => {},
   onCountryChange: () => {},
+  onFocus: () => {},
+  onBlur: () => {},
   onError: () => {},
 };
 PhoneNumberInput.displayName = 'PhoneNumberInput';

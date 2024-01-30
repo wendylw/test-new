@@ -201,7 +201,15 @@ class App extends Component {
   }
 
   render() {
-    const { t, error, loginBannerPrompt, onlineStoreInfoFavicon, isLoginModalShown, appActions } = this.props;
+    const {
+      t,
+      error,
+      loginBannerPrompt,
+      onlineStoreInfoFavicon,
+      isLoginModalShown,
+      appActions,
+      isClaimCashbackPage,
+    } = this.props;
     const { message } = error || {};
 
     return (
@@ -216,7 +224,7 @@ class App extends Component {
           />
         ) : null}
         <Message />
-        {isLoginModalShown && !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram() ? (
+        {isLoginModalShown && !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram() && !isClaimCashbackPage ? (
           <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
         ) : null}
         <Routes />
