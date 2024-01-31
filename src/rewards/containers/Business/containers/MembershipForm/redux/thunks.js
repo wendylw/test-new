@@ -35,6 +35,14 @@ export const hideWebProfileForm = createAsyncThunk(
   async () => {}
 );
 
+export const loadCustomerInfo = createAsyncThunk(
+  'rewards/business/membershipForm/loadCustomerInfo',
+  async (_, { dispatch, getState }) => {
+    const business = getBusiness(getState());
+    await dispatch(fetchCustomerInfo(business));
+  }
+);
+
 export const joinBusinessMembership = createAsyncThunk(
   'rewards/business/membershipForm/joinBusinessMembership',
   async (_, { dispatch, getState }) => {
@@ -158,10 +166,7 @@ export const mounted = createAsyncThunk(
 
     if (from === REFERRER_SOURCE_TYPES.LOGIN) {
       await dispatch(continueJoinMembership());
-      return;
     }
-
-    dispatch(fetchCustomerInfo(business));
   }
 );
 
