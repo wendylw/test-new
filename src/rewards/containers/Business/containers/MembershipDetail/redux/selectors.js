@@ -61,6 +61,11 @@ export const getIsUserFromOrdering = createSelector(getSource, source =>
   [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
 );
 
+export const getIsFromEarnedCashbackQrScan = createSelector(
+  getSource,
+  source => source === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
+);
+
 export const getIsOrderAndRedeemButtonDisplay = createSelector(
   getIsMerchantEnabledOROrdering,
   getIsMerchantEnabledDelivery,
@@ -119,12 +124,14 @@ export const getNewMemberPromptCategory = createSelector(
   getCustomerCashback,
   getIsFromSeamlessLoyaltyQrScan,
   getIsFromJoinMembershipUrlClick,
+  // getIsFromEarnedCashbackQrScan,
   (
     isLoadCustomerRequestCompleted,
     isMerchantEnabledCashback,
     customerCashback,
     isFromSeamlessLoyaltyQrScan,
     isFromJoinMembershipUrlClick
+    // isFromEarnedCashbackQrScan
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return NEW_MEMBER_TYPES.DEFAULT;

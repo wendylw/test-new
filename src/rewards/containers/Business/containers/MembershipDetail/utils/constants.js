@@ -4,12 +4,19 @@ import RewardsEarnedCashbackIcon from '../../../../../../images/rewards-earned-c
 export const NEW_MEMBER_TYPES = {
   DEFAULT: 'default',
   REDEEM_CASHBACK: 'redeemCashback',
+  EARNED_CASHBACK: 'earnedCashback',
+  CLAIMED_SOMEONE_ELSE: 'claimedSomeoneElse',
+  NOT_CLAIMED_EXPIRED: 'notClaimedExpired',
 };
 
 export const RETURNING_MEMBER_TYPES = {
   DEFAULT: 'default',
   REDEEM_CASHBACK: 'redeemCashback',
   THANKS_COMING_BACK: 'thanksComingBack',
+  EARNED_CASHBACK: 'earnedCashback',
+  CLAIMED_REPEAT: 'claimedRepeat',
+  CLAIMED_SOMEONE_ELSE: 'claimedSomeoneElse',
+  NOT_CLAIMED_EXPIRED: 'notClaimedExpired',
 };
 
 export const NEW_MEMBER_ICONS = {
