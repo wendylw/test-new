@@ -1,8 +1,8 @@
 export const CLAIMED_CASHBACK_STATUS = {
   // can claim status
   CLAIMED_FIRST_TIME: 'Claimed_FirstTime',
-  CLAIMED_PROCESSING: 'Claimed_Processing',
   CLAIMED_NOT_FIRST_TIME: 'Claimed_NotFirstTime',
+  CLAIMED_PROCESSING: 'Claimed_Processing',
   // can't claim status
   CLAIMED_SOMEONE_ELSE: 'Claimed_Someone_Else',
   NOT_CLAIMED_EXPIRED: 'NotClaimed_Expired',

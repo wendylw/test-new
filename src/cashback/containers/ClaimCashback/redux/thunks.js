@@ -1,5 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { CASHBACK_SOURCE, PATH_NAME_MAPPING, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../common/utils/constants';
+import {
+  CASHBACK_SOURCE,
+  CLAIM_CASHBACK_STATUS_QUERY_NAME,
+  CLAIM_CASHBACK_VALUE_QUERY_NAME,
+  PATH_NAME_MAPPING,
+  BECOME_MERCHANT_MEMBER_METHODS,
+} from '../../../../common/utils/constants';
 import { getRegistrationTouchPoint, getRegistrationSource } from '../../../../common/utils';
 import { getIsLogin, getUserPhoneNumber } from '../../../../redux/modules/user/selectors';
 import { initUserInfo, loginUserByBeepApp, loginUserByAlipayMiniProgram } from '../../../../redux/modules/user/thunks';
@@ -62,7 +68,7 @@ export const claimedCashbackForCustomer = createAsyncThunk(
       const rewardsBaseRoute = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${REWARDS_BASE}${REWARDS_BUSINESS}`;
 
       if (isMerchantMembershipEnabled) {
-        window.location.href = `${rewardsBaseRoute}${REWARDS_MEMBERSHIP}${REWARDS_MEMBERSHIP_DETAIL}?business=${merchantBusiness}&source=${BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN}&status=${claimedOrderCashbackStatus}&cashback=${orderCashbackValue}`;
+        window.location.href = `${rewardsBaseRoute}${REWARDS_MEMBERSHIP}${REWARDS_MEMBERSHIP_DETAIL}?business=${merchantBusiness}&source=${BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN}&${CLAIM_CASHBACK_STATUS_QUERY_NAME}=${claimedOrderCashbackStatus}&${CLAIM_CASHBACK_VALUE_QUERY_NAME}=${orderCashbackValue}`;
       }
     }
 

@@ -12,6 +12,7 @@ import { getIsNewMember } from '../../../../redux/common/selectors';
 import {
   getIsFromJoinMembershipUrlClick,
   getNewMemberPromptCategory,
+  getNewMemberIn18nParams,
   getReturningMemberPromptCategory,
 } from '../../redux/selectors';
 import { alert, toast } from '../../../../../../../common/utils/feedback';
@@ -22,11 +23,19 @@ const CELEBRATION_ANIMATION_TIME = 3600;
 const NewMember = () => {
   const { t } = useTranslation(['Rewards']);
   const newMemberPromptCategory = useSelector(getNewMemberPromptCategory);
+  const newMemberIn18nParams = useSelector(getNewMemberIn18nParams);
   const newMemberIcon = NEW_MEMBER_ICONS[newMemberPromptCategory];
   const newMemberContentI18nKeys = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory];
-  const { titleI18Key, descriptionI18Key } = newMemberContentI18nKeys || {};
+  const { titleI18nKey, descriptionI18nKey, titleI18nParamsKeys } = newMemberContentI18nKeys || {};
   const [celebrationAnimateImage, setCelebrationAnimateImage] = useState(NewMemberCelebrationAnimateImage);
   const isCelebrationAnimationDisplay = celebrationAnimateImage && newMemberPromptCategory;
+  const newMemberTitleI18nParams = {};
+
+  if (titleI18nParamsKeys) {
+    titleI18nParamsKeys.forEach(key => {
+      newMemberTitleI18nParams[key] = newMemberIn18nParams[key];
+    });
+  }
 
   useEffect(() => {
     if (newMemberContentI18nKeys) {
@@ -37,8 +46,12 @@ const NewMember = () => {
               <ObjectFitImage noCompression src={newMemberIcon} alt="Store New Member Icon in StoreHub" />
             </div>
           )}
-          {titleI18Key && <h4 className={styles.NewMemberTitle}>{t(titleI18Key)}</h4>}
-          {descriptionI18Key && <p className={styles.NewMemberDescription}>{t(descriptionI18Key)}</p>}
+          {titleI18nKey && (
+            <h4 className={styles.NewMemberTitle}>
+              {titleI18nParamsKeys ? t(titleI18nKey, newMemberTitleI18nParams) : t(titleI18nKey)}
+            </h4>
+          )}
+          {descriptionI18nKey && <p className={styles.NewMemberDescription}>{t(descriptionI18nKey)}</p>}
         </div>
       );
 
@@ -48,7 +61,7 @@ const NewMember = () => {
 
       alert(content);
     }
-  }, [newMemberContentI18nKeys, t, titleI18Key, descriptionI18Key, newMemberIcon]);
+  }, [newMemberContentI18nKeys, t, titleI18nKey, descriptionI18nKey, newMemberIcon]);
 
   return (
     isCelebrationAnimationDisplay && (
@@ -71,7 +84,7 @@ const ReturningMember = () => {
   const returningMemberPromptCategory = useSelector(getReturningMemberPromptCategory);
   const returningMemberIcon = RETURNING_MEMBER_ICONS[returningMemberPromptCategory];
   const returningMemberContentI18nKeys = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory];
-  const { titleI18Key, descriptionI18Key } = returningMemberContentI18nKeys || {};
+  const { titleI18nKey, descriptionI18nKey } = returningMemberContentI18nKeys || {};
 
   useEffect(() => {
     if (returningMemberContentI18nKeys) {
@@ -82,19 +95,19 @@ const ReturningMember = () => {
               <ObjectFitImage noCompression src={returningMemberIcon} alt="Store Returning Member Icon in StoreHub" />
             </div>
           )}
-          {titleI18Key && <h4 className={styles.ReturningMemberTitle}>{t(titleI18Key)}</h4>}
-          {descriptionI18Key && <p className={styles.ReturningMemberDescription}>{t(descriptionI18Key)}</p>}
+          {titleI18nKey && <h4 className={styles.ReturningMemberTitle}>{t(titleI18nKey)}</h4>}
+          {descriptionI18nKey && <p className={styles.ReturningMemberDescription}>{t(descriptionI18nKey)}</p>}
         </div>
       );
 
-      isFromJoinMembershipUrlClick ? toast.success(t(titleI18Key)) : alert(content);
+      isFromJoinMembershipUrlClick ? toast.success(t(titleI18nKey)) : alert(content);
     }
   }, [
     returningMemberContentI18nKeys,
     isFromJoinMembershipUrlClick,
     t,
-    titleI18Key,
-    descriptionI18Key,
+    titleI18nKey,
+    descriptionI18nKey,
     returningMemberIcon,
   ]);
 

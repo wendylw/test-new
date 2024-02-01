@@ -255,6 +255,10 @@ export const CASHBACK_SOURCE = {
   QR_ORDERING: 'QR_ORDERING',
 };
 
+export const CLAIM_CASHBACK_STATUS_QUERY_NAME = 'claimedStatus';
+
+export const CLAIM_CASHBACK_VALUE_QUERY_NAME = 'cashback';
+
 export const REFERRER_SOURCE_TYPES = {
   PAYMENT: 'payment',
   CASHBACK: 'cashback',

@@ -1,14 +1,21 @@
 import { createSelector } from 'reselect';
 import {
+  CLAIM_CASHBACK_STATUS_QUERY_NAME,
+  CLAIM_CASHBACK_VALUE_QUERY_NAME,
   BECOME_MERCHANT_MEMBER_METHODS,
   PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
   MEMBER_LEVELS,
   MEMBER_CARD_COLOR_PALETTES,
 } from '../../../../../../common/utils/constants';
-import { getPrice } from '../../../../../../common/utils';
+import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
-import { NEW_MEMBER_TYPES, RETURNING_MEMBER_TYPES } from '../utils/constants';
+import {
+  I18N_PARAM_KEYS,
+  NEW_MEMBER_TYPES,
+  NEW_MEMBER_CASHBACK_STATUS_TYPES,
+  RETURNING_MEMBER_TYPES,
+} from '../utils/constants';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
 import {
   getMerchantCurrency,
@@ -23,6 +30,10 @@ import {
   getCustomerTierLevel,
   getIsLoadCustomerRequestCompleted,
 } from '../../../../../redux/modules/customer/selectors';
+
+export const getOrderReceiptClaimedCashbackStatus = () => getQueryString(CLAIM_CASHBACK_STATUS_QUERY_NAME);
+
+export const getOrderReceiptClaimedCashbackValue = () => getQueryString(CLAIM_CASHBACK_VALUE_QUERY_NAME);
 
 export const getLoadUniquePromoListData = state =>
   state.business.membershipDetail.loadUniquePromoListRequest.data || [];
@@ -122,16 +133,18 @@ export const getNewMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
   getIsMerchantEnabledCashback,
   getCustomerCashback,
+  getOrderReceiptClaimedCashbackStatus,
   getIsFromSeamlessLoyaltyQrScan,
   getIsFromJoinMembershipUrlClick,
-  // getIsFromEarnedCashbackQrScan,
+  getIsFromEarnedCashbackQrScan,
   (
     isLoadCustomerRequestCompleted,
     isMerchantEnabledCashback,
     customerCashback,
+    claimedCashbackStatus,
     isFromSeamlessLoyaltyQrScan,
-    isFromJoinMembershipUrlClick
-    // isFromEarnedCashbackQrScan
+    isFromJoinMembershipUrlClick,
+    isFromEarnedCashbackQrScan
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return NEW_MEMBER_TYPES.DEFAULT;
@@ -143,10 +156,20 @@ export const getNewMemberPromptCategory = createSelector(
         : NEW_MEMBER_TYPES.DEFAULT;
     }
 
+    if (isFromEarnedCashbackQrScan) {
+      const claimedCashbackTypeKey = NEW_MEMBER_CASHBACK_STATUS_TYPES[claimedCashbackStatus];
+
+      return NEW_MEMBER_TYPES[claimedCashbackTypeKey] || NEW_MEMBER_TYPES.DEFAULT;
+    }
+
     // WB-6499: show default new member prompt.
     return NEW_MEMBER_TYPES.DEFAULT;
   }
 );
+
+export const getNewMemberIn18nParams = createSelector(getOrderReceiptClaimedCashbackValue, claimedCashbackValue => ({
+  [I18N_PARAM_KEYS.CASHBACK_VALUE]: claimedCashbackValue,
+}));
 
 export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
