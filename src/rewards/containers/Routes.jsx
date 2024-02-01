@@ -22,6 +22,12 @@ const SeamlessLoyalty = lazy(() =>
   )
 );
 
+const ClaimUniquePromoProxy = lazy(() =>
+  Utils.attemptLoad(() =>
+    import(/* webpackChunkName: "RWD_CL_UQ_PROM" */ './Business/containers/ClaimUniquePromo/ClaimUniquePromoProxy')
+  )
+);
+
 const Login = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_Login" */ './Login')));
 
 const Routes = () => (
@@ -42,6 +48,11 @@ const Routes = () => (
           exact
           path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.SEAMLESS_LOYALTY}`}
           component={SeamlessLoyalty}
+        />
+        <Route
+          exact
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.CLAIM}`}
+          component={ClaimUniquePromoProxy}
         />
         <Route exact path={PATH_NAME_MAPPING.REWARDS_LOGIN} component={Login} />
         <Route path="*" component={NotFound} />

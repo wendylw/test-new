@@ -99,6 +99,8 @@ export const PATH_NAME_MAPPING = {
   SIGN_UP: '/sign-up',
   MEMBERSHIP_DETAIL: '/membership-detail',
   SEAMLESS_LOYALTY: '/seamless-loyalty',
+  UNIQUE_PROMO: '/promo',
+  CLAIM: '/claim',
   REWARDS_LOGIN: '/login',
   // dine
   DINE: '/dine',
@@ -254,6 +256,10 @@ export const CASHBACK_SOURCE = {
   RECEIPT: 'RECEIPT',
   QR_ORDERING: 'QR_ORDERING',
 };
+
+export const CLAIM_CASHBACK_STATUS_QUERY_NAME = 'claimedStatus';
+
+export const CLAIM_CASHBACK_VALUE_QUERY_NAME = 'cashback';
 
 export const REFERRER_SOURCE_TYPES = {
   PAYMENT: 'payment',
