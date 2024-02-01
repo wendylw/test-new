@@ -16,6 +16,8 @@ import {
   NEW_MEMBER_CASHBACK_STATUS_TYPES,
   NEW_MEMBER_I18N_KEYS,
   RETURNING_MEMBER_TYPES,
+  RETURNING_MEMBER_CASHBACK_STATUS_TYPES,
+  RETURNING_MEMBER_I18N_KEYS,
 } from '../utils/constants';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
 import {
@@ -193,7 +195,7 @@ export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
   getIsMerchantEnabledCashback,
   getCustomerCashback,
-  getIsMerchantEnabledCashback,
+  getOrderReceiptClaimedCashbackStatus,
   getIsFromJoinMembershipUrlClick,
   getIsFromSeamlessLoyaltyQrScan,
   getIsFromEarnedCashbackQrScan,
@@ -201,6 +203,7 @@ export const getReturningMemberPromptCategory = createSelector(
     isLoadCustomerRequestCompleted,
     isMerchantEnabledCashback,
     customerCashback,
+    claimedCashbackStatus,
     isFromJoinMembershipUrlClick,
     isFromSeamlessLoyaltyQrScan,
     isFromEarnedCashbackQrScan

@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 import NewMemberCelebrationAnimateImage from '../../../../../../../images/succeed-animation.gif';
+import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import {
   NEW_MEMBER_ICONS,
   NEW_MEMBER_I18N_KEYS,
@@ -22,7 +24,9 @@ import styles from './MemberPrompt.module.scss';
 
 const CELEBRATION_ANIMATION_TIME = 3600;
 const NewMember = () => {
+  const history = useHistory();
   const { t } = useTranslation(['Rewards']);
+  const merchantBusiness = useSelector(getMerchantBusiness);
   const newMemberPromptCategory = useSelector(getNewMemberPromptCategory);
   const newMemberTitleIn18nParams = useSelector(getNewMemberTitleIn18nParams);
   const newMemberIcon = NEW_MEMBER_ICONS[newMemberPromptCategory];
@@ -30,6 +34,12 @@ const NewMember = () => {
   const { titleI18nKey, descriptionI18nKey } = newMemberContentI18nKeys || {};
   const [celebrationAnimateImage, setCelebrationAnimateImage] = useState(NewMemberCelebrationAnimateImage);
   const isCelebrationAnimationDisplay = celebrationAnimateImage && newMemberPromptCategory;
+  const handleCloseNewMemberPrompt = useCallback(() => {
+    history.replaceState({
+      pathname: window.location.pathname,
+      search: `?business=${merchantBusiness}`,
+    });
+  }, [history, merchantBusiness]);
 
   useEffect(() => {
     if (newMemberContentI18nKeys) {
@@ -53,9 +63,19 @@ const NewMember = () => {
         setCelebrationAnimateImage(null);
       }, CELEBRATION_ANIMATION_TIME);
 
-      alert(content);
+      alert(content, {
+        onClose: handleCloseNewMemberPrompt,
+      });
     }
-  }, [newMemberContentI18nKeys, t, titleI18nKey, descriptionI18nKey, newMemberIcon, newMemberTitleIn18nParams]);
+  }, [
+    newMemberContentI18nKeys,
+    t,
+    titleI18nKey,
+    descriptionI18nKey,
+    newMemberIcon,
+    newMemberTitleIn18nParams,
+    handleCloseNewMemberPrompt,
+  ]);
 
   return (
     isCelebrationAnimationDisplay && (
@@ -73,13 +93,21 @@ const NewMember = () => {
 NewMember.displayName = 'NewMember';
 
 const ReturningMember = () => {
+  const history = useHistory();
   const { t } = useTranslation(['Rewards']);
+  const merchantBusiness = useSelector(getMerchantBusiness);
   const isFromJoinMembershipUrlClick = useSelector(getIsFromJoinMembershipUrlClick);
   const returningMemberPromptCategory = useSelector(getReturningMemberPromptCategory);
   const returningMemberTitleIn18nParams = useSelector(getReturningMemberTitleIn18nParams);
   const returningMemberIcon = RETURNING_MEMBER_ICONS[returningMemberPromptCategory];
   const returningMemberContentI18nKeys = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory];
   const { titleI18nKey, descriptionI18nKey } = returningMemberContentI18nKeys || {};
+  const handleCloseReturningMemberPrompt = useCallback(() => {
+    history.replaceState({
+      pathname: window.location.pathname,
+      search: `?business=${merchantBusiness}`,
+    });
+  }, [history, merchantBusiness]);
 
   useEffect(() => {
     if (returningMemberContentI18nKeys) {
@@ -99,7 +127,13 @@ const ReturningMember = () => {
         </div>
       );
 
-      isFromJoinMembershipUrlClick ? toast.success(t(titleI18nKey)) : alert(content);
+      isFromJoinMembershipUrlClick
+        ? toast.success(t(titleI18nKey), {
+            onClose: handleCloseReturningMemberPrompt,
+          })
+        : alert(content, {
+            onClose: handleCloseReturningMemberPrompt,
+          });
     }
   }, [
     returningMemberContentI18nKeys,
@@ -108,6 +142,8 @@ const ReturningMember = () => {
     titleI18nKey,
     descriptionI18nKey,
     returningMemberIcon,
+    returningMemberTitleIn18nParams,
+    handleCloseReturningMemberPrompt,
   ]);
 
   return <></>;
