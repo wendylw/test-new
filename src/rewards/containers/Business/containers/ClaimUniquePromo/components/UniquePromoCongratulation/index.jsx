@@ -13,7 +13,7 @@ const UniquePromoCongratulation = () => {
         id="claim-unique-promo-congratulation"
         title="Claim Unique Promo Congratulation"
         src={iframeUrl}
-        defaultHeight={592}
+        defaultHeight={600}
       />
     </div>
   );
