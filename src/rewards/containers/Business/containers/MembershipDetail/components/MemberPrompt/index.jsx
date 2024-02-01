@@ -14,6 +14,7 @@ import {
   getNewMemberPromptCategory,
   getNewMemberTitleIn18nParams,
   getReturningMemberPromptCategory,
+  getReturningMemberTitleIn18nParams,
 } from '../../redux/selectors';
 import { alert, toast } from '../../../../../../../common/utils/feedback';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
@@ -75,6 +76,7 @@ const ReturningMember = () => {
   const { t } = useTranslation(['Rewards']);
   const isFromJoinMembershipUrlClick = useSelector(getIsFromJoinMembershipUrlClick);
   const returningMemberPromptCategory = useSelector(getReturningMemberPromptCategory);
+  const returningMemberTitleIn18nParams = useSelector(getReturningMemberTitleIn18nParams);
   const returningMemberIcon = RETURNING_MEMBER_ICONS[returningMemberPromptCategory];
   const returningMemberContentI18nKeys = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory];
   const { titleI18nKey, descriptionI18nKey } = returningMemberContentI18nKeys || {};
@@ -88,7 +90,11 @@ const ReturningMember = () => {
               <ObjectFitImage noCompression src={returningMemberIcon} alt="Store Returning Member Icon in StoreHub" />
             </div>
           )}
-          {titleI18nKey && <h4 className={styles.ReturningMemberTitle}>{t(titleI18nKey)}</h4>}
+          {titleI18nKey && (
+            <h4 className={styles.ReturningMemberTitle}>
+              {returningMemberTitleIn18nParams ? t(titleI18nKey, returningMemberTitleIn18nParams) : t(titleI18nKey)}
+            </h4>
+          )}
           {descriptionI18nKey && <p className={styles.ReturningMemberDescription}>{t(descriptionI18nKey)}</p>}
         </div>
       );
