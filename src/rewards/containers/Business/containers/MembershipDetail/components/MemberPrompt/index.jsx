@@ -12,7 +12,7 @@ import { getIsNewMember } from '../../../../redux/common/selectors';
 import {
   getIsFromJoinMembershipUrlClick,
   getNewMemberPromptCategory,
-  getNewMemberIn18nParams,
+  getNewMemberTitleIn18nParams,
   getReturningMemberPromptCategory,
 } from '../../redux/selectors';
 import { alert, toast } from '../../../../../../../common/utils/feedback';
@@ -23,19 +23,12 @@ const CELEBRATION_ANIMATION_TIME = 3600;
 const NewMember = () => {
   const { t } = useTranslation(['Rewards']);
   const newMemberPromptCategory = useSelector(getNewMemberPromptCategory);
-  const newMemberIn18nParams = useSelector(getNewMemberIn18nParams);
+  const newMemberTitleIn18nParams = useSelector(getNewMemberTitleIn18nParams);
   const newMemberIcon = NEW_MEMBER_ICONS[newMemberPromptCategory];
   const newMemberContentI18nKeys = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory];
-  const { titleI18nKey, descriptionI18nKey, titleI18nParamsKeys } = newMemberContentI18nKeys || {};
+  const { titleI18nKey, descriptionI18nKey } = newMemberContentI18nKeys || {};
   const [celebrationAnimateImage, setCelebrationAnimateImage] = useState(NewMemberCelebrationAnimateImage);
   const isCelebrationAnimationDisplay = celebrationAnimateImage && newMemberPromptCategory;
-  const newMemberTitleI18nParams = {};
-
-  if (titleI18nParamsKeys) {
-    titleI18nParamsKeys.forEach(key => {
-      newMemberTitleI18nParams[key] = newMemberIn18nParams[key];
-    });
-  }
 
   useEffect(() => {
     if (newMemberContentI18nKeys) {
@@ -48,7 +41,7 @@ const NewMember = () => {
           )}
           {titleI18nKey && (
             <h4 className={styles.NewMemberTitle}>
-              {titleI18nParamsKeys ? t(titleI18nKey, newMemberTitleI18nParams) : t(titleI18nKey)}
+              {newMemberTitleIn18nParams ? t(titleI18nKey, newMemberTitleIn18nParams) : t(titleI18nKey)}
             </h4>
           )}
           {descriptionI18nKey && <p className={styles.NewMemberDescription}>{t(descriptionI18nKey)}</p>}
@@ -61,7 +54,7 @@ const NewMember = () => {
 
       alert(content);
     }
-  }, [newMemberContentI18nKeys, t, titleI18nKey, descriptionI18nKey, newMemberIcon]);
+  }, [newMemberContentI18nKeys, t, titleI18nKey, descriptionI18nKey, newMemberIcon, newMemberTitleIn18nParams]);
 
   return (
     isCelebrationAnimationDisplay && (

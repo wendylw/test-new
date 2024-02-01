@@ -14,6 +14,7 @@ import {
   I18N_PARAM_KEYS,
   NEW_MEMBER_TYPES,
   NEW_MEMBER_CASHBACK_STATUS_TYPES,
+  NEW_MEMBER_I18N_KEYS,
   RETURNING_MEMBER_TYPES,
 } from '../utils/constants';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
@@ -167,9 +168,26 @@ export const getNewMemberPromptCategory = createSelector(
   }
 );
 
-export const getNewMemberIn18nParams = createSelector(getOrderReceiptClaimedCashbackValue, claimedCashbackValue => ({
-  [I18N_PARAM_KEYS.CASHBACK_VALUE]: claimedCashbackValue,
-}));
+export const getNewMemberTitleIn18nParams = createSelector(
+  getOrderReceiptClaimedCashbackValue,
+  getNewMemberPromptCategory,
+  (claimedCashbackValue, newMemberPromptCategory) => {
+    const { titleI18nParamsKeys } = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory];
+    const newMemberTitleI18nParams = {};
+
+    if (!titleI18nParamsKeys) {
+      return null;
+    }
+
+    titleI18nParamsKeys.forEach(paramKey => {
+      if (paramKey === I18N_PARAM_KEYS.CASHBACK_VALUE) {
+        newMemberTitleI18nParams[paramKey] = claimedCashbackValue;
+      }
+    });
+
+    return newMemberTitleI18nParams;
+  }
+);
 
 export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
