@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
 import NewMemberCelebrationAnimateImage from '../../../../../../../images/succeed-animation.gif';
-import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
+import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import {
   NEW_MEMBER_ICONS,
   NEW_MEMBER_I18N_KEYS,
   RETURNING_MEMBER_ICONS,
   RETURNING_MEMBER_I18N_KEYS,
 } from '../../utils/constants';
+import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import { getIsNewMember } from '../../../../redux/common/selectors';
 import {
   getIsFromJoinMembershipUrlClick,
@@ -24,7 +24,6 @@ import styles from './MemberPrompt.module.scss';
 
 const CELEBRATION_ANIMATION_TIME = 3600;
 const NewMember = () => {
-  const history = useHistory();
   const { t } = useTranslation(['Rewards']);
   const merchantBusiness = useSelector(getMerchantBusiness);
   const newMemberPromptCategory = useSelector(getNewMemberPromptCategory);
@@ -35,11 +34,11 @@ const NewMember = () => {
   const [celebrationAnimateImage, setCelebrationAnimateImage] = useState(NewMemberCelebrationAnimateImage);
   const isCelebrationAnimationDisplay = celebrationAnimateImage && newMemberPromptCategory;
   const handleCloseNewMemberPrompt = useCallback(() => {
-    history.replaceState({
-      pathname: window.location.pathname,
-      search: `?business=${merchantBusiness}`,
-    });
-  }, [history, merchantBusiness]);
+    const pathname = `${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`;
+    const search = `?business=${merchantBusiness}`;
+    // Replace the current URL with the original URL: Fixed shown pop-up issue when user click the back button
+    window.history.replaceState(window.history.state, '', `${pathname}${search}`);
+  }, [merchantBusiness]);
 
   useEffect(() => {
     if (newMemberContentI18nKeys) {
@@ -93,7 +92,6 @@ const NewMember = () => {
 NewMember.displayName = 'NewMember';
 
 const ReturningMember = () => {
-  const history = useHistory();
   const { t } = useTranslation(['Rewards']);
   const merchantBusiness = useSelector(getMerchantBusiness);
   const isFromJoinMembershipUrlClick = useSelector(getIsFromJoinMembershipUrlClick);
@@ -103,11 +101,12 @@ const ReturningMember = () => {
   const returningMemberContentI18nKeys = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory];
   const { titleI18nKey, descriptionI18nKey } = returningMemberContentI18nKeys || {};
   const handleCloseReturningMemberPrompt = useCallback(() => {
-    history.replaceState({
-      pathname: window.location.pathname,
-      search: `?business=${merchantBusiness}`,
-    });
-  }, [history, merchantBusiness]);
+    const pathname = `${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`;
+    const search = `?business=${merchantBusiness}`;
+
+    // Replace the current URL with the original URL: Fixed shown pop-up issue when user click the back button
+    window.history.replaceState(window.history.state, '', `${pathname}${search}`);
+  }, [merchantBusiness]);
 
   useEffect(() => {
     if (returningMemberContentI18nKeys) {
