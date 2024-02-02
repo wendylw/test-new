@@ -36,7 +36,8 @@ import {
 
 export const getOrderReceiptClaimedCashbackStatus = () => getQueryString(CLAIM_CASHBACK_STATUS_QUERY_NAME);
 
-export const getOrderReceiptClaimedCashbackValue = () => getQueryString(CLAIM_CASHBACK_VALUE_QUERY_NAME);
+export const getOrderReceiptClaimedCashbackValue = () =>
+  decodeURIComponent(getQueryString(CLAIM_CASHBACK_VALUE_QUERY_NAME));
 
 export const getLoadUniquePromoListData = state =>
   state.business.membershipDetail.loadUniquePromoListRequest.data || [];
