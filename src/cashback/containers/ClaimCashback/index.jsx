@@ -17,7 +17,7 @@ import {
   getIsClaimedCashbackForCustomerFulfilled,
 } from './redux/selectors';
 import { actions as claimCashbackActions } from './redux';
-import { mounted, claimedCashbackForCustomer } from './redux/thunks';
+import { mounted, claimedCashbackAndContinueNextStep } from './redux/thunks';
 import Frame from '../../../common/components/Frame';
 import PageHeader from '../../../common/components/PageHeader';
 import MerchantInfo from './components/MerchantInfo';
@@ -54,14 +54,12 @@ const ClaimCashback = () => {
 
   useEffect(() => {
     if (isLogin && orderReceiptNumber && !claimedCashbackForCustomerStatus) {
-      dispatch(claimedCashbackForCustomer());
+      dispatch(claimedCashbackAndContinueNextStep());
     }
   }, [isLogin, claimedCashbackForCustomerStatus, orderReceiptNumber, dispatch]);
 
   useEffect(() => {
     if (isClaimedCashbackForCustomerFulfilled && customerId) {
-      console.log(`${PATH_NAME_MAPPING.CASHBACK_BASE}?customerId=${customerId}`);
-      debugger;
       // TODO: WB-6669: change to new cashback detail page and move to thunks
       history.push(`${PATH_NAME_MAPPING.CASHBACK_BASE}?customerId=${customerId}`);
     }
