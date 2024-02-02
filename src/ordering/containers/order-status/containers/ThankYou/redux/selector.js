@@ -25,6 +25,7 @@ import {
   getIsStoreReviewable,
   getOrderDelayReason,
   getIsPreOrder,
+  getOrderCustomerId,
 } from '../../../redux/selector';
 import {
   getMerchantCountry,
@@ -32,7 +33,14 @@ import {
   getUserIsLogin,
   getOnlineStoreInfo,
   getIsWebview,
+  getIsUserLoginRequestCompleted,
+  getHasUserJoinedBusinessMembership,
+  getIsFetchLoginStatusComplete,
+  getIsLoadCustomerRequestCompleted,
+  getUserCustomerId,
+  getUserConsumerId,
 } from '../../../../../redux/modules/app';
+import { getIsMerchantMembershipEnabled } from '../../../../../../redux/modules/merchant/selectors';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
@@ -151,6 +159,14 @@ export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInf
 
 export const getCashbackStatus = createSelector(getCashbackInfo, cashbackInfo => _get(cashbackInfo, 'status', null));
 
+export const getCashbackCustomerId = createSelector(getCashbackInfo, cashbackInfo =>
+  _get(cashbackInfo, 'customerId', null)
+);
+
+export const getCashbackConsumerId = createSelector(getCashbackInfo, cashbackInfo =>
+  _get(cashbackInfo, 'consumerId', null)
+);
+
 export const getCanCashbackClaim = createSelector(getCashbackStatus, cashbackStatus =>
   CASHBACK_CAN_CLAIM_STATUS_LIST.includes(cashbackStatus)
 );
@@ -188,10 +204,17 @@ export const getShouldShowCashbackBanner = createSelector(
     orderShippingType === DELIVERY_METHOD.DINE_IN
 );
 
+// WB-7414: we need to consider the consumerId from cashbackInfo to make user able to see cashback card immediately.
 export const getShouldShowCashbackCard = createSelector(
   getIsCashbackClaimable,
   getHasCashbackClaimed,
-  (isCashbackClaimable, hasCashbackClaimed) => isCashbackClaimable || hasCashbackClaimed
+  getUserCustomerId,
+  getUserConsumerId,
+  getOrderCustomerId,
+  getCashbackConsumerId,
+  (isCashbackClaimable, hasCashbackClaimed, userCustomerId, userConsumerId, orderCustomerId, cashbackConsumerId) =>
+    (isCashbackClaimable || hasCashbackClaimed) &&
+    (userCustomerId === orderCustomerId || userConsumerId === cashbackConsumerId)
 );
 
 export const getFoodCourtId = createSelector(getOrder, order => _get(order, 'foodCourtId', null));
@@ -250,4 +273,91 @@ export const getStatusDescriptionImage = createSelector(
 
     return showMapInApp ? null : delayByBadWeatherImageSource || ImageSource;
   }
+);
+
+export const getUpdateRedirectFromStatus = state => state.orderStatus.thankYou.updateRedirectFromStatus;
+
+export const getIsUpdateRedirectFromCompleted = createSelector(getUpdateRedirectFromStatus, updateRedirectFromStatus =>
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(updateRedirectFromStatus)
+);
+
+/* Tiered Membership */
+export const getJoinBusinessMembershipRequest = state => state.orderStatus.thankYou.joinBusinessMembershipRequest;
+
+export const getJoinBusinessMembershipRequestStatus = createSelector(
+  getJoinBusinessMembershipRequest,
+  joinBusinessMembershipRequest => joinBusinessMembershipRequest.status
+);
+
+export const getIsJoinBusinessMembershipRequestCompleted = createSelector(
+  getJoinBusinessMembershipRequestStatus,
+  joinBusinessMembershipRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(joinBusinessMembershipRequestStatus)
+);
+
+export const getShouldJoinBusinessMembership = createSelector(
+  getUserIsLogin,
+  getIsUserLoginRequestCompleted,
+  getIsMerchantMembershipEnabled,
+  (isLogin, isUserLoginRequestCompleted, isMerchantMembershipEnabled) =>
+    isUserLoginRequestCompleted && isLogin && isMerchantMembershipEnabled
+);
+
+export const getIsRewardInfoReady = createSelector(
+  getUserIsLogin,
+  getIsFetchLoginStatusComplete,
+  getShouldJoinBusinessMembership,
+  getIsLoadCustomerRequestCompleted,
+  getIsUpdateRedirectFromCompleted,
+  getIsJoinBusinessMembershipRequestCompleted,
+  (
+    isLogin,
+    isFetchLoginStatusComplete,
+    shouldJoinBusinessMembership,
+    isLoadCustomerRequestCompleted,
+    isUpdateRedirectFromStatusCompleted,
+    isJoinBusinessMembershipRequestCompleted
+  ) => {
+    if (!(isFetchLoginStatusComplete && isUpdateRedirectFromStatusCompleted)) {
+      return false;
+    }
+
+    if (!isLogin) {
+      return true;
+    }
+
+    if (shouldJoinBusinessMembership) {
+      return isJoinBusinessMembershipRequestCompleted;
+    }
+
+    return isLoadCustomerRequestCompleted;
+  }
+);
+
+export const getShouldShowMemberBanner = createSelector(
+  getUserIsLogin,
+  getIsMerchantMembershipEnabled,
+  getHasUserJoinedBusinessMembership,
+  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership) =>
+    isLogin && isMerchantMembershipEnabled && !hasUserJoinedBusinessMembership
+);
+
+export const getShouldShowMemberCard = createSelector(
+  getUserIsLogin,
+  getIsMerchantMembershipEnabled,
+  getHasUserJoinedBusinessMembership,
+  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership) =>
+    isLogin && isMerchantMembershipEnabled && hasUserJoinedBusinessMembership
+);
+
+// WB-7383: we need to consider the consumerId from cashbackInfo to make user able to see cashback card immediately
+export const getShouldShowEarnedCashback = createSelector(
+  getHasCashback,
+  getHasOrderPaid,
+  getUserCustomerId,
+  getOrderCustomerId,
+  getCashbackCustomerId,
+  getHasCashbackClaimed,
+  (hasCashback, hasOrderPaid, userCustomerId, orderCustomerId, cashbackCustomerId, hasCashbackClaimed) =>
+    hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === (orderCustomerId || cashbackCustomerId)
 );

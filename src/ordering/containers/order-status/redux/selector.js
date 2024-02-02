@@ -101,6 +101,8 @@ export const getHasOrderTableIdChanged = createSelector(getTableId, getOrderTabl
   return !(shouldSkipDiffCheck || _isEqual(prevTableId, currTableId));
 });
 
+export const getOrderCustomerId = createSelector(getOrder, order => _get(order, 'customerId', null));
+
 // Pay Later Order
 export const getPayLaterOrderInfo = state => state.orderStatus.common.payLaterOrderInfo;
 

@@ -1,17 +1,21 @@
 import { createSelector } from 'reselect';
-import { isWebview } from '../../../../common/utils';
-import { getIsAliMiniProgram } from '../../../../common/utils/alipay-miniprogram-client';
+import { getQueryString, isWebview, isTNGMiniProgram, isGCashMiniProgram } from '../../../../common/utils';
+import { isAlipayMiniProgram } from '../../../../common/utils/alipay-miniprogram-client';
 
 /** Utils */
 export const getIsWebview = () => isWebview();
 
-export const getIsAliMiniProgram = () => getIsAliMiniProgram();
+export const getIsTNGMiniProgram = () => isTNGMiniProgram();
 
-export const getIsWeb = createSelector(
-  getIsWebview,
-  getIsTNGMiniProgram,
-  (isWebview, isTNGMiniProgram) => !isWebview && !isTNGMiniProgram
-);
+export const getIsGCashMiniProgram = () => isGCashMiniProgram();
+
+export const getIsAlipayMiniProgram = () => isAlipayMiniProgram();
+
+export const getIsWeb = () => !isWebview() && !isAlipayMiniProgram();
+
+export const getSource = () => getQueryString('source');
+
+export const getBusiness = () => getQueryString('business');
 
 /** Router */
 export const getRouter = state => state.router;

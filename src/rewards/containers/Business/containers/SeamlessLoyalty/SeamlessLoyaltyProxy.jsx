@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { closeWebView } from '../../../../../utils/native-methods';
-import { getMerchantBusiness, getIsMerchantEnabledMembership } from '../../../../redux/modules/merchant/selectors';
-import { getIsWebview, getIsWeb } from '../../../../redux/modules/common/selectors';
-import { getSource, getIsConfirmSharingNewCustomer } from '../../redux/common/selectors';
+import { getMerchantBusiness, getIsMerchantMembershipEnabled } from '../../../../../redux/modules/merchant/selectors';
+import { getIsWebview, getIsWeb, getSource } from '../../../../redux/modules/common/selectors';
+import { getIsConfirmSharingNewCustomer } from '../../redux/common/selectors';
 import {
   getSeamlessLoyaltyPageHashCode,
   getIsAllInitialRequestsCompleted,
@@ -31,7 +31,7 @@ const SeamlessLoyaltyProxy = () => {
   const isWeb = useSelector(getIsWeb);
   const source = useSelector(getSource);
   const seamlessLoyaltyPageHashCode = useSelector(getSeamlessLoyaltyPageHashCode);
-  const isMerchantEnabledMembership = useSelector(getIsMerchantEnabledMembership);
+  const isMerchantMembershipEnabled = useSelector(getIsMerchantMembershipEnabled);
   const isAllInitialRequestsCompleted = useSelector(getIsAllInitialRequestsCompleted);
   const anyInitialRequestError = useSelector(getAnyInitialRequestError);
   const isConfirmSharingNewCustomer = useSelector(getIsConfirmSharingNewCustomer);
@@ -55,17 +55,17 @@ const SeamlessLoyaltyProxy = () => {
   useEffect(() => {
     if (isAllInitialRequestsCompleted) {
       const membershipDetailHistory = {
-        pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
+        pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
         search: `?business=${merchantBusiness}&source=${source}`,
       };
 
-      isMerchantEnabledMembership
+      isMerchantMembershipEnabled
         ? history.replace(membershipDetailHistory)
         : (window.location.href = seamlessLoyaltyURL);
     }
   }, [
     isAllInitialRequestsCompleted,
-    isMerchantEnabledMembership,
+    isMerchantMembershipEnabled,
     history,
     seamlessLoyaltyURL,
     merchantBusiness,

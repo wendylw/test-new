@@ -1,0 +1,52 @@
+@import "../../../../../../../Variables.scss";
+
+.member-card {
+  &__card-wrapper {
+    background-color: transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  &__card-container {
+    border: none;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  &__card-container > * {
+    width: 100%;
+  }
+
+  &__card-header {
+    margin: 0px;
+    font-size: $font-size-base;
+    font-weight: $font-weight-bolder;
+  }
+
+  &__card-content {
+    &__member-level {
+      font-size: 18px;
+      font-weight: 900;
+    }
+  }
+
+  &__card-footer {
+    width: 100%;
+    color: $basic-text-basic;
+    background-color: $status-yellow-1;
+
+    &__cashback-title {
+      flex-grow: 1;
+    }
+
+    &__cashback-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+
+      > figure {
+        background-color: transparent;
+      }
+    }
+  }
+}

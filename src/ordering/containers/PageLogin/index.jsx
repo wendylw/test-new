@@ -58,19 +58,24 @@ class PageLogin extends React.Component {
     };
   }
 
-  componentDidMount() {
-    const { shouldShowGuestOption, isAlipayMiniProgram } = this.props;
+  componentDidMount = async () => {
+    const { appActions, location, isAlipayMiniProgram } = this.props;
+    const { referrerSource } = location.state || {};
 
     if (isAlipayMiniProgram) {
       this.loginInAlipayMiniProgram();
     }
+
+    await appActions.updateLoginReferrerSource(referrerSource);
+
+    const { shouldShowGuestOption } = this.props;
 
     if (shouldShowGuestOption) {
       this.setState({ imageStyle: { height: `${getWebQRImageHeight()}px` } });
     }
 
     prefetch(['ORD_MNU'], ['OrderingDelivery']);
-  }
+  };
 
   componentDidUpdate(prevProps, prevState) {
     const { imageStyle: prevImageStyle } = prevState;
@@ -378,7 +383,7 @@ class PageLogin extends React.Component {
 
   loginInAlipayMiniProgram = async () => {
     const { appActions } = this.props;
-    const isLogin = await appActions.loginInAlipayMiniProgram();
+    const isLogin = await appActions.loginByAlipayMiniProgram();
 
     if (!isLogin) {
       this.goBack();
@@ -552,10 +557,11 @@ PageLogin.propTypes = {
     sendOtp: PropTypes.func,
     loginApp: PropTypes.func,
     updateUser: PropTypes.func,
+    updateLoginReferrerSource: PropTypes.func,
     setConsumerAsGuest: PropTypes.func,
     resetGetOtpRequest: PropTypes.func,
     resetSendOtpRequest: PropTypes.func,
-    loginInAlipayMiniProgram: PropTypes.func,
+    loginByAlipayMiniProgram: PropTypes.func,
     getPhoneWhatsAppSupport: PropTypes.func,
   }),
 };
@@ -586,10 +592,11 @@ PageLogin.defaultProps = {
     sendOtp: () => {},
     loginApp: () => {},
     updateUser: () => {},
+    updateLoginReferrerSource: () => {},
     setConsumerAsGuest: () => {},
     resetGetOtpRequest: () => {},
     resetSendOtpRequest: () => {},
-    loginInAlipayMiniProgram: () => {},
+    loginByAlipayMiniProgram: () => {},
     getPhoneWhatsAppSupport: () => {},
   },
 };

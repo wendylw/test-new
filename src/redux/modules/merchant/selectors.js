@@ -1,7 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { getQueryString } from '../../../../common/utils';
+import { API_REQUEST_STATUS } from '../../../common/utils/constants';
+import { getQueryString } from '../../../common/utils';
 
 /**
  * @returns {string | null} business
@@ -36,7 +36,7 @@ export const getIsMerchantEnabledCashback = createSelector(getMerchantData, merc
   _get(merchantData, 'enableCashback', false)
 );
 
-export const getIsMerchantEnabledMembership = createSelector(getMerchantData, merchantData =>
+export const getIsMerchantMembershipEnabled = createSelector(getMerchantData, merchantData =>
   _get(merchantData, 'membershipEnabled', false)
 );
 

@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 import { fetchMerchantInfo } from './thunks';
 
 const initialState = {
@@ -12,7 +12,7 @@ const initialState = {
 };
 
 const { reducer, actions } = createSlice({
-  name: 'rewards/merchant',
+  name: 'app/merchant',
   initialState,
   reducers: {},
   extraReducers: {

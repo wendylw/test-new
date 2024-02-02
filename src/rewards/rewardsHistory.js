@@ -1,6 +1,6 @@
 import { createBrowserHistory } from 'history';
-import constants from '../utils/constants';
+import { PATH_NAME_MAPPING } from '../common/utils/constants';
 
 export default createBrowserHistory({
-  basename: constants.ROUTER_PATHS.REWARDS_BASE,
+  basename: PATH_NAME_MAPPING.REWARDS_BASE,
 });

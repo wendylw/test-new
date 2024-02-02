@@ -2,7 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 import Utils from '../../utils/utils';
-import Constants from '../../utils/constants';
+import { PATH_NAME_MAPPING } from '../../common/utils/constants';
 import NotFound from '../../containers/NotFound';
 import history from '../rewardsHistory';
 
@@ -22,9 +22,13 @@ const SeamlessLoyalty = lazy(() =>
   )
 );
 
-const Login = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_Login" */ './Login')));
+const ClaimUniquePromoProxy = lazy(() =>
+  Utils.attemptLoad(() =>
+    import(/* webpackChunkName: "RWD_CL_UQ_PROM" */ './Business/containers/ClaimUniquePromo/ClaimUniquePromoProxy')
+  )
+);
 
-const { ROUTER_PATHS } = Constants;
+const Login = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_Login" */ './Login')));
 
 const Routes = () => (
   <ConnectedRouter history={history}>
@@ -32,20 +36,25 @@ const Routes = () => (
       <Switch>
         <Route
           exact
-          path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.JOIN_MEMBERSHIP}`}
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.SIGN_UP}`}
           component={MembershipFormProxy}
         />
         <Route
           exact
-          path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.MEMBERSHIP_DETAIL}`}
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`}
           component={MembershipDetail}
         />
         <Route
           exact
-          path={`${ROUTER_PATHS.REWARDS_BUSINESS}${ROUTER_PATHS.SEAMLESS_LOYALTY}`}
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.SEAMLESS_LOYALTY}`}
           component={SeamlessLoyalty}
         />
-        <Route exact path={ROUTER_PATHS.REWARDS_LOGIN} component={Login} />
+        <Route
+          exact
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.CLAIM}`}
+          component={ClaimUniquePromoProxy}
+        />
+        <Route exact path={PATH_NAME_MAPPING.REWARDS_LOGIN} component={Login} />
         <Route path="*" component={NotFound} />
       </Switch>
     </Suspense>

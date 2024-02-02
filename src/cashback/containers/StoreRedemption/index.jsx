@@ -134,7 +134,7 @@ const StoreRedemption = () => {
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
   const isDisplayWebResult = !isWebview() && !isAlipayMiniProgram();
   const handleGotoBeepDownloadPage = useCallback(() => {
-    const downloadBeepAppDeepLink = process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK;
+    const downloadBeepAppDeepLink = `${process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}?utm_source=beepqr&utm_medium=banner&utm_campaign=seamlessloyalty`;
 
     CleverTap.pushEvent('POS Redemption Landing Page - Click Beep App Logo', {
       country: userCountry,

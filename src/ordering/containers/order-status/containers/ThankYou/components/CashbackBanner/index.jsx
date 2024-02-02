@@ -3,11 +3,19 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { getCashbackCurrency, getIsCashbackAvailable } from '../../redux/selector';
+import { getIsMerchantMembershipEnabled } from '../../../../../../../redux/modules/merchant/selectors';
 import IconGiveCashBag from '../../../../../../../images/icon-give-cash-bag.svg';
 import { IconClose } from '../../../../../../../components/Icons';
 import './index.scss';
 
-function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onShowBannerClick, onHideBannerClick }) {
+function CashbackBanner({
+  currency,
+  isCashbackAvailable,
+  isMerchantMembershipEnabled,
+  onLoginButtonClick,
+  onShowBannerClick,
+  onHideBannerClick,
+}) {
   const [isBannerVisible, setBannerVisibility] = useState(true);
   const toggleBannerHandler = useCallback(() => {
     setBannerVisibility(prevBannerVisible => {
@@ -20,7 +28,7 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
   const { title, description, bannerButtonText, floatingButtonText } = isCashbackAvailable
     ? {
         title: t('GotCashBackTitle', { currency }),
-        description: t('GotCashBackDescription'),
+        description: t(isMerchantMembershipEnabled ? 'GotCashBackAndBeMemberDescription' : 'GotCashBackDescription'),
         bannerButtonText: t('WantCashBackTitle'),
         floatingButtonText: t('ClaimMyCashback'),
       }
@@ -90,6 +98,7 @@ CashbackBanner.displayName = 'CashbackBanner';
 CashbackBanner.propTypes = {
   currency: PropTypes.string,
   isCashbackAvailable: PropTypes.bool,
+  isMerchantMembershipEnabled: PropTypes.bool,
   onLoginButtonClick: PropTypes.func,
   onShowBannerClick: PropTypes.func,
   onHideBannerClick: PropTypes.func,
@@ -98,6 +107,7 @@ CashbackBanner.propTypes = {
 CashbackBanner.defaultProps = {
   currency: 'RM 0.0',
   isCashbackAvailable: false,
+  isMerchantMembershipEnabled: false,
   onLoginButtonClick: () => {},
   onShowBannerClick: () => {},
   onHideBannerClick: () => {},
@@ -106,4 +116,5 @@ CashbackBanner.defaultProps = {
 export default connect(state => ({
   currency: getCashbackCurrency(state),
   isCashbackAvailable: getIsCashbackAvailable(state),
+  isMerchantMembershipEnabled: getIsMerchantMembershipEnabled(state),
 }))(CashbackBanner);

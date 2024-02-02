@@ -161,7 +161,7 @@ export const loginUserByAlipayMiniProgram = createAsyncThunk(
     const userCountry = getUserCountry(state);
 
     if (!isAlipayMiniProgram()) {
-      throw new Error('Not in alipay mini program');
+      throw new Error('Not in Alipay mini program');
     }
 
     try {
@@ -188,7 +188,7 @@ export const loginUserByAlipayMiniProgram = createAsyncThunk(
                 CleverTap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Try Again', {
                   country: userCountry,
                 });
-                await loginUserByTngMiniProgram();
+                await dispatch(loginUserByAlipayMiniProgram());
               } else {
                 // cancel
                 if (window.my.exitMiniProgram) {
