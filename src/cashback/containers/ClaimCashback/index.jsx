@@ -60,6 +60,8 @@ const ClaimCashback = () => {
 
   useEffect(() => {
     if (isClaimedCashbackForCustomerFulfilled && customerId) {
+      console.log(`${PATH_NAME_MAPPING.CASHBACK_BASE}?customerId=${customerId}`);
+      debugger;
       // TODO: WB-6669: change to new cashback detail page and move to thunks
       history.push(`${PATH_NAME_MAPPING.CASHBACK_BASE}?customerId=${customerId}`);
     }

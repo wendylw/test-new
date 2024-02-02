@@ -154,10 +154,6 @@ class App extends Component {
     if (currIsUserLogin && currUserConsumerId) {
       let isLoadCustomerAvailable = false;
 
-      if (isClaimCashbackPage) {
-        isLoadCustomerAvailable = false;
-      }
-
       if (
         pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION) &&
         currIsConfirmSharingConsumerInfoCompleted !== prevIsConfirmSharingConsumerInfoCompleted
@@ -167,6 +163,10 @@ class App extends Component {
 
       if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_BASE) && !isLoadCustomerRequestCompleted) {
         isLoadCustomerAvailable = true;
+      }
+
+      if (isClaimCashbackPage) {
+        isLoadCustomerAvailable = false;
       }
 
       if (isLoadCustomerAvailable) {
