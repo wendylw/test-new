@@ -47,10 +47,7 @@ export const claimedCashbackForCustomer = createAsyncThunk(
   'cashback/claimCashback/claimedCashbackForCustomer',
   async (_, { getState }) => {
     const state = getState();
-    const merchantBusiness = getMerchantBusiness(state);
-    const isMerchantMembershipEnabled = getIsMerchantMembershipEnabled(state);
     const receiptNumber = getOrderReceiptNumber(state);
-    const orderCashbackValue = getOrderCashbackValue(state);
     const userPhoneNumber = getUserPhoneNumber(state);
     const result = await postClaimedCashbackForCustomer({
       receiptNumber,
@@ -60,27 +57,43 @@ export const claimedCashbackForCustomer = createAsyncThunk(
       registrationSource: getRegistrationSource(),
     });
 
+    return result;
+  }
+);
+
+export const claimedCashbackAndContinueNextStep = createAsyncThunk(
+  'cashback/claimCashback/claimedCashbackAndContinueNextStep',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const merchantBusiness = getMerchantBusiness(state);
+    const isMerchantMembershipEnabled = getIsMerchantMembershipEnabled(state);
+    const orderCashbackValue = getOrderCashbackValue(state);
+
+    await dispatch(claimedCashbackForCustomer());
+
     const isClaimedCashbackForCustomerFulfilled = getIsClaimedCashbackForCustomerFulfilled(getState());
 
     if (isClaimedCashbackForCustomerFulfilled) {
       const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
-      const { REWARDS_BASE, REWARDS_BUSINESS, REWARDS_MEMBERSHIP, REWARDS_MEMBERSHIP_DETAIL } = PATH_NAME_MAPPING;
+      const { REWARDS_BASE, REWARDS_BUSINESS, REWARDS_MEMBERSHIP, MEMBERSHIP_DETAIL } = PATH_NAME_MAPPING;
       const rewardsBaseRoute = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${REWARDS_BASE}${REWARDS_BUSINESS}`;
 
       if (isMerchantMembershipEnabled) {
-        window.location.href = `${rewardsBaseRoute}${REWARDS_MEMBERSHIP}${REWARDS_MEMBERSHIP_DETAIL}?business=${merchantBusiness}&source=${BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN}&${CLAIM_CASHBACK_STATUS_QUERY_NAME}=${claimedOrderCashbackStatus}&${CLAIM_CASHBACK_VALUE_QUERY_NAME}=${orderCashbackValue}`;
+        window.location.href = `${rewardsBaseRoute}${REWARDS_MEMBERSHIP}${MEMBERSHIP_DETAIL}?business=${merchantBusiness}&source=${
+          BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
+        }&${CLAIM_CASHBACK_STATUS_QUERY_NAME}=${claimedOrderCashbackStatus}&${CLAIM_CASHBACK_VALUE_QUERY_NAME}=${encodeURIComponent(
+          orderCashbackValue
+        )}`;
       }
     }
-
-    return result;
   }
 );
 
 export const mounted = createAsyncThunk('cashback/claimCashback/mounted', async (_, { getState, dispatch }) => {
   const state = getState();
+  const merchantBusiness = getMerchantBusiness(state);
   const isWebview = getIsWebview(state);
   const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
-  const merchantBusiness = getMerchantBusiness(state);
 
   dispatch(fetchMerchantInfo(merchantBusiness));
   await dispatch(fetchOrderReceiptNumber());
@@ -104,6 +117,6 @@ export const mounted = createAsyncThunk('cashback/claimCashback/mounted', async 
   const isLogin = getIsLogin(getState());
 
   if (isLogin && orderReceiptNumber) {
-    await dispatch(claimedCashbackForCustomer());
+    await dispatch(claimedCashbackAndContinueNextStep());
   }
 });
