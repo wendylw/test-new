@@ -36,7 +36,8 @@ import {
 
 export const getOrderReceiptClaimedCashbackStatus = () => getQueryString(CLAIM_CASHBACK_STATUS_QUERY_NAME);
 
-export const getOrderReceiptClaimedCashbackValue = () => getQueryString(CLAIM_CASHBACK_VALUE_QUERY_NAME);
+export const getOrderReceiptClaimedCashbackValue = () =>
+  decodeURIComponent(getQueryString(CLAIM_CASHBACK_VALUE_QUERY_NAME));
 
 export const getLoadUniquePromoListData = state =>
   state.business.membershipDetail.loadUniquePromoListRequest.data || [];
@@ -160,9 +161,9 @@ export const getNewMemberPromptCategory = createSelector(
     }
 
     if (isFromEarnedCashbackQrScan) {
-      const claimedCashbackTypeKey = NEW_MEMBER_CASHBACK_STATUS_TYPES[claimedCashbackStatus];
+      const claimedCashbackType = NEW_MEMBER_CASHBACK_STATUS_TYPES[claimedCashbackStatus];
 
-      return NEW_MEMBER_TYPES[claimedCashbackTypeKey] || NEW_MEMBER_TYPES.DEFAULT;
+      return claimedCashbackType || NEW_MEMBER_TYPES.DEFAULT;
     }
 
     // WB-6499: show default new member prompt.
@@ -174,7 +175,7 @@ export const getNewMemberTitleIn18nParams = createSelector(
   getOrderReceiptClaimedCashbackValue,
   getNewMemberPromptCategory,
   (claimedCashbackValue, newMemberPromptCategory) => {
-    const { titleI18nParamsKeys } = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory];
+    const { titleI18nParamsKeys } = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory] || {};
     const newMemberTitleI18nParams = {};
 
     if (!titleI18nParamsKeys) {
@@ -219,9 +220,9 @@ export const getReturningMemberPromptCategory = createSelector(
     }
 
     if (isFromEarnedCashbackQrScan) {
-      const claimedCashbackTypeKey = RETURNING_MEMBER_CASHBACK_STATUS_TYPES[claimedCashbackStatus];
+      const claimedCashbackType = RETURNING_MEMBER_CASHBACK_STATUS_TYPES[claimedCashbackStatus];
 
-      return RETURNING_MEMBER_TYPES[claimedCashbackTypeKey] || RETURNING_MEMBER_TYPES.DEFAULT;
+      return claimedCashbackType || RETURNING_MEMBER_TYPES.DEFAULT;
     }
 
     return null;
@@ -232,7 +233,7 @@ export const getReturningMemberTitleIn18nParams = createSelector(
   getOrderReceiptClaimedCashbackValue,
   getReturningMemberPromptCategory,
   (claimedCashbackValue, returningMemberPromptCategory) => {
-    const { titleI18nParamsKeys } = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory];
+    const { titleI18nParamsKeys } = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory] || {};
     const returningMemberTitleI18nParams = {};
 
     if (!titleI18nParamsKeys) {
