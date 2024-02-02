@@ -38,6 +38,7 @@ import {
   getIsFetchLoginStatusComplete,
   getIsLoadCustomerRequestCompleted,
   getUserCustomerId,
+  getUserConsumerId,
 } from '../../../../../redux/modules/app';
 import { getIsMerchantMembershipEnabled } from '../../../../../../redux/modules/merchant/selectors';
 
@@ -158,6 +159,14 @@ export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInf
 
 export const getCashbackStatus = createSelector(getCashbackInfo, cashbackInfo => _get(cashbackInfo, 'status', null));
 
+export const getCashbackCustomerId = createSelector(getCashbackInfo, cashbackInfo =>
+  _get(cashbackInfo, 'customerId', null)
+);
+
+export const getCashbackConsumerId = createSelector(getCashbackInfo, cashbackInfo =>
+  _get(cashbackInfo, 'consumerId', null)
+);
+
 export const getCanCashbackClaim = createSelector(getCashbackStatus, cashbackStatus =>
   CASHBACK_CAN_CLAIM_STATUS_LIST.includes(cashbackStatus)
 );
@@ -195,13 +204,17 @@ export const getShouldShowCashbackBanner = createSelector(
     orderShippingType === DELIVERY_METHOD.DINE_IN
 );
 
+// WB-7414: we need to consider the consumerId from cashbackInfo to make user able to see cashback card immediately.
 export const getShouldShowCashbackCard = createSelector(
   getIsCashbackClaimable,
   getHasCashbackClaimed,
   getUserCustomerId,
+  getUserConsumerId,
   getOrderCustomerId,
-  (isCashbackClaimable, hasCashbackClaimed, userCustomerId, orderCustomerId) =>
-    (isCashbackClaimable || hasCashbackClaimed) && userCustomerId === orderCustomerId
+  getCashbackConsumerId,
+  (isCashbackClaimable, hasCashbackClaimed, userCustomerId, userConsumerId, orderCustomerId, cashbackConsumerId) =>
+    (isCashbackClaimable || hasCashbackClaimed) &&
+    (userCustomerId === orderCustomerId || userConsumerId === cashbackConsumerId)
 );
 
 export const getFoodCourtId = createSelector(getOrder, order => _get(order, 'foodCourtId', null));
@@ -337,12 +350,14 @@ export const getShouldShowMemberCard = createSelector(
     isLogin && isMerchantMembershipEnabled && hasUserJoinedBusinessMembership
 );
 
+// WB-7383: we need to consider the consumerId from cashbackInfo to make user able to see cashback card immediately
 export const getShouldShowEarnedCashback = createSelector(
   getHasCashback,
   getHasOrderPaid,
   getUserCustomerId,
   getOrderCustomerId,
+  getCashbackCustomerId,
   getHasCashbackClaimed,
-  (hasCashback, hasOrderPaid, userCustomerId, orderCustomerId, hasCashbackClaimed) =>
-    hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === orderCustomerId
+  (hasCashback, hasOrderPaid, userCustomerId, orderCustomerId, cashbackCustomerId, hasCashbackClaimed) =>
+    hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === (orderCustomerId || cashbackCustomerId)
 );

@@ -35,6 +35,16 @@ export const getUserProfile = state => state.user.loadProfileRequest;
 
 export const getUserProfileData = createSelector(getUserProfile, loadProfileRequest => loadProfileRequest.data);
 
+export const getUserProfileRequestStatus = createSelector(
+  getUserProfile,
+  loadProfileRequest => loadProfileRequest.status
+);
+
+export const getUserProfileRequestError = createSelector(
+  getUserProfile,
+  loadProfileRequest => loadProfileRequest.error
+);
+
 export const getUserPhoneNumber = createSelector(
   getUserProfileData,
   loadProfileRequestData => loadProfileRequestData.phone
