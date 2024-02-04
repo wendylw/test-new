@@ -77,7 +77,7 @@ const ClaimCashback = () => {
     if (!isMerchantMembershipEnabled && orderCashbackStatus) {
       dispatch(appActions.setMessageInfo({ key: orderCashbackStatus }));
     }
-  }, [orderCashbackStatus, dispatch]);
+  }, [orderCashbackStatus, dispatch, isMerchantMembershipEnabled]);
 
   // TODO: WB-6994: remove this useEffect after we have a better solution
   useEffect(() => {
