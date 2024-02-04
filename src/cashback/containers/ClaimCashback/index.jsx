@@ -10,6 +10,7 @@ import { getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
 import { getIsWeb, getIsWebview } from '../../redux/modules/common/selectors';
 import { getIsLogin } from '../../../redux/modules/user/selectors';
 import { initUserInfo } from '../../../redux/modules/user/thunks';
+import { getIsMerchantMembershipEnabled } from '../../../redux/modules/merchant/selectors';
 import { getCustomerId } from '../../redux/modules/customer/selectors';
 import {
   getOrderReceiptNumber,
@@ -32,6 +33,7 @@ const ClaimCashback = () => {
   const isWeb = useSelector(getIsWeb);
   const isWebview = useSelector(getIsWebview);
   const isLogin = useSelector(getIsLogin);
+  const isMerchantMembershipEnabled = useSelector(getIsMerchantMembershipEnabled);
   const customerId = useSelector(getCustomerId);
   const isClaimedCashbackForCustomerFulfilled = useSelector(getIsClaimedCashbackForCustomerFulfilled);
   const orderReceiptNumber = useSelector(getOrderReceiptNumber);
@@ -59,7 +61,7 @@ const ClaimCashback = () => {
   }, [isLogin, claimedCashbackForCustomerStatus, orderReceiptNumber, dispatch]);
 
   useEffect(() => {
-    if (isClaimedCashbackForCustomerFulfilled && customerId) {
+    if (!isMerchantMembershipEnabled && isClaimedCashbackForCustomerFulfilled && customerId) {
       // TODO: WB-6669: change to new cashback detail page and move to thunks
       history.push({
         pathname: PATH_NAME_MAPPING.CASHBACK_HOME,
