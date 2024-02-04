@@ -13,6 +13,7 @@ import { getMerchantBusiness, getIsMerchantMembershipEnabled } from '../../../..
 import { fetchMerchantInfo } from '../../../../redux/modules/merchant/thunks';
 import { getIsWebview, getIsAlipayMiniProgram } from '../../../redux/modules/common/selectors';
 import { loadConsumerCustomerInfo } from '../../../redux/modules/customer/thunks';
+import { actions as appActions } from '../../../redux/modules/app';
 import { getOrderQRReceiptNumber, getOrderCashbackInfo, postClaimedCashbackForCustomer } from './api-request';
 import {
   getClaimCashbackPageHash,
@@ -82,6 +83,7 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
 
     if (isClaimedCashbackForCustomerFulfilled) {
       // TODO: WB-6669: remove this request new page no needs to request
+      await dispatch(appActions.loadConsumerLoginStatus());
       dispatch(loadConsumerCustomerInfo());
 
       const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
