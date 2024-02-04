@@ -247,7 +247,7 @@ export const getReturningMemberPromptCategory = createSelector(
 );
 
 export const getReturningMemberTitleIn18nParams = createSelector(
-  getOrderReceiptClaimedCashbackValue,
+  getOrderReceiptClaimedCashback,
   getReturningMemberPromptCategory,
   (claimedCashback, returningMemberPromptCategory) => {
     const { titleI18nParamsKeys } = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory] || {};

@@ -32,6 +32,7 @@
   "ThanksComingBackReturningMemberTitle": "Thanks for coming back!",
   "ThanksComingBackReturningMemberDescription": "Visit us again next time.",
   "EarnedCashbackReturningMemberTitle": "You’ve claimed {{cashbackValue}} cashback!",
+  "EarnedCashbackReturningMemberDescription": "Check your total balance",
   "ClaimedCashbackRepeatReturningMemberTitle": "Oops! You've already claimed cashback for this order",
   "ClaimedCashbackRepeatReturningMemberDescription": "Check your total balance",
   "ClaimedCashbackBySomeElseReturningMemberTitle": "Oops! Someone has already claimed cashback for this order",
