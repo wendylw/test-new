@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import {
   CLAIM_CASHBACK_QUERY_NAMES,
+  CLAIM_CASHBACK_TYPES,
   BECOME_MERCHANT_MEMBER_METHODS,
   PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
@@ -53,11 +54,15 @@ export const getOrderReceiptClaimedCashback = createSelector(
   getOrderReceiptClaimedCashbackType,
   getOrderReceiptClaimedCashbackValue,
   (claimedCashbackType, claimedCashbackValue) => {
-    if (claimedCashbackType === CLAIM_CASHBACK_QUERY_NAMES.PERCENTAGE_TYPE) {
+    if (claimedCashbackType === CLAIM_CASHBACK_TYPES.PERCENTAGE) {
       return `${claimedCashbackValue}%`;
-    } else if (claimedCashbackType === CLAIM_CASHBACK_QUERY_NAMES.ABSOLUTE_TYPE) {
+    }
+
+    if (claimedCashbackType === CLAIM_CASHBACK_TYPES.ABSOLUTE) {
       return decodeURIComponent(claimedCashbackValue);
     }
+
+    return '';
   }
 );
 

@@ -68,7 +68,7 @@ const ClaimCashback = () => {
         search: `?customerId=${customerId}`,
       });
     }
-  }, [isClaimedCashbackForCustomerFulfilled, customerId, history]);
+  }, [isClaimedCashbackForCustomerFulfilled, isMerchantMembershipEnabled, customerId, history]);
 
   // TODO: WB-6994: remove this useEffect after we have a better solution
   useEffect(() => {
