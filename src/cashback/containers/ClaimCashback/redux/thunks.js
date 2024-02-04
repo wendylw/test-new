@@ -81,6 +81,7 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
     const isClaimedCashbackForCustomerFulfilled = getIsClaimedCashbackForCustomerFulfilled(getState());
 
     if (isClaimedCashbackForCustomerFulfilled) {
+      // TODO: WB-6669: remove this request new page no needs to request
       dispatch(loadConsumerCustomerInfo());
 
       const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
