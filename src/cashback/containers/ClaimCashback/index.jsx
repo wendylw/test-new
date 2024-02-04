@@ -17,11 +17,14 @@ import {
   getClaimedCashbackForCustomerStatus,
   getIsClaimedCashbackForCustomerFulfilled,
   getClaimedOrderCashbackStatus,
+  getIsClaimCashbackLoaderShow,
 } from './redux/selectors';
 import { actions as claimCashbackActions } from './redux';
 import { mounted, claimedCashbackAndContinueNextStep } from './redux/thunks';
 import Frame from '../../../common/components/Frame';
 import PageHeader from '../../../common/components/PageHeader';
+import PageToast from '../../../common/components/PageToast';
+import Loader from '../../../common/components/Loader';
 import MerchantInfo from './components/MerchantInfo';
 import CashbackBlock from './components/CashbackBlock';
 import styles from './ClaimCashback.module.scss';
@@ -40,6 +43,7 @@ const ClaimCashback = () => {
   const orderReceiptNumber = useSelector(getOrderReceiptNumber);
   const claimedCashbackForCustomerStatus = useSelector(getClaimedCashbackForCustomerStatus);
   const orderCashbackStatus = useSelector(getClaimedOrderCashbackStatus);
+  const isClaimCashbackLoaderShow = useSelector(getIsClaimCashbackLoaderShow);
   const handleClickHeaderBackButton = useCallback(() => {
     if (isWebview) {
       closeWebView();
@@ -96,6 +100,9 @@ const ClaimCashback = () => {
       <MerchantInfo />
       <CashbackBlock />
       {!isLogin && <div className={styles.ClaimCashbackNotLoginBackground} />}
+      {isClaimCashbackLoaderShow && (
+        <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
+      )}
     </Frame>
   );
 };

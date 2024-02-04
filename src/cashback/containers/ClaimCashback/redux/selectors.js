@@ -62,6 +62,11 @@ export const getClaimedOrderCashbackStatus = createSelector(
 /**
  * Derived selectors
  */
+export const getIsClaimedCashbackForCustomerPending = createSelector(
+  getClaimedCashbackForCustomerStatus,
+  claimedCashbackForCustomerStatus => claimedCashbackForCustomerStatus === API_REQUEST_STATUS.PENDING
+);
+
 export const getIsClaimedCashbackForCustomerFulfilled = createSelector(
   getClaimedCashbackForCustomerStatus,
   claimedCashbackForCustomerStatus => claimedCashbackForCustomerStatus === API_REQUEST_STATUS.FULFILLED
@@ -96,4 +101,9 @@ export const getOrderCashbackValue = createSelector(
   getOrderCashbackPercentage,
   (isPriceCashback, orderCashbackPrice, orderCashbackPercentage) =>
     isPriceCashback ? orderCashbackPrice : orderCashbackPercentage
+);
+
+export const getIsClaimCashbackLoaderShow = createSelector(
+  getIsClaimedCashbackForCustomerPending,
+  isClaimedCashbackForCustomerPending => isClaimedCashbackForCustomerPending
 );
