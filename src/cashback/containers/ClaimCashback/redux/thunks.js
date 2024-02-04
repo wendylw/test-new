@@ -12,6 +12,7 @@ import { initUserInfo, loginUserByBeepApp, loginUserByAlipayMiniProgram } from '
 import { getMerchantBusiness, getIsMerchantMembershipEnabled } from '../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../redux/modules/merchant/thunks';
 import { getIsWebview, getIsAlipayMiniProgram } from '../../../redux/modules/common/selectors';
+import { loadConsumerCustomerInfo } from '../../../redux/modules/customer/thunks';
 import { getOrderQRReceiptNumber, getOrderCashbackInfo, postClaimedCashbackForCustomer } from './api-request';
 import {
   getClaimCashbackPageHash,
@@ -74,6 +75,8 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
     const isClaimedCashbackForCustomerFulfilled = getIsClaimedCashbackForCustomerFulfilled(getState());
 
     if (isClaimedCashbackForCustomerFulfilled) {
+      dispatch(loadConsumerCustomerInfo());
+
       const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
       const { REWARDS_BASE, REWARDS_BUSINESS, REWARDS_MEMBERSHIP, MEMBERSHIP_DETAIL } = PATH_NAME_MAPPING;
       const rewardsBaseRoute = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}${REWARDS_BASE}${REWARDS_BUSINESS}`;

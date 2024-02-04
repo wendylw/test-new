@@ -61,7 +61,10 @@ const ClaimCashback = () => {
   useEffect(() => {
     if (isClaimedCashbackForCustomerFulfilled && customerId) {
       // TODO: WB-6669: change to new cashback detail page and move to thunks
-      history.push(`${PATH_NAME_MAPPING.CASHBACK_BASE}?customerId=${customerId}`);
+      history.push({
+        pathname: PATH_NAME_MAPPING.CASHBACK_HOME,
+        search: `?customerId=${customerId}`,
+      });
     }
   }, [isClaimedCashbackForCustomerFulfilled, customerId, history]);
 
