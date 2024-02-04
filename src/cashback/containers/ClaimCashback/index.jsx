@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 import { closeWebView } from '../../../utils/native-methods';
 import usePrefetch from '../../../common/utils/hooks/usePrefetch';
-import { getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
+import { actions as appActions, getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
 import { getIsWeb, getIsWebview } from '../../redux/modules/common/selectors';
 import { getIsLogin } from '../../../redux/modules/user/selectors';
 import { initUserInfo } from '../../../redux/modules/user/thunks';
@@ -16,6 +16,7 @@ import {
   getOrderReceiptNumber,
   getClaimedCashbackForCustomerStatus,
   getIsClaimedCashbackForCustomerFulfilled,
+  getClaimedOrderCashbackStatus,
 } from './redux/selectors';
 import { actions as claimCashbackActions } from './redux';
 import { mounted, claimedCashbackAndContinueNextStep } from './redux/thunks';
@@ -38,6 +39,7 @@ const ClaimCashback = () => {
   const isClaimedCashbackForCustomerFulfilled = useSelector(getIsClaimedCashbackForCustomerFulfilled);
   const orderReceiptNumber = useSelector(getOrderReceiptNumber);
   const claimedCashbackForCustomerStatus = useSelector(getClaimedCashbackForCustomerStatus);
+  const orderCashbackStatus = useSelector(getClaimedOrderCashbackStatus);
   const handleClickHeaderBackButton = useCallback(() => {
     if (isWebview) {
       closeWebView();
@@ -69,6 +71,13 @@ const ClaimCashback = () => {
       });
     }
   }, [isClaimedCashbackForCustomerFulfilled, isMerchantMembershipEnabled, customerId, history]);
+
+  // TODO: WB-6994: remove this useEffect that will redirect to cashback detail page
+  useEffect(() => {
+    if (!isMerchantMembershipEnabled && orderCashbackStatus) {
+      dispatch(appActions.setMessageInfo({ key: orderCashbackStatus }));
+    }
+  }, [orderCashbackStatus, dispatch]);
 
   // TODO: WB-6994: remove this useEffect after we have a better solution
   useEffect(() => {
