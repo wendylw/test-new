@@ -1,7 +1,6 @@
 import { createSelector } from 'reselect';
 import {
-  CLAIM_CASHBACK_STATUS_QUERY_NAME,
-  CLAIM_CASHBACK_VALUE_QUERY_NAME,
+  CLAIM_CASHBACK_QUERY_NAMES,
   BECOME_MERCHANT_MEMBER_METHODS,
   PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
@@ -34,10 +33,11 @@ import {
   getIsLoadCustomerRequestCompleted,
 } from '../../../../../redux/modules/customer/selectors';
 
-export const getOrderReceiptClaimedCashbackStatus = () => getQueryString(CLAIM_CASHBACK_STATUS_QUERY_NAME);
+export const getOrderReceiptClaimedCashbackStatus = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.STATUS);
 
-export const getOrderReceiptClaimedCashbackValue = () =>
-  decodeURIComponent(getQueryString(CLAIM_CASHBACK_VALUE_QUERY_NAME));
+export const getOrderReceiptClaimedCashbackType = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.TYPE);
+
+export const getOrderReceiptClaimedCashbackValue = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.VALUE);
 
 export const getLoadUniquePromoListData = state =>
   state.business.membershipDetail.loadUniquePromoListRequest.data || [];
@@ -49,6 +49,18 @@ export const getLoadUniquePromoListError = state => state.business.membershipDet
 /**
  * Derived selectors
  */
+export const getOrderReceiptClaimedCashback = createSelector(
+  getOrderReceiptClaimedCashbackType,
+  getOrderReceiptClaimedCashbackValue,
+  (claimedCashbackType, claimedCashbackValue) => {
+    if (claimedCashbackType === CLAIM_CASHBACK_QUERY_NAMES.PERCENTAGE_TYPE) {
+      return `${claimedCashbackValue}%`;
+    } else if (claimedCashbackType === CLAIM_CASHBACK_QUERY_NAMES.ABSOLUTE_TYPE) {
+      return decodeURIComponent(claimedCashbackValue);
+    }
+  }
+);
+
 export const getCustomerCashbackPrice = createSelector(
   getCustomerCashback,
   getMerchantLocale,
@@ -172,9 +184,9 @@ export const getNewMemberPromptCategory = createSelector(
 );
 
 export const getNewMemberTitleIn18nParams = createSelector(
-  getOrderReceiptClaimedCashbackValue,
+  getOrderReceiptClaimedCashback,
   getNewMemberPromptCategory,
-  (claimedCashbackValue, newMemberPromptCategory) => {
+  (claimedCashback, newMemberPromptCategory) => {
     const { titleI18nParamsKeys } = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory] || {};
     const newMemberTitleI18nParams = {};
 
@@ -184,7 +196,7 @@ export const getNewMemberTitleIn18nParams = createSelector(
 
     titleI18nParamsKeys.forEach(paramKey => {
       if (paramKey === I18N_PARAM_KEYS.CASHBACK_VALUE) {
-        newMemberTitleI18nParams[paramKey] = claimedCashbackValue;
+        newMemberTitleI18nParams[paramKey] = claimedCashback;
       }
     });
 
@@ -232,7 +244,7 @@ export const getReturningMemberPromptCategory = createSelector(
 export const getReturningMemberTitleIn18nParams = createSelector(
   getOrderReceiptClaimedCashbackValue,
   getReturningMemberPromptCategory,
-  (claimedCashbackValue, returningMemberPromptCategory) => {
+  (claimedCashback, returningMemberPromptCategory) => {
     const { titleI18nParamsKeys } = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory] || {};
     const returningMemberTitleI18nParams = {};
 
@@ -242,7 +254,7 @@ export const getReturningMemberTitleIn18nParams = createSelector(
 
     titleI18nParamsKeys.forEach(paramKey => {
       if (paramKey === I18N_PARAM_KEYS.CASHBACK_VALUE) {
-        returningMemberTitleI18nParams[paramKey] = claimedCashbackValue;
+        returningMemberTitleI18nParams[paramKey] = claimedCashback;
       }
     });
 

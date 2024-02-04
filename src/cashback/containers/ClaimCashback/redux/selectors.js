@@ -75,18 +75,25 @@ export const getOrderCashbackPrice = createSelector(
   (cashback, locale, currency, country) => getPrice(cashback, { locale, currency, country })
 );
 
-export const getOrderCashbackPercentage = createSelector(
+export const getOrderCashbackPercentageNumber = createSelector(
   getOrderCashbackDefaultLoyaltyRatio,
-  defaultLoyaltyRatio => `${defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5}%`
+  defaultLoyaltyRatio => (defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5)
+);
+
+export const getOrderCashbackPercentage = createSelector(
+  getOrderCashbackPercentageNumber,
+  percentage => `${percentage}%`
+);
+
+export const getIsPriceCashback = createSelector(
+  getOrderCashback,
+  cashback => Number(cashback) && !Number.isNaN(Number(cashback))
 );
 
 export const getOrderCashbackValue = createSelector(
-  getOrderCashback,
+  getIsPriceCashback,
   getOrderCashbackPrice,
   getOrderCashbackPercentage,
-  (cashback, orderCashbackPrice, orderCashbackPercentage) => {
-    const isNumber = Number(cashback) && !Number.isNaN(Number(cashback));
-
-    return isNumber ? orderCashbackPrice : orderCashbackPercentage;
-  }
+  (isPriceCashback, orderCashbackPrice, orderCashbackPercentage) =>
+    isPriceCashback ? orderCashbackPrice : orderCashbackPercentage
 );
