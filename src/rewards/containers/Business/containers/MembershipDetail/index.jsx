@@ -35,7 +35,10 @@ const MembershipDetail = () => {
         onBackArrowClick={handleClickHeaderBackButton}
       />
       <MemberCard />
-      <CashbackBlock />
+      <section className={styles.MembershipDetailCashbackSection}>
+        <h2 className={styles.MembershipDetailCashbackSectionTitle}>{t('Cashback')}</h2>
+        <CashbackBlock />
+      </section>
       <UniquePromoList />
       <MembershipDetailFooter />
       <MemberPrompt />

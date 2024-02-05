@@ -10,9 +10,11 @@ const MerchantInfo = () => {
 
   return (
     <section className={styles.MerchantInfo}>
-      <div className={styles.MerchantInfoLogoContainer}>
-        <ObjectFitImage noCompression src={merchantLogo} alt="Store Logo in StoreHub" />
-      </div>
+      {merchantLogo && (
+        <div className={styles.MerchantInfoLogoContainer}>
+          <ObjectFitImage noCompression src={merchantLogo} alt="Store Logo in StoreHub" />
+        </div>
+      )}
       <h1 className={styles.MemberInfoStoreName}>{merchantDisplayName}</h1>
     </section>
   );

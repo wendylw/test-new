@@ -1,3 +1,4 @@
+import { createSelector } from 'reselect';
 import {
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
@@ -6,5 +7,5 @@ import {
 export const getIsOrderAndRedeemButtonDisplay = createSelector(
   getIsMerchantEnabledOROrdering,
   getIsMerchantEnabledDelivery,
-  (isOROrderingEnabled, isDeliveryEnabled, isUserFromOrdering) => isOROrderingEnabled && isDeliveryEnabled
+  (isOROrderingEnabled, isDeliveryEnabled) => isOROrderingEnabled && isDeliveryEnabled
 );

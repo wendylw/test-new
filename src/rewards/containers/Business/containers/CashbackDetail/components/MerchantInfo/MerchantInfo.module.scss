@@ -10,7 +10,7 @@
 }
 
 .MemberInfoStoreName {
-  @apply tw-leading-loose;
+  @apply tw-my-0 tw-text-base tw-leading-loose;
 
   @include text-line-clamp(1);
 }

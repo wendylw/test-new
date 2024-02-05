@@ -43,45 +43,42 @@ const CashbackBlock = () => {
   }
 
   return (
-    <section className={styles.CashbackBlockSection}>
-      <h2 className={styles.CashbackBlockSectionTitle}>{t('Cashback')}</h2>
-      <div className={styles.CashbackBlock}>
-        <div className={styles.CashbackBlockInfoTop}>
-          <div className={cashbackBlockBalanceContainerClassName}>
-            <h4 className={styles.CashbackBlockBalanceTitle}>{t('CashbackBalanceTitle')} :</h4>
-            <data className={styles.CashbackBlockBalance} value={customerCashbackPrice}>
-              {customerCashbackPrice}
-            </data>
-          </div>
-          <a
-            className={styles.CashbackBlockHistoryLink}
-            data-test-id="rewards.membership-detail.cashback-history-link"
-            href={cashbackHistoryLogPageURL}
-          >
-            <img
-              className={styles.CashbackBlockHistoryLinkImage}
-              src={CashbackHistoryButtonIcon}
-              alt="Store cashback history in StoreHub"
-            />
-          </a>
+    <div className={styles.CashbackBlock}>
+      <div className={styles.CashbackBlockInfoTop}>
+        <div className={cashbackBlockBalanceContainerClassName}>
+          <h4 className={styles.CashbackBlockBalanceTitle}>{t('CashbackBalanceTitle')} :</h4>
+          <data className={styles.CashbackBlockBalance} value={customerCashbackPrice}>
+            {customerCashbackPrice}
+          </data>
         </div>
-        {cashbackExpiredDate && (
-          <div className={styles.CashbackBlockInfoBottom}>
-            <time className={cashbackBlockExpiredDateClassName}>
-              {t('ValidUntil', {
-                date: formatTimeToDateString(merchantCountry, cashbackExpiredDate),
-              })}
-            </time>
-            {isCashbackExpired && <Tag className={styles.CashbackBlockExpiredTag}>{t('Expired')}</Tag>}
-            {remainingCashbackExpiredDays && (
-              <Tag className={styles.CashbackBlockRemainingExpiredDaysTag}>
-                {isTodayExpired ? t('ExpiringToday') : t('ExpiringInDays', { remainingCashbackExpiredDays })}
-              </Tag>
-            )}
-          </div>
-        )}
+        <a
+          className={styles.CashbackBlockHistoryLink}
+          data-test-id="rewards.membership-detail.cashback-history-link"
+          href={cashbackHistoryLogPageURL}
+        >
+          <img
+            className={styles.CashbackBlockHistoryLinkImage}
+            src={CashbackHistoryButtonIcon}
+            alt="Store cashback history in StoreHub"
+          />
+        </a>
       </div>
-    </section>
+      {cashbackExpiredDate && (
+        <div className={styles.CashbackBlockInfoBottom}>
+          <time className={cashbackBlockExpiredDateClassName}>
+            {t('ValidUntil', {
+              date: formatTimeToDateString(merchantCountry, cashbackExpiredDate),
+            })}
+          </time>
+          {isCashbackExpired && <Tag className={styles.CashbackBlockExpiredTag}>{t('Expired')}</Tag>}
+          {remainingCashbackExpiredDays && (
+            <Tag className={styles.CashbackBlockRemainingExpiredDaysTag}>
+              {isTodayExpired ? t('ExpiringToday') : t('ExpiringInDays', { remainingCashbackExpiredDays })}
+            </Tag>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
