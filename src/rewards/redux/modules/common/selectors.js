@@ -11,7 +11,7 @@ export const getIsGCashMiniProgram = () => isGCashMiniProgram();
 
 export const getIsAlipayMiniProgram = () => isAlipayMiniProgram();
 
-export const getIsWeb = () => !isWebview() && !isTNGMiniProgram();
+export const getIsWeb = () => !isWebview() && !isAlipayMiniProgram();
 
 export const getSource = () => getQueryString('source');
 
