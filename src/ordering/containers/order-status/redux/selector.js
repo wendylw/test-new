@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
 import { createSelector } from 'reselect';
-import { getUserProfile, getTableId } from '../../../redux/modules/app';
+import { getUserProfile, getTableId, getIsDeliveryType } from '../../../redux/modules/app';
 import Constants from '../../../../utils/constants';
 
 const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS } = Constants;
@@ -18,6 +18,8 @@ export const getRiderLocations = createSelector(getOrder, order => _get(order, '
 export const getOrderDelayReason = createSelector(getOrder, order => _get(order, 'delayReason', null));
 
 export const getOrderShippingType = createSelector(getOrder, order => _get(order, 'shippingType', null));
+
+export const getOrderShippingFee = createSelector(getOrder, order => _get(order, 'shippingFee', 0));
 
 export const getRefundShippingFee = createSelector(getOrder, order => _get(order, 'refundShippingFee', null));
 
@@ -232,3 +234,9 @@ export const getIsStoreReviewSupportable = createSelector(getStoreReviewInfoData
 );
 
 export const getOffline = state => state.orderStatus.storeReview.offline;
+
+export const getIsDeliveryChargeShow = createSelector(
+  getOrderShippingType,
+  getOrderShippingFee,
+  (shippingType, shippingFee) => shippingType === DELIVERY_METHOD.DELIVERY || shippingFee > 0
+);

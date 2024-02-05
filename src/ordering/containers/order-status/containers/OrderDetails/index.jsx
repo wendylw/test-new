@@ -23,6 +23,7 @@ import { loadOrder as loadOrderThunk } from '../../redux/thunks';
 import {
   getIsUseStorehubLogistics,
   getIsShowReorderButton,
+  getIsDeliveryChargeShow,
   getOrder,
   getOrderStatus,
   getPromotion,
@@ -352,7 +353,15 @@ export class OrderDetails extends Component {
   }
 
   render() {
-    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton, shippingType } = this.props;
+    const {
+      order,
+      t,
+      isUseStorehubLogistics,
+      serviceCharge,
+      isShowReorderButton,
+      shippingType,
+      isDeliveryChargeShow,
+    } = this.props;
     const { shippingFee, takeawayCharges, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } =
       order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
@@ -394,10 +403,13 @@ export class OrderDetails extends Component {
                   <CurrencyNumber className="padding-top-bottom-small text-opacity" money={takeawayCharges || 0} />
                 </li>
               )}
-              <li className="flex flex-space-between flex-middle">
-                <span className="padding-top-bottom-small text-opacity">{t('DeliveryCharge')}</span>
-                <CurrencyNumber className="padding-top-bottom-small text-opacity" money={shippingFee || 0} />
-              </li>
+              {isDeliveryChargeShow && (
+                <li className="flex flex-space-between flex-middle">
+                  <span className="padding-top-bottom-small text-opacity">{t('DeliveryCharge')}</span>
+                  <CurrencyNumber className="padding-top-bottom-small text-opacity" money={shippingFee || 0} />
+                </li>
+              )}
+
               <li className="flex flex-space-between flex-middle">
                 <span className="padding-top-bottom-small text-opacity">{t('ServiceCharge')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={serviceCharge || 0} />
@@ -477,6 +489,7 @@ OrderDetails.propTypes = {
   productsManualDiscount: PropTypes.number,
   isShowReorderButton: PropTypes.bool,
   isUseStorehubLogistics: PropTypes.bool,
+  isDeliveryChargeShow: PropTypes.bool,
   loadOrder: PropTypes.func,
 };
 
@@ -492,6 +505,7 @@ OrderDetails.defaultProps = {
   productsManualDiscount: 0,
   isShowReorderButton: false,
   isUseStorehubLogistics: false,
+  isDeliveryChargeShow: false,
   loadOrder: () => {},
 };
 
@@ -509,6 +523,7 @@ export default compose(
       receiptNumber: getReceiptNumber(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       isShowReorderButton: getIsShowReorderButton(state),
+      isDeliveryChargeShow: getIsDeliveryChargeShow(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
