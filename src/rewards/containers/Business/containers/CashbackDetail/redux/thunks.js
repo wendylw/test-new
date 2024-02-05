@@ -19,6 +19,7 @@ export const mounted = createAsyncThunk(
 
     const isLogin = getIsLogin(getState());
 
+    // If user is not login, we will display expired session result
     if (isLogin) {
       dispatch(fetchCustomerInfo(business));
     }
