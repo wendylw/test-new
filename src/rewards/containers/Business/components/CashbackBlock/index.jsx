@@ -1,22 +1,21 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import CashbackHistoryButtonIcon from '../../../../../../../images/membership-history.svg';
-import { formatTimeToDateString } from '../../../../../../../utils/datetime-lib';
-import { getClassName } from '../../../../../../../common/utils/ui';
-import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
+import CashbackHistoryButtonIcon from '../../../../../images/membership-history.svg';
+import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
+import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
+import { getClassName } from '../../../../../common/utils/ui';
 import {
   getMerchantBusiness,
   getMerchantCountry,
   getIsMerchantEnabledCashback,
-} from '../../../../../../../redux/modules/merchant/selectors';
-import { getCashbackExpiredDate, getIsCashbackExpired } from '../../../../../../redux/modules/customer/selectors';
-import { getCustomerCashbackPrice } from '../../redux/selectors';
-import Tag from '../../../../../../../common/components/Tag';
+} from '../../../../../redux/modules/merchant/selectors';
+import { getCashbackExpiredDate, getIsCashbackExpired } from '../../../../redux/modules/customer/selectors';
+import { getCustomerCashbackPrice, getRemainingCashbackExpiredDays } from '../../redux/common/selectors';
+import Tag from '../../../../../common/components/Tag';
 import styles from './CashbackBlock.module.scss';
 
 const CashbackBlock = () => {
-  // TODO: phase3 will add Expiring Remaining Days
   const { t } = useTranslation(['Rewards']);
   const merchantBusiness = useSelector(getMerchantBusiness);
   const merchantCountry = useSelector(getMerchantCountry);
@@ -24,10 +23,12 @@ const CashbackBlock = () => {
   const cashbackExpiredDate = useSelector(getCashbackExpiredDate);
   const isCashbackExpired = useSelector(getIsCashbackExpired);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
+  const remainingCashbackExpiredDays = useSelector(getRemainingCashbackExpiredDays);
   const cashbackHistoryLogPageURL = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace(
     '%business%',
     merchantBusiness
   )}${PATH_NAME_MAPPING.CASHBACK_BASE}${PATH_NAME_MAPPING.CASHBACK_HISTORIES}`;
+  const isTodayExpired = remainingCashbackExpiredDays === 0;
   const cashbackBlockBalanceContainerClassName = getClassName([
     styles.CashbackBlockBalanceContainer,
     isCashbackExpired ? styles.CashbackBlockBalanceContainer__Expired : null,
@@ -72,6 +73,11 @@ const CashbackBlock = () => {
               })}
             </time>
             {isCashbackExpired && <Tag className={styles.CashbackBlockExpiredTag}>{t('Expired')}</Tag>}
+            {remainingCashbackExpiredDays && (
+              <Tag className={styles.CashbackBlockRemainingExpiredDaysTag}>
+                {isTodayExpired ? t('ExpiringToday') : t('ExpiringInDays', { remainingCashbackExpiredDays })}
+              </Tag>
+            )}
           </div>
         )}
       </div>

@@ -52,6 +52,7 @@
   }
 }
 
-.CashbackBlockExpiredTag {
+.CashbackBlockExpiredTag,
+.CashbackBlockRemainingExpiredDaysTag {
   @apply tw-font-bold;
 }

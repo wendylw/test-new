@@ -66,14 +66,6 @@ export const getOrderReceiptClaimedCashback = createSelector(
   }
 );
 
-export const getCustomerCashbackPrice = createSelector(
-  getCustomerCashback,
-  getMerchantLocale,
-  getMerchantCurrency,
-  getMerchantCountry,
-  (cashback, locale, currency, country) => getPrice(cashback, { locale, currency, country })
-);
-
 export const getIsFromEarnedCashbackQRScan = createSelector(
   getSource,
   source => source === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
