@@ -23,7 +23,6 @@ import { loadOrder as loadOrderThunk } from '../../redux/thunks';
 import {
   getIsUseStorehubLogistics,
   getIsShowReorderButton,
-  getIsDeliveryChargeShow,
   getOrder,
   getOrderStatus,
   getPromotion,
@@ -353,19 +352,12 @@ export class OrderDetails extends Component {
   }
 
   render() {
-    const {
-      order,
-      t,
-      isUseStorehubLogistics,
-      serviceCharge,
-      isShowReorderButton,
-      shippingType,
-      isDeliveryChargeShow,
-    } = this.props;
+    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton, shippingType } = this.props;
     const { shippingFee, takeawayCharges, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } =
       order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
     const isTakeAwayType = shippingType === DELIVERY_METHOD.TAKE_AWAY;
+    const isDeliveryChargeShow = shippingType === DELIVERY_METHOD.DELIVERY;
 
     return (
       <section className="ordering-details flex flex-column" data-test-id="ordering.order-detail.container">
@@ -489,7 +481,6 @@ OrderDetails.propTypes = {
   productsManualDiscount: PropTypes.number,
   isShowReorderButton: PropTypes.bool,
   isUseStorehubLogistics: PropTypes.bool,
-  isDeliveryChargeShow: PropTypes.bool,
   loadOrder: PropTypes.func,
 };
 
@@ -505,7 +496,6 @@ OrderDetails.defaultProps = {
   productsManualDiscount: 0,
   isShowReorderButton: false,
   isUseStorehubLogistics: false,
-  isDeliveryChargeShow: false,
   loadOrder: () => {},
 };
 
@@ -523,7 +513,6 @@ export default compose(
       receiptNumber: getReceiptNumber(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       isShowReorderButton: getIsShowReorderButton(state),
-      isDeliveryChargeShow: getIsDeliveryChargeShow(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),

@@ -19,8 +19,6 @@ export const getOrderDelayReason = createSelector(getOrder, order => _get(order,
 
 export const getOrderShippingType = createSelector(getOrder, order => _get(order, 'shippingType', null));
 
-export const getOrderShippingFee = createSelector(getOrder, order => _get(order, 'shippingFee', 0));
-
 export const getRefundShippingFee = createSelector(getOrder, order => _get(order, 'refundShippingFee', null));
 
 export const getCancelOperator = createSelector(getOrder, order => _get(order, 'cancelOperator', null));
@@ -234,9 +232,3 @@ export const getIsStoreReviewSupportable = createSelector(getStoreReviewInfoData
 );
 
 export const getOffline = state => state.orderStatus.storeReview.offline;
-
-export const getIsDeliveryChargeShow = createSelector(
-  getOrderShippingType,
-  getOrderShippingFee,
-  (shippingType, shippingFee) => shippingType === DELIVERY_METHOD.DELIVERY || shippingFee > 0
-);
