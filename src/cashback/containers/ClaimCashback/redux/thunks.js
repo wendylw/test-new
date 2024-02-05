@@ -94,7 +94,7 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
         `business=${merchantBusiness}`,
         `source=${BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN}`,
         `${CLAIM_CASHBACK_QUERY_NAMES.STATUS}=${claimedOrderCashbackStatus}`,
-        `${CLAIM_CASHBACK_QUERY_NAMES.TYPE}=${cashbackType}`,
+        `${CLAIM_CASHBACK_QUERY_NAMES.CASHBACK_TYPE}=${cashbackType}`,
         `${CLAIM_CASHBACK_QUERY_NAMES.VALUE}=${cashback}`,
       ];
 
