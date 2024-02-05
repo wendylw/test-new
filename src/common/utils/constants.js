@@ -257,9 +257,18 @@ export const CASHBACK_SOURCE = {
   QR_ORDERING: 'QR_ORDERING',
 };
 
-export const CLAIM_CASHBACK_STATUS_QUERY_NAME = 'claimedStatus';
+export const CLAIM_CASHBACK_QUERY_NAMES = {
+  STATUS: 'claimedStatus',
+  VALUE: 'cashback',
+  TYPE: 'type',
+  PERCENTAGE_TYPE: 'percentage',
+  ABSOLUTE_TYPE: 'absolute',
+};
 
-export const CLAIM_CASHBACK_VALUE_QUERY_NAME = 'cashback';
+export const CLAIM_CASHBACK_TYPES = {
+  PERCENTAGE: 'percentage',
+  ABSOLUTE: 'absolute',
+};
 
 export const REFERRER_SOURCE_TYPES = {
   PAYMENT: 'payment',

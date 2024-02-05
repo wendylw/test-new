@@ -143,6 +143,7 @@ export const RETURNING_MEMBER_I18N_KEYS = {
   },
   [RETURNING_MEMBER_TYPES.EARNED_CASHBACK]: {
     titleI18nKey: 'EarnedCashbackReturningMemberTitle',
+    descriptionI18nKey: 'EarnedCashbackReturningMemberDescription',
     titleI18nParamsKeys: [I18N_PARAM_KEYS.CASHBACK_VALUE],
   },
   [RETURNING_MEMBER_TYPES.CLAIMED_REPEAT]: {

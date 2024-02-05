@@ -604,15 +604,3 @@ export const getPrice = (number = 0, { locale, currency, country, withCurrency =
     return numberToFixed(number);
   }
 };
-
-export const getHostNameSubDomain = () => {
-  const { hostname } = window.location;
-
-  if (!hostname) {
-    return null;
-  }
-
-  const hostnameSubDomain = hostname.split('.')[0];
-
-  return hostnameSubDomain;
-};
