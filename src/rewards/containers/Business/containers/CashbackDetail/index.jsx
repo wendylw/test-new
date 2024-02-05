@@ -8,6 +8,7 @@ import PageHeader from '../../../../../common/components/PageHeader';
 import CashbackBlock from '../../components/CashbackBlock';
 import MerchantInfo from './components/MerchantInfo';
 import CashbackDetailFooter from './components/CashbackDetailFooter';
+import CashbackStatusPrompt from './components/CashbackStatusPrompt';
 import styles from './CashbackDetail.module.scss';
 
 const CashbackDetail = () => {
@@ -27,6 +28,7 @@ const CashbackDetail = () => {
         <CashbackBlock />
       </section>
       <CashbackDetailFooter />
+      <CashbackStatusPrompt />
     </Frame>
   );
 };

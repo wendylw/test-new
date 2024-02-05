@@ -57,5 +57,15 @@
   "UniquePromoDuplicatedTitle": "Please try another QR code to claim promotion",
   "UniquePromoDuplicatedDescription": "This promotion has been claimed",
   "UniquePromoExpiredTitle": "Please try another QR code to claim promotion",
-  "UniquePromoExpiredDescription": "Failed to claim. Promotion expired."
+  "UniquePromoExpiredDescription": "Failed to claim. Promotion expired.",
+  "EarnedCashbackTitle": "You’ve claimed {{cashbackValue}} cashback!",
+  "EarnedCashbackDescription": "Check your total balance",
+  "ClaimedProcessingMessage": "You've earned more cashback! We'll add it once it's been processed.😉",
+  "ClaimedRepeatMessage": "You've already earned cashback for this receipt.👍",
+  "ClaimedSomeoneElseMessage": "Someone else has already earned cashback for this receipt.😅",
+  "NotClaimedExpiredMessage": "This cashback has expired and cannot be earned anymore.😭",
+  "NotClaimedCancelledMessage": "This transaction has been cancelled/refunded.",
+  "NotClaimedReachLimitMessage": "Your cashback limit is {{claimCashbackCountPerDay}} time(s) a day. 😭",
+  "NotClaimedReachMerchantLimitMessage": "The cashback is processed, you will receive a confirmation SMS.",
+  "NotClaimedMessage": "Something went wrong. Please scan the QR again, or ask the staff for help."
 }

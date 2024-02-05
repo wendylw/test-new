@@ -1,14 +1,12 @@
 import { createSelector } from 'reselect';
 import {
-  CLAIM_CASHBACK_QUERY_NAMES,
-  CLAIM_CASHBACK_TYPES,
   BECOME_MERCHANT_MEMBER_METHODS,
   PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
   MEMBER_LEVELS,
   MEMBER_CARD_COLOR_PALETTES,
 } from '../../../../../../common/utils/constants';
-import { getPrice, getQueryString } from '../../../../../../common/utils';
+import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
   I18N_PARAM_KEYS,
@@ -20,6 +18,7 @@ import {
   RETURNING_MEMBER_I18N_KEYS,
 } from '../utils/constants';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
+import { getOrderReceiptClaimedCashbackStatus, getOrderReceiptClaimedCashback } from '../../../redux/common/selectors';
 import {
   getMerchantCurrency,
   getMerchantLocale,
@@ -34,12 +33,6 @@ import {
   getIsLoadCustomerRequestCompleted,
 } from '../../../../../redux/modules/customer/selectors';
 
-export const getOrderReceiptClaimedCashbackStatus = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.STATUS);
-
-export const getOrderReceiptClaimedCashbackType = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.CASHBACK_TYPE);
-
-export const getOrderReceiptClaimedCashbackValue = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.VALUE);
-
 export const getLoadUniquePromoListData = state =>
   state.business.membershipDetail.loadUniquePromoListRequest.data || [];
 
@@ -50,21 +43,6 @@ export const getLoadUniquePromoListError = state => state.business.membershipDet
 /**
  * Derived selectors
  */
-export const getOrderReceiptClaimedCashback = createSelector(
-  getOrderReceiptClaimedCashbackType,
-  getOrderReceiptClaimedCashbackValue,
-  (claimedCashbackType, claimedCashbackValue) => {
-    if (claimedCashbackType === CLAIM_CASHBACK_TYPES.PERCENTAGE) {
-      return `${claimedCashbackValue}%`;
-    }
-
-    if (claimedCashbackType === CLAIM_CASHBACK_TYPES.ABSOLUTE) {
-      return decodeURIComponent(claimedCashbackValue);
-    }
-
-    return '';
-  }
-);
 
 export const getIsFromEarnedCashbackQRScan = createSelector(
   getSource,

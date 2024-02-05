@@ -1,6 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { getPrice } from '../../../../../common/utils';
+import { CLAIM_CASHBACK_QUERY_NAMES, CLAIM_CASHBACK_TYPES } from '../../../../../common/utils/constants';
+import { getPrice, getQueryString } from '../../../../../common/utils';
 import { getDifferenceTodayInDays } from '../../../../../utils/datetime-lib';
 import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
@@ -13,6 +14,12 @@ import {
   getCashbackExpiredDate,
   getIsCashbackExpired,
 } from '../../../../redux/modules/customer/selectors';
+
+export const getOrderReceiptClaimedCashbackStatus = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.STATUS);
+
+export const getOrderReceiptClaimedCashbackType = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.CASHBACK_TYPE);
+
+export const getOrderReceiptClaimedCashbackValue = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.VALUE);
 
 export const getConfirmSharingConsumerInfoData = state => state.business.common.confirmSharingConsumerInfoRequest.data;
 
@@ -32,6 +39,9 @@ export const getIsConfirmSharingNewMember = createSelector(
   confirmSharingConsumerInfoData => _get(confirmSharingConsumerInfoData, 'joinMembershipResult.isNewMember', false)
 );
 
+/**
+ * Derived selectors
+ */
 export const getIsNewMember = createSelector(
   getIsJoinMembershipNewMember,
   getIsConfirmSharingNewMember,
@@ -57,5 +67,21 @@ export const getRemainingCashbackExpiredDays = createSelector(
     const days = getDifferenceTodayInDays(cashbackExpiredDate);
 
     return days < 8 ? days : null;
+  }
+);
+
+export const getOrderReceiptClaimedCashback = createSelector(
+  getOrderReceiptClaimedCashbackType,
+  getOrderReceiptClaimedCashbackValue,
+  (claimedCashbackType, claimedCashbackValue) => {
+    if (claimedCashbackType === CLAIM_CASHBACK_TYPES.PERCENTAGE) {
+      return `${claimedCashbackValue}%`;
+    }
+
+    if (claimedCashbackType === CLAIM_CASHBACK_TYPES.ABSOLUTE) {
+      return decodeURIComponent(claimedCashbackValue);
+    }
+
+    return '';
   }
 );
