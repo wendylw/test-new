@@ -6,7 +6,7 @@ import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { CLAIMED_CASHBACK_ICONS, CLAIMED_CASHBACK_I18N_KEYS } from '../../utils/constants';
 import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import { getOrderReceiptClaimedCashbackStatus } from '../../../../redux/common/selectors';
-import { getClaimedCashbackStatusTitleIn18nParams } from '../../redux/selectors';
+import { getIsEarnedCashbackStatus, getClaimedCashbackStatusTitleIn18nParams } from '../../redux/selectors';
 import { alert } from '../../../../../../../common/utils/feedback';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './CashbackStatusPrompt.module.scss';
@@ -17,12 +17,13 @@ const CashbackStatusPrompt = () => {
   const { t } = useTranslation(['Rewards']);
   const merchantBusiness = useSelector(getMerchantBusiness);
   const claimedCashbackStatus = useSelector(getOrderReceiptClaimedCashbackStatus);
+  const isEarnedCashbackStatus = useSelector(getIsEarnedCashbackStatus);
   const claimedCashbackStatusTitleIn18nParams = useSelector(getClaimedCashbackStatusTitleIn18nParams);
   const newCashbackStatusIcon = CLAIMED_CASHBACK_ICONS[claimedCashbackStatus];
   const claimedCashbackStatusContentI18nKeys = CLAIMED_CASHBACK_I18N_KEYS[claimedCashbackStatus];
   const { titleI18nKey, descriptionI18nKey } = claimedCashbackStatusContentI18nKeys || {};
   const [celebrationAnimateImage, setCelebrationAnimateImage] = useState(CashbackStatusPromptCelebrationAnimateImage);
-  const isCelebrationAnimationDisplay = celebrationAnimateImage && claimedCashbackStatusContentI18nKeys;
+  const isCelebrationAnimationDisplay = celebrationAnimateImage && isEarnedCashbackStatus;
   const handleCloseCashbackStatusPrompt = useCallback(() => {
     const pathname = `${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.CASHBACK}${PATH_NAME_MAPPING.CASHBACK_DETAIL}`;
     const search = `?business=${merchantBusiness}`;

@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { CLAIMED_CASHBACK_STATUS } from '../../../utils/constants';
 import { I18N_PARAM_KEYS, CLAIMED_CASHBACK_I18N_KEYS } from '../utils/constants';
 import {
   getIsMerchantEnabledDelivery,
@@ -10,6 +11,14 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
   getIsMerchantEnabledOROrdering,
   getIsMerchantEnabledDelivery,
   (isOROrderingEnabled, isDeliveryEnabled) => isOROrderingEnabled && isDeliveryEnabled
+);
+
+export const getIsEarnedCashbackStatus = createSelector(getOrderReceiptClaimedCashbackStatus, claimedCashbackStatus =>
+  [
+    CLAIMED_CASHBACK_STATUS.CLAIMED_FIRST_TIME,
+    CLAIMED_CASHBACK_STATUS.CLAIMED_NOT_FIRST_TIME,
+    CLAIMED_CASHBACK_STATUS.CLAIMED_PROCESSING,
+  ].includes(claimedCashbackStatus)
 );
 
 export const getClaimedCashbackStatusTitleIn18nParams = createSelector(
