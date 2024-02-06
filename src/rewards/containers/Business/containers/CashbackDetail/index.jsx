@@ -49,7 +49,7 @@ const CashbackDetail = () => {
         }
       );
     }
-  }, [isUserSessionExpiredResultShow]);
+  }, [isUserSessionExpiredResultShow, t, isWebview]);
 
   return (
     <Frame>
