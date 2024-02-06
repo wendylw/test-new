@@ -200,7 +200,7 @@ class Promotion extends Component {
       }
       const { code, extraInfo, extra, errorMessage } = appliedResult;
       // WB-7385: If pay later will use v3 API, extraInfo will be extra
-      return getErrorMessageByPromoErrorCode(code, errorExtraInfo, errorMessage, onlineStoreInfo);
+      return getErrorMessageByPromoErrorCode(code, extraInfo || extra, errorMessage, onlineStoreInfo);
     }
 
     const { code, extraInfo, extra, errorMessage } = promoErrorCodePayLater;
