@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { CLAIMED_CASHBACK_STATUS } from '../../../utils/constants';
 import { I18N_PARAM_KEYS, CLAIMED_CASHBACK_I18N_KEYS } from '../utils/constants';
+import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
 import {
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
@@ -40,4 +41,10 @@ export const getClaimedCashbackStatusTitleIn18nParams = createSelector(
 
     return titleI18nParams;
   }
+);
+
+export const getIsUserSessionExpiredResultShow = createSelector(
+  getIsLogin,
+  getIsCheckLoginRequestCompleted,
+  (isLogin, isCheckLoginRequestCompleted) => !isLogin && isCheckLoginRequestCompleted
 );
