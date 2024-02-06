@@ -65,7 +65,6 @@ const CashbackStatusPrompt = () => {
     descriptionI18nKey,
     claimedCashbackStatusContentI18nKeys,
     claimedCashbackStatusTitleIn18nParams,
-    celebrationAnimateImage,
     handleCloseCashbackStatusPrompt,
     newCashbackStatusIcon,
     t,
