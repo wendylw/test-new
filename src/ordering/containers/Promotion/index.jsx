@@ -198,19 +198,18 @@ class Promotion extends Component {
       if (!appliedResult || appliedResult.success) {
         return '';
       }
-      const { code, extraInfo, extra, errorMessage } = appliedResult;
-      // WB-7385: If pay later will use v3 API, extraInfo will be extra
-      return getErrorMessageByPromoErrorCode(code, extraInfo || extra, errorMessage, onlineStoreInfo);
+      const { code, extraInfo, errorMessage } = appliedResult;
+
+      return getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo);
     }
 
-    const { code, extraInfo, extra, errorMessage } = promoErrorCodePayLater;
+    const { code, extraInfo, errorMessage } = promoErrorCodePayLater;
 
     if (!code || isAppliedSuccessPayLater) {
       return '';
     }
 
-    // WB-7385: If pay later will use v3 API, extraInfo will be extra
-    return getErrorMessageByPromoErrorCode(code, extraInfo || extra, errorMessage, onlineStoreInfo);
+    return getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo);
   };
 
   render() {
