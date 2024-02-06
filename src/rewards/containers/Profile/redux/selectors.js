@@ -1,5 +1,6 @@
 import _isNull from 'lodash/isNull';
 import _trim from 'lodash/trim';
+import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
@@ -19,7 +20,11 @@ export const getProfileEmail = state => state.profile.email;
 
 export const getEmailErrorType = state => state.profile.emailErrorType;
 
-export const getIsValidEmail = createSelector(getEmailErrorType, emailErrorType => _isNull(emailErrorType));
+export const getIsValidEmail = createSelector(
+  getProfileEmail,
+  getEmailErrorType,
+  (profileEmail, emailErrorType) => !_isEmpty(profileEmail) && _isNull(emailErrorType)
+);
 
 export const getIsEmailInputFilledStatus = state => state.profile.isEmailInputFilledStatus;
 
@@ -33,7 +38,11 @@ export const getProfileBirthday = state => state.profile.birthday;
 
 export const getBirthdayErrorType = state => state.profile.birthdayErrorType;
 
-export const getIsValidBirthday = createSelector(getBirthdayErrorType, birthdayErrorType => _isNull(birthdayErrorType));
+export const getIsValidBirthday = createSelector(
+  getProfileBirthday,
+  getBirthdayErrorType,
+  (profileBirthday, birthdayErrorType) => !_isEmpty(profileBirthday) && _isNull(birthdayErrorType)
+);
 
 export const getIsBirthdayInputFilledStatus = state => state.profile.isBirthdayInputFilledStatus;
 

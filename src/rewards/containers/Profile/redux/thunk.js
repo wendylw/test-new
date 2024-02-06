@@ -97,8 +97,8 @@ export const init = createAsyncThunk('rewards/profile/init', (_, { dispatch, get
 
   // In fact, the profile data does not need to be returned with the redux merge of the page every time,
   // it only needs to be put in redux during initialization
-  dispatch(name);
-  dispatch(email);
+  dispatch(nameUpdated(name));
+  dispatch(emailUpdated(email));
   dispatch(birthdaySelected(birthday));
 });
 

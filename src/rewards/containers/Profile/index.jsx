@@ -1,8 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMount } from 'react-use';
 import { init } from './redux/thunk';
 import ProfileRewardsImage from '../../../images/profile-rewards.svg';
 import { actions as profileActions } from './redux';
@@ -27,9 +26,11 @@ const Profile = ({ show, onSave, onSkip }) => {
     dispatch(profileActions.resetProfilePageData());
   }, [onSave, dispatch]);
 
-  useMount(() => {
-    dispatch(init());
-  });
+  useEffect(() => {
+    if (show) {
+      dispatch(init());
+    }
+  }, [dispatch, show]);
 
   if (!show) {
     return null;

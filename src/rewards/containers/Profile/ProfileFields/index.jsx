@@ -43,7 +43,6 @@ const ProfileFields = () => {
   };
   const handleSelectBirthDay = e => {
     dispatch(birthdaySelected(e.target.value));
-    dispatch(profileActions.birthdayInputFilledStatusUpdated(true));
   };
   const handleFocusNameInput = useCallback(() => {
     dispatch(profileActions.nameInputFilledStatusUpdated(false));
