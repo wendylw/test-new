@@ -1,14 +1,16 @@
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { closeWebView } from '../../../../../utils/native-methods';
-import { getIsUserSessionExpiredResultShow } from '../../../../../common/redux/selectors';
+import { getIsWebview } from '../../../../redux/modules/common/selectors';
+import { getIsUserSessionExpiredResultShow } from './redux/selectors';
 import { mounted, backButtonClicked } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
+import ResultContent from '../../../../../common/components/Result/ResultContent';
 import CashbackBlock from '../../components/CashbackBlock';
 import MerchantInfo from './components/MerchantInfo';
 import CashbackDetailFooter from './components/CashbackDetailFooter';
@@ -19,6 +21,7 @@ import styles from './CashbackDetail.module.scss';
 const CashbackDetail = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
+  const isWebview = useSelector(getIsWebview);
   const isUserSessionExpiredResultShow = useSelector(getIsUserSessionExpiredResultShow);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
 
