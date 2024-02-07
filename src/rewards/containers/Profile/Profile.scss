@@ -1,0 +1,100 @@
+@import "../../../Variables";
+$profile-tip-background: #fffbe6;
+$input-border-color: #1c1c1c;
+
+.profile {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background: #fff;
+  overflow: hidden;
+
+  &.active {
+    z-index: 101;
+  }
+
+  &__fixed-wrapper {
+    height: 0;
+  }
+
+  &__container {
+    height: 100%;
+  }
+
+  &__skip-button {
+    line-height: 1.6;
+  }
+
+  &__tip-container {
+    background-color: $profile-tip-background;
+  }
+
+  &__tip-reward-image {
+    width: 32px;
+  }
+
+  &__tip-title,
+  &__tip {
+    line-height: 1.6;
+  }
+
+  &__form-item {
+    border-color: $input-border-color;
+  }
+
+  &__form-item--error {
+    border-color: $status-error-basic;
+  }
+
+  &__input {
+    padding: 0;
+    line-height: 24px;
+    height: 24px;
+  }
+
+  &__form-item--error &__label {
+    color: $status-error-basic;
+  }
+
+  &__label--required::after {
+    content: "*";
+    color: $status-error-basic;
+    vertical-align: top;
+    margin-left: 2px;
+  }
+
+  &__input-birthday-container {
+    position: relative;
+  }
+
+  &__input-birthday {
+    position: relative;
+    opacity: 0;
+  }
+
+  &__upper-layer {
+    z-index: $z-index-base;
+  }
+
+  &__input-birthday-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  &__save-button {
+    height: 50px;
+    // Updated button text letter-spacing match new design
+    letter-spacing: 0.02em;
+    border-radius: 8px;
+  }
+
+  // Update confirm modal width for `don't ask again` button text can display inline
+  &__email-duplicated-confirm {
+    max-width: 368px;
+    width: 94%;
+  }
+}

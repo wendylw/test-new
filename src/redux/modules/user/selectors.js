@@ -129,3 +129,10 @@ export const getIsUserOrGuestLoggedIn = createSelector(
   getIsLoginAsGuest,
   (isLogin, isLoginAsGuest) => isLogin || isLoginAsGuest
 );
+
+export const getIsUserProfileIncomplete = createSelector(
+  getUserEmail,
+  getUserBirthday,
+  getUserFirstName,
+  (email, birthday, firstName) => !email || !birthday || !firstName
+);
