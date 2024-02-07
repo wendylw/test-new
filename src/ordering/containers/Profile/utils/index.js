@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
 import _once from 'lodash/once';
 import { isValidDate } from '../../../../utils/datetime-lib';
-import { isSafari, isTNGMiniProgram, isGCashMiniProgram } from '../../../../common/utils';
+import { isAlipayMiniProgram } from '../../../../common/utils/alipay-miniprogram-client';
+import { isSafari } from '../../../../common/utils';
 // TODO: Migrate to v2
 import Utils from '../../../../utils/utils';
 
@@ -27,15 +28,14 @@ export const getIsSupportedShowPicker = _once(() => {
   return true;
 });
 
-// If browser is Safari or iOS TNG, showPicker() can not be execute
-// For date input can be click in Safari or iOS TNG
+// If browser is Safari or iOS TNG or GCash, showPicker() can not be execute
+// For date input can be click in Safari or iOS TNG or GCash
 export const getIsDateInputOnUpperLayer = _once(() => {
   if (isSafari()) {
     return true;
   }
 
-  // TODO: Migrate to isAlipayMiniProgram()
-  if (Utils.judgeClient() === 'iOS' && (isTNGMiniProgram() || isGCashMiniProgram())) {
+  if (Utils.judgeClient() === 'iOS' && isAlipayMiniProgram()) {
     return true;
   }
 

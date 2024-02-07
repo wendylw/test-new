@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Scan } from 'phosphor-react';
 import { getAddressName } from '../../../../redux/modules/address/selectors';
-import { getIsTNGMiniProgram } from '../../../redux/modules/app';
+import { getIsAlipayMiniProgram } from '../../../redux/modules/app';
 import { MapPinIcon } from '../../../../common/components/Icons';
 import Constants from '../../../../utils/constants';
 import styles from './Header.module.scss';
@@ -16,7 +16,7 @@ const Header = ({ onLocationBarClick, onQRScannerClick }) => {
   const { t } = useTranslation();
 
   const addressName = useSelector(getAddressName);
-  const isTnGMiniProgram = useSelector(getIsTNGMiniProgram);
+  const isAlipayMiniProgram = useSelector(getIsAlipayMiniProgram);
 
   return (
     <section className={styles.HeaderContainer} data-test-id="site.home.delivery-bar">
@@ -34,7 +34,7 @@ const Header = ({ onLocationBarClick, onQRScannerClick }) => {
         </div>
       </div>
       <div className="tw-flex tw-justify-end tw-items-stretch tw-flex-shrink-0">
-        {!isTnGMiniProgram && (
+        {!isAlipayMiniProgram && (
           <Link
             to={ROUTER_PATHS.QRSCAN}
             data-test-id="site.home.qr-scan-icon"

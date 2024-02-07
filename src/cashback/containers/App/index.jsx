@@ -13,7 +13,7 @@ import {
   getOnlineStoreInfoFavicon,
   getIsLoginModalShown,
   getUserConsumerId,
-  getIsTngAuthorizationError,
+  getLoginAlipayMiniProgramRequestError,
 } from '../../redux/modules/app';
 import { getIsCashbackClaimRequestFulfilled } from '../../redux/modules/claim';
 import { getIsConfirmSharingConsumerInfoCompleted } from '../StoreRedemption/redux/selectors';
@@ -21,7 +21,8 @@ import { getPageError } from '../../../redux/modules/entities/error';
 import { getIsLoadCustomerRequestCompleted } from '../../redux/modules/customer/selectors';
 import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
 import Constants from '../../../utils/constants';
-import { isTNGMiniProgram, isGCashMiniProgram, isWebview } from '../../../common/utils';
+import { isWebview } from '../../../common/utils';
+import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
 import faviconImage from '../../../images/favicon.ico';
 import '../../../Common.scss';
 import './Loyalty.scss';
@@ -48,18 +49,18 @@ class App extends Component {
 
       await Promise.all(initRequests);
 
-      // TODO: Migrate isTNGMiniProgram to isMiniProgramLogin
       // 2. login
-      // TNGD code is executed at the very beginning.
-      // Because the MP and Beep accounts are not synchronized,
-      // it is impossible to determine that the accounts are the same
-      if (isTNGMiniProgram()) {
+      if (isAlipayMiniProgram()) {
         // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
-        await appActions.loginByTngMiniProgram();
+        await appActions.loginByAlipayMiniProgram();
 
-        const { isTngAuthorizationError } = this.props;
+        const { loginAlipayMiniProgramRequestError } = this.props;
 
-        if (isTngAuthorizationError) {
+        // TNGD & GCash code is executed at the very beginning.
+        // Because the MP and Beep accounts are not synchronized,
+        // it is impossible to determine that the accounts are the same
+        // https://opendocs.alipay.com/support/01rb4b?ant_source=opendoc_recommend
+        if (loginAlipayMiniProgramRequestError) {
           confirm(t('UnexpectedErrorOccurred'), {
             closeByBackButton: false,
             closeByBackDrop: false,
@@ -71,7 +72,7 @@ class App extends Component {
                 Clevertap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Try Again', {
                   country: userCountry,
                 });
-                await appActions.loginByTngMiniProgram();
+                await appActions.loginByAlipayMiniProgram();
               } else {
                 // cancel
                 if (window.my.exitMiniProgram) {
@@ -84,10 +85,6 @@ class App extends Component {
             },
           });
         }
-      }
-
-      if (isGCashMiniProgram()) {
-        await appActions.loginByAlipayMiniProgram();
       }
 
       await appActions.loadConsumerLoginStatus();
@@ -226,7 +223,7 @@ class App extends Component {
           />
         ) : null}
         <Message />
-        {isLoginModalShown && !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram() ? (
+        {isLoginModalShown && !isWebview() && !isAlipayMiniProgram() ? (
           <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
         ) : null}
         <Routes />
@@ -253,8 +250,8 @@ App.propTypes = {
   pageError: PropTypes.shape({
     code: PropTypes.number,
   }),
-  isTngAuthorizationError: PropTypes.bool,
   isLoginModalShown: PropTypes.bool,
+  loginAlipayMiniProgramRequestError: PropTypes.object || PropTypes.string,
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
     resetConsumerLoginStatus: PropTypes.func,
@@ -264,7 +261,6 @@ App.propTypes = {
     fetchCashbackBusiness: PropTypes.func,
     loginApp: PropTypes.func,
     clearError: PropTypes.func,
-    loginByTngMiniProgram: PropTypes.func,
     loginByAlipayMiniProgram: PropTypes.func,
     syncLoginFromBeepApp: PropTypes.func,
     loginByBeepApp: PropTypes.func,
@@ -285,8 +281,8 @@ App.defaultProps = {
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
-  isTngAuthorizationError: false,
   isLoginModalShown: false,
+  loginAlipayMiniProgramRequestError: null,
   appActions: {},
   loadConsumerCustomerInfo: () => {},
 };
@@ -306,7 +302,7 @@ export default compose(
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
       pageError: getPageError(state),
-      isTngAuthorizationError: getIsTngAuthorizationError(state),
+      loginAlipayMiniProgramRequestError: getLoginAlipayMiniProgramRequestError(state),
       userCountry: getUserCountry(state),
     }),
     dispatch => ({

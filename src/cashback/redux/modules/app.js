@@ -19,8 +19,7 @@ import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
 import Url from '../../../utils/url';
-import * as TngUtils from '../../../utils/tng-utils';
-import { getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
+import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
 import * as ApiRequest from '../../../utils/api-request';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
@@ -37,7 +36,7 @@ import {
   COUNTRIES_DEFAULT_CURRENCIES,
   COUNTRIES_DEFAULT_LOCALE,
 } from '../../../common/utils/constants';
-import { isJSON, isWebview, isTNGMiniProgram, isGCashMiniProgram } from '../../../common/utils';
+import { isJSON, isWebview, isTNGMiniProgram } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 import { getCustomerId } from './customer/selectors';
@@ -58,7 +57,7 @@ export const initialState = {
       status: null,
       error: null,
     },
-    loginTngRequest: {
+    loginAlipayMiniProgramRequest: {
       status: null,
       error: null,
     },
@@ -327,49 +326,13 @@ export const actions = {
     }
   },
 
-  // TODO: Migrate loginByTngMiniProgram to loginByAlipayMiniProgram
-  loginByTngMiniProgram: () => async (dispatch, getState) => {
-    try {
-      dispatch({
-        type: types.CREATE_LOGIN_TNGD_REQUEST,
-      });
-
-      if (!isTNGMiniProgram()) {
-        throw new Error('Not in tng mini program');
-      }
-
-      const business = getBusiness(getState());
-
-      const tokens = await TngUtils.getAccessToken({ business });
-
-      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
-
-      await dispatch(actions.loginApp({ accessToken, refreshToken }));
-
-      dispatch({
-        type: types.CREATE_LOGIN_TNGD_SUCCESS,
-      });
-    } catch (error) {
-      dispatch({
-        type: types.CREATE_LOGIN_TNGD_FAILURE,
-        error: isJSON(error?.message) ? JSON.parse(error.message) : error,
-      });
-
-      logger.error('Cashback_LoginByTngMiniProgramFailed', { message: error?.message });
-
-      return false;
-    }
-
-    return getIsUserLogin(getState());
-  },
-
   loginByAlipayMiniProgram: () => async (dispatch, getState) => {
     try {
       dispatch({
         type: types.CREATE_LOGIN_ALIPAY_REQUEST,
       });
 
-      if (!isGCashMiniProgram()) {
+      if (!isAlipayMiniProgram()) {
         throw new Error('Not in alipay mini program');
       }
 
@@ -385,6 +348,7 @@ export const actions = {
     } catch (error) {
       dispatch({
         type: types.CREATE_LOGIN_ALIPAY_FAILURE,
+        error: isJSON(error?.message) ? JSON.parse(error.message) : error,
       });
 
       logger.error('Cashback_LoginByAlipayMiniProgram', { message: error?.message });
@@ -629,26 +593,26 @@ const user = (state = initialState.user, action) => {
       return { ...state, showLoginModal: true };
     case types.HIDE_LOGIN_MODAL:
       return { ...state, showLoginModal: false };
-    case types.CREATE_LOGIN_TNGD_REQUEST:
+    case types.CREATE_LOGIN_ALIPAY_REQUEST:
       return {
         ...state,
-        loginTngRequest: {
+        loginAlipayMiniProgramRequest: {
           status: API_REQUEST_STATUS.PENDING,
           error: null,
         },
       };
-    case types.CREATE_LOGIN_TNGD_SUCCESS:
+    case types.CREATE_LOGIN_ALIPAY_SUCCESS:
       return {
         ...state,
-        loginTngRequest: {
+        loginAlipayMiniProgramRequest: {
           status: API_REQUEST_STATUS.FULFILLED,
           error: null,
         },
       };
-    case types.CREATE_LOGIN_TNGD_FAILURE:
+    case types.CREATE_LOGIN_ALIPAY_FAILURE:
       return {
         ...state,
-        loginTngRequest: {
+        loginAlipayMiniProgramRequest: {
           status: API_REQUEST_STATUS.REJECTED,
           error,
         },
@@ -784,7 +748,7 @@ export const getIsWeb = () => !isWebview() && !isTNGMiniProgram();
 export const getIsWebview = () => isWebview();
 export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
-export const getLoginTngRequest = state => state.app.user.loginTngRequest;
+export const getLoginAlipayMiniProgramRequest = state => state.app.user.loginAlipayMiniProgramRequest;
 export const getUserProfile = state => state.app.user.profile;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
@@ -954,12 +918,9 @@ export const getShouldShowLoader = createSelector(
   (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
 );
 
-export const getLoginTngRequestError = createSelector(getLoginTngRequest, loginTngRequest => loginTngRequest.error);
-
-// If error code is 10, it means user has not authorized the mini program. This error from TNGD Mini Program, Aplipay will response 10 error, get access token in mounted.
-export const getIsTngAuthorizationError = createSelector(
-  getLoginTngRequestError,
-  loginTngRequestError => (loginTngRequestError?.error || null) === 10
+export const getLoginAlipayMiniProgramRequestError = createSelector(
+  getLoginAlipayMiniProgramRequest,
+  loginAlipayMiniProgramRequest => loginAlipayMiniProgramRequest?.error || null
 );
 
 export const getCashbackHistory = createSelector(

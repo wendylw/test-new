@@ -8,8 +8,7 @@ import Utils from '../../../../../../utils/utils';
 import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
-import { callTradePay } from '../../../../../../utils/tng-utils';
-import { callTradePay as callAlipayTradePay } from '../../../../../../common/utils/alipay-miniprogram-client';
+import { callTradePay } from '../../../../../../common/utils/alipay-miniprogram-client';
 import { gotoHome } from '../../../../../../utils/native-methods';
 import {
   actions as appActions,
@@ -22,12 +21,10 @@ import {
   getUserConsumerId,
   getUserName,
   getUserPhone,
-  getIsTNGMiniProgram,
   getIsWebview,
   getShippingType,
   getDeliveryDetails,
   getMerchantCountry,
-  getIsGCashMiniProgram,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
 import { getSelectedPaymentProvider, getModifiedTime, getMiniProgramPaymentProvider } from '../selectors';
@@ -359,9 +356,8 @@ const initPayment = async (data, dispatch) => {
 
 export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch, getState) => {
   const state = getState();
-  const isTNGMiniProgram = getIsTNGMiniProgram(state);
-  const isGCashMiniProgram = getIsGCashMiniProgram(state);
-  const paymentProvider = getMiniProgramPaymentProvider(state) || paymentArgs?.paymentProvider;
+  const alipayMiniProgramProvider = getMiniProgramPaymentProvider(state);
+  const paymentProvider = alipayMiniProgramProvider || paymentArgs?.paymentProvider;
 
   try {
     const shippingType = getShippingType(state);
@@ -392,44 +388,27 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       payload,
       dispatch
     );
-    const miniProgramPaymentPayload = {
+    const { paymentAction } = paymentData || {};
+    const paymentActionUrl = paymentAction?.actionUrl || '';
+    const thirdSDKBasicPayload = {
       amount: total,
       receiptNumber: orderId,
       businessName: business,
-      redirectURL,
       webhookURL,
       paymentMethod: paymentProvider,
       currency,
       source,
       isInternal,
-      paymentId,
     };
 
-    // TODO: will be removed when TNG code migrate to new utils
-    if (isTNGMiniProgram) {
-      const { redirectionUrl } = paymentData?.actionForm || {};
-      await callTradePay(redirectionUrl);
-      Utils.submitForm(redirectURL, {
-        amount: total,
-        receiptNumber: orderId,
-        businessName: business,
-        redirectURL,
-        webhookURL,
-        paymentMethod: PAYMENT_PROVIDERS.TNG_MINI_PROGRAM,
-        currency,
-        source,
-        isInternal,
+    if (alipayMiniProgramProvider) {
+      const miniProgramPaymentPayload = {
+        ...thirdSDKBasicPayload,
         paymentId,
-      });
-      return;
-    }
+        redirectURL,
+      };
 
-    if (isGCashMiniProgram) {
-      const { paymentAction } = paymentData || {};
-      // TODO: maybe need BE to update paymentData format and migrate TNG to here
-      const miniProgramPaymentUrl = paymentAction?.actionUrl || '';
-
-      await callAlipayTradePay(miniProgramPaymentUrl);
+      await callTradePay(paymentActionUrl);
       Utils.submitForm(redirectURL, miniProgramPaymentPayload);
 
       return;
@@ -437,21 +416,14 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
 
     if (paymentProvider === PAYMENT_PROVIDERS.APPLE_PAY) {
       const country = getMerchantCountry(state);
-      const { paymentAction } = paymentData || {};
-      const { actionUrl } = paymentAction || {};
-
-      Utils.submitForm(actionUrl, {
-        amount: total,
-        receiptNumber: orderId,
-        businessName: business,
-        webhookURL,
-        paymentMethod: PAYMENT_PROVIDERS.APPLE_PAY,
+      const applePayPayload = {
+        ...thirdSDKBasicPayload,
         country,
-        currency,
-        source,
-        isInternal,
         paymentRecordId,
-      });
+      };
+
+      Utils.submitForm(paymentActionUrl, applePayPayload);
+
       return;
     }
 

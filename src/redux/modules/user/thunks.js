@@ -205,7 +205,7 @@ export const loginUserByAlipayMiniProgram = createAsyncThunk(
 
       CleverTap.pushEvent('Login - login failed');
 
-      logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
+      logger.error('Common_LoginByAlipayMiniProgramFailed', { message: error?.message });
 
       throw error;
     }
