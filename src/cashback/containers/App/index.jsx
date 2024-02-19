@@ -212,7 +212,7 @@ class App extends Component {
     const { message } = error || {};
 
     return (
-      <main className="loyalty fixed-wrapper__main fixed-wrapper">
+      <main id="beep-app-container" className="loyalty fixed-wrapper__main fixed-wrapper">
         {message ? (
           <ErrorToast
             className="fixed"

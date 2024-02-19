@@ -1,12 +1,22 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
+import i18next from 'i18next';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import { CLAIM_TYPES } from '../types';
 import Constants from '../../../utils/constants';
+import { getPrice, getQueryString } from '../../../common/utils';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { getBusiness } from './app';
+import {
+  actions as appActions,
+  getBusiness,
+  getBusinessLocale,
+  getBusinessCurrency,
+  getBusinessCountry,
+  getIsUserLogin,
+} from './app';
+import { getCustomerId } from './customer/selectors';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 
 export const initialState = {
@@ -28,14 +38,14 @@ export const actions = {
     },
   }),
 
-  createCashbackInfo: ({ receiptNumber, phone, source }) => ({
+  createCashbackInfo: receiptNumber => ({
     [API_REQUEST]: {
       types: [types.CREATE_CASHBACKINFO_REQUEST, types.CREATE_CASHBACKINFO_SUCCESS, types.CREATE_CASHBACKINFO_FAILURE],
       ...Url.API_URLS.POST_CASHBACK,
       payload: {
         receiptNumber,
-        phone,
-        source,
+        phone: Utils.getLocalStorageVariable('user.p'),
+        source: Constants.CASHBACK_SOURCE.RECEIPT,
         registrationTouchpoint: Utils.getRegistrationTouchPoint(),
         registrationSource: Utils.getRegistrationSource(),
       },
@@ -47,6 +57,41 @@ export const actions = {
       types: [types.FETCH_RECEIPTNUMBER_REQUEST, types.FETCH_RECEIPTNUMBER_SUCCESS, types.FETCH_RECEIPTNUMBER_FAILURE],
       ...Url.API_URLS.GET_CASHBACK_HASH_DATA(hash),
     },
+  }),
+
+  claimCashbackForConsumer: ({ receiptNumber, history }) => async (dispatch, getState) => {
+    await dispatch(actions.createCashbackInfo(receiptNumber));
+
+    // eslint-disable-next-line no-use-before-define
+    const customerId = getClaimedCashbackCustomerId(getState());
+
+    // The replace of connected-react-router cannot take effect here. The new method will be used in WB-6450.
+    customerId && history.replace(`${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`);
+  },
+
+  mounted: history => async (dispatch, getState) => {
+    dispatch(appActions.setLoginPrompt(i18next.t('Common:ClaimCashbackTitle')));
+    const hash = encodeURIComponent(decodeURIComponent(getQueryString('h')));
+
+    if (hash) {
+      await dispatch(actions.getCashbackReceiptNumber(hash));
+    }
+
+    // eslint-disable-next-line no-use-before-define
+    const receiptNumber = getReceiptNumber(getState());
+    const isLogin = getIsUserLogin(getState());
+
+    if (receiptNumber) {
+      dispatch(actions.getCashbackInfo(receiptNumber));
+    }
+
+    if (isLogin && receiptNumber) {
+      await dispatch(actions.claimCashbackForConsumer({ receiptNumber, history }));
+    }
+  },
+
+  resetData: () => ({
+    type: types.RESET_CLAIM_INFO_REQUEST,
   }),
 };
 
@@ -127,6 +172,8 @@ const reducer = (state = initialState, action) => {
         receiptNumber,
       };
     }
+    case types.RESET_CLAIM_INFO_REQUEST:
+      return initialState;
     default:
       return state;
   }
@@ -147,7 +194,57 @@ export const getCashbackClaimRequestStatus = createSelector(getCashbackInfo, cas
   _get(cashbackInfo, 'cashbackClaimStatus', null)
 );
 
+export const getIsCashbackClaimRequestPending = createSelector(
+  getCashbackClaimRequestStatus,
+  cashbackClaimRequestStatus => cashbackClaimRequestStatus === API_REQUEST_STATUS.PENDING
+);
+
 export const getIsCashbackClaimRequestFulfilled = createSelector(
   getCashbackClaimRequestStatus,
   cashbackClaimRequestStatus => cashbackClaimRequestStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getOrderCashbackStoreCity = createSelector(getCashbackInfo, cashbackInfo =>
+  _get(cashbackInfo, 'order.store.city', null)
+);
+
+export const getOrderCashback = createSelector(getCashbackInfo, cashbackInfo => _get(cashbackInfo, 'cashback', null));
+
+export const getOrderCustomerId = createSelector(getCashbackInfo, cashbackInfo =>
+  _get(cashbackInfo, 'customerId', null)
+);
+
+export const getOrderCashbackStatus = createSelector(getCashbackInfo, cashbackInfo =>
+  _get(cashbackInfo, 'status', null)
+);
+
+export const getOrderCashbackPrice = createSelector(
+  getOrderCashback,
+  getBusinessLocale,
+  getBusinessCurrency,
+  getBusinessCountry,
+  (cashback, locale, currency, country) => getPrice(cashback, { locale, currency, country })
+);
+
+export const getOrderCashbackPercentage = createSelector(getCashbackInfo, cashbackInfo => {
+  const { defaultLoyaltyRatio } = cashbackInfo || {};
+
+  return `${defaultLoyaltyRatio ? Math.floor((1 * 100) / defaultLoyaltyRatio) : 5}%`;
+});
+
+export const getOrderCashbackValue = createSelector(
+  getOrderCashback,
+  getOrderCashbackPrice,
+  getOrderCashbackPercentage,
+  (cashback, orderCashbackPrice, orderCashbackPercentage) => {
+    const isNumber = Number(cashback) && !Number.isNaN(Number(cashback));
+
+    return isNumber ? orderCashbackPrice : orderCashbackPercentage;
+  }
+);
+
+export const getClaimedCashbackCustomerId = createSelector(
+  getCustomerId,
+  getOrderCustomerId,
+  (customerId, orderCustomerId) => customerId || orderCustomerId
 );

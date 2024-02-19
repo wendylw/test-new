@@ -7,7 +7,7 @@ import NotFound from '../../containers/NotFound';
 const RecentActivities = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "CB_RA" */ './RecentActivities'))
 );
-const Claim = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_CL" */ './Claim')));
+const ClaimCashback = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_CL" */ './ClaimCashback')));
 const Home = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_HM" */ './Home')));
 const StoreRedemption = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "CB_SR" */ './StoreRedemption'))
@@ -25,7 +25,7 @@ const Routes = ({ match }) => (
     >
       <Switch>
         <Route exact path="/" component={Home} />
-        <Route exact path="/claim" component={Claim} />
+        <Route exact path="/claim" component={ClaimCashback} />
         <Route exact path="/activities" component={RecentActivities} />
         <Route exact path="/store-redemption" component={StoreRedemption} />
         <Route exact path="/error" component={Error} />
