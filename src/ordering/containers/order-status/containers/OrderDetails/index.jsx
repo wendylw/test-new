@@ -252,7 +252,7 @@ export class OrderDetails extends Component {
     const { storeInfo, deliveryInformation, status } = order || '';
     const { name } = storeInfo || '';
     const { address } = deliveryInformation && deliveryInformation.length > 0 ? deliveryInformation[0] : {};
-    const { address: deliveryAddress } = address || '';
+    const { deliveryTo: deliveryAddress } = address || '';
 
     return (
       <section className="border__bottom-divider padding-top-bottom-small">
