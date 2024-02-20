@@ -43,6 +43,6 @@ export const getLoadMembershipTiersRequestError = state => state.membership.load
 /**
  * Derived selectors
  */
-export const getIsMembershipTierList = createSelector(getMembershipTiersData, membershipTiersData =>
+export const getMembershipTierList = createSelector(getMembershipTiersData, membershipTiersData =>
   _get(membershipTiersData, 'businessMembershipTiers', [])
 );

@@ -35,3 +35,14 @@
     @apply tw-bg-transparent;
   }
 }
+
+.MemberCardTierItemLevelIcon {
+  @apply tw-box-content tw-flex-shrink-0 tw-border-2 tw-border-gray-50 tw-rounded-full;
+
+  width: 28px;
+  height: 28px;
+
+  > figure {
+    @apply tw-bg-transparent;
+  }
+}

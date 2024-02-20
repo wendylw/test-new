@@ -18,8 +18,10 @@ import {
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
 } from '../../../../../../redux/modules/merchant/selectors';
+import { getMembershipTierList } from '../../../../../../redux/modules/membership/selectors';
 import {
   getCustomerCashback,
+  getCustomerStoreCreditSpent,
   getCustomerTierLevel,
   getIsLoadCustomerRequestCompleted,
 } from '../../../../../redux/modules/customer/selectors';
@@ -192,3 +194,65 @@ export const getMemberCardIconColors = createSelector(getMemberColorPalettes, me
   backgroundStartColor: memberCardColorPalettes.icon.background.startColor,
   backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
 }));
+
+export const getIsHigherThanMemberLowestLevel = createSelector(
+  getCustomerTierLevel,
+  customerTierLevel => customerTierLevel > MEMBER_LEVELS.MEMBER
+);
+
+export const getIsAchievedHighestLevel = createSelector(
+  getCustomerTierLevel,
+  customerTierLevel => customerTierLevel === MEMBER_LEVELS.PLATINUM
+);
+
+export const getCustomerMembershipTierList = createSelector(
+  getCustomerTierLevel,
+  getCustomerStoreCreditSpent,
+  getMembershipTierList,
+  (customerTierLevel, customerStoreCreditSpent, membershipTierList) =>
+    membershipTierList
+      .sort((a, b) => a.level - b.level)
+      .filter(({ level }, index) => {
+        const { spendingThreshold: lastTierSpendingThreshold = 0 } = membershipTierList[index - 1];
+
+        if (level <= customerTierLevel) {
+          return true;
+        }
+
+        if (customerStoreCreditSpent === lastTierSpendingThreshold && level > customerTierLevel) {
+          return true;
+        }
+
+        return false;
+      })
+      .map(({ level, name, spendingThreshold }, index) => {
+        const tierColorPalette = MEMBER_CARD_COLOR_PALETTES[level] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER];
+        const tier = {
+          level,
+          name,
+          spendingThreshold,
+          iconColors: {
+            crownStartColor: tierColorPalette.icon.crown.startColor,
+            crownEndColor: tierColorPalette.icon.crown.endColor,
+            backgroundStartColor: tierColorPalette.icon.background.startColor,
+            backgroundEndColor: tierColorPalette.icon.background.endColor,
+          },
+        };
+        const isAchievedCurrentLevel = customerStoreCreditSpent / spendingThreshold >= 1;
+
+        if (isAchievedCurrentLevel) {
+          tier.progress = '100%';
+          tier.active = true;
+        } else {
+          const { spendingThreshold: lastTierSpendingThreshold = 0 } = membershipTierList[index - 1];
+          const progressNumber = Number.parseFloat(
+            (customerStoreCreditSpent - lastTierSpendingThreshold) / (spendingThreshold - lastTierSpendingThreshold)
+          ).toFixed(6);
+
+          tier.progress = `${progressNumber}%`;
+          tier.active = false;
+        }
+
+        return tier;
+      })
+);

@@ -14,6 +14,10 @@ export const getCustomerCashback = createSelector(getCustomerData, customerData 
   getDecimalNumber(_get(customerData, 'storeCreditInfo.storeCreditsBalance', 0))
 );
 
+export const getCustomerStoreCreditSpent = createSelector(getCustomerData, customerData =>
+  getDecimalNumber(_get(customerData, 'storeCreditInfo.storeCreditsSpent', 0))
+);
+
 export const getCashbackExpiredDate = createSelector(getCustomerData, customerData =>
   _get(customerData, 'storeCreditInfo.cashbackExpirationDate', null)
 );
