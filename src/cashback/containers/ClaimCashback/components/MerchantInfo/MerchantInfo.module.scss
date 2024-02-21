@@ -1,0 +1,17 @@
+@import "../../../../../common/styles/variables.scss";
+
+.MerchantInfo {
+  @apply tw-flex tw-flex-col tw-items-center tw-p-16 sm:tw-p-16px;
+}
+
+.MerchantInfoLogoContainer {
+  @apply tw-my-4 sm:tw-my-4px;
+
+  width: 21.34%;
+  max-width: 80px;
+}
+
+.MerchantInfoTitle {
+  @apply tw-my-4 sm:tw-my-4px tw-text-xl tw-leading-loose;
+  @include text-line-clamp(1);
+}

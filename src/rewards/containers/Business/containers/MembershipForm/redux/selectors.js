@@ -3,7 +3,11 @@ import { API_REQUEST_STATUS, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../
 import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
-import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
+import {
+  getIsLogin,
+  getIsCheckLoginRequestCompleted,
+  getIsUserProfileIncomplete,
+} from '../../../../../../redux/modules/user/selectors';
 import {
   getIsMerchantMembershipEnabled,
   getIsLoadMerchantRequestStatusFulfilled,
@@ -99,3 +103,19 @@ export const getShouldShowBackButton = createSelector(
 );
 
 export const getIsJoinNowButtonDisabled = state => state.business.membershipForm.isJoinNowButtonDisabled;
+
+// WB-7279: fix iOS swipe back no response issue.
+export const getShouldDisableJoinNowButton = createSelector(
+  getIsWebview,
+  getIsJoinNowButtonDisabled,
+  (isWebview, isJoinNowButtonDisabled) => !isWebview && isJoinNowButtonDisabled
+);
+
+export const getIsProfileFormVisible = state => state.business.membershipForm.isProfileFormVisible;
+
+export const getShouldShowProfileForm = createSelector(
+  getIsUserProfileIncomplete,
+  getHasUserJoinedMerchantMembership,
+  (isUserProfileIncomplete, hasUserJoinedMerchantMembership) =>
+    isUserProfileIncomplete && !hasUserJoinedMerchantMembership
+);
