@@ -3,7 +3,7 @@ import { createSelector } from 'reselect';
 import { getQueryString } from '../../../../../common/utils';
 import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 
-export const getIsClaimedOrderCashbackNewMember = () => getQueryString('isNewMember').toLowerCase() === 'true';
+export const getIsClaimedOrderCashbackNewMember = () => getQueryString('isNewMember') === 'true';
 
 export const getConfirmSharingConsumerInfoData = state => state.business.common.confirmSharingConsumerInfoRequest.data;
 
