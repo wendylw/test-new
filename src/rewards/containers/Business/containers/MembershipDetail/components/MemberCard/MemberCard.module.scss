@@ -60,6 +60,10 @@
   }
 }
 
+.MemberCardTierLevelItemIconPlatinum {
+  @apply tw-bg-gray-700;
+}
+
 .MemberCardTierLevelItemProgress {
   @apply tw-relative tw-flex-1 tw-bg-gray-50;
 
@@ -74,6 +78,10 @@
   &__notAchieved {
     @apply tw-rounded-r;
   }
+}
+
+.MemberCardTierItemLevelProgressFillPlatinum {
+  @apply tw-bg-gray-700;
 }
 
 .MemberCardTierLevelItem {

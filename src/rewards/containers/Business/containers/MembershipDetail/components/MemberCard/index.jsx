@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { useSelector } from 'react-redux';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import { MemberIcon } from '../../../../../../../common/components/Icons';
@@ -7,7 +7,8 @@ import { getCustomerTierLevelName } from '../../../../../../redux/modules/custom
 import {
   getMemberCardStyles,
   getMemberCardIconColors,
-  getIsHigherThanMemberLowestLevel,
+  getIsCustomerMembershipTierListShow,
+  getIsAchievedPlatinumLevel,
   getCustomerMembershipTierList,
 } from '../../redux/selectors';
 import styles from './MemberCard.module.scss';
@@ -17,7 +18,8 @@ const MemberCard = () => {
   const customerTierLevelName = useSelector(getCustomerTierLevelName);
   const memberCardStyles = useSelector(getMemberCardStyles);
   const memberCardIconColors = useSelector(getMemberCardIconColors);
-  const isHigherThanMemberLowestLevel = useSelector(getIsHigherThanMemberLowestLevel);
+  const isCustomerMembershipTierListShow = useSelector(getIsCustomerMembershipTierListShow);
+  const isAchievedPlatinumLevel = useSelector(getIsAchievedPlatinumLevel);
   const customerMembershipTierList = useSelector(getCustomerMembershipTierList);
   const { crownStartColor, crownEndColor, backgroundStartColor, backgroundEndColor } = memberCardIconColors;
 
@@ -25,23 +27,24 @@ const MemberCard = () => {
     <section className={styles.MemberCardSection}>
       <div className={styles.MemberCard} style={memberCardStyles}>
         <h1 className={styles.MemberCardStoreName}>{merchantDisplayName}</h1>
-        {isHigherThanMemberLowestLevel ? (
+        {isCustomerMembershipTierListShow ? (
           <div className={styles.MemberCardLevelProgressContainer}>
             <span className={styles.MemberCardLevelName}>{customerTierLevelName}</span>
             <p>TODO: prompt will be replaced</p>
             <ul className={styles.MemberCardMembershipTierProgress}>
               {customerMembershipTierList.map((tier, index) => {
-                /* eslint-disable */
-                const iconKey = `membership-level-progress-icon-${index}`;
-                const progressBarKey = `membership-level-progress-bar-${index}`;
-                const { iconColors, active, progress } = tier;
+                const { level, iconColors, active, progress } = tier;
+                const iconKey = `membership-level-progress-icon-${level}`;
+                const progressBarKey = `membership-level-progress-bar-${level}`;
                 const memberIconClassName = getClassName([
                   styles.MemberCardTierLevelItemIcon,
                   active && styles.MemberCardTierLevelItemIcon__active,
+                  isAchievedPlatinumLevel && styles.MemberCardTierLevelItemIconPlatinum,
                 ]);
                 const memberCardLevelProgressFillClassName = getClassName([
                   styles.MemberCardTierItemLevelProgressFill,
                   progress !== '100%' && styles.MemberCardTierItemLevelProgressFill__notAchieved,
+                  isAchievedPlatinumLevel && styles.MemberCardTierItemLevelProgressFillPlatinum,
                 ]);
                 const MemberIconElement = (
                   <MemberIcon
@@ -54,17 +57,18 @@ const MemberCard = () => {
                   />
                 );
 
+                // Not Fragment, console will show a warning: Each child in a list should have a unique "key" prop.
                 return (
-                  <>
-                    {/* {index > 0 && (
+                  <Fragment key={`membership-level-progress-item-${level}`}>
+                    {index > 0 && (
                       <li key={progressBarKey} className={styles.MemberCardTierLevelItemProgress}>
                         <span className={memberCardLevelProgressFillClassName} style={{ width: progress }} />
                       </li>
-                    )} */}
+                    )}
                     <li key={iconKey} className={styles.MemberCardTierLevelItem}>
                       {MemberIconElement}
                     </li>
-                  </>
+                  </Fragment>
                 );
               })}
             </ul>

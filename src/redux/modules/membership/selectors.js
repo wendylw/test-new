@@ -34,15 +34,15 @@ export const getIsJoinMembershipNewMember = createSelector(getJoinMembershipRequ
   _get(joinMembershipRequestInfo, 'isNewMember', false)
 );
 
-export const getMembershipTiersData = state => state.membership.loadMembershipTiersRequest.data;
+export const getMembershipsData = state => state.membership.loadMembershipRequest.data;
 
-export const getLoadMembershipTiersRequestStatus = state => state.membership.loadMembershipTiersRequest.status;
+export const getLoadMembershipsRequestStatus = state => state.membership.loadMembershipRequest.status;
 
-export const getLoadMembershipTiersRequestError = state => state.membership.loadMembershipTiersRequest.error;
+export const getLoadMembershipsRequestError = state => state.membership.loadMembershipRequest.error;
 
 /**
  * Derived selectors
  */
-export const getMembershipTierList = createSelector(getMembershipTiersData, membershipTiersData =>
-  _get(membershipTiersData, 'businessMembershipTiers', [])
+export const getMembershipTierList = createSelector(getMembershipsData, membershipsData =>
+  _get(membershipsData, 'businessMembershipTiers', [])
 );

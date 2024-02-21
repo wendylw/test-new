@@ -195,12 +195,23 @@ export const getMemberCardIconColors = createSelector(getMemberColorPalettes, me
   backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
 }));
 
-export const getIsHigherThanMemberLowestLevel = createSelector(
+export const getIsCustomerMembershipTierListShow = createSelector(
   getCustomerTierLevel,
-  customerTierLevel => customerTierLevel > MEMBER_LEVELS.MEMBER
+  getCustomerTierTotalSpent,
+  getMembershipTierList,
+  (customerTierLevel, customerTierTotalSpent, membershipTierList) => {
+    if (!membershipTierList || !membershipTierList.length) {
+      return false;
+    }
+
+    const minLevel = Math.min(...membershipTierList.map(({ level }) => level));
+    const minTierSpendingThreshold = membershipTierList.find(({ level }) => level === minLevel)?.spendingThreshold || 0;
+
+    return customerTierLevel > minLevel || customerTierTotalSpent >= minTierSpendingThreshold;
+  }
 );
 
-export const getIsAchievedHighestLevel = createSelector(
+export const getIsAchievedPlatinumLevel = createSelector(
   getCustomerTierLevel,
   customerTierLevel => customerTierLevel === MEMBER_LEVELS.PLATINUM
 );
@@ -233,7 +244,7 @@ export const getCustomerMembershipTierList = createSelector(
           return true;
         }
 
-        if (customerTierTotalSpent === lastTierSpendingThreshold && level > customerTierLevel) {
+        if (customerTierTotalSpent >= lastTierSpendingThreshold && level > customerTierLevel) {
           return true;
         }
 

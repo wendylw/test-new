@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { alert } from '../../../common/utils/feedback';
-import { postUserMembership, getMembershipTiers } from './api-request';
+import { postUserMembership, getMembershipsInfo } from './api-request';
 
 export const joinMembership = createAsyncThunk(
   'app/membership/joinMembership',
@@ -18,8 +18,8 @@ export const joinMembership = createAsyncThunk(
   }
 );
 
-export const fetchMembershipTierList = createAsyncThunk('app/membership/fetchMembershipTierList', async business => {
-  const result = await getMembershipTiers(business);
+export const fetchMembershipsInfo = createAsyncThunk('app/membership/fetchMembershipsInfo', async business => {
+  const result = await getMembershipsInfo(business);
 
   return result;
 });

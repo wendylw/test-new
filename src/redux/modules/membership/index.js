@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { joinMembership, fetchMembershipTierList } from './thunks';
+import { joinMembership, fetchMembershipsInfo } from './thunks';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 
 const initialState = {
@@ -8,7 +8,7 @@ const initialState = {
     status: null,
     error: null,
   },
-  loadMembershipTiersRequest: {
+  loadMembershipRequest: {
     data: null,
     status: null,
     error: null,
@@ -31,18 +31,18 @@ export const { actions, reducer } = createSlice({
       state.joinMembershipRequest.status = API_REQUEST_STATUS.REJECTED;
       state.joinMembershipRequest.error = error;
     },
-    [fetchMembershipTierList.pending.type]: state => {
-      state.loadMembershipTiersRequest.status = API_REQUEST_STATUS.PENDING;
-      state.loadMembershipTiersRequest.error = null;
+    [fetchMembershipsInfo.pending.type]: state => {
+      state.loadMembershipRequest.status = API_REQUEST_STATUS.PENDING;
+      state.loadMembershipRequest.error = null;
     },
-    [fetchMembershipTierList.fulfilled.type]: (state, { payload }) => {
-      state.loadMembershipTiersRequest.data = payload;
-      state.loadMembershipTiersRequest.status = API_REQUEST_STATUS.FULFILLED;
-      state.loadMembershipTiersRequest.error = null;
+    [fetchMembershipsInfo.fulfilled.type]: (state, { payload }) => {
+      state.loadMembershipRequest.data = payload;
+      state.loadMembershipRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.loadMembershipRequest.error = null;
     },
-    [fetchMembershipTierList.rejected.type]: (state, { error }) => {
-      state.loadMembershipTiersRequest.status = API_REQUEST_STATUS.REJECTED;
-      state.loadMembershipTiersRequest.error = error;
+    [fetchMembershipsInfo.rejected.type]: (state, { error }) => {
+      state.loadMembershipRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.loadMembershipRequest.error = error;
     },
   },
 });
