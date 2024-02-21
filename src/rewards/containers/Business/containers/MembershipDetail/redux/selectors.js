@@ -263,7 +263,7 @@ export const getCustomerMembershipTierList = createSelector(
             backgroundEndColor: tierColorPalette.icon.background.endColor,
           },
         };
-        const isAchievedCurrentLevel = customerTierTotalSpent / spendingThreshold >= 1;
+        const isAchievedCurrentLevel = level <= customerTierLevel;
 
         if (isAchievedCurrentLevel) {
           tier.progress = '100%';
