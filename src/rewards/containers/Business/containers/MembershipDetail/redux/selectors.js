@@ -294,10 +294,9 @@ export const getMemberCardIconColors = createSelector(getMemberColorPalettes, me
 }));
 
 export const getIsCustomerMembershipTierListShow = createSelector(
-  getCustomerTierLevel,
   getCustomerTierTotalSpent,
   getMembershipTierList,
-  (customerTierLevel, customerTierTotalSpent, membershipTierList) => {
+  (customerTierTotalSpent, membershipTierList) => {
     if (!membershipTierList || !membershipTierList.length) {
       return false;
     }
@@ -305,7 +304,7 @@ export const getIsCustomerMembershipTierListShow = createSelector(
     const minLevel = Math.min(...membershipTierList.map(({ level }) => level));
     const minTierSpendingThreshold = membershipTierList.find(({ level }) => level === minLevel)?.spendingThreshold || 0;
 
-    return customerTierLevel > minLevel || customerTierTotalSpent >= minTierSpendingThreshold;
+    return customerTierTotalSpent >= minTierSpendingThreshold && membershipTierList.length > 1;
   }
 );
 
@@ -318,23 +317,21 @@ export const getCustomerMembershipTierList = createSelector(
   getCustomerTierLevel,
   getCustomerTierTotalSpent,
   getMembershipTierList,
-  (customerTierLevel, customerTierTotalSpent, membershipTierList) => {
-    const newMembershipTierList = membershipTierList.map(membershipItem => membershipItem);
-    newMembershipTierList.sort((next, current) => {
-      const nextLevel = next?.level || 0;
-      const currentLevel = current?.level || 0;
+  (customerTierLevel, customerTierTotalSpent, membershipTierList) =>
+    membershipTierList
+      .toSorted((next, current) => {
+        const nextLevel = next?.level || 0;
+        const currentLevel = current?.level || 0;
 
-      if (nextLevel < currentLevel) {
-        return -1;
-      }
-      if (nextLevel > currentLevel) {
-        return 1;
-      }
+        if (nextLevel < currentLevel) {
+          return -1;
+        }
+        if (nextLevel > currentLevel) {
+          return 1;
+        }
 
-      return 0;
-    });
-
-    return newMembershipTierList
+        return 0;
+      })
       .filter(({ level }, index) => {
         const { spendingThreshold: lastTierSpendingThreshold = 0 } = membershipTierList[index - 1] || {};
 
@@ -378,6 +375,5 @@ export const getCustomerMembershipTierList = createSelector(
         }
 
         return tier;
-      });
-  }
+      })
 );

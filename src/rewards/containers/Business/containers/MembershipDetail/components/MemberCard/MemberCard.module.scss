@@ -25,6 +25,14 @@
   @apply tw-text-xl tw-font-black tw-capitalize;
 }
 
+.MemberCardLevelNamePlatinum {
+  @apply tw-text-gray-50;
+}
+
+.MemberCardLevelPrompt {
+  @apply tw-flex tw-items-center tw-gap-6 sm:tw-gap-6px tw-text-xs;
+}
+
 .MemberCardLevelIcon {
   @apply tw-rounded-full;
 
@@ -85,5 +93,7 @@
 }
 
 .MemberCardTierLevelItem {
+  @apply tw-relative tw-flex tw-flex-col tw-items-center;
+
   z-index: 1;
 }

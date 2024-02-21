@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { useSelector } from 'react-redux';
+import { Info } from 'phosphor-react';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import { MemberIcon } from '../../../../../../../common/components/Icons';
 import { getMerchantDisplayName } from '../../../../../../../redux/modules/merchant/selectors';
@@ -22,6 +23,14 @@ const MemberCard = () => {
   const isAchievedPlatinumLevel = useSelector(getIsAchievedPlatinumLevel);
   const customerMembershipTierList = useSelector(getCustomerMembershipTierList);
   const { crownStartColor, crownEndColor, backgroundStartColor, backgroundEndColor } = memberCardIconColors;
+  const progressContainerLevelNameClassName = getClassName([
+    styles.MemberCardLevelName,
+    isAchievedPlatinumLevel && styles.MemberCardLevelNamePlatinum,
+  ]);
+  const progressContainerPromptClassName = getClassName([
+    styles.MemberCardLevelPrompt,
+    isAchievedPlatinumLevel && styles.MemberCardLevelPromptPlatinum,
+  ]);
 
   return (
     <section className={styles.MemberCardSection}>
@@ -29,11 +38,13 @@ const MemberCard = () => {
         <h1 className={styles.MemberCardStoreName}>{merchantDisplayName}</h1>
         {isCustomerMembershipTierListShow ? (
           <div className={styles.MemberCardLevelProgressContainer}>
-            <span className={styles.MemberCardLevelName}>{customerTierLevelName}</span>
-            <p>TODO: prompt will be replaced</p>
+            <span className={progressContainerLevelNameClassName}>{customerTierLevelName}</span>
+            <p className={progressContainerPromptClassName}>
+              TODO: prompt will be replaced <Info size={18} />
+            </p>
             <ul className={styles.MemberCardMembershipTierProgress}>
               {customerMembershipTierList.map((tier, index) => {
-                const { level, iconColors, active, progress } = tier;
+                const { level, name, iconColors, active, progress } = tier;
                 const iconKey = `membership-level-progress-icon-${level}`;
                 const progressBarKey = `membership-level-progress-bar-${level}`;
                 const memberIconClassName = getClassName([
@@ -67,6 +78,7 @@ const MemberCard = () => {
                     )}
                     <li key={iconKey} className={styles.MemberCardTierLevelItem}>
                       {MemberIconElement}
+                      <span className="tw-absolute tw-bottom-0">{name}</span>
                     </li>
                   </Fragment>
                 );
