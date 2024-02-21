@@ -21,7 +21,7 @@ import {
 import { getMembershipTierList } from '../../../../../../redux/modules/membership/selectors';
 import {
   getCustomerCashback,
-  getCustomerStoreCreditSpent,
+  getCustomerTierTotalSpent,
   getCustomerTierLevel,
   getIsLoadCustomerRequestCompleted,
 } from '../../../../../redux/modules/customer/selectors';
@@ -207,9 +207,9 @@ export const getIsAchievedHighestLevel = createSelector(
 
 export const getCustomerMembershipTierList = createSelector(
   getCustomerTierLevel,
-  getCustomerStoreCreditSpent,
+  getCustomerTierTotalSpent,
   getMembershipTierList,
-  (customerTierLevel, customerStoreCreditSpent, membershipTierList) =>
+  (customerTierLevel, customerTierTotalSpent, membershipTierList) =>
     membershipTierList
       .sort((a, b) => a.level - b.level)
       .filter(({ level }, index) => {
@@ -219,7 +219,7 @@ export const getCustomerMembershipTierList = createSelector(
           return true;
         }
 
-        if (customerStoreCreditSpent === lastTierSpendingThreshold && level > customerTierLevel) {
+        if (customerTierTotalSpent === lastTierSpendingThreshold && level > customerTierLevel) {
           return true;
         }
 
@@ -238,7 +238,7 @@ export const getCustomerMembershipTierList = createSelector(
             backgroundEndColor: tierColorPalette.icon.background.endColor,
           },
         };
-        const isAchievedCurrentLevel = customerStoreCreditSpent / spendingThreshold >= 1;
+        const isAchievedCurrentLevel = customerTierTotalSpent / spendingThreshold >= 1;
 
         if (isAchievedCurrentLevel) {
           tier.progress = '100%';
@@ -246,7 +246,7 @@ export const getCustomerMembershipTierList = createSelector(
         } else {
           const { spendingThreshold: lastTierSpendingThreshold = 0 } = membershipTierList[index - 1];
           const progressNumber = Number.parseFloat(
-            (customerStoreCreditSpent - lastTierSpendingThreshold) / (spendingThreshold - lastTierSpendingThreshold)
+            (customerTierTotalSpent - lastTierSpendingThreshold) / (spendingThreshold - lastTierSpendingThreshold)
           ).toFixed(6);
 
           tier.progress = `${progressNumber}%`;

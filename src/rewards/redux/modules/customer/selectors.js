@@ -14,10 +14,6 @@ export const getCustomerCashback = createSelector(getCustomerData, customerData 
   getDecimalNumber(_get(customerData, 'storeCreditInfo.storeCreditsBalance', 0))
 );
 
-export const getCustomerStoreCreditSpent = createSelector(getCustomerData, customerData =>
-  getDecimalNumber(_get(customerData, 'storeCreditInfo.storeCreditsSpent', 0))
-);
-
 export const getCashbackExpiredDate = createSelector(getCustomerData, customerData =>
   _get(customerData, 'storeCreditInfo.cashbackExpirationDate', null)
 );
@@ -32,6 +28,10 @@ export const getCustomerTierLevel = createSelector(getCustomerData, customerData
 
 export const getCustomerTierLevelName = createSelector(getCustomerData, customerData =>
   _get(customerData, 'customerTier.name', null)
+);
+
+export const getCustomerTierTotalSpent = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier.totalSpent', null)
 );
 
 /**

@@ -28,8 +28,8 @@ const MemberCard = () => {
           <div>
             <span className={styles.MemberCardLevelName}>{customerTierLevelName}</span>
             <p>TODO: prompt will be replaced</p>
-            {customerMembershipTierList.map(tier, index => {
-              const { level, name, spendingThreshold, iconColors } = tier;
+            {customerMembershipTierList.map((tier, index) => {
+              const { level, name, iconColors } = tier;
               const MemberIconElement = (
                 <MemberIcon
                   className={styles.MemberCardTierItemLevelIcon}
@@ -44,7 +44,9 @@ const MemberCard = () => {
                 <ul>
                   {index > 0 ? (
                     <>
-                      <li>test</li>
+                      <li>
+                        {level} {name}
+                      </li>
                       <li>{MemberIconElement}</li>
                     </>
                   ) : (
