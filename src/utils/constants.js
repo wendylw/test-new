@@ -18,11 +18,7 @@ const MANIFEST = {
 
 const ROUTER_PATHS = ConstantsV2.PATH_NAME_MAPPING;
 
-const CASHBACK_SOURCE = {
-  REGISTER: 'REGISTER',
-  RECEIPT: 'RECEIPT',
-  QR_ORDERING: 'QR_ORDERING',
-};
+const { CASHBACK_SOURCE } = ConstantsV2;
 
 const DOCUMENT_TITLE = {
   HOME: 'Home',

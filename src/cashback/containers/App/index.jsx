@@ -13,9 +13,9 @@ import {
   getOnlineStoreInfoFavicon,
   getIsLoginModalShown,
   getUserConsumerId,
+  getIsClaimCashbackPage,
   getLoginAlipayMiniProgramRequestError,
 } from '../../redux/modules/app';
-import { getIsCashbackClaimRequestFulfilled } from '../../redux/modules/claim';
 import { getIsConfirmSharingConsumerInfoCompleted } from '../StoreRedemption/redux/selectors';
 import { getPageError } from '../../../redux/modules/entities/error';
 import { getIsLoadCustomerRequestCompleted } from '../../redux/modules/customer/selectors';
@@ -38,7 +38,7 @@ import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 
 class App extends Component {
   async componentDidMount() {
-    const { t, appActions, userCountry, loadConsumerCustomerInfo } = this.props;
+    const { t, appActions, userCountry, loadConsumerCustomerInfo, isClaimCashbackPage } = this.props;
     const { pathname } = window.location;
 
     this.visitErrorPage();
@@ -50,7 +50,10 @@ class App extends Component {
       await Promise.all(initRequests);
 
       // 2. login
-      if (isAlipayMiniProgram()) {
+      // TNGD code is executed at the very beginning.
+      // Because the MP and Beep accounts are not synchronized,
+      // it is impossible to determine that the accounts are the same
+      if (isAlipayMiniProgram() && !isClaimCashbackPage) {
         // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
         await appActions.loginByAlipayMiniProgram();
 
@@ -89,14 +92,9 @@ class App extends Component {
 
       await appActions.loadConsumerLoginStatus();
 
-      const {
-        isUserLogin,
-        userConsumerId,
-        isCashbackClaimRequestFulfilled,
-        isConfirmSharingConsumerInfoCompleted,
-      } = this.props;
+      const { isUserLogin, userConsumerId, isConfirmSharingConsumerInfoCompleted } = this.props;
 
-      if (isWebview()) {
+      if (isWebview() && !isClaimCashbackPage) {
         await appActions.syncLoginFromBeepApp();
 
         return;
@@ -111,8 +109,8 @@ class App extends Component {
       if (userConsumerId) {
         let isLoadCustomerAvailable = true;
 
-        if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM)) {
-          isLoadCustomerAvailable = isCashbackClaimRequestFulfilled;
+        if (isClaimCashbackPage) {
+          isLoadCustomerAvailable = false;
         }
 
         if (pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION)) {
@@ -136,13 +134,12 @@ class App extends Component {
       userConsumerId: currUserConsumerId,
       loadConsumerCustomerInfo,
       isLoadCustomerRequestCompleted,
-      isCashbackClaimRequestFulfilled: currIsCashbackClaimRequestFulfilled,
       isConfirmSharingConsumerInfoCompleted: currIsConfirmSharingConsumerInfoCompleted,
+      isClaimCashbackPage,
     } = this.props;
     const {
       pageError: prevPageError,
       isUserLogin: prevIsUserLogin,
-      isCashbackClaimRequestFulfilled: prevIsCashbackClaimRequestFulfilled,
       isConfirmSharingConsumerInfoCompleted: prevIsConfirmSharingConsumerInfoCompleted,
     } = prevProps;
     const { code } = prevPageError || {};
@@ -158,14 +155,6 @@ class App extends Component {
       let isLoadCustomerAvailable = false;
 
       if (
-        pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM) &&
-        currIsCashbackClaimRequestFulfilled &&
-        currIsCashbackClaimRequestFulfilled !== prevIsCashbackClaimRequestFulfilled
-      ) {
-        isLoadCustomerAvailable = currIsCashbackClaimRequestFulfilled;
-      }
-
-      if (
         pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION) &&
         currIsConfirmSharingConsumerInfoCompleted !== prevIsConfirmSharingConsumerInfoCompleted
       ) {
@@ -174,6 +163,10 @@ class App extends Component {
 
       if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_BASE) && !isLoadCustomerRequestCompleted) {
         isLoadCustomerAvailable = true;
+      }
+
+      if (isClaimCashbackPage) {
+        isLoadCustomerAvailable = false;
       }
 
       if (isLoadCustomerAvailable) {
@@ -208,7 +201,15 @@ class App extends Component {
   }
 
   render() {
-    const { t, error, loginBannerPrompt, onlineStoreInfoFavicon, isLoginModalShown, appActions } = this.props;
+    const {
+      t,
+      error,
+      loginBannerPrompt,
+      onlineStoreInfoFavicon,
+      isLoginModalShown,
+      appActions,
+      isClaimCashbackPage,
+    } = this.props;
     const { message } = error || {};
 
     return (
@@ -224,7 +225,10 @@ class App extends Component {
         ) : null}
         <Message />
         {isLoginModalShown && !isWebview() && !isAlipayMiniProgram() ? (
-          <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
+          <Login
+            className="aside fixed-wrapper"
+            title={isClaimCashbackPage ? t('CashbackLoginText') : loginBannerPrompt || t('LoginBannerPrompt')}
+          />
         ) : null}
         <Routes />
         <DocumentFavicon icon={onlineStoreInfoFavicon || faviconImage} />
@@ -239,7 +243,7 @@ App.propTypes = {
   userCountry: PropTypes.string,
   loginBannerPrompt: PropTypes.string,
   isUserLogin: PropTypes.bool,
-  isCashbackClaimRequestFulfilled: PropTypes.bool,
+  isClaimCashbackPage: PropTypes.bool,
   isConfirmSharingConsumerInfoCompleted: PropTypes.bool,
   isLoadCustomerRequestCompleted: PropTypes.bool,
   userConsumerId: PropTypes.string,
@@ -274,7 +278,7 @@ App.defaultProps = {
   userCountry: null,
   loginBannerPrompt: null,
   isUserLogin: false,
-  isCashbackClaimRequestFulfilled: false,
+  isClaimCashbackPage: false,
   isConfirmSharingConsumerInfoCompleted: false,
   isLoadCustomerRequestCompleted: false,
   userConsumerId: null,
@@ -294,8 +298,8 @@ export default compose(
       loginBannerPrompt: getLoginBannerPrompt(state),
       isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
       isUserLogin: getIsUserLogin(state),
+      isClaimCashbackPage: getIsClaimCashbackPage(state),
       userConsumerId: getUserConsumerId(state),
-      isCashbackClaimRequestFulfilled: getIsCashbackClaimRequestFulfilled(state),
       isConfirmSharingConsumerInfoCompleted: getIsConfirmSharingConsumerInfoCompleted(state),
       isLoadCustomerRequestCompleted: getIsLoadCustomerRequestCompleted(state),
       isLoginModalShown: getIsLoginModalShown(state),

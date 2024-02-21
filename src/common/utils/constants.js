@@ -251,6 +251,23 @@ export const ORDER_STATUS = {
   PICKED_UP: 'pickedUp',
 };
 
+export const CASHBACK_SOURCE = {
+  REGISTER: 'REGISTER',
+  RECEIPT: 'RECEIPT',
+  QR_ORDERING: 'QR_ORDERING',
+};
+
+export const CLAIM_CASHBACK_QUERY_NAMES = {
+  STATUS: 'claimedStatus',
+  VALUE: 'cashback',
+  CASHBACK_TYPE: 'cashbackType',
+};
+
+export const CLAIM_CASHBACK_TYPES = {
+  PERCENTAGE: 'percentage',
+  ABSOLUTE: 'absolute',
+};
+
 export const REFERRER_SOURCE_TYPES = {
   PAYMENT: 'payment',
   CASHBACK: 'cashback',
