@@ -1,6 +1,9 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
+import { getQueryString } from '../../../../../common/utils';
 import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
+
+export const getIsClaimedOrderCashbackNewMember = () => getQueryString('newMember').toLowerCase() === 'true';
 
 export const getConfirmSharingConsumerInfoData = state => state.business.common.confirmSharingConsumerInfoRequest.data;
 
@@ -23,5 +26,7 @@ export const getIsConfirmSharingNewMember = createSelector(
 export const getIsNewMember = createSelector(
   getIsJoinMembershipNewMember,
   getIsConfirmSharingNewMember,
-  (isJoinMembershipNewMember, isConfirmSharingNewMember) => isJoinMembershipNewMember || isConfirmSharingNewMember
+  getIsClaimedOrderCashbackNewMember,
+  (isJoinMembershipNewMember, isConfirmSharingNewMember, isClaimedOrderCashbackNewMember) =>
+    isJoinMembershipNewMember || isConfirmSharingNewMember || isClaimedOrderCashbackNewMember
 );
