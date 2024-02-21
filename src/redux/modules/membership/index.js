@@ -38,6 +38,7 @@ export const { actions, reducer } = createSlice({
     [fetchMembershipTierList.fulfilled.type]: (state, { payload }) => {
       state.loadMembershipTiersRequest.data = payload;
       state.loadMembershipTiersRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.loadMembershipTiersRequest.error = null;
     },
     [fetchMembershipTierList.rejected.type]: (state, { error }) => {
       state.loadMembershipTiersRequest.status = API_REQUEST_STATUS.REJECTED;

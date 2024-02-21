@@ -6,9 +6,19 @@ export const postUserMembership = ({ consumerId, business, source }) =>
     source,
   });
 
-export const getMembershipTiers = business =>
-  get('/api/v3/memberships', {
+// export const getMembershipTiers = business =>
+//   get('/api/v3/memberships', {
+//     queryParams: {
+//       business,
+//     },
+//   });
+
+export const getMembershipTiers = async business => {
+  const result = await get('http://127.0.0.1:4523/m1/2755399-0-default/api/v3/memberships', {
     queryParams: {
       business,
     },
   });
+
+  return result.data;
+};

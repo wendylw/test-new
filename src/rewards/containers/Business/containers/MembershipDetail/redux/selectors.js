@@ -209,11 +209,25 @@ export const getCustomerMembershipTierList = createSelector(
   getCustomerTierLevel,
   getCustomerTierTotalSpent,
   getMembershipTierList,
-  (customerTierLevel, customerTierTotalSpent, membershipTierList) =>
-    membershipTierList
-      .sort((a, b) => a.level - b.level)
+  (customerTierLevel, customerTierTotalSpent, membershipTierList) => {
+    const newMembershipTierList = membershipTierList.map(membershipItem => membershipItem);
+    newMembershipTierList.sort((next, current) => {
+      const nextLevel = next?.level || 0;
+      const currentLevel = current?.level || 0;
+
+      if (nextLevel < currentLevel) {
+        return -1;
+      }
+      if (nextLevel > currentLevel) {
+        return 1;
+      }
+
+      return 0;
+    });
+
+    return newMembershipTierList
       .filter(({ level }, index) => {
-        const { spendingThreshold: lastTierSpendingThreshold = 0 } = membershipTierList[index - 1];
+        const { spendingThreshold: lastTierSpendingThreshold = 0 } = membershipTierList[index - 1] || {};
 
         if (level <= customerTierLevel) {
           return true;
@@ -244,9 +258,10 @@ export const getCustomerMembershipTierList = createSelector(
           tier.progress = '100%';
           tier.active = true;
         } else {
-          const { spendingThreshold: lastTierSpendingThreshold = 0 } = membershipTierList[index - 1];
+          const { spendingThreshold: lastTierSpendingThreshold = 0 } = membershipTierList[index - 1] || {};
           const progressNumber = Number.parseFloat(
-            (customerTierTotalSpent - lastTierSpendingThreshold) / (spendingThreshold - lastTierSpendingThreshold)
+            ((customerTierTotalSpent - lastTierSpendingThreshold) / (spendingThreshold - lastTierSpendingThreshold)) *
+              100
           ).toFixed(6);
 
           tier.progress = `${progressNumber}%`;
@@ -254,5 +269,6 @@ export const getCustomerMembershipTierList = createSelector(
         }
 
         return tier;
-      })
+      });
+  }
 );

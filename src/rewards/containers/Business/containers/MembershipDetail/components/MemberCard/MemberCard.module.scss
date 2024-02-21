@@ -36,13 +36,46 @@
   }
 }
 
-.MemberCardTierItemLevelIcon {
-  @apply tw-box-content tw-flex-shrink-0 tw-border-2 tw-border-gray-50 tw-rounded-full;
+.MemberCardMembershipTierProgress {
+  @apply tw-flex tw-items-center tw-justify-between;
+}
 
-  width: 28px;
-  height: 28px;
+.MemberCardTierLevelItemIcon {
+  @apply tw-inline-flex tw-flex-shrink-0 tw-rounded-full tw-bg-gray-50;
+
+  padding: 1.5px;
+  width: 30px;
+  height: 30px;
+
+  &__active {
+    @apply tw-bg-black;
+  }
+
+  > svg {
+    @apply tw-h-full;
+  }
 
   > figure {
     @apply tw-bg-transparent;
   }
+}
+
+.MemberCardTierLevelItemProgress {
+  @apply tw-relative tw-flex-1 tw-bg-gray-50;
+
+  height: 8px;
+  margin-left: -1.5px;
+  margin-right: -1.5px;
+}
+
+.MemberCardTierItemLevelProgressFill {
+  @apply tw-absolute tw-top-0 tw-left-0 tw-inline-block tw-bg-black tw-h-full;
+
+  &__notAchieved {
+    @apply tw-rounded-r;
+  }
+}
+
+.MemberCardTierLevelItem {
+  z-index: 1;
 }
