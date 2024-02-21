@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-// import { getClassName } from '../../../../../../../common/utils/ui';
+import { getClassName } from '../../../../../../../common/utils/ui';
 import { MemberIcon } from '../../../../../../../common/components/Icons';
 import { getMerchantDisplayName } from '../../../../../../../redux/modules/merchant/selectors';
 import { getCustomerTierLevelName } from '../../../../../../redux/modules/customer/selectors';
@@ -8,7 +8,7 @@ import {
   getMemberCardStyles,
   getMemberCardIconColors,
   getIsHigherThanMemberLowestLevel,
-  // getCustomerMembershipTierList,
+  getCustomerMembershipTierList,
 } from '../../redux/selectors';
 import styles from './MemberCard.module.scss';
 
@@ -18,7 +18,7 @@ const MemberCard = () => {
   const memberCardStyles = useSelector(getMemberCardStyles);
   const memberCardIconColors = useSelector(getMemberCardIconColors);
   const isHigherThanMemberLowestLevel = useSelector(getIsHigherThanMemberLowestLevel);
-  // const customerMembershipTierList = useSelector(getCustomerMembershipTierList);
+  const customerMembershipTierList = useSelector(getCustomerMembershipTierList);
   const { crownStartColor, crownEndColor, backgroundStartColor, backgroundEndColor } = memberCardIconColors;
 
   return (
@@ -26,11 +26,12 @@ const MemberCard = () => {
       <div className={styles.MemberCard} style={memberCardStyles}>
         <h1 className={styles.MemberCardStoreName}>{merchantDisplayName}</h1>
         {isHigherThanMemberLowestLevel ? (
-          <div>
+          <div className={styles.MemberCardLevelProgressContainer}>
             <span className={styles.MemberCardLevelName}>{customerTierLevelName}</span>
             <p>TODO: prompt will be replaced</p>
             <ul className={styles.MemberCardMembershipTierProgress}>
-              {/* {customerMembershipTierList.map((tier, index) => {
+              {customerMembershipTierList.map((tier, index) => {
+                /* eslint-disable */
                 const iconKey = `membership-level-progress-icon-${index}`;
                 const progressBarKey = `membership-level-progress-bar-${index}`;
                 const { iconColors, active, progress } = tier;
@@ -53,21 +54,19 @@ const MemberCard = () => {
                   />
                 );
 
-                return index > 0 ? (
+                return (
                   <>
-                    <li key={progressBarKey} className={styles.MemberCardTierLevelItemProgress}>
-                      <span className={memberCardLevelProgressFillClassName} style={{ width: progress }} />
-                    </li>
+                    {/* {index > 0 && (
+                      <li key={progressBarKey} className={styles.MemberCardTierLevelItemProgress}>
+                        <span className={memberCardLevelProgressFillClassName} style={{ width: progress }} />
+                      </li>
+                    )} */}
                     <li key={iconKey} className={styles.MemberCardTierLevelItem}>
                       {MemberIconElement}
                     </li>
                   </>
-                ) : (
-                  <li key={iconKey} className={styles.MemberCardTierLevelItem}>
-                    {MemberIconElement}
-                  </li>
                 );
-              })} */}
+              })}
             </ul>
           </div>
         ) : (
