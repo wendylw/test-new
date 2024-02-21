@@ -22,6 +22,7 @@ import {
   getOrderCashbackPrice,
   getOrderCashbackPercentageNumber,
   getClaimedOrderCashbackStatus,
+  getIsClaimedOrderCashbackNewMember,
   getIsClaimedCashbackForCustomerFulfilled,
 } from './selectors';
 
@@ -87,10 +88,12 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
       dispatch(loadConsumerCustomerInfo());
 
       const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
+      const isClaimedOrderCashbackNewMember = getIsClaimedOrderCashbackNewMember(getState());
       const { REWARDS_BASE, REWARDS_BUSINESS, REWARDS_MEMBERSHIP, MEMBERSHIP_DETAIL } = PATH_NAME_MAPPING;
       const rewardsBaseRoute = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}`;
       const pathName = `${REWARDS_BASE}${REWARDS_BUSINESS}${REWARDS_MEMBERSHIP}${MEMBERSHIP_DETAIL}`;
       const search = [
+        `isNewMember=${isClaimedOrderCashbackNewMember}`,
         `business=${merchantBusiness}`,
         `source=${BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN}`,
         `${CLAIM_CASHBACK_QUERY_NAMES.STATUS}=${claimedOrderCashbackStatus}`,

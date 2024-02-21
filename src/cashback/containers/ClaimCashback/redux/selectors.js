@@ -59,6 +59,11 @@ export const getClaimedOrderCashbackStatus = createSelector(
   claimedCashbackForCustomerData => _get(claimedCashbackForCustomerData, 'status', null)
 );
 
+export const getIsClaimedOrderCashbackNewMember = createSelector(
+  getClaimedCashbackForCustomerData,
+  claimedCashbackForCustomerData => _get(claimedCashbackForCustomerData, 'joinMembershipResult.isNewMember', false)
+);
+
 /**
  * Derived selectors
  */
