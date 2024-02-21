@@ -37,7 +37,7 @@ import {
   getUserConsumerId,
   getUser,
   getUserIsLogin,
-  getIsGCashMiniProgram,
+  getIsAlipayMiniProgram,
 } from '../../../../redux/modules/app';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
@@ -58,9 +58,8 @@ class ReportDriver extends Component {
       loadOrder,
       fetchReport,
       userIsLogin,
-      loginByTngMiniProgram,
       loginByAlipayMiniProgram,
-      isGCashMiniProgram,
+      isAlipayMiniProgram,
     } = this.props;
 
     await loadOrder(receiptNumber);
@@ -77,12 +76,7 @@ class ReportDriver extends Component {
         }
       }
 
-      // TODO: Migrate isTNGMiniProgram to loginByAlipayMiniProgram
-      if (Utils.isTNGMiniProgram()) {
-        await loginByTngMiniProgram();
-      }
-
-      if (isGCashMiniProgram) {
+      if (isAlipayMiniProgram) {
         await loginByAlipayMiniProgram();
       }
     }
@@ -522,7 +516,7 @@ ReportDriver.propTypes = {
   }),
   submittable: PropTypes.bool,
   userIsLogin: PropTypes.bool,
-  isGCashMiniProgram: PropTypes.bool,
+  isAlipayMiniProgram: PropTypes.bool,
   showPageLoader: PropTypes.bool,
   inputEmailIsValid: PropTypes.bool,
   isSubmitButtonDisabled: PropTypes.bool,
@@ -549,7 +543,6 @@ ReportDriver.propTypes = {
   updateInputEmail: PropTypes.func,
   setUploadPhotoFile: PropTypes.func,
   inputEmailCompleted: PropTypes.func,
-  loginByTngMiniProgram: PropTypes.func,
   loginByAlipayMiniProgram: PropTypes.func,
   removeUploadPhotoFile: PropTypes.func,
 };
@@ -566,7 +559,7 @@ ReportDriver.defaultProps = {
   },
   submittable: false,
   userIsLogin: false,
-  isGCashMiniProgram: false,
+  isAlipayMiniProgram: false,
   showPageLoader: false,
   inputEmailIsValid: false,
   isSubmitButtonDisabled: false,
@@ -591,7 +584,6 @@ ReportDriver.defaultProps = {
   updateInputEmail: () => {},
   setUploadPhotoFile: () => {},
   inputEmailCompleted: () => {},
-  loginByTngMiniProgram: () => {},
   loginByAlipayMiniProgram: () => {},
   removeUploadPhotoFile: () => {},
 };
@@ -616,7 +608,7 @@ export default compose(
       isSubmitButtonDisabled: getIsSubmitButtonDisabled(state),
       inputEmailIsValid: getInputEmailIsValid(state),
       user: getUser(state),
-      isGCashMiniProgram: getIsGCashMiniProgram(state),
+      isAlipayMiniProgram: getIsAlipayMiniProgram(state),
       userIsLogin: getUserIsLogin(state),
     }),
     {
@@ -634,7 +626,7 @@ export default compose(
       initialEmail: reportDriverActionCreators.initialEmail,
       loadProfileInfo: appActionCreators.loadProfileInfo,
       loginApp: appActionCreators.loginApp,
-      loginByTngMiniProgram: appActionCreators.loginByTngMiniProgram,
+      loginByAlipayMiniProgram: appActionCreators.loginByAlipayMiniProgram,
     }
   )
 )(ReportDriver);

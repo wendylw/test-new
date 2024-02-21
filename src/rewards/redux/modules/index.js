@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 import business from '../../containers/Business/redux';
+import profile from '../../containers/Profile/redux';
 import growthbook from '../../../redux/modules/growthbook';
 import merchant from '../../../redux/modules/merchant';
 import membership from '../../../redux/modules/membership';
@@ -12,6 +13,7 @@ const rootReducer = history =>
   combineReducers({
     router: connectRouter(history),
     user,
+    profile,
     business,
     customer,
     merchant,
