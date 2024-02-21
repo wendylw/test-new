@@ -117,7 +117,7 @@ export const mounted = createAsyncThunk('cashback/claimCashback/mounted', async 
   const orderReceiptNumber = getOrderReceiptNumber(getState());
 
   if (orderReceiptNumber) {
-    dispatch(fetchOrderCashbackInfo());
+    await dispatch(fetchOrderCashbackInfo());
   }
 
   await dispatch(initUserInfo());
