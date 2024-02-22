@@ -1,8 +1,10 @@
 import React, { Fragment } from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import { MemberIcon } from '../../../../../../../common/components/Icons';
+import { MEMBERSHIP_LEVEL_I18N_KEYS } from '../../utils/constants';
 import { getMerchantDisplayName } from '../../../../../../../redux/modules/merchant/selectors';
 import { getCustomerTierLevelName } from '../../../../../../redux/modules/customer/selectors';
 import {
@@ -11,10 +13,13 @@ import {
   getIsMemberCardMembershipProgressBarShow,
   getMemberCardTierProgressBarStyles,
   getMemberCardMembershipProgressTierList,
+  getMemberCardMembershipLevelStatus,
+  getMemberCardMembershipProgressMessageIn18nParams,
 } from '../../redux/selectors';
 import styles from './MemberCard.module.scss';
 
 const MemberCard = () => {
+  const { t } = useTranslation('Rewards');
   const merchantDisplayName = useSelector(getMerchantDisplayName);
   const customerTierLevelName = useSelector(getCustomerTierLevelName);
   const memberCardStyles = useSelector(getMemberCardStyles);
@@ -22,6 +27,10 @@ const MemberCard = () => {
   const isMemberCardMembershipProgressBarShow = useSelector(getIsMemberCardMembershipProgressBarShow);
   const memberCardTierProgressBarStyles = useSelector(getMemberCardTierProgressBarStyles);
   const memberCardMembershipProgressTierList = useSelector(getMemberCardMembershipProgressTierList);
+  const memberCardMembershipLevelStatus = useSelector(getMemberCardMembershipLevelStatus);
+  const memberCardMembershipLevelMessageIn18nParams = useSelector(getMemberCardMembershipProgressMessageIn18nParams);
+  const memberLevelI18nKeys = MEMBERSHIP_LEVEL_I18N_KEYS[memberCardMembershipLevelStatus];
+  const { messageI18nKey, messageI18nParamsKeys } = memberLevelI18nKeys || {};
   const { crownStartColor, crownEndColor, backgroundStartColor, backgroundEndColor } = memberCardIconColors;
 
   return (
@@ -32,7 +41,10 @@ const MemberCard = () => {
           <div className={styles.MemberCardLevelProgressContainer}>
             <span className={styles.MemberCardLevelName}>{customerTierLevelName}</span>
             <p className={styles.MemberCardLevelProgressPrompt}>
-              TODO: prompt will be replaced <Info size={18} />
+              {messageI18nParamsKeys
+                ? t(messageI18nKey, memberCardMembershipLevelMessageIn18nParams)
+                : t(messageI18nKey)}
+              <Info size={18} />
             </p>
             <ul className={styles.MemberCardLevelProgress}>
               {memberCardMembershipProgressTierList.map((tier, index) => {
@@ -41,8 +53,7 @@ const MemberCard = () => {
                 const progressBarKey = `membership-level-progress-bar-${level}`;
                 const MemberIconElement = (
                   <MemberIcon
-                    iconBackgroundId={`iconBackground_${iconKey}`}
-                    iconCrownId={`iconCrown_${iconKey}`}
+                    id={iconKey}
                     className={styles.MemberCardLevelProgressItemIcon}
                     style={
                       active

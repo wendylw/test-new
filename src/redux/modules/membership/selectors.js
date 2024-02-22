@@ -1,4 +1,5 @@
 import _get from 'lodash/get';
+import _last from 'lodash/last';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 
@@ -40,9 +41,14 @@ export const getLoadMembershipsRequestStatus = state => state.membership.loadMem
 
 export const getLoadMembershipsRequestError = state => state.membership.loadMembershipRequest.error;
 
+export const getMembershipTierList = createSelector(getMembershipsData, membershipsData =>
+  _get(membershipsData, 'businessMembershipTiers', [])
+);
+
 /**
  * Derived selectors
  */
-export const getMembershipTierList = createSelector(getMembershipsData, membershipsData =>
-  _get(membershipsData, 'businessMembershipTiers', [])
+export const getHighestMembershipTier = createSelector(
+  getMembershipTierList,
+  membershipTierList => _last(membershipTierList) || {}
 );

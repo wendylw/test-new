@@ -54,5 +54,8 @@
   "UniquePromoDuplicatedTitle": "Please try another QR code to claim promotion",
   "UniquePromoDuplicatedDescription": "This promotion has been claimed",
   "UniquePromoExpiredTitle": "Please try another QR code to claim promotion",
-  "UniquePromoExpiredDescription": "Failed to claim. Promotion expired."
+  "UniquePromoExpiredDescription": "Failed to claim. Promotion expired.",
+  "UnlockNextLevelMessage": "Spend {{unlockSpendPrice}} more by {{nextReviewDate}} to unlock {{nextLevelName}}",
+  "LevelCompletedMessage": "Enjoy Gold benefits until {{nextReviewDate}}",
+  "LevelMaintainMessage": "Spend {{maintainSpendPrice}} more by {{nextReviewDate}} to maintain {{currentLevelName}}"
 }

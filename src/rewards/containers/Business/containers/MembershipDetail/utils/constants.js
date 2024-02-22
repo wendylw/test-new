@@ -3,7 +3,7 @@ import RewardsEarnedCashbackIcon from '../../../../../../images/rewards-earned-c
 import RewardsWarningIcon from '../../../../../../images/rewards-warning.svg';
 import { CLAIMED_CASHBACK_STATUS } from '../../../utils/constants';
 
-export const I18N_PARAM_KEYS = {
+export const MEMBER_TYPE_I18N_PARAM_KEYS = {
   CASHBACK_VALUE: 'cashbackValue',
 };
 
@@ -72,7 +72,7 @@ export const NEW_MEMBER_I18N_KEYS = {
   },
   [NEW_MEMBER_TYPES.EARNED_CASHBACK]: {
     titleI18nKey: 'EarnedCashbackNewMemberTitle',
-    titleI18nParamsKeys: [I18N_PARAM_KEYS.CASHBACK_VALUE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE],
   },
   [NEW_MEMBER_TYPES.CLAIMED_REPEAT]: {
     titleI18nKey: 'ClaimedCashbackRepeatNewMemberTitle',
@@ -144,7 +144,7 @@ export const RETURNING_MEMBER_I18N_KEYS = {
   [RETURNING_MEMBER_TYPES.EARNED_CASHBACK]: {
     titleI18nKey: 'EarnedCashbackReturningMemberTitle',
     descriptionI18nKey: 'EarnedCashbackReturningMemberDescription',
-    titleI18nParamsKeys: [I18N_PARAM_KEYS.CASHBACK_VALUE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE],
   },
   [RETURNING_MEMBER_TYPES.CLAIMED_REPEAT]: {
     titleI18nKey: 'ClaimedCashbackRepeatReturningMemberTitle',
@@ -167,5 +167,42 @@ export const RETURNING_MEMBER_I18N_KEYS = {
   },
   [RETURNING_MEMBER_TYPES.NOT_CLAIMED_DEFAULT]: {
     titleI18nKey: 'NotClaimDefaultReturningMemberTitle',
+  },
+};
+
+export const MEMBERSHIP_LEVEL_I18N_PARAM_KEYS = {
+  UNLOCK_SPEND_PRICE: 'unlockSpendPrice',
+  MAINTAIN_SPEND_PRICE: 'maintainSpendPrice',
+  NEXT_REVIEW_DATE: 'nextReviewDate',
+  NEXT_LEVEL_NAME: 'nextLevelName',
+  CURRENT_LEVEL_NAME: 'currentLevelName',
+};
+
+export const MEMBERSHIP_LEVEL_STATUS = {
+  UNLOCK_NEXT_LEVEL: 'unlockNextLevel',
+  LEVEL_COMPLETED: 'levelCompleted',
+  LEVEL_MAINTAIN: 'levelMaintain',
+};
+
+export const MEMBERSHIP_LEVEL_I18N_KEYS = {
+  [MEMBERSHIP_LEVEL_STATUS.UNLOCK_NEXT_LEVEL]: {
+    messageI18nKey: 'UnlockNextLevelMessage',
+    messageI18nParamsKeys: [
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.UNLOCK_SPEND_PRICE,
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_REVIEW_DATE,
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_LEVEL_NAME,
+    ],
+  },
+  [MEMBERSHIP_LEVEL_STATUS.LEVEL_COMPLETED]: {
+    messageI18nKey: 'LevelCompletedMessage',
+    messageI18nParamsKeys: [MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_REVIEW_DATE],
+  },
+  [MEMBERSHIP_LEVEL_STATUS.LEVEL_MAINTAIN]: {
+    messageI18nKey: 'LevelMaintainMessage',
+    messageI18nParamsKeys: [
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE,
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_REVIEW_DATE,
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.CURRENT_LEVEL_NAME,
+    ],
   },
 };
