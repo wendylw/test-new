@@ -22,11 +22,7 @@
 }
 
 .MemberCardLevelName {
-  @apply tw-text-xl tw-capitalize;
-}
-
-.MemberCardLevelPrompt {
-  @apply tw-flex tw-items-center tw-gap-6 sm:tw-gap-6px tw-text-xs;
+  @apply tw-text-xl tw-font-bold tw-capitalize;
 }
 
 .MemberCardLevelIcon {
@@ -40,11 +36,21 @@
   }
 }
 
-.MemberCardMembershipTierProgress {
-  @apply tw-flex tw-items-center tw-justify-between;
+.MemberCardLevelProgressPrompt {
+  @apply tw-flex tw-items-center tw-gap-6 sm:tw-gap-6px tw-text-xs;
 }
 
-.MemberCardTierLevelItemIcon {
+.MemberCardLevelProgress {
+  @apply tw-relative tw-flex tw-items-center tw-justify-between tw-pb-20 sm:tw-pb-20px;
+}
+
+.MemberCardLevelProgressItem {
+  @apply tw-flex tw-flex-col tw-items-center;
+
+  z-index: 1;
+}
+
+.MemberCardLevelProgressItemIcon {
   @apply tw-inline-flex tw-flex-shrink-0 tw-bg-gray-50 tw-rounded-full;
 
   padding: 1.5px;
@@ -60,7 +66,11 @@
   }
 }
 
-.MemberCardTierLevelItemProgress {
+.MemberCardLevelProgressItemLevelName {
+  @apply tw-absolute tw-bottom-0 tw-text-xs tw-font-bold tw-leading-loose;
+}
+
+.MemberCardLevelProgressItemProgress {
   @apply tw-relative tw-flex-1 tw-bg-gray-50;
 
   height: 8px;
@@ -68,16 +78,10 @@
   margin-right: -1.5px;
 }
 
-.MemberCardTierItemLevelProgressFill {
+.MemberCardLevelProgressItemFill {
   @apply tw-absolute tw-top-0 tw-left-0 tw-inline-block tw-bg-black tw-h-full;
 
   &__notAchieved {
     @apply tw-rounded-r;
   }
-}
-
-.MemberCardTierLevelItem {
-  @apply tw-relative tw-flex tw-flex-col tw-items-center;
-
-  z-index: 1;
 }

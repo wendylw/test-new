@@ -23,8 +23,6 @@ const MemberCard = () => {
   const memberCardTierProgressBarStyles = useSelector(getMemberCardTierProgressBarStyles);
   const customerMembershipTierList = useSelector(getCustomerMembershipTierList);
   const { crownStartColor, crownEndColor, backgroundStartColor, backgroundEndColor } = memberCardIconColors;
-  const progressContainerLevelNameClassName = getClassName([styles.MemberCardLevelName]);
-  const progressContainerPromptClassName = getClassName([styles.MemberCardLevelPrompt]);
 
   return (
     <section className={styles.MemberCardSection}>
@@ -32,27 +30,26 @@ const MemberCard = () => {
         <h1 className={styles.MemberCardStoreName}>{merchantDisplayName}</h1>
         {isCustomerMembershipProgressBarShow ? (
           <div className={styles.MemberCardLevelProgressContainer}>
-            <span className={progressContainerLevelNameClassName}>{customerTierLevelName}</span>
-            <p className={progressContainerPromptClassName}>
+            <span className={styles.MemberCardLevelName}>{customerTierLevelName}</span>
+            <p className={styles.MemberCardLevelProgressPrompt}>
               TODO: prompt will be replaced <Info size={18} />
             </p>
-            <ul className={styles.MemberCardMembershipTierProgress}>
+            <ul className={styles.MemberCardLevelProgress}>
               {customerMembershipTierList.map((tier, index) => {
                 const { level, name, iconColors, active, progress } = tier;
                 const iconKey = `membership-level-progress-icon-${level}`;
                 const progressBarKey = `membership-level-progress-bar-${level}`;
-                const memberCardLevelProgressFillClassName = getClassName([
-                  styles.MemberCardTierItemLevelProgressFill,
-                  progress !== '100%' && styles.MemberCardTierItemLevelProgressFill__notAchieved,
-                ]);
                 const MemberIconElement = (
                   <MemberIcon
-                    id={iconKey}
-                    className={styles.MemberCardTierLevelItemIcon}
+                    iconBackgroundId={`iconBackground_${iconKey}`}
+                    iconCrownId={`iconCrown_${iconKey}`}
+                    className={styles.MemberCardLevelProgressItemIcon}
                     style={
-                      active && {
-                        backgroundColor: memberCardTierProgressBarStyles.activeBackground,
-                      }
+                      active
+                        ? {
+                            backgroundColor: memberCardTierProgressBarStyles.activeBackground,
+                          }
+                        : null
                     }
                     crownStartColor={iconColors.crownStartColor}
                     crownEndColor={iconColors.crownEndColor}
@@ -65,9 +62,12 @@ const MemberCard = () => {
                 return (
                   <Fragment key={`membership-level-progress-item-${level}`}>
                     {index > 0 && (
-                      <li key={progressBarKey} className={styles.MemberCardTierLevelItemProgress}>
+                      <li key={progressBarKey} className={styles.MemberCardLevelProgressItemProgress}>
                         <span
-                          className={memberCardLevelProgressFillClassName}
+                          className={getClassName([
+                            styles.MemberCardLevelProgressItemFill,
+                            progress !== '100%' && styles.MemberCardLevelProgressItemFill__notAchieved,
+                          ])}
                           style={{
                             width: progress,
                             backgroundColor: memberCardTierProgressBarStyles.progressBackground,
@@ -75,10 +75,10 @@ const MemberCard = () => {
                         />
                       </li>
                     )}
-                    <li key={iconKey} className={styles.MemberCardTierLevelItem}>
+                    <li key={iconKey} className={styles.MemberCardLevelProgressItem}>
                       {MemberIconElement}
                       <span
-                        className="tw-absolute tw-bottom-0"
+                        className={styles.MemberCardLevelProgressItemLevelName}
                         style={{
                           color: memberCardTierProgressBarStyles.color,
                         }}
