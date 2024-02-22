@@ -306,12 +306,11 @@ export const getIsMemberCardMembershipProgressBarShow = createSelector(
 
 export const getMemberCardMembershipProgressTierList = createSelector(
   getCustomerTierLevel,
+  getCustomerMembershipNextLevel,
   getCustomerTierTotalSpent,
   getMembershipTierList,
-  (customerTierLevel, customerTierTotalSpent, membershipTierList) => {
-    const nextTierIndex = membershipTierList.findIndex(({ level }) => level === customerTierLevel) + 1;
-
-    return membershipTierList
+  (customerTierLevel, customerTierTotalSpent, membershipTierList) =>
+    membershipTierList
       .toSorted(({ level: nextLevel }, { level: currentLevel }) => {
         if (nextLevel < currentLevel) {
           return -1;
@@ -343,7 +342,7 @@ export const getMemberCardMembershipProgressTierList = createSelector(
         if (isAchievedCurrentLevel) {
           tier.progress = '100%';
           tier.active = true;
-        } else if (nextTierIndex === index) {
+        } else if (customerTierLevel === membershipTierList[index - 1]?.level) {
           const progressPercentageNumber = Number.parseFloat(
             (customerTierTotalSpent / spendingThreshold) * 100
           ).toFixed(6);
@@ -352,6 +351,5 @@ export const getMemberCardMembershipProgressTierList = createSelector(
         }
 
         return tier;
-      });
-  }
+      })
 );
