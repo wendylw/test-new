@@ -317,8 +317,10 @@ export const getCustomerMembershipTierList = createSelector(
   getCustomerTierLevel,
   getCustomerTierTotalSpent,
   getMembershipTierList,
-  (customerTierLevel, customerTierTotalSpent, membershipTierList) =>
-    membershipTierList
+  (customerTierLevel, customerTierTotalSpent, membershipTierList) => {
+    const nextTierIndex = membershipTierList.findIndex(({ level }) => level === customerTierLevel) + 1;
+
+    return membershipTierList
       .toSorted(({ level: nextLevel }, { level: currentLevel }) => {
         if (nextLevel < currentLevel) {
           return -1;
@@ -342,23 +344,23 @@ export const getCustomerMembershipTierList = createSelector(
             backgroundStartColor: tierColorPalette.icon.background.startColor,
             backgroundEndColor: tierColorPalette.icon.background.endColor,
           },
+          progress: '0%',
+          active: false,
         };
         const isAchievedCurrentLevel = level <= customerTierLevel;
 
         if (isAchievedCurrentLevel) {
           tier.progress = '100%';
           tier.active = true;
-        } else {
-          const { spendingThreshold: lastTierSpendingThreshold = 0 } = membershipTierList[index - 1] || {};
-          const progressNumber = Number.parseFloat(
-            ((customerTierTotalSpent - lastTierSpendingThreshold) / (spendingThreshold - lastTierSpendingThreshold)) *
-              100
+        } else if (nextTierIndex === index) {
+          const progressPercentageNumber = Number.parseFloat(
+            (customerTierTotalSpent / spendingThreshold) * 100
           ).toFixed(6);
 
-          tier.progress = `${progressNumber}%`;
-          tier.active = false;
+          tier.progress = `${progressPercentageNumber}%`;
         }
 
         return tier;
-      })
+      });
+  }
 );
