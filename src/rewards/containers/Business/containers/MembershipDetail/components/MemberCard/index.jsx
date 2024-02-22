@@ -8,9 +8,9 @@ import { getCustomerTierLevelName } from '../../../../../../redux/modules/custom
 import {
   getMemberCardStyles,
   getMemberCardIconColors,
-  getIsCustomerMembershipProgressBarShow,
+  getIsMemberCardMembershipProgressBarShow,
   getMemberCardTierProgressBarStyles,
-  getCustomerMembershipTierList,
+  getMemberCardMembershipProgressTierList,
 } from '../../redux/selectors';
 import styles from './MemberCard.module.scss';
 
@@ -19,23 +19,23 @@ const MemberCard = () => {
   const customerTierLevelName = useSelector(getCustomerTierLevelName);
   const memberCardStyles = useSelector(getMemberCardStyles);
   const memberCardIconColors = useSelector(getMemberCardIconColors);
-  const isCustomerMembershipProgressBarShow = useSelector(getIsCustomerMembershipProgressBarShow);
+  const isMemberCardMembershipProgressBarShow = useSelector(getIsMemberCardMembershipProgressBarShow);
   const memberCardTierProgressBarStyles = useSelector(getMemberCardTierProgressBarStyles);
-  const customerMembershipTierList = useSelector(getCustomerMembershipTierList);
+  const memberCardMembershipProgressTierList = useSelector(getMemberCardMembershipProgressTierList);
   const { crownStartColor, crownEndColor, backgroundStartColor, backgroundEndColor } = memberCardIconColors;
 
   return (
     <section className={styles.MemberCardSection}>
       <div className={styles.MemberCard} style={memberCardStyles}>
         <h1 className={styles.MemberCardStoreName}>{merchantDisplayName}</h1>
-        {isCustomerMembershipProgressBarShow ? (
+        {isMemberCardMembershipProgressBarShow ? (
           <div className={styles.MemberCardLevelProgressContainer}>
             <span className={styles.MemberCardLevelName}>{customerTierLevelName}</span>
             <p className={styles.MemberCardLevelProgressPrompt}>
               TODO: prompt will be replaced <Info size={18} />
             </p>
             <ul className={styles.MemberCardLevelProgress}>
-              {customerMembershipTierList.map((tier, index) => {
+              {memberCardMembershipProgressTierList.map((tier, index) => {
                 const { level, name, iconColors, active, progress } = tier;
                 const iconKey = `membership-level-progress-icon-${level}`;
                 const progressBarKey = `membership-level-progress-bar-${level}`;

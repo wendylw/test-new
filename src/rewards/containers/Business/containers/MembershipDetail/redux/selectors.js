@@ -299,12 +299,12 @@ export const getMemberCardIconColors = createSelector(getMemberColorPalettes, me
   backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
 }));
 
-export const getIsCustomerMembershipProgressBarShow = createSelector(
+export const getIsMemberCardMembershipProgressBarShow = createSelector(
   getMembershipTierList,
   membershipTierList => membershipTierList?.length > 1
 );
 
-export const getCustomerMembershipTierList = createSelector(
+export const getMemberCardMembershipProgressTierList = createSelector(
   getCustomerTierLevel,
   getCustomerTierTotalSpent,
   getMembershipTierList,
