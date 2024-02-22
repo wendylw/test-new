@@ -45,15 +45,11 @@
 }
 
 .MemberCardTierLevelItemIcon {
-  @apply tw-inline-flex tw-flex-shrink-0 tw-rounded-full;
+  @apply tw-inline-flex tw-flex-shrink-0 tw-bg-gray-50 tw-rounded-full;
 
   padding: 1.5px;
   width: 30px;
   height: 30px;
-
-  &__active {
-    @apply tw-bg-black;
-  }
 
   > svg {
     @apply tw-h-full;

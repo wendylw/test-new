@@ -286,10 +286,10 @@ export const getMemberCardStyles = createSelector(getMemberColorPalettes, member
   background: `linear-gradient(105deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 50%,${memberCardColorPalettes.background.endColor} 100%)`,
 }));
 
-export const getMemberCardTierItemStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+export const getMemberCardTierProgressBarStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
   color: memberCardColorPalettes.font,
-  activeBackground: memberCardColorPalettes.icon.activeBackground,
-  progressBackground: memberCardColorPalettes.progressBackground,
+  activeBackground: memberCardColorPalettes.progress.activeIcon,
+  progressBackground: memberCardColorPalettes.progress.activeBackground,
 }));
 
 export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
@@ -299,14 +299,9 @@ export const getMemberCardIconColors = createSelector(getMemberColorPalettes, me
   backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
 }));
 
-export const getIsCustomerMembershipTierListShow = createSelector(
+export const getIsCustomerMembershipProgressBarShow = createSelector(
   getMembershipTierList,
   membershipTierList => membershipTierList?.length > 1
-);
-
-export const getIsAchievedPlatinumLevel = createSelector(
-  getCustomerTierLevel,
-  customerTierLevel => customerTierLevel === MEMBER_LEVELS.PLATINUM
 );
 
 export const getCustomerMembershipTierList = createSelector(
