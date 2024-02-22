@@ -317,7 +317,7 @@ export const getMemberCardMembershipProgressTierList = createSelector(
   getCustomerTierTotalSpent,
   getMembershipTierList,
   (customerTierLevel, customerMembershipNextLevel, customerTierTotalSpent, membershipTierList) =>
-    membershipTierList.map(({ level, name, spendingThreshold }, index) => {
+    membershipTierList.map(({ level, name, spendingThreshold }) => {
       const tierColorPalette = MEMBER_CARD_COLOR_PALETTES[level] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER];
       const tier = {
         level,
