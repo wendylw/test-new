@@ -50,10 +50,10 @@ const ClaimCashback = () => {
   });
 
   useEffect(() => {
-    if (isLogin && orderReceiptNumber && !claimedCashbackForCustomerStatus) {
+    if (isLogin && orderReceiptNumber && !claimedCashbackForCustomerStatus && isWeb) {
       dispatch(claimedCashbackAndContinueNextStep());
     }
-  }, [isLogin, claimedCashbackForCustomerStatus, orderReceiptNumber, dispatch]);
+  }, [isLogin, claimedCashbackForCustomerStatus, orderReceiptNumber, isWeb, dispatch]);
 
   // TODO: WB-6994: remove this useEffect after we have a better solution
   useEffect(() => {
