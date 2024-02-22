@@ -365,10 +365,13 @@ export const getMemberCardMembershipLevelStatus = createSelector(
       return MEMBERSHIP_LEVEL_STATUS.UNLOCK_NEXT_LEVEL;
     }
 
+    // Customer achieved highest spending threshold for next review time.
     if (customerTierLevel === highestTierLevel && customerTierTotalSpent >= highestTierSpendingThreshold) {
       return MEMBERSHIP_LEVEL_STATUS.LEVEL_COMPLETED;
     }
 
+    // Customer achieved highest spending threshold last review time, customer still maintain highest level.
+    // But we will prompt customer to maintain highest level. Because spend total will be cleared.
     if (customerTierLevel === highestTierLevel && customerTierTotalSpent < highestTierSpendingThreshold) {
       return MEMBERSHIP_LEVEL_STATUS.LEVEL_NOT_COMPLETED;
     }
