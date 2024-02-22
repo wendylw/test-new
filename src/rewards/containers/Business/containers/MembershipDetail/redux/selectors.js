@@ -319,31 +319,16 @@ export const getCustomerMembershipTierList = createSelector(
   getMembershipTierList,
   (customerTierLevel, customerTierTotalSpent, membershipTierList) =>
     membershipTierList
-      .toSorted((next, current) => {
-        const nextLevel = next?.level || 0;
-        const currentLevel = current?.level || 0;
-
+      .toSorted(({ level: nextLevel }, { level: currentLevel }) => {
         if (nextLevel < currentLevel) {
           return -1;
         }
+
         if (nextLevel > currentLevel) {
           return 1;
         }
 
         return 0;
-      })
-      .filter(({ level }, index) => {
-        const { spendingThreshold: lastTierSpendingThreshold = 0 } = membershipTierList[index - 1] || {};
-
-        if (level <= customerTierLevel) {
-          return true;
-        }
-
-        if (customerTierTotalSpent >= lastTierSpendingThreshold && level > customerTierLevel) {
-          return true;
-        }
-
-        return false;
       })
       .map(({ level, name, spendingThreshold }, index) => {
         const tierColorPalette = MEMBER_CARD_COLOR_PALETTES[level] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER];
