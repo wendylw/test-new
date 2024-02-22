@@ -301,7 +301,7 @@ export const getMemberCardIconColors = createSelector(getMemberColorPalettes, me
 
 export const getIsMemberCardMembershipProgressBarShow = createSelector(
   getMembershipTierList,
-  membershipTierList => membershipTierList?.length > 1
+  membershipTierList => membershipTierList.length > 1
 );
 
 export const getMemberCardMembershipProgressTierList = createSelector(
