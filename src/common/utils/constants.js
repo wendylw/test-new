@@ -323,7 +323,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
       midColor: '#99C8FF',
       endColor: '#52A1FF',
     },
-    progressOutlineColor: '#303030',
+    progress: '#303030',
     font: '#303030',
   },
   [MEMBER_LEVELS.SLIVER]: {
@@ -343,7 +343,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
       midColor: '#E0E0E0',
       endColor: '#CCC',
     },
-    progressOutlineColor: '#303030',
+    progress: '#303030',
     font: '#303030',
   },
   [MEMBER_LEVELS.GOLD]: {
@@ -363,7 +363,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
       midColor: '#FFBD17',
       endColor: '#FFCF43',
     },
-    progressOutlineColor: '#303030',
+    progress: '#303030',
     font: '#303030',
   },
   [MEMBER_LEVELS.PLATINUM]: {
@@ -383,7 +383,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
       midColor: '#4E4E4E',
       endColor: '#000000',
     },
-    progressOutlineColor: '#717171',
+    progress: '#717171',
     font: '#FFFFFF',
   },
 };
