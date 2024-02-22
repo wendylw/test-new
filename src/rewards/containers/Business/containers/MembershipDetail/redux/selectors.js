@@ -310,46 +310,34 @@ export const getMemberCardMembershipProgressTierList = createSelector(
   getCustomerTierTotalSpent,
   getMembershipTierList,
   (customerTierLevel, customerTierTotalSpent, membershipTierList) =>
-    membershipTierList
-      .toSorted(({ level: nextLevel }, { level: currentLevel }) => {
-        if (nextLevel < currentLevel) {
-          return -1;
-        }
+    membershipTierList.map(({ level, name, spendingThreshold }, index) => {
+      const tierColorPalette = MEMBER_CARD_COLOR_PALETTES[level] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER];
+      const tier = {
+        level,
+        name,
+        spendingThreshold,
+        progress: '0%',
+        active: false,
+        iconColors: {
+          crownStartColor: tierColorPalette.icon.crown.startColor,
+          crownEndColor: tierColorPalette.icon.crown.endColor,
+          backgroundStartColor: tierColorPalette.icon.background.startColor,
+          backgroundEndColor: tierColorPalette.icon.background.endColor,
+        },
+      };
+      const isAchievedCurrentLevel = level <= customerTierLevel;
 
-        if (nextLevel > currentLevel) {
-          return 1;
-        }
+      if (isAchievedCurrentLevel) {
+        tier.progress = '100%';
+        tier.active = true;
+      } else if (customerTierLevel === membershipTierList[index - 1]?.level) {
+        const progressPercentageNumber = Number.parseFloat((customerTierTotalSpent / spendingThreshold) * 100).toFixed(
+          6
+        );
 
-        return 0;
-      })
-      .map(({ level, name, spendingThreshold }, index) => {
-        const tierColorPalette = MEMBER_CARD_COLOR_PALETTES[level] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER];
-        const tier = {
-          level,
-          name,
-          spendingThreshold,
-          progress: '0%',
-          active: false,
-          iconColors: {
-            crownStartColor: tierColorPalette.icon.crown.startColor,
-            crownEndColor: tierColorPalette.icon.crown.endColor,
-            backgroundStartColor: tierColorPalette.icon.background.startColor,
-            backgroundEndColor: tierColorPalette.icon.background.endColor,
-          },
-        };
-        const isAchievedCurrentLevel = level <= customerTierLevel;
+        tier.progress = `${progressPercentageNumber}%`;
+      }
 
-        if (isAchievedCurrentLevel) {
-          tier.progress = '100%';
-          tier.active = true;
-        } else if (customerTierLevel === membershipTierList[index - 1]?.level) {
-          const progressPercentageNumber = Number.parseFloat(
-            (customerTierTotalSpent / spendingThreshold) * 100
-          ).toFixed(6);
-
-          tier.progress = `${progressPercentageNumber}%`;
-        }
-
-        return tier;
-      })
+      return tier;
+    })
 );
