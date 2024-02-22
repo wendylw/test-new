@@ -316,6 +316,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
         startColor: '#DCFCFF',
         endColor: '#D2DEFF',
       },
+      activeBackground: '#303030',
     },
     background: {
       startColor: '#91F7E7',
@@ -323,6 +324,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
       endColor: '#52A1FF',
     },
     font: '#303030',
+    progressBackground: '#303030',
   },
   [MEMBER_LEVELS.SLIVER]: {
     icon: {
@@ -334,6 +336,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
         startColor: '#F3F3F3',
         endColor: '#CCCCCC',
       },
+      activeBackground: '#303030',
     },
     background: {
       startColor: '#AFAFAF',
@@ -341,6 +344,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
       endColor: '#CCC',
     },
     font: '#303030',
+    progressBackground: '#303030',
   },
   [MEMBER_LEVELS.GOLD]: {
     icon: {
@@ -352,6 +356,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
         startColor: '#FFFBE6',
         endColor: '#FFFEAD',
       },
+      activeBackground: '#303030',
     },
     background: {
       startColor: '#FFF143',
@@ -359,6 +364,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
       endColor: '#FFCF43',
     },
     font: '#303030',
+    progressBackground: '#303030',
   },
   [MEMBER_LEVELS.PLATINUM]: {
     icon: {
@@ -370,6 +376,7 @@ export const MEMBER_CARD_COLOR_PALETTES = {
         startColor: '#EAEAEA',
         endColor: '#AFAFAF',
       },
+      activeBackground: '#717171',
     },
     background: {
       startColor: '#000000',
@@ -377,5 +384,6 @@ export const MEMBER_CARD_COLOR_PALETTES = {
       endColor: '#000000',
     },
     font: '#FFFFFF',
+    progressBackground: '#717171',
   },
 };

@@ -286,6 +286,12 @@ export const getMemberCardStyles = createSelector(getMemberColorPalettes, member
   background: `linear-gradient(105deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 50%,${memberCardColorPalettes.background.endColor} 100%)`,
 }));
 
+export const getMemberCardTierItemStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+  color: memberCardColorPalettes.font,
+  activeBackground: memberCardColorPalettes.icon.activeBackground,
+  progressBackground: memberCardColorPalettes.progressBackground,
+}));
+
 export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
   crownStartColor: memberCardColorPalettes.icon.crown.startColor,
   crownEndColor: memberCardColorPalettes.icon.crown.endColor,
@@ -294,18 +300,8 @@ export const getMemberCardIconColors = createSelector(getMemberColorPalettes, me
 }));
 
 export const getIsCustomerMembershipTierListShow = createSelector(
-  getCustomerTierTotalSpent,
   getMembershipTierList,
-  (customerTierTotalSpent, membershipTierList) => {
-    if (!membershipTierList || !membershipTierList.length) {
-      return false;
-    }
-
-    const minLevel = Math.min(...membershipTierList.map(({ level }) => level));
-    const minTierSpendingThreshold = membershipTierList.find(({ level }) => level === minLevel)?.spendingThreshold || 0;
-
-    return customerTierTotalSpent >= minTierSpendingThreshold && membershipTierList.length > 1;
-  }
+  membershipTierList => membershipTierList?.length > 1
 );
 
 export const getIsAchievedPlatinumLevel = createSelector(
@@ -338,14 +334,14 @@ export const getCustomerMembershipTierList = createSelector(
           level,
           name,
           spendingThreshold,
+          progress: '0%',
+          active: false,
           iconColors: {
             crownStartColor: tierColorPalette.icon.crown.startColor,
             crownEndColor: tierColorPalette.icon.crown.endColor,
             backgroundStartColor: tierColorPalette.icon.background.startColor,
             backgroundEndColor: tierColorPalette.icon.background.endColor,
           },
-          progress: '0%',
-          active: false,
         };
         const isAchievedCurrentLevel = level <= customerTierLevel;
 

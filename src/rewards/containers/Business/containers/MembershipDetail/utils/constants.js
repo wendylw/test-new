@@ -169,5 +169,3 @@ export const RETURNING_MEMBER_I18N_KEYS = {
     titleI18nKey: 'NotClaimDefaultReturningMemberTitle',
   },
 };
-
-export const MEMBER_CARD_LEVELS_COLORS = {};

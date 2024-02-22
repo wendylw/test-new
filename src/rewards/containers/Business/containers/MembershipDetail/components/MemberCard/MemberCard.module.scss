@@ -22,11 +22,7 @@
 }
 
 .MemberCardLevelName {
-  @apply tw-text-xl tw-font-black tw-capitalize;
-}
-
-.MemberCardLevelNamePlatinum {
-  @apply tw-text-gray-50;
+  @apply tw-text-xl tw-capitalize;
 }
 
 .MemberCardLevelPrompt {
@@ -49,7 +45,7 @@
 }
 
 .MemberCardTierLevelItemIcon {
-  @apply tw-inline-flex tw-flex-shrink-0 tw-rounded-full tw-bg-gray-50;
+  @apply tw-inline-flex tw-flex-shrink-0 tw-rounded-full;
 
   padding: 1.5px;
   width: 30px;
@@ -68,10 +64,6 @@
   }
 }
 
-.MemberCardTierLevelItemIconPlatinum {
-  @apply tw-bg-gray-700;
-}
-
 .MemberCardTierLevelItemProgress {
   @apply tw-relative tw-flex-1 tw-bg-gray-50;
 
@@ -86,10 +78,6 @@
   &__notAchieved {
     @apply tw-rounded-r;
   }
-}
-
-.MemberCardTierItemLevelProgressFillPlatinum {
-  @apply tw-bg-gray-700;
 }
 
 .MemberCardTierLevelItem {
