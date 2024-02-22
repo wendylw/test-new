@@ -288,8 +288,8 @@ export const getMemberCardStyles = createSelector(getMemberColorPalettes, member
 
 export const getMemberCardTierProgressBarStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
   color: memberCardColorPalettes.font,
-  activeBackground: memberCardColorPalettes.progress.activeIcon,
-  progressBackground: memberCardColorPalettes.progress.activeBackground,
+  activeBackground: memberCardColorPalettes.active,
+  progressBackground: memberCardColorPalettes.active,
 }));
 
 export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
