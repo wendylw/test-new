@@ -241,10 +241,16 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       shippingType,
       ...expectDeliveryDateInfo,
     };
-  } else if (shippingType === SHIPPING_TYPES.DINE_IN || shippingType === SHIPPING_TYPES.TAKE_AWAY) {
+  } else if (shippingType === SHIPPING_TYPES.DINE_IN) {
     variables = {
       ...variables,
       tableId,
+      shippingType: Utils.getApiRequestShippingType(shippingType),
+      contactDetail,
+    };
+  } else if (shippingType === SHIPPING_TYPES.TAKE_AWAY) {
+    variables = {
+      ...variables,
       shippingType: Utils.getApiRequestShippingType(shippingType),
       contactDetail,
     };
