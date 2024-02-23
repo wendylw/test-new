@@ -5,7 +5,13 @@ import _isEmpty from 'lodash/isEmpty';
 import { push } from 'connected-react-router';
 import Url from '../../../../../../utils/url';
 import Utils from '../../../../../../utils/utils';
-import { SHIPPING_TYPES, PAYMENT_PROVIDERS, REFERRER_SOURCE_TYPES } from '../../../../../../common/utils/constants';
+import {
+  SHIPPING_TYPES,
+  PAYMENT_PROVIDERS,
+  REFERRER_SOURCE_TYPES,
+  PRE_ORDER_IMMEDIATE_TAG,
+  PATH_NAME_MAPPING,
+} from '../../../../../../common/utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 import { callTradePay } from '../../../../../../common/utils/alipay-miniprogram-client';
@@ -191,7 +197,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
       // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
 
-      if (expectedDeliveryHour.from !== Constants.PREORDER_IMMEDIATE_TAG.from) {
+      if (expectedDeliveryHour.from !== PRE_ORDER_IMMEDIATE_TAG.from) {
         expectDeliveryDateInfo = getExpectDeliveryDateInfo(
           expectedDeliveryDate.date,
           expectedDeliveryHour.from,
@@ -320,7 +326,7 @@ const handlePaymentError = ({ e, dispatch }) => {
       onClose: () =>
         dispatch(
           push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+            pathname: PATH_NAME_MAPPING.ORDERING_HOME,
             search: removeReceiptNumberUrl,
           })
         ),
@@ -333,7 +339,7 @@ const handlePaymentError = ({ e, dispatch }) => {
       onClose: () =>
         dispatch(
           push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+            pathname: PATH_NAME_MAPPING.ORDERING_HOME,
             search: removeReceiptNumberUrl,
           })
         ),
