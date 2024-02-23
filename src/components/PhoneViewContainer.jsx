@@ -9,7 +9,7 @@ import PhoneInput, {
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
 import Constants from '../utils/constants';
-import { VALIDATION_COUNTRIES } from '../common/utils/phone-number-constants';
+import { AVAILABLE_COUNTRIES } from '../common/utils/phone-number-constants';
 import './PhoneViewContainer.scss';
 
 class PhoneViewContainer extends React.Component {
@@ -86,7 +86,7 @@ class PhoneViewContainer extends React.Component {
           value={formatPhoneNumberIntl(phone)}
           defaultCountry={country}
           country={country}
-          countries={VALIDATION_COUNTRIES}
+          countries={AVAILABLE_COUNTRIES}
           onChange={newPhone => this.handleUpdatePhoneNumber(newPhone)}
           onCountryChange={newCountry => this.handleUpdateCountry(newCountry)}
         />
