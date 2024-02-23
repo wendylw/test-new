@@ -57,5 +57,6 @@
   "UniquePromoExpiredDescription": "Failed to claim. Promotion expired.",
   "UnlockNextLevelMessage": "Spend {{unlockSpendPrice}} more by {{nextReviewDate}} to unlock {{nextLevelName}}",
   "LevelCompletedMessage": "Enjoy Gold benefits until {{nextReviewDate}}",
-  "LevelMaintainMessage": "Spend {{maintainSpendPrice}} more by {{nextReviewDate}} to maintain {{currentLevelName}}"
+  "LevelMaintainMessage": "Spend {{maintainSpendPrice}} more by {{nextReviewDate}} to maintain {{currentLevelName}}",
+  "LevelUpdateRuleText": "Your progress updates on a daily basis"
 }

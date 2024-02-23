@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
@@ -32,6 +32,22 @@ const MemberCard = () => {
   const memberLevelI18nKeys = MEMBERSHIP_LEVEL_I18N_KEYS[memberCardMembershipLevelStatus];
   const { messageI18nKey, messageI18nParamsKeys } = memberLevelI18nKeys || {};
   const { crownStartColor, crownEndColor, backgroundStartColor, backgroundEndColor } = memberCardIconColors;
+  const [promptToolTipContainerClassNameList, setPromptToolTipContainerClassNameList] = useState([
+    styles.MemberCardLevelProgressPromptToolTipContainer,
+  ]);
+  const handleClickMemberCardLevelProgressPromptToolTip = useCallback(() => {
+    const toolTipShownClassName = styles.MemberCardLevelProgressPromptToolTipContainer__show;
+
+    if (promptToolTipContainerClassNameList.includes(toolTipShownClassName)) {
+      setPromptToolTipContainerClassNameList(
+        promptToolTipContainerClassNameList.filter(item => item !== toolTipShownClassName)
+      );
+    } else {
+      setPromptToolTipContainerClassNameList([...promptToolTipContainerClassNameList, toolTipShownClassName]);
+    }
+  });
+
+  console.log(promptToolTipContainerClassNameList);
 
   return (
     <section className={styles.MemberCardSection}>
@@ -44,7 +60,16 @@ const MemberCard = () => {
               {messageI18nParamsKeys
                 ? t(messageI18nKey, memberCardMembershipLevelMessageIn18nParams)
                 : t(messageI18nKey)}
-              <Info size={18} />
+              <button
+                data-test-id="rewards.business.membership-detail.member-card.progress-info-tooltip-button"
+                className={getClassName(promptToolTipContainerClassNameList)}
+                onClick={handleClickMemberCardLevelProgressPromptToolTip}
+              >
+                <Info size={18} />
+                <div className={styles.MemberCardLevelProgressPromptToolTip}>
+                  <span className={styles.MemberCardLevelProgressPromptToolTipText}>{t('LevelUpdateRuleText')}</span>
+                </div>
+              </button>
             </p>
             <ul className={styles.MemberCardLevelProgress}>
               {memberCardMembershipProgressTierList.map((tier, index) => {
