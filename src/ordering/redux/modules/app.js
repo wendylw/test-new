@@ -43,7 +43,6 @@ import { getCartItems as getNewCartItems } from './cart/selectors';
 import { getProfileInfo, postLoginGuest, getUrlsValidation, getCustomerInfo } from './api-request';
 
 import * as StoreUtils from '../../../utils/store-utils';
-import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
 import {
@@ -53,6 +52,7 @@ import {
   isFromFoodCourt,
   isProductSoldOut,
   isGCashMiniProgram,
+  isTNGMiniProgram,
 } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
@@ -780,31 +780,6 @@ export const actions = {
     }
   },
 
-  // TODO: Migrate loginByTngMiniProgram to loginByAlipayMiniProgram
-  loginByTngMiniProgram: () => async (dispatch, getState) => {
-    if (!Utils.isTNGMiniProgram()) {
-      throw new Error('Not in tng mini program');
-    }
-
-    try {
-      const business = getBusiness(getState());
-      const tokens = await TngUtils.getAccessToken({ business });
-      const source = REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
-      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
-
-      await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
-    } catch (error) {
-      CleverTap.pushEvent('Login - login failed');
-
-      logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
-
-      return false;
-    }
-
-    return getUserIsLogin(getState());
-  },
-
-  // TODO: Migrate isTNGMiniProgram to here
   loginByAlipayMiniProgram: () => async (dispatch, getState) => {
     if (!isAlipayMiniProgramUtil()) {
       throw new Error('Not in alipay mini program');
@@ -813,16 +788,23 @@ export const actions = {
     try {
       const business = getBusiness(getState());
       const { access_token: accessToken, refresh_token: refreshToken } = await getAccessToken({ business });
+      let source = null;
+
+      if (getIsTNGMiniProgram(getState())) {
+        source = REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
+      } else if (getIsGCashMiniProgram(getState())) {
+        source = REGISTRATION_SOURCE.GCASH_MINI_PROGRAM;
+      }
 
       await dispatch(
         actions.loginApp({
           accessToken,
           refreshToken,
-          source: REGISTRATION_SOURCE.GCASH_MINI_PROGRAM,
+          source,
         })
       );
     } catch (error) {
-      // TODO: Migrate isTNGMiniProgram to add provider data
+      CleverTap.pushEvent('Login - login failed');
       logger.error('Common_LoginByAlipayMiniProgramFailed', { message: error?.message });
 
       return false;
@@ -1995,7 +1977,7 @@ export const getCategoryProductList = createSelector(
 );
 
 // TODO: add Utils methods to state rather than using Utils
-export const getIsTNGMiniProgram = () => Utils.isTNGMiniProgram();
+export const getIsTNGMiniProgram = () => isTNGMiniProgram();
 export const getIsGCashMiniProgram = () => isGCashMiniProgram();
 export const getIsAlipayMiniProgram = () => isAlipayMiniProgramUtil();
 export const getIsDigitalType = () => Utils.isDigitalType();
@@ -2005,9 +1987,8 @@ export const getIsWebview = () => Utils.isWebview();
 export const getIsInBrowser = () => Utils.getClient() === CLIENTS.WEB;
 export const getIsInAppOrMiniProgram = createSelector(
   getIsWebview,
-  getIsTNGMiniProgram,
   getIsAlipayMiniProgram,
-  (isWebview, isTNGMiniProgram, isAlipayMiniProgram) => isWebview || isTNGMiniProgram || isAlipayMiniProgram
+  (isWebview, isAlipayMiniProgram) => isWebview || isAlipayMiniProgram
 );
 export const getIsFromBeepSite = () => isFromBeepSite();
 export const getIsFromBeepSiteOrderHistory = () => isFromBeepSiteOrderHistory();
@@ -2074,12 +2055,10 @@ export const getIsFreeOrder = createSelector(getCartBilling, cartBilling => {
   return billingTotal === 0;
 });
 
-// TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
 export const getIsValidCreateOrder = createSelector(
   getIsFreeOrder,
-  getIsTNGMiniProgram,
   getIsAlipayMiniProgram,
-  (isFreeOrder, isTNGMiniProgram, isAlipayMiniProgram) => isTNGMiniProgram || isAlipayMiniProgram || isFreeOrder
+  (isFreeOrder, isAlipayMiniProgram) => isAlipayMiniProgram || isFreeOrder
 );
 
 export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCartInfo => {

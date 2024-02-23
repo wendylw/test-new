@@ -36,7 +36,6 @@ import Carousel from './components/Carousel';
 import BeepAppLink from '../../images/beep-app-link.jpg';
 import DevToolsTrigger from '../../components/DevToolsTrigger';
 import prefetch from '../../common/utils/prefetch-assets';
-import Utils from '../../utils/utils';
 import {
   getAddressInfo as getAddress,
   getAddressId,
@@ -121,9 +120,8 @@ class Home extends React.Component {
     // eslint-disable-next-line react/destructuring-assignment
     if (this.props.ifAddressInfoExists) return BACKEND_CACHE;
 
-    // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
     // Get address from ip (or device for Alipay Program)
-    const { placeInfo, source } = await getPlaceInfo({ fromDevice: Utils.isTNGMiniProgram() || isAlipayMiniProgram });
+    const { placeInfo, source } = await getPlaceInfo({ fromDevice: isAlipayMiniProgram });
 
     const hasAddressInfo = !!placeInfo;
     if (hasAddressInfo) await this.updateAddressInfo(placeInfo);

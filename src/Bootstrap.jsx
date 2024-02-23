@@ -155,7 +155,7 @@ class Bootstrap extends Component {
   }
 }
 
-// enable dev-tools in tng mini-program
+// enable dev-tools in tng & gcash mini-program
 (async () => {
   try {
     const alipayMiniProgramResult = await isRequiredAlipayMiniProgramDevTools();

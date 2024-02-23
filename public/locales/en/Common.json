@@ -176,6 +176,8 @@
   "DeliveryHelpText": "Please key in your address to add items to your cart",
   "CompleteProfile": "Complete Profile",
   "CompleteProfileTip": "Share your details with us and stand a chance to enjoy future promotions!",
+  "UnlockRewards": "Unlock Rewards",
+  "UnlockMemberRewardsTip": "Complete your profile to access exclusive member rewards and discounts!",
   "AddNewAddress": "Add New Address",
   "SavedAddress": "Saved Address",
   "OutOfRange": "Out of Range",
@@ -214,6 +216,7 @@
   "Beepit.com": "Beepit.com",
   "BeepApp": "Beep App",
   "BeepTngMiniProgram": "Beep Mini Program via the Touch ’n Go eWallet app",
+  "BeepGCashMiniProgram": "Beep Mini Program via the GCash eWallet app",
   "EditCart": "Edit Cart",
   "TableNumber": "Table Number",
   "OrderNumber": "Order Number",
@@ -320,5 +323,6 @@
   "UrlExpiredDescription": "Please request a new QR Code with the cashier & scan again",
   "UrlExpiredButton": "Scan a new qr code",
   "LoginSessionExpiredTitle": "Oops! This session has expired",
-  "LoginSessionExpiredDescription": "Please close this page and start again"
+  "LoginSessionExpiredDescription": "Please close this page and start again",
+  "UnexpectedErrorOccurred": "Oops! An unexpected error has occurred"
 }
