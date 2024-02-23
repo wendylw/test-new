@@ -1,0 +1,9 @@
+.ClaimCashbackNotLoginBackground {
+  @apply tw-absolute tw-left-0 tw-right-0 tw-top-0 tw-mx-auto tw-w-full tw-h-full tw-bg-black tw-bg-opacity-50;
+}
+
+@media (min-width: 770px) {
+  .ClaimCashbackNotLoginBackground {
+    max-width: 414px;
+  }
+}

@@ -3,14 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import Button from '../../../../../../../common/components/Button';
 import PageFooter from '../../../../../../../common/components/PageFooter';
-import { getShouldShowFooter, getIsJoinNowButtonDisabled } from '../../redux/selectors';
+import { getShouldShowFooter, getShouldDisableJoinNowButton } from '../../redux/selectors';
 import { joinNowButtonClicked } from '../../redux/thunks';
 import { TERMS_AND_CONDITION_URL } from '../../constants';
 
 const Footer = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation('Rewards');
-  const isJoinNowButtonDisabled = useSelector(getIsJoinNowButtonDisabled);
+  const isJoinNowButtonDisabled = useSelector(getShouldDisableJoinNowButton);
   const handleClickJoinNowButton = useCallback(() => dispatch(joinNowButtonClicked()), [dispatch]);
   const shouldShowFooter = useSelector(getShouldShowFooter);
 

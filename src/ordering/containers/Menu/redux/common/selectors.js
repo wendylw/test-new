@@ -581,7 +581,7 @@ export const getIsAddressOutOfRange = createSelector(
 
 /**
  * get store rating
- * Will be display it when entry is Beepit.com or Beep App or Beep TNG MP
+ * Will be display it when entry is Beepit.com or Beep App or Beep TNG MP or Beep GCash MP
  * @returns 4.8 | null
  */
 export const getStoreRatingDisplayValue = createSelector(
