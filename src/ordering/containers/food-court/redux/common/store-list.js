@@ -23,13 +23,9 @@ import ThebaoguysImage from '../../../../../images/food-court-temp/merchant-theb
 import HijauKualaLumpurImage from '../../../../../images/food-court-temp/merchant-hijau.jpeg';
 import FaceImage from '../../../../../images/food-court-temp/merchant-face.png';
 import JuiceImage from '../../../../../images/food-court-temp/merchant-Juice.jpeg';
-import JoeImage from '../../../../../images/food-court-temp/merchant-Joe.jpeg';
 import RiceImage from '../../../../../images/food-court-temp/merchant-rice.jpeg';
 import SeoulImage from '../../../../../images/food-court-temp/merchant-Seoul.png';
-import SubwayImage from '../../../../../images/food-court-temp/merchant-Subway.png';
 import BobaTeaHouseImage from '../../../../../images/food-court-temp/merchant-Boba-Tea-House.jpg';
-import SaladAtelierImage from '../../../../../images/food-court-temp/merchant-Salad-Atelier.jpg';
-import HopeCoffeeImage from '../../../../../images/food-court-temp/merchant-Hope-Coffee.png';
 import IronBarImage from '../../../../../images/food-court-temp/merchant-Iron-Bar.png';
 import YuByRainGardenImage from '../../../../../images/food-court-temp/merchant-Yu-by-Rain-Garden.png';
 import FengImage from '../../../../../images/food-court-temp/merchant-Feng.png';
