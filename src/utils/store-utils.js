@@ -462,7 +462,7 @@ export const filterDeliveryAvailableStores = (stores, date, utcOffset) =>
       return false;
     }
 
-    if (!qrOrderingSettings.enableLiveOnline) {
+    if (!qrOrderingSettings.enableDeliveryLiveOnline) {
       return false;
     }
 
