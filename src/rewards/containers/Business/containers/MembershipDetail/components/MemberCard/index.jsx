@@ -45,9 +45,7 @@ const MemberCard = () => {
     } else {
       setPromptToolTipContainerClassNameList([...promptToolTipContainerClassNameList, toolTipShownClassName]);
     }
-  });
-
-  console.log(promptToolTipContainerClassNameList);
+  }, [promptToolTipContainerClassNameList]);
 
   return (
     <section className={styles.MemberCardSection}>
