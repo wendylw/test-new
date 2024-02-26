@@ -54,21 +54,24 @@ const MemberCard = () => {
         {isMemberCardMembershipProgressBarShow ? (
           <div className={styles.MemberCardLevelProgressContainer}>
             <span className={styles.MemberCardLevelName}>{customerTierLevelName}</span>
-            <p className={styles.MemberCardLevelProgressPrompt}>
-              {messageI18nParamsKeys
-                ? t(messageI18nKey, memberCardMembershipLevelMessageIn18nParams)
-                : t(messageI18nKey)}
-              <button
-                data-test-id="rewards.business.membership-detail.member-card.progress-info-tooltip-button"
-                className={getClassName(promptToolTipContainerClassNameList)}
-                onClick={handleClickMemberCardLevelProgressPromptToolTip}
-              >
-                <Info size={18} />
-                <div className={styles.MemberCardLevelProgressPromptToolTip}>
-                  <span className={styles.MemberCardLevelProgressPromptToolTipText}>{t('LevelUpdateRuleText')}</span>
-                </div>
-              </button>
-            </p>
+            {messageI18nKey ? (
+              <p className={styles.MemberCardLevelProgressPrompt}>
+                {messageI18nParamsKeys
+                  ? t(messageI18nKey, memberCardMembershipLevelMessageIn18nParams)
+                  : t(messageI18nKey)}
+                <button
+                  data-test-id="rewards.business.membership-detail.member-card.progress-info-tooltip-button"
+                  className={getClassName(promptToolTipContainerClassNameList)}
+                  onClick={handleClickMemberCardLevelProgressPromptToolTip}
+                >
+                  <Info size={18} />
+                  <div className={styles.MemberCardLevelProgressPromptToolTip}>
+                    <span className={styles.MemberCardLevelProgressPromptToolTipText}>{t('LevelUpdateRuleText')}</span>
+                  </div>
+                </button>
+              </p>
+            ) : null}
+
             <ul className={styles.MemberCardLevelProgress}>
               {memberCardMembershipProgressTierList.map((tier, index) => {
                 const { level, name, iconColors, active, progress } = tier;

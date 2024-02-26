@@ -391,7 +391,7 @@ export const getMemberCardMembershipLevelStatus = createSelector(
     // Customer achieved highest spending threshold last review time, customer still maintain highest level.
     // But we will prompt customer to maintain highest level. Because spend total will be cleared.
     if (customerTierLevel === highestTierLevel && customerTierTotalSpent < highestTierSpendingThreshold) {
-      return MEMBERSHIP_LEVEL_STATUS.LEVEL_NOT_COMPLETED;
+      return MEMBERSHIP_LEVEL_STATUS.LEVEL_MAINTAIN;
     }
 
     return null;
