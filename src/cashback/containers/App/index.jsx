@@ -14,9 +14,9 @@ import {
   getIsLoginModalShown,
   getUserConsumerId,
   getIsClaimCashbackPage,
+  getIsSeamlessLoyaltyPage,
   getLoginAlipayMiniProgramRequestError,
 } from '../../redux/modules/app';
-import { getIsConfirmSharingConsumerInfoCompleted } from '../StoreRedemption/redux/selectors';
 import { getPageError } from '../../../redux/modules/entities/error';
 import { getIsLoadCustomerRequestCompleted } from '../../redux/modules/customer/selectors';
 import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
@@ -38,8 +38,14 @@ import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 
 class App extends Component {
   async componentDidMount() {
-    const { t, appActions, userCountry, loadConsumerCustomerInfo, isClaimCashbackPage } = this.props;
-    const { pathname } = window.location;
+    const {
+      t,
+      appActions,
+      userCountry,
+      loadConsumerCustomerInfo,
+      isClaimCashbackPage,
+      isSeamlessLoyaltyPage,
+    } = this.props;
 
     this.visitErrorPage();
 
@@ -53,7 +59,7 @@ class App extends Component {
       // TNGD code is executed at the very beginning.
       // Because the MP and Beep accounts are not synchronized,
       // it is impossible to determine that the accounts are the same
-      if (isAlipayMiniProgram() && !isClaimCashbackPage) {
+      if (isAlipayMiniProgram() && !(isClaimCashbackPage || isSeamlessLoyaltyPage)) {
         // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
         await appActions.loginByAlipayMiniProgram();
 
@@ -92,9 +98,9 @@ class App extends Component {
 
       await appActions.loadConsumerLoginStatus();
 
-      const { isUserLogin, userConsumerId, isConfirmSharingConsumerInfoCompleted } = this.props;
+      const { isUserLogin, userConsumerId } = this.props;
 
-      if (isWebview() && !isClaimCashbackPage) {
+      if (isWebview() && !(isClaimCashbackPage || isSeamlessLoyaltyPage)) {
         await appActions.syncLoginFromBeepApp();
 
         return;
@@ -109,12 +115,8 @@ class App extends Component {
       if (userConsumerId) {
         let isLoadCustomerAvailable = true;
 
-        if (isClaimCashbackPage) {
+        if (isClaimCashbackPage || isSeamlessLoyaltyPage) {
           isLoadCustomerAvailable = false;
-        }
-
-        if (pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION)) {
-          isLoadCustomerAvailable = isConfirmSharingConsumerInfoCompleted;
         }
 
         if (isLoadCustomerAvailable) {
@@ -134,14 +136,10 @@ class App extends Component {
       userConsumerId: currUserConsumerId,
       loadConsumerCustomerInfo,
       isLoadCustomerRequestCompleted,
-      isConfirmSharingConsumerInfoCompleted: currIsConfirmSharingConsumerInfoCompleted,
       isClaimCashbackPage,
+      isSeamlessLoyaltyPage,
     } = this.props;
-    const {
-      pageError: prevPageError,
-      isUserLogin: prevIsUserLogin,
-      isConfirmSharingConsumerInfoCompleted: prevIsConfirmSharingConsumerInfoCompleted,
-    } = prevProps;
+    const { pageError: prevPageError, isUserLogin: prevIsUserLogin } = prevProps;
     const { code } = prevPageError || {};
     const { pathname } = window.location;
 
@@ -154,18 +152,11 @@ class App extends Component {
     if (currIsUserLogin && currUserConsumerId) {
       let isLoadCustomerAvailable = false;
 
-      if (
-        pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION) &&
-        currIsConfirmSharingConsumerInfoCompleted !== prevIsConfirmSharingConsumerInfoCompleted
-      ) {
-        isLoadCustomerAvailable = currIsConfirmSharingConsumerInfoCompleted;
-      }
-
       if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_BASE) && !isLoadCustomerRequestCompleted) {
         isLoadCustomerAvailable = true;
       }
 
-      if (isClaimCashbackPage) {
+      if (isClaimCashbackPage || isSeamlessLoyaltyPage) {
         isLoadCustomerAvailable = false;
       }
 
@@ -244,7 +235,7 @@ App.propTypes = {
   loginBannerPrompt: PropTypes.string,
   isUserLogin: PropTypes.bool,
   isClaimCashbackPage: PropTypes.bool,
-  isConfirmSharingConsumerInfoCompleted: PropTypes.bool,
+  isSeamlessLoyaltyPage: PropTypes.bool,
   isLoadCustomerRequestCompleted: PropTypes.bool,
   userConsumerId: PropTypes.string,
   onlineStoreInfoFavicon: PropTypes.string,
@@ -279,7 +270,7 @@ App.defaultProps = {
   loginBannerPrompt: null,
   isUserLogin: false,
   isClaimCashbackPage: false,
-  isConfirmSharingConsumerInfoCompleted: false,
+  isSeamlessLoyaltyPage: false,
   isLoadCustomerRequestCompleted: false,
   userConsumerId: null,
   onlineStoreInfoFavicon: '',
@@ -299,8 +290,8 @@ export default compose(
       isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
       isUserLogin: getIsUserLogin(state),
       isClaimCashbackPage: getIsClaimCashbackPage(state),
+      isSeamlessLoyaltyPage: getIsSeamlessLoyaltyPage(state),
       userConsumerId: getUserConsumerId(state),
-      isConfirmSharingConsumerInfoCompleted: getIsConfirmSharingConsumerInfoCompleted(state),
       isLoadCustomerRequestCompleted: getIsLoadCustomerRequestCompleted(state),
       isLoginModalShown: getIsLoginModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),

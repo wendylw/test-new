@@ -12,8 +12,6 @@ import { initUserInfo, loginUserByBeepApp, loginUserByAlipayMiniProgram } from '
 import { getMerchantBusiness, getIsMerchantMembershipEnabled } from '../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../redux/modules/merchant/thunks';
 import { getIsWebview, getIsAlipayMiniProgram } from '../../../redux/modules/common/selectors';
-import { loadConsumerCustomerInfo } from '../../../redux/modules/customer/thunks';
-import { actions as appActions } from '../../../redux/modules/app';
 import { getOrderQRReceiptNumber, getOrderCashbackInfo, postClaimedCashbackForCustomer } from './api-request';
 import {
   getClaimCashbackPageHash,
@@ -83,15 +81,20 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
     const isClaimedCashbackForCustomerFulfilled = getIsClaimedCashbackForCustomerFulfilled(getState());
 
     if (isClaimedCashbackForCustomerFulfilled) {
-      // TODO: WB-6669: remove this request new page no needs to request
-      await dispatch(appActions.loadConsumerLoginStatus());
-      dispatch(loadConsumerCustomerInfo());
-
       const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
+      const {
+        REWARDS_BASE,
+        REWARDS_BUSINESS,
+        REWARDS_MEMBERSHIP,
+        MEMBERSHIP_DETAIL,
+        CASHBACK,
+        CASHBACK_DETAIL,
+      } = PATH_NAME_MAPPING;
       const isClaimedOrderCashbackNewMember = getIsClaimedOrderCashbackNewMember(getState());
-      const { REWARDS_BASE, REWARDS_BUSINESS, REWARDS_MEMBERSHIP, MEMBERSHIP_DETAIL } = PATH_NAME_MAPPING;
       const rewardsBaseRoute = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}`;
-      const pathName = `${REWARDS_BASE}${REWARDS_BUSINESS}${REWARDS_MEMBERSHIP}${MEMBERSHIP_DETAIL}`;
+      const pathName = `${REWARDS_BASE}${REWARDS_BUSINESS}${
+        isMerchantMembershipEnabled ? `${REWARDS_MEMBERSHIP}${MEMBERSHIP_DETAIL}` : `${CASHBACK}${CASHBACK_DETAIL}`
+      }`;
       const search = [
         `isNewMember=${isClaimedOrderCashbackNewMember}`,
         `business=${merchantBusiness}`,
@@ -101,9 +104,7 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
         `${CLAIM_CASHBACK_QUERY_NAMES.VALUE}=${cashback}`,
       ];
 
-      if (isMerchantMembershipEnabled) {
-        window.location.href = `${rewardsBaseRoute}${pathName}?${search.join('&')}`;
-      }
+      window.location.href = `${rewardsBaseRoute}${pathName}?${search.join('&')}`;
     }
   }
 );
