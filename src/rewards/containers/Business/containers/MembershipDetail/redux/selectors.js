@@ -316,12 +316,29 @@ export const getCustomerMembershipNextLevel = createSelector(getCustomerTierLeve
   return memberLevels[currentLevelIndex + 1];
 });
 
+export const getCurrentCustomerLevelSpendingThreshold = createSelector(
+  getCustomerTierLevel,
+  getMembershipTierList,
+  (customerTierLevel, membershipTierList) => {
+    const currentTier = membershipTierList.find(({ level }) => level === customerTierLevel);
+
+    return currentTier ? currentTier.spendingThreshold : 0;
+  }
+);
+
 export const getMemberCardMembershipProgressTierList = createSelector(
   getCustomerTierLevel,
   getCustomerMembershipNextLevel,
+  getCurrentCustomerLevelSpendingThreshold,
   getCustomerTierTotalSpent,
   getMembershipTierList,
-  (customerTierLevel, customerMembershipNextLevel, customerTierTotalSpent, membershipTierList) =>
+  (
+    customerTierLevel,
+    customerMembershipNextLevel,
+    currentCustomerLevelSpendingThreshold,
+    customerTierTotalSpent,
+    membershipTierList
+  ) =>
     membershipTierList.map(({ level, name, spendingThreshold }) => {
       const tierColorPalette = MEMBER_CARD_COLOR_PALETTES[level] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER];
       const tier = {
@@ -342,10 +359,11 @@ export const getMemberCardMembershipProgressTierList = createSelector(
       if (isAchievedCurrentLevel) {
         tier.progress = '100%';
         tier.active = true;
-      } else if (customerTierLevel === customerMembershipNextLevel) {
-        const progressPercentageNumber = Number.parseFloat((customerTierTotalSpent / spendingThreshold) * 100).toFixed(
-          6
-        );
+      } else if (level === customerMembershipNextLevel) {
+        const unlockSpentNumber = customerTierTotalSpent - currentCustomerLevelSpendingThreshold;
+        const progressPercentageNumber = Number.parseFloat(
+          ((unlockSpentNumber < 0 ? 0 : unlockSpentNumber) / spendingThreshold) * 100
+        ).toFixed(6);
 
         tier.progress = `${progressPercentageNumber}%`;
       }
