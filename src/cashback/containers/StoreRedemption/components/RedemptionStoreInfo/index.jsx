@@ -13,7 +13,7 @@ const RedemptionStoreInfo = () => {
   return (
     <section
       className={`tw-flex ${
-        isMerchantLogoShown
+        !isMerchantLogoShown
           ? `${styles.StoreRedemptionContentExist} tw-bg-gray-200`
           : styles.StoreRedemptionContentNoExist
       } tw-flex-col tw-items-center tw-justify-center tw-flex-shrink-0 tw-px-16 sm:tw-px-16px tw-pt-24 sm:tw-pt-24px`}
