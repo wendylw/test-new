@@ -35,9 +35,9 @@ export const getIsMerchantLogoShown = createSelector(
 );
 
 export const getIsRedemptionCashbackEnabled = createSelector(
-  getIsStoreRedemptionNewCustomer,
-  getIsMerchantLogoShown,
-  (isStoreRedemptionNewCustomer, isMerchantLogoShown) => isStoreRedemptionNewCustomer && isMerchantLogoShown
+  getIsMerchantEnabledCashback,
+  getCustomerCashback,
+  (isMerchantEnabledCashback, customerCashback) => isMerchantEnabledCashback && customerCashback > 0
 );
 
 export const getIsConfirmSharingConsumerInfoCompleted = createSelector(
