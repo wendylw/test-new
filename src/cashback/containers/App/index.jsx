@@ -12,14 +12,11 @@ import {
   getIsLoginRequestStatusPending,
   getOnlineStoreInfoFavicon,
   getIsLoginModalShown,
-  getUserConsumerId,
   getIsClaimCashbackPage,
   getIsSeamlessLoyaltyPage,
   getLoginAlipayMiniProgramRequestError,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
-import { getIsLoadCustomerRequestCompleted } from '../../redux/modules/customer/selectors';
-import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
 import Constants from '../../../utils/constants';
 import { isWebview } from '../../../common/utils';
 import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
@@ -34,27 +31,14 @@ import { confirm } from '../../../common/utils/feedback';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import logger from '../../../utils/monitoring/logger';
 import Clevertap from '../../../utils/clevertap';
-import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 
 class App extends Component {
   async componentDidMount() {
-    const {
-      t,
-      appActions,
-      userCountry,
-      loadConsumerCustomerInfo,
-      isClaimCashbackPage,
-      isSeamlessLoyaltyPage,
-    } = this.props;
+    const { t, appActions, userCountry, isClaimCashbackPage, isSeamlessLoyaltyPage } = this.props;
 
     this.visitErrorPage();
 
     try {
-      // 1. fetch online store info
-      const initRequests = [appActions.fetchOnlineStoreInfo(), appActions.fetchCashbackBusiness()];
-
-      await Promise.all(initRequests);
-
       // 2. login
       // TNGD code is executed at the very beginning.
       // Because the MP and Beep accounts are not synchronized,
@@ -98,7 +82,7 @@ class App extends Component {
 
       await appActions.loadConsumerLoginStatus();
 
-      const { isUserLogin, userConsumerId } = this.props;
+      const { isUserLogin } = this.props;
 
       if (isWebview() && !(isClaimCashbackPage || isSeamlessLoyaltyPage)) {
         await appActions.syncLoginFromBeepApp();
@@ -109,60 +93,18 @@ class App extends Component {
       if (!isUserLogin) {
         appActions.showLoginModal();
       }
-
-      // TODO: This will be optimized later, this is a temporary modification plan.
-      // It is not recommended to introduce page selector in App or app.
-      if (userConsumerId) {
-        let isLoadCustomerAvailable = true;
-
-        if (isClaimCashbackPage || isSeamlessLoyaltyPage) {
-          isLoadCustomerAvailable = false;
-        }
-
-        if (isLoadCustomerAvailable) {
-          await loadConsumerCustomerInfo();
-        }
-      }
     } catch (error) {
       logger.error('Cashback_App_InitFailed', { message: error?.message });
     }
   }
 
   componentDidUpdate = async prevProps => {
-    const {
-      appActions,
-      pageError,
-      isUserLogin: currIsUserLogin,
-      userConsumerId: currUserConsumerId,
-      loadConsumerCustomerInfo,
-      isLoadCustomerRequestCompleted,
-      isClaimCashbackPage,
-      isSeamlessLoyaltyPage,
-    } = this.props;
+    const { appActions, pageError, isUserLogin: currIsUserLogin } = this.props;
     const { pageError: prevPageError, isUserLogin: prevIsUserLogin } = prevProps;
     const { code } = prevPageError || {};
-    const { pathname } = window.location;
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
-    }
-
-    // currUserConsumerId !== prevUserConsumerId instead of !prevUserConsumerId .
-    // The 3rd MiniProgram cached the previous consumerId, so the consumerId is not the correct account
-    if (currIsUserLogin && currUserConsumerId) {
-      let isLoadCustomerAvailable = false;
-
-      if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_BASE) && !isLoadCustomerRequestCompleted) {
-        isLoadCustomerAvailable = true;
-      }
-
-      if (isClaimCashbackPage || isSeamlessLoyaltyPage) {
-        isLoadCustomerAvailable = false;
-      }
-
-      if (isLoadCustomerAvailable) {
-        await loadConsumerCustomerInfo();
-      }
     }
 
     if (currIsUserLogin && currIsUserLogin !== prevIsUserLogin) {
@@ -236,8 +178,6 @@ App.propTypes = {
   isUserLogin: PropTypes.bool,
   isClaimCashbackPage: PropTypes.bool,
   isSeamlessLoyaltyPage: PropTypes.bool,
-  isLoadCustomerRequestCompleted: PropTypes.bool,
-  userConsumerId: PropTypes.string,
   onlineStoreInfoFavicon: PropTypes.string,
   error: PropTypes.shape({
     message: PropTypes.string,
@@ -250,7 +190,6 @@ App.propTypes = {
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
     resetConsumerLoginStatus: PropTypes.func,
-    loadConsumerCustomerInfo: PropTypes.func,
     resetConsumerCustomerInfo: PropTypes.func,
     fetchOnlineStoreInfo: PropTypes.func,
     fetchCashbackBusiness: PropTypes.func,
@@ -262,7 +201,6 @@ App.propTypes = {
     showLoginModal: PropTypes.func,
     hideLoginModal: PropTypes.func,
   }),
-  loadConsumerCustomerInfo: PropTypes.func,
 };
 
 App.defaultProps = {
@@ -271,15 +209,12 @@ App.defaultProps = {
   isUserLogin: false,
   isClaimCashbackPage: false,
   isSeamlessLoyaltyPage: false,
-  isLoadCustomerRequestCompleted: false,
-  userConsumerId: null,
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
   isLoginModalShown: false,
   loginAlipayMiniProgramRequestError: null,
   appActions: {},
-  loadConsumerCustomerInfo: () => {},
 };
 
 export default compose(
@@ -291,8 +226,6 @@ export default compose(
       isUserLogin: getIsUserLogin(state),
       isClaimCashbackPage: getIsClaimCashbackPage(state),
       isSeamlessLoyaltyPage: getIsSeamlessLoyaltyPage(state),
-      userConsumerId: getUserConsumerId(state),
-      isLoadCustomerRequestCompleted: getIsLoadCustomerRequestCompleted(state),
       isLoginModalShown: getIsLoginModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
@@ -302,7 +235,6 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      loadConsumerCustomerInfo: bindActionCreators(loadConsumerCustomerInfoThunk, dispatch),
     })
   )
 )(App);

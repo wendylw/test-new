@@ -4,13 +4,9 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
+import { getMerchantBusiness, getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
 import { getCustomerId } from '../../../../redux/modules/customer/selectors';
-import {
-  actions as appActionCreators,
-  getOnlineStoreInfo,
-  getBusiness,
-  getCashbackHistory,
-} from '../../../../redux/modules/app';
+import { actions as appActionCreators, getCashbackHistory } from '../../../../redux/modules/app';
 import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { IconTicket } from '../../../../../components/Icons';
@@ -50,9 +46,9 @@ class RecentList extends React.Component {
   }
 
   loadItems = page => {
-    const { business, homeActions } = this.props;
+    const { merchantBusiness, homeActions } = this.props;
     const pageSize = 10;
-    homeActions.getReceiptList(business, page, pageSize);
+    homeActions.getReceiptList(merchantBusiness, page, pageSize);
   };
 
   toggleFullScreen = () => {
@@ -62,8 +58,7 @@ class RecentList extends React.Component {
   };
 
   renderLogList() {
-    const { onlineStoreInfo, receiptList, fetchState, t } = this.props;
-    const { country } = onlineStoreInfo || {};
+    const { receiptList, fetchState, t, merchantCountry } = this.props;
 
     return (
       <InfiniteScroll
@@ -91,7 +86,9 @@ class RecentList extends React.Component {
                     <span>{t('Receipt')} - </span>
                     <CurrencyNumber money={Math.abs(total || 0)} />
                   </h4>
-                  <time className="receipt-list__time">{toLocaleDateString(receiptTime, country, DATE_OPTIONS)}</time>
+                  <time className="receipt-list__time">
+                    {toLocaleDateString(receiptTime, merchantCountry, DATE_OPTIONS)}
+                  </time>
                 </summary>
               </div>
             );
@@ -144,12 +141,10 @@ class RecentList extends React.Component {
 RecentList.displayName = 'RecentList';
 
 RecentList.propTypes = {
-  business: PropTypes.string,
+  merchantBusiness: PropTypes.string,
+  merchantCountry: PropTypes.string,
   fetchState: PropTypes.bool,
   userCustomerId: PropTypes.string,
-  onlineStoreInfo: PropTypes.shape({
-    country: PropTypes.string,
-  }),
   receiptList: PropTypes.arrayOf(PropTypes.object),
   cashbackHistory: PropTypes.arrayOf(PropTypes.object),
   appActions: PropTypes.shape({
@@ -161,12 +156,10 @@ RecentList.propTypes = {
 };
 
 RecentList.defaultProps = {
-  business: '',
+  merchantBusiness: '',
+  merchantCountry: null,
   fetchState: true,
   userCustomerId: '',
-  onlineStoreInfo: {
-    country: '',
-  },
   receiptList: [],
   cashbackHistory: [],
   appActions: {
@@ -182,8 +175,8 @@ export default compose(
   connect(
     state => ({
       userCustomerId: getCustomerId(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-      business: getBusiness(state),
+      merchantBusiness: getMerchantBusiness(state),
+      merchantCountry: getMerchantCountry(state),
       cashbackHistory: getCashbackHistory(state),
       receiptList: getReceiptList(state),
       fetchState: getFetchState(state),
