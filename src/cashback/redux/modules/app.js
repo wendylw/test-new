@@ -365,18 +365,6 @@ export const actions = {
     message,
   }),
 
-  setCashbackMessage: () => dispatch => {
-    const status = Utils.getLocalStorageVariable('cashback.status');
-
-    if (status) {
-      Utils.removeLocalStorageVariable('cashback.status');
-      dispatch({
-        type: types.SET_CASHBACK_MESSAGE_SUCCESS,
-        status,
-      });
-    }
-  },
-
   showMessageInfo: () => ({
     type: types.SHOW_MESSAGE_MODAL,
   }),

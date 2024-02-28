@@ -3,73 +3,95 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
-import { isWebview } from '../../../common/utils';
+import { Info } from 'phosphor-react';
 import { closeWebView } from '../../../utils/native-methods';
+import { actions as appActionCreators, getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
+import { getIsLogin } from '../../../redux/modules/user/selectors';
+import {
+  initUserInfo as initUserInfoThunk,
+  loginUserByBeepApp as loginUserByBeepAppThunk,
+  loginUserByAlipayMiniProgram as loginUserByAlipayMiniProgramThunk,
+} from '../../../redux/modules/user/thunks';
+import {
+  getMerchantBusiness,
+  getMerchantDisplayName,
+  getMerchantLogo,
+} from '../../../redux/modules/merchant/selectors';
+import { fetchMerchantInfo as fetchMerchantInfoThunk } from '../../../redux/modules/merchant/thunks';
+import { getIsWebview, getIsAlipayMiniProgram } from '../../redux/modules/common/selectors';
+import { getCustomerCashbackPrice } from '../../redux/modules/customer/selectors';
+import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
 import Image from '../../../components/Image';
 import RedeemInfo from '../../components/RedeemInfo';
-import { IconInfo } from '../../../components/Icons';
+import DownloadBanner from '../../../common/components/DownloadBanner';
 import ReceiptList from './components/ReceiptList';
-import CurrencyNumber from '../../components/CurrencyNumber';
-import DownloadBanner from '../../../components/DownloadBanner';
 import NativeHeader from '../../../components/NativeHeader';
-import { getCustomerCashback } from '../../redux/modules/customer/selectors';
-import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
 import './LoyaltyHome.scss';
 
 const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
 const cashbackDownloadText = 'Download the Beep app to keep track of your cashback!';
 class PageLoyalty extends React.Component {
   async componentDidMount() {
-    const { appActions } = this.props;
-    await appActions.setCashbackMessage();
-    appActions.showMessageInfo();
+    const {
+      appActions,
+      merchantBusiness,
+      isWebview,
+      isAlipayMiniProgram,
+      fetchMerchantInfo,
+      initUserInfo,
+      loginUserByBeepApp,
+      loginUserByAlipayMiniProgram,
+      loadConsumerCustomerInfo,
+    } = this.props;
+    fetchMerchantInfo(merchantBusiness);
+
+    await initUserInfo();
+
+    if (isWebview) {
+      await loginUserByBeepApp();
+    }
+
+    if (isAlipayMiniProgram) {
+      await loginUserByAlipayMiniProgram();
+    }
+
+    const { isLogin } = this.props;
+
+    if (isLogin) {
+      appActions.showMessageInfo();
+      loadConsumerCustomerInfo();
+    }
   }
 
-  renderLocation() {
-    const { businessInfo } = this.props;
-    const { displayBusinessName, name } = businessInfo || {};
-    return (
-      <div className="margin-top-bottom-normal">
-        <span className="loyalty-home__location margin-left-right-small text-size-big text-opacity text-middle">
-          {displayBusinessName || name}
-        </span>
-      </div>
-    );
-  }
+  componentDidUpdate(prevProps) {
+    const { isLogin, isAppUserLogin, appActions, initUserInfo, loadConsumerCustomerInfo } = this.props;
+    const { isLogin: prevIsLogin, isAppUserLogin: prevIsAppUserLogin } = prevProps;
 
-  renderCashback() {
-    const { history, totalCredits } = this.props;
+    if (isAppUserLogin !== prevIsAppUserLogin && isAppUserLogin) {
+      initUserInfo();
+    }
 
-    return (
-      <div>
-        <CurrencyNumber
-          className="loyalty-home__money-currency padding-left-right-small text-size-large"
-          money={totalCredits}
-        />
-        <span
-          role="button"
-          tabIndex="0"
-          onClick={() => {
-            history.push({ pathname: '/activities', search: window.location.search });
-          }}
-          data-test-id="cashback.home.cashback-info"
-        >
-          <IconInfo className="icon icon__default" />
-        </span>
-      </div>
-    );
+    if (isLogin !== prevIsLogin && isLogin) {
+      appActions.showMessageInfo();
+      loadConsumerCustomerInfo();
+    }
   }
 
   render() {
-    const { history, businessInfo, onlineStoreInfo, t } = this.props;
-    const { displayBusinessName, name } = businessInfo || {};
-    const { logo } = onlineStoreInfo || {};
-    const hideDownloadBanner = isWebview() || isAlipayMiniProgram();
+    const {
+      history,
+      t,
+      merchantLogo,
+      merchantDisplayName,
+      customerCashbackPrice,
+      isWebview,
+      isAlipayMiniProgram,
+    } = this.props;
+    const hideDownloadBanner = isWebview || isAlipayMiniProgram;
 
     return (
       <>
-        {isWebview() && (
+        {isWebview && (
           <NativeHeader
             navFunc={() => {
               closeWebView();
@@ -78,18 +100,36 @@ class PageLoyalty extends React.Component {
         )}
         <section className="loyalty-home__container flex flex-column" data-test-id="cashback.home.container">
           <article className="loyalty-home__article text-center margin-top-bottom-normal">
-            {logo ? (
+            {merchantLogo ? (
               <Image
                 className="loyalty-home__logo logo logo__big margin-top-bottom-normal"
-                src={logo}
-                alt={displayBusinessName || name}
+                src={merchantLogo}
+                alt={merchantDisplayName}
               />
             ) : null}
             <h5 className="loyalty-home__title padding-top-bottom-small text-uppercase">{t('TotalCashback')}</h5>
 
-            {this.renderCashback()}
+            <div>
+              <data className="loyalty-home__cashback-value text-size-larger" value={customerCashbackPrice}>
+                {customerCashbackPrice}
+              </data>
+              <span
+                role="button"
+                tabIndex="0"
+                onClick={() => {
+                  history.push({ pathname: '/activities', search: window.location.search });
+                }}
+                data-test-id="cashback.home.cashback-info"
+              >
+                <Info size={24} />
+              </span>
+            </div>
 
-            {this.renderLocation()}
+            <div className="margin-top-bottom-normal">
+              <span className="loyalty-home__location margin-left-right-small text-size-big text-opacity text-middle">
+                {merchantDisplayName}
+              </span>
+            </div>
             <RedeemInfo
               buttonClassName="redeem-info__button-link button border-radius-base text-uppercase"
               buttonText={t('HowToUseCashback')}
@@ -106,45 +146,65 @@ class PageLoyalty extends React.Component {
 PageLoyalty.displayName = 'PageLoyalty';
 
 PageLoyalty.propTypes = {
-  businessInfo: PropTypes.shape({
-    displayBusinessName: PropTypes.string,
-    name: PropTypes.string,
-  }),
-  onlineStoreInfo: PropTypes.shape({
-    logo: PropTypes.string,
-  }),
-  totalCredits: PropTypes.number,
+  isLogin: PropTypes.bool,
+  isAppUserLogin: PropTypes.bool,
+  isWebview: PropTypes.bool,
+  isAlipayMiniProgram: PropTypes.bool,
+  merchantBusiness: PropTypes.string,
+  merchantLogo: PropTypes.string,
+  merchantDisplayName: PropTypes.string,
+  customerCashbackPrice: PropTypes.string,
   appActions: PropTypes.shape({
     showMessageInfo: PropTypes.func,
     setCashbackMessage: PropTypes.func,
   }),
+  fetchMerchantInfo: PropTypes.func,
+  initUserInfo: PropTypes.func,
+  loginUserByBeepApp: PropTypes.func,
+  loginUserByAlipayMiniProgram: PropTypes.func,
+  loadConsumerCustomerInfo: PropTypes.func,
 };
 
 PageLoyalty.defaultProps = {
-  businessInfo: {
-    displayBusinessName: '',
-    name: '',
-  },
-  onlineStoreInfo: {
-    logo: '',
-  },
-  totalCredits: 0,
+  isLogin: false,
+  isAppUserLogin: false,
+  isWebview: false,
+  isAlipayMiniProgram: false,
+  merchantBusiness: null,
+  merchantLogo: null,
+  merchantDisplayName: '',
+  customerCashbackPrice: null,
   appActions: {
     showMessageInfo: () => {},
     setCashbackMessage: () => {},
   },
+  fetchMerchantInfo: () => {},
+  initUserInfo: () => {},
+  loginUserByBeepApp: () => {},
+  loginUserByAlipayMiniProgram: () => {},
+  loadConsumerCustomerInfo: () => {},
 };
 
 export default compose(
   withTranslation(['Cashback']),
   connect(
     state => ({
-      businessInfo: getBusinessInfo(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-      totalCredits: getCustomerCashback(state),
+      isLogin: getIsLogin(state),
+      isAppUserLogin: getIsAppUserLogin(state),
+      isWebview: getIsWebview(state),
+      isAlipayMiniProgram: getIsAlipayMiniProgram(state),
+      merchantBusiness: getMerchantBusiness(state),
+      merchantLogo: getMerchantLogo(state),
+      merchantDisplayName: getMerchantDisplayName(state),
+      customerCashbackPrice: getCustomerCashbackPrice(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      fetchMerchantInfo: bindActionCreators(fetchMerchantInfoThunk, dispatch),
+      initUserInfo: bindActionCreators(initUserInfoThunk, dispatch),
+      loginUserByBeepApp: bindActionCreators(loginUserByBeepAppThunk, dispatch),
+      loginUserByAlipayMiniProgram: bindActionCreators(loginUserByAlipayMiniProgramThunk, dispatch),
+      loadConsumerCustomerInfo: bindActionCreators(loadConsumerCustomerInfoThunk, dispatch),
     })
   )
 )(PageLoyalty);
