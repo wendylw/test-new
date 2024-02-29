@@ -86,7 +86,9 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
       const isClaimedOrderCashbackNewMember = getIsClaimedOrderCashbackNewMember(getState());
       const { REWARDS_BASE, REWARDS_BUSINESS, REWARDS_MEMBERSHIP, MEMBERSHIP_DETAIL } = PATH_NAME_MAPPING;
       const rewardsBaseRoute = `${config.beepitComUrl}`;
-      const pathName = `${REWARDS_BASE}${REWARDS_BUSINESS}${REWARDS_MEMBERSHIP}${MEMBERSHIP_DETAIL}`;
+      const pathName = `${REWARDS_BASE}${REWARDS_BUSINESS}${
+        isMerchantMembershipEnabled ? `${REWARDS_MEMBERSHIP}${MEMBERSHIP_DETAIL}` : `${CASHBACK}${CASHBACK_DETAIL}`
+      }`;
       const search = [
         `isNewMember=${isClaimedOrderCashbackNewMember}`,
         `business=${merchantBusiness}`,
