@@ -11,7 +11,12 @@ import {
   getIsMerchantEnabledCashback,
 } from '../../../../../redux/modules/merchant/selectors';
 import { getCashbackExpiredDate, getIsCashbackExpired } from '../../../../redux/modules/customer/selectors';
-import { getCustomerCashbackPrice, getRemainingCashbackExpiredDays } from '../../redux/common/selectors';
+import {
+  getCustomerCashbackPrice,
+  getRemainingCashbackExpiredDays,
+  getIsTodayExpired,
+  getIsExpiringTagShown,
+} from '../../redux/common/selectors';
 import Tag from '../../../../../common/components/Tag';
 import styles from './CashbackBlock.module.scss';
 
@@ -23,12 +28,13 @@ const CashbackBlock = () => {
   const cashbackExpiredDate = useSelector(getCashbackExpiredDate);
   const isCashbackExpired = useSelector(getIsCashbackExpired);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
+  const isExpiringTagShown = useSelector(getIsExpiringTagShown);
   const remainingCashbackExpiredDays = useSelector(getRemainingCashbackExpiredDays);
+  const isTodayExpired = useSelector(getIsTodayExpired);
   const cashbackHistoryLogPageURL = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace(
     '%business%',
     merchantBusiness
   )}${PATH_NAME_MAPPING.CASHBACK_BASE}${PATH_NAME_MAPPING.CASHBACK_HISTORIES}`;
-  const isTodayExpired = remainingCashbackExpiredDays === 0;
   const cashbackBlockBalanceContainerClassName = getClassName([
     styles.CashbackBlockBalanceContainer,
     isCashbackExpired ? styles.CashbackBlockBalanceContainer__Expired : null,
@@ -71,11 +77,11 @@ const CashbackBlock = () => {
             })}
           </time>
           {isCashbackExpired && <Tag className={styles.CashbackBlockExpiredTag}>{t('Expired')}</Tag>}
-          {remainingCashbackExpiredDays && (
+          {isExpiringTagShown ? (
             <Tag color="red" className={styles.CashbackBlockRemainingExpiredDaysTag}>
               {isTodayExpired ? t('ExpiringToday') : t('ExpiringInDays', { remainingCashbackExpiredDays })}
             </Tag>
-          )}
+          ) : null}
         </div>
       )}
     </div>

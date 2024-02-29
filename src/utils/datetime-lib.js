@@ -265,7 +265,7 @@ export const getDifferenceTodayInDays = dateCompare => {
 
     const days = dayjs(new Date()).diff(dateCompare, 'day', true);
 
-    return Math.floor(days);
+    return days;
   } catch (error) {
     return null;
   }

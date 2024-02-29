@@ -70,8 +70,18 @@ export const getRemainingCashbackExpiredDays = createSelector(
 
     const days = getDifferenceTodayInDays(new Date(cashbackExpiredDate));
 
-    return days > -8 && days <= 0 ? Math.abs(days) : null;
+    return days > -8 && days <= 0 ? Math.floor(Math.abs(days)) : null;
   }
+);
+
+export const getIsTodayExpired = createSelector(
+  getRemainingCashbackExpiredDays,
+  remainingCashbackExpiredDays => remainingCashbackExpiredDays === 0
+);
+
+export const getIsExpiringTagShown = createSelector(
+  getRemainingCashbackExpiredDays,
+  remainingCashbackExpiredDays => remainingCashbackExpiredDays !== null
 );
 
 export const getOrderReceiptClaimedCashback = createSelector(
