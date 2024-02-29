@@ -70,7 +70,7 @@ export const getRemainingCashbackExpiredDays = createSelector(
 
     const days = getDifferenceTodayInDays(new Date(cashbackExpiredDate));
 
-    return days < 8 ? days : null;
+    return days > -8 && days <= 0 ? Math.abs(days) : null;
   }
 );
 
