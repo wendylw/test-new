@@ -21,6 +21,8 @@ export const getOrderReceiptClaimedCashbackType = () => getQueryString(CLAIM_CAS
 
 export const getOrderReceiptClaimedCashbackValue = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.VALUE);
 
+export const getIsClaimedOrderCashbackNewMember = () => getQueryString('isNewMember') === 'true';
+
 export const getConfirmSharingConsumerInfoData = state => state.business.common.confirmSharingConsumerInfoRequest.data;
 
 export const getConfirmSharingConsumerInfoStatus = state =>
@@ -45,7 +47,9 @@ export const getIsConfirmSharingNewMember = createSelector(
 export const getIsNewMember = createSelector(
   getIsJoinMembershipNewMember,
   getIsConfirmSharingNewMember,
-  (isJoinMembershipNewMember, isConfirmSharingNewMember) => isJoinMembershipNewMember || isConfirmSharingNewMember
+  getIsClaimedOrderCashbackNewMember,
+  (isJoinMembershipNewMember, isConfirmSharingNewMember, isClaimedOrderCashbackNewMember) =>
+    isJoinMembershipNewMember || isConfirmSharingNewMember || isClaimedOrderCashbackNewMember
 );
 
 export const getCustomerCashbackPrice = createSelector(

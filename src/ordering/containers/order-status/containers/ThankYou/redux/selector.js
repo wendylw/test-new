@@ -46,7 +46,19 @@ const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
 export const getStoreHashCode = state => state.orderStatus.thankYou.storeHashCode;
 
-export const getCashbackInfo = state => state.orderStatus.thankYou.cashbackInfo;
+export const getLoadCashbackRequest = state => state.orderStatus.thankYou.loadCashbackRequest;
+
+export const getLoadCashbackRequestData = createSelector(
+  getLoadCashbackRequest,
+  loadCashbackRequest => loadCashbackRequest.data
+);
+
+export const getClaimCashbackRequest = state => state.orderStatus.thankYou.claimCashbackRequest;
+
+export const getClaimCashbackRequestData = createSelector(
+  getClaimCashbackRequest,
+  claimCashbackRequest => claimCashbackRequest.data
+);
 
 export const getRedirectFrom = state => state.orderStatus.thankYou.redirectFrom;
 
@@ -149,7 +161,11 @@ export const getHasOrderPaid = createSelector(getOrderStatus, orderStatus =>
   AFTER_PAID_STATUS_LIST.includes(orderStatus)
 );
 
-export const getCashback = createSelector(getCashbackInfo, ({ cashback }) => (Number(cashback) ? Number(cashback) : 0));
+export const getCashback = createSelector(getLoadCashbackRequestData, loadCashbackRequestData => {
+  const cashback = _get(loadCashbackRequestData, 'cashback', 0);
+
+  return Number(cashback) ? Number(cashback) : 0;
+});
 
 export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInfo, (cashback, onlineStoreInfo) => {
   const { currency } = onlineStoreInfo || {};
@@ -157,14 +173,16 @@ export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInf
   return currencyFormatter.format(cashback);
 });
 
-export const getCashbackStatus = createSelector(getCashbackInfo, cashbackInfo => _get(cashbackInfo, 'status', null));
-
-export const getCashbackCustomerId = createSelector(getCashbackInfo, cashbackInfo =>
-  _get(cashbackInfo, 'customerId', null)
+export const getCashbackStatus = createSelector(getLoadCashbackRequestData, loadCashbackRequestData =>
+  _get(loadCashbackRequestData, 'status', null)
 );
 
-export const getCashbackConsumerId = createSelector(getCashbackInfo, cashbackInfo =>
-  _get(cashbackInfo, 'consumerId', null)
+export const getCashbackCustomerId = createSelector(getClaimCashbackRequestData, claimCashbackRequestData =>
+  _get(claimCashbackRequestData, 'customerId', null)
+);
+
+export const getCashbackConsumerId = createSelector(getClaimCashbackRequestData, claimCashbackRequestData =>
+  _get(claimCashbackRequestData, 'consumerId', null)
 );
 
 export const getCanCashbackClaim = createSelector(getCashbackStatus, cashbackStatus =>
@@ -206,15 +224,13 @@ export const getShouldShowCashbackBanner = createSelector(
 
 // WB-7414: we need to consider the consumerId from cashbackInfo to make user able to see cashback card immediately.
 export const getShouldShowCashbackCard = createSelector(
-  getIsCashbackClaimable,
   getHasCashbackClaimed,
   getUserCustomerId,
   getUserConsumerId,
   getOrderCustomerId,
   getCashbackConsumerId,
-  (isCashbackClaimable, hasCashbackClaimed, userCustomerId, userConsumerId, orderCustomerId, cashbackConsumerId) =>
-    (isCashbackClaimable || hasCashbackClaimed) &&
-    (userCustomerId === orderCustomerId || userConsumerId === cashbackConsumerId)
+  (hasCashbackClaimed, userCustomerId, userConsumerId, orderCustomerId, cashbackConsumerId) =>
+    hasCashbackClaimed && (userCustomerId === orderCustomerId || userConsumerId === cashbackConsumerId)
 );
 
 export const getFoodCourtId = createSelector(getOrder, order => _get(order, 'foodCourtId', null));

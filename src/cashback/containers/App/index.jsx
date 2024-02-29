@@ -53,7 +53,7 @@ class App extends Component {
       // TNGD code is executed at the very beginning.
       // Because the MP and Beep accounts are not synchronized,
       // it is impossible to determine that the accounts are the same
-      if (isAlipayMiniProgram()) {
+      if (isAlipayMiniProgram() && !isClaimCashbackPage) {
         // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
         await appActions.loginByAlipayMiniProgram();
 
