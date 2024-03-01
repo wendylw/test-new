@@ -20,20 +20,25 @@ const removePromoOrVoucher = async removeMethods => {
 /**
  * Promotion part
  */
-export const applyPromo = createAsyncThunk('ordering/promotion/common/applyPromo', async (_, { getState }) => {
-  const state = getState();
-  const promotionId = getSelectedPromoId(state);
-  const receiptNumber = Utils.getQueryString('receiptNumber');
-  try {
-    const result = await applyPromotion({ receiptNumber, promotionId });
+export const applyPromo = createAsyncThunk(
+  'ordering/promotion/common/applyPromo',
+  async (_, { getState, rejectWithValue }) => {
+    const state = getState();
+    const promotionId = getSelectedPromoId(state);
+    const receiptNumber = Utils.getQueryString('receiptNumber');
+    try {
+      const result = await applyPromotion({ receiptNumber, promotionId });
 
-    return result;
-  } catch (e) {
-    logger.error('Ordering_Promotion_applyPromoFailed', { message: e?.message || '' });
+      return result;
+    } catch (e) {
+      logger.error('Ordering_Promotion_applyPromoFailed', { message: e?.message || '' });
 
-    throw e;
+      // WB-7385: If error only with {code, message, name, stack}, If error want to with other fields.
+      // We need to use rejectWithValue to pass the error as payload
+      throw rejectWithValue(e);
+    }
   }
-});
+);
 
 export const removePromo = createAsyncThunk('ordering/promotion/common/removePromotion', () =>
   removePromoOrVoucher(removePromotion)
