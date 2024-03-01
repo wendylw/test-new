@@ -280,3 +280,25 @@ export const getIsAfterDateTime = (date, dateCompare, unit = 'millisecond') => {
     return false;
   }
 };
+
+export const getIsMidnight = date => {
+  try {
+    invariant(isValidDate(date), 'invalid date object');
+
+    return dayjs(date).hour() === 0 && dayjs(date).minute() === 0 && dayjs(date).second() === 0;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const getReduceOneSecondForDate = date => {
+  try {
+    invariant(isValidDate(date), 'invalid date object');
+
+    return dayjs(date)
+      .subtract(1, 'second')
+      .format();
+  } catch (error) {
+    return null;
+  }
+};

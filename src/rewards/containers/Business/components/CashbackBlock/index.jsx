@@ -10,7 +10,7 @@ import {
   getMerchantCountry,
   getIsMerchantEnabledCashback,
 } from '../../../../../redux/modules/merchant/selectors';
-import { getCashbackExpiredDate, getIsCashbackExpired } from '../../../../redux/modules/customer/selectors';
+import { getDisplayCashbackExpiredDate, getIsCashbackExpired } from '../../../../redux/modules/customer/selectors';
 import {
   getCustomerCashbackPrice,
   getRemainingCashbackExpiredDays,
@@ -25,7 +25,7 @@ const CashbackBlock = () => {
   const merchantBusiness = useSelector(getMerchantBusiness);
   const merchantCountry = useSelector(getMerchantCountry);
   const isMerchantEnabledCashback = useSelector(getIsMerchantEnabledCashback);
-  const cashbackExpiredDate = useSelector(getCashbackExpiredDate);
+  const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
   const isCashbackExpired = useSelector(getIsCashbackExpired);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const isExpiringTagShown = useSelector(getIsExpiringTagShown);
@@ -69,11 +69,11 @@ const CashbackBlock = () => {
           />
         </a>
       </div>
-      {cashbackExpiredDate && (
+      {displayCashbackExpiredDate && (
         <div className={styles.CashbackBlockInfoBottom}>
           <time className={cashbackBlockExpiredDateClassName}>
             {t('ValidUntil', {
-              date: formatTimeToDateString(merchantCountry, cashbackExpiredDate),
+              date: formatTimeToDateString(merchantCountry, displayCashbackExpiredDate),
             })}
           </time>
           {isCashbackExpired && <Tag className={styles.CashbackBlockExpiredTag}>{t('Expired')}</Tag>}
