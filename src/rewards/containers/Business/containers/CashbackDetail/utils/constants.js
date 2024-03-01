@@ -27,7 +27,7 @@ export const CLAIMED_CASHBACK_I18N_KEYS = {
     titleI18nParamsKeys: [I18N_PARAM_KEYS.CASHBACK_VALUE],
   },
   [CLAIMED_CASHBACK_STATUS.CLAIMED_NOT_FIRST_TIME]: {
-    titleI18nKey: 'EarnedCashbackNewMemberTitle',
+    titleI18nKey: 'EarnedCashbackTitle',
     descriptionI18nKey: 'EarnedCashbackDescription',
     titleI18nParamsKeys: [I18N_PARAM_KEYS.CASHBACK_VALUE],
   },
