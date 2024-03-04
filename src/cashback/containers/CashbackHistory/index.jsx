@@ -16,7 +16,7 @@ import {
   getIsUserLogin,
   getCashbackHistory,
 } from '../../redux/modules/app';
-import './RecentActivities.scss';
+import './CashbackHistory.scss';
 
 const DATE_OPTIONS = {
   weekday: 'short',
@@ -25,7 +25,7 @@ const DATE_OPTIONS = {
   day: 'numeric',
 };
 
-class RecentActivities extends React.Component {
+class CashbackHistory extends React.Component {
   componentDidMount() {
     const { isUserLogin, customerId, onModalVisibilityChanged } = this.props;
 
@@ -158,9 +158,9 @@ class RecentActivities extends React.Component {
   }
 }
 
-RecentActivities.displayName = 'RecentActivities';
+CashbackHistory.displayName = 'CashbackHistory';
 
-RecentActivities.propTypes = {
+CashbackHistory.propTypes = {
   isFetching: PropTypes.bool,
   isUserLogin: PropTypes.bool,
   customerId: PropTypes.string,
@@ -174,7 +174,7 @@ RecentActivities.propTypes = {
   }),
 };
 
-RecentActivities.defaultProps = {
+CashbackHistory.defaultProps = {
   isFetching: false,
   isUserLogin: false,
   customerId: '',
@@ -201,4 +201,4 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
-)(RecentActivities);
+)(CashbackHistory);
