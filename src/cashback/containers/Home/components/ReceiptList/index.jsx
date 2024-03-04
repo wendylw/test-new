@@ -4,13 +4,14 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import { getMerchantBusiness, getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
+import { toLocaleDateString } from '../../../../../utils/datetime-lib';
+import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
 import { getCustomerId } from '../../../../redux/modules/customer/selectors';
 import { actions as appActionCreators, getCashbackHistory } from '../../../../redux/modules/app';
-import { toLocaleDateString } from '../../../../../utils/datetime-lib';
+import { getCustomerReceiptList, getIsCustomerReceiptListHasMore } from '../../redux/selectors';
+import { fetchCustomerReceiptList as fetchCustomerReceiptListThunk } from '../../redux/thunks';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { IconTicket } from '../../../../../components/Icons';
-import { actions as homeActionCreators, getReceiptList, getFetchState } from '../../../../redux/modules/home';
 import './ReceiptList.scss';
 
 const DATE_OPTIONS = {
@@ -46,9 +47,9 @@ class RecentList extends React.Component {
   }
 
   loadItems = page => {
-    const { merchantBusiness, homeActions } = this.props;
-    const pageSize = 10;
-    homeActions.getReceiptList(merchantBusiness, page, pageSize);
+    const { fetchCustomerReceiptList } = this.props;
+
+    fetchCustomerReceiptList(page);
   };
 
   toggleFullScreen = () => {
@@ -58,13 +59,13 @@ class RecentList extends React.Component {
   };
 
   renderLogList() {
-    const { receiptList, fetchState, t, merchantCountry } = this.props;
+    const { customerReceiptList, isCustomerReceiptListHasMore, t, merchantCountry } = this.props;
 
     return (
       <InfiniteScroll
         pageStart={-1}
         loadMore={this.loadItems}
-        hasMore={fetchState}
+        hasMore={isCustomerReceiptListHasMore}
         loader={
           <div style={{ clear: 'both' }} key={0}>
             {t('Loading')}
@@ -73,7 +74,7 @@ class RecentList extends React.Component {
         useWindow={false}
       >
         <div>
-          {(receiptList || []).map((receipt, i) => {
+          {customerReceiptList.map((receipt, i) => {
             const { createdTime, total } = receipt;
             const receiptTime = new Date(createdTime);
 
@@ -141,33 +142,27 @@ class RecentList extends React.Component {
 RecentList.displayName = 'RecentList';
 
 RecentList.propTypes = {
-  merchantBusiness: PropTypes.string,
   merchantCountry: PropTypes.string,
-  fetchState: PropTypes.bool,
+  isCustomerReceiptListHasMore: PropTypes.bool,
   userCustomerId: PropTypes.string,
-  receiptList: PropTypes.arrayOf(PropTypes.object),
+  customerReceiptList: PropTypes.arrayOf(PropTypes.object),
   cashbackHistory: PropTypes.arrayOf(PropTypes.object),
   appActions: PropTypes.shape({
     getCashbackHistory: PropTypes.func,
   }),
-  homeActions: PropTypes.shape({
-    getReceiptList: PropTypes.func,
-  }),
+  fetchCustomerReceiptList: PropTypes.func,
 };
 
 RecentList.defaultProps = {
-  merchantBusiness: '',
   merchantCountry: null,
-  fetchState: true,
+  isCustomerReceiptListHasMore: true,
   userCustomerId: '',
-  receiptList: [],
+  customerReceiptList: [],
   cashbackHistory: [],
   appActions: {
     getCashbackHistory: () => {},
   },
-  homeActions: {
-    getReceiptList: () => {},
-  },
+  fetchCustomerReceiptList: () => {},
 };
 
 export default compose(
@@ -175,15 +170,14 @@ export default compose(
   connect(
     state => ({
       userCustomerId: getCustomerId(state),
-      merchantBusiness: getMerchantBusiness(state),
       merchantCountry: getMerchantCountry(state),
       cashbackHistory: getCashbackHistory(state),
-      receiptList: getReceiptList(state),
-      fetchState: getFetchState(state),
+      customerReceiptList: getCustomerReceiptList(state),
+      isCustomerReceiptListHasMore: getIsCustomerReceiptListHasMore(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      fetchCustomerReceiptList: bindActionCreators(fetchCustomerReceiptListThunk, dispatch),
     })
   )
 )(RecentList);

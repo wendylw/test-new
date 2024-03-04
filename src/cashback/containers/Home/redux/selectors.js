@@ -1,11 +1,11 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 
-export const getLoadCustomerReceiptListData = state => state.claimCashback.loadCustomerReceiptListRequest.data;
+export const getLoadCustomerReceiptListData = state => state.cashbackHome.loadCustomerReceiptListRequest.data;
 
-export const geLoadCustomerReceiptListStatus = state => state.claimCashback.loadCustomerReceiptListRequest.status;
+export const geLoadCustomerReceiptListStatus = state => state.cashbackHome.loadCustomerReceiptListRequest.status;
 
-export const geLoadCustomerReceiptListError = state => state.claimCashback.loadCustomerReceiptListRequest.error;
+export const geLoadCustomerReceiptListError = state => state.cashbackHome.loadCustomerReceiptListRequest.error;
 
 /**
  * Derived selectors
@@ -16,5 +16,5 @@ export const getCustomerReceiptList = createSelector(getLoadCustomerReceiptListD
 
 export const getIsCustomerReceiptListHasMore = createSelector(
   getCustomerReceiptList,
-  customerReceiptList => customerReceiptList.length != 0
+  customerReceiptList => customerReceiptList.length !== 0
 );
