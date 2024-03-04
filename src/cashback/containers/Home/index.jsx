@@ -110,19 +110,19 @@ class PageLoyalty extends React.Component {
             <h5 className="loyalty-home__title padding-top-bottom-small text-uppercase">{t('TotalCashback')}</h5>
 
             <div>
-              <data className="loyalty-home__cashback-value text-size-larger" value={customerCashbackPrice}>
+              <data className="loyalty-home__cashback-value text-size-large" value={customerCashbackPrice}>
                 {customerCashbackPrice}
               </data>
-              <span
-                role="button"
+              <button
                 tabIndex="0"
+                className="loyalty-home__cashback-history-icon-button"
                 onClick={() => {
                   history.push({ pathname: '/activities', search: window.location.search });
                 }}
                 data-test-id="cashback.home.cashback-info"
               >
-                <Info size={24} />
-              </span>
+                <Info size={24} weight="fill" />
+              </button>
             </div>
 
             <div className="margin-top-bottom-normal">
