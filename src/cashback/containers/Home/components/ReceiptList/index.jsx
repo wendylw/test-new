@@ -12,7 +12,6 @@ import {
   getMerchantLocale,
 } from '../../../../../redux/modules/merchant/selectors';
 import { getCustomerId } from '../../../../redux/modules/customer/selectors';
-import { actions as appActionCreators, getCashbackHistory } from '../../../../redux/modules/app';
 import { getCustomerReceiptList, getIsCustomerReceiptListHasMore } from '../../redux/selectors';
 import { fetchCustomerReceiptList as fetchCustomerReceiptListThunk } from '../../redux/thunks';
 import { IconTicket } from '../../../../../components/Icons';
@@ -29,25 +28,6 @@ class RecentList extends React.Component {
   constructor(props) {
     super(props);
     this.state = { fullScreen: false };
-  }
-
-  componentDidMount() {
-    const { appActions, userCustomerId } = this.props;
-
-    if (userCustomerId) {
-      appActions.getCashbackHistory(userCustomerId);
-    }
-  }
-
-  async componentDidUpdate(prevProps) {
-    const { appActions, userCustomerId: currUserCustomerId } = this.props;
-    const { userCustomerId: prevUserCustomerId } = prevProps || {};
-
-    // customerId !== prevProps.customerId instead of !prevProps.customerId
-    // The 3rd MiniProgram cached the previous customerId, so the customerId is not the correct account
-    if (currUserCustomerId && currUserCustomerId !== prevUserCustomerId) {
-      appActions.getCashbackHistory(currUserCustomerId);
-    }
   }
 
   loadItems = page => {
@@ -118,9 +98,9 @@ class RecentList extends React.Component {
 
   render() {
     const { fullScreen } = this.state;
-    const { cashbackHistory, userCustomerId, t } = this.props;
+    const { customerReceiptList, userCustomerId, t } = this.props;
 
-    if (!Array.isArray(cashbackHistory) || !userCustomerId) {
+    if (!Array.isArray(customerReceiptList) || !userCustomerId) {
       return null;
     }
 
@@ -165,7 +145,6 @@ RecentList.propTypes = {
   isCustomerReceiptListHasMore: PropTypes.bool,
   userCustomerId: PropTypes.string,
   customerReceiptList: PropTypes.arrayOf(PropTypes.object),
-  cashbackHistory: PropTypes.arrayOf(PropTypes.object),
   appActions: PropTypes.shape({
     getCashbackHistory: PropTypes.func,
   }),
@@ -179,7 +158,6 @@ RecentList.defaultProps = {
   isCustomerReceiptListHasMore: true,
   userCustomerId: '',
   customerReceiptList: [],
-  cashbackHistory: [],
   appActions: {
     getCashbackHistory: () => {},
   },
@@ -194,12 +172,10 @@ export default compose(
       merchantCountry: getMerchantCountry(state),
       merchantCurrency: getMerchantCurrency(state),
       merchantLocale: getMerchantLocale(state),
-      cashbackHistory: getCashbackHistory(state),
       customerReceiptList: getCustomerReceiptList(state),
       isCustomerReceiptListHasMore: getIsCustomerReceiptListHasMore(state),
     }),
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
       fetchCustomerReceiptList: bindActionCreators(fetchCustomerReceiptListThunk, dispatch),
     })
   )
