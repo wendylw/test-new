@@ -21,6 +21,7 @@ import { fetchMerchantInfo as fetchMerchantInfoThunk } from '../../../redux/modu
 import { getIsWebview, getIsAlipayMiniProgram } from '../../redux/modules/common/selectors';
 import { getCustomerCashbackPrice } from '../../redux/modules/customer/selectors';
 import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
+import { getIsDownloadBannerShown } from './redux/selectors';
 import Image from '../../../components/Image';
 import RedeemInfo from '../../components/RedeemInfo';
 import DownloadBanner from '../../../common/components/DownloadBanner';
@@ -85,9 +86,8 @@ class PageLoyalty extends React.Component {
       merchantDisplayName,
       customerCashbackPrice,
       isWebview,
-      isAlipayMiniProgram,
+      isDownloadBannerShown,
     } = this.props;
-    const hideDownloadBanner = isWebview || isAlipayMiniProgram;
 
     return (
       <>
@@ -135,7 +135,11 @@ class PageLoyalty extends React.Component {
               buttonText={t('HowToUseCashback')}
             />
           </article>
-          {!hideDownloadBanner && <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />}
+          {isDownloadBannerShown && (
+            <div className="margin-left-right-small margin-top-bottom-small">
+              <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />
+            </div>
+          )}
           <ReceiptList history={history} />
         </section>
       </>
@@ -154,6 +158,7 @@ PageLoyalty.propTypes = {
   merchantLogo: PropTypes.string,
   merchantDisplayName: PropTypes.string,
   customerCashbackPrice: PropTypes.string,
+  isDownloadBannerShown: PropTypes.bool,
   appActions: PropTypes.shape({
     showMessageInfo: PropTypes.func,
     setCashbackMessage: PropTypes.func,
@@ -174,6 +179,7 @@ PageLoyalty.defaultProps = {
   merchantLogo: null,
   merchantDisplayName: '',
   customerCashbackPrice: null,
+  isDownloadBannerShown: false,
   appActions: {
     showMessageInfo: () => {},
     setCashbackMessage: () => {},
@@ -197,6 +203,7 @@ export default compose(
       merchantLogo: getMerchantLogo(state),
       merchantDisplayName: getMerchantDisplayName(state),
       customerCashbackPrice: getCustomerCashbackPrice(state),
+      isDownloadBannerShown: getIsDownloadBannerShown(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

@@ -4,13 +4,17 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
+import { getPrice } from '../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../utils/datetime-lib';
-import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
+import {
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+} from '../../../../../redux/modules/merchant/selectors';
 import { getCustomerId } from '../../../../redux/modules/customer/selectors';
 import { actions as appActionCreators, getCashbackHistory } from '../../../../redux/modules/app';
 import { getCustomerReceiptList, getIsCustomerReceiptListHasMore } from '../../redux/selectors';
 import { fetchCustomerReceiptList as fetchCustomerReceiptListThunk } from '../../redux/thunks';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { IconTicket } from '../../../../../components/Icons';
 import './ReceiptList.scss';
 
@@ -59,7 +63,14 @@ class RecentList extends React.Component {
   };
 
   renderLogList() {
-    const { customerReceiptList, isCustomerReceiptListHasMore, t, merchantCountry } = this.props;
+    const {
+      customerReceiptList,
+      isCustomerReceiptListHasMore,
+      t,
+      merchantCountry,
+      merchantLocale,
+      merchantCurrency,
+    } = this.props;
 
     return (
       <InfiniteScroll
@@ -85,7 +96,13 @@ class RecentList extends React.Component {
                 <summary className="receipt-list__item-summary padding-left-right-normal">
                   <h4 className="margin-top-bottom-small">
                     <span>{t('Receipt')} - </span>
-                    <CurrencyNumber money={Math.abs(total || 0)} />
+                    <span>
+                      {getPrice(Math.abs(total || 0), {
+                        country: merchantCountry,
+                        currency: merchantCurrency,
+                        locale: merchantLocale,
+                      })}
+                    </span>
                   </h4>
                   <time className="receipt-list__time">
                     {toLocaleDateString(receiptTime, merchantCountry, DATE_OPTIONS)}
@@ -143,6 +160,8 @@ RecentList.displayName = 'RecentList';
 
 RecentList.propTypes = {
   merchantCountry: PropTypes.string,
+  merchantCurrency: PropTypes.string,
+  merchantLocale: PropTypes.string,
   isCustomerReceiptListHasMore: PropTypes.bool,
   userCustomerId: PropTypes.string,
   customerReceiptList: PropTypes.arrayOf(PropTypes.object),
@@ -155,6 +174,8 @@ RecentList.propTypes = {
 
 RecentList.defaultProps = {
   merchantCountry: null,
+  merchantCurrency: null,
+  merchantLocale: null,
   isCustomerReceiptListHasMore: true,
   userCustomerId: '',
   customerReceiptList: [],
@@ -171,6 +192,8 @@ export default compose(
     state => ({
       userCustomerId: getCustomerId(state),
       merchantCountry: getMerchantCountry(state),
+      merchantCurrency: getMerchantCurrency(state),
+      merchantLocale: getMerchantLocale(state),
       cashbackHistory: getCashbackHistory(state),
       customerReceiptList: getCustomerReceiptList(state),
       isCustomerReceiptListHasMore: getIsCustomerReceiptListHasMore(state),

@@ -5,6 +5,9 @@ import { fetchCustomerReceiptList } from './thunks';
 const initialState = {
   loadCustomerReceiptListRequest: {
     data: null,
+    localData: {
+      hasMore: true,
+    },
     status: null,
     error: null,
   },
@@ -30,6 +33,7 @@ export const { reducer, actions } = createSlice({
           ? state.loadCustomerReceiptListRequest.data.list.concat(list)
           : list,
       };
+      state.loadCustomerReceiptListRequest.localData.hasMore = list.length !== 0;
       state.loadCustomerReceiptListRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.loadCustomerReceiptListRequest.error = null;
     },
