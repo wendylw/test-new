@@ -96,13 +96,13 @@ class RecentList extends React.Component {
                 <summary className="receipt-list__item-summary padding-left-right-normal">
                   <h4 className="margin-top-bottom-small">
                     <span>{t('Receipt')} - </span>
-                    <span>
+                    <data value={total}>
                       {getPrice(Math.abs(total || 0), {
                         country: merchantCountry,
                         currency: merchantCurrency,
                         locale: merchantLocale,
                       })}
-                    </span>
+                    </data>
                   </h4>
                   <time className="receipt-list__time">
                     {toLocaleDateString(receiptTime, merchantCountry, DATE_OPTIONS)}
