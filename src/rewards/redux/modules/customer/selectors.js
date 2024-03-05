@@ -30,6 +30,14 @@ export const getCustomerTierLevelName = createSelector(getCustomerData, customer
   _get(customerData, 'customerTier.name', null)
 );
 
+export const getCustomerTierTotalSpent = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier.totalSpent', null)
+);
+
+export const getCustomerTierNextReviewTime = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier.nextReviewTime', null)
+);
+
 /**
  * Derived selectors
  */

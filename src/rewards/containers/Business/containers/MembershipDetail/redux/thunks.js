@@ -10,9 +10,10 @@ import {
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
 import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
-import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
+import { fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
+import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
 
@@ -61,6 +62,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
 
   if (isLogin) {
     dispatch(fetchMerchantInfo(business));
+    dispatch(fetchMembershipsInfo(business));
     dispatch(fetchCustomerInfo(business));
     dispatch(fetchUniquePromoList());
   }

@@ -604,3 +604,11 @@ export const getPrice = (number = 0, { locale, currency, country, withCurrency =
     return numberToFixed(number);
   }
 };
+
+export const toCapitalize = (string = '') => {
+  if (!string) {
+    return '';
+  }
+
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};

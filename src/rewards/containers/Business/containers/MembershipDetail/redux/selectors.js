@@ -8,16 +8,19 @@ import {
   MEMBER_LEVELS,
   MEMBER_CARD_COLOR_PALETTES,
 } from '../../../../../../common/utils/constants';
-import { getPrice, getQueryString } from '../../../../../../common/utils';
+import { getPrice, getQueryString, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
-  I18N_PARAM_KEYS,
+  MEMBER_TYPE_I18N_PARAM_KEYS,
   NEW_MEMBER_TYPES,
   NEW_MEMBER_CASHBACK_STATUS_TYPES,
   NEW_MEMBER_I18N_KEYS,
   RETURNING_MEMBER_TYPES,
   RETURNING_MEMBER_CASHBACK_STATUS_TYPES,
   RETURNING_MEMBER_I18N_KEYS,
+  MEMBERSHIP_LEVEL_I18N_PARAM_KEYS,
+  MEMBERSHIP_LEVEL_I18N_KEYS,
+  MEMBERSHIP_LEVEL_STATUS,
 } from '../utils/constants';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
 import {
@@ -28,10 +31,14 @@ import {
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
 } from '../../../../../../redux/modules/merchant/selectors';
+import { getMembershipTierList, getHighestMembershipTier } from '../../../../../../redux/modules/membership/selectors';
 import {
   getCustomerCashback,
+  getCustomerTierTotalSpent,
   getCustomerTierLevel,
+  getCustomerTierNextReviewTime,
   getIsLoadCustomerRequestCompleted,
+  getCustomerTierLevelName,
 } from '../../../../../redux/modules/customer/selectors';
 
 export const getOrderReceiptClaimedCashbackStatus = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.STATUS);
@@ -200,7 +207,7 @@ export const getNewMemberTitleIn18nParams = createSelector(
     }
 
     titleI18nParamsKeys.forEach(paramKey => {
-      if (paramKey === I18N_PARAM_KEYS.CASHBACK_VALUE) {
+      if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE) {
         newMemberTitleI18nParams[paramKey] = claimedCashback;
       }
     });
@@ -258,7 +265,7 @@ export const getReturningMemberTitleIn18nParams = createSelector(
     }
 
     titleI18nParamsKeys.forEach(paramKey => {
-      if (paramKey === I18N_PARAM_KEYS.CASHBACK_VALUE) {
+      if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE) {
         returningMemberTitleI18nParams[paramKey] = claimedCashback;
       }
     });
@@ -284,9 +291,182 @@ export const getMemberCardStyles = createSelector(getMemberColorPalettes, member
   background: `linear-gradient(105deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 50%,${memberCardColorPalettes.background.endColor} 100%)`,
 }));
 
+export const getMemberCardTierProgressBarStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+  color: memberCardColorPalettes.font,
+  activeBackground: memberCardColorPalettes.icon.outlineColor,
+  progressBackground: memberCardColorPalettes.progress,
+}));
+
 export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
   crownStartColor: memberCardColorPalettes.icon.crown.startColor,
   crownEndColor: memberCardColorPalettes.icon.crown.endColor,
   backgroundStartColor: memberCardColorPalettes.icon.background.startColor,
   backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
 }));
+
+export const getIsMemberCardMembershipProgressBarShow = createSelector(
+  getMembershipTierList,
+  membershipTierList => membershipTierList.length > 1
+);
+
+export const getCustomerMembershipNextLevel = createSelector(getCustomerTierLevel, customerTierLevel => {
+  const memberLevels = Object.values(MEMBER_LEVELS);
+  const currentLevelIndex = memberLevels.indexOf(customerTierLevel);
+
+  return memberLevels[currentLevelIndex + 1];
+});
+
+export const getCurrentCustomerLevelSpendingThreshold = createSelector(
+  getCustomerTierLevel,
+  getMembershipTierList,
+  (customerTierLevel, membershipTierList) => {
+    const currentTier = membershipTierList.find(({ level }) => level === customerTierLevel);
+
+    return currentTier ? currentTier.spendingThreshold : 0;
+  }
+);
+
+export const getMemberCardMembershipProgressTierList = createSelector(
+  getCustomerTierLevel,
+  getCustomerMembershipNextLevel,
+  getCurrentCustomerLevelSpendingThreshold,
+  getCustomerTierTotalSpent,
+  getMembershipTierList,
+  (
+    customerTierLevel,
+    customerMembershipNextLevel,
+    currentCustomerLevelSpendingThreshold,
+    customerTierTotalSpent,
+    membershipTierList
+  ) =>
+    membershipTierList.map(({ level, name, spendingThreshold }) => {
+      const tierColorPalette = MEMBER_CARD_COLOR_PALETTES[level] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER];
+      const tier = {
+        level,
+        name,
+        spendingThreshold,
+        progress: '0%',
+        active: false,
+        iconColors: {
+          crownStartColor: tierColorPalette.icon.crown.startColor,
+          crownEndColor: tierColorPalette.icon.crown.endColor,
+          backgroundStartColor: tierColorPalette.icon.background.startColor,
+          backgroundEndColor: tierColorPalette.icon.background.endColor,
+        },
+      };
+      const isAchievedCurrentLevel = level <= customerTierLevel;
+
+      if (isAchievedCurrentLevel) {
+        tier.progress = '100%';
+        tier.active = true;
+      } else if (level === customerMembershipNextLevel) {
+        const unlockSpentNumber = customerTierTotalSpent - currentCustomerLevelSpendingThreshold;
+        const progressPercentageNumber = Number.parseFloat(
+          ((unlockSpentNumber < 0 ? 0 : unlockSpentNumber) / spendingThreshold) * 100
+        ).toFixed(6);
+
+        tier.progress = `${progressPercentageNumber}%`;
+      }
+
+      return tier;
+    })
+);
+
+export const getMemberCardMembershipLevelStatus = createSelector(
+  getCustomerTierLevel,
+  getCustomerTierTotalSpent,
+  getHighestMembershipTier,
+  (customerTierLevel, customerTierTotalSpent, highestMembershipTier) => {
+    const { level: highestTierLevel, spendingThreshold: highestTierSpendingThreshold } = highestMembershipTier;
+
+    if (customerTierLevel < highestTierLevel) {
+      return MEMBERSHIP_LEVEL_STATUS.UNLOCK_NEXT_LEVEL;
+    }
+
+    // Customer achieved highest spending threshold for next review time.
+    if (customerTierLevel === highestTierLevel && customerTierTotalSpent >= highestTierSpendingThreshold) {
+      return MEMBERSHIP_LEVEL_STATUS.LEVEL_COMPLETED;
+    }
+
+    // Customer achieved highest spending threshold last review time, customer still maintain highest level.
+    // But we will prompt customer to maintain highest level. Because spend total will be cleared.
+    if (customerTierLevel === highestTierLevel && customerTierTotalSpent < highestTierSpendingThreshold) {
+      return MEMBERSHIP_LEVEL_STATUS.LEVEL_MAINTAIN;
+    }
+
+    return null;
+  }
+);
+
+export const getMemberCardMembershipProgressMessageIn18nParams = createSelector(
+  getCustomerTierLevelName,
+  getCustomerTierTotalSpent,
+  getCustomerTierNextReviewTime,
+  getMembershipTierList,
+  getHighestMembershipTier,
+  getMerchantLocale,
+  getMerchantCurrency,
+  getMerchantCountry,
+  getCustomerMembershipNextLevel,
+  getMemberCardMembershipLevelStatus,
+  (
+    customerTierLevelName,
+    customerTierTotalSpent,
+    customerTierNextReviewTime,
+    membershipTierList,
+    highestMembershipTier,
+    merchantLocale,
+    merchantCurrency,
+    merchantCountry,
+    customerMembershipNextLevel,
+    membershipLevelStatus
+  ) => {
+    const membershipProgressMessageI18nParams = {};
+
+    if (!membershipLevelStatus) {
+      return membershipProgressMessageI18nParams;
+    }
+
+    const { messageI18nParamsKeys } = MEMBERSHIP_LEVEL_I18N_KEYS[membershipLevelStatus];
+    const nextTier = membershipTierList.find(({ level }) => level === customerMembershipNextLevel);
+    const { name: nextTierName, spendingThreshold: nextTierSpendingThreshold } = nextTier || {};
+
+    messageI18nParamsKeys.forEach(paramKey => {
+      switch (paramKey) {
+        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.UNLOCK_SPEND_PRICE:
+          membershipProgressMessageI18nParams[paramKey] = getPrice(nextTierSpendingThreshold - customerTierTotalSpent, {
+            locale: merchantLocale,
+            currency: merchantCurrency,
+            country: merchantCountry,
+          });
+          break;
+        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE:
+          membershipProgressMessageI18nParams[paramKey] = getPrice(
+            highestMembershipTier.spendingThreshold - customerTierTotalSpent,
+            {
+              locale: merchantLocale,
+              currency: merchantCurrency,
+              country: merchantCountry,
+            }
+          );
+          break;
+        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_REVIEW_DATE:
+          membershipProgressMessageI18nParams[paramKey] = formatTimeToDateString(
+            merchantCountry,
+            customerTierNextReviewTime
+          );
+          break;
+        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_LEVEL_NAME:
+          membershipProgressMessageI18nParams[paramKey] = toCapitalize(nextTierName);
+          break;
+        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.CURRENT_LEVEL_NAME:
+          membershipProgressMessageI18nParams[paramKey] = toCapitalize(customerTierLevelName);
+          break;
+        default:
+          break;
+      }
+    });
+
+    return membershipProgressMessageI18nParams;
+  }
+);
