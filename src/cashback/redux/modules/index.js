@@ -7,6 +7,7 @@ import merchant from '../../../redux/modules/merchant';
 import cashbackHome from '../../containers/Home/redux';
 import claimCashback from '../../containers/ClaimCashback/redux';
 import storeRedemption from '../../containers/StoreRedemption/redux';
+import cashbackHistory from '../../containers/CashbackHistory/redux';
 
 const rootReducer = combineReducers({
   entities,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   merchant,
   claimCashback,
   storeRedemption,
+  cashbackHistory,
 });
 
 export default rootReducer;
