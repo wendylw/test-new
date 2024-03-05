@@ -6,6 +6,7 @@ import {
   PATH_NAME_MAPPING,
   BECOME_MERCHANT_MEMBER_METHODS,
 } from '../../../../common/utils/constants';
+import config from '../../../../config';
 import { getRegistrationTouchPoint, getRegistrationSource } from '../../../../common/utils';
 import { getIsLogin, getUserPhoneNumber } from '../../../../redux/modules/user/selectors';
 import { initUserInfo, loginUserByBeepApp, loginUserByAlipayMiniProgram } from '../../../../redux/modules/user/thunks';
@@ -90,7 +91,7 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
       const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
       const isClaimedOrderCashbackNewMember = getIsClaimedOrderCashbackNewMember(getState());
       const { REWARDS_BASE, REWARDS_BUSINESS, REWARDS_MEMBERSHIP, MEMBERSHIP_DETAIL } = PATH_NAME_MAPPING;
-      const rewardsBaseRoute = `${window.location.protocol}//${process.env.REACT_APP_QR_SCAN_DOMAINS}`;
+      const rewardsBaseRoute = `${config.beepitComUrl}`;
       const pathName = `${REWARDS_BASE}${REWARDS_BUSINESS}${REWARDS_MEMBERSHIP}${MEMBERSHIP_DETAIL}`;
       const search = [
         `isNewMember=${isClaimedOrderCashbackNewMember}`,

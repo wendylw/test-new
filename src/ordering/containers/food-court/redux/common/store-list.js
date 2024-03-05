@@ -23,13 +23,9 @@ import ThebaoguysImage from '../../../../../images/food-court-temp/merchant-theb
 import HijauKualaLumpurImage from '../../../../../images/food-court-temp/merchant-hijau.jpeg';
 import FaceImage from '../../../../../images/food-court-temp/merchant-face.png';
 import JuiceImage from '../../../../../images/food-court-temp/merchant-Juice.jpeg';
-import JoeImage from '../../../../../images/food-court-temp/merchant-Joe.jpeg';
 import RiceImage from '../../../../../images/food-court-temp/merchant-rice.jpeg';
 import SeoulImage from '../../../../../images/food-court-temp/merchant-Seoul.png';
-import SubwayImage from '../../../../../images/food-court-temp/merchant-Subway.png';
 import BobaTeaHouseImage from '../../../../../images/food-court-temp/merchant-Boba-Tea-House.jpg';
-import SaladAtelierImage from '../../../../../images/food-court-temp/merchant-Salad-Atelier.jpg';
-import HopeCoffeeImage from '../../../../../images/food-court-temp/merchant-Hope-Coffee.png';
 import IronBarImage from '../../../../../images/food-court-temp/merchant-Iron-Bar.png';
 import YuByRainGardenImage from '../../../../../images/food-court-temp/merchant-Yu-by-Rain-Garden.png';
 import FengImage from '../../../../../images/food-court-temp/merchant-Feng.png';
@@ -117,16 +113,6 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '21:00',
     },
   },
-  '633a539bb537780006036edf': {
-    id: '633a539bb537780006036edf',
-    imageNoCompression: JoeImage,
-    title: "Joe's Western",
-    tags: ['Western', 'Pasta'],
-    businessHours: {
-      validTimeFrom: '09:00',
-      validTimeTo: '21:00',
-    },
-  },
   '5935311ca80222a3745165f2': {
     id: '5935311ca80222a3745165f2',
     imageNoCompression: JuiceImage,
@@ -157,16 +143,6 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '20:00',
     },
   },
-  '63a29c30e677e80008f0470d': {
-    id: '63a29c30e677e80008f0470d',
-    title: 'Subway Syopz',
-    imageNoCompression: SubwayImage,
-    tags: ['Sandwiches', 'Subs', 'Cookies'],
-    businessHours: {
-      validTimeFrom: '10:00',
-      validTimeTo: '22:00',
-    },
-  },
   '63745ceb7b7f960007de8dc5': {
     id: '63745ceb7b7f960007de8dc5',
     title: 'Boba Tea House',
@@ -175,16 +151,6 @@ export const AllFoodCourtStoreList = {
     businessHours: {
       validTimeFrom: '10:00',
       validTimeTo: '19:00',
-    },
-  },
-  '63a2a5a16b6f220007796bc7': {
-    id: '63a2a5a16b6f220007796bc7',
-    title: "Salad Atelier OTG (Taylor's Lakeside)",
-    imageNoCompression: SaladAtelierImage,
-    tags: ['Healthy', 'Salad', 'Fresh'],
-    businessHours: {
-      validTimeFrom: '8:30',
-      validTimeTo: '19:30',
     },
   },
   '63974c018f6d940007f79bb9': {
@@ -215,16 +181,6 @@ export const AllFoodCourtStoreList = {
     businessHours: {
       validTimeFrom: '0:00',
       validTimeTo: '24:00',
-    },
-  },
-  '63747d2aa07b6a0008108c24': {
-    id: '63747d2aa07b6a0008108c24',
-    title: 'Hope Coffee',
-    imageNoCompression: HopeCoffeeImage,
-    tags: ['Street Food', 'Toast', 'Croffle', 'Coffee'],
-    businessHours: {
-      validTimeFrom: '08:00',
-      validTimeTo: '19:30',
     },
   },
   '60750940db81da0007dd1f70': {
