@@ -6,6 +6,7 @@ import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import BusinessProfile from './components/BusinessProfile';
 import BusinessRewards from './components/BusinessRewards';
+import MembershipTiersInfoTabs from '../../components/MembershipTiersInfoTabs';
 import Footer from './components/Footer';
 import JoiningIndicator from './components/JoiningIndicator';
 import Profile from '../../../Profile';
@@ -33,6 +34,7 @@ const MembershipForm = () => {
       <section>
         <BusinessProfile />
         <BusinessRewards />
+        <MembershipTiersInfoTabs />
       </section>
       <Footer />
       <JoiningIndicator />
