@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getCustomerCashbackPrice } from '../../../../redux/modules/customer/selectors';
 import { Image } from '../../../../../common/components/Image';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
 import EarnedCashbackIcon from '../../../../../images/rewards-earned-cashback.svg';
 import styles from './CashbackBlock.module.scss';
 
