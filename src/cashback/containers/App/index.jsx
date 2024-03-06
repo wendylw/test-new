@@ -35,7 +35,7 @@ import Clevertap from '../../../utils/clevertap';
 
 class App extends Component {
   async componentDidMount() {
-    const { t, appActions, userCountry, isClaimCashbackPage, isSeamlessLoyaltyPage } = this.props;
+    const { t, appActions, userCountry, isClaimCashbackPage, isSeamlessLoyaltyPage, isHomePage } = this.props;
 
     this.visitErrorPage();
 
