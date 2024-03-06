@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { getBusiness, getMessageInfo } from '../../redux/modules/app';
-import { actions as commonActions } from '../../redux/modules/common';
+import { getBusiness } from '../../redux/modules/app';
+import { actions as commonActionsCreator } from '../../redux/modules/common';
+import { getMessageInfo } from '../../redux/modules/common/selectors';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import TopMessage from '../TopMessage';
 import ClaimedMessage from '../ClaimedMessage';
@@ -102,8 +103,8 @@ Message.propTypes = {
   businessInfo: PropTypes.shape({
     claimCashbackCountPerDay: PropTypes.number,
   }),
-  appActions: PropTypes.shape({
-    hideMessageInfo: PropTypes.func,
+  commonActions: PropTypes.shape({
+    messageInfoHide: PropTypes.func,
   }),
 };
 
@@ -116,8 +117,8 @@ Message.defaultProps = {
   businessInfo: {
     claimCashbackCountPerDay: 0,
   },
-  appActions: {
-    hideMessageInfo: () => {},
+  commonActions: {
+    messageInfoHide: () => {},
   },
 };
 
@@ -133,7 +134,7 @@ export default compose(
       };
     },
     dispatch => ({
-      commonActions: bindActionCreators(commonActions, dispatch),
+      commonActions: bindActionCreators(commonActionsCreator, dispatch),
     })
   )
 )(Message);

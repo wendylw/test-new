@@ -6,7 +6,6 @@ import appReducers, {
   getError,
   getOnlineStoreInfo,
   getRequestInfo,
-  getMessageInfo,
 } from './app';
 import rootReducer from './index';
 import { APP_TYPES as types } from '../types';
@@ -247,9 +246,5 @@ describe('src/cashback/redux/modules/app.js:selectors', () => {
   it('getRequestInfo', () => {
     const expectedState = initialState.requestInfo;
     expect(getRequestInfo(state)).toEqual(expectedState);
-  });
-  it('getMessageInfo', () => {
-    const expectedState = initialState.messageInfo;
-    expect(getMessageInfo(state)).toEqual(expectedState);
   });
 });

@@ -79,11 +79,6 @@ export const initialState = {
   },
   customerInfo: {},
   error: null, // network error
-  messageInfo: {
-    show: false,
-    key: null,
-    message: null,
-  }, // message modal
   business: config.business,
   onlineStoreInfo: {
     id: '',
@@ -357,10 +352,6 @@ export const actions = {
 
   clearError: () => ({
     type: types.CLEAR_ERROR,
-  }),
-
-  hideMessageInfo: () => ({
-    type: types.HIDE_MESSAGE_MODAL,
   }),
 
   setLoginPrompt: prompt => ({
@@ -680,22 +671,11 @@ const coreBusiness = (state = initialState.coreBusiness, action) => {
   }
 };
 
-const messageInfo = (state = initialState.messageInfo, action) => {
-  switch (action.type) {
-    case types.HIDE_MESSAGE_MODAL: {
-      return { ...state, show: false, key: null, message: null };
-    }
-    default:
-      return state;
-  }
-};
-
 const requestInfo = (state = initialState.requestInfo) => state;
 
 export default combineReducers({
   user,
   error,
-  messageInfo,
   business,
   onlineStoreInfo,
   coreBusiness,
@@ -715,7 +695,6 @@ export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => state.entities.onlineStores[state.app.onlineStoreInfo.id];
 export const getCoreBusiness = state => state.app.coreBusiness;
 export const getRequestInfo = state => state.app.requestInfo;
-export const getMessageInfo = state => state.app.messageInfo;
 
 export const getOnlineStoreInfoFavicon = createSelector(getOnlineStoreInfo, info => _get(info, 'favicon', null));
 
