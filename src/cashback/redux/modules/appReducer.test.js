@@ -209,18 +209,6 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
     });
 
-    it('types.SET_CASHBACK_MESSAGE_SUCCESS', () => {
-      const action = {
-        type: types.SET_CASHBACK_MESSAGE_SUCCESS,
-        ...messageActionInfo,
-      };
-      const expectedState = {
-        ...initialState.messageInfo,
-        key: 'mockStatus',
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
-    });
-
     it('default', () => {
       expect(getReducerNewState(appReducers, { type: 'default' }, nameField)).toEqual({
         ...initialState.messageInfo,

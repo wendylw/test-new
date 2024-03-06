@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 import { closeWebView } from '../../../utils/native-methods';
 import usePrefetch from '../../../common/utils/hooks/usePrefetch';
-import { actions as appActions, getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
+import { getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
+import { actions as commonActions } from '../../redux/modules/common';
 import { getIsWeb, getIsWebview } from '../../redux/modules/common/selectors';
 import { getIsLogin } from '../../../redux/modules/user/selectors';
 import { initUserInfo } from '../../../redux/modules/user/thunks';
@@ -79,7 +80,7 @@ const ClaimCashback = () => {
   // TODO: WB-6994: remove this useEffect that will redirect to cashback detail page
   useEffect(() => {
     if (!isMerchantMembershipEnabled && orderCashbackStatus) {
-      dispatch(appActions.setMessageInfo({ key: orderCashbackStatus }));
+      dispatch(commonActions.messageInfoSet({ key: orderCashbackStatus }));
     }
   }, [orderCashbackStatus, dispatch, isMerchantMembershipEnabled]);
 

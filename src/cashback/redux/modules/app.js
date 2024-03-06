@@ -359,16 +359,6 @@ export const actions = {
     type: types.CLEAR_ERROR,
   }),
 
-  setMessageInfo: ({ key, message }) => ({
-    type: types.SET_MESSAGE_INFO,
-    key,
-    message,
-  }),
-
-  showMessageInfo: () => ({
-    type: types.SHOW_MESSAGE_MODAL,
-  }),
-
   hideMessageInfo: () => ({
     type: types.HIDE_MESSAGE_MODAL,
   }),
@@ -692,23 +682,8 @@ const coreBusiness = (state = initialState.coreBusiness, action) => {
 
 const messageInfo = (state = initialState.messageInfo, action) => {
   switch (action.type) {
-    case types.SET_MESSAGE_INFO: {
-      const { key, message } = action;
-      return { ...state, key, message };
-    }
-    case types.SHOW_MESSAGE_MODAL: {
-      return { ...state, show: true };
-    }
     case types.HIDE_MESSAGE_MODAL: {
       return { ...state, show: false, key: null, message: null };
-    }
-    case types.SET_CASHBACK_MESSAGE_SUCCESS: {
-      const { status } = action;
-
-      return {
-        ...state,
-        key: status,
-      };
     }
     default:
       return state;

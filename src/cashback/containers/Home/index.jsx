@@ -5,7 +5,8 @@ import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
 import { closeWebView } from '../../../utils/native-methods';
-import { actions as appActionCreators, getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
+import { getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
+import { actions as commonActionsCreators } from '../../redux/modules/common';
 import { getIsLogin } from '../../../redux/modules/user/selectors';
 import {
   initUserInfo as initUserInfoThunk,
@@ -34,7 +35,7 @@ const cashbackDownloadText = 'Download the Beep app to keep track of your cashba
 class PageLoyalty extends React.Component {
   async componentDidMount() {
     const {
-      appActions,
+      commonActions,
       merchantBusiness,
       isWebview,
       isAlipayMiniProgram,
@@ -59,13 +60,13 @@ class PageLoyalty extends React.Component {
     const { isLogin } = this.props;
 
     if (isLogin) {
-      appActions.showMessageInfo();
+      commonActions.messageInfoShow();
       loadConsumerCustomerInfo();
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { isLogin, isAppUserLogin, appActions, initUserInfo, loadConsumerCustomerInfo } = this.props;
+    const { isLogin, isAppUserLogin, commonActions, initUserInfo, loadConsumerCustomerInfo } = this.props;
     const { isLogin: prevIsLogin, isAppUserLogin: prevIsAppUserLogin } = prevProps;
 
     if (isAppUserLogin !== prevIsAppUserLogin && isAppUserLogin) {
@@ -73,7 +74,7 @@ class PageLoyalty extends React.Component {
     }
 
     if (isLogin !== prevIsLogin && isLogin) {
-      appActions.showMessageInfo();
+      commonActions.messageInfoShow();
       loadConsumerCustomerInfo();
     }
   }
@@ -159,9 +160,8 @@ PageLoyalty.propTypes = {
   merchantDisplayName: PropTypes.string,
   customerCashbackPrice: PropTypes.string,
   isDownloadBannerShown: PropTypes.bool,
-  appActions: PropTypes.shape({
-    showMessageInfo: PropTypes.func,
-    setCashbackMessage: PropTypes.func,
+  commonActions: PropTypes.shape({
+    messageInfoShow: PropTypes.func,
   }),
   fetchMerchantInfo: PropTypes.func,
   initUserInfo: PropTypes.func,
@@ -180,9 +180,8 @@ PageLoyalty.defaultProps = {
   merchantDisplayName: '',
   customerCashbackPrice: null,
   isDownloadBannerShown: false,
-  appActions: {
-    showMessageInfo: () => {},
-    setCashbackMessage: () => {},
+  commonActions: {
+    messageInfoShow: () => {},
   },
   fetchMerchantInfo: () => {},
   initUserInfo: () => {},
@@ -206,7 +205,7 @@ export default compose(
       isDownloadBannerShown: getIsDownloadBannerShown(state),
     }),
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
+      commonActions: bindActionCreators(commonActionsCreators, dispatch),
       fetchMerchantInfo: bindActionCreators(fetchMerchantInfoThunk, dispatch),
       initUserInfo: bindActionCreators(initUserInfoThunk, dispatch),
       loginUserByBeepApp: bindActionCreators(loginUserByBeepAppThunk, dispatch),

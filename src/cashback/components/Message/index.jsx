@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { actions as appActionCreators, getBusiness, getMessageInfo } from '../../redux/modules/app';
+import { getBusiness, getMessageInfo } from '../../redux/modules/app';
+import { actions as commonActions } from '../../redux/modules/common';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import TopMessage from '../TopMessage';
 import ClaimedMessage from '../ClaimedMessage';
@@ -71,7 +72,7 @@ class Message extends React.Component {
   }
 
   render() {
-    const { appActions, messageInfo } = this.props;
+    const { commonActions, messageInfo } = this.props;
     const { show, key, message } = messageInfo || {};
 
     if (!show || (!key && !message)) {
@@ -79,11 +80,11 @@ class Message extends React.Component {
     }
 
     return EARNED_STATUS.includes(key) ? (
-      <ClaimedMessage isFirstTime={key === 'Claimed_FirstTime'} hideMessage={() => appActions.hideMessageInfo()} />
+      <ClaimedMessage isFirstTime={key === 'Claimed_FirstTime'} hideMessage={() => commonActions.messageInfoHide()} />
     ) : (
       <TopMessage
         className={ERROR_STATUS.includes(key) ? MESSAGE_TYPES.ERROR : MESSAGE_TYPES.PRIMARY}
-        hideMessage={() => appActions.hideMessageInfo()}
+        hideMessage={() => commonActions.messageInfoHide()}
         message={key ? this.MESSAGES[key] || this.MESSAGES.Default : message}
       />
     );
@@ -93,9 +94,6 @@ class Message extends React.Component {
 Message.displayName = 'Message';
 
 Message.propTypes = {
-  appActions: PropTypes.shape({
-    hideMessageInfo: PropTypes.func,
-  }),
   messageInfo: PropTypes.shape({
     show: PropTypes.bool,
     key: PropTypes.string,
@@ -104,12 +102,12 @@ Message.propTypes = {
   businessInfo: PropTypes.shape({
     claimCashbackCountPerDay: PropTypes.number,
   }),
+  appActions: PropTypes.shape({
+    hideMessageInfo: PropTypes.func,
+  }),
 };
 
 Message.defaultProps = {
-  appActions: {
-    hideMessageInfo: () => {},
-  },
   messageInfo: {
     show: false,
     key: null,
@@ -117,6 +115,9 @@ Message.defaultProps = {
   },
   businessInfo: {
     claimCashbackCountPerDay: 0,
+  },
+  appActions: {
+    hideMessageInfo: () => {},
   },
 };
 
@@ -132,7 +133,7 @@ export default compose(
       };
     },
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
+      commonActions: bindActionCreators(commonActions, dispatch),
     })
   )
 )(Message);
