@@ -747,6 +747,12 @@ export const getIsSeamlessLoyaltyPage = () => {
   return pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION);
 };
 
+export const getIsHomePage = () => {
+  const { pathname } = window.location;
+
+  return pathname === PATH_NAME_MAPPING.CASHBACK_BASE || pathname === `${PATH_NAME_MAPPING.CASHBACK_HOME}/`;
+};
+
 export const getLoginBannerPrompt = createSelector(getUser, userInfo => _get(userInfo, 'prompt', null));
 
 export const getIsUserLogin = createSelector(getUser, userInfo => _get(userInfo, 'isLogin', false));

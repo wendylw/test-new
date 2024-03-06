@@ -14,6 +14,7 @@ import {
   getIsLoginModalShown,
   getIsClaimCashbackPage,
   getIsSeamlessLoyaltyPage,
+  getIsHomePage,
   getLoginAlipayMiniProgramRequestError,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
@@ -43,7 +44,7 @@ class App extends Component {
       // TNGD code is executed at the very beginning.
       // Because the MP and Beep accounts are not synchronized,
       // it is impossible to determine that the accounts are the same
-      if (isAlipayMiniProgram() && !(isClaimCashbackPage || isSeamlessLoyaltyPage)) {
+      if (isAlipayMiniProgram() && !(isClaimCashbackPage || isSeamlessLoyaltyPage || isHomePage)) {
         // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
         await appActions.loginByAlipayMiniProgram();
 
@@ -84,7 +85,7 @@ class App extends Component {
 
       const { isUserLogin } = this.props;
 
-      if (isWebview() && !(isClaimCashbackPage || isSeamlessLoyaltyPage)) {
+      if (isWebview() && !(isClaimCashbackPage || isSeamlessLoyaltyPage || isHomePage)) {
         await appActions.syncLoginFromBeepApp();
 
         return;
@@ -178,6 +179,7 @@ App.propTypes = {
   isUserLogin: PropTypes.bool,
   isClaimCashbackPage: PropTypes.bool,
   isSeamlessLoyaltyPage: PropTypes.bool,
+  isHomePage: PropTypes.bool,
   onlineStoreInfoFavicon: PropTypes.string,
   error: PropTypes.shape({
     message: PropTypes.string,
@@ -209,6 +211,7 @@ App.defaultProps = {
   isUserLogin: false,
   isClaimCashbackPage: false,
   isSeamlessLoyaltyPage: false,
+  isHomePage: false,
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
@@ -226,6 +229,7 @@ export default compose(
       isUserLogin: getIsUserLogin(state),
       isClaimCashbackPage: getIsClaimCashbackPage(state),
       isSeamlessLoyaltyPage: getIsSeamlessLoyaltyPage(state),
+      isHomePage: getIsHomePage(state),
       isLoginModalShown: getIsLoginModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
