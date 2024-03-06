@@ -12,12 +12,14 @@ import {
   getIsLoginRequestStatusPending,
   getOnlineStoreInfoFavicon,
   getIsLoginModalShown,
+  getUserConsumerId,
   getIsClaimCashbackPage,
   getIsSeamlessLoyaltyPage,
   getIsHomePage,
   getLoginAlipayMiniProgramRequestError,
 } from '../../redux/modules/app';
 import { getPageError } from '../../../redux/modules/entities/error';
+import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
 import Constants from '../../../utils/constants';
 import { isWebview } from '../../../common/utils';
 import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
@@ -35,11 +37,24 @@ import Clevertap from '../../../utils/clevertap';
 
 class App extends Component {
   async componentDidMount() {
-    const { t, appActions, userCountry, isClaimCashbackPage, isSeamlessLoyaltyPage, isHomePage } = this.props;
+    const {
+      t,
+      appActions,
+      userCountry,
+      loadConsumerCustomerInfo,
+      isClaimCashbackPage,
+      isSeamlessLoyaltyPage,
+      isHomePage,
+    } = this.props;
 
     this.visitErrorPage();
 
     try {
+      // 1. fetch online store info
+      const initRequests = [appActions.fetchOnlineStoreInfo(), appActions.fetchCashbackBusiness()];
+
+      await Promise.all(initRequests);
+
       // 2. login
       // TNGD code is executed at the very beginning.
       // Because the MP and Beep accounts are not synchronized,
@@ -83,7 +98,7 @@ class App extends Component {
 
       await appActions.loadConsumerLoginStatus();
 
-      const { isUserLogin } = this.props;
+      const { isUserLogin, userConsumerId } = this.props;
 
       if (isWebview() && !(isClaimCashbackPage || isSeamlessLoyaltyPage || isHomePage)) {
         await appActions.syncLoginFromBeepApp();
@@ -94,18 +109,55 @@ class App extends Component {
       if (!isUserLogin) {
         appActions.showLoginModal();
       }
+
+      // TODO: This will be optimized later, this is a temporary modification plan.
+      // It is not recommended to introduce page selector in App or app.
+      if (userConsumerId) {
+        let isLoadCustomerAvailable = true;
+
+        if (isClaimCashbackPage || isSeamlessLoyaltyPage) {
+          isLoadCustomerAvailable = false;
+        }
+
+        if (isLoadCustomerAvailable) {
+          await loadConsumerCustomerInfo();
+        }
+      }
     } catch (error) {
       logger.error('Cashback_App_InitFailed', { message: error?.message });
     }
   }
 
   componentDidUpdate = async prevProps => {
-    const { appActions, pageError, isUserLogin: currIsUserLogin } = this.props;
+    const {
+      appActions,
+      pageError,
+      isUserLogin: currIsUserLogin,
+      userConsumerId: currUserConsumerId,
+      loadConsumerCustomerInfo,
+      isClaimCashbackPage,
+      isSeamlessLoyaltyPage,
+      isHomePage,
+    } = this.props;
     const { pageError: prevPageError, isUserLogin: prevIsUserLogin } = prevProps;
     const { code } = prevPageError || {};
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
+    }
+
+    // currUserConsumerId !== prevUserConsumerId instead of !prevUserConsumerId .
+    // The 3rd MiniProgram cached the previous consumerId, so the consumerId is not the correct account
+    if (currIsUserLogin && currUserConsumerId) {
+      let isLoadCustomerAvailable = false;
+
+      if (isClaimCashbackPage || isSeamlessLoyaltyPage || isHomePage) {
+        isLoadCustomerAvailable = false;
+      }
+
+      if (isLoadCustomerAvailable) {
+        await loadConsumerCustomerInfo();
+      }
     }
 
     if (currIsUserLogin && currIsUserLogin !== prevIsUserLogin) {
@@ -180,6 +232,7 @@ App.propTypes = {
   isClaimCashbackPage: PropTypes.bool,
   isSeamlessLoyaltyPage: PropTypes.bool,
   isHomePage: PropTypes.bool,
+  userConsumerId: PropTypes.string,
   onlineStoreInfoFavicon: PropTypes.string,
   error: PropTypes.shape({
     message: PropTypes.string,
@@ -192,6 +245,7 @@ App.propTypes = {
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
     resetConsumerLoginStatus: PropTypes.func,
+    loadConsumerCustomerInfo: PropTypes.func,
     resetConsumerCustomerInfo: PropTypes.func,
     fetchOnlineStoreInfo: PropTypes.func,
     fetchCashbackBusiness: PropTypes.func,
@@ -203,6 +257,7 @@ App.propTypes = {
     showLoginModal: PropTypes.func,
     hideLoginModal: PropTypes.func,
   }),
+  loadConsumerCustomerInfo: PropTypes.func,
 };
 
 App.defaultProps = {
@@ -212,12 +267,14 @@ App.defaultProps = {
   isClaimCashbackPage: false,
   isSeamlessLoyaltyPage: false,
   isHomePage: false,
+  userConsumerId: null,
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
   isLoginModalShown: false,
   loginAlipayMiniProgramRequestError: null,
   appActions: {},
+  loadConsumerCustomerInfo: () => {},
 };
 
 export default compose(
@@ -230,6 +287,7 @@ export default compose(
       isClaimCashbackPage: getIsClaimCashbackPage(state),
       isSeamlessLoyaltyPage: getIsSeamlessLoyaltyPage(state),
       isHomePage: getIsHomePage(state),
+      userConsumerId: getUserConsumerId(state),
       isLoginModalShown: getIsLoginModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
@@ -239,6 +297,7 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      loadConsumerCustomerInfo: bindActionCreators(loadConsumerCustomerInfoThunk, dispatch),
     })
   )
 )(App);
