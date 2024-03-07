@@ -8,6 +8,7 @@ import {
 import styles from './MembershipTiersInfoTabs.module.scss';
 
 const getCurrentActiveBlockInfo = activeIndex => {
+  console.log(document.getElementById(`membership-tier-button-${activeIndex}`));
   const buttonElement = document.getElementById(`membership-tier-button-${activeIndex}`);
 
   if (buttonElement) {
@@ -24,21 +25,28 @@ const MembershipTiersInfoTabs = () => {
   const isMembershipBenefitTabsShown = useSelector(getIsMembershipBenefitTabsShown);
   const membershipTiersBenefit = useSelector(getMerchantMembershipTiersBenefit);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [activeBlockInfo, setActiveBlockInfo] = useState({
-    offsetLeft: 0,
-    width: 0,
-  });
+  // const [activeBlockInfo, setActiveBlockInfo] = useState({
+  //   offsetLeft: 0,
+  //   width: 0,
+  // });
   const handleClickMembershipTierButton = index => {
     setActiveIndex(index);
-    const activeInfo = getCurrentActiveBlockInfo(index);
-
-    if (activeInfo) {
-      setActiveBlockInfo({
-        offsetLeft: activeInfo.offsetLeft,
-        width: activeInfo.width,
-      });
-    }
   };
+
+  console.log(document.getElementById(`membership-tier-button-${activeIndex}`));
+
+  // useEffect(() => {
+  //   const activeInfo = getCurrentActiveBlockInfo(activeIndex);
+
+  //   console.log('activeIndex', activeIndex);
+
+  //   if (activeInfo) {
+  //     setActiveBlockInfo({
+  //       offsetLeft: activeInfo.offsetLeft,
+  //       width: activeInfo.width,
+  //     });
+  //   }
+  // }, [activeInfo]);
 
   return (
     <section className={styles.MembershipTiersInfoTabsSection}>
@@ -72,8 +80,8 @@ const MembershipTiersInfoTabs = () => {
             <div
               className={styles.MembershipTiersInfoTabsActiveBlock}
               style={{
-                left: `${activeBlockInfo.offsetLeft}px`,
-                width: `${activeBlockInfo.width}px`,
+                left: `${getCurrentActiveBlockInfo(activeIndex)?.offsetLeft}px`,
+                width: `${getCurrentActiveBlockInfo(activeIndex)?.width}px`,
                 transition: 'left 0.3s, width 0.3s',
               }}
             />
