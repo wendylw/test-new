@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { getMerchantClaimCashbackCountPerDay } from '../../redux/modules/merchant/selectors';
+import { getMerchantClaimCashbackCountPerDay } from '../../../redux/modules/merchant/selectors';
 import { actions as commonActionsCreator } from '../../redux/modules/common';
 import { getMessageInfo } from '../../redux/modules/common/selectors';
 import TopMessage from '../TopMessage';

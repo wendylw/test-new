@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { closeWebView } from '../../../utils/native-methods';
 import usePrefetch from '../../../common/utils/hooks/usePrefetch';
 import { getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
-import { actions as commonActions } from '../../redux/modules/common';
 import { getIsWeb, getIsWebview } from '../../redux/modules/common/selectors';
 import { getIsLogin } from '../../../redux/modules/user/selectors';
 import { initUserInfo } from '../../../redux/modules/user/thunks';
