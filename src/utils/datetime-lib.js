@@ -259,6 +259,18 @@ export const getDifferenceInMilliseconds = (dateLeft, dateRight) => {
   return dateLeft.getTime() - dateRight.getTime();
 };
 
+export const getDifferenceTodayInDays = dateCompare => {
+  try {
+    invariant(isValidDate(dateCompare), 'invalid date object');
+
+    const days = dayjs(new Date()).diff(dateCompare, 'day', true);
+
+    return days;
+  } catch (error) {
+    return null;
+  }
+};
+
 export const getIsAfterDateTime = (date, dateCompare, unit = 'millisecond') => {
   try {
     invariant(isValidDate(date) && isValidDate(dateCompare), 'invalid date object');
@@ -266,5 +278,27 @@ export const getIsAfterDateTime = (date, dateCompare, unit = 'millisecond') => {
     return dayjs(date).isAfter(dateCompare, unit);
   } catch (error) {
     return false;
+  }
+};
+
+export const getIsMidnight = date => {
+  try {
+    invariant(isValidDate(date), 'invalid date object');
+
+    return dayjs(date).hour() === 0 && dayjs(date).minute() === 0 && dayjs(date).second() === 0;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const getReduceOneSecondForDate = date => {
+  try {
+    invariant(isValidDate(date), 'invalid date object');
+
+    return dayjs(date)
+      .subtract(1, 'second')
+      .format();
+  } catch (error) {
+    return null;
   }
 };
