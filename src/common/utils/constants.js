@@ -102,6 +102,8 @@ export const PATH_NAME_MAPPING = {
   UNIQUE_PROMO: '/promo',
   CLAIM: '/claim',
   REWARDS_LOGIN: '/login',
+  CASHBACK: '/cashback',
+  CASHBACK_DETAIL: '/cashback-detail',
   // dine
   DINE: '/dine',
   FOOD_COURT: '/food-court',

@@ -62,7 +62,8 @@ export const claimCashback = createAsyncThunk(
     const state = getState();
     const phone = getUserPhone(state);
     const receiptNumber = getReceiptNumber(state);
-    await dispatch(createCashbackInfo({ receiptNumber, phone }));
+    await dispatch(createCashbackInfo({ receiptNumber, phone })).unwrap();
+    dispatch(loadCashbackInfo(receiptNumber));
   }
 );
 
