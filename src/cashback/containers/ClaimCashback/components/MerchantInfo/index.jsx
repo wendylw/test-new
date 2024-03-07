@@ -1,13 +1,13 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { getOnlineStoreInfoLogo, getBusinessDisplayName } from '../../../../redux/modules/app';
-import { getOrderCashbackStoreCity } from '../../../../redux/modules/claim';
+import { getMerchantLogo, getMerchantDisplayName } from '../../../../../redux/modules/merchant/selectors';
+import { getOrderCashbackStoreCity } from '../../redux/selectors';
 import { ObjectFitImage } from '../../../../../common/components/Image';
 import styles from './MerchantInfo.module.scss';
 
 const MerchantInfo = () => {
-  const merchantLogo = useSelector(getOnlineStoreInfoLogo);
-  const merchantDisplayName = useSelector(getBusinessDisplayName);
+  const merchantLogo = useSelector(getMerchantLogo);
+  const merchantDisplayName = useSelector(getMerchantDisplayName);
   const city = useSelector(getOrderCashbackStoreCity);
 
   return (

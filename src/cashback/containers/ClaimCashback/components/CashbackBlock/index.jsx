@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { getOrderCashbackValue } from '../../../../redux/modules/claim';
+import { getOrderCashbackValue } from '../../redux/selectors';
 import styles from './CashbackBlock.module.scss';
 
 const CashbackBlock = () => {

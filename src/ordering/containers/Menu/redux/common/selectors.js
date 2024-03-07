@@ -734,6 +734,7 @@ export const getIsAbleToReviewCart = createSelector(
   getIsEnablePayLater,
   getCartQuantity,
   getDeliveryInfo,
+  getIsQrOrderingShippingType,
   getIsBeepDeliveryShippingType,
   getIsFulfillMinimumConsumption,
   getIsUserLoginRequestStatusInPending,
@@ -742,25 +743,32 @@ export const getIsAbleToReviewCart = createSelector(
     enablePayLater,
     cartQuantity,
     deliveryInfo,
+    isQrOrderingShippingType,
     isBeepDeliveryShippingType,
     isFulfillMinimumConsumption,
     isUserLoginRequestStatusInPending,
     storeStatus
   ) => {
-    const { enableLiveOnline } = deliveryInfo;
+    const { enableLiveOnline, enableDeliveryLiveOnline } = deliveryInfo;
     const availableCartQuantity = cartQuantity > 0;
 
-    if (enablePayLater) {
-      return availableCartQuantity;
+    if (isQrOrderingShippingType && !enableLiveOnline) {
+      return false;
+    }
+
+    if (isBeepDeliveryShippingType && !enableDeliveryLiveOnline) {
+      return false;
     }
 
     if (isBeepDeliveryShippingType && storeStatus === STORE_OPENING_STATUS.CLOSED) {
       return false;
     }
 
-    return (
-      availableCartQuantity && enableLiveOnline && !isUserLoginRequestStatusInPending && isFulfillMinimumConsumption
-    );
+    if (enablePayLater) {
+      return availableCartQuantity;
+    }
+
+    return availableCartQuantity && !isUserLoginRequestStatusInPending && isFulfillMinimumConsumption;
   }
 );
 
@@ -809,9 +817,45 @@ export const getShouldShowProductDetailDrawer = createSelector(
 
 export const getShouldShowOfflineMenu = createSelector(
   getDeliveryInfo,
+  getIsQrOrderingShippingType,
+  getIsBeepDeliveryShippingType,
   getIsCoreBusinessAPICompleted,
-  (deliveryInfo, isCoreBusinessAPICompleted) => {
-    const { enableLiveOnline } = deliveryInfo;
-    return isCoreBusinessAPICompleted && !enableLiveOnline;
+  (deliveryInfo, isQrOrderingShippingType, isBeepDeliveryShippingType, isCoreBusinessAPICompleted) => {
+    const { enableLiveOnline, enableDeliveryLiveOnline } = deliveryInfo;
+
+    if (!isCoreBusinessAPICompleted) {
+      return false;
+    }
+
+    if (isQrOrderingShippingType && !enableLiveOnline) {
+      return true;
+    }
+
+    if (isBeepDeliveryShippingType && !enableDeliveryLiveOnline) {
+      return true;
+    }
+
+    return false;
+  }
+);
+
+export const getShouldShowOfflineHeader = createSelector(
+  getIsWebview,
+  getDeliveryInfo,
+  getIsFromBeepSite,
+  getIsQrOrderingShippingType,
+  getIsBeepDeliveryShippingType,
+  (isWebview, deliveryInfo, isFromBeepSite, isQrOrderingShippingType, isBeepDeliveryShippingType) => {
+    const { enableLiveOnline, enableDeliveryLiveOnline } = deliveryInfo;
+
+    if (isQrOrderingShippingType && enableLiveOnline) {
+      return false;
+    }
+
+    if (isBeepDeliveryShippingType && enableDeliveryLiveOnline) {
+      return false;
+    }
+
+    return isWebview || isFromBeepSite;
   }
 );

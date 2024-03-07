@@ -31,12 +31,8 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getCoreBusinessInfo } from './api-request';
 import { getAllLoyaltyHistories } from '../../../redux/modules/entities/loyaltyHistories';
-import {
-  REGISTRATION_SOURCE,
-  COUNTRIES_DEFAULT_CURRENCIES,
-  COUNTRIES_DEFAULT_LOCALE,
-} from '../../../common/utils/constants';
-import { isJSON, isWebview, isTNGMiniProgram } from '../../../common/utils';
+import { REGISTRATION_SOURCE, PATH_NAME_MAPPING } from '../../../common/utils/constants';
+import { isJSON, isWebview } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 import { getCustomerId } from './customer/selectors';
@@ -744,7 +740,7 @@ export default combineReducers({
 });
 
 // selectors
-export const getIsWeb = () => !isWebview() && !isTNGMiniProgram();
+export const getIsWeb = () => !isWebview() && !isAlipayMiniProgram();
 export const getIsWebview = () => isWebview();
 export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
@@ -797,6 +793,12 @@ export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, c
 );
 
 // TODO: Will remove from reducer, prompt should in component
+export const getIsClaimCashbackPage = () => {
+  const { pathname } = window.location;
+
+  return pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM);
+};
+
 export const getLoginBannerPrompt = createSelector(getUser, userInfo => _get(userInfo, 'prompt', null));
 
 export const getIsUserLogin = createSelector(getUser, userInfo => _get(userInfo, 'isLogin', false));
@@ -927,31 +929,4 @@ export const getCashbackHistory = createSelector(
   getCustomerId,
   getAllLoyaltyHistories,
   (customerId, allLoyaltyHistories) => allLoyaltyHistories[customerId]
-);
-
-export const getBusinessCountry = createSelector(
-  getOnlineStoreInfo,
-  getBusinessInfo,
-  (info, businessInfo) => info?.country || businessInfo?.country || ''
-);
-
-export const getBusinessCurrency = createSelector(
-  getOnlineStoreInfo,
-  getBusinessInfo,
-  getBusinessCountry,
-  (info, businessInfo, businessCountry) =>
-    info?.currency || businessInfo?.currency || COUNTRIES_DEFAULT_CURRENCIES[businessCountry]
-);
-
-export const getBusinessLocale = createSelector(
-  getOnlineStoreInfo,
-  getBusinessInfo,
-  getBusinessCountry,
-  (info, businessInfo, businessCountry) =>
-    info?.locale || businessInfo?.locale || COUNTRIES_DEFAULT_LOCALE[businessCountry]
-);
-
-export const getBusinessDisplayName = createSelector(
-  getBusinessInfo,
-  businessInfo => businessInfo?.displayBusinessName || businessInfo?.name || ''
 );

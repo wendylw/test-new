@@ -4,28 +4,35 @@ import { useMount, useUnmount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { closeWebView } from '../../../utils/native-methods';
 import usePrefetch from '../../../common/utils/hooks/usePrefetch';
-import { actions as appActions, getIsWeb, getIsWebview, getIsUserLogin } from '../../redux/modules/app';
+import { getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
+import { getIsWeb, getIsWebview } from '../../redux/modules/common/selectors';
+import { getIsLogin } from '../../../redux/modules/user/selectors';
+import { initUserInfo } from '../../../redux/modules/user/thunks';
 import {
-  actions as claimActions,
-  getReceiptNumber,
-  getCashbackClaimRequestStatus,
-  getOrderCashbackStatus,
-} from '../../redux/modules/claim';
+  getOrderReceiptNumber,
+  getClaimedCashbackForCustomerStatus,
+  getIsClaimCashbackLoaderShow,
+} from './redux/selectors';
+import { actions as claimCashbackActions } from './redux';
+import { mounted, claimedCashbackAndContinueNextStep } from './redux/thunks';
 import Frame from '../../../common/components/Frame';
 import PageHeader from '../../../common/components/PageHeader';
+import PageToast from '../../../common/components/PageToast';
+import Loader from '../../../common/components/Loader';
 import MerchantInfo from './components/MerchantInfo';
 import CashbackBlock from './components/CashbackBlock';
 import styles from './ClaimCashback.module.scss';
 
-const ClaimCashback = ({ history }) => {
+const ClaimCashback = () => {
   const { t } = useTranslation(['Cashback']);
   const dispatch = useDispatch();
+  const isAppUserLogin = useSelector(getIsAppUserLogin);
   const isWeb = useSelector(getIsWeb);
   const isWebview = useSelector(getIsWebview);
-  const isUserLogin = useSelector(getIsUserLogin);
-  const receiptNumber = useSelector(getReceiptNumber);
-  const claimRequestStatus = useSelector(getCashbackClaimRequestStatus);
-  const orderCashbackStatus = useSelector(getOrderCashbackStatus);
+  const isLogin = useSelector(getIsLogin);
+  const orderReceiptNumber = useSelector(getOrderReceiptNumber);
+  const claimedCashbackForCustomerStatus = useSelector(getClaimedCashbackForCustomerStatus);
+  const isClaimCashbackLoaderShow = useSelector(getIsClaimCashbackLoaderShow);
   const handleClickHeaderBackButton = useCallback(() => {
     if (isWebview) {
       closeWebView();
@@ -35,24 +42,25 @@ const ClaimCashback = ({ history }) => {
   usePrefetch(['CB_HM'], ['Cashback']);
 
   useMount(() => {
-    dispatch(claimActions.mounted(history));
+    dispatch(mounted());
   });
 
   useUnmount(() => {
-    dispatch(claimActions.resetData());
+    dispatch(claimCashbackActions.resetClaimCashback());
   });
 
   useEffect(() => {
-    if (isUserLogin && receiptNumber && !claimRequestStatus) {
-      dispatch(claimActions.claimCashbackForConsumer({ receiptNumber, history }));
+    if (isLogin && orderReceiptNumber && !claimedCashbackForCustomerStatus && isWeb) {
+      dispatch(claimedCashbackAndContinueNextStep());
     }
-  }, [isUserLogin, claimRequestStatus, receiptNumber, dispatch, history]);
+  }, [isLogin, claimedCashbackForCustomerStatus, orderReceiptNumber, isWeb, dispatch]);
 
+  // TODO: WB-6994: remove this useEffect after we have a better solution
   useEffect(() => {
-    if (orderCashbackStatus) {
-      dispatch(appActions.setMessageInfo({ key: orderCashbackStatus }));
+    if (isAppUserLogin) {
+      dispatch(initUserInfo());
     }
-  }, [orderCashbackStatus, dispatch]);
+  }, [isAppUserLogin, dispatch]);
 
   return (
     <Frame>
@@ -63,7 +71,10 @@ const ClaimCashback = ({ history }) => {
       />
       <MerchantInfo />
       <CashbackBlock />
-      {!isUserLogin && <div className={styles.ClaimCashbackNotLoginBackground} />}
+      {!isLogin && <div className={styles.ClaimCashbackNotLoginBackground} />}
+      {isClaimCashbackLoaderShow && (
+        <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
+      )}
     </Frame>
   );
 };
