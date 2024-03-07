@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, createRef } from 'react';
 import { useSelector } from 'react-redux';
 import { getClassName } from '../../../../../common/utils/ui';
 import {
@@ -8,7 +8,6 @@ import {
 import styles from './MembershipTiersInfoTabs.module.scss';
 
 const getCurrentActiveBlockInfo = activeIndex => {
-  console.log(document.getElementById(`membership-tier-button-${activeIndex}`));
   const buttonElement = document.getElementById(`membership-tier-button-${activeIndex}`);
 
   if (buttonElement) {
@@ -24,29 +23,28 @@ const getCurrentActiveBlockInfo = activeIndex => {
 const MembershipTiersInfoTabs = () => {
   const isMembershipBenefitTabsShown = useSelector(getIsMembershipBenefitTabsShown);
   const membershipTiersBenefit = useSelector(getMerchantMembershipTiersBenefit);
+  const benefitLength = membershipTiersBenefit.length;
   const [activeIndex, setActiveIndex] = useState(0);
-  // const [activeBlockInfo, setActiveBlockInfo] = useState({
-  //   offsetLeft: 0,
-  //   width: 0,
-  // });
+  const [activeBlockInfo, setActiveBlockInfo] = useState(null);
+  const [elRefs, setElRefs] = useState([]);
   const handleClickMembershipTierButton = index => {
     setActiveIndex(index);
+    setActiveBlockInfo(getCurrentActiveBlockInfo(index));
   };
 
-  console.log(document.getElementById(`membership-tier-button-${activeIndex}`));
+  useEffect(() => {
+    setElRefs(item =>
+      Array(benefitLength)
+        .fill()
+        .map((_, i) => item[i] || createRef())
+    );
+  }, [benefitLength]);
 
-  // useEffect(() => {
-  //   const activeInfo = getCurrentActiveBlockInfo(activeIndex);
-
-  //   console.log('activeIndex', activeIndex);
-
-  //   if (activeInfo) {
-  //     setActiveBlockInfo({
-  //       offsetLeft: activeInfo.offsetLeft,
-  //       width: activeInfo.width,
-  //     });
-  //   }
-  // }, [activeInfo]);
+  useEffect(() => {
+    if (benefitLength && elRefs[0] && !activeBlockInfo) {
+      setActiveBlockInfo(getCurrentActiveBlockInfo(0));
+    }
+  }, [benefitLength, elRefs, activeBlockInfo]);
 
   return (
     <section className={styles.MembershipTiersInfoTabsSection}>
@@ -64,6 +62,7 @@ const MembershipTiersInfoTabs = () => {
                 return (
                   <li key={`membership-tier-name-${tier.level}`} className={styles.MembershipTiersInfoTab}>
                     <button
+                      ref={elRefs[index]}
                       id={`membership-tier-button-${index}`}
                       className={membershipTiersBenefitButtonClassName}
                       data-test-id="rewards.business.membership-tiers-info-tabs.tier-button"
@@ -80,8 +79,8 @@ const MembershipTiersInfoTabs = () => {
             <div
               className={styles.MembershipTiersInfoTabsActiveBlock}
               style={{
-                left: `${getCurrentActiveBlockInfo(activeIndex)?.offsetLeft}px`,
-                width: `${getCurrentActiveBlockInfo(activeIndex)?.width}px`,
+                left: `${activeBlockInfo?.offsetLeft}px`,
+                width: `${activeBlockInfo?.width}px`,
                 transition: 'left 0.3s, width 0.3s',
               }}
             />
