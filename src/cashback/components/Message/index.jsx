@@ -3,10 +3,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { getBusiness } from '../../redux/modules/app';
+import { getMerchantClaimCashbackCountPerDay } from '../../redux/modules/merchant/selectors';
 import { actions as commonActionsCreator } from '../../redux/modules/common';
 import { getMessageInfo } from '../../redux/modules/common/selectors';
-import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import TopMessage from '../TopMessage';
 import ClaimedMessage from '../ClaimedMessage';
 
@@ -39,8 +38,7 @@ class Message extends React.Component {
   }
 
   initMessages() {
-    const { businessInfo, t } = this.props;
-    const { claimCashbackCountPerDay } = businessInfo || {};
+    const { claimCashbackCountPerDay, t } = this.props;
     const messages = {
       Default: t('DefaultMessage'),
       /* get Cash Back messages */
@@ -59,7 +57,7 @@ class Message extends React.Component {
       NotClaimed: t('NotClaimed'),
       NotClaimed_Expired: t('NotClaimedExpired'),
       NotClaimed_Cancelled: t('NotClaimedCancelled'),
-      NotClaimed_ReachLimit: t('NotClaimedReachLimit', { claimCashbackCountPerDay: claimCashbackCountPerDay || 0 }),
+      NotClaimed_ReachLimit: t('NotClaimedReachLimit', { claimCashbackCountPerDay }),
       NotClaimed_ReachMerchantLimit: t('NotClaimedReachMerchantLimit'),
       /* set Otp */
       NotSent_OTP: t('NotSentOTP'),
@@ -100,9 +98,7 @@ Message.propTypes = {
     key: PropTypes.string,
     message: PropTypes.string,
   }),
-  businessInfo: PropTypes.shape({
-    claimCashbackCountPerDay: PropTypes.number,
-  }),
+  claimCashbackCountPerDay: PropTypes.number,
   commonActions: PropTypes.shape({
     messageInfoHide: PropTypes.func,
   }),
@@ -114,9 +110,7 @@ Message.defaultProps = {
     key: null,
     message: null,
   },
-  businessInfo: {
-    claimCashbackCountPerDay: 0,
-  },
+  claimCashbackCountPerDay: 0,
   commonActions: {
     messageInfoHide: () => {},
   },
@@ -125,14 +119,10 @@ Message.defaultProps = {
 export default compose(
   withTranslation('Common'),
   connect(
-    state => {
-      const business = getBusiness(state) || '';
-
-      return {
-        messageInfo: getMessageInfo(state),
-        businessInfo: getBusinessByName(state, business),
-      };
-    },
+    state => ({
+      messageInfo: getMessageInfo(state),
+      claimCashbackCountPerDay: getMerchantClaimCashbackCountPerDay(state),
+    }),
     dispatch => ({
       commonActions: bindActionCreators(commonActionsCreator, dispatch),
     })
