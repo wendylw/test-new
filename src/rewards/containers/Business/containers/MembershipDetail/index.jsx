@@ -10,6 +10,7 @@ import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MemberCard from './components/MemberCard';
 import CashbackBlock from '../../components/CashbackBlock';
+import MembershipTiersInfoTabs from '../../components/MembershipTiersInfoTabs';
 import UniquePromoList from './components/UniquePromoList';
 import MembershipDetailFooter from './components/MembershipDetailFooter';
 import MemberPrompt from './components/MemberPrompt';
@@ -40,6 +41,7 @@ const MembershipDetail = () => {
         <CashbackBlock />
       </section>
       <UniquePromoList />
+      <MembershipTiersInfoTabs />
       <MembershipDetailFooter />
       <MemberPrompt />
     </Frame>

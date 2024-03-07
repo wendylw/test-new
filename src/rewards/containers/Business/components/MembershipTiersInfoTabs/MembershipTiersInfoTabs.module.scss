@@ -41,7 +41,9 @@
 .MembershipTiersInfoTabContent {
   @apply tw-hidden tw-p-12 sm:tw-p-12px;
 
-  min-height: 136px;
+  &__tab {
+    min-height: 136px;
+  }
 
   &__active {
     @apply tw-block;

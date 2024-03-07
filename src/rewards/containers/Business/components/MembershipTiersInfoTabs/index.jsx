@@ -4,6 +4,7 @@ import { getClassName } from '../../../../../common/utils/ui';
 import {
   getIsMembershipBenefitTabsShown,
   getMerchantMembershipTiersBenefit,
+  getMembershipTierListLength,
 } from '../../../../redux/modules/common/selectors';
 import styles from './MembershipTiersInfoTabs.module.scss';
 
@@ -23,7 +24,7 @@ const getCurrentActiveBlockInfo = activeIndex => {
 const MembershipTiersInfoTabs = () => {
   const isMembershipBenefitTabsShown = useSelector(getIsMembershipBenefitTabsShown);
   const membershipTiersBenefit = useSelector(getMerchantMembershipTiersBenefit);
-  const benefitLength = membershipTiersBenefit.length;
+  const benefitLength = useSelector(getMembershipTierListLength);
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeBlockInfo, setActiveBlockInfo] = useState(null);
   const [elRefs, setElRefs] = useState([]);
@@ -45,6 +46,10 @@ const MembershipTiersInfoTabs = () => {
       setActiveBlockInfo(getCurrentActiveBlockInfo(0));
     }
   }, [benefitLength, elRefs, activeBlockInfo]);
+
+  if (benefitLength === 0) {
+    return null;
+  }
 
   return (
     <section className={styles.MembershipTiersInfoTabsSection}>
@@ -87,6 +92,7 @@ const MembershipTiersInfoTabs = () => {
             {membershipTiersBenefit.map((benefit, index) => {
               const benefitDescriptionClassName = getClassName([
                 styles.MembershipTiersInfoTabContent,
+                styles.MembershipTiersInfoTabContent__tab,
                 activeIndex === index && styles.MembershipTiersInfoTabContent__active,
               ]);
 
@@ -103,7 +109,7 @@ const MembershipTiersInfoTabs = () => {
           </>
         ) : membershipTiersBenefit[0] ? (
           <div
-            className={styles.MembershipTiersInfoTabContent__active}
+            className={`${styles.MembershipTiersInfoTabContent} ${styles.MembershipTiersInfoTabContent__active}`}
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{ __html: membershipTiersBenefit[0].description }}
             data-test-id="rewards.business.membership-tiers-info-tabs.benefit-description"

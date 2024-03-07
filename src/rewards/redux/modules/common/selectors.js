@@ -46,3 +46,8 @@ export const getMerchantMembershipTiersBenefit = createSelector(
       return { ...tier, ...currentBenefit };
     })
 );
+
+export const getMembershipTierListLength = createSelector(
+  getMembershipTierList,
+  membershipTierList => membershipTierList.length
+);
