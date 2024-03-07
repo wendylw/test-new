@@ -28,6 +28,10 @@ const ClaimUniquePromoProxy = lazy(() =>
   )
 );
 
+const CashbackDetail = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_CBD" */ './Business/containers/CashbackDetail'))
+);
+
 const Login = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_Login" */ './Login')));
 
 const Routes = () => (
@@ -53,6 +57,11 @@ const Routes = () => (
           exact
           path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.CLAIM}`}
           component={ClaimUniquePromoProxy}
+        />
+        <Route
+          exact
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.CASHBACK}${PATH_NAME_MAPPING.CASHBACK_DETAIL}`}
+          component={CashbackDetail}
         />
         <Route exact path={PATH_NAME_MAPPING.REWARDS_LOGIN} component={Login} />
         <Route path="*" component={NotFound} />
