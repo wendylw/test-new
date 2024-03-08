@@ -30,7 +30,6 @@ import {
   getBusinessInfo,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
-  getIsTNGMiniProgram,
   getIsAlipayMiniProgram,
 } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
@@ -179,7 +178,7 @@ class CustomerInfo extends Component {
 
     this.setState({ processing: !!orderId });
 
-    // FB-4206: TnG MP won't go to the payment page
+    // FB-4206: TnG or GCash MP won't go to the payment page
     if (isDisabledWebPayment) {
       return;
     }
@@ -383,7 +382,6 @@ class CustomerInfo extends Component {
       cartBilling,
       customerError,
       storeInfoForCleverTap,
-      isTNGMiniProgram,
       isAlipayMiniProgram,
     } = this.props;
     const { addressChange, processing } = this.state;
@@ -394,12 +392,10 @@ class CustomerInfo extends Component {
       : '';
     const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
     const { total, shippingFee } = cartBilling || {};
-    // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
-    const isAlipayOrTNGMiniProgram = isTNGMiniProgram || isAlipayMiniProgram;
-    const shouldShowRedirectLoader = isAlipayOrTNGMiniProgram && processing;
-    const isValidToCreateOrder = (isAlipayOrTNGMiniProgram || !total) && !this.validateFields().show;
+    const shouldShowRedirectLoader = isAlipayMiniProgram && processing;
+    const isValidToCreateOrder = (isAlipayMiniProgram || !total) && !this.validateFields().show;
 
-    // FB-4026: For TnG MP, we won't go to the payment page once the user clicks the continue button, we will immediately create an order and call TnG payment API.
+    // FB-4026: For TnG or GCash MP, we won't go to the payment page once the user clicks the continue button, we will immediately create an order and call TnG or GCash payment API.
     // For such a case, we will show a redirect loader page to prevent users' further interaction and also provide the same payment flow as dine.
     if (shouldShowRedirectLoader) {
       return <RedirectPageLoader />;
@@ -563,7 +559,6 @@ CustomerInfo.propTypes = {
   businessInfo: PropTypes.object,
   storeInfoForCleverTap: PropTypes.object,
   /* eslint-enable */
-  isTNGMiniProgram: PropTypes.bool,
   shouldGoToAddNewAddressPage: PropTypes.bool,
   isDisabledWebPayment: PropTypes.bool,
   isAlipayMiniProgram: PropTypes.bool,
@@ -608,7 +603,6 @@ CustomerInfo.defaultProps = {
   },
   businessInfo: {},
   storeInfoForCleverTap: null,
-  isTNGMiniProgram: false,
   shouldGoToAddNewAddressPage: false,
   isDisabledWebPayment: false,
   isAlipayMiniProgram: false,
@@ -653,7 +647,6 @@ export default compose(
       businessUTCOffset: getBusinessUTCOffset(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       shouldGoToAddNewAddressPage: getShouldGoToAddNewAddressPage(state),
-      isTNGMiniProgram: getIsTNGMiniProgram(state),
       isAlipayMiniProgram: getIsAlipayMiniProgram(state),
       isDisabledWebPayment: getIsDisabledWebPayment(state),
     }),

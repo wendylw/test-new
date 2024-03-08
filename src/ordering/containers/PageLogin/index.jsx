@@ -38,7 +38,6 @@ import './OrderingPageLogin.scss';
 import config from '../../../config';
 import prefetch from '../../../common/utils/prefetch-assets';
 import logger from '../../../utils/monitoring/logger';
-import Utils from '../../../utils/utils';
 import { alert } from '../../../common/utils/feedback';
 import { getWebQRImageHeight } from './utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
@@ -452,8 +451,7 @@ class PageLogin extends React.Component {
     const { isLogin, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
 
-    // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
-    if (Utils.isTNGMiniProgram() || isAlipayMiniProgram) {
+    if (isAlipayMiniProgram) {
       return <PageLoader />;
     }
 

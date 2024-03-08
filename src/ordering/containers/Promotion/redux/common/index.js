@@ -39,11 +39,11 @@ const { reducer, actions } = createSlice({
       state.appliedResult.success = true;
       state.requestStatus.applyPromo = API_REQUEST_STATUS.FULFILLED;
     },
-    [applyPromo.rejected.type]: (state, { error }) => {
-      state.error.applyPromo.code = error.code;
+    [applyPromo.rejected.type]: (state, { payload }) => {
+      state.error.applyPromo.code = payload.code;
       // ExtraReducers rejected need name field and restore from string format
-      state.error.applyPromo.extraInfo = error.extra;
-      state.error.applyPromo.errorMessage = error.message;
+      state.error.applyPromo.extraInfo = payload.extra;
+      state.error.applyPromo.errorMessage = payload.message;
       state.appliedResult.success = false;
       state.requestStatus.applyPromo = API_REQUEST_STATUS.REJECTED;
     },

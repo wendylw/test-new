@@ -5,7 +5,7 @@ import { getApiRequestShippingType, isJSON } from '../../../common/utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 import logger from '../../../utils/monitoring/logger';
 import CleverTap from '../../../utils/clevertap';
-import { getUserLoginStatus, postUserLogin, getUserProfile, postLoginGuest } from './api-request';
+import { getUserLoginStatus, postUserLogin, getUserProfile, putProfileInfo, postLoginGuest } from './api-request';
 import { getConsumerId, getIsLogin, getIsLoginExpired, getUserCountry } from './selectors';
 import Utils from '../../../utils/utils';
 import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
@@ -68,6 +68,20 @@ export const fetchUserProfileInfo = createAsyncThunk('app/user/fetchUserProfileI
 
   return result;
 });
+
+/**
+ * @param {undefined}
+ * @return {Object} {firstName, email, birthday }
+ */
+export const uploadUserProfileInfo = createAsyncThunk(
+  'app/user/uploadUserProfileInfo',
+  async ({ firstName, email, birthday }, { getState }) => {
+    const state = getState();
+    const consumerId = getConsumerId(state);
+
+    await putProfileInfo(consumerId, { firstName, email, birthday });
+  }
+);
 
 export const initUserInfo = createAsyncThunk('app/user/initUserInfo', async (_, { dispatch, getState }) => {
   await dispatch(fetchUserLoginStatus());
@@ -177,7 +191,7 @@ export const loginUserByAlipayMiniProgram = createAsyncThunk(
         const { error: errorCode } = JSON.parse(error.message) || {};
 
         errorCode === 10 &&
-          confirm(i18next.t('ApiError:UnexpectedErrorOccurred'), {
+          confirm(i18next.t('Common:UnexpectedErrorOccurred'), {
             closeByBackButton: false,
             closeByBackDrop: false,
             cancelButtonContent: i18next.t('Common:Cancel'),
@@ -205,7 +219,7 @@ export const loginUserByAlipayMiniProgram = createAsyncThunk(
 
       CleverTap.pushEvent('Login - login failed');
 
-      logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
+      logger.error('Common_LoginByAlipayMiniProgramFailed', { message: error?.message });
 
       throw error;
     }

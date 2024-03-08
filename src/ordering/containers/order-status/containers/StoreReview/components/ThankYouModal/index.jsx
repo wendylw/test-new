@@ -10,7 +10,6 @@ import styles from './ThankYouModal.module.scss';
 const ThankYouModal = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation('OrderingThankYou');
-
   const isHighestRating = useSelector(getIsHighestRating);
   const isModalVisible = useSelector(getIsStoreThankYouModalVisible);
 

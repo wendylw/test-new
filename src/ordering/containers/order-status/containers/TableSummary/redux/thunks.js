@@ -10,12 +10,7 @@ import {
   getOrderPromotionId,
   getOrderVoucherCode,
 } from './selectors';
-import {
-  getUserConsumerId,
-  getLocationSearch,
-  getIsTNGMiniProgram,
-  getIsAlipayMiniProgram,
-} from '../../../../../redux/modules/app';
+import { getUserConsumerId, getLocationSearch, getIsAlipayMiniProgram } from '../../../../../redux/modules/app';
 import {
   loadPayLaterOrderStatus as loadOrderStatus,
   loadPayLaterOrder as loadOrder,
@@ -117,8 +112,8 @@ export const payByAlipayMiniProgram = createAsyncThunk(
     try {
       dispatch(showRedirectLoader());
       // We need to stop the polling for 2 reasons:
-      // 1. It is unnecessary to poll the status when user is paying by TNG Mini Program.
-      // 2. It affects the page redirection and the page will be stook and the TnG app will be crashed at the end.
+      // 1. It is unnecessary to poll the status when user is paying by TNG or GCash Mini Program.
+      // 2. It affects the page redirection and the page will be stook and the TnG or GCash app will be crashed at the end.
       dispatch(clearQueryOrdersAndStatus());
       // Load Billing API before calling init with order API, otherwise may be rejected for the required parameter missing
       // TODO: Not a good practice to call the thunk that from totally different module. We definitely need to optimize these codes in the future.
@@ -147,12 +142,10 @@ export const gotoPayment = createAsyncThunk(
         return;
       }
 
-      // If it comes from TnG mini program, we need to directly init payment
-      const isTNGMiniProgram = getIsTNGMiniProgram(state);
+      // If it comes from TnG or GCash mini program, we need to directly init payment
       const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
 
-      // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
-      if (isTNGMiniProgram || isAlipayMiniProgram) {
+      if (isAlipayMiniProgram) {
         await dispatch(payByAlipayMiniProgram()).unwrap();
         return;
       }

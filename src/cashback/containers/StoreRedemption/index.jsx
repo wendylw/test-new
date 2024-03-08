@@ -5,14 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { CaretRight } from 'phosphor-react';
 import { alert } from '../../../common/utils/feedback';
-import {
-  isWebview,
-  isTNGMiniProgram,
-  isGCashMiniProgram,
-  judgeClient,
-  getIsThePageHidden,
-  getIsDesktopClients,
-} from '../../../common/utils';
+import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
+import { isWebview, judgeClient, getIsThePageHidden, getIsDesktopClients } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
 import { getUserCountry } from '../../redux/modules/app';
@@ -138,7 +132,7 @@ const StoreRedemption = () => {
   const client = judgeClient();
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
-  const isDisplayWebResult = !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram();
+  const isDisplayWebResult = !isWebview() && !isAlipayMiniProgram();
   const handleGotoBeepDownloadPage = useCallback(() => {
     const downloadBeepAppDeepLink = `${process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}?utm_source=beepqr&utm_medium=banner&utm_campaign=seamlessloyalty`;
 

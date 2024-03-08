@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getUserConsumerId } from '../app';
-import { getConsumerCustomerInfo } from '../api-request';
+import { getConsumerCustomerInfo } from './api-request';
 
 export const loadConsumerCustomerInfo = createAsyncThunk(
   'loyalty/customer/loadConsumerCustomerInfo',

@@ -28,7 +28,7 @@ const PageHeader = props => {
             )}
             <div
               className={
-                isShowBackButton ? `${styles.PageHeaderTitle}` : `${styles.PageHeaderTitle} tw-px-12 sm:tw-px-12px`
+                isShowBackButton ? `${styles.PageHeaderTitle}` : `${styles.PageHeaderTitle} tw-px-16 sm:tw-px-16px`
               }
             >
               {title}

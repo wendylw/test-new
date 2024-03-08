@@ -102,6 +102,8 @@ export const PATH_NAME_MAPPING = {
   UNIQUE_PROMO: '/promo',
   CLAIM: '/claim',
   REWARDS_LOGIN: '/login',
+  CASHBACK: '/cashback',
+  CASHBACK_DETAIL: '/cashback-detail',
   // dine
   DINE: '/dine',
   FOOD_COURT: '/food-court',
@@ -249,6 +251,23 @@ export const ORDER_STATUS = {
    * if shipping type is self-pickup, pickedUp means picked up by customer
    * */
   PICKED_UP: 'pickedUp',
+};
+
+export const CASHBACK_SOURCE = {
+  REGISTER: 'REGISTER',
+  RECEIPT: 'RECEIPT',
+  QR_ORDERING: 'QR_ORDERING',
+};
+
+export const CLAIM_CASHBACK_QUERY_NAMES = {
+  STATUS: 'claimedStatus',
+  VALUE: 'cashback',
+  CASHBACK_TYPE: 'cashbackType',
+};
+
+export const CLAIM_CASHBACK_TYPES = {
+  PERCENTAGE: 'percentage',
+  ABSOLUTE: 'absolute',
 };
 
 export const REFERRER_SOURCE_TYPES = {

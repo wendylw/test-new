@@ -1,5 +1,6 @@
 {
   "EarnCashbackNow": "Earn cashback now",
+  "EarnCashbackPageTitle": "Store Cashback Details",
   "TotalCashback": "Total cashback",
   "Receipt": "Receipt",
   "Receipts": "Receipts",
@@ -20,6 +21,7 @@
   "StoreRedemptionNewUserGreetings": "Thanks for signing up with us!",
   "StoreRedemptionCashRedeemAlert": "Your cashback balance will be auto redeemed at the cashier",
   "LoginBannerPrompt": "Do you have a Beep account? Login with your mobile phone number.",
+  "CashbackLoginText": "Claim cashback with mobile number",
   "Redirecting": "Redirecting...",
   "UnexpectedErrorOccurred": "Oops! An unexpected error has occurred",
   "SeamlessLoyaltyWebTitle": "Please choose the<0></0>app below to continue",

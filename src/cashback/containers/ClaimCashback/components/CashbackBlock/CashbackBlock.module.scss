@@ -1,0 +1,11 @@
+.CashbackBlock {
+  @apply tw-text-center tw-p-12 sm:tw-p-12px tw-mx-16 sm:tw-mx-16px tw-space-y-4 sm:tw-space-y-4px tw-bg-orange-light tw-bg-opacity-30 tw-rounded-xl;
+}
+
+.CashbackBlockTitle {
+  @apply tw-capitalize tw-leading-loose;
+}
+
+.CashbackBlockCashback {
+  @apply tw-text-3xl tw-font-black tw-leading-normal;
+}

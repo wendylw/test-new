@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { getDecimalNumber } from '../../../../common/utils';
-import { getIsAfterDateTime } from '../../../../utils/datetime-lib';
+import { getIsAfterDateTime, getIsMidnight, getReduceOneSecondForDate } from '../../../../utils/datetime-lib';
 
 export const getCustomerData = state => state.customer.loadCustomerRequest.data;
 
@@ -48,3 +48,14 @@ export const getHasUserJoinedMerchantMembership = createSelector(
   getCustomerData,
   customerData => !!_get(customerData, 'customerTier', null)
 );
+
+export const getDisplayCashbackExpiredDate = createSelector(getCashbackExpiredDate, cashbackExpiredDate => {
+  if (!cashbackExpiredDate) {
+    return null;
+  }
+
+  const dateObj = new Date(cashbackExpiredDate);
+  const isDateMidnight = getIsMidnight(dateObj);
+
+  return isDateMidnight ? getReduceOneSecondForDate(dateObj) : cashbackExpiredDate;
+});

@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import { isWebview, isTNGMiniProgram, isGCashMiniProgram } from '../../../common/utils';
+import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
+import { isWebview } from '../../../common/utils';
 import { closeWebView } from '../../../utils/native-methods';
 import Image from '../../../components/Image';
 import RedeemInfo from '../../components/RedeemInfo';
@@ -64,7 +65,7 @@ class PageLoyalty extends React.Component {
     const { history, businessInfo, onlineStoreInfo, t } = this.props;
     const { displayBusinessName, name } = businessInfo || {};
     const { logo } = onlineStoreInfo || {};
-    const hideDownloadBanner = isWebview() || isTNGMiniProgram() || isGCashMiniProgram();
+    const hideDownloadBanner = isWebview() || isAlipayMiniProgram();
 
     return (
       <>

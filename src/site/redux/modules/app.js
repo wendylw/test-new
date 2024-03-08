@@ -1,10 +1,8 @@
 /* eslint-disable no-use-before-define */
 import { createSelector } from 'reselect';
 import { get } from '../../../utils/request';
-import * as TngUtils from '../../../utils/tng-utils';
 import * as ApiRequest from '../../../utils/api-request';
 import { API_REQUEST_STATUS } from '../../../utils/constants';
-import { isGCashMiniProgram, isTNGMiniProgram } from '../../../common/utils';
 import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
 import logger from '../../../utils/monitoring/logger';
 
@@ -44,44 +42,6 @@ const actions = {
   // Important: this is an example to get response from dispatched requestPromise
   ping: () => async dispatch => {
     await dispatch(queryPing());
-  },
-
-  // TODO: Migrate loginByTngMiniProgram to loginByAlipayMiniProgram
-  loginByTngMiniProgram: () => async (dispatch, getState) => {
-    if (!isTNGMiniProgram()) {
-      throw new Error('Not in tng mini program');
-    }
-
-    try {
-      dispatch({
-        type: types.LOGIN_REQUEST,
-      });
-
-      const result = await TngUtils.getAccessToken({ business: '' });
-
-      const { access_token: accessToken, refresh_token: refreshToken } = result;
-
-      const data = await ApiRequest.login({
-        accessToken,
-        refreshToken,
-      });
-
-      dispatch({
-        type: types.LOGIN_SUCCESS,
-        payload: data,
-      });
-    } catch (error) {
-      logger.error('Site_LoginByAlipayMiniProgram', { message: error?.message });
-
-      dispatch({
-        type: types.LOGIN_FAILURE,
-        error,
-      });
-
-      return false;
-    }
-
-    return getUserIsLogin(getState());
   },
 
   loginByAlipayMiniProgram: () => async (dispatch, getState) => {
@@ -217,9 +177,5 @@ export const getIsPingRequestDone = createSelector(
   getPingStatus,
   pingStatus => pingStatus === API_REQUEST_STATUS.FULFILLED || pingStatus === API_REQUEST_STATUS.REJECTED
 );
-
-export const getIsTNGMiniProgram = () => isTNGMiniProgram();
-
-export const getIsGCashMiniProgram = () => isGCashMiniProgram();
 
 export const getIsAlipayMiniProgram = () => isAlipayMiniProgram();

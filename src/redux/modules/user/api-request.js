@@ -1,4 +1,4 @@
-import { get, post } from '../../../utils/api/api-fetch';
+import { get, post, put } from '../../../utils/api/api-fetch';
 
 export const getUserLoginStatus = () => get('/api/ping');
 
@@ -22,3 +22,6 @@ export const postUserLogin = ({
 export const postLoginGuest = () => post('/api/login/guest');
 
 export const getUserProfile = consumerId => get(`/api/v3/consumers/${consumerId}/profile`);
+
+export const putProfileInfo = (consumerId, { firstName, email, birthday }) =>
+  put(`/api/v3/consumers/${consumerId}/profile`, { firstName, email, birthday });
