@@ -426,16 +426,22 @@ export const getCountry = (phone, language, countries, defaultCountry) => {
     return '';
   }
 
-  if (!language || (!language.split('-')[1] && !language.split('-')[0])) {
+  if (!language) {
     return defaultCountry;
   }
 
-  if (countries.includes(language.split('-')[1])) {
-    return language.split('-')[1];
+  const languageSplit = language.split('-').map(l => l.toUpperCase());
+
+  if (!languageSplit[0] && !languageSplit[1]) {
+    return defaultCountry;
   }
 
-  if (countries.includes(language.split('-')[0])) {
-    return language.split('-')[0];
+  if (languageSplit[1] && countries.includes(languageSplit[1])) {
+    return languageSplit[1];
+  }
+
+  if (languageSplit[0] && countries.includes(languageSplit[0])) {
+    return languageSplit[0];
   }
 
   return undefined;

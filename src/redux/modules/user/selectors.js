@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { getCountry } from '../../../common/utils';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
-import { COUNTRIES } from '../../../common/utils/phone-number-constants';
+import { AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 import { LOGIN_EXPIRED_ERROR_TYPES } from './constants';
 
 export const getUserLoginStatus = state => state.user.checkLoginRequest;
@@ -94,7 +94,7 @@ export const getGuestLoginRequestError = createSelector(
  */
 // TODO: Update getCountry logic
 export const getUserCountry = createSelector(getUserPhoneNumber, userPhoneNumber =>
-  getCountry(userPhoneNumber, navigator.language, COUNTRIES, 'MY')
+  getCountry(userPhoneNumber, navigator.language, AVAILABLE_COUNTRIES, 'MY')
 );
 
 export const getUserName = createSelector(getUserFirstName, getUserLastName, (userFirstName, userLastName) => {
