@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import { PlusCircle, CheckCircle, ClockCounterClockwise } from 'phosphor-react';
 import { isWebview } from '../../../common/utils';
 import { toLocaleDateString } from '../../../utils/datetime-lib';
 import { goBack } from '../../../utils/native-methods';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { IconPending, IconChecked, IconEarned } from '../../../components/Icons';
 import HybridHeader from '../../../components/HybridHeader';
 import { getCustomerId } from '../../redux/modules/customer/selectors';
 import {
@@ -27,12 +27,11 @@ const DATE_OPTIONS = {
 
 class CashbackHistory extends React.Component {
   componentDidMount() {
-    const { isUserLogin, customerId, onModalVisibilityChanged } = this.props;
+    const { isUserLogin, customerId } = this.props;
 
     if (isUserLogin && customerId) {
       this.getLoyaltyHistory(customerId);
     }
-    onModalVisibilityChanged(true);
   }
 
   componentDidUpdate(prevProps) {
@@ -46,11 +45,6 @@ class CashbackHistory extends React.Component {
     if (currUserCustomerId && prevUserCustomerId !== currUserCustomerId) {
       this.getLoyaltyHistory(currUserCustomerId);
     }
-  }
-
-  componentWillUnmount() {
-    const { onModalVisibilityChanged } = this.props;
-    onModalVisibilityChanged(false);
   }
 
   getLoyaltyHistory(customerId) {
@@ -67,23 +61,23 @@ class CashbackHistory extends React.Component {
       pending: {
         text: t('CashbackPending'),
         // eslint-disable-next-line react/jsx-props-no-spreading
-        icon: <IconPending {...props} />,
+        icon: <ClockCounterClockwise size={32} weight="fill" {...props} />,
       },
       /* expense is same as redeemed */
       expense: {
         text: t('Redeemed'),
         // eslint-disable-next-line react/jsx-props-no-spreading
-        icon: <IconChecked {...props} />,
+        icon: <CheckCircle size={32} weight="fill" {...props} />,
       },
       earned: {
         text: t('YouEarned'),
         // eslint-disable-next-line react/jsx-props-no-spreading
-        icon: <IconEarned {...props} />,
+        icon: <PlusCircle size={32} weight="fill" {...props} />,
       },
       adjustment: {
         text: t('Adjustment'),
         // eslint-disable-next-line react/jsx-props-no-spreading
-        icon: <IconEarned {...props} />,
+        icon: <PlusCircle size={32} weight="fill" {...props} />,
       },
     };
 
@@ -164,7 +158,6 @@ CashbackHistory.propTypes = {
   isFetching: PropTypes.bool,
   isUserLogin: PropTypes.bool,
   customerId: PropTypes.string,
-  onModalVisibilityChanged: PropTypes.func,
   cashbackHistory: PropTypes.arrayOf(PropTypes.object),
   onlineStoreInfo: PropTypes.shape({
     country: PropTypes.string,
@@ -178,7 +171,6 @@ CashbackHistory.defaultProps = {
   isFetching: false,
   isUserLogin: false,
   customerId: '',
-  onModalVisibilityChanged: () => {},
   cashbackHistory: [],
   onlineStoreInfo: {
     country: '',
