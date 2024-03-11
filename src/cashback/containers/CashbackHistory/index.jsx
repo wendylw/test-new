@@ -6,6 +6,8 @@ import { bindActionCreators, compose } from 'redux';
 import { PlusCircle, CheckCircle, ClockCounterClockwise } from 'phosphor-react';
 import { toLocaleDateString } from '../../../utils/datetime-lib';
 import { goBack } from '../../../utils/native-methods';
+import { getConsumerId } from '../../../redux/modules/user/selectors';
+import { initUserInfo } from '../../../redux/modules/user/thunks';
 import { getMerchantCountry } from '../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../redux/modules/common/selectors';
 import { getCustomerId } from '../../redux/modules/customer/selectors';
@@ -36,7 +38,11 @@ class CashbackHistory extends React.Component {
     const { isUserLogin, loadConsumerCustomerInfo, fetchCashbackHistoryList } = this.props;
 
     if (isUserLogin && isUserLogin !== prevIsUserLogin) {
-      await loadConsumerCustomerInfo();
+      await initUserInfo();
+
+      const { consumerId } = this.props;
+
+      await loadConsumerCustomerInfo(consumerId);
       fetchCashbackHistoryList();
     }
   }
@@ -142,6 +148,7 @@ CashbackHistory.displayName = 'CashbackHistory';
 CashbackHistory.propTypes = {
   isUserLogin: PropTypes.bool,
   isWebview: PropTypes.bool,
+  consumerId: PropTypes.string,
   customerId: PropTypes.string,
   cashbackHistoryList: PropTypes.arrayOf(PropTypes.object),
   country: PropTypes.string,
@@ -153,6 +160,7 @@ CashbackHistory.propTypes = {
 CashbackHistory.defaultProps = {
   isUserLogin: false,
   isWebview: false,
+  consumerId: '',
   customerId: '',
   cashbackHistoryList: [],
   country: '',
@@ -166,8 +174,9 @@ export default compose(
   connect(
     state => ({
       isUserLogin: getIsUserLogin(state),
-      country: getMerchantCountry(state),
       isWebview: getIsWebview(state),
+      consumerId: getConsumerId(state),
+      country: getMerchantCountry(state),
       customerId: getCustomerId(state),
       cashbackHistoryList: getCashbackHistoryList(state),
     }),

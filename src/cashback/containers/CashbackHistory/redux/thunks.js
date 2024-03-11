@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { getIsLogin, getConsumerId } from '../../../../redux/modules/user/selectors';
 import { initUserInfo, loginUserByBeepApp, loginUserByAlipayMiniProgram } from '../../../../redux/modules/user/thunks';
 import { getMerchantBusiness } from '../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../redux/modules/merchant/thunks';
@@ -36,10 +37,11 @@ export const mounted = createAsyncThunk('cashback/cashbackHistory/mounted', asyn
     await loginUserByAlipayMiniProgram();
   }
 
-  const { isLogin } = this.props;
+  const isLogin = getIsLogin(getState());
+  const consumerId = getConsumerId(getState());
 
   if (isLogin) {
-    await loadConsumerCustomerInfo();
+    await loadConsumerCustomerInfo(consumerId);
     dispatch(fetchCashbackHistoryList());
   }
 });

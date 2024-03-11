@@ -7,7 +7,7 @@ import { Info } from 'phosphor-react';
 import { closeWebView } from '../../../utils/native-methods';
 import { getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
 import { actions as commonActionsCreators } from '../../redux/modules/common';
-import { getIsLogin } from '../../../redux/modules/user/selectors';
+import { getIsLogin, getConsumerId } from '../../../redux/modules/user/selectors';
 import {
   initUserInfo as initUserInfoThunk,
   loginUserByBeepApp as loginUserByBeepAppThunk,
@@ -57,16 +57,16 @@ class PageLoyalty extends React.Component {
       await loginUserByAlipayMiniProgram();
     }
 
-    const { isLogin } = this.props;
+    const { isLogin, consumerId } = this.props;
 
     if (isLogin) {
       commonActions.messageInfoShow();
-      loadConsumerCustomerInfo();
+      loadConsumerCustomerInfo(consumerId);
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { isLogin, isAppUserLogin, commonActions, initUserInfo, loadConsumerCustomerInfo } = this.props;
+    const { isLogin, isAppUserLogin, consumerId, commonActions, initUserInfo, loadConsumerCustomerInfo } = this.props;
     const { isLogin: prevIsLogin, isAppUserLogin: prevIsAppUserLogin } = prevProps;
 
     if (isAppUserLogin !== prevIsAppUserLogin && isAppUserLogin) {
@@ -75,7 +75,7 @@ class PageLoyalty extends React.Component {
 
     if (isLogin !== prevIsLogin && isLogin) {
       commonActions.messageInfoShow();
-      loadConsumerCustomerInfo();
+      loadConsumerCustomerInfo(consumerId);
     }
   }
 
@@ -155,6 +155,7 @@ PageLoyalty.propTypes = {
   isAppUserLogin: PropTypes.bool,
   isWebview: PropTypes.bool,
   isAlipayMiniProgram: PropTypes.bool,
+  consumerId: PropTypes.string,
   merchantBusiness: PropTypes.string,
   merchantLogo: PropTypes.string,
   merchantDisplayName: PropTypes.string,
@@ -175,6 +176,7 @@ PageLoyalty.defaultProps = {
   isAppUserLogin: false,
   isWebview: false,
   isAlipayMiniProgram: false,
+  consumerId: '',
   merchantBusiness: null,
   merchantLogo: null,
   merchantDisplayName: '',
@@ -198,6 +200,7 @@ export default compose(
       isAppUserLogin: getIsAppUserLogin(state),
       isWebview: getIsWebview(state),
       isAlipayMiniProgram: getIsAlipayMiniProgram(state),
+      consumerId: getConsumerId(state),
       merchantBusiness: getMerchantBusiness(state),
       merchantLogo: getMerchantLogo(state),
       merchantDisplayName: getMerchantDisplayName(state),

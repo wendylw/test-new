@@ -4,7 +4,7 @@ import { getStoreRedemptionPlatform } from '../utils';
 import CleverTap from '../../../../utils/clevertap';
 import logger from '../../../../utils/monitoring/logger';
 import { patchShareConsumerInfoRequests, postShareConsumerInfoRequests } from './api-request';
-import { getIsLogin, getUserCountry } from '../../../../redux/modules/user/selectors';
+import { getIsLogin, getUserCountry, getConsumerId } from '../../../../redux/modules/user/selectors';
 import { initUserInfo, loginUserByBeepApp, loginUserByAlipayMiniProgram } from '../../../../redux/modules/user/thunks';
 import { getMerchantBusiness } from '../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../redux/modules/merchant/thunks';
@@ -92,10 +92,11 @@ export const mounted = createAsyncThunk('loyalty/storeRedemption/mounted', async
     }
 
     const isLogin = getIsLogin(getState());
+    const consumerId = getConsumerId(getState());
 
     if (isLogin) {
       await dispatch(confirmToShareConsumerInfoRequests());
-      await dispatch(loadConsumerCustomerInfo());
+      await dispatch(loadConsumerCustomerInfo(consumerId));
 
       const customerCashback = getCustomerCashback(getState());
       const userCountry = getUserCountry(getState());
