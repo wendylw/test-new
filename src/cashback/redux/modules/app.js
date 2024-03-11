@@ -30,12 +30,10 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getCoreBusinessInfo } from './api-request';
-import { getAllLoyaltyHistories } from '../../../redux/modules/entities/loyaltyHistories';
 import { REGISTRATION_SOURCE, PATH_NAME_MAPPING } from '../../../common/utils/constants';
 import { isJSON, isWebview } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
-import { getCustomerId } from './customer/selectors';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const { AUTH_INFO, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
@@ -75,7 +73,6 @@ export const initialState = {
       status: null,
     },
     showLoginModal: false,
-    totalCredits: 0,
   },
   customerInfo: {},
   error: null, // network error
@@ -405,26 +402,11 @@ export const actions = {
       },
     },
   }),
-
-  getCashbackHistory: customerId => ({
-    [API_REQUEST]: {
-      types: [
-        types.GET_CASHBACK_HISTORIES_REQUEST,
-        types.GET_CASHBACK_HISTORIES_SUCCESS,
-        types.GET_CASHBACK_HISTORIES_FAILURE,
-      ],
-      ...Url.API_URLS.GET_CASHBACK_HISTORIES,
-      params: {
-        customerId,
-      },
-    },
-  }),
 };
 
 const user = (state = initialState.user, action) => {
   const { type, response, responseGql, prompt, error, payload } = action || {};
-  const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken, totalCredits } =
-    response || {};
+  const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken } = response || {};
   const { data } = responseGql || {};
   const { business, onlineStoreInfo } = data || {};
   const otpType = _get(payload, 'otpType', null);
@@ -581,20 +563,6 @@ const user = (state = initialState.user, action) => {
           status: API_REQUEST_STATUS.REJECTED,
           error,
         },
-      };
-    case types.GET_CASHBACK_HISTORIES_REQUEST:
-      return {
-        ...state,
-      };
-    case types.GET_CASHBACK_HISTORIES_SUCCESS: {
-      return {
-        ...state,
-        totalCredits,
-      };
-    }
-    case types.GET_CASHBACK_HISTORIES_FAILURE:
-      return {
-        ...state,
       };
     default:
       return state;
@@ -877,10 +845,4 @@ export const getShouldShowLoader = createSelector(
 export const getLoginAlipayMiniProgramRequestError = createSelector(
   getLoginAlipayMiniProgramRequest,
   loginAlipayMiniProgramRequest => loginAlipayMiniProgramRequest?.error || null
-);
-
-export const getCashbackHistory = createSelector(
-  getCustomerId,
-  getAllLoyaltyHistories,
-  (customerId, allLoyaltyHistories) => allLoyaltyHistories[customerId]
 );

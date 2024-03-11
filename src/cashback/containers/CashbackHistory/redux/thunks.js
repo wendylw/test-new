@@ -1,5 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { initUserInfo, loginUserByBeepApp, loginUserByAlipayMiniProgram } from '../../../../redux/modules/user/thunks';
+import { getMerchantBusiness } from '../../../../redux/modules/merchant/selectors';
+import { fetchMerchantInfo } from '../../../../redux/modules/merchant/thunks';
 import { getCustomerId } from '../../../redux/modules/customer/selectors';
 import { getIsWebview, getIsAlipayMiniProgram } from '../../../redux/modules/common/selectors';
 import { loadConsumerCustomerInfo } from '../../../redux/modules/customer/thunks';
@@ -18,8 +20,11 @@ export const fetchCashbackHistoryList = createAsyncThunk(
 
 export const mounted = createAsyncThunk('cashback/cashbackHistory/mounted', async (_, { dispatch, getState }) => {
   const state = getState();
+  const merchantBusiness = getMerchantBusiness(state);
   const isWebview = getIsWebview(state);
   const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
+
+  fetchMerchantInfo(merchantBusiness);
 
   await initUserInfo();
 

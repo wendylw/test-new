@@ -4,18 +4,17 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { PlusCircle, CheckCircle, ClockCounterClockwise } from 'phosphor-react';
-import { isWebview } from '../../../common/utils';
 import { toLocaleDateString } from '../../../utils/datetime-lib';
 import { goBack } from '../../../utils/native-methods';
+import { getMerchantCountry } from '../../../redux/modules/merchant/selectors';
+import { getIsWebview } from '../../redux/modules/common/selectors';
+import { getCustomerId } from '../../redux/modules/customer/selectors';
+import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
+import { getCashbackHistoryList } from './redux/selectors';
+import { mounted as mountedThunk, fetchCashbackHistoryList as fetchCashbackHistoryListThunk } from './redux/thunks';
+import { getIsUserLogin } from '../../redux/modules/app';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import HybridHeader from '../../../components/HybridHeader';
-import { getCustomerId } from '../../redux/modules/customer/selectors';
-import {
-  actions as appActionCreators,
-  getOnlineStoreInfo,
-  getIsUserLogin,
-  getCashbackHistory,
-} from '../../redux/modules/app';
 import './CashbackHistory.scss';
 
 const DATE_OPTIONS = {
@@ -27,31 +26,18 @@ const DATE_OPTIONS = {
 
 class CashbackHistory extends React.Component {
   componentDidMount() {
-    const { isUserLogin, customerId } = this.props;
+    const { mounted } = this.props;
 
-    if (isUserLogin && customerId) {
-      this.getLoyaltyHistory(customerId);
-    }
+    mounted();
   }
 
-  componentDidUpdate(prevProps) {
-    const { customerId: prevUserCustomerId } = prevProps;
-    const { customerId: currUserCustomerId, isFetching, isUserLogin } = this.props;
+  async componentDidUpdate(prevProps) {
+    const { isUserLogin: prevIsUserLogin } = prevProps;
+    const { isUserLogin, loadConsumerCustomerInfo, fetchCashbackHistoryList } = this.props;
 
-    if (isFetching || !isUserLogin) {
-      return;
-    }
-
-    if (currUserCustomerId && prevUserCustomerId !== currUserCustomerId) {
-      this.getLoyaltyHistory(currUserCustomerId);
-    }
-  }
-
-  getLoyaltyHistory(customerId) {
-    const { appActions } = this.props;
-
-    if (customerId) {
-      appActions.getCashbackHistory(customerId);
+    if (isUserLogin && isUserLogin !== prevIsUserLogin) {
+      await loadConsumerCustomerInfo();
+      fetchCashbackHistoryList();
     }
   }
 
@@ -85,12 +71,11 @@ class CashbackHistory extends React.Component {
   }
 
   renderLogList() {
-    const { cashbackHistory, onlineStoreInfo } = this.props;
-    const { country } = onlineStoreInfo || {};
+    const { cashbackHistoryList, country } = this.props;
 
     return (
       <ul className="padding-left-right-small">
-        {(cashbackHistory || []).map((activity, i) => {
+        {cashbackHistoryList.map((activity, i) => {
           const { eventType, eventTime } = activity;
           const eventDateTime = new Date(Number.parseInt(eventTime, 10));
           const type = this.getType(eventType, {
@@ -123,7 +108,7 @@ class CashbackHistory extends React.Component {
   }
 
   render() {
-    const { t, history } = this.props;
+    const { t, history, isWebview } = this.props;
 
     return (
       <>
@@ -134,7 +119,7 @@ class CashbackHistory extends React.Component {
           isPage
           title={t('CashbackHistory')}
           navFunc={() => {
-            if (isWebview()) {
+            if (isWebview) {
               goBack();
 
               return;
@@ -155,29 +140,25 @@ class CashbackHistory extends React.Component {
 CashbackHistory.displayName = 'CashbackHistory';
 
 CashbackHistory.propTypes = {
-  isFetching: PropTypes.bool,
   isUserLogin: PropTypes.bool,
+  isWebview: PropTypes.bool,
   customerId: PropTypes.string,
-  cashbackHistory: PropTypes.arrayOf(PropTypes.object),
-  onlineStoreInfo: PropTypes.shape({
-    country: PropTypes.string,
-  }),
-  appActions: PropTypes.shape({
-    getCashbackHistory: PropTypes.func,
-  }),
+  cashbackHistoryList: PropTypes.arrayOf(PropTypes.object),
+  country: PropTypes.string,
+  mounted: PropTypes.func,
+  loadConsumerCustomerInfo: PropTypes.func,
+  fetchCashbackHistoryList: PropTypes.func,
 };
 
 CashbackHistory.defaultProps = {
-  isFetching: false,
   isUserLogin: false,
+  isWebview: false,
   customerId: '',
-  cashbackHistory: [],
-  onlineStoreInfo: {
-    country: '',
-  },
-  appActions: {
-    getCashbackHistory: () => {},
-  },
+  cashbackHistoryList: [],
+  country: '',
+  mounted: () => {},
+  loadConsumerCustomerInfo: () => {},
+  fetchCashbackHistoryList: () => {},
 };
 
 export default compose(
@@ -185,12 +166,15 @@ export default compose(
   connect(
     state => ({
       isUserLogin: getIsUserLogin(state),
+      country: getMerchantCountry(state),
+      isWebview: getIsWebview(state),
       customerId: getCustomerId(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
-      cashbackHistory: getCashbackHistory(state),
+      cashbackHistoryList: getCashbackHistoryList(state),
     }),
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
+      mounted: bindActionCreators(mountedThunk, dispatch),
+      loadConsumerCustomerInfo: bindActionCreators(loadConsumerCustomerInfoThunk, dispatch),
+      fetchCashbackHistoryList: bindActionCreators(fetchCashbackHistoryListThunk, dispatch),
     })
   )
 )(CashbackHistory);
