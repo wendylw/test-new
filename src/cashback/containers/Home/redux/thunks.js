@@ -3,7 +3,7 @@ import { getReceiptList } from './api-request';
 import { getMerchantBusiness } from '../../../../redux/modules/merchant/selectors';
 
 export const fetchCustomerReceiptList = createAsyncThunk(
-  'cashback/home/fetchCustomerReceiptList',
+  'cashback/cashbackHome/fetchCustomerReceiptList',
   async (page, { getState }) => {
     const state = getState();
     const merchantBusiness = getMerchantBusiness(state);

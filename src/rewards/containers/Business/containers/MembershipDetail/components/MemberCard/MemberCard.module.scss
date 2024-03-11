@@ -109,7 +109,7 @@
 }
 
 .MemberCardLevelProgressItemLevelName {
-  @apply tw-absolute tw-bottom-0 tw-text-xs tw-font-bold tw-leading-loose;
+  @apply tw-absolute tw-bottom-0 tw-text-xs tw-font-bold tw-leading-loose tw-capitalize;
 }
 
 .MemberCardLevelProgressItemProgress {

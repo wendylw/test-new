@@ -6,7 +6,6 @@ import appReducers, {
   getError,
   getOnlineStoreInfo,
   getRequestInfo,
-  getMessageInfo,
 } from './app';
 import rootReducer from './index';
 import { APP_TYPES as types } from '../types';
@@ -209,18 +208,6 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
     });
 
-    it('types.SET_CASHBACK_MESSAGE_SUCCESS', () => {
-      const action = {
-        type: types.SET_CASHBACK_MESSAGE_SUCCESS,
-        ...messageActionInfo,
-      };
-      const expectedState = {
-        ...initialState.messageInfo,
-        key: 'mockStatus',
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
-    });
-
     it('default', () => {
       expect(getReducerNewState(appReducers, { type: 'default' }, nameField)).toEqual({
         ...initialState.messageInfo,
@@ -259,9 +246,5 @@ describe('src/cashback/redux/modules/app.js:selectors', () => {
   it('getRequestInfo', () => {
     const expectedState = initialState.requestInfo;
     expect(getRequestInfo(state)).toEqual(expectedState);
-  });
-  it('getMessageInfo', () => {
-    const expectedState = initialState.messageInfo;
-    expect(getMessageInfo(state)).toEqual(expectedState);
   });
 });

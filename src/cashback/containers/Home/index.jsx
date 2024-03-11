@@ -5,7 +5,8 @@ import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
 import { closeWebView } from '../../../utils/native-methods';
-import { actions as appActionCreators, getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
+import { getIsUserLogin as getIsAppUserLogin } from '../../redux/modules/app';
+import { actions as commonActionsCreators } from '../../redux/modules/common';
 import { getIsLogin } from '../../../redux/modules/user/selectors';
 import {
   initUserInfo as initUserInfoThunk,
@@ -21,6 +22,7 @@ import { fetchMerchantInfo as fetchMerchantInfoThunk } from '../../../redux/modu
 import { getIsWebview, getIsAlipayMiniProgram } from '../../redux/modules/common/selectors';
 import { getCustomerCashbackPrice } from '../../redux/modules/customer/selectors';
 import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
+import { getIsDownloadBannerShown } from './redux/selectors';
 import Image from '../../../components/Image';
 import RedeemInfo from '../../components/RedeemInfo';
 import DownloadBanner from '../../../common/components/DownloadBanner';
@@ -33,7 +35,7 @@ const cashbackDownloadText = 'Download the Beep app to keep track of your cashba
 class PageLoyalty extends React.Component {
   async componentDidMount() {
     const {
-      appActions,
+      commonActions,
       merchantBusiness,
       isWebview,
       isAlipayMiniProgram,
@@ -58,13 +60,13 @@ class PageLoyalty extends React.Component {
     const { isLogin } = this.props;
 
     if (isLogin) {
-      appActions.showMessageInfo();
+      commonActions.messageInfoShow();
       loadConsumerCustomerInfo();
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { isLogin, isAppUserLogin, appActions, initUserInfo, loadConsumerCustomerInfo } = this.props;
+    const { isLogin, isAppUserLogin, commonActions, initUserInfo, loadConsumerCustomerInfo } = this.props;
     const { isLogin: prevIsLogin, isAppUserLogin: prevIsAppUserLogin } = prevProps;
 
     if (isAppUserLogin !== prevIsAppUserLogin && isAppUserLogin) {
@@ -72,7 +74,7 @@ class PageLoyalty extends React.Component {
     }
 
     if (isLogin !== prevIsLogin && isLogin) {
-      appActions.showMessageInfo();
+      commonActions.messageInfoShow();
       loadConsumerCustomerInfo();
     }
   }
@@ -85,9 +87,8 @@ class PageLoyalty extends React.Component {
       merchantDisplayName,
       customerCashbackPrice,
       isWebview,
-      isAlipayMiniProgram,
+      isDownloadBannerShown,
     } = this.props;
-    const hideDownloadBanner = isWebview || isAlipayMiniProgram;
 
     return (
       <>
@@ -110,19 +111,19 @@ class PageLoyalty extends React.Component {
             <h5 className="loyalty-home__title padding-top-bottom-small text-uppercase">{t('TotalCashback')}</h5>
 
             <div>
-              <data className="loyalty-home__cashback-value text-size-larger" value={customerCashbackPrice}>
+              <data className="loyalty-home__cashback-value text-size-large" value={customerCashbackPrice}>
                 {customerCashbackPrice}
               </data>
-              <span
-                role="button"
+              <button
                 tabIndex="0"
+                className="loyalty-home__cashback-history-icon-button"
                 onClick={() => {
                   history.push({ pathname: '/activities', search: window.location.search });
                 }}
                 data-test-id="cashback.home.cashback-info"
               >
-                <Info size={24} />
-              </span>
+                <Info size={24} weight="fill" />
+              </button>
             </div>
 
             <div className="margin-top-bottom-normal">
@@ -135,7 +136,11 @@ class PageLoyalty extends React.Component {
               buttonText={t('HowToUseCashback')}
             />
           </article>
-          {!hideDownloadBanner && <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />}
+          {isDownloadBannerShown && (
+            <div className="margin-left-right-small margin-top-bottom-small">
+              <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />
+            </div>
+          )}
           <ReceiptList history={history} />
         </section>
       </>
@@ -154,9 +159,9 @@ PageLoyalty.propTypes = {
   merchantLogo: PropTypes.string,
   merchantDisplayName: PropTypes.string,
   customerCashbackPrice: PropTypes.string,
-  appActions: PropTypes.shape({
-    showMessageInfo: PropTypes.func,
-    setCashbackMessage: PropTypes.func,
+  isDownloadBannerShown: PropTypes.bool,
+  commonActions: PropTypes.shape({
+    messageInfoShow: PropTypes.func,
   }),
   fetchMerchantInfo: PropTypes.func,
   initUserInfo: PropTypes.func,
@@ -174,9 +179,9 @@ PageLoyalty.defaultProps = {
   merchantLogo: null,
   merchantDisplayName: '',
   customerCashbackPrice: null,
-  appActions: {
-    showMessageInfo: () => {},
-    setCashbackMessage: () => {},
+  isDownloadBannerShown: false,
+  commonActions: {
+    messageInfoShow: () => {},
   },
   fetchMerchantInfo: () => {},
   initUserInfo: () => {},
@@ -197,9 +202,10 @@ export default compose(
       merchantLogo: getMerchantLogo(state),
       merchantDisplayName: getMerchantDisplayName(state),
       customerCashbackPrice: getCustomerCashbackPrice(state),
+      isDownloadBannerShown: getIsDownloadBannerShown(state),
     }),
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
+      commonActions: bindActionCreators(commonActionsCreators, dispatch),
       fetchMerchantInfo: bindActionCreators(fetchMerchantInfoThunk, dispatch),
       initUserInfo: bindActionCreators(initUserInfoThunk, dispatch),
       loginUserByBeepApp: bindActionCreators(loginUserByBeepAppThunk, dispatch),

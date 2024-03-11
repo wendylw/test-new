@@ -86,7 +86,6 @@ it('src/cashback/redux/store.js', () => {
       products: {},
       stores: {},
     },
-    home: { fetchState: true, receiptList: [] },
     storeRedemption: {
       requestId: null,
       sharedInfoData: {

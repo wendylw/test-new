@@ -28,4 +28,19 @@
     display: inline-block;
     color: $white;
   }
+
+  &__cashback-history-icon-button {
+    padding: 8px;
+    height: auto;
+    line-height: 0;
+    border: none;
+    background-color: transparent;
+    outline: none;
+    cursor: pointer;
+
+    svg {
+      fill: $gray-2;
+      color: $gray-2;
+    }
+  }
 }

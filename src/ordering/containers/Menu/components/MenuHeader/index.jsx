@@ -16,6 +16,7 @@ import {
   getShouldShowFavoriteButton,
   getIsShowBackButton,
   getShouldCheckSaveStoreStatus,
+  getShouldShowOfflineHeader,
 } from '../../redux/common/selectors';
 import { getIsProductDetailDrawerVisible } from '../../redux/productDetail/selectors';
 import { hideProductDetailDrawer } from '../../redux/productDetail/thunks';
@@ -29,7 +30,7 @@ import {
 } from '../../../../../common/utils';
 import NativeHeader, { ICON_RES } from '../../../../../components/NativeHeader';
 import { closeWebView } from '../../../../../utils/native-methods';
-import { getDeliveryInfo, getIsFromBeepSite, getIsFromFoodCourt } from '../../../../redux/modules/app';
+import { getIsFromFoodCourt } from '../../../../redux/modules/app';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import { goBack, loadUserFavStoreStatus, saveFavoriteStore, shareStore } from '../../redux/common/thunks';
 import logger from '../../../../../utils/monitoring/logger';
@@ -78,14 +79,13 @@ const MenuHeader = ({ webHeaderVisibility }) => {
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   const isProductDetailDrawerVisible = useSelector(getIsProductDetailDrawerVisible);
   const isInWebview = isWebview();
-  const isFromBeepSitePage = useSelector(getIsFromBeepSite);
   const isFromFoodCourt = useSelector(getIsFromFoodCourt);
-  const { enableLiveOnline } = useSelector(getDeliveryInfo);
   const storeFullDisplayTitle = useSelector(getStoreFullDisplayTitle);
   const hasUserSaveStore = useSelector(getHasUserSaveStore);
   const shouldShowFavoriteButton = useSelector(getShouldShowFavoriteButton);
   const isShowBackButton = useSelector(getIsShowBackButton);
   const shouldCheckSaveStoreStatus = useSelector(getShouldCheckSaveStoreStatus);
+  const shouldShowOfflineHeader = useSelector(getShouldShowOfflineHeader);
   const history = useHistory();
 
   useEffect(() => {
@@ -215,7 +215,7 @@ const MenuHeader = ({ webHeaderVisibility }) => {
   ) : null;
 
   // Offline header will be shown only when the user is in webview and the user is from beep site
-  if (!enableLiveOnline && (isInWebview || isFromBeepSitePage)) {
+  if (shouldShowOfflineHeader) {
     return <OfflinePageHeader history={history} />;
   }
 

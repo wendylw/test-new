@@ -4,13 +4,16 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
+import { getPrice } from '../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../utils/datetime-lib';
-import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
+import {
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+} from '../../../../../redux/modules/merchant/selectors';
 import { getCustomerId } from '../../../../redux/modules/customer/selectors';
-import { actions as appActionCreators, getCashbackHistory } from '../../../../redux/modules/app';
 import { getCustomerReceiptList, getIsCustomerReceiptListHasMore } from '../../redux/selectors';
 import { fetchCustomerReceiptList as fetchCustomerReceiptListThunk } from '../../redux/thunks';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { IconTicket } from '../../../../../components/Icons';
 import './ReceiptList.scss';
 
@@ -27,25 +30,6 @@ class RecentList extends React.Component {
     this.state = { fullScreen: false };
   }
 
-  componentDidMount() {
-    const { appActions, userCustomerId } = this.props;
-
-    if (userCustomerId) {
-      appActions.getCashbackHistory(userCustomerId);
-    }
-  }
-
-  async componentDidUpdate(prevProps) {
-    const { appActions, userCustomerId: currUserCustomerId } = this.props;
-    const { userCustomerId: prevUserCustomerId } = prevProps || {};
-
-    // customerId !== prevProps.customerId instead of !prevProps.customerId
-    // The 3rd MiniProgram cached the previous customerId, so the customerId is not the correct account
-    if (currUserCustomerId && currUserCustomerId !== prevUserCustomerId) {
-      appActions.getCashbackHistory(currUserCustomerId);
-    }
-  }
-
   loadItems = page => {
     const { fetchCustomerReceiptList } = this.props;
 
@@ -59,7 +43,14 @@ class RecentList extends React.Component {
   };
 
   renderLogList() {
-    const { customerReceiptList, isCustomerReceiptListHasMore, t, merchantCountry } = this.props;
+    const {
+      customerReceiptList,
+      isCustomerReceiptListHasMore,
+      t,
+      merchantCountry,
+      merchantLocale,
+      merchantCurrency,
+    } = this.props;
 
     return (
       <InfiniteScroll
@@ -85,7 +76,13 @@ class RecentList extends React.Component {
                 <summary className="receipt-list__item-summary padding-left-right-normal">
                   <h4 className="margin-top-bottom-small">
                     <span>{t('Receipt')} - </span>
-                    <CurrencyNumber money={Math.abs(total || 0)} />
+                    <data value={total}>
+                      {getPrice(Math.abs(total || 0), {
+                        country: merchantCountry,
+                        currency: merchantCurrency,
+                        locale: merchantLocale,
+                      })}
+                    </data>
                   </h4>
                   <time className="receipt-list__time">
                     {toLocaleDateString(receiptTime, merchantCountry, DATE_OPTIONS)}
@@ -101,9 +98,9 @@ class RecentList extends React.Component {
 
   render() {
     const { fullScreen } = this.state;
-    const { cashbackHistory, userCustomerId, t } = this.props;
+    const { customerReceiptList, userCustomerId, t } = this.props;
 
-    if (!Array.isArray(cashbackHistory) || !userCustomerId) {
+    if (!Array.isArray(customerReceiptList) || !userCustomerId) {
       return null;
     }
 
@@ -143,10 +140,11 @@ RecentList.displayName = 'RecentList';
 
 RecentList.propTypes = {
   merchantCountry: PropTypes.string,
+  merchantCurrency: PropTypes.string,
+  merchantLocale: PropTypes.string,
   isCustomerReceiptListHasMore: PropTypes.bool,
   userCustomerId: PropTypes.string,
   customerReceiptList: PropTypes.arrayOf(PropTypes.object),
-  cashbackHistory: PropTypes.arrayOf(PropTypes.object),
   appActions: PropTypes.shape({
     getCashbackHistory: PropTypes.func,
   }),
@@ -155,10 +153,11 @@ RecentList.propTypes = {
 
 RecentList.defaultProps = {
   merchantCountry: null,
+  merchantCurrency: null,
+  merchantLocale: null,
   isCustomerReceiptListHasMore: true,
   userCustomerId: '',
   customerReceiptList: [],
-  cashbackHistory: [],
   appActions: {
     getCashbackHistory: () => {},
   },
@@ -171,12 +170,12 @@ export default compose(
     state => ({
       userCustomerId: getCustomerId(state),
       merchantCountry: getMerchantCountry(state),
-      cashbackHistory: getCashbackHistory(state),
+      merchantCurrency: getMerchantCurrency(state),
+      merchantLocale: getMerchantLocale(state),
       customerReceiptList: getCustomerReceiptList(state),
       isCustomerReceiptListHasMore: getIsCustomerReceiptListHasMore(state),
     }),
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
       fetchCustomerReceiptList: bindActionCreators(fetchCustomerReceiptListThunk, dispatch),
     })
   )
