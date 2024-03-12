@@ -73,7 +73,6 @@ export const initialState = {
     },
     showLoginModal: false,
   },
-  customerInfo: {},
   error: null, // network error
   business: config.business,
   coreBusiness: {
@@ -387,9 +386,8 @@ export const actions = {
 };
 
 const user = (state = initialState.user, action) => {
-  const { type, response, responseGql, prompt, error, payload } = action || {};
+  const { type, response, prompt, error, payload } = action || {};
   const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken } = response || {};
-  const { data } = responseGql || {};
   const otpType = _get(payload, 'otpType', null);
 
   switch (type) {
@@ -611,24 +609,6 @@ export const getRequestInfo = state => state.app.requestInfo;
 
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'timezoneOffset', 480)
-);
-
-export const getLoadCoreBusinessStatus = createSelector(getCoreBusiness, coreBusinessInfo =>
-  _get(coreBusinessInfo, 'loadCoreBusinessStatus', null)
-);
-
-export const getIsCoreBusinessLoaded = createSelector(
-  getLoadCoreBusinessStatus,
-  loadCoreBusinessStatus => loadCoreBusinessStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadCoreBusinessFailed = createSelector(
-  getLoadCoreBusinessStatus,
-  loadCoreBusinessStatus => loadCoreBusinessStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, coreBusinessInfo =>
-  _get(coreBusinessInfo, 'enableCashback', false)
 );
 
 // TODO: Will remove from reducer, prompt should in component
