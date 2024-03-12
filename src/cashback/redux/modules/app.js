@@ -26,7 +26,6 @@ import logger from '../../../utils/monitoring/logger';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getCoreBusinessInfo } from './api-request';
@@ -391,7 +390,6 @@ const user = (state = initialState.user, action) => {
   const { type, response, responseGql, prompt, error, payload } = action || {};
   const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken } = response || {};
   const { data } = responseGql || {};
-  const { business, onlineStoreInfo } = data || {};
   const otpType = _get(payload, 'otpType', null);
 
   switch (type) {
@@ -594,7 +592,6 @@ export default combineReducers({
   user,
   error,
   business,
-  onlineStoreInfo,
   coreBusiness,
   requestInfo,
 });
