@@ -4,18 +4,18 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { PlusCircle, CheckCircle, ClockCounterClockwise } from 'phosphor-react';
+import { getPrice } from '../../../common/utils';
 import { toLocaleDateString } from '../../../utils/datetime-lib';
 import { goBack } from '../../../utils/native-methods';
 import { getConsumerId } from '../../../redux/modules/user/selectors';
 import { initUserInfo as initUserInfoThunk } from '../../../redux/modules/user/thunks';
-import { getMerchantCountry } from '../../../redux/modules/merchant/selectors';
+import { getMerchantCountry, getMerchantCurrency, getMerchantLocale } from '../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../redux/modules/common/selectors';
 import { getCustomerId } from '../../redux/modules/customer/selectors';
+import { getIsUserLogin } from '../../redux/modules/app';
 import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
 import { getCashbackHistoryList } from './redux/selectors';
 import { mounted as mountedThunk, fetchCashbackHistoryList as fetchCashbackHistoryListThunk } from './redux/thunks';
-import { getIsUserLogin } from '../../redux/modules/app';
-import CurrencyNumber from '../../components/CurrencyNumber';
 import HybridHeader from '../../../components/HybridHeader';
 import './CashbackHistory.scss';
 
@@ -77,18 +77,19 @@ class CashbackHistory extends React.Component {
   }
 
   renderLogList() {
-    const { cashbackHistoryList, country } = this.props;
+    const { cashbackHistoryList, country, locale, currency } = this.props;
 
     return (
       <ul className="padding-left-right-small">
         {cashbackHistoryList.map((activity, i) => {
-          const { eventType, eventTime } = activity;
+          const { eventType, eventTime, amount } = activity;
           const eventDateTime = new Date(Number.parseInt(eventTime, 10));
           const type = this.getType(eventType, {
             className: `recent-activities__list-icon icon  ${
               eventType === 'earned' || eventType === 'adjustment' ? 'icon__primary' : 'icon__default'
             }`,
           });
+          const amountPrice = getPrice(Math.abs(amount || 0), { locale, currency, country });
 
           return (
             <li
@@ -100,7 +101,7 @@ class CashbackHistory extends React.Component {
               <summary className="padding-left-right-normal">
                 <h4 className="margin-top-bottom-small">
                   <span>{type.text}&nbsp;</span>
-                  {activity.eventType !== 'pending' ? <CurrencyNumber money={Math.abs(activity.amount || 0)} /> : null}
+                  {activity.eventType !== 'pending' ? <span>{amountPrice}</span> : null}
                 </h4>
                 <time className="recent-activities__time padding-top-bottom-smaller">
                   {toLocaleDateString(eventDateTime, country, DATE_OPTIONS)}
@@ -152,6 +153,8 @@ CashbackHistory.propTypes = {
   customerId: PropTypes.string,
   cashbackHistoryList: PropTypes.arrayOf(PropTypes.object),
   country: PropTypes.string,
+  locale: PropTypes.string,
+  currency: PropTypes.string,
   initUserInfo: PropTypes.func,
   mounted: PropTypes.func,
   loadConsumerCustomerInfo: PropTypes.func,
@@ -165,6 +168,8 @@ CashbackHistory.defaultProps = {
   customerId: '',
   cashbackHistoryList: [],
   country: '',
+  locale: null,
+  currency: null,
   initUserInfo: () => {},
   mounted: () => {},
   loadConsumerCustomerInfo: () => {},
@@ -179,6 +184,8 @@ export default compose(
       isWebview: getIsWebview(state),
       consumerId: getConsumerId(state),
       country: getMerchantCountry(state),
+      locale: getMerchantLocale(state),
+      currency: getMerchantCurrency(state),
       customerId: getCustomerId(state),
       cashbackHistoryList: getCashbackHistoryList(state),
     }),
