@@ -4,6 +4,7 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import faviconImage from '../../../images/favicon.ico';
+import { getPageError } from '../../../redux/modules/entities/error';
 import {
   actions as appActionCreators,
   getError,
@@ -13,7 +14,6 @@ import {
   getIsLoginModalShown,
   getIsClaimCashbackPage,
 } from '../../redux/modules/app';
-import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
 import { isWebview } from '../../../common/utils';
 import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
