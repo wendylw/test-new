@@ -7,7 +7,7 @@ import { PlusCircle, CheckCircle, ClockCounterClockwise } from 'phosphor-react';
 import { toLocaleDateString } from '../../../utils/datetime-lib';
 import { goBack } from '../../../utils/native-methods';
 import { getConsumerId } from '../../../redux/modules/user/selectors';
-import { initUserInfo } from '../../../redux/modules/user/thunks';
+import { initUserInfo as initUserInfoThunk } from '../../../redux/modules/user/thunks';
 import { getMerchantCountry } from '../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../redux/modules/common/selectors';
 import { getCustomerId } from '../../redux/modules/customer/selectors';
@@ -35,7 +35,7 @@ class CashbackHistory extends React.Component {
 
   async componentDidUpdate(prevProps) {
     const { isUserLogin: prevIsUserLogin } = prevProps;
-    const { isUserLogin, loadConsumerCustomerInfo, fetchCashbackHistoryList } = this.props;
+    const { isUserLogin, initUserInfo, loadConsumerCustomerInfo, fetchCashbackHistoryList } = this.props;
 
     if (isUserLogin && isUserLogin !== prevIsUserLogin) {
       await initUserInfo();
@@ -152,6 +152,7 @@ CashbackHistory.propTypes = {
   customerId: PropTypes.string,
   cashbackHistoryList: PropTypes.arrayOf(PropTypes.object),
   country: PropTypes.string,
+  initUserInfo: PropTypes.func,
   mounted: PropTypes.func,
   loadConsumerCustomerInfo: PropTypes.func,
   fetchCashbackHistoryList: PropTypes.func,
@@ -164,6 +165,7 @@ CashbackHistory.defaultProps = {
   customerId: '',
   cashbackHistoryList: [],
   country: '',
+  initUserInfo: () => {},
   mounted: () => {},
   loadConsumerCustomerInfo: () => {},
   fetchCashbackHistoryList: () => {},
@@ -181,6 +183,7 @@ export default compose(
       cashbackHistoryList: getCashbackHistoryList(state),
     }),
     dispatch => ({
+      initUserInfo: bindActionCreators(initUserInfoThunk, dispatch),
       mounted: bindActionCreators(mountedThunk, dispatch),
       loadConsumerCustomerInfo: bindActionCreators(loadConsumerCustomerInfoThunk, dispatch),
       fetchCashbackHistoryList: bindActionCreators(fetchCashbackHistoryListThunk, dispatch),
