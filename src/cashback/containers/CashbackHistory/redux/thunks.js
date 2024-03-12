@@ -25,23 +25,23 @@ export const mounted = createAsyncThunk('cashback/cashbackHistory/mounted', asyn
   const isWebview = getIsWebview(state);
   const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
 
-  fetchMerchantInfo(merchantBusiness);
+  dispatch(fetchMerchantInfo(merchantBusiness));
 
-  await initUserInfo();
+  await dispatch(initUserInfo());
 
   if (isWebview) {
-    await loginUserByBeepApp();
+    await dispatch(loginUserByBeepApp());
   }
 
   if (isAlipayMiniProgram) {
-    await loginUserByAlipayMiniProgram();
+    await dispatch(loginUserByAlipayMiniProgram());
   }
 
   const isLogin = getIsLogin(getState());
   const consumerId = getConsumerId(getState());
 
   if (isLogin) {
-    await loadConsumerCustomerInfo(consumerId);
+    await dispatch(loadConsumerCustomerInfo(consumerId));
     dispatch(fetchCashbackHistoryList());
   }
 });
