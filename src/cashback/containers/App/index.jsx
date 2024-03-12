@@ -86,12 +86,6 @@ class App extends Component {
 
       const { isUserLogin } = this.props;
 
-      if (isWebview() && !(isClaimCashbackPage || isSeamlessLoyaltyPage || isHomePage)) {
-        await appActions.syncLoginFromBeepApp();
-
-        return;
-      }
-
       if (!isUserLogin) {
         appActions.showLoginModal();
       }
