@@ -15,12 +15,6 @@ it('src/cashback/redux/store.js', () => {
         message: null,
         show: false,
       },
-      onlineStoreInfo: {
-        id: '',
-        isFetching: false,
-        loadOnlineStoreInfoStatus: null,
-        logo: null,
-      },
       requestInfo: {
         storeId: null,
         tableId: null,

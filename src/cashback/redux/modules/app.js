@@ -77,12 +77,6 @@ export const initialState = {
   customerInfo: {},
   error: null, // network error
   business: config.business,
-  onlineStoreInfo: {
-    id: '',
-    logo: null,
-    isFetching: false,
-    loadOnlineStoreInfoStatus: null,
-  },
   coreBusiness: {
     enableCashback: true,
     loadCoreBusinessStatus: null,
@@ -378,17 +372,6 @@ export const actions = {
     }
   },
 
-  fetchOnlineStoreInfo: () => ({
-    [FETCH_GRAPHQL]: {
-      types: [
-        types.FETCH_ONLINE_STORE_INFO_REQUEST,
-        types.FETCH_ONLINE_STORE_INFO_SUCCESS,
-        types.FETCH_ONLINE_STORE_INFO_FAILURE,
-      ],
-      endpoint: Url.apiGql('OnlineStoreInfo'),
-    },
-  }),
-
   fetchCashbackBusiness: () => ({
     [API_REQUEST]: {
       types: [
@@ -520,18 +503,6 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     }
-    // fetch online store info success
-    // fetch core business success
-    case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
-      if (!state.phone && business && business.country) {
-        return { ...state, country: business.country };
-      }
-
-      if (!state.phone && onlineStoreInfo && onlineStoreInfo.country) {
-        return { ...state, country: onlineStoreInfo.country };
-      }
-
-      return state;
     case types.UPDATE_USER:
       return { ...state, ...action.user };
     case types.SET_LOGIN_PROMPT:
@@ -601,28 +572,6 @@ const business = (state = initialState.business, action) => {
   }
 };
 
-const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
-  const { type, responseGql } = action;
-  const { data } = responseGql || {};
-  const { onlineStoreInfo: info } = data || {};
-
-  switch (type) {
-    case types.FETCH_ONLINE_STORE_INFO_REQUEST:
-      return { ...state, isFetching: true, loadOnlineStoreInfoStatus: API_REQUEST_STATUS.PENDING };
-    case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
-      return {
-        ...state,
-        isFetching: false,
-        id: info.id || '',
-        loadOnlineStoreInfoStatus: API_REQUEST_STATUS.FULFILLED,
-      };
-    case types.FETCH_ONLINE_STORE_INFO_FAILURE:
-      return { ...state, isFetching: false, loadOnlineStoreInfoStatus: API_REQUEST_STATUS.REJECTED };
-    default:
-      return state;
-  }
-};
-
 const coreBusiness = (state = initialState.coreBusiness, action) => {
   const { payload, type } = action || {};
   const enableCashback = payload || {};
@@ -660,25 +609,8 @@ export const getUserProfile = state => state.app.user.profile;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
 export const getError = state => state.app.error;
-export const getOnlineStoreInfo = state => state.entities.onlineStores[state.app.onlineStoreInfo.id];
 export const getCoreBusiness = state => state.app.coreBusiness;
 export const getRequestInfo = state => state.app.requestInfo;
-
-export const getOnlineStoreInfoFavicon = createSelector(getOnlineStoreInfo, info => _get(info, 'favicon', null));
-
-export const getOnlineStoreInfoLogo = createSelector(getOnlineStoreInfo, info => _get(info, 'logo', null));
-
-export const getLoadOnlineStoreInfoStatus = state => _get(state.app.onlineStoreInfo, 'loadOnlineStoreInfoStatus', null);
-
-export const getIsOnlineStoreInfoLoaded = createSelector(
-  getLoadOnlineStoreInfoStatus,
-  loadOnlineStoreInfoStatus => loadOnlineStoreInfoStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadOnlineStoreInfoFailed = createSelector(
-  getLoadOnlineStoreInfoStatus,
-  loadOnlineStoreInfoStatus => loadOnlineStoreInfoStatus === API_REQUEST_STATUS.REJECTED
-);
 
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'timezoneOffset', 480)

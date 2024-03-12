@@ -10,7 +10,6 @@ import {
   getLoginBannerPrompt,
   getIsUserLogin,
   getIsLoginRequestStatusPending,
-  getOnlineStoreInfoFavicon,
   getIsLoginModalShown,
   getIsClaimCashbackPage,
   getIsSeamlessLoyaltyPage,
@@ -40,10 +39,7 @@ class App extends Component {
     this.visitErrorPage();
 
     try {
-      // 1. fetch online store info
-      const initRequests = [appActions.fetchOnlineStoreInfo(), appActions.fetchCashbackBusiness()];
-
-      await Promise.all(initRequests);
+      await appActions.fetchCashbackBusiness();
 
       // 2. login
       // TNGD code is executed at the very beginning.
@@ -140,15 +136,7 @@ class App extends Component {
   }
 
   render() {
-    const {
-      t,
-      error,
-      loginBannerPrompt,
-      onlineStoreInfoFavicon,
-      isLoginModalShown,
-      appActions,
-      isClaimCashbackPage,
-    } = this.props;
+    const { t, error, loginBannerPrompt, isLoginModalShown, appActions, isClaimCashbackPage } = this.props;
     const { message } = error || {};
 
     return (
@@ -170,7 +158,7 @@ class App extends Component {
           />
         ) : null}
         <Routes />
-        <DocumentFavicon icon={onlineStoreInfoFavicon || faviconImage} />
+        <DocumentFavicon icon={faviconImage} />
       </main>
     );
   }
@@ -185,7 +173,6 @@ App.propTypes = {
   isClaimCashbackPage: PropTypes.bool,
   isSeamlessLoyaltyPage: PropTypes.bool,
   isHomePage: PropTypes.bool,
-  onlineStoreInfoFavicon: PropTypes.string,
   error: PropTypes.shape({
     message: PropTypes.string,
   }),
@@ -198,7 +185,6 @@ App.propTypes = {
     loadConsumerLoginStatus: PropTypes.func,
     resetConsumerLoginStatus: PropTypes.func,
     resetConsumerCustomerInfo: PropTypes.func,
-    fetchOnlineStoreInfo: PropTypes.func,
     fetchCashbackBusiness: PropTypes.func,
     loginApp: PropTypes.func,
     clearError: PropTypes.func,
@@ -217,7 +203,6 @@ App.defaultProps = {
   isClaimCashbackPage: false,
   isSeamlessLoyaltyPage: false,
   isHomePage: false,
-  onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
   isLoginModalShown: false,
@@ -236,7 +221,6 @@ export default compose(
       isSeamlessLoyaltyPage: getIsSeamlessLoyaltyPage(state),
       isHomePage: getIsHomePage(state),
       isLoginModalShown: getIsLoginModalShown(state),
-      onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
       pageError: getPageError(state),
       loginAlipayMiniProgramRequestError: getLoginAlipayMiniProgramRequestError(state),
