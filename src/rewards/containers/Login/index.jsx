@@ -334,7 +334,7 @@ class PageLogin extends React.Component {
       <OtpModal
         resendOtpTime={RESEND_OTP_TIME}
         phone={phone}
-        country={country}
+        country={country || 'MY'}
         showWhatsAppResendBtn={!noWhatsAppAccount && country === 'MY'}
         data-test-id="ordering.page-login.otp-modal"
         onClose={this.handleCloseOtpModal}
@@ -423,7 +423,7 @@ class PageLogin extends React.Component {
               className="padding-normal margin-normal"
               phone={phone}
               content={t('LoginTip')}
-              country={country}
+              country={country || 'MY'}
               buttonText={isOtpRequestPending ? t('Processing') : t('Continue')}
               show
               isProcessing={isOtpRequestPending}
