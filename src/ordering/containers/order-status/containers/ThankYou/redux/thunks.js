@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
-import { getCookieVariable, removeCookieVariable } from '../../../../../../common/utils';
+import { getCookieVariable, removeCookieVariable, submitForm } from '../../../../../../common/utils';
 import { alert } from '../../../../../../common/feedback';
 import { API_INFO, postFoodCourtIdHashCode } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
@@ -10,6 +10,7 @@ import CleverTap from '../../../../../../utils/clevertap';
 import * as NativeMethods from '../../../../../../utils/native-methods';
 import { getPaidToCurrentEventDurationMinutes, getIsProfileMissingSkippedExpired } from '../utils';
 import { PROFILE_DISPLAY_DELAY_DURATION } from '../constants';
+import { BECOME_MERCHANT_MEMBER_METHODS, PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import {
   actions as appActions,
   getBusinessInfo,
@@ -18,11 +19,16 @@ import {
   getIsUserProfileStatusFulfilled,
   getUserProfile,
   getIsWebview,
+  getBusiness,
+  getUserPhone,
 } from '../../../../../redux/modules/app';
-import { getOrder } from '../../../redux/selector';
+import { getOrder, getReceiptNumber } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
+import { joinMembership } from '../../../../../../redux/modules/membership/thunks';
+import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import logger from '../../../../../../utils/monitoring/logger';
 import { getRedirectFrom } from './selector';
+import config from '../../../../../../config';
 
 export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/fetchCashbackInfo', async orderId => {
   try {
@@ -47,6 +53,17 @@ export const createCashbackInfo = createAsyncThunk(
     });
 
     return result;
+  }
+);
+
+export const claimCashback = createAsyncThunk(
+  'ordering/orderStatus/thankYou/claimCashback',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const phone = getUserPhone(state);
+    const receiptNumber = getReceiptNumber(state);
+    await dispatch(createCashbackInfo({ receiptNumber, phone })).unwrap();
+    dispatch(loadCashbackInfo(receiptNumber));
   }
 );
 
@@ -217,5 +234,57 @@ export const initProfilePage = createAsyncThunk(
 
       throw error;
     }
+  }
+);
+
+/* Tiered Membership */
+export const loadBusinessMembershipInfo = createAsyncThunk(
+  'ordering/orderStatus/thankYou/loadBusinessMembershipInfo',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+
+    await dispatch(fetchMerchantInfo(business));
+  }
+);
+
+export const joinBusinessMembership = createAsyncThunk(
+  'ordering/orderStatus/thankYou/joinBusinessMembership',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+    const consumerId = getUserConsumerId(state);
+    const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
+
+    await dispatch(joinMembership({ business, source, consumerId }));
+    await dispatch(appActions.loadCustomerInfo(consumerId));
+  }
+);
+
+export const goToJoinMembershipPage = createAsyncThunk(
+  'ordering/orderStatus/thankYou/goToJoinMembershipPage',
+  async (_, { getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+    const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
+    const redirectUrl = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.SIGN_UP}?business=${business}&source=${source}`;
+
+    submitForm('/go2page', {
+      target: redirectUrl,
+    });
+  }
+);
+
+export const goToMembershipDetailPage = createAsyncThunk(
+  'ordering/orderStatus/thankYou/goToMembershipDetailPage',
+  async (_, { getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+    const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
+    const redirectUrl = `${config.beepitComUrl}${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}?business=${business}&source=${source}`;
+
+    submitForm('/go2page', {
+      target: redirectUrl,
+    });
   }
 );

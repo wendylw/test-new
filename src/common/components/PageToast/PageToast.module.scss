@@ -1,0 +1,17 @@
+@import "../../../common/styles/variables.scss";
+
+.PageToastContainer {
+  @apply tw-fixed tw-top-0 tw-left-0 tw-flex tw-items-center tw-justify-center tw-w-full tw-h-full tw-z-300;
+}
+
+.PageToastContent {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-12 sm:tw-p-12px tw-text-white tw-bg-gray-700 tw-bg-opacity-60 tw-rounded;
+
+  min-width: 110px;
+  max-width: 256px;
+  min-height: 92px;
+}
+
+.PageToastText {
+  @apply tw-text-center tw-leading-loose;
+}

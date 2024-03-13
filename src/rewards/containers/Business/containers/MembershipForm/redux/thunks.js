@@ -1,33 +1,97 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { push, replace } from 'connected-react-router';
-import { getBusinessInfo } from './api-request';
-import { goBack } from '../../../../../../utils/native-methods';
-import { getIsTNGMiniProgram, getIsWebview, getLocationSearch } from '../../../../../redux/modules/common/selectors';
-import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import { push, replace, goBack as historyGoBack } from 'connected-react-router';
+import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
+import { getCookieVariable, setCookieVariable, removeCookieVariable, getClient } from '../../../../../../common/utils';
+import { PATH_NAME_MAPPING, REFERRER_SOURCE_TYPES } from '../../../../../../common/utils/constants';
+import logger from '../../../../../../utils/monitoring/logger';
+import CleverTap from '../../../../../../utils/clevertap';
+import {
+  getIsAlipayMiniProgram,
+  getIsWebview,
+  getLocationSearch,
+  getSource,
+  getBusiness,
+} from '../../../../../redux/modules/common/selectors';
+import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
 import Growthbook from '../../../../../../utils/growthbook';
 import {
-  fetchUserLoginStatus,
+  initUserInfo,
   loginUserByBeepApp,
-  loginUserByTngMiniProgram,
+  loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { joinMembership } from '../../../redux/common/thunks';
-import { PATH_NAME_MAPPING, REFERRER_SOURCE_TYPES } from '../../../../../../common/utils/constants';
-import {
-  getQueryString,
-  getCookieVariable,
-  setCookieVariable,
-  removeCookieVariable,
-} from '../../../../../../common/utils';
+import { getMerchantBusiness, getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
+import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
+import { joinMembership } from '../../../../../../redux/modules/membership/thunks';
+import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
+import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
+import { getShouldShowProfileForm } from './selectors';
 
-export const fetchBusinessInfo = createAsyncThunk(
-  'rewards/business/membershipForm/fetchBusinessInfo',
-  async business => {
-    const result = await getBusinessInfo(business);
-    const { country } = result || {};
+export const showWebProfileForm = createAsyncThunk(
+  'rewards/business/membershipForm/showWebProfileForm',
+  async () => {}
+);
 
-    Growthbook.patchAttributes({ country });
+export const hideWebProfileForm = createAsyncThunk(
+  'rewards/business/membershipForm/hideWebProfileForm',
+  async () => {}
+);
 
-    return result;
+export const loadCustomerInfo = createAsyncThunk(
+  'rewards/business/membershipForm/loadCustomerInfo',
+  async (_, { dispatch, getState }) => {
+    const business = getBusiness(getState());
+    await dispatch(fetchCustomerInfo(business));
+  }
+);
+
+export const joinBusinessMembership = createAsyncThunk(
+  'rewards/business/membershipForm/joinBusinessMembership',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+    const source = getSource(state);
+    const consumerId = getConsumerId(state);
+
+    await dispatch(joinMembership({ business, source, consumerId }));
+    await dispatch(fetchCustomerInfo(business));
+  }
+);
+
+export const showNativeProfileForm = createAsyncThunk(
+  'rewards/business/membershipForm/showNativeProfileForm',
+  async (_, { dispatch }) => {
+    await showCompleteProfilePageAsync();
+    await dispatch(joinBusinessMembership());
+  }
+);
+
+export const showProfileForm = createAsyncThunk(
+  'rewards/business/membershipForm/showProfileForm',
+  async (_, { dispatch, getState }) => {
+    const isWebview = getIsWebview(getState());
+
+    if (isWebview) {
+      await dispatch(showNativeProfileForm());
+      return;
+    }
+
+    await dispatch(showWebProfileForm());
+  }
+);
+
+export const skipProfileButtonClicked = createAsyncThunk(
+  'rewards/business/membershipForm/skipProfileButtonClicked',
+  async (_, { dispatch }) => {
+    await dispatch(hideWebProfileForm());
+    await dispatch(joinBusinessMembership());
+  }
+);
+
+export const saveProfileButtonClicked = createAsyncThunk(
+  'rewards/business/membershipForm/saveProfileButtonClicked',
+  async (_, { dispatch }) => {
+    await dispatch(hideWebProfileForm());
+    await dispatch(joinBusinessMembership());
   }
 );
 
@@ -37,18 +101,60 @@ export const goToMembershipDetail = createAsyncThunk(
     const state = getState();
     const search = getLocationSearch(state);
 
-    dispatch(replace(`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`));
+    dispatch(
+      replace(
+        `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`
+      )
+    );
+  }
+);
+
+export const continueJoinMembership = createAsyncThunk(
+  'rewards/business/membershipForm/continueJoinMembership',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+
+    await dispatch(fetchCustomerInfo(business));
+
+    const hasUserJoinedMerchantMembership = getHasUserJoinedMerchantMembership(getState());
+
+    if (hasUserJoinedMerchantMembership) {
+      // NOTE: this case has been handled in MembershipFormProxy useEffect. No need to do any manual redirect here.
+      return;
+    }
+
+    const shouldShowProfileForm = getShouldShowProfileForm(getState());
+
+    try {
+      if (shouldShowProfileForm) {
+        await dispatch(showProfileForm());
+        throw new Error('Incomplete user profile');
+      }
+
+      await dispatch(joinBusinessMembership());
+    } catch (error) {
+      logger.error('Rewards_Business_JoinMembershipFailed', { message: error?.message });
+      throw error;
+    }
   }
 );
 
 export const mounted = createAsyncThunk(
   'rewards/business/membershipForm/mounted',
   async (_, { dispatch, getState }) => {
-    const business = getQueryString('business');
+    const business = getBusiness(getState());
 
-    Growthbook.patchAttributes({ business });
-    await dispatch(fetchBusinessInfo(business));
-    await dispatch(fetchUserLoginStatus());
+    await dispatch(fetchMerchantInfo(business));
+
+    const country = getMerchantCountry(getState());
+
+    Growthbook.patchAttributes({
+      country,
+      business,
+    });
+
+    await dispatch(initUserInfo());
 
     const isLogin = getIsLogin(getState());
 
@@ -60,14 +166,23 @@ export const mounted = createAsyncThunk(
     removeCookieVariable('__jm_source');
 
     if (from === REFERRER_SOURCE_TYPES.LOGIN) {
-      await dispatch(joinMembership());
+      await dispatch(continueJoinMembership());
     }
   }
 );
 
 export const backButtonClicked = createAsyncThunk(
   'rewards/business/membershipForm/backButtonClicked',
-  async (_, { dispatch }) => dispatch(goBack())
+  async (_, { dispatch, getState }) => {
+    const isWebview = getIsWebview(getState());
+
+    if (isWebview) {
+      dispatch(nativeGoBack());
+      return;
+    }
+
+    dispatch(historyGoBack());
+  }
 );
 
 export const retryButtonClicked = createAsyncThunk('rewards/business/membershipForm/retryButtonClicked', async () =>
@@ -78,25 +193,31 @@ export const joinNowButtonClicked = createAsyncThunk(
   'rewards/business/membershipForm/joinNowButtonClicked',
   async (_, { getState, dispatch }) => {
     const state = getState();
+    const merchantBusiness = getMerchantBusiness(state);
     const isLogin = getIsLogin(state);
     const isWebview = getIsWebview(state);
-    const isTNGMiniProgram = getIsTNGMiniProgram(state);
+    const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
     const search = getLocationSearch(state);
 
+    CleverTap.pushEvent('Join Membership Page - Click Join Now', {
+      'account name': merchantBusiness,
+      source: getClient(),
+    });
+
     if (isLogin) {
-      await dispatch(joinMembership());
+      await dispatch(continueJoinMembership());
       return;
     }
 
-    if (!(isTNGMiniProgram || isWebview)) {
+    if (!(isAlipayMiniProgram || isWebview)) {
       setCookieVariable('__jm_source', REFERRER_SOURCE_TYPES.LOGIN);
       dispatch(push(`${PATH_NAME_MAPPING.REWARDS_LOGIN}${search}`, { shouldGoBack: true }));
       return;
     }
 
     // Force a login for Beep app & Beep TnG MP
-    if (isTNGMiniProgram) {
-      await dispatch(loginUserByTngMiniProgram());
+    if (isAlipayMiniProgram) {
+      await dispatch(loginUserByAlipayMiniProgram());
     }
 
     if (isWebview) {
@@ -104,7 +225,7 @@ export const joinNowButtonClicked = createAsyncThunk(
     }
 
     if (getIsLogin(getState())) {
-      await dispatch(joinMembership());
+      await dispatch(continueJoinMembership());
     }
   }
 );

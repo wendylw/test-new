@@ -252,7 +252,7 @@ export class OrderDetails extends Component {
     const { storeInfo, deliveryInformation, status } = order || '';
     const { name } = storeInfo || '';
     const { address } = deliveryInformation && deliveryInformation.length > 0 ? deliveryInformation[0] : {};
-    const { address: deliveryAddress } = address || '';
+    const { deliveryTo: deliveryAddress } = address || '';
 
     return (
       <section className="border__bottom-divider padding-top-bottom-small">
@@ -357,6 +357,7 @@ export class OrderDetails extends Component {
       order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
     const isTakeAwayType = shippingType === DELIVERY_METHOD.TAKE_AWAY;
+    const isDeliveryChargeShow = shippingType === DELIVERY_METHOD.DELIVERY;
 
     return (
       <section className="ordering-details flex flex-column" data-test-id="ordering.order-detail.container">
@@ -394,10 +395,13 @@ export class OrderDetails extends Component {
                   <CurrencyNumber className="padding-top-bottom-small text-opacity" money={takeawayCharges || 0} />
                 </li>
               )}
-              <li className="flex flex-space-between flex-middle">
-                <span className="padding-top-bottom-small text-opacity">{t('DeliveryCharge')}</span>
-                <CurrencyNumber className="padding-top-bottom-small text-opacity" money={shippingFee || 0} />
-              </li>
+              {isDeliveryChargeShow && (
+                <li className="flex flex-space-between flex-middle">
+                  <span className="padding-top-bottom-small text-opacity">{t('DeliveryCharge')}</span>
+                  <CurrencyNumber className="padding-top-bottom-small text-opacity" money={shippingFee || 0} />
+                </li>
+              )}
+
               <li className="flex flex-space-between flex-middle">
                 <span className="padding-top-bottom-small text-opacity">{t('ServiceCharge')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={serviceCharge || 0} />

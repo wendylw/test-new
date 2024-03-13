@@ -18,11 +18,7 @@ const MANIFEST = {
 
 const ROUTER_PATHS = ConstantsV2.PATH_NAME_MAPPING;
 
-const CASHBACK_SOURCE = {
-  REGISTER: 'REGISTER',
-  RECEIPT: 'RECEIPT',
-  QR_ORDERING: 'QR_ORDERING',
-};
+const { CASHBACK_SOURCE } = ConstantsV2;
 
 const DOCUMENT_TITLE = {
   HOME: 'Home',
@@ -517,10 +513,7 @@ const VOUCHER_STATUS = {
   REDEEMED: 'redeemed',
 };
 
-const PREORDER_IMMEDIATE_TAG = {
-  from: 'now',
-  to: 'now',
-};
+const PREORDER_IMMEDIATE_TAG = ConstantsV2.PRE_ORDER_IMMEDIATE_TAG;
 
 const PROMO_TYPE = {
   PROMOTION: 'promotion',

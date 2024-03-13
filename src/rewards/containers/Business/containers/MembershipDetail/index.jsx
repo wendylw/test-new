@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../common/utils/ui';
-import { closeWebView } from '../../../../../utils/native-methods';
-import { mounted } from './redux/thunks';
-import { getIsWebview, getIsTNGMiniProgram } from '../../../../redux/modules/common/selectors';
+import { getIsWeb } from '../../../../redux/modules/common/selectors';
+import { mounted, backButtonClicked } from './redux/thunks';
+import { getShouldShowBackButton } from './redux/selectors';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MemberCard from './components/MemberCard';
-import CashbackBlock from './components/CashbackBlock';
+import CashbackBlock from '../../components/CashbackBlock';
 import UniquePromoList from './components/UniquePromoList';
 import MembershipDetailFooter from './components/MembershipDetailFooter';
 import MemberPrompt from './components/MemberPrompt';
@@ -18,14 +18,9 @@ import styles from './MembershipDetail.module.scss';
 const MembershipDetail = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
-  const isWebview = useSelector(getIsWebview);
-  const isTNGMiniProgram = useSelector(getIsTNGMiniProgram);
-  const isWeb = !isWebview && !isTNGMiniProgram;
-  const handleClickHeaderBackButton = useCallback(() => {
-    if (isWebview) {
-      closeWebView();
-    }
-  }, [isWebview]);
+  const isWeb = useSelector(getIsWeb);
+  const shouldShowBackButton = useSelector(getShouldShowBackButton);
+  const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
 
   useMount(() => {
     dispatch(mounted());
@@ -35,12 +30,15 @@ const MembershipDetail = () => {
     <Frame>
       <PageHeader
         className={getClassName([isWeb && styles.MembershipDetailWebPageHeader])}
-        isShowBackButton={!isWeb}
+        isShowBackButton={shouldShowBackButton}
         title={t('MembershipDetailPageTitle')}
         onBackArrowClick={handleClickHeaderBackButton}
       />
       <MemberCard />
-      <CashbackBlock />
+      <section className={styles.MembershipDetailCashbackSection}>
+        <h2 className={styles.MembershipDetailCashbackSectionTitle}>{t('Cashback')}</h2>
+        <CashbackBlock />
+      </section>
       <UniquePromoList />
       <MembershipDetailFooter />
       <MemberPrompt />

@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import { isWebview } from '../../../common/utils';
 import { toLocaleDateString } from '../../../utils/datetime-lib';
+import { goBack } from '../../../utils/native-methods';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconPending, IconChecked, IconEarned } from '../../../components/Icons';
 import HybridHeader from '../../../components/HybridHeader';
@@ -138,6 +140,12 @@ class RecentActivities extends React.Component {
           isPage
           title={t('CashbackHistory')}
           navFunc={() => {
+            if (isWebview()) {
+              goBack();
+
+              return;
+            }
+
             history.goBack();
           }}
         />

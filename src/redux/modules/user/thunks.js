@@ -1,16 +1,16 @@
 import i18next from 'i18next';
 import _isEmpty from 'lodash/isEmpty';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getApiRequestShippingType } from '../../../common/utils';
+import { getApiRequestShippingType, isJSON } from '../../../common/utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 import logger from '../../../utils/monitoring/logger';
 import CleverTap from '../../../utils/clevertap';
-import { getUserLoginStatus, postUserLogin, getUserProfile, postLoginGuest } from './api-request';
-import { getConsumerId, getIsLogin, getIsLoginExpired } from './selectors';
+import { getUserLoginStatus, postUserLogin, getUserProfile, putProfileInfo, postLoginGuest } from './api-request';
+import { getConsumerId, getIsLogin, getIsLoginExpired, getUserCountry } from './selectors';
 import Utils from '../../../utils/utils';
-import { getAccessToken } from '../../../utils/tng-utils';
+import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
 import { getTokenAsync, tokenExpiredAsync } from '../../../utils/native-methods';
-import { toast } from '../../../common/utils/feedback';
+import { toast, confirm } from '../../../common/utils/feedback';
 import { REGISTRATION_SOURCE } from '../../../common/utils/constants';
 
 const { getRegistrationTouchPoint, getRegistrationSource } = Utils;
@@ -68,6 +68,20 @@ export const fetchUserProfileInfo = createAsyncThunk('app/user/fetchUserProfileI
 
   return result;
 });
+
+/**
+ * @param {undefined}
+ * @return {Object} {firstName, email, birthday }
+ */
+export const uploadUserProfileInfo = createAsyncThunk(
+  'app/user/uploadUserProfileInfo',
+  async ({ firstName, email, birthday }, { getState }) => {
+    const state = getState();
+    const consumerId = getConsumerId(state);
+
+    await putProfileInfo(consumerId, { firstName, email, birthday });
+  }
+);
 
 export const initUserInfo = createAsyncThunk('app/user/initUserInfo', async (_, { dispatch, getState }) => {
   await dispatch(fetchUserLoginStatus());
@@ -154,11 +168,14 @@ export const loginUserAsGuest = createAsyncThunk('app/user/loginUserAsGuest', as
   return result;
 });
 
-export const loginUserByTngMiniProgram = createAsyncThunk(
-  'app/user/loginByTngMiniProgram',
-  async (business, { dispatch }) => {
-    if (!Utils.isTNGMiniProgram()) {
-      throw new Error('Not in tng mini program');
+export const loginUserByAlipayMiniProgram = createAsyncThunk(
+  'app/user/loginUserByAlipayMiniProgram',
+  async (business, { dispatch, getState }) => {
+    const state = getState();
+    const userCountry = getUserCountry(state);
+
+    if (!isAlipayMiniProgram()) {
+      throw new Error('Not in Alipay mini program');
     }
 
     try {
@@ -168,9 +185,41 @@ export const loginUserByTngMiniProgram = createAsyncThunk(
 
       await dispatch(syncUserLoginInfo({ accessToken, refreshToken }));
     } catch (error) {
+      const isJSONErrorMessage = isJSON(error?.message);
+
+      if (isJSONErrorMessage) {
+        const { error: errorCode } = JSON.parse(error.message) || {};
+
+        errorCode === 10 &&
+          confirm(i18next.t('Common:UnexpectedErrorOccurred'), {
+            closeByBackButton: false,
+            closeByBackDrop: false,
+            cancelButtonContent: i18next.t('Common:Cancel'),
+            confirmButtonContent: i18next.t('Common:TryAgain'),
+            onSelection: async confirmStatus => {
+              if (confirmStatus) {
+                // try again
+                CleverTap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Try Again', {
+                  country: userCountry,
+                });
+                await dispatch(loginUserByAlipayMiniProgram());
+              } else {
+                // cancel
+                if (window.my.exitMiniProgram) {
+                  window.my.exitMiniProgram();
+                }
+
+                CleverTap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Cancel', {
+                  country: userCountry,
+                });
+              }
+            },
+          });
+      }
+
       CleverTap.pushEvent('Login - login failed');
 
-      logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
+      logger.error('Common_LoginByAlipayMiniProgramFailed', { message: error?.message });
 
       throw error;
     }

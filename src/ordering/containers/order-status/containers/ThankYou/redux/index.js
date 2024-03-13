@@ -10,17 +10,11 @@ import {
   showProfileModal,
   hideProfileModal,
   updateRedirectFrom,
+  joinBusinessMembership,
 } from './thunks';
+import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 
 const initialState = {
-  /* included: customerId, consumerId, status */
-  cashbackInfo: {
-    customerId: null,
-    consumerId: null,
-    status: null,
-    error: null,
-  },
-  updateCashbackInfoStatus: null,
   storeHashCode: null,
   orderCancellationReasonAsideVisible: false,
   updateShippingTypeStatus: null, // pending || fulfilled || rejected
@@ -32,6 +26,25 @@ const initialState = {
     hashCode: null,
   },
   redirectFrom: null,
+  updateRedirectFromStatus: null, // FIXME: refactor later
+  joinBusinessMembershipRequest: {
+    status: null,
+    error: null,
+  },
+  loadCashbackRequest: {
+    data: null,
+    status: null,
+    error: null,
+  },
+  claimCashbackRequest: {
+    data: {
+      customerId: null,
+      consumerId: null,
+      status: null,
+    },
+    status: null,
+    error: null,
+  },
 };
 
 const { reducer, actions } = createSlice({
@@ -46,38 +59,44 @@ const { reducer, actions } = createSlice({
     },
   },
   extraReducers: {
+    // For sake of completeness
+    [updateRedirectFrom.pending.type]: state => {
+      state.updateRedirectFromStatus = API_REQUEST_STATUS.PENDING;
+    },
     [updateRedirectFrom.fulfilled.type]: (state, { payload }) => {
       state.redirectFrom = payload;
+      state.updateRedirectFromStatus = API_REQUEST_STATUS.FULFILLED;
+    },
+    [updateRedirectFrom.rejected.type]: state => {
+      state.updateRedirectFromStatus = API_REQUEST_STATUS.REJECTED;
     },
     [loadCashbackInfo.pending.type]: state => {
-      state.updateCashbackInfoStatus = 'pending';
+      state.loadCashbackRequest.status = API_REQUEST_STATUS.PENDING;
+      state.loadCashbackRequest.error = null;
     },
     [loadCashbackInfo.fulfilled.type]: (state, { payload }) => {
-      state.cashbackInfo = {
-        ...state.cashbackInfo,
-        ...payload,
-        updateCashbackInfoStatus: 'fulfilled',
-        createdCashbackInfo: false,
-      };
+      state.loadCashbackRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.loadCashbackRequest.data = payload;
     },
     [loadCashbackInfo.rejected.type]: (state, { error }) => {
-      state.cashbackInfo.error = error;
-      state.updateCashbackInfoStatus = 'rejected';
+      state.loadCashbackRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.loadCashbackRequest.error = error;
     },
     [createCashbackInfo.pending.type]: state => {
-      state.updateCashbackInfoStatus = 'pending';
+      state.claimCashbackRequest.status = API_REQUEST_STATUS.PENDING;
+      state.claimCashbackRequest.error = null;
     },
     [createCashbackInfo.fulfilled.type]: (state, { payload }) => {
-      state.cashbackInfo = {
-        ...state.cashbackInfo,
-        ...payload,
-        updateCashbackInfoStatus: 'fulfilled',
-        createdCashbackInfo: true,
-      };
+      const { customerId, consumerId, status } = payload;
+
+      state.claimCashbackRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.claimCashbackRequest.data.customerId = customerId;
+      state.claimCashbackRequest.data.consumerId = consumerId;
+      state.claimCashbackRequest.data.status = status;
     },
     [createCashbackInfo.rejected.type]: (state, { error }) => {
-      state.cashbackInfo.error = error;
-      state.updateCashbackInfoStatus = 'rejected';
+      state.claimCashbackRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.claimCashbackRequest.error = error;
     },
     [loadStoreIdHashCode.fulfilled.type]: (state, { payload }) => {
       state.storeHashCode = payload.redirectTo;
@@ -86,26 +105,26 @@ const { reducer, actions } = createSlice({
       state.storeHashCode = payload.hex;
     },
     [cancelOrder.pending.type]: state => {
-      state.cancelOrderStatus = 'pending';
+      state.cancelOrderStatus = API_REQUEST_STATUS.PENDING;
       state.cancelOrderError = null;
     },
     [cancelOrder.fulfilled.type]: state => {
-      state.cancelOrderStatus = 'fulfilled';
+      state.cancelOrderStatus = API_REQUEST_STATUS.FULFILLED;
     },
     [cancelOrder.rejected.type]: (state, { error }) => {
       state.cancelOrderError = error;
-      state.cancelOrderStatus = 'rejected';
+      state.cancelOrderStatus = API_REQUEST_STATUS.REJECTED;
     },
     [updateOrderShippingType.pending.type]: state => {
-      state.updateShippingTypeStatus = 'pending';
+      state.updateShippingTypeStatus = API_REQUEST_STATUS.PENDING;
       state.updateShippingTypeError = null;
     },
     [updateOrderShippingType.fulfilled.type]: state => {
-      state.updateShippingTypeStatus = 'fulfilled';
+      state.updateShippingTypeStatus = API_REQUEST_STATUS.FULFILLED;
     },
     [updateOrderShippingType.rejected.type]: (state, { error }) => {
       state.updateShippingTypeError = error;
-      state.updateShippingTypeStatus = 'rejected';
+      state.updateShippingTypeStatus = API_REQUEST_STATUS.REJECTED;
     },
     [loadFoodCourtIdHashCode.fulfilled.type]: (state, { payload }) => {
       state.foodCourtInfo.hashCode = payload.hex;
@@ -115,6 +134,17 @@ const { reducer, actions } = createSlice({
     },
     [hideProfileModal.fulfilled.type]: state => {
       state.profileModalVisibility = false;
+    },
+    [joinBusinessMembership.pending.type]: state => {
+      state.joinBusinessMembershipRequest.status = API_REQUEST_STATUS.PENDING;
+      state.joinBusinessMembershipRequest.error = null;
+    },
+    [joinBusinessMembership.fulfilled.type]: state => {
+      state.joinBusinessMembershipRequest.status = API_REQUEST_STATUS.FULFILLED;
+    },
+    [joinBusinessMembership.rejected.type]: (state, { error }) => {
+      state.joinBusinessMembershipRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.joinBusinessMembershipRequest.error = error;
     },
   },
 });

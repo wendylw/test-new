@@ -33,13 +33,6 @@ export const WEB_VIEW_SOURCE = {
   Android: 'Android',
 };
 
-export const SOURCE_TYPE = {
-  SHOPPING_CART: 'shoppingCart',
-  SHARED_LINK: 'SharedLink',
-  PUSH_NOTIFICATION: 'PushNotification',
-  SMS: 'SMS',
-};
-
 export const CLIENTS = {
   WEB: 'web',
   IOS: 'iOS',
@@ -60,17 +53,22 @@ export const REGISTRATION_SOURCE = {
   SHARED_LINK: 'SharedLink',
 };
 
+export const SOURCE_TYPE = {
+  SHOPPING_CART: 'shoppingCart',
+  SHARED_LINK: 'SharedLink',
+  PUSH_NOTIFICATION: 'PushNotification',
+  SMS: 'SMS',
+};
+
 export const URL_TYPES = {
   STATIC: 'static',
   DYNAMIC: 'dynamic',
 };
 
-export const SHIPPING_TYPES = {
-  DELIVERY: 'delivery',
-  PICKUP: 'pickup',
-  DINE_IN: 'dine-in',
-  TAKE_AWAY: 'takeaway',
-  DIGITAL: 'digital',
+export const API_REQUEST_STATUS = {
+  PENDING: 'pending',
+  FULFILLED: 'fulfilled',
+  REJECTED: 'rejected',
 };
 
 export const PATH_NAME_MAPPING = {
@@ -127,13 +125,27 @@ export const PATH_NAME_MAPPING = {
   REWARDS_BASE: '/rewards',
   REWARDS_HOME: '/',
   REWARDS_BUSINESS: '/business',
-  JOIN_MEMBERSHIP: '/join-membership',
+  REWARDS_MEMBERSHIP: '/membership',
+  SIGN_UP: '/sign-up',
   MEMBERSHIP_DETAIL: '/membership-detail',
+  SEAMLESS_LOYALTY: '/seamless-loyalty',
+  UNIQUE_PROMO: '/promo',
+  CLAIM: '/claim',
   REWARDS_LOGIN: '/login',
+  CASHBACK: '/cashback',
+  CASHBACK_DETAIL: '/cashback-detail',
   // dine
   DINE: '/dine',
   FOOD_COURT: '/food-court',
   STORE_REVIEW: '/store-review',
+};
+
+export const SHIPPING_TYPES = {
+  DELIVERY: 'delivery',
+  PICKUP: 'pickup',
+  DINE_IN: 'dine-in',
+  TAKE_AWAY: 'takeaway',
+  DIGITAL: 'digital',
 };
 
 export const PROMOTION_CLIENT_TYPES = {
@@ -141,12 +153,6 @@ export const PROMOTION_CLIENT_TYPES = {
   GCASH_MINI_PROGRAM: 'gcashMiniProgram',
   APP: 'app',
   WEB: 'web',
-};
-
-export const API_REQUEST_STATUS = {
-  PENDING: 'pending',
-  FULFILLED: 'fulfilled',
-  REJECTED: 'rejected',
 };
 
 export const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -198,9 +204,6 @@ export const PAYMENT_PROVIDERS = {
   GCASH_MINI_PROGRAM: 'GCashMiniProgram',
 };
 
-// TODO: remove this after we have a better solution
-export const TIME_SLOT_NOW = 'now';
-
 export const PRODUCT_STOCK_STATUS = {
   NOT_TRACK_INVENTORY: 'notTrackInventory',
   IN_STOCK: 'inStock',
@@ -215,6 +218,11 @@ export const ORDER_SOURCE = {
   BEEP_APP: 'BeepApp',
   BEEP_SITE: 'BeepSite',
   BEEP_STORE: 'BeepStore',
+};
+
+export const PRE_ORDER_IMMEDIATE_TAG = {
+  from: 'now',
+  to: 'now',
 };
 
 export const ORDER_STATUS = {
@@ -247,10 +255,30 @@ export const REGISTRATION_TOUCH_POINT = {
   GCash: 'GCash',
 };
 
+// TODO: remove this after we have a better solution
+export const TIME_SLOT_NOW = 'now';
+
 export const TIME_SLOT = {
   NOW: 'now',
   TODAY: 'Today',
   TOMORROW: 'Tomorrow',
+};
+
+export const CASHBACK_SOURCE = {
+  REGISTER: 'REGISTER',
+  RECEIPT: 'RECEIPT',
+  QR_ORDERING: 'QR_ORDERING',
+};
+
+export const CLAIM_CASHBACK_QUERY_NAMES = {
+  STATUS: 'claimedStatus',
+  VALUE: 'cashback',
+  CASHBACK_TYPE: 'cashbackType',
+};
+
+export const CLAIM_CASHBACK_TYPES = {
+  PERCENTAGE: 'percentage',
+  ABSOLUTE: 'absolute',
 };
 
 export const REFERRER_SOURCE_TYPES = {
@@ -281,4 +309,86 @@ export const PROMO_VOUCHER_STATUS = {
   ACTIVE: 'active',
   EXPIRED: 'expired',
   REDEEMED: 'redeemed',
+};
+
+export const MEMBER_LEVELS = {
+  MEMBER: 1,
+  SLIVER: 2,
+  GOLD: 3,
+  PLATINUM: 4,
+};
+
+export const MEMBER_CARD_COLOR_PALETTES = {
+  [MEMBER_LEVELS.MEMBER]: {
+    icon: {
+      crown: {
+        startColor: '#91F7E7',
+        endColor: '#52A1FF',
+      },
+      background: {
+        startColor: '#DCFCFF',
+        endColor: '#D2DEFF',
+      },
+    },
+    background: {
+      startColor: '#91F7E7',
+      midColor: '#99C8FF',
+      endColor: '#52A1FF',
+    },
+    font: '#303030',
+  },
+  [MEMBER_LEVELS.SLIVER]: {
+    icon: {
+      crown: {
+        startColor: '#AFAFAF',
+        endColor: '#AFAFAF',
+      },
+      background: {
+        startColor: '#F3F3F3',
+        endColor: '#CCCCCC',
+      },
+    },
+    background: {
+      startColor: '#AFAFAF',
+      midColor: '#E0E0E0',
+      endColor: '#CCC',
+    },
+    font: '#303030',
+  },
+  [MEMBER_LEVELS.GOLD]: {
+    icon: {
+      crown: {
+        startColor: '#FFF143',
+        endColor: '#FFBD17',
+      },
+      background: {
+        startColor: '#FFFBE6',
+        endColor: '#FFFEAD',
+      },
+    },
+    background: {
+      startColor: '#FFF143',
+      midColor: '#FFBD17',
+      endColor: '#FFCF43',
+    },
+    font: '#303030',
+  },
+  [MEMBER_LEVELS.PLATINUM]: {
+    icon: {
+      crown: {
+        startColor: '#000000',
+        endColor: '#000000',
+      },
+      background: {
+        startColor: '#EAEAEA',
+        endColor: '#AFAFAF',
+      },
+    },
+    background: {
+      startColor: '#000000',
+      midColor: '#4E4E4E',
+      endColor: '#000000',
+    },
+    font: '#FFFFFF',
+  },
 };

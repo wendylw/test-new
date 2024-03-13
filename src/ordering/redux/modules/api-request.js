@@ -18,3 +18,10 @@ export const getUrlsValidation = h =>
   get('/api/v3/urls/validation', {
     queryParams: { h },
   });
+
+export const getCustomerInfo = ({ consumerId, business }) =>
+  get(`/api/v3/consumers/${consumerId}/customer`, {
+    queryParams: {
+      business,
+    },
+  });

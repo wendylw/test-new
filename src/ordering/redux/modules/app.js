@@ -12,7 +12,7 @@ import _cloneDeep from 'lodash/cloneDeep';
 import { replace } from 'connected-react-router';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants, { API_REQUEST_STATUS, REGISTRATION_SOURCE } from '../../../utils/constants';
-import { URL_TYPES } from '../../../common/utils/constants';
+import { URL_TYPES, MEMBER_LEVELS, MEMBER_CARD_COLOR_PALETTES } from '../../../common/utils/constants';
 import Utils from '../../../utils/utils';
 import {
   isAlipayMiniProgram as isAlipayMiniProgramUtil,
@@ -40,10 +40,9 @@ import {
   getIsAddressRequestStatusFulfilled,
 } from '../../../redux/modules/address/selectors';
 import { getCartItems as getNewCartItems } from './cart/selectors';
-import { getProfileInfo, postLoginGuest, getUrlsValidation } from './api-request';
+import { getProfileInfo, postLoginGuest, getUrlsValidation, getCustomerInfo } from './api-request';
 
 import * as StoreUtils from '../../../utils/store-utils';
-import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
 import {
@@ -53,9 +52,10 @@ import {
   isFromFoodCourt,
   isProductSoldOut,
   isGCashMiniProgram,
+  isTNGMiniProgram,
 } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
-import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
+import { AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 
 const { AUTH_INFO, DELIVERY_METHOD, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -149,6 +149,12 @@ export const initialState = {
       birthdayChangeAllowed: false,
       status: null,
     },
+    loadCustomerRequest: {
+      data: null,
+      status: null,
+      error: null,
+    },
+    loginReferrerSource: null,
   },
   error: null, // network error
   apiError: {
@@ -337,6 +343,8 @@ export const actions = {
         type: types.CREATE_LOGIN_SUCCESS,
         payload: { ...result, source },
       });
+
+      await dispatch(actions.getLoginStatus());
     } catch (error) {
       CleverTap.pushEvent('Login - login failed');
 
@@ -481,6 +489,8 @@ export const actions = {
         }
 
         try {
+          dispatch(actions.loadCustomerInfo(consumerId));
+
           await dispatch(actions.loadProfileInfo(consumerId));
 
           const profile = getUserProfile(getState());
@@ -770,52 +780,6 @@ export const actions = {
     }
   },
 
-  // TODO: Migrate loginByTngMiniProgram to loginByAlipayMiniProgram
-  loginByTngMiniProgram: () => async (dispatch, getState) => {
-    if (!Utils.isTNGMiniProgram()) {
-      throw new Error('Not in tng mini program');
-    }
-
-    try {
-      const business = getBusiness(getState());
-
-      dispatch({
-        type: types.CREATE_LOGIN_REQUEST,
-      });
-
-      const businessUTCOffset = getBusinessUTCOffset(getState());
-
-      const tokens = await TngUtils.getAccessToken({ business });
-
-      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
-
-      const result = await ApiRequest.login({
-        accessToken,
-        refreshToken,
-        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-      });
-
-      dispatch({
-        type: types.CREATE_LOGIN_SUCCESS,
-        payload: result,
-      });
-    } catch (error) {
-      CleverTap.pushEvent('Login - login failed');
-
-      dispatch({
-        type: types.CREATE_LOGIN_FAILURE,
-        error,
-      });
-
-      logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
-
-      return false;
-    }
-
-    return getUserIsLogin(getState());
-  },
-
-  // TODO: Migrate isTNGMiniProgram to here
   loginByAlipayMiniProgram: () => async (dispatch, getState) => {
     if (!isAlipayMiniProgramUtil()) {
       throw new Error('Not in alipay mini program');
@@ -824,16 +788,23 @@ export const actions = {
     try {
       const business = getBusiness(getState());
       const { access_token: accessToken, refresh_token: refreshToken } = await getAccessToken({ business });
+      let source = null;
+
+      if (getIsTNGMiniProgram(getState())) {
+        source = REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
+      } else if (getIsGCashMiniProgram(getState())) {
+        source = REGISTRATION_SOURCE.GCASH_MINI_PROGRAM;
+      }
 
       await dispatch(
         actions.loginApp({
           accessToken,
           refreshToken,
-          source: REGISTRATION_SOURCE.GCASH_MINI_PROGRAM,
+          source,
         })
       );
     } catch (error) {
-      // TODO: Migrate isTNGMiniProgram to add provider data
+      CleverTap.pushEvent('Login - login failed');
       logger.error('Common_LoginByAlipayMiniProgramFailed', { message: error?.message });
 
       return false;
@@ -952,18 +923,43 @@ export const actions = {
       });
     }
   },
+  updateLoginReferrerSource: referrerSource => ({
+    type: types.UPDATE_LOGIN_SOURCE,
+    payload: {
+      referrerSource,
+    },
+  }),
+  loadCustomerInfo: consumerId => async (dispatch, getState) => {
+    const business = getBusiness(getState());
+
+    try {
+      dispatch({ type: types.LOAD_CONSUMER_INFO_PENDING });
+
+      const result = await getCustomerInfo({ consumerId, business });
+
+      dispatch({
+        type: types.LOAD_CONSUMER_INFO_FULFILLED,
+        payload: result,
+      });
+    } catch (error) {
+      dispatch({
+        type: types.LOAD_CONSUMER_INFO_REJECTED,
+        error,
+      });
+    }
+  },
 };
 
 const user = (state = initialState.user, action) => {
   const { type, response, prompt, error, responseGql, payload } = action;
   const { consumerId, login, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken } = response || {};
 
-  const userConsumerId = _get(payload, 'consumerId', '');
   const userInfo = _get(payload, 'user', {});
   const { data } = responseGql || {};
   const { business, onlineStoreInfo } = data || {};
   const source = _get(payload, 'source', null);
   const otpType = _get(payload, 'otpType', null);
+  const loginReferrerSource = _get(payload, 'referrerSource', null);
   const isFromBeepApp = source === REGISTRATION_SOURCE.BEEP_APP;
   const loginByBeepAppStatus = isFromBeepApp ? API_REQUEST_STATUS.REJECTED : null;
 
@@ -1044,7 +1040,6 @@ const user = (state = initialState.user, action) => {
 
       return {
         ...state,
-        consumerId: userConsumerId,
         // WB-5109: If login status refactor, please to remove profile data,
         // BE has any update profile field should update this reducer for api/login
         profile: {
@@ -1055,7 +1050,6 @@ const user = (state = initialState.user, action) => {
           birthday: userInfo.birthday,
           status: API_REQUEST_STATUS.FULFILLED,
         },
-        isLogin: true,
         isExpired: false,
         isFetching: false,
         loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
@@ -1143,6 +1137,26 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         profile: { ...state.profile, ...payload },
+      };
+    case types.UPDATE_LOGIN_SOURCE:
+      return {
+        ...state,
+        loginReferrerSource,
+      };
+    case types.LOAD_CONSUMER_INFO_PENDING:
+      return {
+        ...state,
+        loadCustomerRequest: { ...state.loadCustomerRequest, status: API_REQUEST_STATUS.PENDING, error: null },
+      };
+    case types.LOAD_CONSUMER_INFO_FULFILLED:
+      return {
+        ...state,
+        loadCustomerRequest: { data: { ...payload }, status: API_REQUEST_STATUS.FULFILLED, error: null },
+      };
+    case types.LOAD_CONSUMER_INFO_REJECTED:
+      return {
+        ...state,
+        loadCustomerRequest: { ...state.loadCustomerRequest, status: API_REQUEST_STATUS.REJECTED, error },
       };
     default:
       return state;
@@ -1517,6 +1531,8 @@ export const getIsGuestModeRequestRejected = createSelector(
   status => status === API_REQUEST_STATUS.REJECTED
 );
 
+export const getLoginReferrerSource = createSelector(getUser, userInfo => _get(userInfo, 'loginReferrerSource', null));
+
 export const getUserIsLogin = createSelector(getUser, userInfo => _get(userInfo, 'isLogin', false));
 
 export const getFetchLoginRequestStatus = createSelector(getUser, userInfo => userInfo.fetchLoginRequestStatus || null);
@@ -1575,6 +1591,10 @@ export const getUserProfileStatus = state => state.app.user.profile.status;
 export const getIsUserLoginRequestStatusInPending = createSelector(
   getUserLoginRequestStatus,
   status => status === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsUserLoginRequestCompleted = createSelector(getUserLoginRequestStatus, status =>
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(status)
 );
 
 export const getIsUserProfileStatusFulfilled = createSelector(
@@ -1957,7 +1977,7 @@ export const getCategoryProductList = createSelector(
 );
 
 // TODO: add Utils methods to state rather than using Utils
-export const getIsTNGMiniProgram = () => Utils.isTNGMiniProgram();
+export const getIsTNGMiniProgram = () => isTNGMiniProgram();
 export const getIsGCashMiniProgram = () => isGCashMiniProgram();
 export const getIsAlipayMiniProgram = () => isAlipayMiniProgramUtil();
 export const getIsDigitalType = () => Utils.isDigitalType();
@@ -1967,9 +1987,8 @@ export const getIsWebview = () => Utils.isWebview();
 export const getIsInBrowser = () => Utils.getClient() === CLIENTS.WEB;
 export const getIsInAppOrMiniProgram = createSelector(
   getIsWebview,
-  getIsTNGMiniProgram,
   getIsAlipayMiniProgram,
-  (isWebview, isTNGMiniProgram, isAlipayMiniProgram) => isWebview || isTNGMiniProgram || isAlipayMiniProgram
+  (isWebview, isAlipayMiniProgram) => isWebview || isAlipayMiniProgram
 );
 export const getIsFromBeepSite = () => isFromBeepSite();
 export const getIsFromBeepSiteOrderHistory = () => isFromBeepSiteOrderHistory();
@@ -2036,12 +2055,10 @@ export const getIsFreeOrder = createSelector(getCartBilling, cartBilling => {
   return billingTotal === 0;
 });
 
-// TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
 export const getIsValidCreateOrder = createSelector(
   getIsFreeOrder,
-  getIsTNGMiniProgram,
   getIsAlipayMiniProgram,
-  (isFreeOrder, isTNGMiniProgram, isAlipayMiniProgram) => isTNGMiniProgram || isAlipayMiniProgram || isFreeOrder
+  (isFreeOrder, isAlipayMiniProgram) => isAlipayMiniProgram || isFreeOrder
 );
 
 export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCartInfo => {
@@ -2169,3 +2186,61 @@ export const getIsDynamicUrlExpired = createSelector(
   getIsDynamicUrl,
   (isDynamicQrCodeUrlExpired, isDynamicUrl) => isDynamicQrCodeUrlExpired && isDynamicUrl
 );
+
+/* Tiered Membership */
+export const getCustomerData = createSelector(getUser, userInfo => userInfo.loadCustomerRequest.data);
+
+export const getLoadCustomerRequestStatus = createSelector(getUser, userInfo => userInfo.loadCustomerRequest.status);
+
+export const getLoadCustomerRequestError = createSelector(getUser, userInfo => userInfo.loadCustomerRequest.error);
+
+export const getIsLoadCustomerRequestPending = createSelector(
+  getLoadCustomerRequestStatus,
+  loadCustomerRequestStatus => loadCustomerRequestStatus === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsLoadCustomerRequestCompleted = createSelector(
+  getLoadCustomerRequestStatus,
+  loadCustomerRequestStatus =>
+    loadCustomerRequestStatus === API_REQUEST_STATUS.FULFILLED ||
+    loadCustomerRequestStatus === API_REQUEST_STATUS.REJECTED
+);
+
+export const getCustomerCashback = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'storeCreditInfo.storeCreditsBalance', 0)
+);
+
+export const getCustomerTierLevel = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier.level', null)
+);
+
+export const getCustomerTierLevelName = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier.name', null)
+);
+
+export const getHasUserJoinedBusinessMembership = createSelector(
+  getCustomerData,
+  customerData => !!_get(customerData, 'customerTier', null)
+);
+
+export const getUserCustomerId = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerId', null)
+);
+
+// If the level is not by design, use member style by default.
+export const getMemberColorPalettes = createSelector(
+  getCustomerTierLevel,
+  customerTierLevel => MEMBER_CARD_COLOR_PALETTES[customerTierLevel] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER]
+);
+
+export const getMemberCardStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+  color: memberCardColorPalettes.font,
+  background: `linear-gradient(105deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 50%,${memberCardColorPalettes.background.endColor} 100%)`,
+}));
+
+export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+  crownStartColor: memberCardColorPalettes.icon.crown.startColor,
+  crownEndColor: memberCardColorPalettes.icon.crown.endColor,
+  backgroundStartColor: memberCardColorPalettes.icon.background.startColor,
+  backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
+}));

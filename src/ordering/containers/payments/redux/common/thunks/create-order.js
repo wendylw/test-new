@@ -5,11 +5,16 @@ import _isEmpty from 'lodash/isEmpty';
 import { push } from 'connected-react-router';
 import Url from '../../../../../../utils/url';
 import Utils from '../../../../../../utils/utils';
-import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../../utils/constants';
+import {
+  SHIPPING_TYPES,
+  PAYMENT_PROVIDERS,
+  REFERRER_SOURCE_TYPES,
+  PRE_ORDER_IMMEDIATE_TAG,
+  PATH_NAME_MAPPING,
+} from '../../../../../../common/utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
-import { callTradePay } from '../../../../../../utils/tng-utils';
-import { callTradePay as callAlipayTradePay } from '../../../../../../common/utils/alipay-miniprogram-client';
+import { callTradePay } from '../../../../../../common/utils/alipay-miniprogram-client';
 import { gotoHome } from '../../../../../../utils/native-methods';
 import {
   actions as appActions,
@@ -22,12 +27,10 @@ import {
   getUserConsumerId,
   getUserName,
   getUserPhone,
-  getIsTNGMiniProgram,
   getIsWebview,
   getShippingType,
   getDeliveryDetails,
   getMerchantCountry,
-  getIsGCashMiniProgram,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
 import { getSelectedPaymentProvider, getModifiedTime, getMiniProgramPaymentProvider } from '../selectors';
@@ -41,8 +44,6 @@ import { alert as alertV2 } from '../../../../../../common/utils/feedback';
 import { initPaymentWithOrder, createOrderStatusRequest } from './api-info';
 import logger from '../../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../../utils/monitoring/constants';
-
-const { DELIVERY_METHOD, PAYMENT_PROVIDERS } = Constants;
 
 const POLLING_INTERVAL = 3000;
 
@@ -182,7 +183,6 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     business,
     storeId,
     shoppingCartIds: cartItems.map(cartItem => cartItem.id),
-    tableId,
     cashback,
     orderSource,
     paymentProvider,
@@ -191,13 +191,13 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
   // --Begin-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
   let expectDeliveryDateInfo = null;
   try {
-    if (enablePreOrder && !(shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY)) {
+    if (enablePreOrder && !(shippingType === SHIPPING_TYPES.DINE_IN || shippingType === SHIPPING_TYPES.TAKE_AWAY)) {
       const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
       // => {"from":2,"to":3}
       const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
       // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
 
-      if (expectedDeliveryHour.from !== Constants.PREORDER_IMMEDIATE_TAG.from) {
+      if (expectedDeliveryHour.from !== PRE_ORDER_IMMEDIATE_TAG.from) {
         expectDeliveryDateInfo = getExpectDeliveryDateInfo(
           expectedDeliveryDate.date,
           expectedDeliveryHour.from,
@@ -211,7 +211,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
   }
   // --End-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo
 
-  if (shippingType === DELIVERY_METHOD.DELIVERY) {
+  if (shippingType === SHIPPING_TYPES.DELIVERY) {
     const { country } = getOnlineStoreInfo(getState(), business); // this one needs businessInfo
     const {
       addressDetails,
@@ -240,14 +240,21 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       },
       deliveryComments,
     };
-  } else if (shippingType === DELIVERY_METHOD.PICKUP) {
+  } else if (shippingType === SHIPPING_TYPES.PICKUP) {
     variables = {
       ...variables,
       contactDetail,
       shippingType,
       ...expectDeliveryDateInfo,
     };
-  } else if (shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY) {
+  } else if (shippingType === SHIPPING_TYPES.DINE_IN) {
+    variables = {
+      ...variables,
+      tableId,
+      shippingType: Utils.getApiRequestShippingType(shippingType),
+      contactDetail,
+    };
+  } else if (shippingType === SHIPPING_TYPES.TAKE_AWAY) {
     variables = {
       ...variables,
       shippingType: Utils.getApiRequestShippingType(shippingType),
@@ -319,7 +326,7 @@ const handlePaymentError = ({ e, dispatch }) => {
       onClose: () =>
         dispatch(
           push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+            pathname: PATH_NAME_MAPPING.ORDERING_HOME,
             search: removeReceiptNumberUrl,
           })
         ),
@@ -332,7 +339,7 @@ const handlePaymentError = ({ e, dispatch }) => {
       onClose: () =>
         dispatch(
           push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+            pathname: PATH_NAME_MAPPING.ORDERING_HOME,
             search: removeReceiptNumberUrl,
           })
         ),
@@ -359,9 +366,8 @@ const initPayment = async (data, dispatch) => {
 
 export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch, getState) => {
   const state = getState();
-  const isTNGMiniProgram = getIsTNGMiniProgram(state);
-  const isGCashMiniProgram = getIsGCashMiniProgram(state);
-  const paymentProvider = getMiniProgramPaymentProvider(state) || paymentArgs?.paymentProvider;
+  const alipayMiniProgramProvider = getMiniProgramPaymentProvider(state);
+  const paymentProvider = alipayMiniProgramProvider || paymentArgs?.paymentProvider;
 
   try {
     const shippingType = getShippingType(state);
@@ -392,44 +398,27 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       payload,
       dispatch
     );
-    const miniProgramPaymentPayload = {
+    const { paymentAction } = paymentData || {};
+    const paymentActionUrl = paymentAction?.actionUrl || '';
+    const thirdSDKBasicPayload = {
       amount: total,
       receiptNumber: orderId,
       businessName: business,
-      redirectURL,
       webhookURL,
       paymentMethod: paymentProvider,
       currency,
       source,
       isInternal,
-      paymentId,
     };
 
-    // TODO: will be removed when TNG code migrate to new utils
-    if (isTNGMiniProgram) {
-      const { redirectionUrl } = paymentData?.actionForm || {};
-      await callTradePay(redirectionUrl);
-      Utils.submitForm(redirectURL, {
-        amount: total,
-        receiptNumber: orderId,
-        businessName: business,
-        redirectURL,
-        webhookURL,
-        paymentMethod: PAYMENT_PROVIDERS.TNG_MINI_PROGRAM,
-        currency,
-        source,
-        isInternal,
+    if (alipayMiniProgramProvider) {
+      const miniProgramPaymentPayload = {
+        ...thirdSDKBasicPayload,
         paymentId,
-      });
-      return;
-    }
+        redirectURL,
+      };
 
-    if (isGCashMiniProgram) {
-      const { paymentAction } = paymentData || {};
-      // TODO: maybe need BE to update paymentData format and migrate TNG to here
-      const miniProgramPaymentUrl = paymentAction?.actionUrl || '';
-
-      await callAlipayTradePay(miniProgramPaymentUrl);
+      await callTradePay(paymentActionUrl);
       Utils.submitForm(redirectURL, miniProgramPaymentPayload);
 
       return;
@@ -437,21 +426,14 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
 
     if (paymentProvider === PAYMENT_PROVIDERS.APPLE_PAY) {
       const country = getMerchantCountry(state);
-      const { paymentAction } = paymentData || {};
-      const { actionUrl } = paymentAction || {};
-
-      Utils.submitForm(actionUrl, {
-        amount: total,
-        receiptNumber: orderId,
-        businessName: business,
-        webhookURL,
-        paymentMethod: PAYMENT_PROVIDERS.APPLE_PAY,
+      const applePayPayload = {
+        ...thirdSDKBasicPayload,
         country,
-        currency,
-        source,
-        isInternal,
         paymentRecordId,
-      });
+      };
+
+      Utils.submitForm(paymentActionUrl, applePayPayload);
+
       return;
     }
 

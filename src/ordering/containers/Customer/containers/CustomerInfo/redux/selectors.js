@@ -1,6 +1,6 @@
 import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
-import { getDeliveryDetails, getIsTNGMiniProgram, getIsAlipayMiniProgram } from '../../../../../redux/modules/app';
+import { getDeliveryDetails, getIsAlipayMiniProgram } from '../../../../../redux/modules/app';
 import { getAddressList } from '../../../../../redux/modules/addressList/selectors';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 
@@ -19,10 +19,8 @@ export const getIsSelectAvailableAddressRequestCompleted = createSelector(
   status => status === API_REQUEST_STATUS.FULFILLED || status === API_REQUEST_STATUS.REJECTED
 );
 
-// TODO: Migrate getIsTNGMiniProgram to getIsAlipayMiniProgram
-// FB-4206: TnG MP won't go to the payment page
+// FB-4206: TnG or GCash MP won't go to the payment page
 export const getIsDisabledWebPayment = createSelector(
-  getIsTNGMiniProgram,
   getIsAlipayMiniProgram,
-  (isTNGMiniProgram, isAlipayMiniProgram) => isTNGMiniProgram || isAlipayMiniProgram
+  isAlipayMiniProgram => isAlipayMiniProgram
 );

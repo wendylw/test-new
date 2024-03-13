@@ -11,11 +11,10 @@ import {
   getShouldShowUnsupportedError,
   getShouldShowUnknownError,
   getShouldShowBackButton,
-  getHasUserJoinedBusinessMembership,
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
-import { loadCustomerInfo } from '../../redux/common/thunks';
-import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail } from './redux/thunks';
+import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
+import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
 import MembershipForm from '.';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 
@@ -32,7 +31,7 @@ const MembershipFormProxy = () => {
   const shouldShowUnsupportedError = useSelector(getShouldShowUnsupportedError);
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
-  const hasJoinedMembership = useSelector(getHasUserJoinedBusinessMembership);
+  const hasJoinedMembership = useSelector(getHasUserJoinedMerchantMembership);
 
   useEffect(() => {
     if (isLogin) {

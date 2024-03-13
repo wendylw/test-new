@@ -1,36 +1,14 @@
-import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { alert } from '../../../../../common/utils/feedback';
-import { getQueryString } from '../../../../../common/utils';
-import { postUserMembership } from './api-request';
-import { getConsumerId } from '../../../../../redux/modules/user/selectors';
-import { fetchCustomerInfo } from '../../../../redux/modules/customer/thunks';
+import { postSharingConsumerInfoToMerchant } from './api-request';
+import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 
-export const loadCustomerInfo = createAsyncThunk(
-  'rewards/business/common/loadCustomerInfo',
-  async (_, { dispatch }) => {
-    const business = getQueryString('business');
-    await dispatch(fetchCustomerInfo(business));
-  }
-);
-
-export const joinMembership = createAsyncThunk(
-  'rewards/business/common/joinMembership',
-  async (_, { dispatch, getState }) => {
+export const confirmToShareConsumerInfo = createAsyncThunk(
+  'rewards/business/common/confirmToShareConsumerInfo',
+  async (requestId, { getState }) => {
     const state = getState();
-    const consumerId = getConsumerId(state);
-    const business = getQueryString('business');
-    const source = getQueryString('source');
+    const merchantBusiness = getMerchantBusiness(state);
+    const result = await postSharingConsumerInfoToMerchant({ requestId, business: merchantBusiness });
 
-    try {
-      const result = await postUserMembership({ consumerId, business, source });
-      await dispatch(loadCustomerInfo());
-      return result;
-    } catch (error) {
-      alert(i18next.t('UnknownErrorDescription'), {
-        title: i18next.t('UnknownErrorTitle'),
-      });
-      throw error;
-    }
+    return result;
   }
 );

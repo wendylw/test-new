@@ -36,7 +36,6 @@ import {
   getUserProfile,
   getIsUserProfileStatusFulfilled,
   getIsWebview,
-  getIsTNGMiniProgram,
   getIsAlipayMiniProgram,
   getEnableCashback,
   getCartApplyCashback,
@@ -440,7 +439,6 @@ class PayFirst extends Component {
       consumerId,
       appActions,
       isUserProfileStatusFulfilled,
-      isTNGMiniProgram,
       isAlipayMiniProgram,
       isFreeOrder,
     } = this.props;
@@ -449,8 +447,7 @@ class PayFirst extends Component {
 
     if (isFreeOrder) {
       this.setState({ isCreatingOrder: true });
-      // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
-    } else if (isTNGMiniProgram || isAlipayMiniProgram) {
+    } else if (isAlipayMiniProgram) {
       this.setState({ shouldShowRedirectLoader: true });
     }
 
@@ -934,7 +931,6 @@ PayFirst.propTypes = {
   consumerId: PropTypes.string,
   serviceChargeRate: PropTypes.number,
   isWebview: PropTypes.bool,
-  isTNGMiniProgram: PropTypes.bool,
   isAlipayMiniProgram: PropTypes.bool,
   isCashbackEnabled: PropTypes.bool,
   isCashbackApplied: PropTypes.bool,
@@ -983,7 +979,6 @@ PayFirst.defaultProps = {
   consumerId: '',
   serviceChargeRate: 0,
   isWebview: false,
-  isTNGMiniProgram: false,
   isAlipayMiniProgram: false,
   isCashbackEnabled: false,
   isCashbackApplied: false,
@@ -1018,7 +1013,6 @@ export default compose(
       userProfile: getUserProfile(state),
       isUserProfileStatusFulfilled: getIsUserProfileStatusFulfilled(state),
       isWebview: getIsWebview(state),
-      isTNGMiniProgram: getIsTNGMiniProgram(state),
       isAlipayMiniProgram: getIsAlipayMiniProgram(state),
       isCashbackEnabled: getEnableCashback(state),
       isCashbackApplied: getCartApplyCashback(state),

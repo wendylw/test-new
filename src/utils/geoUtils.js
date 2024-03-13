@@ -7,7 +7,6 @@ import Utils from './utils';
 import { isAlipayMiniProgram, getLocationForAlipayMiniProgram } from '../common/utils/alipay-miniprogram-client';
 import { get, post } from './request';
 import logger from './monitoring/logger';
-import { getLocation as getLocationFromTNG } from './tng-utils';
 import { ADDRESS_INFO_SOURCE_TYPE } from '../redux/modules/address/constants';
 import config from '../config';
 
@@ -197,15 +196,6 @@ export const getDeviceCoordinates = option =>
   });
 
 export const tryGetDeviceCoordinates = async () => {
-  // TODO: Migrate isTNGMiniProgram to isAlipayMiniProgram
-  if (Utils.isTNGMiniProgram()) {
-    const location = await getLocationFromTNG();
-    return {
-      latitude: location.latitude,
-      longitude: location.longitude,
-    };
-  }
-
   if (isAlipayMiniProgram()) {
     const location = await getLocationForAlipayMiniProgram();
     return {

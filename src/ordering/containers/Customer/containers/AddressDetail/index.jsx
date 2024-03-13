@@ -31,7 +31,7 @@ import 'react-phone-number-input/style.css';
 import './AddressDetail.scss';
 import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
-import { COUNTRY_PHONE_CODES } from '../../../../../common/utils/phone-number-constants';
+import { PHONE_NUMBER_COUNTRIES } from '../../../../../common/utils/phone-number-constants';
 
 const actions = {
   EDIT: 'edit',
@@ -103,8 +103,8 @@ class AddressDetail extends Component {
 
     const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
     const phoneInput =
-      (COUNTRY_PHONE_CODES[selectedCountry] &&
-        Utils.getFormatPhoneNumber(phone || '', COUNTRY_PHONE_CODES[selectedCountry])) ||
+      (PHONE_NUMBER_COUNTRIES[selectedCountry] &&
+        Utils.getFormatPhoneNumber(phone || '', PHONE_NUMBER_COUNTRIES[selectedCountry])) ||
       '';
     customerActions.updatePhoneNumber(phoneInput);
   };

@@ -223,14 +223,14 @@ function OrderSummary({
           <PreOrderMessage
             expectFrom={getBusinessDateTime(businessUTCOffset, new Date(expectDeliveryDateRange[0]))}
             expectTo={getBusinessDateTime(businessUTCOffset, new Date(expectDeliveryDateRange[1]))}
-            address={address && address.address}
+            address={address && address.deliveryTo}
           />
         ) : (
           <StoreInfo
             storeAddress={Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY)}
             storeName={storeName}
             total={total}
-            deliveryAddress={address && address.address}
+            deliveryAddress={address && address.deliveryTo}
             shippingType={shippingType}
             pickupTime={formatPickupTime({
               date: isPreOrder

@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { MagnifyingGlass } from 'phosphor-react';
+import CleverTap from '../../../../../utils/clevertap';
+import { getMerchantCountry } from '../../../../redux/modules/app';
 import {
   hideSearchingBox,
   showSearchingBox,
@@ -35,6 +37,7 @@ const originalHeight = getWindowInnerHeight();
 const isIosMobile = isSafari();
 const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef, searchInputRef }) => {
   const { t } = useTranslation();
+  const merchantCountry = useSelector(getMerchantCountry);
   // for whether display searching banner
   const isSearchingBannerVisible = useSelector(getIsSearchingBannerVisible);
   // get searching product keywords
@@ -77,6 +80,8 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
           contentClassName={styles.menuSearchProductsBannerButtonContent}
           data-test-id="ordering.menu.product-list.search-banner.show-btn"
           onClick={async () => {
+            CleverTap.pushEvent('Menu Page - Click Search', { country: merchantCountry });
+
             // get window scroll position
             const scrollTopPosition = bodyScrollTopPosition();
             // get height from product list to page top

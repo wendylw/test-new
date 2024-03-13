@@ -1,54 +1,25 @@
-import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
-import { getIsWebview } from '../../../../../redux/modules/common/selectors';
+import { API_REQUEST_STATUS, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
 import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
-import { getIsLogin, getIsCheckLoginRequestCompleted } from '../../../../../../redux/modules/user/selectors';
 import {
-  getCustomerData,
+  getIsLogin,
+  getIsCheckLoginRequestCompleted,
+  getIsUserProfileIncomplete,
+} from '../../../../../../redux/modules/user/selectors';
+import {
+  getIsMerchantMembershipEnabled,
+  getIsLoadMerchantRequestStatusFulfilled,
+  getIsLoadMerchantRequestStatusRejected,
+  getIsLoadMerchantRequestCompleted,
+} from '../../../../../../redux/modules/merchant/selectors';
+import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
+import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
+  getHasUserJoinedMerchantMembership,
 } from '../../../../../redux/modules/customer/selectors';
-
-export const getBusinessInfoRequest = state => state.business.membershipForm.fetchBusinessInfoRequest;
-
-export const getBusinessInfo = createSelector(getBusinessInfoRequest, businessInfoRequest => businessInfoRequest.data);
-
-export const getBusinessLogo = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'logo', ''));
-
-export const getBusinessName = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'displayName', ''));
-
-export const getIsBusinessMembershipEnabled = createSelector(getBusinessInfo, businessInfo =>
-  _get(businessInfo, 'membershipEnabled', false)
-);
-
-export const getBusinessInfoRequestStatus = createSelector(
-  getBusinessInfoRequest,
-  businessInfoRequest => businessInfoRequest.status
-);
-
-export const getIsBusinessInfoRequestStatusFulfilled = createSelector(
-  getBusinessInfoRequestStatus,
-  businessInfoRequestStatus => businessInfoRequestStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsBusinessInfoRequestStatusRejected = createSelector(
-  getBusinessInfoRequestStatus,
-  businessInfoRequestStatus => businessInfoRequestStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getIsBusinessInfoRequestStatusCompleted = createSelector(
-  getBusinessInfoRequestStatus,
-  businessInfoRequestStatus =>
-    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(businessInfoRequestStatus)
-);
-
-export const getHasUserJoinedBusinessMembership = createSelector(
-  getCustomerData,
-  customerData => !!_get(customerData, 'customerTier', null)
-);
 
 export const getIsLoadCustomerRequestStatusRejected = createSelector(
   getLoadCustomerRequestStatus,
@@ -73,24 +44,24 @@ export const getCongratulationUrl = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.FOUNDATION_OF_TIERED_MEMBERSHIP).congratsURL;
 
 export const getShouldShowSkeletonLoader = createSelector(
-  getIsBusinessInfoRequestStatusCompleted,
-  isBusinessInfoRequestStatusCompleted => !isBusinessInfoRequestStatusCompleted
+  getIsLoadMerchantRequestCompleted,
+  isLoadMerchantRequestCompleted => !isLoadMerchantRequestCompleted
 );
 
 export const getShouldShowUnsupportedError = createSelector(
-  getIsBusinessInfoRequestStatusFulfilled,
-  getIsBusinessMembershipEnabled,
-  (isBusinessInfoRequestStatusFulfilled, isBusinessMembershipEnabled) =>
-    isBusinessInfoRequestStatusFulfilled && !isBusinessMembershipEnabled
+  getIsLoadMerchantRequestStatusFulfilled,
+  getIsMerchantMembershipEnabled,
+  (isLoadMerchantRequestStatusFulfilled, isMerchantMembershipEnabled) =>
+    isLoadMerchantRequestStatusFulfilled && !isMerchantMembershipEnabled
 );
 
 export const getShouldShowUnknownError = createSelector(
   getIsLogin,
   getIsCustomerNotFoundError,
-  getIsBusinessInfoRequestStatusRejected,
+  getIsLoadMerchantRequestStatusRejected,
   getIsLoadCustomerRequestStatusRejected,
-  (isLogin, isCustomerNotFoundError, isBusinessInfoRequestStatusRejected, isLoadCustomerRequestStatusRejected) => {
-    if (isBusinessInfoRequestStatusRejected) {
+  (isLogin, isCustomerNotFoundError, isLoadMerchantRequestStatusRejected, isLoadCustomerRequestStatusRejected) => {
+    if (isLoadMerchantRequestStatusRejected) {
       return true;
     }
 
@@ -106,9 +77,9 @@ export const getShouldShowUnknownError = createSelector(
 export const getShouldShowFooter = createSelector(
   getIsLogin,
   getIsCheckLoginRequestCompleted,
-  getHasUserJoinedBusinessMembership,
+  getHasUserJoinedMerchantMembership,
   getIsLoadCustomerRequestStatusCompleted,
-  (isLogin, isCheckLoginRequestCompleted, hasUserJoinedBusinessMembership, isLoadCustomerRequestStatusCompleted) => {
+  (isLogin, isCheckLoginRequestCompleted, hasUserJoinedMerchantMembership, isLoadCustomerRequestStatusCompleted) => {
     if (!isCheckLoginRequestCompleted) {
       return false;
     }
@@ -117,10 +88,34 @@ export const getShouldShowFooter = createSelector(
       return true;
     }
 
-    return isLoadCustomerRequestStatusCompleted && !hasUserJoinedBusinessMembership;
+    return isLoadCustomerRequestStatusCompleted && !hasUserJoinedMerchantMembership;
   }
 );
 
-export const getShouldShowBackButton = createSelector(getIsWebview, isInWebview => isInWebview);
+export const getIsUserFromOrdering = createSelector(getSource, source =>
+  [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
+);
+
+export const getShouldShowBackButton = createSelector(
+  getIsWebview,
+  getIsUserFromOrdering,
+  (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
+);
 
 export const getIsJoinNowButtonDisabled = state => state.business.membershipForm.isJoinNowButtonDisabled;
+
+// WB-7279: fix iOS swipe back no response issue.
+export const getShouldDisableJoinNowButton = createSelector(
+  getIsWebview,
+  getIsJoinNowButtonDisabled,
+  (isWebview, isJoinNowButtonDisabled) => !isWebview && isJoinNowButtonDisabled
+);
+
+export const getIsProfileFormVisible = state => state.business.membershipForm.isProfileFormVisible;
+
+export const getShouldShowProfileForm = createSelector(
+  getIsUserProfileIncomplete,
+  getHasUserJoinedMerchantMembership,
+  (isUserProfileIncomplete, hasUserJoinedMerchantMembership) =>
+    isUserProfileIncomplete && !hasUserJoinedMerchantMembership
+);

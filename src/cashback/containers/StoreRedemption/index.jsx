@@ -3,15 +3,10 @@ import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
+import { CaretRight } from 'phosphor-react';
 import { alert } from '../../../common/utils/feedback';
-import {
-  isWebview,
-  isTNGMiniProgram,
-  isGCashMiniProgram,
-  judgeClient,
-  getIsThePageHidden,
-  getIsDesktopClients,
-} from '../../../common/utils';
+import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
+import { isWebview, judgeClient, getIsThePageHidden, getIsDesktopClients } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
 import { closeWebView } from '../../../utils/native-methods';
 import { getUserCountry } from '../../redux/modules/app';
@@ -28,13 +23,14 @@ import Button from '../../../common/components/Button';
 import RedemptionStoreInfo from './components/RedemptionStoreInfo';
 import CashbackBlock from './components/CashbackBlock';
 import NativeHeader from '../../../components/NativeHeader';
+import EarnedCashbackIcon from '../../../images/rewards-earned-cashback.svg';
 import PowerByStoreHubLogo from '../../../images/power-by-storehub-logo.svg';
 import BeepAppLogo from '../../../images/app-beep-logo.svg';
 import TNGAppLogo from '../../../images/app-tng-logo.svg';
 import StoreRedemptionImage from '../../../images/store-redemption.png';
+import { ObjectFitImage } from '../../../common/components/Image';
 import '../../../common/styles/base.scss';
 import styles from './StoreRedemption.module.scss';
-import { ObjectFitImage } from '../../../common/components/Image';
 
 const StoreRedemptionNative = () => {
   const { t } = useTranslation('Cashback');
@@ -60,7 +56,12 @@ const StoreRedemptionNative = () => {
   useEffect(() => {
     if (isLoadCustomerRequestCompleted && isDisplayStoreRedemptionContent) {
       alert(
-        <p className="tw-text-xl tw-text-gray tw-font-bold tw-leading-loose">{t('StoreRedemptionCashRedeemAlert')}</p>,
+        <div className={styles.StoreRedemptionAlertContent}>
+          <div className={styles.StoreRedemptionAlertIcon}>
+            <ObjectFitImage noCompression src={EarnedCashbackIcon} alt="Store New Member Icon in StoreHub" />
+          </div>
+          <h4 className={styles.StoreRedemptionAlertTitle}>{t('StoreRedemptionCashRedeemAlert')}</h4>
+        </div>,
         {
           id: 'StoreRedemptionInitialAlert',
           onClose: () => {
@@ -105,9 +106,9 @@ const StoreRedemptionNative = () => {
               t('StoreRedemptionNewUserGreetings')
             ) : (
               <Trans i18nKey="StoreRedemptionUserGreetings">
-                Thanks for visiting our store.
+                Thanks for coming back! Visit us
                 <br />
-                See you again!
+                again next time.
               </Trans>
             )}
           </h2>
@@ -126,13 +127,14 @@ const StoreRedemptionNative = () => {
 StoreRedemptionNative.displayName = 'StoreRedemptionNative';
 
 const StoreRedemption = () => {
+  const { t } = useTranslation('Cashback');
   const dispatch = useDispatch();
   const client = judgeClient();
   const userCountry = useSelector(getUserCountry);
   const isLoadStoreRedemptionDataCompleted = useSelector(getIsLoadStoreRedemptionDataCompleted);
-  const isDisplayWebResult = !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram();
+  const isDisplayWebResult = !isWebview() && !isAlipayMiniProgram();
   const handleGotoBeepDownloadPage = useCallback(() => {
-    const downloadBeepAppDeepLink = process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK;
+    const downloadBeepAppDeepLink = `${process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}?utm_source=beepqr&utm_medium=banner&utm_campaign=seamlessloyalty`;
 
     CleverTap.pushEvent('POS Redemption Landing Page - Click Beep App Logo', {
       country: userCountry,
@@ -186,31 +188,43 @@ const StoreRedemption = () => {
           </h1>
         </header>
         <section className={styles.StoreRedemptionWebContent}>
-          <h2 className="tw-text-center tw-text-3xl tw-leading-normal tw-text-gray-50 tw-font-bold">
-            Oops... <br />
-            Please scan with
+          <h2 className={styles.StoreRedemptionWebContentTitle}>
+            <Trans i18nKey="SeamlessLoyaltyWebTitle">
+              Please choose the
+              <br />
+              app below to continue{' '}
+            </Trans>
           </h2>
-          <div
-            className="tw-flex tw-p-24 sm:tw-p-24px tw-my-24 sm:tw-my-24px tw-gap-24 sm:tw-gap-24px tw-bg-gray-50 tw-rounded-2xl"
-            role="button"
-          >
+          <div className={styles.StoreRedemptionWebLogoButtons}>
             <Button
-              className="tw-inline-flex tw-m-8 sm:tw-m-8px"
+              block
+              contentClassName={styles.StoreRedemptionWebLogoButtonContent}
               type="text"
               theme="ghost"
               onClick={handleGotoBeepDownloadPage}
               data-test-id="seamless-loyalty.beep-app-button"
             >
-              <img src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
+              <div className={styles.StoreRedemptionWebLogoButtonImage}>
+                <ObjectFitImage noCompression src={BeepAppLogo} alt="StoreHub Redemption Beep App Logo" />
+              </div>
+              <span className={styles.StoreRedemptionWebLogoButtonText}>{t('SeamlessLoyaltyBeepAppButtonText')}</span>
+              <CaretRight size={24} />
             </Button>
             <Button
-              className="tw-inline-flex tw-m-8 sm:tw-m-8px"
+              block
+              contentClassName={styles.StoreRedemptionWebLogoButtonContent}
               type="text"
               theme="ghost"
               onClick={handleGotoTNGApp}
               data-test-id="seamless-loyalty.tng-app-button"
             >
-              <img src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+              <div className={styles.StoreRedemptionWebLogoButtonImage}>
+                <ObjectFitImage noCompression src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+              </div>
+              <span className={styles.StoreRedemptionWebLogoButtonText}>
+                {t('SeamlessLoyaltyTNGMiniProgramButtonText')}
+              </span>
+              <CaretRight size={24} />
             </Button>
           </div>
         </section>

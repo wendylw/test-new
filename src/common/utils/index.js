@@ -562,16 +562,22 @@ export const getCountry = (phone, language, countries, defaultCountry) => {
     return '';
   }
 
-  if (!language || (!language.split('-')[1] && !language.split('-')[0])) {
+  if (!language) {
     return defaultCountry;
   }
 
-  if (countries.includes(language.split('-')[1])) {
-    return language.split('-')[1];
+  const languageSplit = language.split('-').map(l => l.toUpperCase());
+
+  if (!languageSplit[0] && !languageSplit[1]) {
+    return defaultCountry;
   }
 
-  if (countries.includes(language.split('-')[0])) {
-    return language.split('-')[0];
+  if (languageSplit[1] && countries.includes(languageSplit[1])) {
+    return languageSplit[1];
+  }
+
+  if (languageSplit[0] && countries.includes(languageSplit[0])) {
+    return languageSplit[0];
   }
 
   return undefined;
@@ -809,6 +815,17 @@ export const containerHeight = ({ headerEls, footerEls }) =>
 
 export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
+
+export const getDecimalNumber = (number = 0) => {
+  const scientificNotationRegex = /^[+-]?\d+(\.\d+)?[eE][+-]?\d+$/;
+  const isScientificNotation = scientificNotationRegex.test(number);
+
+  if (!isScientificNotation) {
+    return number;
+  }
+
+  return Math.round(number * 100) / 100;
+};
 
 export const getPrice = (number = 0, { locale, currency, country, withCurrency = true }) => {
   let price = '';

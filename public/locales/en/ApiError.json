@@ -111,5 +111,6 @@
   "UnableToPlaceOrder": "Unable to place order",
   "HasBeenPlacedContentDescription": "Someone from your table is in the process of checking out, please <bold>complete payment</bold> before placing a new order",
   "ViewOrder": "View order",
-  "NoInternetConnection": "No internet connection"
+  "NoInternetConnection": "No internet connection",
+  "UnexpectedErrorOccurred": "Oops! An unexpected error has occurred"
 }

@@ -13,15 +13,16 @@ import {
   getOnlineStoreInfoFavicon,
   getIsLoginModalShown,
   getUserConsumerId,
-  getIsTngAuthorizationError,
+  getIsClaimCashbackPage,
+  getLoginAlipayMiniProgramRequestError,
 } from '../../redux/modules/app';
-import { getIsCashbackClaimRequestFulfilled } from '../../redux/modules/claim';
 import { getIsConfirmSharingConsumerInfoCompleted } from '../StoreRedemption/redux/selectors';
 import { getPageError } from '../../../redux/modules/entities/error';
 import { getIsLoadCustomerRequestCompleted } from '../../redux/modules/customer/selectors';
 import { loadConsumerCustomerInfo as loadConsumerCustomerInfoThunk } from '../../redux/modules/customer/thunks';
 import Constants from '../../../utils/constants';
-import { isTNGMiniProgram, isGCashMiniProgram, isWebview } from '../../../common/utils';
+import { isWebview } from '../../../common/utils';
+import { isAlipayMiniProgram } from '../../../common/utils/alipay-miniprogram-client';
 import faviconImage from '../../../images/favicon.ico';
 import '../../../Common.scss';
 import './Loyalty.scss';
@@ -37,7 +38,7 @@ import { PATH_NAME_MAPPING } from '../../../common/utils/constants';
 
 class App extends Component {
   async componentDidMount() {
-    const { t, appActions, userCountry, loadConsumerCustomerInfo } = this.props;
+    const { t, appActions, userCountry, loadConsumerCustomerInfo, isClaimCashbackPage } = this.props;
     const { pathname } = window.location;
 
     this.visitErrorPage();
@@ -48,18 +49,21 @@ class App extends Component {
 
       await Promise.all(initRequests);
 
-      // TODO: Migrate isTNGMiniProgram to isMiniProgramLogin
       // 2. login
       // TNGD code is executed at the very beginning.
       // Because the MP and Beep accounts are not synchronized,
       // it is impossible to determine that the accounts are the same
-      if (isTNGMiniProgram()) {
+      if (isAlipayMiniProgram() && !isClaimCashbackPage) {
         // the user information of the 3rd MiniProgram may be different, so synchronize the data of the consumer once
-        await appActions.loginByTngMiniProgram();
+        await appActions.loginByAlipayMiniProgram();
 
-        const { isTngAuthorizationError } = this.props;
+        const { loginAlipayMiniProgramRequestError } = this.props;
 
-        if (isTngAuthorizationError) {
+        // TNGD & GCash code is executed at the very beginning.
+        // Because the MP and Beep accounts are not synchronized,
+        // it is impossible to determine that the accounts are the same
+        // https://opendocs.alipay.com/support/01rb4b?ant_source=opendoc_recommend
+        if (loginAlipayMiniProgramRequestError) {
           confirm(t('UnexpectedErrorOccurred'), {
             closeByBackButton: false,
             closeByBackDrop: false,
@@ -71,7 +75,7 @@ class App extends Component {
                 Clevertap.pushEvent('Loyalty Page (Login Error Pop-up) - Click Try Again', {
                   country: userCountry,
                 });
-                await appActions.loginByTngMiniProgram();
+                await appActions.loginByAlipayMiniProgram();
               } else {
                 // cancel
                 if (window.my.exitMiniProgram) {
@@ -86,20 +90,11 @@ class App extends Component {
         }
       }
 
-      if (isGCashMiniProgram()) {
-        await appActions.loginByAlipayMiniProgram();
-      }
-
       await appActions.loadConsumerLoginStatus();
 
-      const {
-        isUserLogin,
-        userConsumerId,
-        isCashbackClaimRequestFulfilled,
-        isConfirmSharingConsumerInfoCompleted,
-      } = this.props;
+      const { isUserLogin, userConsumerId, isConfirmSharingConsumerInfoCompleted } = this.props;
 
-      if (isWebview()) {
+      if (isWebview() && !isClaimCashbackPage) {
         await appActions.syncLoginFromBeepApp();
 
         return;
@@ -114,8 +109,8 @@ class App extends Component {
       if (userConsumerId) {
         let isLoadCustomerAvailable = true;
 
-        if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM)) {
-          isLoadCustomerAvailable = isCashbackClaimRequestFulfilled;
+        if (isClaimCashbackPage) {
+          isLoadCustomerAvailable = false;
         }
 
         if (pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION)) {
@@ -139,13 +134,12 @@ class App extends Component {
       userConsumerId: currUserConsumerId,
       loadConsumerCustomerInfo,
       isLoadCustomerRequestCompleted,
-      isCashbackClaimRequestFulfilled: currIsCashbackClaimRequestFulfilled,
       isConfirmSharingConsumerInfoCompleted: currIsConfirmSharingConsumerInfoCompleted,
+      isClaimCashbackPage,
     } = this.props;
     const {
       pageError: prevPageError,
       isUserLogin: prevIsUserLogin,
-      isCashbackClaimRequestFulfilled: prevIsCashbackClaimRequestFulfilled,
       isConfirmSharingConsumerInfoCompleted: prevIsConfirmSharingConsumerInfoCompleted,
     } = prevProps;
     const { code } = prevPageError || {};
@@ -161,14 +155,6 @@ class App extends Component {
       let isLoadCustomerAvailable = false;
 
       if (
-        pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM) &&
-        currIsCashbackClaimRequestFulfilled &&
-        currIsCashbackClaimRequestFulfilled !== prevIsCashbackClaimRequestFulfilled
-      ) {
-        isLoadCustomerAvailable = currIsCashbackClaimRequestFulfilled;
-      }
-
-      if (
         pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION) &&
         currIsConfirmSharingConsumerInfoCompleted !== prevIsConfirmSharingConsumerInfoCompleted
       ) {
@@ -177,6 +163,10 @@ class App extends Component {
 
       if (pathname.includes(PATH_NAME_MAPPING.CASHBACK_BASE) && !isLoadCustomerRequestCompleted) {
         isLoadCustomerAvailable = true;
+      }
+
+      if (isClaimCashbackPage) {
+        isLoadCustomerAvailable = false;
       }
 
       if (isLoadCustomerAvailable) {
@@ -211,11 +201,19 @@ class App extends Component {
   }
 
   render() {
-    const { t, error, loginBannerPrompt, onlineStoreInfoFavicon, isLoginModalShown, appActions } = this.props;
+    const {
+      t,
+      error,
+      loginBannerPrompt,
+      onlineStoreInfoFavicon,
+      isLoginModalShown,
+      appActions,
+      isClaimCashbackPage,
+    } = this.props;
     const { message } = error || {};
 
     return (
-      <main className="loyalty fixed-wrapper__main fixed-wrapper">
+      <main id="beep-app-container" className="loyalty fixed-wrapper__main fixed-wrapper">
         {message ? (
           <ErrorToast
             className="fixed"
@@ -226,8 +224,11 @@ class App extends Component {
           />
         ) : null}
         <Message />
-        {isLoginModalShown && !isWebview() && !isTNGMiniProgram() && !isGCashMiniProgram() ? (
-          <Login className="aside fixed-wrapper" title={loginBannerPrompt || t('LoginBannerPrompt')} />
+        {isLoginModalShown && !isWebview() && !isAlipayMiniProgram() ? (
+          <Login
+            className="aside fixed-wrapper"
+            title={isClaimCashbackPage ? t('CashbackLoginText') : loginBannerPrompt || t('LoginBannerPrompt')}
+          />
         ) : null}
         <Routes />
         <DocumentFavicon icon={onlineStoreInfoFavicon || faviconImage} />
@@ -242,7 +243,7 @@ App.propTypes = {
   userCountry: PropTypes.string,
   loginBannerPrompt: PropTypes.string,
   isUserLogin: PropTypes.bool,
-  isCashbackClaimRequestFulfilled: PropTypes.bool,
+  isClaimCashbackPage: PropTypes.bool,
   isConfirmSharingConsumerInfoCompleted: PropTypes.bool,
   isLoadCustomerRequestCompleted: PropTypes.bool,
   userConsumerId: PropTypes.string,
@@ -253,8 +254,8 @@ App.propTypes = {
   pageError: PropTypes.shape({
     code: PropTypes.number,
   }),
-  isTngAuthorizationError: PropTypes.bool,
   isLoginModalShown: PropTypes.bool,
+  loginAlipayMiniProgramRequestError: PropTypes.object || PropTypes.string,
   appActions: PropTypes.shape({
     loadConsumerLoginStatus: PropTypes.func,
     resetConsumerLoginStatus: PropTypes.func,
@@ -264,7 +265,6 @@ App.propTypes = {
     fetchCashbackBusiness: PropTypes.func,
     loginApp: PropTypes.func,
     clearError: PropTypes.func,
-    loginByTngMiniProgram: PropTypes.func,
     loginByAlipayMiniProgram: PropTypes.func,
     syncLoginFromBeepApp: PropTypes.func,
     loginByBeepApp: PropTypes.func,
@@ -278,15 +278,15 @@ App.defaultProps = {
   userCountry: null,
   loginBannerPrompt: null,
   isUserLogin: false,
-  isCashbackClaimRequestFulfilled: false,
+  isClaimCashbackPage: false,
   isConfirmSharingConsumerInfoCompleted: false,
   isLoadCustomerRequestCompleted: false,
   userConsumerId: null,
   onlineStoreInfoFavicon: '',
   error: {},
   pageError: {},
-  isTngAuthorizationError: false,
   isLoginModalShown: false,
+  loginAlipayMiniProgramRequestError: null,
   appActions: {},
   loadConsumerCustomerInfo: () => {},
 };
@@ -298,15 +298,15 @@ export default compose(
       loginBannerPrompt: getLoginBannerPrompt(state),
       isLoginRequestStatusPending: getIsLoginRequestStatusPending(state),
       isUserLogin: getIsUserLogin(state),
+      isClaimCashbackPage: getIsClaimCashbackPage(state),
       userConsumerId: getUserConsumerId(state),
-      isCashbackClaimRequestFulfilled: getIsCashbackClaimRequestFulfilled(state),
       isConfirmSharingConsumerInfoCompleted: getIsConfirmSharingConsumerInfoCompleted(state),
       isLoadCustomerRequestCompleted: getIsLoadCustomerRequestCompleted(state),
       isLoginModalShown: getIsLoginModalShown(state),
       onlineStoreInfoFavicon: getOnlineStoreInfoFavicon(state),
       error: getError(state),
       pageError: getPageError(state),
-      isTngAuthorizationError: getIsTngAuthorizationError(state),
+      loginAlipayMiniProgramRequestError: getLoginAlipayMiniProgramRequestError(state),
       userCountry: getUserCountry(state),
     }),
     dispatch => ({
