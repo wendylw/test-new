@@ -55,7 +55,7 @@ import {
   isTNGMiniProgram,
 } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
-import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
+import { AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 
 const { AUTH_INFO, DELIVERY_METHOD, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');

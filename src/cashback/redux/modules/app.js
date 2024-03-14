@@ -14,7 +14,7 @@ import Constants, {
   OTP_SERVER_ERROR_I18N_KEYS,
   OTP_ERROR_POPUP_I18N_KEYS,
 } from '../../../utils/constants';
-import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
+import { AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
