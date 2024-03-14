@@ -5,11 +5,7 @@ import CashbackHistoryButtonIcon from '../../../../../images/membership-history.
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
 import { getClassName } from '../../../../../common/utils/ui';
-import {
-  getMerchantBusiness,
-  getMerchantCountry,
-  getIsMerchantEnabledCashback,
-} from '../../../../../redux/modules/merchant/selectors';
+import { getMerchantBusiness, getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
 import { getDisplayCashbackExpiredDate, getIsCashbackExpired } from '../../../../redux/modules/customer/selectors';
 import {
   getCustomerCashbackPrice,
@@ -24,7 +20,6 @@ const CashbackBlock = () => {
   const { t } = useTranslation(['Rewards']);
   const merchantBusiness = useSelector(getMerchantBusiness);
   const merchantCountry = useSelector(getMerchantCountry);
-  const isMerchantEnabledCashback = useSelector(getIsMerchantEnabledCashback);
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
   const isCashbackExpired = useSelector(getIsCashbackExpired);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
@@ -43,10 +38,6 @@ const CashbackBlock = () => {
     styles.CashbackBlockExpiredDate,
     isCashbackExpired ? styles.CashbackBlockExpiredDate__Expired : null,
   ]);
-
-  if (!isMerchantEnabledCashback) {
-    return null;
-  }
 
   return (
     <div className={styles.CashbackBlock}>
