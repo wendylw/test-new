@@ -1,5 +1,6 @@
 import React, { useEffect, useState, createRef } from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../common/utils/ui';
 import {
   getIsMembershipBenefitTabsShown,
@@ -23,6 +24,7 @@ const getCurrentActiveBlockInfo = activeIndex => {
 };
 
 const MembershipTiersInfoTabs = () => {
+  const { t } = useTranslation(['Rewards']);
   const isMembershipBenefitTabsShown = useSelector(getIsMembershipBenefitTabsShown);
   const membershipTiersBenefit = useSelector(getMerchantMembershipTiersBenefit);
   const isMembershipBenefitInfoShown = useSelector(getIsMembershipBenefitInfoShown);
