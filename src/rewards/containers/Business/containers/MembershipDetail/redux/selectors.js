@@ -296,6 +296,7 @@ export const getPointsRewardList = createSelector(
             ? `${discountValue}%`
             : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
         name,
+        costOfPoints,
         isUnavailable: isUnavailableStatus || isInsufficientPoints,
       };
     })

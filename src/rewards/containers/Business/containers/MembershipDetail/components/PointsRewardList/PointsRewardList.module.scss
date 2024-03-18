@@ -11,7 +11,7 @@
 }
 
 .PointsRewardCard {
-  @apply tw-flex tw-items-center tw-justify-between tw-bg-white tw-p-12 sm:tw-p-12px tw-border tw-border-gray-50 tw-border-solid tw-rounded-lg tw-shadow;
+  @apply tw-flex tw-items-center tw-justify-between tw-bg-white tw-pl-12 sm:tw-pl-12px tw-py-12 sm:tw-py-12px tw-rounded-lg tw-shadow;
 }
 
 .PointsRewardInfoLeft {
@@ -21,7 +21,7 @@
 }
 
 .PointsRewardDiscount {
-  @apply tw-leading-relaxed tw-font-bold tw-uppercase;
+  @apply tw-text-lg tw-leading-relaxed tw-font-bold tw-uppercase;
 }
 
 .PointsRewardDiscountName {
@@ -34,4 +34,12 @@
   &__Unavailable {
     @apply tw-border-opacity-40;
   }
+}
+
+.PointsRewardConstButton {
+  max-height: 30px;
+}
+
+.PointsRewardConstButtonContent {
+  @apply tw-font-bold;
 }

@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import { getPointsRewardList, getIsPointsRewardListShown } from '../../redux/selectors';
+import Button from '../../../../../../../common/components/Button';
 import styles from './PointsRewardList.module.scss';
 
 const PointsRewardList = () => {
@@ -19,7 +20,7 @@ const PointsRewardList = () => {
       <h2 className={styles.PointsRewardListSectionTitle}>{t('GetRewards')}</h2>
       <ul className={styles.PointsRewardList}>
         {pointsRewardList.map(pointsReward => {
-          const { id, value, name, isUnavailable } = pointsReward;
+          const { id, value, name, costOfPoints, isUnavailable } = pointsReward;
           const uniquePromoInfoLeftClassName = getClassName([
             styles.PointsRewardInfoLeft,
             isUnavailable ? styles.PointsRewardInfoLeft__Unavailable : null,
@@ -38,7 +39,16 @@ const PointsRewardList = () => {
                 <h5 className={styles.PointsRewardDiscountName}>{name}</h5>
               </div>
               <div className={uniquePromoInfoRightClassName}>
-                <Button></Button>
+                <Button
+                  theme="ghost"
+                  type="secondary"
+                  size="small"
+                  className={styles.PointsRewardConstButton}
+                  contentClassName={styles.PointsRewardConstButtonContent}
+                  disabled={isUnavailable}
+                >
+                  {t('RewardsCostOfPointsText', { costOfPoints })}
+                </Button>
               </div>
             </li>
           );
