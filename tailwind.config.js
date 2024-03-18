@@ -18,6 +18,7 @@ module.exports = {
     fontFamily: {
       sans: ['Lato', 'Open Sans', 'Helvetica', 'Arial', 'sans-serif'],
     },
+    // usage: tw-text-[xs|sm|base|lg|xl|2xl|3xl|4xl|5xl]
     fontSize: {
       xs: '0.7142rem',
       sm: '0.8571rem',
@@ -29,16 +30,19 @@ module.exports = {
       '4xl': '2.5714rem',
       '5xl': '2.8571rem',
     },
+    // usage: tw-font-[normal|bold|black]
     fontWeight: {
       normal: 400,
       bold: 700,
       black: 900,
     },
+    // usage: tw-leading-[normal|relaxed|loose]
     lineHeight: {
       normal: '1.4',
       relaxed: '1.5',
       loose: '1.6',
     },
+    // usage: tw-tracking-[normal|wide|wider]
     letterSpacing: {
       normal: '0',
       wide: '.01em',
@@ -49,6 +53,7 @@ module.exports = {
       md: '770px',
       lg: '1030px',
     },
+    // usage: tw-shadow[-sm|-lg|-xl|-none]
     boxShadow: {
       DEFAULT: '0 2px 16px rgba(0, 0, 0, 0.06)',
       sm: '0 -4px 16px rgba(0, 0, 0, 0.06)',
@@ -128,6 +133,7 @@ module.exports = {
         '3/10': '30%',
         '1.5/10': '15%',
       },
+      // usage: tw-z-[60|100|200|300]
       zIndex: {
         '60': '60',
         '100': '100',

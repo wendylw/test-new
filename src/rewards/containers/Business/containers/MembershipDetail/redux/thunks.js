@@ -36,7 +36,7 @@ export const fetchPointsRewardList = createAsyncThunk(
     const business = getMerchantBusiness(state);
     const result = await getPointsRewardList({ consumerId, business });
 
-    return result;
+    return result.data;
   }
 );
 
@@ -75,6 +75,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     dispatch(fetchMerchantInfo(business));
     dispatch(fetchCustomerInfo(business));
     dispatch(fetchUniquePromoList());
+    dispatch(fetchPointsRewardList());
   }
 });
 

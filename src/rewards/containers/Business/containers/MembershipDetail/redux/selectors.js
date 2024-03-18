@@ -283,9 +283,11 @@ export const getPointsRewardList = createSelector(
         return reward;
       }
 
-      const { id, discountType, discountValue, name } = reward;
-      const isUnavailableStatus = [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(reward.status);
-      const isInsufficientPoints = customerAvailablePointsBalance < discountValue;
+      const { id, discountType, discountValue, name, redeemedStatus, costOfPoints } = reward;
+      const isUnavailableStatus = [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(
+        redeemedStatus
+      );
+      const isInsufficientPoints = customerAvailablePointsBalance < costOfPoints;
 
       return {
         id,

@@ -11,12 +11,10 @@
 }
 
 .PointsRewardCard {
-  @apply tw-bg-white tw-p-12 sm:tw-p-12px tw-border tw-border-gray-500 tw-border-solid tw-rounded-lg tw-divide-y tw-divide-gray-200 tw-divide-solid;
+  @apply tw-flex tw-items-center tw-justify-between tw-bg-white tw-p-12 sm:tw-p-12px tw-border tw-border-gray-50 tw-border-solid tw-rounded-lg tw-shadow;
 }
 
-.PointsRewardInfoTop {
-  @apply tw-pb-8 sm:tw-pb-8px;
-
+.PointsRewardInfoLeft {
   &__Unavailable {
     @apply tw-opacity-40;
   }
@@ -30,8 +28,8 @@
   @apply tw-text-sm tw-leading-loose;
 }
 
-.PointsRewardInfoBottom {
-  @apply tw-flex tw-items-end tw-justify-between tw-pt-8 sm:tw-pt-8px tw-border-l-0 tw-border-r-0;
+.PointsRewardInfoRight {
+  @apply tw-border-l-0 tw-border-r-0;
 
   &__Unavailable {
     @apply tw-border-opacity-40;

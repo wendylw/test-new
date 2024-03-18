@@ -20,26 +20,26 @@ const PointsRewardList = () => {
       <ul className={styles.PointsRewardList}>
         {pointsRewardList.map(pointsReward => {
           const { id, value, name, isUnavailable } = pointsReward;
-          const uniquePromoInfoTopClassList = getClassName([
-            styles.PointsRewardInfoTop,
-            isUnavailable ? styles.PointsRewardInfoTop__Unavailable : null,
+          const uniquePromoInfoLeftClassName = getClassName([
+            styles.PointsRewardInfoLeft,
+            isUnavailable ? styles.PointsRewardInfoLeft__Unavailable : null,
           ]);
-          const uniquePromoInfoBottomClassList = [styles.PointsRewardInfoBottom];
-
-          if (isUnavailable) {
-            uniquePromoInfoTopClassList.push(styles.PointsRewardInfoTop__Unavailable);
-            uniquePromoInfoBottomClassList.push(styles.PointsRewardInfoBottom__Unavailable);
-          }
+          const uniquePromoInfoRightClassName = getClassName([
+            styles.PointsRewardInfoRight,
+            isUnavailable ? styles.PointsRewardInfoRight__Unavailable : null,
+          ]);
 
           return (
             <li className={styles.PointsRewardCard} key={id}>
-              <div className={getClassName(uniquePromoInfoTopClassList)}>
+              <div className={uniquePromoInfoLeftClassName}>
                 <data className={styles.PointsRewardDiscount} value={value}>
                   {t('DiscountValueText', { discount: value })}
                 </data>
                 <h5 className={styles.PointsRewardDiscountName}>{name}</h5>
               </div>
-              <div className={getClassName(uniquePromoInfoBottomClassList)}>button</div>
+              <div className={uniquePromoInfoRightClassName}>
+                <Button></Button>
+              </div>
             </li>
           );
         })}

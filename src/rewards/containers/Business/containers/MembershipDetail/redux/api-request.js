@@ -8,7 +8,7 @@ export const getUniquePromoList = async ({ consumerId, business }) =>
   });
 
 export const getPointsRewardList = async ({ consumerId, business: merchantName }) =>
-  get(`/api/v3/points/rewards`, {
+  get(`http://127.0.0.1:4523/m1/2755399-0-default/api/v3/points/rewards`, {
     queryParams: {
       consumerId,
       merchantName,
