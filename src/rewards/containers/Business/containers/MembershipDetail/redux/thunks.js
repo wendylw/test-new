@@ -36,7 +36,7 @@ export const fetchPointsRewardList = createAsyncThunk(
     const business = getMerchantBusiness(state);
     const result = await getPointsRewardList({ consumerId, business });
 
-    return result;
+    return result.data;
   }
 );
 

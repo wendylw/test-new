@@ -37,9 +37,16 @@
 }
 
 .PointsRewardConstButton {
+  min-width: 100px;
   max-height: 30px;
 }
 
 .PointsRewardConstButtonContent {
   @apply tw-font-bold;
+}
+
+.PointsRewardConfirm {
+  h4 {
+    max-width: 296px;
+  }
 }

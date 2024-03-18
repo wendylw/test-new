@@ -2,9 +2,11 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../../../common/utils/ui';
+import CleverTap from '../../../../../../../utils/clevertap';
 import { getPointsRewardList, getIsPointsRewardListShown } from '../../redux/selectors';
 import { pointsClaimRewardButtonClick } from '../../redux/thunks';
 import Button from '../../../../../../../common/components/Button';
+import { confirm } from '../../../../../../../common/utils/feedback';
 import styles from './PointsRewardList.module.scss';
 
 const PointsRewardList = () => {
@@ -12,8 +14,24 @@ const PointsRewardList = () => {
   const { t } = useTranslation(['Rewards']);
   const pointsRewardList = useSelector(getPointsRewardList);
   const isPointsRewardListShown = useSelector(getIsPointsRewardListShown);
-  const handlePointsClaimRewardButtonClick = (id, type) => {
-    dispatch(pointsClaimRewardButtonClick({ id, type }));
+  const handlePointsClaimRewardButtonClick = (id, type, costOfPoints) => {
+    confirm('', {
+      className: styles.PointsRewardConfirm,
+      title: t('RewardsCostOfPointsConfirmMessage', { costOfPoints }),
+      cancelButtonContent: t('Cancel'),
+      confirmButtonContent: t('Confirm'),
+      onSelection: async status => {
+        if (status) {
+          CleverTap.pushEvent('Points Reward Claimed - Click confirm', {
+            type,
+            costOfPoints,
+          });
+          dispatch(pointsClaimRewardButtonClick({ id, type }));
+        } else {
+          CleverTap.pushEvent('Points Reward Claimed - Click cancel');
+        }
+      },
+    });
   };
 
   if (!isPointsRewardListShown) {
@@ -53,7 +71,7 @@ const PointsRewardList = () => {
                   contentClassName={styles.PointsRewardConstButtonContent}
                   disabled={isUnavailable}
                   onClick={() => {
-                    handlePointsClaimRewardButtonClick(id, type);
+                    handlePointsClaimRewardButtonClick(id, type, costOfPoints);
                   }}
                 >
                   {t('RewardsCostOfPointsText', { costOfPoints })}

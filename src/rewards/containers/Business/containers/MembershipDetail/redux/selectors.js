@@ -5,6 +5,7 @@ import {
   PROMO_VOUCHER_STATUS,
   MEMBER_LEVELS,
   MEMBER_CARD_COLOR_PALETTES,
+  API_REQUEST_STATUS,
 } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
@@ -49,6 +50,10 @@ export const getLoadPointsRewardListStatus = state =>
   state.business.membershipDetail.loadPointsRewardListRequest.status;
 
 export const getLoadPointsRewardListError = state => state.business.membershipDetail.loadPointsRewardListRequest.error;
+
+export const getClaimPointsRewardStatus = state => state.business.membershipDetail.claimPointsRewardRequest.status;
+
+export const getClaimPointsRewardError = state => state.business.membershipDetail.claimPointsRewardRequest.error;
 
 /**
  * Derived selectors
@@ -308,4 +313,14 @@ export const getIsPointsRewardListShown = createSelector(
   getPointsRewardList,
   (isMerchantMembershipPointsEnabled, pointsRewardList) =>
     isMerchantMembershipPointsEnabled && pointsRewardList.length > 0
+);
+
+export const getIsClaimPointsRewardPending = createSelector(
+  getClaimPointsRewardStatus,
+  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsClaimPointsRewardFulfilled = createSelector(
+  getClaimPointsRewardStatus,
+  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
 );

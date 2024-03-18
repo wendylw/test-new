@@ -7,5 +7,5 @@ export const fetchCustomerInfo = createAsyncThunk('app/customer/fetchCustomerInf
   const consumerId = getConsumerId(state);
   const result = await getCustomerInfo({ consumerId, business });
 
-  return result;
+  return result.data;
 });
