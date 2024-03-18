@@ -283,7 +283,7 @@ export const getPointsRewardList = createSelector(
         return reward;
       }
 
-      const { id, discountType, discountValue, name, redeemedStatus, costOfPoints } = reward;
+      const { id, type, discountType, discountValue, name, redeemedStatus, costOfPoints } = reward;
       const isUnavailableStatus = [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(
         redeemedStatus
       );
@@ -291,6 +291,7 @@ export const getPointsRewardList = createSelector(
 
       return {
         id,
+        type,
         value:
           discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
             ? `${discountValue}%`

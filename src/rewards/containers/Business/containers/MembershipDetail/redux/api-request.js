@@ -1,4 +1,4 @@
-import { get } from '../../../../../../utils/api/api-fetch';
+import { get, post } from '../../../../../../utils/api/api-fetch';
 
 export const getUniquePromoList = async ({ consumerId, business }) =>
   get(`/api/v3/consumers/${consumerId}/unique-promos`, {
@@ -14,3 +14,19 @@ export const getPointsRewardList = async ({ consumerId, business: merchantName }
       merchantName,
     },
   });
+
+export const postClaimedPointsReward = async ({ consumerId, business: merchantName, id, type }) =>
+  post(
+    `/api/v3/points/rewards`,
+    {
+      id,
+      type,
+      merchantName,
+    },
+    {
+      queryParams: {
+        consumerId,
+        merchantName,
+      },
+    }
+  );

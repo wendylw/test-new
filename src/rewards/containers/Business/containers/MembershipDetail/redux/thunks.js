@@ -14,7 +14,7 @@ import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../.
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
-import { getUniquePromoList, getPointsRewardList } from './api-request';
+import { getUniquePromoList, getPointsRewardList, postClaimedPointsReward } from './api-request';
 
 export const fetchUniquePromoList = createAsyncThunk(
   'rewards/business/memberDetail/fetchPromoList',
@@ -36,7 +36,19 @@ export const fetchPointsRewardList = createAsyncThunk(
     const business = getMerchantBusiness(state);
     const result = await getPointsRewardList({ consumerId, business });
 
-    return result.data;
+    return result;
+  }
+);
+
+export const claimPointsReward = createAsyncThunk(
+  'rewards/business/memberDetail/claimPointsReward',
+  async ({ id, type }, { getState }) => {
+    const state = getState();
+    const consumerId = getConsumerId(state);
+    const business = getMerchantBusiness(state);
+    const result = await postClaimedPointsReward({ consumerId, business, id, type });
+
+    return result;
   }
 );
 
@@ -90,5 +102,13 @@ export const backButtonClicked = createAsyncThunk(
     }
 
     dispatch(historyGoBack());
+  }
+);
+
+export const pointsClaimRewardButtonClick = createAsyncThunk(
+  'rewards/business/memberDetail/pointsClaimRewardButtonClick',
+  async ({ id, type }, { dispatch }) => {
+    await dispatch(claimPointsReward(id, type));
+    dispatch(fetchPointsRewardList());
   }
 );
