@@ -11,6 +11,7 @@ import PageHeader from '../../../../../common/components/PageHeader';
 import MemberCard from './components/MemberCard';
 import CashbackBlock from '../../components/CashbackBlock';
 import UniquePromoList from './components/UniquePromoList';
+import PointsRewardList from './components/PointsRewardList';
 import MembershipDetailFooter from './components/MembershipDetailFooter';
 import MemberPrompt from './components/MemberPrompt';
 import styles from './MembershipDetail.module.scss';
@@ -35,6 +36,7 @@ const MembershipDetail = () => {
         onBackArrowClick={handleClickHeaderBackButton}
       />
       <MemberCard />
+      <PointsRewardList />
       <section className={styles.MembershipDetailCashbackSection}>
         <h2 className={styles.MembershipDetailCashbackSectionTitle}>{t('Cashback')}</h2>
         <CashbackBlock />

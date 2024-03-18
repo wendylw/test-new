@@ -1,9 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import { fetchUniquePromoList } from './thunks';
+import { fetchUniquePromoList, fetchPointsRewardList } from './thunks';
 
 const initialState = {
   loadUniquePromoListRequest: {
+    data: null,
+    status: null,
+    error: null,
+  },
+  loadPointsRewardListRequest: {
     data: null,
     status: null,
     error: null,
@@ -27,6 +32,19 @@ export const { reducer, actions } = createSlice({
     [fetchUniquePromoList.rejected.type]: (state, { error }) => {
       state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.ERROR;
       state.loadUniquePromoListRequest.error = error;
+    },
+    [fetchPointsRewardList.pending.type]: state => {
+      state.loadPointsRewardListRequest.status = API_REQUEST_STATUS.PENDING;
+      state.loadPointsRewardListRequest.error = null;
+    },
+    [fetchPointsRewardList.fulfilled.type]: (state, { payload }) => {
+      state.loadPointsRewardListRequest.data = payload;
+      state.loadPointsRewardListRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.loadPointsRewardListRequest.error = null;
+    },
+    [fetchPointsRewardList.rejected.type]: (state, { error }) => {
+      state.loadPointsRewardListRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.loadPointsRewardListRequest.error = error;
     },
   },
 });

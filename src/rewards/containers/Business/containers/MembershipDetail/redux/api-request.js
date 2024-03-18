@@ -6,3 +6,11 @@ export const getUniquePromoList = async ({ consumerId, business }) =>
       business,
     },
   });
+
+export const getPointsRewardList = async ({ consumerId, business: merchantName }) =>
+  get(`/api/v3/points/rewards`, {
+    queryParams: {
+      consumerId,
+      merchantName,
+    },
+  });

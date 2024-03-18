@@ -26,11 +26,13 @@ import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
+  getIsMerchantMembershipPointsEnabled,
 } from '../../../../../../redux/modules/merchant/selectors';
 import {
   getCustomerCashback,
   getCustomerTierLevel,
   getIsLoadCustomerRequestCompleted,
+  getCustomerAvailablePointsBalance,
 } from '../../../../../redux/modules/customer/selectors';
 
 export const getLoadUniquePromoListData = state =>
@@ -39,6 +41,14 @@ export const getLoadUniquePromoListData = state =>
 export const getLoadUniquePromoListStatus = state => state.business.membershipDetail.loadUniquePromoListRequest.status;
 
 export const getLoadUniquePromoListError = state => state.business.membershipDetail.loadUniquePromoListRequest.error;
+
+export const getLoadPointsRewardListData = state =>
+  state.business.membershipDetail.loadPointsRewardListRequest.data || [];
+
+export const getLoadPointsRewardListStatus = state =>
+  state.business.membershipDetail.loadPointsRewardListRequest.status;
+
+export const getLoadPointsRewardListError = state => state.business.membershipDetail.loadPointsRewardListRequest.error;
 
 /**
  * Derived selectors
@@ -260,3 +270,38 @@ export const getMemberCardIconColors = createSelector(getMemberColorPalettes, me
   backgroundStartColor: memberCardColorPalettes.icon.background.startColor,
   backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
 }));
+
+export const getPointsRewardList = createSelector(
+  getLoadPointsRewardListData,
+  getCustomerAvailablePointsBalance,
+  getMerchantCurrency,
+  getMerchantLocale,
+  getMerchantCountry,
+  (pointsRewardList, customerAvailablePointsBalance, merchantCurrency, merchantLocale, merchantCountry) =>
+    pointsRewardList.map(reward => {
+      if (!reward) {
+        return reward;
+      }
+
+      const { id, discountType, discountValue, name } = reward;
+      const isUnavailableStatus = [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(reward.status);
+      const isInsufficientPoints = customerAvailablePointsBalance < discountValue;
+
+      return {
+        id,
+        value:
+          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
+            ? `${discountValue}%`
+            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        name,
+        isUnavailable: isUnavailableStatus || isInsufficientPoints,
+      };
+    })
+);
+
+export const getIsPointsRewardListShown = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getPointsRewardList,
+  (isMerchantMembershipPointsEnabled, pointsRewardList) =>
+    isMerchantMembershipPointsEnabled && pointsRewardList.length > 0
+);

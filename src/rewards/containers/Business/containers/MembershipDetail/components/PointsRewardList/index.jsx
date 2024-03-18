@@ -2,14 +2,15 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../../../common/utils/ui';
-import { getPointsRewardList } from '../../redux/selectors';
+import { getPointsRewardList, getIsPointsRewardListShown } from '../../redux/selectors';
 import styles from './PointsRewardList.module.scss';
 
 const PointsRewardList = () => {
   const { t } = useTranslation(['Rewards']);
-  const uniquePromoList = useSelector(getPointsRewardList);
+  const pointsRewardList = useSelector(getPointsRewardList);
+  const isPointsRewardListShown = useSelector(getIsPointsRewardListShown);
 
-  if (uniquePromoList.length <= 0) {
+  if (!isPointsRewardListShown) {
     return null;
   }
 
@@ -17,19 +18,17 @@ const PointsRewardList = () => {
     <section className={styles.PointsRewardListSection}>
       <h2 className={styles.PointsRewardListSectionTitle}>{t('GetRewards')}</h2>
       <ul className={styles.PointsRewardList}>
-        {uniquePromoList.map(uniquePromo => {
+        {pointsRewardList.map(pointsReward => {
+          const { id, value, name, isUnavailable } = pointsReward;
           const uniquePromoInfoTopClassList = getClassName([
             styles.PointsRewardInfoTop,
             isUnavailable ? styles.PointsRewardInfoTop__Unavailable : null,
           ]);
           const uniquePromoInfoBottomClassList = [styles.PointsRewardInfoBottom];
-          const uniquePromoLimitationListClassList = [styles.PointsRewardLimitationList];
-          const { id, value, name, isUnavailable } = uniquePromo;
 
           if (isUnavailable) {
             uniquePromoInfoTopClassList.push(styles.PointsRewardInfoTop__Unavailable);
             uniquePromoInfoBottomClassList.push(styles.PointsRewardInfoBottom__Unavailable);
-            uniquePromoLimitationListClassList.push(styles.PointsRewardLimitationList__Unavailable);
           }
 
           return (

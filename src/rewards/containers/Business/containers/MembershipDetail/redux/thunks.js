@@ -1,9 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, goBack as historyGoBack } from 'connected-react-router';
-import { getUniquePromoList } from './api-request';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import { getClient } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
+import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
 import {
   initUserInfo,
   loginUserByBeepApp,
@@ -14,7 +14,7 @@ import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../.
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
-import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
+import { getUniquePromoList, getPointsRewardList } from './api-request';
 
 export const fetchUniquePromoList = createAsyncThunk(
   'rewards/business/memberDetail/fetchPromoList',
@@ -23,6 +23,18 @@ export const fetchUniquePromoList = createAsyncThunk(
     const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
     const result = await getUniquePromoList({ consumerId, business });
+
+    return result;
+  }
+);
+
+export const fetchPointsRewardList = createAsyncThunk(
+  'rewards/business/memberDetail/fetchPointsRewardList',
+  async (_, { getState }) => {
+    const state = getState();
+    const consumerId = getConsumerId(state);
+    const business = getMerchantBusiness(state);
+    const result = await getPointsRewardList({ consumerId, business });
 
     return result;
   }

@@ -30,6 +30,10 @@ export const getCustomerTierLevelName = createSelector(getCustomerData, customer
   _get(customerData, 'customerTier.name', null)
 );
 
+export const getCustomerAvailablePointsBalance = createSelector(getCustomerData, customerData =>
+  getDecimalNumber(_get(customerData, 'availablePointsBalance', 0))
+);
+
 /**
  * Derived selectors
  */
