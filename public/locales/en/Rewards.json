@@ -67,5 +67,6 @@
   "NotClaimedCancelledMessage": "This transaction has been cancelled/refunded.",
   "NotClaimedReachLimitMessage": "Oops, you've exceeded your cashback limit for today.",
   "NotClaimedReachMerchantLimitMessage": "The cashback is processed, you will receive a confirmation SMS.",
-  "NotClaimedMessage": "Something went wrong. Please scan the QR again, or ask the staff for help."
+  "NotClaimedMessage": "Something went wrong. Please scan the QR again, or ask the staff for help.",
+  "GetRewards": "Get Rewards"
 }

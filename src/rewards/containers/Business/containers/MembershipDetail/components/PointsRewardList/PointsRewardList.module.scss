@@ -1,0 +1,39 @@
+.PointsRewardListSection {
+  @apply tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-space-y-12 sm:tw-space-y-12px;
+}
+
+.PointsRewardListSectionTitle {
+  @apply tw-text-xl tw-leading-normal tw-font-bold;
+}
+
+.PointsRewardList {
+  @apply tw-flex tw-flex-col tw-gap-y-12 sm:tw-gap-y-12px;
+}
+
+.PointsRewardCard {
+  @apply tw-bg-white tw-p-12 sm:tw-p-12px tw-border tw-border-gray-500 tw-border-solid tw-rounded-lg tw-divide-y tw-divide-gray-200 tw-divide-solid;
+}
+
+.PointsRewardInfoTop {
+  @apply tw-pb-8 sm:tw-pb-8px;
+
+  &__Unavailable {
+    @apply tw-opacity-40;
+  }
+}
+
+.PointsRewardDiscount {
+  @apply tw-leading-relaxed tw-font-bold tw-uppercase;
+}
+
+.PointsRewardDiscountName {
+  @apply tw-text-sm tw-leading-loose;
+}
+
+.PointsRewardInfoBottom {
+  @apply tw-flex tw-items-end tw-justify-between tw-pt-8 sm:tw-pt-8px tw-border-l-0 tw-border-r-0;
+
+  &__Unavailable {
+    @apply tw-border-opacity-40;
+  }
+}
