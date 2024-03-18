@@ -35,6 +35,12 @@ export const getIsMembershipBenefitTabsShown = createSelector(
 export const getMembershipTiersBenefit = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.SHOW_TIERED_MEMBERSHIP_BENEFIT);
 
+export const getIsMembershipBenefitInfoShown = createSelector(
+  getMembershipTiersBenefit,
+  getMembershipTierList,
+  (membershipTiersBenefit, membershipTierList) => membershipTiersBenefit.length > 0 && membershipTierList.length > 0
+);
+
 export const getMerchantMembershipTiersBenefit = createSelector(
   getMembershipTiersBenefit,
   getMembershipTierList,

@@ -4,6 +4,7 @@ import { getClassName } from '../../../../../common/utils/ui';
 import {
   getIsMembershipBenefitTabsShown,
   getMerchantMembershipTiersBenefit,
+  getIsMembershipBenefitInfoShown,
   getMerchantMembershipTiersBenefitLength,
 } from '../../../../redux/modules/common/selectors';
 import styles from './MembershipTiersInfoTabs.module.scss';
@@ -24,6 +25,7 @@ const getCurrentActiveBlockInfo = activeIndex => {
 const MembershipTiersInfoTabs = () => {
   const isMembershipBenefitTabsShown = useSelector(getIsMembershipBenefitTabsShown);
   const membershipTiersBenefit = useSelector(getMerchantMembershipTiersBenefit);
+  const isMembershipBenefitInfoShown = useSelector(getIsMembershipBenefitInfoShown);
   const benefitLength = useSelector(getMerchantMembershipTiersBenefitLength);
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeBlockInfo, setActiveBlockInfo] = useState(null);
@@ -47,7 +49,7 @@ const MembershipTiersInfoTabs = () => {
     }
   }, [benefitLength, elRefs, activeBlockInfo]);
 
-  if (benefitLength === 0) {
+  if (!isMembershipBenefitInfoShown) {
     return null;
   }
 
