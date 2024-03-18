@@ -231,6 +231,11 @@ export const TIME_SLOT = {
   TOMORROW: 'Tomorrow',
 };
 
+export const PRE_ORDER_IMMEDIATE_TAG = {
+  from: 'now',
+  to: 'now',
+};
+
 export const ORDER_STATUS = {
   CREATED: 'created',
   PENDING_PAYMENT: 'pendingPayment',

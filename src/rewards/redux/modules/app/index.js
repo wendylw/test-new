@@ -10,7 +10,7 @@ import { APP_TYPES } from './types';
 import { API_REQUEST } from '../../../../redux/middlewares/api';
 import { post } from '../../../../utils/api/api-fetch';
 import logger from '../../../../utils/monitoring/logger';
-import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../../common/utils/phone-number-constants';
+import { AVAILABLE_COUNTRIES } from '../../../../common/utils/phone-number-constants';
 
 const { AUTH_INFO, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
