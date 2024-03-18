@@ -38,16 +38,21 @@ export const getMembershipTiersBenefit = state =>
 export const getMerchantMembershipTiersBenefit = createSelector(
   getMembershipTiersBenefit,
   getMembershipTierList,
-  (membershipTiersBenefit, membershipTierList) =>
-    membershipTierList.map(tier => {
+  (membershipTiersBenefit, membershipTierList) => {
+    if (membershipTiersBenefit.length === 0) {
+      return [];
+    }
+
+    return membershipTierList.map(tier => {
       const { level } = tier;
       const currentBenefit = membershipTiersBenefit.find(benefit => benefit.level === level);
 
       return { ...tier, ...currentBenefit };
-    })
+    });
+  }
 );
 
-export const getMembershipTierListLength = createSelector(
-  getMembershipTierList,
-  membershipTierList => membershipTierList.length
+export const getMerchantMembershipTiersBenefitLength = createSelector(
+  getMerchantMembershipTiersBenefit,
+  membershipTiersBenefit => membershipTiersBenefit.length
 );

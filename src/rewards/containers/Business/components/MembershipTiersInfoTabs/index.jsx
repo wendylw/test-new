@@ -4,7 +4,7 @@ import { getClassName } from '../../../../../common/utils/ui';
 import {
   getIsMembershipBenefitTabsShown,
   getMerchantMembershipTiersBenefit,
-  getMembershipTierListLength,
+  getMerchantMembershipTiersBenefitLength,
 } from '../../../../redux/modules/common/selectors';
 import styles from './MembershipTiersInfoTabs.module.scss';
 
@@ -24,7 +24,7 @@ const getCurrentActiveBlockInfo = activeIndex => {
 const MembershipTiersInfoTabs = () => {
   const isMembershipBenefitTabsShown = useSelector(getIsMembershipBenefitTabsShown);
   const membershipTiersBenefit = useSelector(getMerchantMembershipTiersBenefit);
-  const benefitLength = useSelector(getMembershipTierListLength);
+  const benefitLength = useSelector(getMerchantMembershipTiersBenefitLength);
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeBlockInfo, setActiveBlockInfo] = useState(null);
   const [elRefs, setElRefs] = useState([]);
@@ -53,7 +53,7 @@ const MembershipTiersInfoTabs = () => {
 
   return (
     <section className={styles.MembershipTiersInfoTabsSection}>
-      <h5 className={styles.MembershipTiersInfoTabsTitle}>Membership Benefits</h5>
+      <h5 className={styles.MembershipTiersInfoTabsTitle}>{t('MembershipBenefits')}</h5>
       <div className={styles.MembershipTiersInfoTabsContainer}>
         {isMembershipBenefitTabsShown ? (
           <>
@@ -107,14 +107,14 @@ const MembershipTiersInfoTabs = () => {
               );
             })}
           </>
-        ) : membershipTiersBenefit[0] ? (
+        ) : (
           <div
             className={`${styles.MembershipTiersInfoTabContent} ${styles.MembershipTiersInfoTabContent__active}`}
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{ __html: membershipTiersBenefit[0].description }}
             data-test-id="rewards.business.membership-tiers-info-tabs.benefit-description"
           />
-        ) : null}
+        )}
       </div>
     </section>
   );
