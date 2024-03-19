@@ -333,12 +333,6 @@ export const getIsClaimPointsRewardLoaderShow = createSelector(
   isClaimPointsRewardPending => isClaimPointsRewardPending
 );
 
-export const getIsProfileFormShow = createSelector(
-  getIsProfileModalShow,
-  getIsUserProfileIncomplete,
-  (isProfileModalShow, isUserProfileIncomplete) => isProfileModalShow && !isUserProfileIncomplete
-);
-
 export const getIsClaimPointsRewardSuccessfulAlertShow = createSelector(
   getIsClaimPointsRewardFulfilled,
   isClaimPointsRewardFulfilled => isClaimPointsRewardFulfilled

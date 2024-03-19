@@ -9,7 +9,7 @@ import {
   getPointsRewardList,
   getIsPointsRewardListShown,
   getIsClaimPointsRewardLoaderShow,
-  getIsProfileFormShow,
+  getIsProfileModalShow,
   getIsClaimPointsRewardSuccessfulAlertShow,
 } from '../../redux/selectors';
 import { pointsClaimRewardButtonClicked, skipProfileButtonClicked, saveProfileButtonClicked } from '../../redux/thunks';
@@ -28,7 +28,7 @@ const PointsRewardList = () => {
   const pointsRewardList = useSelector(getPointsRewardList);
   const isPointsRewardListShown = useSelector(getIsPointsRewardListShown);
   const isClaimPointsRewardLoaderShow = useSelector(getIsClaimPointsRewardLoaderShow);
-  const isProfileFormShow = useSelector(getIsProfileFormShow);
+  const isProfileModalShow = useSelector(getIsProfileModalShow);
   const isClaimPointsRewardSuccessfulAlertShow = useSelector(getIsClaimPointsRewardSuccessfulAlertShow);
   const handlePointsClaimRewardButtonClick = (id, type, costOfPoints) => {
     confirm('', {
@@ -127,7 +127,11 @@ const PointsRewardList = () => {
         <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
       )}
       {!isWebview && (
-        <Profile show={isProfileFormShow} onSave={handleClickSaveProfileButton} onSkip={handleClickSkipProfileButton} />
+        <Profile
+          show={isProfileModalShow}
+          onSave={handleClickSaveProfileButton}
+          onSkip={handleClickSkipProfileButton}
+        />
       )}
     </>
   );
