@@ -9,7 +9,6 @@ import {
 } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
-import { getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import {
   I18N_PARAM_KEYS,
   NEW_MEMBER_TYPES,
