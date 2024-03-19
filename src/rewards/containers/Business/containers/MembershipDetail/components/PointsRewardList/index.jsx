@@ -96,6 +96,9 @@ const PointsRewardList = () => {
       {isClaimPointsRewardLoaderShow && (
         <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
       )}
+      {/* {!isWebview && (
+        <Profile show={isProfileFormShow} onSave={handleClickSaveProfileButton} onSkip={handleClickSkipProfileButton} />
+      )} */}
     </>
   );
 };
