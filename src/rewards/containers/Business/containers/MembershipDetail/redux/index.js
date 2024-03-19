@@ -4,12 +4,12 @@ import { fetchUniquePromoList, fetchPointsRewardList, claimPointsReward } from '
 
 const initialState = {
   loadUniquePromoListRequest: {
-    data: null,
+    data: [],
     status: null,
     error: null,
   },
   loadPointsRewardListRequest: {
-    data: null,
+    data: [],
     status: null,
     error: null,
   },
