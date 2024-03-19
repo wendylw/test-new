@@ -47,6 +47,37 @@
 
 .PointsRewardConfirm {
   h4 {
-    max-width: 296px;
+    max-width: 290px;
   }
+}
+
+.PointsRewardClaimedAlertContent {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-leading-loose;
+}
+
+.PointsRewardClaimedAlertIcon {
+  @apply tw-mb-8 sm:tw-mb-8px tw-rounded-full tw-overflow-hidden;
+
+  width: 88px;
+  height: 88px;
+
+  > figure {
+    @apply tw-bg-transparent;
+  }
+}
+
+.PointsRewardClaimedAlertTitle {
+  @apply tw-flex tw-justify-center tw-text-center tw-m-auto tw-text-xl tw-leading-normal tw-text-gray-800 tw-font-bold;
+
+  max-width: 264px;
+  word-break: break-word;
+}
+
+.PointsRewardClaimedAlertDescription {
+  @apply tw-flex tw-justify-center tw-text-center tw-mt-4 sm:tw-mt-4px tw-mb-8 sm:tw-mb-8px tw-leading-relaxed tw-text-gray-700;
+
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 360px;
+  word-break: break-word;
 }

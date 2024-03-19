@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import CleverTap from '../../../../../../../utils/clevertap';
+import PointsRewardClaimedIcon from '../../../../../../../images/rewards-points-claimed.svg';
 import { getIsWebview } from '../../../../../../redux/modules/common/selectors';
 import {
   getPointsRewardList,
@@ -16,6 +17,7 @@ import { alert, confirm } from '../../../../../../../common/utils/feedback';
 import PageToast from '../../../../../../../common/components/PageToast';
 import Loader from '../../../../../../../common/components/Loader';
 import Button from '../../../../../../../common/components/Button';
+import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import Profile from '../../../../../Profile';
 import styles from './PointsRewardList.module.scss';
 
@@ -55,7 +57,20 @@ const PointsRewardList = () => {
 
   useEffect(() => {
     if (isClaimPointsRewardSuccessfulAlertShow) {
-      alert(t('PointsRewardClaimedDescription'), { title: t('PointsRewardClaimedTitle') });
+      alert(
+        <div className={styles.PointsRewardClaimedAlertContent}>
+          <div className={styles.PointsRewardClaimedAlertIcon}>
+            <ObjectFitImage
+              noCompression
+              src={PointsRewardClaimedIcon}
+              alt="Points Reward Claimed Successful Icon in StoreHub"
+            />
+          </div>
+          <h4 className={styles.PointsRewardClaimedAlertTitle}>{t('PointsRewardClaimedTitle')}</h4>
+          <p className={styles.PointsRewardClaimedAlertDescription}>{t('PointsRewardClaimedDescription')}</p>
+        </div>,
+        { id: 'PointsRewardClaimedSuccessfulAlert' }
+      );
     }
   }, [t, isClaimPointsRewardSuccessfulAlertShow]);
 
