@@ -324,3 +324,8 @@ export const getIsClaimPointsRewardFulfilled = createSelector(
   getClaimPointsRewardStatus,
   claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
 );
+
+export const getIsClaimPointsRewardLoaderShow = createSelector(
+  getIsClaimPointsRewardPending,
+  isClaimPointsRewardPending => isClaimPointsRewardPending
+);
