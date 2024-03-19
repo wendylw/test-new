@@ -9,9 +9,10 @@ import {
   getIsPointsRewardListShown,
   getIsClaimPointsRewardLoaderShow,
   getIsProfileFormShow,
+  getIsClaimPointsRewardSuccessfulAlertShow,
 } from '../../redux/selectors';
-import { pointsClaimRewardButtonClick, hideWebProfileForm } from '../../redux/thunks';
-import { confirm } from '../../../../../../../common/utils/feedback';
+import { pointsClaimRewardButtonClicked, skipProfileButtonClicked, saveProfileButtonClicked } from '../../redux/thunks';
+import { alert, confirm } from '../../../../../../../common/utils/feedback';
 import PageToast from '../../../../../../../common/components/PageToast';
 import Loader from '../../../../../../../common/components/Loader';
 import Button from '../../../../../../../common/components/Button';
@@ -26,6 +27,7 @@ const PointsRewardList = () => {
   const isPointsRewardListShown = useSelector(getIsPointsRewardListShown);
   const isClaimPointsRewardLoaderShow = useSelector(getIsClaimPointsRewardLoaderShow);
   const isProfileFormShow = useSelector(getIsProfileFormShow);
+  const isClaimPointsRewardSuccessfulAlertShow = useSelector(getIsClaimPointsRewardSuccessfulAlertShow);
   const handlePointsClaimRewardButtonClick = (id, type, costOfPoints) => {
     confirm('', {
       className: styles.PointsRewardConfirm,
@@ -38,7 +40,7 @@ const PointsRewardList = () => {
             type,
             costOfPoints,
           });
-          dispatch(pointsClaimRewardButtonClick({ id, type }));
+          dispatch(pointsClaimRewardButtonClicked({ id, type }));
         } else {
           CleverTap.pushEvent('Points Reward Claimed - Click cancel', {
             type,
@@ -48,8 +50,14 @@ const PointsRewardList = () => {
       },
     });
   };
-  const handleClickSkipProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
-  const handleClickSaveProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
+  const handleClickSkipProfileButton = (id, type) => dispatch(skipProfileButtonClicked({ id, type }));
+  const handleClickSaveProfileButton = (id, type) => dispatch(saveProfileButtonClicked({ id, type }));
+
+  useEffect(() => {
+    if (isClaimPointsRewardSuccessfulAlertShow) {
+      alert(t('PointsRewardClaimedDescription'), { title: t('PointsRewardClaimedTitle') });
+    }
+  }, [isClaimPointsRewardSuccessfulAlertShow]);
 
   if (!isPointsRewardListShown) {
     return null;

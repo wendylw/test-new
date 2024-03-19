@@ -70,5 +70,7 @@
   "NotClaimedMessage": "Something went wrong. Please scan the QR again, or ask the staff for help.",
   "GetRewards": "Get Rewards",
   "RewardsCostOfPointsText": "{{costOfPoints}} points",
-  "RewardsCostOfPointsConfirmMessage": "Are you sure want to spend {{costOfPoints}} points?"
+  "RewardsCostOfPointsConfirmMessage": "Are you sure want to spend {{costOfPoints}} points?",
+  "PointsRewardClaimedTitle": "Successfully redeemed!",
+  "PointsRewardClaimedDescription": "It has been added to ‘My Rewards’ tab. You may view and and use it now."
 }
