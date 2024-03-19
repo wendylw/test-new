@@ -3,17 +3,18 @@ import { push, goBack as historyGoBack } from 'connected-react-router';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import { getClient } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
-import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
+import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
 import {
   initUserInfo,
   loginUserByBeepApp,
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
+import { getIsLogin, getConsumerId, getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
+
 import { getUniquePromoList, getPointsRewardList, postClaimedPointsReward } from './api-request';
 
 export const fetchUniquePromoList = createAsyncThunk(
@@ -105,10 +106,35 @@ export const backButtonClicked = createAsyncThunk(
   }
 );
 
+export const showWebProfileForm = createAsyncThunk('rewards/business/memberDetail/showWebProfileForm', async () => {});
+
+export const hideWebProfileForm = createAsyncThunk('rewards/business/memberDetail/hideWebProfileForm', async () => {});
+
+export const showProfileForm = createAsyncThunk(
+  'rewards/business/memberDetail/showProfileForm',
+  async (_, { dispatch, getState }) => {
+    const isWebview = getIsWebview(getState());
+
+    if (isWebview) {
+      await showCompleteProfilePageAsync();
+      return;
+    }
+
+    await dispatch(showWebProfileForm());
+  }
+);
+
 export const pointsClaimRewardButtonClick = createAsyncThunk(
   'rewards/business/memberDetail/pointsClaimRewardButtonClick',
-  async ({ id, type }, { dispatch }) => {
+  async ({ id, type }, { dispatch, getState }) => {
+    const state = getState();
+    const isUserProfileIncomplete = getIsUserProfileIncomplete(state);
+
     await dispatch(claimPointsReward(id, type));
+
+    if (isUserProfileIncomplete) {
+      dispatch(showProfileForm());
+    }
 
     dispatch(fetchPointsRewardList());
   }

@@ -1,8 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import { fetchUniquePromoList, fetchPointsRewardList, claimPointsReward } from './thunks';
+import {
+  fetchUniquePromoList,
+  fetchPointsRewardList,
+  showWebProfileForm,
+  hideWebProfileForm,
+  claimPointsReward,
+} from './thunks';
 
 const initialState = {
+  isProfileModalShow: false,
   loadUniquePromoListRequest: {
     data: [],
     status: null,
@@ -61,6 +68,12 @@ export const { reducer, actions } = createSlice({
     [claimPointsReward.rejected.type]: (state, { error }) => {
       state.claimPointsRewardRequest.status = API_REQUEST_STATUS.REJECTED;
       state.claimPointsRewardRequest.error = error;
+    },
+    [showWebProfileForm.fulfilled.type]: state => {
+      state.isProfileModalShow = true;
+    },
+    [hideWebProfileForm.fulfilled.type]: state => {
+      state.isProfileModalShow = false;
     },
   },
 });

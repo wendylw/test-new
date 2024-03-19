@@ -1,26 +1,31 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import CleverTap from '../../../../../../../utils/clevertap';
+import { getIsWebview } from '../../../../../../redux/modules/common/selectors';
 import {
   getPointsRewardList,
   getIsPointsRewardListShown,
   getIsClaimPointsRewardLoaderShow,
+  getIsProfileFormShow,
 } from '../../redux/selectors';
-import { pointsClaimRewardButtonClick } from '../../redux/thunks';
+import { pointsClaimRewardButtonClick, hideWebProfileForm } from '../../redux/thunks';
 import { confirm } from '../../../../../../../common/utils/feedback';
 import PageToast from '../../../../../../../common/components/PageToast';
 import Loader from '../../../../../../../common/components/Loader';
 import Button from '../../../../../../../common/components/Button';
+import Profile from '../../../../../Profile';
 import styles from './PointsRewardList.module.scss';
 
 const PointsRewardList = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(['Rewards']);
+  const isWebview = useSelector(getIsWebview);
   const pointsRewardList = useSelector(getPointsRewardList);
   const isPointsRewardListShown = useSelector(getIsPointsRewardListShown);
   const isClaimPointsRewardLoaderShow = useSelector(getIsClaimPointsRewardLoaderShow);
+  const isProfileFormShow = useSelector(getIsProfileFormShow);
   const handlePointsClaimRewardButtonClick = (id, type, costOfPoints) => {
     confirm('', {
       className: styles.PointsRewardConfirm,
@@ -43,6 +48,8 @@ const PointsRewardList = () => {
       },
     });
   };
+  const handleClickSkipProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
+  const handleClickSaveProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
   if (!isPointsRewardListShown) {
     return null;
@@ -96,9 +103,9 @@ const PointsRewardList = () => {
       {isClaimPointsRewardLoaderShow && (
         <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
       )}
-      {/* {!isWebview && (
+      {!isWebview && (
         <Profile show={isProfileFormShow} onSave={handleClickSaveProfileButton} onSkip={handleClickSkipProfileButton} />
-      )} */}
+      )}
     </>
   );
 };

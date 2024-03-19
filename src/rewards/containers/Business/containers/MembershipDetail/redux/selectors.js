@@ -9,6 +9,7 @@ import {
 } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
+import { getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import {
   I18N_PARAM_KEYS,
   NEW_MEMBER_TYPES,
@@ -35,6 +36,8 @@ import {
   getIsLoadCustomerRequestCompleted,
   getCustomerAvailablePointsBalance,
 } from '../../../../../redux/modules/customer/selectors';
+
+export const getIsProfileModalShow = state => state.business.membershipDetail.isProfileModalShow;
 
 export const getLoadUniquePromoListData = state =>
   state.business.membershipDetail.loadUniquePromoListRequest.data || [];
@@ -328,4 +331,12 @@ export const getIsClaimPointsRewardFulfilled = createSelector(
 export const getIsClaimPointsRewardLoaderShow = createSelector(
   getIsClaimPointsRewardPending,
   isClaimPointsRewardPending => isClaimPointsRewardPending
+);
+
+export const getIsProfileFormShow = createSelector(
+  getIsProfileModalShow,
+  getIsUserProfileIncomplete,
+  getIsClaimPointsRewardFulfilled,
+  (isProfileModalShow, isUserProfileIncomplete, isClaimPointsRewardFulfilled) =>
+    isProfileModalShow && isUserProfileIncomplete && isClaimPointsRewardFulfilled
 );
