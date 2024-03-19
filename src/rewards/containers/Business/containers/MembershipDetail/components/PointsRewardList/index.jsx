@@ -57,7 +57,7 @@ const PointsRewardList = () => {
     if (isClaimPointsRewardSuccessfulAlertShow) {
       alert(t('PointsRewardClaimedDescription'), { title: t('PointsRewardClaimedTitle') });
     }
-  }, [isClaimPointsRewardSuccessfulAlertShow]);
+  }, [t, isClaimPointsRewardSuccessfulAlertShow]);
 
   if (!isPointsRewardListShown) {
     return null;
