@@ -35,7 +35,10 @@ const PointsRewardList = () => {
           });
           dispatch(pointsClaimRewardButtonClick({ id, type }));
         } else {
-          CleverTap.pushEvent('Points Reward Claimed - Click cancel');
+          CleverTap.pushEvent('Points Reward Claimed - Click cancel', {
+            type,
+            costOfPoints,
+          });
         }
       },
     });
