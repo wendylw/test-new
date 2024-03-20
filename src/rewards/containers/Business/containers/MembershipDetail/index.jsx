@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../common/utils/ui';
+import { getMerchantDisplayName } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWeb } from '../../../../redux/modules/common/selectors';
 import { mounted, backButtonClicked } from './redux/thunks';
 import { getShouldShowBackButton } from './redux/selectors';
@@ -12,13 +13,13 @@ import MemberCard from './components/MemberCard';
 import CashbackBlock from '../../components/CashbackBlock';
 import UniquePromoList from './components/UniquePromoList';
 import PointsRewardList from './components/PointsRewardList';
-import MembershipDetailFooter from './components/MembershipDetailFooter';
 import MemberPrompt from './components/MemberPrompt';
 import styles from './MembershipDetail.module.scss';
 
 const MembershipDetail = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
+  const merchantDisplayName = useSelector(getMerchantDisplayName);
   const isWeb = useSelector(getIsWeb);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
@@ -32,7 +33,7 @@ const MembershipDetail = () => {
       <PageHeader
         className={getClassName([isWeb && styles.MembershipDetailWebPageHeader])}
         isShowBackButton={shouldShowBackButton}
-        title={t('MembershipDetailPageTitle')}
+        title={t('MembershipDetailPageTitle', { merchantDisplayName })}
         onBackArrowClick={handleClickHeaderBackButton}
       />
       <MemberCard />
@@ -42,7 +43,6 @@ const MembershipDetail = () => {
         <CashbackBlock />
       </section>
       <UniquePromoList />
-      <MembershipDetailFooter />
       <MemberPrompt />
     </Frame>
   );

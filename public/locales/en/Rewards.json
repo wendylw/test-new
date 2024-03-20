@@ -4,7 +4,7 @@
   "TermsAndConditionsDescription": "By tapping on Join Now, you agree to the <1>Term & Conditions</1>",
   "MembershipUnavailableTitle": "Oops, join membership for this store is unavailable yet",
   "MembershipUnavailableDescription": "Ask the merchant to enable the membership!",
-  "MembershipDetailPageTitle": "Store Membership Details",
+  "MembershipDetailPageTitle": "Membership - {{merchantDisplayName}}",
   "CashbackDetailPageTitle": "Store Cashback Details",
   "CashbackBalanceTitle": "Cashback Balance",
   "UniquePromoListTitle": "Exclusive Discounts",
