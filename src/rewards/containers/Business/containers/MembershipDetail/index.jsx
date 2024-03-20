@@ -10,6 +10,7 @@ import { getShouldShowBackButton } from './redux/selectors';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MemberCard from './components/MemberCard';
+import RewardsButtons from './components/RewardsButtons';
 import CashbackBlock from '../../components/CashbackBlock';
 import UniquePromoList from './components/UniquePromoList';
 import PointsRewardList from './components/PointsRewardList';
@@ -37,6 +38,7 @@ const MembershipDetail = () => {
         onBackArrowClick={handleClickHeaderBackButton}
       />
       <MemberCard />
+      <RewardsButtons />
       <PointsRewardList />
       <section className={styles.MembershipDetailCashbackSection}>
         <h2 className={styles.MembershipDetailCashbackSectionTitle}>{t('Cashback')}</h2>
