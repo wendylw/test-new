@@ -15,6 +15,7 @@ import CashbackBlock from '../../components/CashbackBlock';
 import UniquePromoList from './components/UniquePromoList';
 import PointsRewardList from './components/PointsRewardList';
 import MemberPrompt from './components/MemberPrompt';
+import EarnedPointsPromptDrawer from './components/EarnedPointsPromptDrawer';
 import styles from './MembershipDetail.module.scss';
 
 const MembershipDetail = () => {
@@ -46,6 +47,7 @@ const MembershipDetail = () => {
       </section>
       <UniquePromoList />
       <MemberPrompt />
+      <EarnedPointsPromptDrawer />
     </Frame>
   );
 };

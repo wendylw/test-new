@@ -74,5 +74,11 @@
   "PointsRewardClaimedTitle": "Successfully redeemed!",
   "PointsRewardClaimedDescription": "It has been added to ‘My Rewards’ tab. You may view and and use it now.",
   "Points": "Points",
-  "MyRewards": "My Rewards"
+  "MyRewards": "My Rewards",
+  "EarnedPointsPromptDrawerTitle": "How to collect points",
+  "EarnedPointsPromptDrawerDescription": "Earn points with every purchase at your favourite store. ",
+  "EarnedPointsPromptRedeemOnlineTitle": "Redeem online",
+  "EarnedPointsPromptRedeemOnlineDescription": "Use points to redeem exclusive rewards at your Membership page.",
+  "EarnedPointsPromptRedeemInStoreTitle": "Redeem in-store",
+  "EarnedPointsPromptRedeemInStoreDescription": "Visit the store and ask the staff to redeem your reward, then share your phone number."
 }

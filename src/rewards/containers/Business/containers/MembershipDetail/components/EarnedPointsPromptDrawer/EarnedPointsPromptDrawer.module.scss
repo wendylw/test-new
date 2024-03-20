@@ -1,0 +1,23 @@
+.EarnedPointsPromptDrawer {
+  @apply tw-p-0;
+}
+
+.EarnedPointsPromptDrawerDescription {
+  @apply tw-px-16 sm:tw-px-16px tw-my-16 sm:tw-my-16px tw-leading-loose;
+}
+
+.EarnedPointsPromptList {
+  @apply tw-flex tw-flex-col tw-gap-y-16 sm:tw-gap-y-16px tw-px-16 sm:tw-px-16px tw-my-16 sm:tw-my-16px;
+}
+
+.EarnedPointsPromptItem {
+  @apply tw-border tw-border-solid tw-border-gray-400 tw-rounded;
+}
+
+.EarnedPointsPromptItemTitle {
+  @apply tw-px-16 sm:tw-px-16px tw-py-8 sm:tw-py-8px tw-border-0 tw-border-b tw-border-solid tw-border-gray-400 tw-text-lg tw-leading-relaxed tw-font-bold;
+}
+
+.EarnedPointsPromptItemDescription {
+  @apply tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-leading-loose;
+}

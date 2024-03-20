@@ -10,6 +10,7 @@ import {
 
 const initialState = {
   isProfileModalShow: false,
+  isEarnedPointsPromptDrawerShow: false,
   loadUniquePromoListRequest: {
     data: [],
     status: null,
@@ -29,7 +30,14 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'rewards/business/membershipDetail',
   initialState,
-  reducers: {},
+  reducers: {
+    earnedPointsPromptDrawerShown: state => {
+      state.isEarnedPointsPromptDrawerShow = true;
+    },
+    earnedPointsPromptDrawerHidden: state => {
+      state.isEarnedPointsPromptDrawerShow = false;
+    },
+  },
   extraReducers: {
     [fetchUniquePromoList.pending.type]: state => {
       state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.PENDING;
