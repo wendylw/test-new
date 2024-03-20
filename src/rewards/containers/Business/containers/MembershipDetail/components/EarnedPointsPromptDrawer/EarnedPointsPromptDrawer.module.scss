@@ -2,6 +2,14 @@
   @apply tw-p-0;
 }
 
+.EarnedPointsPromptDrawerHeaderCloseButton {
+  @apply tw-flex-shrink-0 tw-text-2xl tw-text-gray;
+}
+
+.EarnedPointsPromptDrawerTitle {
+  @apply tw-font-bold tw-text-lg tw-leading-relaxed;
+}
+
 .EarnedPointsPromptDrawerDescription {
   @apply tw-px-16 sm:tw-px-16px tw-my-16 sm:tw-my-16px tw-leading-loose;
 }

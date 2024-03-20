@@ -24,13 +24,13 @@ const EarnedPointsPromptDrawer = () => {
           left={
             <X
               weight="light"
-              className="tw-flex-shrink-0 tw-text-2xl tw-text-gray"
+              className={styles.EarnedPointsPromptDrawerHeaderCloseButton}
               data-test-id="rewards.business.membershipDetail.earnedPointsPromptDrawer.closeButton"
               onClick={closeDrawer}
             />
           }
         >
-          <span className="tw-font-bold tw-text-lg tw-leading-relaxed">{t('EarnedPointsPromptDrawerTitle')}</span>
+          <span className={styles.EarnedPointsPromptDrawerTitle}>{t('EarnedPointsPromptDrawerTitle')}</span>
         </DrawerHeader>
       }
       show={isEarnedPointsPromptDrawerShow}

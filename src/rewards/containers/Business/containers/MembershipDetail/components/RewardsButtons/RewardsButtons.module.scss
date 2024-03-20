@@ -21,7 +21,7 @@
 }
 
 .RewardsButtonTitle {
-  @apply tw-flex tw-items-center;
+  @apply tw-flex tw-items-center tw-gap-x-4 sm:tw-gap-x-4px;
 }
 
 .RewardsButtonPointsText,

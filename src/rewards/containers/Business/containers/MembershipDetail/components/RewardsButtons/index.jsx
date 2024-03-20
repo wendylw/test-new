@@ -1,9 +1,10 @@
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { CaretRight } from 'phosphor-react';
 import RewardsIcon from '../../../../../../../images/rewards-icon.svg';
 import RewardsPointsIcon from '../../../../../../../images/rewards-points-icon.svg';
+import { getCustomerAvailablePointsBalance } from '../../../../../../redux/modules/customer/selectors';
 import { actions as membershipDetailActions } from '../../redux';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
@@ -12,6 +13,7 @@ import styles from './RewardsButtons.module.scss';
 const RewardsButtons = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
+  const availablePointsBalance = useSelector(getCustomerAvailablePointsBalance);
   const handlePointsDetailButtonClick = useCallback(() => {
     dispatch(membershipDetailActions.earnedPointsPromptDrawerShown());
   }, [dispatch]);
@@ -33,8 +35,8 @@ const RewardsButtons = () => {
           <span className={styles.RewardsButtonPointsText}>{t('Points')}</span>
           <CaretRight size={12} />
         </div>
-        <data className={styles.RewardsButtonPoints} value={500}>
-          500
+        <data className={styles.RewardsButtonPoints} value={availablePointsBalance}>
+          {availablePointsBalance}
         </data>
       </Button>
       <Button
