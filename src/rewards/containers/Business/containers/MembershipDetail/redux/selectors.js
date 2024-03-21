@@ -91,6 +91,7 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
 export const getNewMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
   getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
   getCustomerCashback,
   getOrderReceiptClaimedCashbackStatus,
   getIsFromSeamlessLoyaltyQrScan,
@@ -99,6 +100,7 @@ export const getNewMemberPromptCategory = createSelector(
   (
     isLoadCustomerRequestCompleted,
     isMerchantEnabledCashback,
+    isMerchantMembershipPointsEnabled,
     customerCashback,
     claimedCashbackStatus,
     isFromSeamlessLoyaltyQrScan,
@@ -107,6 +109,10 @@ export const getNewMemberPromptCategory = createSelector(
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return NEW_MEMBER_TYPES.DEFAULT;
+    }
+
+    if (isFromEarnedCashbackQrScan && isMerchantMembershipPointsEnabled) {
+      return NEW_MEMBER_TYPES.ENABLED_POINTS;
     }
 
     if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
@@ -150,6 +156,7 @@ export const getNewMemberTitleIn18nParams = createSelector(
 export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
   getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
   getCustomerCashback,
   getOrderReceiptClaimedCashbackStatus,
   getIsFromJoinMembershipUrlClick,
@@ -158,6 +165,7 @@ export const getReturningMemberPromptCategory = createSelector(
   (
     isLoadCustomerRequestCompleted,
     isMerchantEnabledCashback,
+    isMerchantMembershipPointsEnabled,
     customerCashback,
     claimedCashbackStatus,
     isFromJoinMembershipUrlClick,
@@ -166,6 +174,10 @@ export const getReturningMemberPromptCategory = createSelector(
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return RETURNING_MEMBER_TYPES.DEFAULT;
+    }
+
+    if (isFromEarnedCashbackQrScan && isMerchantMembershipPointsEnabled) {
+      return RETURNING_MEMBER_TYPES.ENABLED_POINTS;
     }
 
     if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
