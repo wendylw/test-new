@@ -111,7 +111,7 @@ export const getNewMemberPromptCategory = createSelector(
       return NEW_MEMBER_TYPES.DEFAULT;
     }
 
-    if (isFromEarnedCashbackQrScan && isMerchantMembershipPointsEnabled) {
+    if (isFromSeamlessLoyaltyQrScan && isMerchantMembershipPointsEnabled) {
       return NEW_MEMBER_TYPES.ENABLED_POINTS;
     }
 
@@ -176,7 +176,7 @@ export const getReturningMemberPromptCategory = createSelector(
       return RETURNING_MEMBER_TYPES.DEFAULT;
     }
 
-    if (isFromEarnedCashbackQrScan && isMerchantMembershipPointsEnabled) {
+    if (isFromSeamlessLoyaltyQrScan && isMerchantMembershipPointsEnabled) {
       return RETURNING_MEMBER_TYPES.ENABLED_POINTS;
     }
 
