@@ -100,6 +100,7 @@ export const PATH_NAME_MAPPING = {
   MEMBERSHIP_DETAIL: '/membership-detail',
   SEAMLESS_LOYALTY: '/seamless-loyalty',
   UNIQUE_PROMO: '/promo',
+  LIST: '/list',
   CLAIM: '/claim',
   REWARDS_LOGIN: '/login',
   CASHBACK: '/cashback',

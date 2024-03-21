@@ -12,7 +12,7 @@ import PageHeader from '../../../../../common/components/PageHeader';
 import MemberCard from './components/MemberCard';
 import RewardsButtons from './components/RewardsButtons';
 import CashbackBlock from '../../components/CashbackBlock';
-import UniquePromoList from './components/UniquePromoList';
+import UniquePromoListSection from './components/UniquePromoListSection';
 import PointsRewardList from './components/PointsRewardList';
 import MemberPrompt from './components/MemberPrompt';
 import EarnedPointsPromptDrawer from './components/EarnedPointsPromptDrawer';
@@ -45,7 +45,7 @@ const MembershipDetail = () => {
         <h2 className={styles.MembershipDetailCashbackSectionTitle}>{t('Cashback')}</h2>
         <CashbackBlock />
       </section>
-      <UniquePromoList />
+      <UniquePromoListSection />
       <MemberPrompt />
       <EarnedPointsPromptDrawer />
     </Frame>

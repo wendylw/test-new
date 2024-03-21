@@ -11,11 +11,6 @@ import {
 const initialState = {
   isProfileModalShow: false,
   isEarnedPointsPromptDrawerShow: false,
-  loadUniquePromoListRequest: {
-    data: [],
-    status: null,
-    error: null,
-  },
   loadPointsRewardListRequest: {
     data: [],
     status: null,
@@ -39,19 +34,6 @@ export const { reducer, actions } = createSlice({
     },
   },
   extraReducers: {
-    [fetchUniquePromoList.pending.type]: state => {
-      state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.PENDING;
-      state.loadUniquePromoListRequest.error = null;
-    },
-    [fetchUniquePromoList.fulfilled.type]: (state, { payload }) => {
-      state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.SUCCESS;
-      state.loadUniquePromoListRequest.data = payload;
-      state.loadUniquePromoListRequest.error = null;
-    },
-    [fetchUniquePromoList.rejected.type]: (state, { error }) => {
-      state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.ERROR;
-      state.loadUniquePromoListRequest.error = error;
-    },
     [fetchPointsRewardList.pending.type]: state => {
       state.loadPointsRewardListRequest.status = API_REQUEST_STATUS.PENDING;
       state.loadPointsRewardListRequest.error = null;

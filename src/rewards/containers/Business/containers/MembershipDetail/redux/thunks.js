@@ -14,20 +14,9 @@ import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../.
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
+import { fetchUniquePromoList } from '../../../redux/common/thunks';
 
-import { getUniquePromoList, getPointsRewardList, postClaimedPointsReward } from './api-request';
-
-export const fetchUniquePromoList = createAsyncThunk(
-  'rewards/business/memberDetail/fetchPromoList',
-  async (_, { getState }) => {
-    const state = getState();
-    const consumerId = getConsumerId(state);
-    const business = getMerchantBusiness(state);
-    const result = await getUniquePromoList({ consumerId, business });
-
-    return result;
-  }
-);
+import { getPointsRewardList, postClaimedPointsReward } from './api-request';
 
 export const fetchPointsRewardList = createAsyncThunk(
   'rewards/business/memberDetail/fetchPointsRewardList',
