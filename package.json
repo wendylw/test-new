@@ -116,7 +116,7 @@
     "analyze:bundle-stats": "webpack-bundle-analyzer build/bundle-stats.json",
     "start": "TAILWIND_MODE=watch craco start",
     "start:https": "./scripts/ssl-certs/check-dev-ssl-cert.sh && HTTPS=true SSL_CRT_FILE=.cert/cert.pem SSL_KEY_FILE=.cert/key.pem yarn start",
-    "start:mock-server": "TAILWIND_MODE=watch PROXY=http://localhost:3004 run-p \"mock-server\" \"start\"",
+    "start:mock-server": "TAILWIND_MODE=watch PROXY=http://127.0.0.1:3004 run-p \"mock-server\" \"start\"",
     "start:serve-prod-build": "node ./scripts/serve-prod-build.js",
     "build-sw": "node ./src/sw-build.js",
     "clean-cra-sw": "rm -f build/precache-manifest.*.js && rm -f build/service-worker.js",
