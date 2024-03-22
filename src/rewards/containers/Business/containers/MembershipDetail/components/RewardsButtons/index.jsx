@@ -29,7 +29,7 @@ const RewardsButtons = () => {
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,
       search,
     });
-  }, [history]);
+  }, [history, search]);
 
   if (!isMerchantMembershipPointsEnabled) {
     return null;
