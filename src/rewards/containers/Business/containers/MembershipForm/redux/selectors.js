@@ -21,6 +21,8 @@ import {
   getHasUserJoinedMerchantMembership,
 } from '../../../../../redux/modules/customer/selectors';
 
+export const getStoreId = () => getQueryString('storeId');
+
 export const getIsLoadCustomerRequestStatusRejected = createSelector(
   getLoadCustomerRequestStatus,
   loadCustomerRequestStatus => loadCustomerRequestStatus === API_REQUEST_STATUS.REJECTED

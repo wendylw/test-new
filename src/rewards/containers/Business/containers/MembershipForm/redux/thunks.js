@@ -24,7 +24,7 @@ import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thun
 import { joinMembership } from '../../../../../../redux/modules/membership/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
-import { getShouldShowProfileForm } from './selectors';
+import { getShouldShowProfileForm, getStoreId } from './selectors';
 
 export const showWebProfileForm = createAsyncThunk(
   'rewards/business/membershipForm/showWebProfileForm',
@@ -51,8 +51,9 @@ export const joinBusinessMembership = createAsyncThunk(
     const business = getBusiness(state);
     const source = getSource(state);
     const consumerId = getConsumerId(state);
+    const storeId = getStoreId(state);
 
-    await dispatch(joinMembership({ business, source, consumerId }));
+    await dispatch(joinMembership({ business, source, consumerId, storeId }));
     await dispatch(fetchCustomerInfo(business));
   }
 );
