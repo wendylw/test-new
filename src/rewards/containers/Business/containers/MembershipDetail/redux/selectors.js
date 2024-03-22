@@ -331,8 +331,9 @@ export const getMemberCardMembershipProgressTierList = createSelector(
         tier.active = true;
       } else if (level === customerMembershipNextLevel) {
         const unlockSpentNumber = customerTierTotalSpent - currentCustomerLevelSpendingThreshold;
+        const unlockSpentThreshold = spendingThreshold - currentCustomerLevelSpendingThreshold;
         const progressPercentageNumber = Number.parseFloat(
-          ((unlockSpentNumber < 0 ? 0 : unlockSpentNumber) / spendingThreshold) * 100
+          ((unlockSpentNumber < 0 ? 0 : unlockSpentNumber) / unlockSpentThreshold) * 100
         ).toFixed(6);
 
         tier.progress = `${progressPercentageNumber}%`;
