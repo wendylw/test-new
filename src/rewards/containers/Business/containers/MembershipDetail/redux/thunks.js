@@ -1,29 +1,43 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, goBack as historyGoBack } from 'connected-react-router';
-import { getUniquePromoList } from './api-request';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import { getClient } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
+import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
 import {
   initUserInfo,
   loginUserByBeepApp,
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
+import { getIsLogin, getConsumerId, getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import { fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
+import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
-import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
-import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
+import { fetchUniquePromoList } from '../../../redux/common/thunks';
 
-export const fetchUniquePromoList = createAsyncThunk(
-  'rewards/business/memberDetail/fetchPromoList',
+import { getPointsRewardList, postClaimedPointsReward } from './api-request';
+
+export const fetchPointsRewardList = createAsyncThunk(
+  'rewards/business/memberDetail/fetchPointsRewardList',
   async (_, { getState }) => {
     const state = getState();
     const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
-    const result = await getUniquePromoList({ consumerId, business });
+    const result = await getPointsRewardList({ consumerId, business });
+
+    return result;
+  }
+);
+
+export const claimPointsReward = createAsyncThunk(
+  'rewards/business/memberDetail/claimPointsReward',
+  async ({ id, type }, { getState }) => {
+    const state = getState();
+    const consumerId = getConsumerId(state);
+    const business = getMerchantBusiness(state);
+    const result = await postClaimedPointsReward({ consumerId, business, id, type });
 
     return result;
   }
@@ -65,6 +79,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     dispatch(fetchMembershipsInfo(business));
     dispatch(fetchCustomerInfo(business));
     dispatch(fetchUniquePromoList());
+    dispatch(fetchPointsRewardList());
   }
 });
 
@@ -79,5 +94,63 @@ export const backButtonClicked = createAsyncThunk(
     }
 
     dispatch(historyGoBack());
+  }
+);
+
+export const showWebProfileForm = createAsyncThunk('rewards/business/memberDetail/showWebProfileForm', async () => {});
+
+export const hideWebProfileForm = createAsyncThunk('rewards/business/memberDetail/hideWebProfileForm', async () => {});
+
+export const showProfileForm = createAsyncThunk(
+  'rewards/business/memberDetail/showProfileForm',
+  async (_, { dispatch, getState }) => {
+    const isWebview = getIsWebview(getState());
+
+    if (isWebview) {
+      await showCompleteProfilePageAsync();
+      return;
+    }
+
+    await dispatch(showWebProfileForm());
+  }
+);
+
+export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
+  'rewards/business/memberDetail/claimPointsRewardAndRefreshRewardsList',
+  async ({ id, type }, { dispatch }) => {
+    await dispatch(claimPointsReward(id, type));
+    dispatch(fetchPointsRewardList());
+  }
+);
+
+export const pointsClaimRewardButtonClicked = createAsyncThunk(
+  'rewards/business/memberDetail/pointsClaimRewardButtonClicked',
+  async ({ id, type }, { dispatch, getState }) => {
+    const state = getState();
+    const isUserProfileIncomplete = getIsUserProfileIncomplete(state);
+
+    if (isUserProfileIncomplete) {
+      dispatch(showProfileForm());
+
+      return;
+    }
+
+    dispatch(claimPointsRewardAndRefreshRewardsList({ id, type }));
+  }
+);
+
+export const skipProfileButtonClicked = createAsyncThunk(
+  'rewards/business/memberDetail/skipProfileButtonClicked',
+  async ({ id, type }, { dispatch }) => {
+    dispatch(hideWebProfileForm());
+    dispatch(claimPointsRewardAndRefreshRewardsList({ id, type }));
+  }
+);
+
+export const saveProfileButtonClicked = createAsyncThunk(
+  'rewards/business/memberDetail/saveProfileButtonClicked',
+  async ({ id, type }, { dispatch }) => {
+    dispatch(hideWebProfileForm());
+    dispatch(claimPointsRewardAndRefreshRewardsList({ id, type }));
   }
 );
