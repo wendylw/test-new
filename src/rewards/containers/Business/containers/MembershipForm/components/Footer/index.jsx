@@ -20,7 +20,7 @@ const Footer = () => {
 
   return (
     <PageFooter className="tw-shadow-xl">
-      <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-8 sm:tw-p-8px">
+      <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-py-8 sm:tw-py-8px tw-px-16 sm:tw-px-16px">
         <p className="tw-text-left tw-w-full tw-py-8 sm:tw-py-8px tw-text-sm">
           <Trans i18nKey="TermsAndConditionsDescription">
             By tapping on Join Now, you agree to the &nbsp;

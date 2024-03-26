@@ -86,5 +86,6 @@
   "EarnedPointsPromptRedeemOnlineTitle": "Redeem online",
   "EarnedPointsPromptRedeemOnlineDescription": "Use points to redeem exclusive rewards at your Membership page.",
   "EarnedPointsPromptRedeemInStoreTitle": "Redeem in-store",
-  "EarnedPointsPromptRedeemInStoreDescription": "Visit the store and ask the staff to redeem your reward, then share your phone number."
+  "EarnedPointsPromptRedeemInStoreDescription": "Visit the store and ask the staff to redeem your reward, then share your phone number.",
+  "MembershipBenefits": "Membership Benefits"
 }
