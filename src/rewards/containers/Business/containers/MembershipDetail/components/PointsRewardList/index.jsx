@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../../../common/utils/ui';
@@ -32,6 +32,7 @@ const PointsRewardList = () => {
   const isProfileModalShow = useSelector(getIsProfileModalShow);
   const isClaimPointsRewardSuccessfulAlertShow = useSelector(getIsClaimPointsRewardSuccessfulAlertShow);
   const claimPointsRewardErrorI18nKeys = useSelector(getClaimPointsRewardErrorI18nKeys);
+  const [selectedReward, setSelectedReward] = useState(null);
   const handlePointsClaimRewardButtonClick = (id, type, costOfPoints) => {
     confirm('', {
       className: styles.PointsRewardConfirm,
@@ -123,6 +124,7 @@ const PointsRewardList = () => {
                     contentClassName={styles.PointsRewardConstButtonContent}
                     disabled={isUnavailable}
                     onClick={() => {
+                      setSelectedReward(pointsReward);
                       handlePointsClaimRewardButtonClick(id, type, costOfPoints);
                     }}
                   >
@@ -140,8 +142,14 @@ const PointsRewardList = () => {
       {!isWebview && (
         <Profile
           show={isProfileModalShow}
-          onSave={handleClickSaveProfileButton}
-          onSkip={handleClickSkipProfileButton}
+          onSave={() => {
+            handleClickSaveProfileButton(selectedReward.id, selectedReward.type);
+            setSelectedReward(null);
+          }}
+          onSkip={() => {
+            handleClickSkipProfileButton(selectedReward.id, selectedReward.type);
+            setSelectedReward(null);
+          }}
         />
       )}
     </>
