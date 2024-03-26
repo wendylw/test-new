@@ -7,7 +7,7 @@ import {
   loginUserByBeepApp,
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import { getConsumerId, getIsLogin } from '../../../../../../redux/modules/user/selectors';
 import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
@@ -42,8 +42,10 @@ export const mounted = createAsyncThunk(
     }
 
     if (isLogin) {
+      const consumerId = getConsumerId(getState());
+
       dispatch(fetchMerchantInfo(business));
-      dispatch(fetchUniquePromoList());
+      dispatch(fetchUniquePromoList(consumerId));
     }
   }
 );

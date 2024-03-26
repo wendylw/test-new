@@ -75,10 +75,12 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   }
 
   if (isLogin) {
+    const consumerId = getConsumerId(getState());
+
     dispatch(fetchMerchantInfo(business));
     dispatch(fetchMembershipsInfo(business));
     dispatch(fetchCustomerInfo(business));
-    dispatch(fetchUniquePromoList());
+    dispatch(fetchUniquePromoList(consumerId));
     dispatch(fetchPointsRewardList());
   }
 });
