@@ -26,12 +26,11 @@ import logger from '../../../utils/monitoring/logger';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getCoreBusinessInfo } from './api-request';
 import { REGISTRATION_SOURCE, PATH_NAME_MAPPING } from '../../../common/utils/constants';
-import { isJSON, isWebview } from '../../../common/utils';
+import { isJSON } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
 
@@ -74,15 +73,8 @@ export const initialState = {
     },
     showLoginModal: false,
   },
-  customerInfo: {},
   error: null, // network error
   business: config.business,
-  onlineStoreInfo: {
-    id: '',
-    logo: null,
-    isFetching: false,
-    loadOnlineStoreInfoStatus: null,
-  },
   coreBusiness: {
     enableCashback: true,
     loadCoreBusinessStatus: null,
@@ -378,17 +370,6 @@ export const actions = {
     }
   },
 
-  fetchOnlineStoreInfo: () => ({
-    [FETCH_GRAPHQL]: {
-      types: [
-        types.FETCH_ONLINE_STORE_INFO_REQUEST,
-        types.FETCH_ONLINE_STORE_INFO_SUCCESS,
-        types.FETCH_ONLINE_STORE_INFO_FAILURE,
-      ],
-      endpoint: Url.apiGql('OnlineStoreInfo'),
-    },
-  }),
-
   fetchCashbackBusiness: () => ({
     [API_REQUEST]: {
       types: [
@@ -405,10 +386,8 @@ export const actions = {
 };
 
 const user = (state = initialState.user, action) => {
-  const { type, response, responseGql, prompt, error, payload } = action || {};
+  const { type, response, prompt, error, payload } = action || {};
   const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken } = response || {};
-  const { data } = responseGql || {};
-  const { business, onlineStoreInfo } = data || {};
   const otpType = _get(payload, 'otpType', null);
 
   switch (type) {
@@ -520,18 +499,6 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     }
-    // fetch online store info success
-    // fetch core business success
-    case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
-      if (!state.phone && business && business.country) {
-        return { ...state, country: business.country };
-      }
-
-      if (!state.phone && onlineStoreInfo && onlineStoreInfo.country) {
-        return { ...state, country: onlineStoreInfo.country };
-      }
-
-      return state;
     case types.UPDATE_USER:
       return { ...state, ...action.user };
     case types.SET_LOGIN_PROMPT:
@@ -601,28 +568,6 @@ const business = (state = initialState.business, action) => {
   }
 };
 
-const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
-  const { type, responseGql } = action;
-  const { data } = responseGql || {};
-  const { onlineStoreInfo: info } = data || {};
-
-  switch (type) {
-    case types.FETCH_ONLINE_STORE_INFO_REQUEST:
-      return { ...state, isFetching: true, loadOnlineStoreInfoStatus: API_REQUEST_STATUS.PENDING };
-    case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
-      return {
-        ...state,
-        isFetching: false,
-        id: info.id || '',
-        loadOnlineStoreInfoStatus: API_REQUEST_STATUS.FULFILLED,
-      };
-    case types.FETCH_ONLINE_STORE_INFO_FAILURE:
-      return { ...state, isFetching: false, loadOnlineStoreInfoStatus: API_REQUEST_STATUS.REJECTED };
-    default:
-      return state;
-  }
-};
-
 const coreBusiness = (state = initialState.coreBusiness, action) => {
   const { payload, type } = action || {};
   const enableCashback = payload || {};
@@ -645,14 +590,11 @@ export default combineReducers({
   user,
   error,
   business,
-  onlineStoreInfo,
   coreBusiness,
   requestInfo,
 });
 
 // selectors
-export const getIsWeb = () => !isWebview() && !isAlipayMiniProgram();
-export const getIsWebview = () => isWebview();
 export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
 export const getLoginAlipayMiniProgramRequest = state => state.app.user.loginAlipayMiniProgramRequest;
@@ -660,46 +602,11 @@ export const getUserProfile = state => state.app.user.profile;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
 export const getError = state => state.app.error;
-export const getOnlineStoreInfo = state => state.entities.onlineStores[state.app.onlineStoreInfo.id];
 export const getCoreBusiness = state => state.app.coreBusiness;
 export const getRequestInfo = state => state.app.requestInfo;
 
-export const getOnlineStoreInfoFavicon = createSelector(getOnlineStoreInfo, info => _get(info, 'favicon', null));
-
-export const getOnlineStoreInfoLogo = createSelector(getOnlineStoreInfo, info => _get(info, 'logo', null));
-
-export const getLoadOnlineStoreInfoStatus = state => _get(state.app.onlineStoreInfo, 'loadOnlineStoreInfoStatus', null);
-
-export const getIsOnlineStoreInfoLoaded = createSelector(
-  getLoadOnlineStoreInfoStatus,
-  loadOnlineStoreInfoStatus => loadOnlineStoreInfoStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadOnlineStoreInfoFailed = createSelector(
-  getLoadOnlineStoreInfoStatus,
-  loadOnlineStoreInfoStatus => loadOnlineStoreInfoStatus === API_REQUEST_STATUS.REJECTED
-);
-
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'timezoneOffset', 480)
-);
-
-export const getLoadCoreBusinessStatus = createSelector(getCoreBusiness, coreBusinessInfo =>
-  _get(coreBusinessInfo, 'loadCoreBusinessStatus', null)
-);
-
-export const getIsCoreBusinessLoaded = createSelector(
-  getLoadCoreBusinessStatus,
-  loadCoreBusinessStatus => loadCoreBusinessStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadCoreBusinessFailed = createSelector(
-  getLoadCoreBusinessStatus,
-  loadCoreBusinessStatus => loadCoreBusinessStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, coreBusinessInfo =>
-  _get(coreBusinessInfo, 'enableCashback', false)
 );
 
 // TODO: Will remove from reducer, prompt should in component
@@ -707,18 +614,6 @@ export const getIsClaimCashbackPage = () => {
   const { pathname } = window.location;
 
   return pathname.includes(PATH_NAME_MAPPING.CASHBACK_CLAIM);
-};
-
-export const getIsSeamlessLoyaltyPage = () => {
-  const { pathname } = window.location;
-
-  return pathname.includes(PATH_NAME_MAPPING.STORE_REDEMPTION);
-};
-
-export const getIsHomePage = () => {
-  const { pathname } = window.location;
-
-  return pathname === PATH_NAME_MAPPING.CASHBACK_BASE || pathname === `${PATH_NAME_MAPPING.CASHBACK_HOME}/`;
 };
 
 export const getLoginBannerPrompt = createSelector(getUser, userInfo => _get(userInfo, 'prompt', null));
@@ -840,9 +735,4 @@ export const getShouldShowLoader = createSelector(
   getIsOtpRequestStatusPending,
   getIsLoginRequestStatusPending,
   (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
-);
-
-export const getLoginAlipayMiniProgramRequestError = createSelector(
-  getLoginAlipayMiniProgramRequest,
-  loginAlipayMiniProgramRequest => loginAlipayMiniProgramRequest?.error || null
 );

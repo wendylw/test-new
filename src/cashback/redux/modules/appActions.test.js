@@ -69,17 +69,6 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       });
     });
 
-    describe('fetchOnlineStoreInfo', () => {
-      it(':Success', () => {
-        successMockFetch();
-        const expectedActions = [
-          { type: types.FETCH_ONLINE_STORE_INFO_REQUEST },
-          { type: types.FETCH_ONLINE_STORE_INFO_SUCCESS, responseGql: commonSuccessData },
-        ];
-        return expectedActionsCheck(actions.fetchOnlineStoreInfo(), expectedActions);
-      });
-    });
-
     describe('fetchCashbackBusiness', () => {
       it(':Success', () => {
         successMockFetch();
