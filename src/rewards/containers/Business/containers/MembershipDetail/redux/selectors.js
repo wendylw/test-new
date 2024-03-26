@@ -20,6 +20,8 @@ import {
   MEMBERSHIP_LEVEL_I18N_PARAM_KEYS,
   MEMBERSHIP_LEVEL_I18N_KEYS,
   MEMBERSHIP_LEVEL_STATUS,
+  CLAIMED_POINTS_REWARD_ERROR_CODES,
+  CLAIMED_POINTS_REWARD_ERROR_I18N_KEYS,
 } from '../utils/constants';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
 import { getOrderReceiptClaimedCashbackStatus, getOrderReceiptClaimedCashback } from '../../../redux/common/selectors';
@@ -481,3 +483,20 @@ export const getIsClaimPointsRewardSuccessfulAlertShow = createSelector(
   getIsClaimPointsRewardFulfilled,
   isClaimPointsRewardFulfilled => isClaimPointsRewardFulfilled
 );
+
+export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRewardError, claimPointsRewardError => {
+  if (!claimPointsRewardError) {
+    return null;
+  }
+
+  const { code } = claimPointsRewardError;
+
+  if (CLAIMED_POINTS_REWARD_ERROR_CODES[code]) {
+    return CLAIMED_POINTS_REWARD_ERROR_I18N_KEYS[CLAIMED_POINTS_REWARD_ERROR_CODES[code]];
+  }
+
+  return {
+    titleI18nKey: 'SomethingWentWrongTitle',
+    descriptionI18nKey: 'SomethingWentWrongDescription',
+  };
+});

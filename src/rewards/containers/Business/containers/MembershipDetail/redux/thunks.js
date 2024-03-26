@@ -124,9 +124,13 @@ export const showProfileForm = createAsyncThunk(
 
 export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
   'rewards/business/memberDetail/claimPointsRewardAndRefreshRewardsList',
-  async ({ id, type }, { dispatch }) => {
-    await dispatch(claimPointsReward(id, type));
+  async ({ id, type }, { dispatch, getState }) => {
+    const state = getState();
+    const business = getMerchantBusiness(state);
+
+    await dispatch(claimPointsReward({ id, type }));
     dispatch(fetchPointsRewardList());
+    dispatch(fetchCustomerInfo(business));
   }
 );
 

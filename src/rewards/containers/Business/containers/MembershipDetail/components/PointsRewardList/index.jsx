@@ -11,6 +11,7 @@ import {
   getIsClaimPointsRewardLoaderShow,
   getIsProfileModalShow,
   getIsClaimPointsRewardSuccessfulAlertShow,
+  getClaimPointsRewardErrorI18nKeys,
 } from '../../redux/selectors';
 import { pointsClaimRewardButtonClicked, skipProfileButtonClicked, saveProfileButtonClicked } from '../../redux/thunks';
 import { alert, confirm } from '../../../../../../../common/utils/feedback';
@@ -30,6 +31,7 @@ const PointsRewardList = () => {
   const isClaimPointsRewardLoaderShow = useSelector(getIsClaimPointsRewardLoaderShow);
   const isProfileModalShow = useSelector(getIsProfileModalShow);
   const isClaimPointsRewardSuccessfulAlertShow = useSelector(getIsClaimPointsRewardSuccessfulAlertShow);
+  const claimPointsRewardErrorI18nKeys = useSelector(getClaimPointsRewardErrorI18nKeys);
   const handlePointsClaimRewardButtonClick = (id, type, costOfPoints) => {
     confirm('', {
       className: styles.PointsRewardConfirm,
@@ -68,11 +70,20 @@ const PointsRewardList = () => {
           </div>
           <h4 className={styles.PointsRewardClaimedAlertTitle}>{t('PointsRewardClaimedTitle')}</h4>
           <p className={styles.PointsRewardClaimedAlertDescription}>{t('PointsRewardClaimedDescription')}</p>
-        </div>,
-        { id: 'PointsRewardClaimedSuccessfulAlert' }
+        </div>
       );
     }
   }, [t, isClaimPointsRewardSuccessfulAlertShow]);
+
+  useEffect(() => {
+    if (claimPointsRewardErrorI18nKeys) {
+      const { titleI18nKey, descriptionI18nKey } = claimPointsRewardErrorI18nKeys || {};
+
+      alert(t(descriptionI18nKey), {
+        title: t(titleI18nKey),
+      });
+    }
+  }, [claimPointsRewardErrorI18nKeys, t]);
 
   if (!isPointsRewardListShown) {
     return null;

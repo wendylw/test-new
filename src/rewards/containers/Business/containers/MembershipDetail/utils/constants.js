@@ -3,6 +3,27 @@ import RewardsEarnedCashbackIcon from '../../../../../../images/rewards-earned-c
 import RewardsWarningIcon from '../../../../../../images/rewards-warning.svg';
 import { CLAIMED_CASHBACK_STATUS } from '../../../utils/constants';
 
+export const CLAIMED_POINTS_REWARD_ERROR_CODES = {
+  395279: 'promotionIsNotRedeemable',
+  395280: 'insufficientPoints',
+  395281: 'insufficientPoints',
+};
+
+export const CLAIMED_POINTS_REWARD_ERROR_I18N_KEYS = {
+  [CLAIMED_POINTS_REWARD_ERROR_CODES['395279']]: {
+    titleI18nKey: 'PromotionIsNotRedeemableTitle',
+    descriptionI18nKey: 'PromotionIsNotRedeemableDescription',
+  },
+  [CLAIMED_POINTS_REWARD_ERROR_CODES['395280']]: {
+    titleI18nKey: 'InsufficientPointsTitle',
+    descriptionI18nKey: 'InsufficientPointsDescription',
+  },
+  [CLAIMED_POINTS_REWARD_ERROR_CODES['395281']]: {
+    titleI18nKey: 'InsufficientPointsTitle',
+    descriptionI18nKey: 'InsufficientPointsDescription',
+  },
+};
+
 export const MEMBER_TYPE_I18N_PARAM_KEYS = {
   CASHBACK_VALUE: 'cashbackValue',
 };

@@ -87,5 +87,9 @@
   "EarnedPointsPromptRedeemOnlineDescription": "Use points to redeem exclusive rewards at your Membership page.",
   "EarnedPointsPromptRedeemInStoreTitle": "Redeem in-store",
   "EarnedPointsPromptRedeemInStoreDescription": "Visit the store and ask the staff to redeem your reward, then share your phone number.",
+  "PromotionIsNotRedeemableTitle": "Oops, the redemption was not successful",
+  "PromotionIsNotRedeemableDescription": "The promotion is not redeemable. Please other reward try again, or ask the staff for help",
+  "InsufficientPointsTitle": "Oops, Your balance is insufficient",
+  "InsufficientPointsDescription": "Please other reward try again",
   "MembershipBenefits": "Membership Benefits"
 }
