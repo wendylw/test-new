@@ -14,7 +14,7 @@ export const confirmToShareConsumerInfo = createAsyncThunk(
 );
 
 export const fetchUniquePromoList = createAsyncThunk(
-  'rewards/business/memberDetail/fetchPromoList',
+  'rewards/business/common/fetchPromoList',
   async (consumerId, { getState }) => {
     const state = getState();
     const business = getMerchantBusiness(state);
