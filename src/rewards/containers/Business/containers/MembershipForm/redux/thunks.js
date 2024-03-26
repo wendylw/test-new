@@ -21,7 +21,7 @@ import {
 } from '../../../../../../redux/modules/user/thunks';
 import { getMerchantBusiness, getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
-import { joinMembership } from '../../../../../../redux/modules/membership/thunks';
+import { joinMembership, fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
 import { getShouldShowProfileForm } from './selectors';
@@ -145,6 +145,7 @@ export const mounted = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     const business = getBusiness(getState());
 
+    dispatch(fetchMembershipsInfo(business));
     await dispatch(fetchMerchantInfo(business));
 
     const country = getMerchantCountry(getState());

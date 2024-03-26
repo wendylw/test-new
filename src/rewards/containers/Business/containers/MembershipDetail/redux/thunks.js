@@ -1,9 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, goBack as historyGoBack } from 'connected-react-router';
-import { getUniquePromoList } from './api-request';
+import Growthbook from '../../../../../../utils/growthbook';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import { getClient } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
+import { getUniquePromoList } from './api-request';
 import {
   initUserInfo,
   loginUserByBeepApp,
@@ -35,6 +36,10 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   const isWebview = getIsWebview(state);
   const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
   const search = getLocationSearch(state);
+
+  Growthbook.patchAttributes({
+    business,
+  });
 
   CleverTap.pushEvent('Membership Details Page - View Page', {
     'account name': business,

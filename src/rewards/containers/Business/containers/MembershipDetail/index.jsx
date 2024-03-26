@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../common/utils/ui';
+import { getIsMerchantEnabledCashback } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWeb } from '../../../../redux/modules/common/selectors';
 import { mounted, backButtonClicked } from './redux/thunks';
 import { getShouldShowBackButton } from './redux/selectors';
@@ -10,6 +11,7 @@ import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MemberCard from './components/MemberCard';
 import CashbackBlock from '../../components/CashbackBlock';
+import MembershipTiersInfoTabs from '../../components/MembershipTiersInfoTabs';
 import UniquePromoList from './components/UniquePromoList';
 import MembershipDetailFooter from './components/MembershipDetailFooter';
 import MemberPrompt from './components/MemberPrompt';
@@ -19,6 +21,7 @@ const MembershipDetail = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
   const isWeb = useSelector(getIsWeb);
+  const isMerchantEnabledCashback = useSelector(getIsMerchantEnabledCashback);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
 
@@ -35,11 +38,15 @@ const MembershipDetail = () => {
         onBackArrowClick={handleClickHeaderBackButton}
       />
       <MemberCard />
-      <section className={styles.MembershipDetailCashbackSection}>
-        <h2 className={styles.MembershipDetailCashbackSectionTitle}>{t('Cashback')}</h2>
-        <CashbackBlock />
-      </section>
+      {isMerchantEnabledCashback ? (
+        <section className={styles.MembershipDetailCashbackSection}>
+          <h2 className={styles.MembershipDetailCashbackSectionTitle}>{t('Cashback')}</h2>
+          <CashbackBlock />
+        </section>
+      ) : null}
+
       <UniquePromoList />
+      <MembershipTiersInfoTabs />
       <MembershipDetailFooter />
       <MemberPrompt />
     </Frame>
