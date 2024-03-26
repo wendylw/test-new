@@ -8,12 +8,11 @@ export const getPointsRewardList = async ({ consumerId, business: merchantName }
     },
   });
 
-export const postClaimedPointsReward = async ({ consumerId, business: merchantName, id, type }) =>
+export const postClaimedPointsReward = async ({ consumerId, business: merchantName, id }) =>
   post(
     `/api/v3/points/rewards`,
     {
       id,
-      type,
       merchantName,
     },
     {

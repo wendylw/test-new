@@ -34,11 +34,11 @@ export const fetchPointsRewardList = createAsyncThunk(
 
 export const claimPointsReward = createAsyncThunk(
   'rewards/business/memberDetail/claimPointsReward',
-  async ({ id, type }, { getState }) => {
+  async (id, { getState }) => {
     const state = getState();
     const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
-    const result = await postClaimedPointsReward({ consumerId, business, id, type });
+    const result = await postClaimedPointsReward({ consumerId, business, id });
 
     return result;
   }
@@ -124,11 +124,11 @@ export const showProfileForm = createAsyncThunk(
 
 export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
   'rewards/business/memberDetail/claimPointsRewardAndRefreshRewardsList',
-  async ({ id, type }, { dispatch, getState }) => {
+  async (id, { dispatch, getState }) => {
     const state = getState();
     const business = getMerchantBusiness(state);
 
-    await dispatch(claimPointsReward({ id, type }));
+    await dispatch(claimPointsReward(id));
     dispatch(fetchPointsRewardList());
     dispatch(fetchCustomerInfo(business));
   }
@@ -136,7 +136,7 @@ export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
 
 export const pointsClaimRewardButtonClicked = createAsyncThunk(
   'rewards/business/memberDetail/pointsClaimRewardButtonClicked',
-  async ({ id, type }, { dispatch, getState }) => {
+  async (id, { dispatch, getState }) => {
     const state = getState();
     const isUserProfileIncomplete = getIsUserProfileIncomplete(state);
 
@@ -146,22 +146,22 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
       return;
     }
 
-    dispatch(claimPointsRewardAndRefreshRewardsList({ id, type }));
+    dispatch(claimPointsRewardAndRefreshRewardsList(id));
   }
 );
 
 export const skipProfileButtonClicked = createAsyncThunk(
   'rewards/business/memberDetail/skipProfileButtonClicked',
-  async ({ id, type }, { dispatch }) => {
+  async (id, { dispatch }) => {
     dispatch(hideWebProfileForm());
-    dispatch(claimPointsRewardAndRefreshRewardsList({ id, type }));
+    dispatch(claimPointsRewardAndRefreshRewardsList(id));
   }
 );
 
 export const saveProfileButtonClicked = createAsyncThunk(
   'rewards/business/memberDetail/saveProfileButtonClicked',
-  async ({ id, type }, { dispatch }) => {
+  async (id, { dispatch }) => {
     dispatch(hideWebProfileForm());
-    dispatch(claimPointsRewardAndRefreshRewardsList({ id, type }));
+    dispatch(claimPointsRewardAndRefreshRewardsList(id));
   }
 );

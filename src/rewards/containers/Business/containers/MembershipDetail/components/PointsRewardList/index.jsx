@@ -32,7 +32,7 @@ const PointsRewardList = () => {
   const isProfileModalShow = useSelector(getIsProfileModalShow);
   const isClaimPointsRewardSuccessfulAlertShow = useSelector(getIsClaimPointsRewardSuccessfulAlertShow);
   const claimPointsRewardErrorI18nKeys = useSelector(getClaimPointsRewardErrorI18nKeys);
-  const [selectedReward, setSelectedReward] = useState(null);
+  const [selectedRewardId, setSelectedRewardId] = useState(null);
   const handlePointsClaimRewardButtonClick = (id, type, costOfPoints) => {
     confirm('', {
       className: styles.PointsRewardConfirm,
@@ -45,7 +45,7 @@ const PointsRewardList = () => {
             type,
             costOfPoints,
           });
-          dispatch(pointsClaimRewardButtonClicked({ id, type }));
+          dispatch(pointsClaimRewardButtonClicked(id));
         } else {
           CleverTap.pushEvent('Points Reward Claimed - Click cancel', {
             type,
@@ -55,8 +55,14 @@ const PointsRewardList = () => {
       },
     });
   };
-  const handleClickSkipProfileButton = (id, type) => dispatch(skipProfileButtonClicked({ id, type }));
-  const handleClickSaveProfileButton = (id, type) => dispatch(saveProfileButtonClicked({ id, type }));
+  const handleClickSkipProfileButton = id => {
+    dispatch(skipProfileButtonClicked(id));
+    setSelectedRewardId(null);
+  };
+  const handleClickSaveProfileButton = id => {
+    dispatch(saveProfileButtonClicked(id));
+    setSelectedRewardId(null);
+  };
 
   useEffect(() => {
     if (isClaimPointsRewardSuccessfulAlertShow) {
@@ -124,7 +130,7 @@ const PointsRewardList = () => {
                     contentClassName={styles.PointsRewardConstButtonContent}
                     disabled={isUnavailable}
                     onClick={() => {
-                      setSelectedReward(pointsReward);
+                      setSelectedRewardId(id);
                       handlePointsClaimRewardButtonClick(id, type, costOfPoints);
                     }}
                   >
@@ -143,12 +149,10 @@ const PointsRewardList = () => {
         <Profile
           show={isProfileModalShow}
           onSave={() => {
-            handleClickSaveProfileButton(selectedReward.id, selectedReward.type);
-            setSelectedReward(null);
+            handleClickSaveProfileButton(selectedRewardId);
           }}
           onSkip={() => {
-            handleClickSkipProfileButton(selectedReward.id, selectedReward.type);
-            setSelectedReward(null);
+            handleClickSkipProfileButton(selectedRewardId);
           }}
         />
       )}
