@@ -1,0 +1,62 @@
+.MembershipTiersInfoTabsSection {
+  @apply tw-p-16 sm:tw-p-16px tw-mx-auto;
+
+  // width: 320px;
+}
+
+.MembershipTiersInfoTabsTitle {
+  @apply tw-text-sm tw-font-bold;
+}
+
+.MembershipTiersInfoTabsContainer {
+  @apply tw-relative tw-my-16 sm:tw-my-16px tw-border tw-border-solid tw-border-gray-400 tw-rounded;
+}
+
+.MembershipTiersInfoTabs {
+  @apply tw-flex tw-justify-between tw-border-0 tw-border-b tw-border-solid tw-border-gray-400;
+}
+
+.MembershipTiersInfoTabsActiveBlock {
+  @apply tw-absolute tw-left-0 tw-bg-orange;
+
+  top: 37px;
+  height: 2px;
+}
+
+.MembershipTiersInfoTab {
+  @apply tw-flex-1 tw-text-center tw-cursor-pointer;
+}
+
+.MembershipTiersInfoTabName {
+  @apply tw-w-full tw-p-8 sm:tw-p-8px tw-border-0 tw-bg-transparent tw-capitalize tw-leading-loose tw-cursor-pointer;
+
+  outline: none;
+  box-shadow: none;
+
+  &__active {
+    @apply tw-text-orange tw-font-bold;
+  }
+}
+
+.MembershipTiersInfoTabContent {
+  @apply tw-hidden tw-p-12 sm:tw-p-12px;
+
+  &__tab {
+    min-height: 136px;
+  }
+
+  &__active {
+    @apply tw-block;
+  }
+
+  ol,
+  ul {
+    @apply tw-list-disc;
+
+    padding-left: 20px;
+  }
+
+  li {
+    @apply tw-leading-loose;
+  }
+}
