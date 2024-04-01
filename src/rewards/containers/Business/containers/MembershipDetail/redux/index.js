@@ -4,7 +4,6 @@ import { fetchPointsRewardList, claimPointsReward, showWebProfileForm, hideWebPr
 
 const initialState = {
   isProfileModalShow: false,
-  isEarnedPointsPromptDrawerShow: false,
   loadPointsRewardListRequest: {
     data: [],
     status: null,
@@ -19,14 +18,7 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'rewards/business/membershipDetail',
   initialState,
-  reducers: {
-    earnedPointsPromptDrawerShown: state => {
-      state.isEarnedPointsPromptDrawerShow = true;
-    },
-    earnedPointsPromptDrawerHidden: state => {
-      state.isEarnedPointsPromptDrawerShow = false;
-    },
-  },
+  reducers: {},
   extraReducers: {
     [fetchPointsRewardList.pending.type]: state => {
       state.loadPointsRewardListRequest.status = API_REQUEST_STATUS.PENDING;

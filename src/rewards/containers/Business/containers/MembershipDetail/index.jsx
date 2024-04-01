@@ -16,7 +16,6 @@ import UniquePromoListSection from './components/UniquePromoListSection';
 import PointsRewardList from './components/PointsRewardList';
 import MembershipTiersInfoTabs from '../../components/MembershipTiersInfoTabs';
 import MemberPrompt from './components/MemberPrompt';
-import EarnedPointsPromptDrawer from './components/EarnedPointsPromptDrawer';
 import styles from './MembershipDetail.module.scss';
 
 const MembershipDetail = () => {
@@ -52,7 +51,6 @@ const MembershipDetail = () => {
       <UniquePromoListSection />
       <MembershipTiersInfoTabs />
       <MemberPrompt />
-      <EarnedPointsPromptDrawer />
     </Frame>
   );
 };

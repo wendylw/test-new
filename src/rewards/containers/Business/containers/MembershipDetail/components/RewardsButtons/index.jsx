@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CaretRight } from 'phosphor-react';
@@ -9,7 +9,6 @@ import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { getIsMerchantMembershipPointsEnabled } from '../../../../../../../redux/modules/merchant/selectors';
 import { getCustomerAvailablePointsBalance } from '../../../../../../redux/modules/customer/selectors';
 import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
-import { actions as membershipDetailActions } from '../../redux';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './RewardsButtons.module.scss';
@@ -17,13 +16,15 @@ import styles from './RewardsButtons.module.scss';
 const RewardsButtons = () => {
   const { t } = useTranslation(['Rewards']);
   const history = useHistory();
-  const dispatch = useDispatch();
   const isMerchantMembershipPointsEnabled = useSelector(getIsMerchantMembershipPointsEnabled);
   const availablePointsBalance = useSelector(getCustomerAvailablePointsBalance);
   const search = useSelector(getLocationSearch);
   const handlePointsDetailButtonClick = useCallback(() => {
-    dispatch(membershipDetailActions.earnedPointsPromptDrawerShown());
-  }, [dispatch]);
+    history.push({
+      pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.POINTS_HISTORY}`,
+      search,
+    });
+  }, [history, search]);
   const handleMyRewardsButtonClick = useCallback(() => {
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,

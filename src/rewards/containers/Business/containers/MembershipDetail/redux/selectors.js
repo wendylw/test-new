@@ -47,9 +47,6 @@ import {
 
 export const getIsProfileModalShow = state => state.business.membershipDetail.isProfileModalShow;
 
-export const getIsEarnedPointsPromptDrawerShow = state =>
-  state.business.membershipDetail.isEarnedPointsPromptDrawerShow;
-
 export const getLoadPointsRewardListData = state =>
   state.business.membershipDetail.loadPointsRewardListRequest.data || [];
 

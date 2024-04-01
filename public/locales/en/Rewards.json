@@ -91,5 +91,12 @@
   "PromotionIsNotRedeemableDescription": "Something went wrong. Please try again later, or try a different reward",
   "InsufficientPointsTitle": "Insufficient points",
   "InsufficientPointsDescription": "You don’t have enough points to get this reward. Please refresh the page & try again",
+  "PointsDetail": "Points Detail",
+  "PointsBalanceTitle": "Points Balance",
+  "CustomerPoints": "{{customerAvailablePointsBalance}} Points",
+  "PointsExpiringTimePrompt": "Points expire 6 months after they were earned",
+  "HowToUsePoints": "How to use points",
+  "PointsHistory": "Points History",
+  "ChangePointsText": "{{changedPoints}} points",
   "MembershipBenefits": "Membership Benefits"
 }
