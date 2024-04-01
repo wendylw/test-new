@@ -4,6 +4,9 @@ import { fetchPointsHistoryList } from './thunks';
 
 const initialState = {
   isEarnedPointsPromptDrawerShow: false,
+  page: 0,
+  limit: 20,
+  end: false,
   loadPointsHistoryListRequest: {
     data: [],
     status: null,
@@ -28,7 +31,8 @@ export const { reducer, actions } = createSlice({
       state.loadPointsHistoryListRequest.error = null;
     },
     [fetchPointsHistoryList.fulfilled.type]: (state, { payload }) => {
-      state.loadPointsHistoryListRequest.data = payload;
+      state.loadPointsHistoryListRequest.data = state.loadPointsHistoryListRequest.data.concat(payload || []);
+      state.end = payload?.length < state.limit;
       state.loadPointsHistoryListRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.loadPointsHistoryListRequest.error = null;
     },

@@ -15,6 +15,7 @@ import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/se
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
+import { getPointsHistoryListPage, getPointsHistoryListLimit, getIsPointsHistoryListEnded } from './selectors';
 
 import { getPointsHistoryList } from './api-request';
 
@@ -24,9 +25,24 @@ export const fetchPointsHistoryList = createAsyncThunk(
     const state = getState();
     const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
-    const result = await getPointsHistoryList({ consumerId, business });
+    const page = getPointsHistoryListPage(state);
+    const limit = getPointsHistoryListLimit(state);
+    const result = await getPointsHistoryList({ consumerId, business, page, limit });
 
     return result.data;
+  }
+);
+
+export const queryFetchPointsHistoryList = createAsyncThunk(
+  'rewards/business/pointsHistory/queryFetchPointsHistoryList',
+  async (_, { dispatch, getState }) => {
+    await dispatch(fetchPointsHistoryList());
+
+    const end = getIsPointsHistoryListEnded(getState());
+
+    if (!end) {
+      dispatch(queryFetchPointsHistoryList());
+    }
   }
 );
 
@@ -68,7 +84,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   if (isLogin) {
     dispatch(fetchMerchantInfo(business));
     dispatch(fetchCustomerInfo(business));
-    dispatch(fetchPointsHistoryList());
+    dispatch(queryFetchPointsHistoryList());
   }
 });
 

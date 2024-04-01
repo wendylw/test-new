@@ -5,6 +5,12 @@ import { getMerchantCountry } from '../../../../../../redux/modules/merchant/sel
 
 export const getIsEarnedPointsPromptDrawerShow = state => state.business.pointsHistory.isEarnedPointsPromptDrawerShow;
 
+export const getPointsHistoryListPage = state => state.business.pointsHistory.page;
+
+export const getPointsHistoryListLimit = state => state.business.pointsHistory.limit;
+
+export const getIsPointsHistoryListEnded = state => state.business.pointsHistory.end;
+
 export const getLoadPointsHistoryListData = state =>
   state.business.pointsHistory.loadPointsHistoryListRequest.data || [];
 
