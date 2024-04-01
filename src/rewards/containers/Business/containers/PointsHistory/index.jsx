@@ -58,23 +58,23 @@ const PointsHistory = () => {
           <ObjectFitImage noCompression src={RewardsHistoryBanner} alt="Beep Rewards Banner" />
         </div>
       </section>
-      <section>
+      <section className={styles.PointsHistorySection}>
         <h2 className={styles.PointsHistoryListTitle}>{t('PointsHistory')}</h2>
-        <ul>
+        <ul className={styles.PointsHistoryList}>
           {pointsHistoryList.map(pointsHistoryItem => {
-            const { id, nameI18nKey, logDateTime, changeAmount, isReduce } = pointsHistoryItem || {};
+            const { id, nameI18nKey, logDateTime, changePoints, isReduce } = pointsHistoryItem || {};
 
             return (
-              <li key={id}>
+              <li key={id} className={styles.PointsHistoryItem}>
                 <div>
                   <h4 className={styles.PointsHistoryItemTitle}>{t(nameI18nKey)}</h4>
                   <time className={styles.PointsHistoryItemDateTime}>{logDateTime}</time>
                 </div>
                 <data
                   className={isReduce ? styles.PointsHistoryItemReduceAmount : styles.PointsHistoryItemIncreaseAmount}
-                  value={changeAmount}
+                  value={changePoints}
                 >
-                  {t('ChangePointsText', { changedPoints: changeAmount })}
+                  {t('ChangePointsText', { changedPoints: changePoints })}
                 </data>
               </li>
             );
