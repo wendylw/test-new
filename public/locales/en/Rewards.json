@@ -100,5 +100,13 @@
   "ChangePointsText": "{{changeValue}} points",
   "NoPointsCollectedTitle": "No points collected yet",
   "NoPointsCollectedDescription": "Start collecting points upon purchase you make",
+  "CashbackDetails": "Cashback Details",
+  "CashbackBalance": "Cashback Balance",
+  "HowToUseCashback": "How to use cashback",
+  "EarnedCashbackPromptDrawerTitle": "How to use cashback",
+  "EarnedCashbackPromptRedeemOnlineTitle": "Redeem online",
+  "EarnedCashbackPromptRedeemOnlineDescription": "Go to the Store checkout page and apply your cashback balance for an instant discounts.",
+  "EarnedCashbackPromptRedeemInStoreTitle": "Redeem in-store",
+  "EarnedCashbackPromptRedeemInStoreDescription": "Inform the cashier that you'd like to redeem your cashback and share your phone number.",
   "MembershipBenefits": "Membership Benefits"
 }

@@ -19,7 +19,7 @@ const HistoryList = ({ isEmpty, emptyTitle, emptyDescription, historyList }) => 
   ) : (
     <ul className={styles.HistoryList}>
       {historyList.map(historyItem => {
-        const { id, nameI18nKey, logDateTime, changeValue, changeValueI18nKey, isReduce } = historyItem || {};
+        const { id, nameI18nKey, logDateTime, changeValue, changeValueText, isReduce } = historyItem || {};
 
         return (
           <li key={id} className={styles.HistoryItem}>
@@ -31,7 +31,7 @@ const HistoryList = ({ isEmpty, emptyTitle, emptyDescription, historyList }) => 
               className={isReduce ? styles.HistoryItemReduceAmount : styles.HistoryItemIncreaseAmount}
               value={changeValue}
             >
-              {changeValue ? t(changeValueI18nKey, { changeValue }) : t(changeValueI18nKey)}
+              {changeValueText}
             </data>
           </li>
         );
@@ -52,7 +52,7 @@ HistoryList.propTypes = {
       nameI18nKey: PropTypes.string,
       logDateTime: PropTypes.string,
       changeValue: PropTypes.string || PropTypes.number,
-      changeTextI18nKey: PropTypes.string,
+      changeValueText: PropTypes.string,
       isReduce: PropTypes.bool,
     })
   ),
@@ -68,7 +68,7 @@ HistoryList.defaultProps = {
       nameI18nKey: '',
       logDateTime: '',
       changeValue: '',
-      changeTextI18nKey: '',
+      changeValueText: '',
       isReduce: false,
     })
   ),
