@@ -31,7 +31,13 @@ export const { reducer, actions } = createSlice({
       state.loadCashbackHistoryListRequest.error = null;
     },
     [fetchCashbackHistoryList.fulfilled.type]: (state, { payload }) => {
-      state.end = !!(payload instanceof Array && payload.length < state.limit);
+      const isEnded = !!(payload instanceof Array && payload.length < state.limit);
+
+      if (!isEnded) {
+        state.page += 1;
+      }
+
+      state.end = isEnded;
       state.loadCashbackHistoryListRequest.data = state.loadCashbackHistoryListRequest.data.concat(payload || []);
       state.loadCashbackHistoryListRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.loadCashbackHistoryListRequest.error = null;

@@ -31,7 +31,13 @@ export const { reducer, actions } = createSlice({
       state.loadPointsHistoryListRequest.error = null;
     },
     [fetchPointsHistoryList.fulfilled.type]: (state, { payload }) => {
-      state.end = !!(payload instanceof Array && payload.length < state.limit);
+      const isEnded = !!(payload instanceof Array && payload.length < state.limit);
+
+      if (!isEnded) {
+        state.page += 1;
+      }
+
+      state.end = isEnded;
       state.loadPointsHistoryListRequest.data = state.loadPointsHistoryListRequest.data.concat(payload || []);
       state.loadPointsHistoryListRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.loadPointsHistoryListRequest.error = null;
