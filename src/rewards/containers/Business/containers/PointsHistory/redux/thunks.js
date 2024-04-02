@@ -57,7 +57,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     business,
   });
 
-  CleverTap.pushEvent('Membership Details Page - View Page', {
+  CleverTap.pushEvent('Points History Page - View Page', {
     'account name': business,
     source: getClient(),
   });
