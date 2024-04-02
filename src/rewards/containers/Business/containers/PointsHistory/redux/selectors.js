@@ -42,3 +42,10 @@ export const getPointsHistoryList = createSelector(
       };
     })
 );
+
+export const getIsPointsHistoryListEmpty = createSelector(
+  getLoadPointsHistoryListData,
+  getIsPointsHistoryListEnded,
+  (loadPointsHistoryListData, isPointsHistoryListEnded) =>
+    loadPointsHistoryListData.length === 0 && isPointsHistoryListEnded
+);

@@ -98,5 +98,7 @@
   "HowToUsePoints": "How to use points",
   "PointsHistory": "Points History",
   "ChangePointsText": "{{changedPoints}} points",
+  "NoPointsCollectedTitle": "No points collected yet",
+  "NoPointsCollectedDescription": "Start collecting points upon purchase you make",
   "MembershipBenefits": "Membership Benefits"
 }

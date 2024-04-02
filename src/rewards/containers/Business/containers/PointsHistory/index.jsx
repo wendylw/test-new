@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
-import RewardsHistoryBanner from '../../../../../images/rewards-history-banner.svg';
+import RewardsHistoryBannerImage from '../../../../../images/rewards-history-banner.svg';
+import RewardsEmptyListImage from '../../../../../images/rewards-empty-list-icon.svg';
 import { getCustomerAvailablePointsBalance } from '../../../../redux/modules/customer/selectors';
-import { getPointsHistoryList } from './redux/selectors';
+import { getPointsHistoryList, getIsPointsHistoryListEmpty } from './redux/selectors';
 import { actions as PointsHistoryActions } from './redux';
 import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
@@ -20,6 +21,7 @@ const PointsHistory = () => {
   const dispatch = useDispatch();
   const customerAvailablePointsBalance = useSelector(getCustomerAvailablePointsBalance);
   const pointsHistoryList = useSelector(getPointsHistoryList);
+  const isPointsHistoryListEmpty = useSelector(getIsPointsHistoryListEmpty);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickHowToUseButton = useCallback(() => dispatch(PointsHistoryActions.earnedPointsPromptDrawerShown()), [
     dispatch,
@@ -55,31 +57,41 @@ const PointsHistory = () => {
           </div>
         </div>
         <div className={styles.PointsHistoryBannerImage}>
-          <ObjectFitImage noCompression src={RewardsHistoryBanner} alt="Beep Rewards Banner" />
+          <ObjectFitImage noCompression src={RewardsHistoryBannerImage} alt="Beep Rewards Banner" />
         </div>
       </section>
       <section className={styles.PointsHistorySection}>
         <h2 className={styles.PointsHistoryListTitle}>{t('PointsHistory')}</h2>
-        <ul className={styles.PointsHistoryList}>
-          {pointsHistoryList.map(pointsHistoryItem => {
-            const { id, nameI18nKey, logDateTime, changePoints, isReduce } = pointsHistoryItem || {};
+        {isPointsHistoryListEmpty ? (
+          <section className={styles.PointsHistoryListEmptySection}>
+            <div className={styles.PointsHistoryListEmptyImage}>
+              <ObjectFitImage noCompression src={RewardsEmptyListImage} />
+            </div>
+            <h4 className={styles.PointsHistoryListEmptyTitle}>{t('NoPointsCollectedTitle')}</h4>
+            <p className={styles.PointsHistoryListEmptyDescription}>{t('NoPointsCollectedDescription')}</p>
+          </section>
+        ) : (
+          <ul className={styles.PointsHistoryList}>
+            {pointsHistoryList.map(pointsHistoryItem => {
+              const { id, nameI18nKey, logDateTime, changePoints, isReduce } = pointsHistoryItem || {};
 
-            return (
-              <li key={id} className={styles.PointsHistoryItem}>
-                <div>
-                  <h4 className={styles.PointsHistoryItemTitle}>{t(nameI18nKey)}</h4>
-                  <time className={styles.PointsHistoryItemDateTime}>{logDateTime}</time>
-                </div>
-                <data
-                  className={isReduce ? styles.PointsHistoryItemReduceAmount : styles.PointsHistoryItemIncreaseAmount}
-                  value={changePoints}
-                >
-                  {t('ChangePointsText', { changedPoints: changePoints })}
-                </data>
-              </li>
-            );
-          })}
-        </ul>
+              return (
+                <li key={id} className={styles.PointsHistoryItem}>
+                  <div>
+                    <h4 className={styles.PointsHistoryItemTitle}>{t(nameI18nKey)}</h4>
+                    <time className={styles.PointsHistoryItemDateTime}>{logDateTime}</time>
+                  </div>
+                  <data
+                    className={isReduce ? styles.PointsHistoryItemReduceAmount : styles.PointsHistoryItemIncreaseAmount}
+                    value={changePoints}
+                  >
+                    {t('ChangePointsText', { changedPoints: changePoints })}
+                  </data>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </section>
       <EarnedPointsPromptDrawer />
     </Frame>
