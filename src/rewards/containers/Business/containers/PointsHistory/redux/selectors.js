@@ -37,7 +37,8 @@ export const getPointsHistoryList = createSelector(
         id,
         nameI18nKey: POINTS_HISTORY_LOG_I18N_KEYS[type],
         logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
-        changePoints: `${isReduce ? '-' : '+'}${Math.abs(changeAmount)}`,
+        changeValueI18nKey: 'ChangePointsText',
+        changeValue: `${isReduce ? '-' : '+'}${Math.abs(changeAmount)}`,
         isReduce,
       };
     })
