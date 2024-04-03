@@ -1,6 +1,7 @@
+import i18next from 'i18next';
 import { createSelector } from 'reselect';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
-import { POINTS_HISTORY_LOG_I18N_KEYS, DATE_OPTIONS } from '../utils/constatns';
+import { POINTS_HISTORY_LOG_I18N_KEYS, DATE_OPTIONS } from '../utils/constants';
 import { getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
 
 export const getIsEarnedPointsPromptDrawerShow = state => state.business.pointsHistory.isEarnedPointsPromptDrawerShow;
@@ -28,12 +29,14 @@ export const getPointsHistoryList = createSelector(
     getLoadPointsHistoryList.map(pointsHistoryItem => {
       const { id, type, eventTime, changeAmount } = pointsHistoryItem || {};
       const isReduce = changeAmount < 0;
+      const changeValue = `${isReduce ? '-' : '+'}${Math.abs(changeAmount)}`;
 
       return {
         id,
         nameI18nKey: POINTS_HISTORY_LOG_I18N_KEYS[type],
         logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
-        changePoints: `${isReduce ? '-' : '+'}${Math.abs(changeAmount)}`,
+        changeValueText: i18next.t('Rewards:ChangePointsText', { changeValue }),
+        changeValue,
         isReduce,
       };
     })

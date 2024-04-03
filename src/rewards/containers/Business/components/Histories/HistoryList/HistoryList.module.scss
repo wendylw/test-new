@@ -1,0 +1,49 @@
+.HistoryListTitle {
+  @apply tw-px-16 sm:tw-px-16px tw-text-xl tw-leading-normal tw-font-bold;
+}
+
+.HistoryList {
+  @apply tw-py-8 sm:tw-py-8px tw-space-y-8 sm:tw-space-y-8px;
+}
+
+.HistoryItem {
+  @apply tw-flex tw-justify-between tw-px-16 sm:tw-px-16px tw-py-4 sm:tw-py-4px;
+}
+
+.HistoryItemTitle {
+  @apply tw-leading-loose;
+}
+
+.HistoryItemDateTime {
+  @apply tw-text-sm tw-text-gray-700 tw-leading-loose;
+}
+
+.HistoryItemReduceAmount,
+.HistoryItemIncreaseAmount {
+  @apply tw-leading-loose;
+}
+
+.HistoryItemReduceAmount {
+  @apply tw-text-red;
+}
+
+.HistoryItemIncreaseAmount {
+  @apply tw-text-green;
+}
+
+.HistoryListEmptySection {
+  @apply tw-flex tw-flex-col tw-items-center tw-p-16 sm:tw-p-16px tw-my-16 sm:tw-my-16px tw-space-y-8 sm:tw-space-y-8px;
+}
+
+.HistoryListEmptyImage {
+  width: 21.333333%;
+  max-width: 80px;
+}
+
+.HistoryListEmptyTitle {
+  @apply tw-text-gray-700 tw-font-bold tw-leading-loose;
+}
+
+.HistoryListEmptyDescription {
+  @apply tw-text-gray-700 tw-leading-loose;
+}
