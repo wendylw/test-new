@@ -6,7 +6,7 @@ const initialState = {
   isEarnedPointsPromptDrawerShow: false,
   page: 0,
   limit: 20,
-  end: false,
+  end: true,
   loadPointsHistoryListRequest: {
     data: [],
     status: null,
@@ -31,7 +31,6 @@ export const { reducer, actions } = createSlice({
       state.loadPointsHistoryListRequest.error = null;
     },
     [fetchPointsHistoryList.fulfilled.type]: (state, { payload }) => {
-      state.end = !!(payload instanceof Array && payload.length < state.limit);
       state.loadPointsHistoryListRequest.data = state.loadPointsHistoryListRequest.data.concat(payload || []);
       state.loadPointsHistoryListRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.loadPointsHistoryListRequest.error = null;
