@@ -4,14 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { X } from 'phosphor-react';
 import Drawer from '../../../../../../../common/components/Drawer';
 import DrawerHeader from '../../../../../../../common/components/Drawer/DrawerHeader';
-import { getIsEarnedCashbackPromptDrawerShow } from '../../redux/selectors';
+import { getIsUseCashbackPromptDrawerShow } from '../../redux/selectors';
 import { actions as membershipDetailActions } from '../../redux';
 import styles from './EarnedCashbackPromptDrawer.module.scss';
 
 const EarnedCashbackPromptDrawer = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
-  const isEarnedCashbackPromptDrawerShow = useSelector(getIsEarnedCashbackPromptDrawerShow);
+  const isUseCashbackPromptDrawerShow = useSelector(getIsUseCashbackPromptDrawerShow);
   const closeDrawer = useCallback(() => {
     dispatch(membershipDetailActions.earnedCashbackPromptDrawerHidden());
   }, [dispatch]);
@@ -33,7 +33,7 @@ const EarnedCashbackPromptDrawer = () => {
           <span className={styles.EarnedCashbackPromptDrawerTitle}>{t('EarnedCashbackPromptDrawerTitle')}</span>
         </DrawerHeader>
       }
-      show={isEarnedCashbackPromptDrawerShow}
+      show={isUseCashbackPromptDrawerShow}
       onClose={closeDrawer}
     >
       <ol className={styles.EarnedCashbackPromptList}>

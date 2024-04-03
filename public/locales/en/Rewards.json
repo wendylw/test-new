@@ -103,10 +103,18 @@
   "CashbackDetails": "Cashback Details",
   "CashbackBalance": "Cashback Balance",
   "HowToUseCashback": "How to use cashback",
+  "CashbackHistory": "Cashback History",
   "EarnedCashbackPromptDrawerTitle": "How to use cashback",
   "EarnedCashbackPromptRedeemOnlineTitle": "Redeem online",
   "EarnedCashbackPromptRedeemOnlineDescription": "Go to the Store checkout page and apply your cashback balance for an instant discounts.",
   "EarnedCashbackPromptRedeemInStoreTitle": "Redeem in-store",
   "EarnedCashbackPromptRedeemInStoreDescription": "Inform the cashier that you'd like to redeem your cashback and share your phone number.",
+  "StoreCreditDetails": "Store Credit Details",
+  "StoreCreditsBalance": "Store Credits Balance",
+  "HowToUseStoreCredits": "How to use store credits",
+  "StoreCreditsHistory": "Store Credits History",
+  "EarnedStoreCreditsPromptDrawerTitle": "How to use store credits",
+  "EarnedStoreCreditsPromptRedeemInStoreTitle": "Redeem in-store",
+  "EarnedStoreCreditsPromptRedeemInStoreDescription": "Inform the cashier during payment that you'd like to redeem your store credit balance.",
   "MembershipBenefits": "Membership Benefits"
 }

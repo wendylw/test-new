@@ -5,43 +5,53 @@ import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import { getClient } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
 import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
+import { REWARD_TYPE } from '../utils/constants';
 import {
   initUserInfo,
   loginUserByBeepApp,
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
 import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
-import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
+import {
+  getMerchantBusiness,
+  getIsMerchantEnabledStoreCredits,
+} from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
-import { getCashbackHistoryListPage, getCashbackHistoryListLimit, getIsCashbackHistoryListEnded } from './selectors';
+import {
+  getCashbackCreditsHistoryListPage,
+  getCashbackCreditsHistoryListLimit,
+  getIsCashbackCreditsHistoryListEnded,
+} from './selectors';
 
-import { getCashbackHistoryList } from './api-request';
+import { getCashbackCreditsHistoryList } from './api-request';
 
-export const fetchCashbackHistoryList = createAsyncThunk(
-  'rewards/business/pointsHistory/fetchCashbackHistoryList',
+export const fetchCashbackCreditsHistoryList = createAsyncThunk(
+  'rewards/business/pointsHistory/fetchCashbackCreditsHistoryList',
   async (_, { getState }) => {
     const state = getState();
     const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
-    const page = getCashbackHistoryListPage(state);
-    const limit = getCashbackHistoryListLimit(state);
-    const result = await getCashbackHistoryList({ consumerId, business, page, limit });
+    const isMerchantEnabledStoreCredits = getIsMerchantEnabledStoreCredits(state);
+    const rewardType = isMerchantEnabledStoreCredits ? REWARD_TYPE.STORE_CREDITS : REWARD_TYPE.CASHBACK;
+    const page = getCashbackCreditsHistoryListPage(state);
+    const limit = getCashbackCreditsHistoryListLimit(state);
+    const result = await getCashbackCreditsHistoryList({ consumerId, business, rewardType, page, limit });
 
     return result.data;
   }
 );
 
-export const queryFetchCashbackHistoryList = createAsyncThunk(
-  'rewards/business/pointsHistory/queryFetchCashbackHistoryList',
+export const queryFetchCashbackCreditsHistoryList = createAsyncThunk(
+  'rewards/business/pointsHistory/queryFetchCashbackCreditsHistoryList',
   async (_, { dispatch, getState }) => {
-    await dispatch(fetchCashbackHistoryList());
+    await dispatch(fetchCashbackCreditsHistoryList());
 
-    const end = getIsCashbackHistoryListEnded(getState());
+    const end = getIsCashbackCreditsHistoryListEnded(getState());
 
     if (!end) {
-      dispatch(queryFetchCashbackHistoryList());
+      dispatch(queryFetchCashbackCreditsHistoryList());
     }
   }
 );
@@ -82,9 +92,9 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   }
 
   if (isLogin) {
-    dispatch(fetchMerchantInfo(business));
+    await dispatch(fetchMerchantInfo(business));
     dispatch(fetchCustomerInfo(business));
-    dispatch(queryFetchCashbackHistoryList());
+    dispatch(queryFetchCashbackCreditsHistoryList());
   }
 });
 
