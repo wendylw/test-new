@@ -15,7 +15,7 @@ import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/se
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
-import { getPointsHistoryListPage, getPointsHistoryListLimit, getIsPointsHistoryListEnded } from './selectors';
+import { getPointsHistoryListPage, getPointsHistoryListLimit } from './selectors';
 
 import { getPointsHistoryList } from './api-request';
 
@@ -33,19 +33,6 @@ export const fetchPointsHistoryList = createAsyncThunk(
   }
 );
 
-export const queryFetchPointsHistoryList = createAsyncThunk(
-  'rewards/business/pointsHistory/queryFetchPointsHistoryList',
-  async (_, { dispatch, getState }) => {
-    await dispatch(fetchPointsHistoryList());
-
-    const end = getIsPointsHistoryListEnded(getState());
-
-    if (!end) {
-      dispatch(queryFetchPointsHistoryList());
-    }
-  }
-);
-
 export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted', async (_, { dispatch, getState }) => {
   const state = getState();
   const business = getMerchantBusiness(state);
@@ -57,7 +44,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     business,
   });
 
-  CleverTap.pushEvent('Membership Details Page - View Page', {
+  CleverTap.pushEvent('Points History Page - View Page', {
     'account name': business,
     source: getClient(),
   });
@@ -84,7 +71,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   if (isLogin) {
     dispatch(fetchMerchantInfo(business));
     dispatch(fetchCustomerInfo(business));
-    dispatch(queryFetchPointsHistoryList());
+    dispatch(fetchPointsHistoryList());
   }
 });
 

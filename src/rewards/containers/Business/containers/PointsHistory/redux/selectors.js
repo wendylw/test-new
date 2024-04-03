@@ -27,10 +27,6 @@ export const getPointsHistoryList = createSelector(
   getMerchantCountry,
   (getLoadPointsHistoryList, merchantCountry) =>
     getLoadPointsHistoryList.map(pointsHistoryItem => {
-      if (!pointsHistoryItem) {
-        return null;
-      }
-
       const { id, type, eventTime, changeAmount } = pointsHistoryItem || {};
       const isReduce = changeAmount < 0;
       const changeValue = `${isReduce ? '-' : '+'}${Math.abs(changeAmount)}`;
