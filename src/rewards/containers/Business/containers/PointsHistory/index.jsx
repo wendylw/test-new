@@ -8,8 +8,7 @@ import { actions as PointsHistoryActions } from './redux';
 import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
-import HistoryBanner from '../../components/Histories/HistoryBanner';
-import HistoryList from '../../components/Histories/HistoryList';
+import { HistoryBanner, HistoryList } from '../../components/Histories';
 import EarnedPointsPromptDrawer from './components/EarnedPointsPromptDrawer';
 import styles from './PointsHistory.module.scss';
 
