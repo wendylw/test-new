@@ -4,9 +4,6 @@ import { fetchPointsHistoryList } from './thunks';
 
 const initialState = {
   isEarnedPointsPromptDrawerShow: false,
-  page: 0,
-  limit: 20,
-  end: true,
   loadPointsHistoryListRequest: {
     data: [],
     status: null,
