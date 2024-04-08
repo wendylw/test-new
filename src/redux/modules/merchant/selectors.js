@@ -37,6 +37,10 @@ export const getIsMerchantEnabledCashback = createSelector(getMerchantData, merc
   _get(merchantData, 'enableCashback', false)
 );
 
+export const getIsMerchantEnabledLoyalty = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'enableLoyalty', false)
+);
+
 export const getIsMerchantMembershipEnabled = createSelector(getMerchantData, merchantData =>
   _get(merchantData, 'membershipEnabled', false)
 );
@@ -72,4 +76,10 @@ export const getIsMerchantMembershipPointsEnabled = createSelector(
   getIsMerchantPointsEnabled,
   getIsMerchantMembershipEnabled,
   (isPointsEnabled, isMembershipEnabled) => isPointsEnabled && isMembershipEnabled
+);
+
+export const getIsMerchantEnabledStoreCredits = createSelector(
+  getIsMerchantEnabledCashback,
+  getIsMerchantEnabledLoyalty,
+  (isMerchantEnabledCashback, isMerchantEnabledLoyalty) => !isMerchantEnabledCashback && isMerchantEnabledLoyalty
 );
