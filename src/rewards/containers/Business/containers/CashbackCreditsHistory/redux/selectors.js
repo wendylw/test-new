@@ -3,28 +3,20 @@ import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
 import { CASHBACK_HISTORY_LOG_I18N_KEYS, DATE_OPTIONS } from '../utils/constants';
 import { getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
 
-export const getIsUseCashbackPromptDrawerShow = state => state.business.cashbackHistory.isUseCashbackPromptDrawerShow;
+export const getIsUseCashbackPromptDrawerShow = state =>
+  state.business.cashbackCreditsHistory.isUseCashbackPromptDrawerShow;
 
 export const getIsUseStoreCreditsPromptDrawerShow = state =>
-  state.business.cashbackHistory.isUseStoreCreditsPromptDrawerShow;
+  state.business.cashbackCreditsHistory.isUseStoreCreditsPromptDrawerShow;
 
 export const getLoadCashbackCreditsHistoryListData = state =>
-  state.business.cashbackHistory.loadCashbackCreditsHistoryListRequest.data || [];
+  state.business.cashbackCreditsHistory.loadCashbackCreditsHistoryListRequest.data || [];
 
 export const getLoadCashbackCreditsHistoryListStatus = state =>
-  state.business.cashbackHistory.loadCashbackCreditsHistoryListRequest.status;
+  state.business.cashbackCreditsHistory.loadCashbackCreditsHistoryListRequest.status;
 
 export const getLoadCashbackCreditsHistoryListError = state =>
-  state.business.cashbackHistory.loadCashbackCreditsHistoryListRequest.error;
-
-export const getCashbackCreditsHistoryListPage = state =>
-  state.business.cashbackHistory.loadCashbackCreditsHistoryListRequest.page;
-
-export const getCashbackCreditsHistoryListLimit = state =>
-  state.business.cashbackHistory.loadCashbackCreditsHistoryListRequest.limit;
-
-export const getIsCashbackCreditsHistoryListEnded = state =>
-  state.business.cashbackHistory.loadCashbackCreditsHistoryListRequest.end;
+  state.business.cashbackCreditsHistory.loadCashbackCreditsHistoryListRequest.error;
 
 /**
  * Derived selectors
@@ -49,9 +41,15 @@ export const getCashbackCreditsHistoryList = createSelector(
     })
 );
 
+export const getIsLoadCashbackCreditsHistoryListCompleted = createSelector(
+  getLoadCashbackCreditsHistoryListStatus,
+  loadCashbackCreditsHistoryListStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadCashbackCreditsHistoryListStatus)
+);
+
 export const getIsCashbackCreditsHistoryListEmpty = createSelector(
   getLoadCashbackCreditsHistoryListData,
-  getIsCashbackHistoryListEnded,
-  (loadCashbackCreditsHistoryList, isCashbackHistoryListEnded) =>
-    loadCashbackCreditsHistoryList.length === 0 && isCashbackHistoryListEnded
+  getIsLoadCashbackCreditsHistoryListCompleted,
+  (loadCashbackCreditsHistoryList, isLoadCashbackCreditsHistoryListCompleted) =>
+    loadCashbackCreditsHistoryList.length === 0 && isLoadCashbackCreditsHistoryListCompleted
 );

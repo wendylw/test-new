@@ -9,14 +9,11 @@ const initialState = {
     data: [],
     status: null,
     error: null,
-    page: 0,
-    limit: 20,
-    end: false,
   },
 };
 
 export const { reducer, actions } = createSlice({
-  name: 'rewards/business/pointsHistory',
+  name: 'rewards/business/cashbackCreditsHistory',
   initialState,
   reducers: {
     useCashbackPromptDrawerShown: state => {
@@ -38,12 +35,6 @@ export const { reducer, actions } = createSlice({
       state.loadCashbackCreditsHistoryListRequest.error = null;
     },
     [fetchCashbackCreditsHistoryList.fulfilled.type]: (state, { payload }) => {
-      const isEnded = !!(payload instanceof Array && payload.length < state.limit);
-
-      if (!isEnded) {
-        state.page += 1;
-      }
-
       state.loadCashbackCreditsCreditsHistoryListRequest.end = isEnded;
       state.loadCashbackCreditsHistoryListRequest.data = state.loadCashbackCreditsHistoryListRequest.data.concat(
         payload || []

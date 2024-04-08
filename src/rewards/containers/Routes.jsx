@@ -20,8 +20,10 @@ const PointsHistory = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_PH" */ './Business/containers/PointsHistory'))
 );
 
-const CashbackHistory = lazy(() =>
-  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_PH" */ './Business/containers/CashbackHistory'))
+const CashbackCreditsHistoryProxy = lazy(() =>
+  Utils.attemptLoad(() =>
+    import(/* webpackChunkName: "RWD_PH" */ './Business/containers/CashbackCreditsHistory/CashbackCreditsHistoryProxy')
+  )
 );
 
 const UniquePromoListPage = lazy(() =>
@@ -68,7 +70,12 @@ const Routes = () => (
         <Route
           exact
           path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.CASHBACK_HISTORY}`}
-          component={CashbackHistory}
+          component={CashbackCreditsHistoryProxy}
+        />
+        <Route
+          exact
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.STORE_CREDITS_HISTORY}`}
+          component={CashbackCreditsHistoryProxy}
         />
         <Route
           exact

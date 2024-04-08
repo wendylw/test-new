@@ -5,7 +5,7 @@ import { getIsMerchantEnabledStoreCredits } from './redux/selectors';
 import CashbackHistory from '.';
 import StoreCreditsHistory from './StoreCreditsHistory';
 
-const CashbackHistoryProxy = () => {
+const CashbackCreditsHistoryProxy = () => {
   const isMerchantEnabledStoreCredits = useSelector(getIsMerchantEnabledStoreCredits);
 
   useMount(() => {
@@ -15,6 +15,6 @@ const CashbackHistoryProxy = () => {
   return isMerchantEnabledStoreCredits ? <StoreCreditsHistory /> : <CashbackHistory />;
 };
 
-CashbackHistoryProxy.displayName = 'CashbackHistoryProxy';
+CashbackCreditsHistoryProxy.displayName = 'CashbackCreditsHistoryProxy';
 
-export default CashbackHistoryProxy;
+export default CashbackCreditsHistoryProxy;

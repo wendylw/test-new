@@ -19,11 +19,6 @@ import {
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
-import {
-  getCashbackCreditsHistoryListPage,
-  getCashbackCreditsHistoryListLimit,
-  getIsCashbackCreditsHistoryListEnded,
-} from './selectors';
 
 import { getCashbackCreditsHistoryList } from './api-request';
 
@@ -35,24 +30,9 @@ export const fetchCashbackCreditsHistoryList = createAsyncThunk(
     const business = getMerchantBusiness(state);
     const isMerchantEnabledStoreCredits = getIsMerchantEnabledStoreCredits(state);
     const rewardType = isMerchantEnabledStoreCredits ? REWARD_TYPE.STORE_CREDITS : REWARD_TYPE.CASHBACK;
-    const page = getCashbackCreditsHistoryListPage(state);
-    const limit = getCashbackCreditsHistoryListLimit(state);
-    const result = await getCashbackCreditsHistoryList({ consumerId, business, rewardType, page, limit });
+    const result = await getCashbackCreditsHistoryList({ consumerId, business, rewardType });
 
     return result.data;
-  }
-);
-
-export const queryFetchCashbackCreditsHistoryList = createAsyncThunk(
-  'rewards/business/pointsHistory/queryFetchCashbackCreditsHistoryList',
-  async (_, { dispatch, getState }) => {
-    await dispatch(fetchCashbackCreditsHistoryList());
-
-    const end = getIsCashbackCreditsHistoryListEnded(getState());
-
-    if (!end) {
-      dispatch(queryFetchCashbackCreditsHistoryList());
-    }
   }
 );
 
@@ -67,7 +47,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     business,
   });
 
-  CleverTap.pushEvent('Membership Details Page - View Page', {
+  CleverTap.pushEvent('Cashback Credits Details Page - View Page', {
     'account name': business,
     source: getClient(),
   });
@@ -94,7 +74,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   if (isLogin) {
     await dispatch(fetchMerchantInfo(business));
     dispatch(fetchCustomerInfo(business));
-    dispatch(queryFetchCashbackCreditsHistoryList());
+    dispatch(fetchCashbackCreditsHistoryList());
   }
 });
 

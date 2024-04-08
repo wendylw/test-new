@@ -6,7 +6,7 @@ import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
 import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
 import { getDisplayCashbackExpiredDate } from '../../../../redux/modules/customer/selectors';
 import { getCustomerCashbackPrice } from '../../redux/common/selectors';
-import { getCashbackHistoryList, getIsCashbackHistoryListEmpty } from './redux/selectors';
+import { getCashbackCreditsHistoryList, getIsCashbackCreditsHistoryListEmpty } from './redux/selectors';
 import { actions as CashbackHistoryActions } from './redux';
 import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
@@ -22,8 +22,8 @@ const CashbackHistory = () => {
   const merchantCountry = useSelector(getMerchantCountry);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
-  const cashbackHistoryList = useSelector(getCashbackHistoryList);
-  const isCashbackHistoryListEmpty = useSelector(getIsCashbackHistoryListEmpty);
+  const cashbackCreditsHistoryList = useSelector(getCashbackCreditsHistoryList);
+  const isCashbackCreditsHistoryListEmpty = useSelector(getIsCashbackCreditsHistoryListEmpty);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickHowToUseButton = useCallback(() => dispatch(CashbackHistoryActions.useCashbackPromptDrawerShown()), [
     dispatch,
@@ -50,10 +50,10 @@ const CashbackHistory = () => {
       <section className={styles.CashbackHistorySection}>
         <h2 className={styles.CashbackHistoryListTitle}>{t('CashbackHistory')}</h2>
         <HistoryList
-          isEmpty={isCashbackHistoryListEmpty}
+          isEmpty={isCashbackCreditsHistoryListEmpty}
           emptyTitle={t('NoCashbackCollectedTitle')}
           emptyDescription={t('NoCashbackCollectedDescription')}
-          historyList={cashbackHistoryList}
+          historyList={cashbackCreditsHistoryList}
         />
       </section>
       <EarnedCashbackPromptDrawer />
