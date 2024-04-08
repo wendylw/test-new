@@ -21,7 +21,7 @@ const CashbackHistory = () => {
   const merchantCountry = useSelector(getMerchantCountry);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
-  const cashbackCreditsHistoryList = useSelector(getCashbackHistoryList);
+  const cashbackHistoryList = useSelector(getCashbackHistoryList);
   const isCashbackHistoryListEmpty = useSelector(getIsCashbackHistoryListEmpty);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickHowToUseButton = useCallback(() => {
@@ -48,7 +48,7 @@ const CashbackHistory = () => {
           isEmpty={isCashbackHistoryListEmpty}
           emptyTitle={t('NoCashbackCollectedTitle')}
           emptyDescription={t('NoCashbackCollectedDescription')}
-          historyList={cashbackCreditsHistoryList}
+          historyList={cashbackHistoryList}
         />
       </section>
       <EarnedCashbackPromptDrawer />

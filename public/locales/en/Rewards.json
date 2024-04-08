@@ -116,5 +116,11 @@
   "EarnedStoreCreditsPromptDrawerTitle": "How to use store credits",
   "EarnedStoreCreditsPromptRedeemInStoreTitle": "Redeem in-store",
   "EarnedStoreCreditsPromptRedeemInStoreDescription": "Inform the cashier during payment that you'd like to redeem your store credit balance.",
-  "MembershipBenefits": "Membership Benefits"
+  "MembershipBenefits": "Membership Benefits",
+  "Earned": "Earned",
+  "Returned": "Returned",
+  "Refunded": "Refunded",
+  "Spent": "Spent",
+  "Adjustment": "Adjustment",
+  "Pending": "Pending"
 }
