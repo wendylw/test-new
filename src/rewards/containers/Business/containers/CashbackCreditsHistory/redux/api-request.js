@@ -1,7 +1,7 @@
 import { get } from '../../../../../../utils/api/api-fetch';
 
 export const getCashbackHistoryList = async ({ consumerId, business: merchantName }) =>
-  get('/api/cashback/history', {
+  get('/api/v3/loyalty-change-logs', {
     queryParams: {
       consumerId,
       merchantName,
