@@ -67,12 +67,7 @@ const Routes = () => (
         />
         <Route
           exact
-          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.CASHBACK_HISTORY}`}
-          component={CashbackCreditsHistory}
-        />
-        <Route
-          exact
-          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.STORE_CREDITS_HISTORY}`}
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.CASHBACK_CREDITS_HISTORY}`}
           component={CashbackCreditsHistory}
         />
         <Route
