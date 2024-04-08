@@ -12,7 +12,12 @@ import {
 } from '../../../../../../redux/modules/user/thunks';
 import { getIsLogin, getConsumerId, getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import { fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
-import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
+import {
+  getIsWebview,
+  getIsAlipayMiniProgram,
+  getLocationSearch,
+  getIsNotLoginInWeb,
+} from '../../../../../redux/modules/common/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
@@ -71,7 +76,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   }
 
   const isLogin = getIsLogin(getState());
-  const isNotLoginInWeb = !isLogin && !isWebview && !isAlipayMiniProgram;
+  const isNotLoginInWeb = getIsNotLoginInWeb(getState());
 
   if (isNotLoginInWeb) {
     dispatch(push(`${PATH_NAME_MAPPING.REWARDS_LOGIN}${search}`, { shouldGoBack: true }));
