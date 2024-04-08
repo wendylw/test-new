@@ -1,3 +1,8 @@
+.CashbackHistoryExpiredTag,
+.CashbackHistoryRemainingExpiredDaysTag {
+  @apply tw-font-bold;
+}
+
 .CashbackHistorySection {
   @apply tw-pt-24 sm:tw-pt-24px;
 }

@@ -5,7 +5,7 @@ import { X } from 'phosphor-react';
 import Drawer from '../../../../../../../common/components/Drawer';
 import DrawerHeader from '../../../../../../../common/components/Drawer/DrawerHeader';
 import { getIsUseStoreCreditsPromptDrawerShow } from '../../redux/selectors';
-import { actions as membershipDetailActions } from '../../redux';
+import { actions as cashbackCreditsActions } from '../../redux';
 import styles from './EarnedStoreCreditsPromptDrawer.module.scss';
 
 const EarnedStoreCreditsPromptDrawer = () => {
@@ -13,7 +13,7 @@ const EarnedStoreCreditsPromptDrawer = () => {
   const dispatch = useDispatch();
   const isUseStoreCreditsPromptDrawerShow = useSelector(getIsUseStoreCreditsPromptDrawerShow);
   const closeDrawer = useCallback(() => {
-    dispatch(membershipDetailActions.earnedStoreCreditsPromptDrawerHidden());
+    dispatch(cashbackCreditsActions.useStoreCreditsPromptDrawerHidden());
   }, [dispatch]);
 
   return (

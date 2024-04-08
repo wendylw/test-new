@@ -41,7 +41,7 @@ HistoryBanner.propTypes = {
   title: PropTypes.string,
   value: PropTypes.string || PropTypes.number,
   valueText: PropTypes.string,
-  prompt: PropTypes.string,
+  prompt: PropTypes.string || PropTypes.node,
   infoButtonText: PropTypes.string,
   onClickInfoButton: PropTypes.func,
   infoButtonTestId: PropTypes.string,

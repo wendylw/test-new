@@ -3,13 +3,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
 import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
-import { getDisplayCashbackExpiredDate } from '../../../../redux/modules/customer/selectors';
-import { getCustomerCashbackPrice } from '../../redux/common/selectors';
+import { getIsCashbackExpired, getDisplayCashbackExpiredDate } from '../../../../redux/modules/customer/selectors';
+import {
+  getIsExpiringTagShown,
+  getIsTodayExpired,
+  getRemainingCashbackExpiredDays,
+  getCustomerCashbackPrice,
+} from '../../redux/common/selectors';
 import { getCashbackHistoryList, getIsCashbackHistoryListEmpty } from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
 import { backButtonClicked } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
+import Tag from '../../../../../common/components/Tag';
 import HistoryBanner from '../../components/Histories/HistoryBanner';
 import HistoryList from '../../components/Histories/HistoryList';
 import EarnedCashbackPromptDrawer from './components/EarnedCashbackPromptDrawer';
@@ -19,6 +25,10 @@ const CashbackHistory = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
   const merchantCountry = useSelector(getMerchantCountry);
+  const isCashbackExpired = useSelector(getIsCashbackExpired);
+  const isExpiringTagShown = useSelector(getIsExpiringTagShown);
+  const isTodayExpired = useSelector(getIsTodayExpired);
+  const remainingCashbackExpiredDays = useSelector(getRemainingCashbackExpiredDays);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
   const cashbackHistoryList = useSelector(getCashbackHistoryList);
@@ -35,9 +45,19 @@ const CashbackHistory = () => {
         title={t('CashbackBalance')}
         value={customerCashbackPrice}
         valueText={customerCashbackPrice}
-        prompt={t('ValidUntil', {
-          date: formatTimeToDateString(merchantCountry, displayCashbackExpiredDate),
-        })}
+        prompt={
+          <>
+            {t('ValidUntil', {
+              date: formatTimeToDateString(merchantCountry, displayCashbackExpiredDate),
+            })}
+            {isCashbackExpired && <Tag className={styles.CashbackHistoryExpiredTag}>{t('Expired')}</Tag>}
+            {isExpiringTagShown ? (
+              <Tag color="red" className={styles.CashbackHistoryRemainingExpiredDaysTag}>
+                {isTodayExpired ? t('ExpiringToday') : t('ExpiringInDays', { remainingCashbackExpiredDays })}
+              </Tag>
+            ) : null}
+          </>
+        }
         infoButtonText={t('HowToUseCashback')}
         onClickInfoButton={handleClickHowToUseButton}
         infoButtonTestId="rewards.business.cashback-history.how-to-use-button"
