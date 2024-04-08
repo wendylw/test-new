@@ -15,7 +15,6 @@ import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/se
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
-import { getPointsHistoryListPage, getPointsHistoryListLimit } from './selectors';
 
 import { getPointsHistoryList } from './api-request';
 
@@ -25,8 +24,6 @@ export const fetchPointsHistoryList = createAsyncThunk(
     const state = getState();
     const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
-    const page = getPointsHistoryListPage(state);
-    const limit = getPointsHistoryListLimit(state);
     const result = await getPointsHistoryList({ consumerId, business, page, limit });
 
     return result.data;
