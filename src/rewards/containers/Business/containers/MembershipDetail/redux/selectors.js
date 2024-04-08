@@ -5,6 +5,7 @@ import {
   PROMO_VOUCHER_STATUS,
   MEMBER_LEVELS,
   MEMBER_CARD_COLOR_PALETTES,
+  API_REQUEST_STATUS,
 } from '../../../../../../common/utils/constants';
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
@@ -19,6 +20,8 @@ import {
   MEMBERSHIP_LEVEL_I18N_PARAM_KEYS,
   MEMBERSHIP_LEVEL_I18N_KEYS,
   MEMBERSHIP_LEVEL_STATUS,
+  CLAIMED_POINTS_REWARD_ERROR_CODES,
+  CLAIMED_POINTS_REWARD_ERROR_I18N_KEYS,
 } from '../utils/constants';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
 import { getOrderReceiptClaimedCashbackStatus, getOrderReceiptClaimedCashback } from '../../../redux/common/selectors';
@@ -29,6 +32,7 @@ import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
+  getIsMerchantMembershipPointsEnabled,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getMembershipTierList, getHighestMembershipTier } from '../../../../../../redux/modules/membership/selectors';
 import {
@@ -38,14 +42,22 @@ import {
   getCustomerTierNextReviewTime,
   getIsLoadCustomerRequestCompleted,
   getCustomerTierLevelName,
+  getCustomerAvailablePointsBalance,
 } from '../../../../../redux/modules/customer/selectors';
 
-export const getLoadUniquePromoListData = state =>
-  state.business.membershipDetail.loadUniquePromoListRequest.data || [];
+export const getIsProfileModalShow = state => state.business.membershipDetail.isProfileModalShow;
 
-export const getLoadUniquePromoListStatus = state => state.business.membershipDetail.loadUniquePromoListRequest.status;
+export const getLoadPointsRewardListData = state =>
+  state.business.membershipDetail.loadPointsRewardListRequest.data || [];
 
-export const getLoadUniquePromoListError = state => state.business.membershipDetail.loadUniquePromoListRequest.error;
+export const getLoadPointsRewardListStatus = state =>
+  state.business.membershipDetail.loadPointsRewardListRequest.status;
+
+export const getLoadPointsRewardListError = state => state.business.membershipDetail.loadPointsRewardListRequest.error;
+
+export const getClaimPointsRewardStatus = state => state.business.membershipDetail.claimPointsRewardRequest.status;
+
+export const getClaimPointsRewardError = state => state.business.membershipDetail.claimPointsRewardRequest.error;
 
 /**
  * Derived selectors
@@ -83,53 +95,10 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
     !isUserFromOrdering && isOROrderingEnabled && isDeliveryEnabled
 );
 
-export const getUniquePromoList = createSelector(
-  getMerchantCurrency,
-  getMerchantLocale,
-  getMerchantCountry,
-  getLoadUniquePromoListData,
-  (merchantCurrency, merchantLocale, merchantCountry, uniquePromoList) =>
-    uniquePromoList.map(promo => {
-      if (!promo) {
-        return promo;
-      }
-
-      const { id, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
-
-      return {
-        id,
-        value:
-          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
-            ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
-        name,
-        status,
-        limitations: [
-          minSpendAmount && {
-            key: `unique-promo-${id}-limitation-0`,
-            i18nKey: 'MinConsumption',
-            params: {
-              amount: getPrice(minSpendAmount, {
-                locale: merchantLocale,
-                currency: merchantCurrency,
-                country: merchantCountry,
-              }),
-            },
-          },
-          validTo && {
-            key: `unique-promo-${id}-limitation-1`,
-            i18nKey: 'ValidUntil',
-            params: { date: formatTimeToDateString(merchantCountry, validTo) },
-          },
-        ].filter(limitation => Boolean(limitation)),
-        isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
-      };
-    })
-);
-
 export const getNewMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
   getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
   getCustomerCashback,
   getOrderReceiptClaimedCashbackStatus,
   getIsFromSeamlessLoyaltyQrScan,
@@ -138,6 +107,7 @@ export const getNewMemberPromptCategory = createSelector(
   (
     isLoadCustomerRequestCompleted,
     isMerchantEnabledCashback,
+    isMerchantMembershipPointsEnabled,
     customerCashback,
     claimedCashbackStatus,
     isFromSeamlessLoyaltyQrScan,
@@ -146,6 +116,10 @@ export const getNewMemberPromptCategory = createSelector(
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return NEW_MEMBER_TYPES.DEFAULT;
+    }
+
+    if (isFromSeamlessLoyaltyQrScan && isMerchantMembershipPointsEnabled) {
+      return NEW_MEMBER_TYPES.ENABLED_POINTS;
     }
 
     if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
@@ -189,6 +163,7 @@ export const getNewMemberTitleIn18nParams = createSelector(
 export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
   getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
   getCustomerCashback,
   getOrderReceiptClaimedCashbackStatus,
   getIsFromJoinMembershipUrlClick,
@@ -197,6 +172,7 @@ export const getReturningMemberPromptCategory = createSelector(
   (
     isLoadCustomerRequestCompleted,
     isMerchantEnabledCashback,
+    isMerchantMembershipPointsEnabled,
     customerCashback,
     claimedCashbackStatus,
     isFromJoinMembershipUrlClick,
@@ -205,6 +181,10 @@ export const getReturningMemberPromptCategory = createSelector(
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return RETURNING_MEMBER_TYPES.DEFAULT;
+    }
+
+    if (isFromSeamlessLoyaltyQrScan && isMerchantMembershipPointsEnabled) {
+      return RETURNING_MEMBER_TYPES.ENABLED_POINTS;
     }
 
     if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
@@ -441,3 +421,79 @@ export const getMemberCardMembershipProgressMessageIn18nParams = createSelector(
     return membershipProgressMessageI18nParams;
   }
 );
+
+export const getPointsRewardList = createSelector(
+  getLoadPointsRewardListData,
+  getCustomerAvailablePointsBalance,
+  getMerchantCurrency,
+  getMerchantLocale,
+  getMerchantCountry,
+  (pointsRewardList, customerAvailablePointsBalance, merchantCurrency, merchantLocale, merchantCountry) =>
+    pointsRewardList.map(reward => {
+      if (!reward) {
+        return reward;
+      }
+
+      const { id, type, discountType, discountValue, name, redeemedStatus, costOfPoints } = reward;
+      const isUnavailableStatus = [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(
+        redeemedStatus
+      );
+      const isInsufficientPoints = customerAvailablePointsBalance < costOfPoints;
+
+      return {
+        id,
+        type,
+        value:
+          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
+            ? `${discountValue}%`
+            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        name,
+        costOfPoints,
+        isUnavailable: isUnavailableStatus || isInsufficientPoints,
+      };
+    })
+);
+
+export const getIsPointsRewardListShown = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getPointsRewardList,
+  (isMerchantMembershipPointsEnabled, pointsRewardList) =>
+    isMerchantMembershipPointsEnabled && pointsRewardList.length > 0
+);
+
+export const getIsClaimPointsRewardPending = createSelector(
+  getClaimPointsRewardStatus,
+  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsClaimPointsRewardFulfilled = createSelector(
+  getClaimPointsRewardStatus,
+  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsClaimPointsRewardLoaderShow = createSelector(
+  getIsClaimPointsRewardPending,
+  isClaimPointsRewardPending => isClaimPointsRewardPending
+);
+
+export const getIsClaimPointsRewardSuccessfulAlertShow = createSelector(
+  getIsClaimPointsRewardFulfilled,
+  isClaimPointsRewardFulfilled => isClaimPointsRewardFulfilled
+);
+
+export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRewardError, claimPointsRewardError => {
+  if (!claimPointsRewardError) {
+    return null;
+  }
+
+  const { code } = claimPointsRewardError;
+
+  if (CLAIMED_POINTS_REWARD_ERROR_CODES[code]) {
+    return CLAIMED_POINTS_REWARD_ERROR_I18N_KEYS[CLAIMED_POINTS_REWARD_ERROR_CODES[code]];
+  }
+
+  return {
+    titleI18nKey: 'SomethingWentWrongTitle',
+    descriptionI18nKey: 'SomethingWentWrongDescription',
+  };
+});

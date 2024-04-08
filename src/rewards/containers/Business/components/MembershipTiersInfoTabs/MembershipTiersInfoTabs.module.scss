@@ -1,7 +1,5 @@
 .MembershipTiersInfoTabsSection {
   @apply tw-p-16 sm:tw-p-16px tw-mx-auto;
-
-  // width: 320px;
 }
 
 .MembershipTiersInfoTabsTitle {
@@ -28,7 +26,7 @@
 }
 
 .MembershipTiersInfoTabName {
-  @apply tw-w-full tw-p-8 sm:tw-p-8px tw-border-0 tw-bg-transparent tw-capitalize tw-leading-loose tw-cursor-pointer;
+  @apply tw-w-full tw-p-8 sm:tw-p-8px tw-border-0 tw-bg-transparent tw-capitalize tw-leading-loose tw-text-gray-800 tw-cursor-pointer;
 
   outline: none;
   box-shadow: none;

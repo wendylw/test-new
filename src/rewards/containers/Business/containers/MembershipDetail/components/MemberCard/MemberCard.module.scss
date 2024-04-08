@@ -64,6 +64,10 @@
 
     transition: all 0.3s ease-in-out;
   }
+
+  svg {
+    @apply tw-fill-current tw-text-gray-800;
+  }
 }
 
 .MemberCardLevelProgressPromptToolTip {

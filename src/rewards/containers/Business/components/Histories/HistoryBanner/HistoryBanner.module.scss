@@ -1,0 +1,49 @@
+.HistoryBanner {
+  @apply tw-flex tw-pl-8 sm:tw-pl-8px tw-pr-16 sm:tw-pr-16px tw-py-16 sm:tw-py-16px  tw-bg-yellow-light;
+}
+
+.HistoryBannerCustomerInfo {
+  @apply tw-flex-1;
+}
+
+.HistoryBannerTitle {
+  @apply tw-leading-loose tw-px-8 sm:tw-px-8px;
+}
+
+.HistoryBannerPoints {
+  @apply tw-text-3xl tw-font-bold tw-px-8 sm:tw-px-8px;
+}
+
+.HistoryBannerPrompts::before {
+  @apply tw-block tw-m-8 sm:tw-m-8px tw-mt-4 sm:tw-mt-4px tw-bg-gray-200;
+
+  content: "";
+  height: 4px;
+}
+
+.HistoryBannerExpiringTimePrompt {
+  @apply tw-text-sm tw-text-gray-700 tw-px-8 sm:tw-px-8px;
+}
+
+.HistoryBannerHowToUseButton {
+  @apply tw-flex tw-items-center tw-mt-12 sm:tw-mt-12px;
+}
+
+.HistoryBannerHowToUseButtonContent {
+  @apply tw-font-bold;
+}
+
+.HistoryBannerImage {
+  @apply tw-flex-shrink-0;
+
+  width: 28.571428%;
+  max-width: 98px;
+
+  > figure {
+    @apply tw-bg-transparent;
+  }
+
+  figure > div {
+    padding-top: 132.653061% !important;
+  }
+}
