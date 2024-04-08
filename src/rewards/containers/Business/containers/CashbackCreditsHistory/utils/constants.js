@@ -20,8 +20,3 @@ export const DATE_OPTIONS = {
   month: 'short',
   day: 'numeric',
 };
-
-export const REWARD_TYPE = {
-  CASHBACK: 'cashback',
-  STORE_CREDITS: 'storeCredits',
-};

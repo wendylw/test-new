@@ -1,11 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import { fetchCashbackHistoryList } from './thunks';
+import { fetchCashbackHistoryList, fetchStoreCreditsHistoryList } from './thunks';
 
 const initialState = {
   isUseCashbackPromptDrawerShow: false,
   isUseStoreCreditsPromptDrawerShow: false,
-  loadCashbackCreditsHistoryListRequest: {
+  loadCashbackHistoryListRequest: {
+    data: [],
+    status: null,
+    error: null,
+  },
+  loadStoreCreditsHistoryListRequest: {
     data: [],
     status: null,
     error: null,
@@ -30,21 +35,33 @@ export const { reducer, actions } = createSlice({
     },
   },
   extraReducers: {
-    [fetchCashbackCreditsHistoryList.pending.type]: state => {
-      state.loadCashbackCreditsHistoryListRequest.status = API_REQUEST_STATUS.PENDING;
-      state.loadCashbackCreditsHistoryListRequest.error = null;
+    [fetchCashbackHistoryList.pending.type]: state => {
+      state.loadCashbackHistoryListRequest.status = API_REQUEST_STATUS.PENDING;
+      state.loadCashbackHistoryListRequest.error = null;
     },
-    [fetchCashbackCreditsHistoryList.fulfilled.type]: (state, { payload }) => {
-      state.loadCashbackCreditsCreditsHistoryListRequest.end = isEnded;
-      state.loadCashbackCreditsHistoryListRequest.data = state.loadCashbackCreditsHistoryListRequest.data.concat(
+    [fetchCashbackHistoryList.fulfilled.type]: (state, { payload }) => {
+      state.loadCashbackHistoryListRequest.data = state.loadCashbackHistoryListRequest.data.concat(payload || []);
+      state.loadCashbackHistoryListRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.loadCashbackHistoryListRequest.error = null;
+    },
+    [fetchCashbackHistoryList.rejected.type]: (state, { error }) => {
+      state.loadCashbackHistoryListRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.loadCashbackHistoryListRequest.error = error;
+    },
+    [fetchStoreCreditsHistoryList.pending.type]: state => {
+      state.loadStoreCreditsHistoryListRequest.status = API_REQUEST_STATUS.PENDING;
+      state.loadStoreCreditsHistoryListRequest.error = null;
+    },
+    [fetchStoreCreditsHistoryList.fulfilled.type]: (state, { payload }) => {
+      state.loadStoreCreditsHistoryListRequest.data = state.loadStoreCreditsHistoryListRequest.data.concat(
         payload || []
       );
-      state.loadCashbackCreditsHistoryListRequest.status = API_REQUEST_STATUS.FULFILLED;
-      state.loadCashbackCreditsHistoryListRequest.error = null;
+      state.loadStoreCreditsHistoryListRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.loadStoreCreditsHistoryListRequest.error = null;
     },
-    [fetchCashbackCreditsHistoryList.rejected.type]: (state, { error }) => {
-      state.loadCashbackCreditsHistoryListRequest.status = API_REQUEST_STATUS.REJECTED;
-      state.loadCashbackCreditsHistoryListRequest.error = error;
+    [fetchStoreCreditsHistoryList.rejected.type]: (state, { error }) => {
+      state.loadStoreCreditsHistoryListRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.loadStoreCreditsHistoryListRequest.error = error;
     },
   },
 });

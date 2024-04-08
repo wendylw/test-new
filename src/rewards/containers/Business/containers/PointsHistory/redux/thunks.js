@@ -24,13 +24,13 @@ export const fetchPointsHistoryList = createAsyncThunk(
     const state = getState();
     const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
-    const result = await getPointsHistoryList({ consumerId, business, page, limit });
+    const result = await getPointsHistoryList({ consumerId, business });
 
     return result.data;
   }
 );
 
-export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted', async (_, { dispatch, getState }) => {
+export const mounted = createAsyncThunk('rewards/business/pointsHistory/mounted', async (_, { dispatch, getState }) => {
   const state = getState();
   const business = getMerchantBusiness(state);
   const isWebview = getIsWebview(state);
@@ -73,7 +73,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
 });
 
 export const backButtonClicked = createAsyncThunk(
-  'rewards/business/memberDetail/backButtonClicked',
+  'rewards/business/pointsHistory/backButtonClicked',
   async (_, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
 

@@ -1,11 +1,10 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { getCustomerCashbackPrice } from '../../redux/common/selectors';
-import { getCashbackCreditsHistoryList, getIsCashbackCreditsHistoryListEmpty } from './redux/selectors';
-import { actions as CashbackHistoryActions } from './redux';
-import { backButtonClicked, mounted } from './redux/thunks';
+import { getStoreCreditsHistoryList, getIsStoreCreditsHistoryListEmpty } from './redux/selectors';
+import { actions as cashbackCreditsHistoryActions } from './redux';
+import { backButtonClicked } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import HistoryBanner from '../../components/Histories/HistoryBanner';
@@ -17,17 +16,13 @@ const StoreCreditsHistory = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
-  const cashbackCreditsHistoryList = useSelector(getCashbackCreditsHistoryList);
-  const isCashbackCreditsHistoryListEmpty = useSelector(getIsCashbackCreditsHistoryListEmpty);
+  const storeCreditsHistoryList = useSelector(getStoreCreditsHistoryList);
+  const isStoreCreditsHistoryListEmpty = useSelector(getIsStoreCreditsHistoryListEmpty);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickHowToUseButton = useCallback(
-    () => dispatch(CashbackHistoryActions.useStoreCreditsPromptDrawerShown()),
+    () => dispatch(cashbackCreditsHistoryActions.useStoreCreditsPromptDrawerShown()),
     [dispatch]
   );
-
-  useMount(() => {
-    dispatch(mounted());
-  });
 
   return (
     <Frame>
@@ -44,10 +39,10 @@ const StoreCreditsHistory = () => {
       <section className={styles.StoreCreditsHistorySection}>
         <h2 className={styles.StoreCreditsHistoryListTitle}>{t('StoreCreditsHistory')}</h2>
         <HistoryList
-          isEmpty={isCashbackCreditsHistoryListEmpty}
+          isEmpty={isStoreCreditsHistoryListEmpty}
           emptyTitle={t('NoCashbackCollectedTitle')}
           emptyDescription={t('NoCashbackCollectedDescription')}
-          historyList={cashbackCreditsHistoryList}
+          historyList={storeCreditsHistoryList}
         />
       </section>
       <EarnedCashbackPromptDrawer />

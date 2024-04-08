@@ -1,14 +1,13 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
 import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
 import { getDisplayCashbackExpiredDate } from '../../../../redux/modules/customer/selectors';
 import { getCustomerCashbackPrice } from '../../redux/common/selectors';
-import { getCashbackCreditsHistoryList, getIsCashbackCreditsHistoryListEmpty } from './redux/selectors';
-import { actions as CashbackHistoryActions } from './redux';
-import { backButtonClicked, mounted } from './redux/thunks';
+import { getCashbackHistoryList, getIsCashbackHistoryListEmpty } from './redux/selectors';
+import { actions as cashbackCreditsHistoryActions } from './redux';
+import { backButtonClicked } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import HistoryBanner from '../../components/Histories/HistoryBanner';
@@ -22,16 +21,12 @@ const CashbackHistory = () => {
   const merchantCountry = useSelector(getMerchantCountry);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
-  const cashbackCreditsHistoryList = useSelector(getCashbackCreditsHistoryList);
-  const isCashbackCreditsHistoryListEmpty = useSelector(getIsCashbackCreditsHistoryListEmpty);
+  const cashbackCreditsHistoryList = useSelector(getCashbackHistoryList);
+  const isCashbackHistoryListEmpty = useSelector(getIsCashbackHistoryListEmpty);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
-  const handleClickHowToUseButton = useCallback(() => dispatch(CashbackHistoryActions.useCashbackPromptDrawerShown()), [
-    dispatch,
-  ]);
-
-  useMount(() => {
-    dispatch(mounted());
-  });
+  const handleClickHowToUseButton = useCallback(() => {
+    dispatch(cashbackCreditsHistoryActions.useCashbackPromptDrawerShown());
+  }, [dispatch]);
 
   return (
     <Frame>
@@ -50,7 +45,7 @@ const CashbackHistory = () => {
       <section className={styles.CashbackHistorySection}>
         <h2 className={styles.CashbackHistoryListTitle}>{t('CashbackHistory')}</h2>
         <HistoryList
-          isEmpty={isCashbackCreditsHistoryListEmpty}
+          isEmpty={isCashbackHistoryListEmpty}
           emptyTitle={t('NoCashbackCollectedTitle')}
           emptyDescription={t('NoCashbackCollectedDescription')}
           historyList={cashbackCreditsHistoryList}

@@ -5,7 +5,6 @@ import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import { getClient } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
 import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
-import { REWARD_TYPE } from '../utils/constants';
 import {
   initUserInfo,
   loginUserByBeepApp,
@@ -20,66 +19,82 @@ import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thun
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
 
-import { getCashbackCreditsHistoryList } from './api-request';
+import { getCashbackHistoryList, getStoreCreditsHistoryList } from './api-request';
 
-export const fetchCashbackCreditsHistoryList = createAsyncThunk(
-  'rewards/business/pointsHistory/fetchCashbackCreditsHistoryList',
+export const fetchCashbackHistoryList = createAsyncThunk(
+  'rewards/business/cashbackCreditsHistory/fetchCashbackHistoryList',
   async (_, { getState }) => {
     const state = getState();
     const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
-    const isMerchantEnabledStoreCredits = getIsMerchantEnabledStoreCredits(state);
-    const rewardType = isMerchantEnabledStoreCredits ? REWARD_TYPE.STORE_CREDITS : REWARD_TYPE.CASHBACK;
-    const result = await getCashbackCreditsHistoryList({ consumerId, business, rewardType });
+    const result = await getCashbackHistoryList({ consumerId, business });
 
-    return result.data;
+    return result;
   }
 );
 
-export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted', async (_, { dispatch, getState }) => {
-  const state = getState();
-  const business = getMerchantBusiness(state);
-  const isWebview = getIsWebview(state);
-  const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
-  const search = getLocationSearch(state);
+export const fetchStoreCreditsHistoryList = createAsyncThunk(
+  'rewards/business/cashbackCreditsHistory/fetchStoreCreditsHistoryList',
+  async (_, { getState }) => {
+    const state = getState();
+    const consumerId = getConsumerId(state);
+    const business = getMerchantBusiness(state);
+    const result = await getStoreCreditsHistoryList({ consumerId, business });
 
-  Growthbook.patchAttributes({
-    business,
-  });
-
-  CleverTap.pushEvent('Cashback Credits Details Page - View Page', {
-    'account name': business,
-    source: getClient(),
-  });
-
-  await dispatch(initUserInfo());
-
-  if (isWebview) {
-    await dispatch(loginUserByBeepApp());
+    return result;
   }
+);
 
-  if (isAlipayMiniProgram) {
-    await dispatch(loginUserByAlipayMiniProgram());
+export const mounted = createAsyncThunk(
+  'rewards/business/cashbackCreditsHistory/mounted',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const business = getMerchantBusiness(state);
+    const isWebview = getIsWebview(state);
+    const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
+    const search = getLocationSearch(state);
+
+    Growthbook.patchAttributes({
+      business,
+    });
+
+    CleverTap.pushEvent('Cashback Credits Details Page - View Page', {
+      'account name': business,
+      source: getClient(),
+    });
+
+    await dispatch(initUserInfo());
+
+    if (isWebview) {
+      await dispatch(loginUserByBeepApp());
+    }
+
+    if (isAlipayMiniProgram) {
+      await dispatch(loginUserByAlipayMiniProgram());
+    }
+
+    const isLogin = getIsLogin(getState());
+    const isNotLoginInWeb = !isLogin && !isWebview && !isAlipayMiniProgram;
+
+    if (isNotLoginInWeb) {
+      dispatch(push(`${PATH_NAME_MAPPING.REWARDS_LOGIN}${search}`, { shouldGoBack: true }));
+
+      return;
+    }
+
+    if (isLogin) {
+      await dispatch(fetchMerchantInfo(business));
+      dispatch(fetchCustomerInfo(business));
+
+      const isMerchantEnabledStoreCredits = getIsMerchantEnabledStoreCredits(getState());
+
+      isMerchantEnabledStoreCredits ? dispatch(fetchStoreCreditsHistoryList()) : dispatch(fetchCashbackHistoryList());
+    }
   }
-
-  const isLogin = getIsLogin(getState());
-  const isNotLoginInWeb = !isLogin && !isWebview && !isAlipayMiniProgram;
-
-  if (isNotLoginInWeb) {
-    dispatch(push(`${PATH_NAME_MAPPING.REWARDS_LOGIN}${search}`, { shouldGoBack: true }));
-
-    return;
-  }
-
-  if (isLogin) {
-    await dispatch(fetchMerchantInfo(business));
-    dispatch(fetchCustomerInfo(business));
-    dispatch(fetchCashbackCreditsHistoryList());
-  }
-});
+);
 
 export const backButtonClicked = createAsyncThunk(
-  'rewards/business/memberDetail/backButtonClicked',
+  'rewards/business/cashbackCreditsHistory/backButtonClicked',
   async (_, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
 
