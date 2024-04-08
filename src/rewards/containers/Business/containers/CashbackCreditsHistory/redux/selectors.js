@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
-import { CASHBACK_HISTORY_LOG_I18N_KEYS, DATE_OPTIONS } from '../utils/constants';
+import { CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS, DATE_OPTIONS } from '../utils/constants';
 import { getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
 
 export const getIsUseCashbackPromptDrawerShow = state =>
@@ -42,7 +42,7 @@ export const getCashbackHistoryList = createSelector(
 
       return {
         id,
-        nameI18nKey: CASHBACK_HISTORY_LOG_I18N_KEYS[eventType],
+        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[eventType],
         logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
         changeValueText: changeValue,
         changeValue,
@@ -75,7 +75,7 @@ export const getStoreCreditsHistoryList = createSelector(
 
       return {
         id,
-        nameI18nKey: CASHBACK_HISTORY_LOG_I18N_KEYS[eventType],
+        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[eventType],
         logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
         changeValueText: changeValue,
         changeValue,
