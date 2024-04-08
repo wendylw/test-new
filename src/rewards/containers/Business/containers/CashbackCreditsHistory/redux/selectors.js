@@ -1,8 +1,13 @@
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
+import { getPrice } from '../../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
 import { CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS, DATE_OPTIONS } from '../utils/constants';
-import { getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
+import {
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+} from '../../../../../../redux/modules/merchant/selectors';
 
 export const getIsUseCashbackPromptDrawerShow = state =>
   state.business.cashbackCreditsHistory.isUseCashbackPromptDrawerShow;
@@ -34,15 +39,21 @@ export const getLoadStoreCreditsHistoryListError = state =>
 export const getCashbackHistoryList = createSelector(
   getLoadCashbackHistoryListData,
   getMerchantCountry,
-  (loadCashbackHistoryList, merchantCountry) =>
-    loadCashbackHistoryList.map(cashbackCreditsHistoryItem => {
-      const { id, eventType, eventTime, changeAmount } = cashbackCreditsHistoryItem || {};
+  getMerchantCurrency,
+  getMerchantLocale,
+  (loadCashbackHistoryList, merchantCountry, merchantCurrency, merchantLocale) =>
+    loadCashbackHistoryList.map(cashbackHistoryItem => {
+      const { id, type, eventTime, changeAmount } = cashbackHistoryItem || {};
       const isReduce = changeAmount < 0;
-      const changeValue = `${isReduce ? '-' : '+'}${Math.abs(changeAmount)}`;
+      const changeValue = `${isReduce ? '-' : '+'}${getPrice(Math.abs(changeAmount), {
+        country: merchantCountry,
+        currency: merchantCurrency,
+        locale: merchantLocale,
+      })}`;
 
       return {
         id,
-        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[eventType],
+        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[type],
         logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
         changeValueText: changeValue,
         changeValue,
@@ -67,15 +78,22 @@ export const getIsCashbackHistoryListEmpty = createSelector(
 export const getStoreCreditsHistoryList = createSelector(
   getLoadStoreCreditsHistoryListData,
   getMerchantCountry,
-  (loadStoreCreditsHistoryList, merchantCountry) =>
-    loadStoreCreditsHistoryList.map(cashbackCreditsHistoryItem => {
-      const { id, eventType, eventTime, changeAmount } = cashbackCreditsHistoryItem || {};
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+  (loadStoreCreditsHistoryList, merchantCountry, merchantCurrency, merchantLocale) =>
+    loadStoreCreditsHistoryList.map(storeCreditsHistoryItem => {
+      const { id, type, eventTime, changeAmount } = storeCreditsHistoryItem || {};
       const isReduce = changeAmount < 0;
-      const changeValue = `${isReduce ? '-' : '+'}${Math.abs(changeAmount)}`;
+      const changeValue = `${isReduce ? '-' : '+'}${getPrice(Math.abs(changeAmount), {
+        country: merchantCountry,
+        currency: merchantCurrency,
+        locale: merchantLocale,
+      })}`;
 
       return {
         id,
-        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[eventType],
+        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[type],
         logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
         changeValueText: changeValue,
         changeValue,
