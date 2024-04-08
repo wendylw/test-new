@@ -17,7 +17,12 @@ import {
 } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
-import { getIsWebview, getIsAlipayMiniProgram, getLocationSearch } from '../../../../../redux/modules/common/selectors';
+import {
+  getIsWebview,
+  getIsAlipayMiniProgram,
+  getLocationSearch,
+  getIsNotLoginInWeb,
+} from '../../../../../redux/modules/common/selectors';
 
 import { getCashbackHistoryList, getStoreCreditsHistoryList } from './api-request';
 
@@ -74,7 +79,7 @@ export const mounted = createAsyncThunk(
     }
 
     const isLogin = getIsLogin(getState());
-    const isNotLoginInWeb = !isLogin && !isWebview && !isAlipayMiniProgram;
+    const isNotLoginInWeb = getIsNotLoginInWeb(getState());
 
     if (isNotLoginInWeb) {
       dispatch(push(`${PATH_NAME_MAPPING.REWARDS_LOGIN}${search}`, { shouldGoBack: true }));

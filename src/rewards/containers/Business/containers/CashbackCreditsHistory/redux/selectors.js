@@ -42,8 +42,8 @@ export const getCashbackHistoryList = createSelector(
   getMerchantCurrency,
   getMerchantLocale,
   (loadCashbackHistoryList, merchantCountry, merchantCurrency, merchantLocale) =>
-    loadCashbackHistoryList.map(cashbackHistoryItem => {
-      const { id, type, eventTime, changeAmount } = cashbackHistoryItem || {};
+    loadCashbackHistoryList.map((cashbackHistoryItem, index) => {
+      const { type, eventTime, changeAmount } = cashbackHistoryItem || {};
       const isReduce = changeAmount < 0;
       const changeValue = `${isReduce ? '-' : '+'}${getPrice(Math.abs(changeAmount), {
         country: merchantCountry,
@@ -51,8 +51,16 @@ export const getCashbackHistoryList = createSelector(
         locale: merchantLocale,
       })}`;
 
+      console.log({
+        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[type],
+        logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
+        changeValueText: changeValue,
+        changeValue,
+        isReduce,
+      });
+
       return {
-        id,
+        id: `cashback-history-log-${index}`,
         nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[type],
         logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
         changeValueText: changeValue,
@@ -82,8 +90,8 @@ export const getStoreCreditsHistoryList = createSelector(
   getMerchantCurrency,
   getMerchantLocale,
   (loadStoreCreditsHistoryList, merchantCountry, merchantCurrency, merchantLocale) =>
-    loadStoreCreditsHistoryList.map(storeCreditsHistoryItem => {
-      const { id, type, eventTime, changeAmount } = storeCreditsHistoryItem || {};
+    loadStoreCreditsHistoryList.map((storeCreditsHistoryItem, index) => {
+      const { type, eventTime, changeAmount } = storeCreditsHistoryItem || {};
       const isReduce = changeAmount < 0;
       const changeValue = `${isReduce ? '-' : '+'}${getPrice(Math.abs(changeAmount), {
         country: merchantCountry,
@@ -92,7 +100,7 @@ export const getStoreCreditsHistoryList = createSelector(
       })}`;
 
       return {
-        id,
+        id: `store-credits-history-log-${index}`,
         nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[type],
         logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
         changeValueText: changeValue,
