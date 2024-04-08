@@ -51,14 +51,6 @@ export const getCashbackHistoryList = createSelector(
         locale: merchantLocale,
       })}`;
 
-      console.log({
-        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[type],
-        logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
-        changeValueText: changeValue,
-        changeValue,
-        isReduce,
-      });
-
       return {
         id: `cashback-history-log-${index}`,
         nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[type],
