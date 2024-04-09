@@ -311,7 +311,7 @@ export const getMemberCardMembershipProgressTierList = createSelector(
     currentCustomerLevelPointsThreshold,
     customerTierPointsTotal
   ) =>
-    membershipTierList.map(({ level, name, spendingThreshold }) => {
+    membershipTierList.map(({ level, name, spendingThreshold, pointsThreshold }) => {
       const tierColorPalette = MEMBER_CARD_COLOR_PALETTES[level] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER];
       const tier = {
         level,
@@ -384,7 +384,7 @@ export const getMemberCardMembershipLevelStatus = createSelector(
       // Customer achieved highest points threshold last review time, customer still maintain highest level.
       // But we will prompt customer to maintain highest level. Because collect points total will be cleared.
       if (customerTierLevel === highestTierLevel && customerTierPointsTotal < highestTierPointsThreshold) {
-        return MEMBERSHIP_LEVEL_STATUS.LEVEL_MAINTAIN;
+        return MEMBERSHIP_LEVEL_STATUS.POINTS_LEVEL_MAINTAIN;
       }
     }
 
@@ -410,6 +410,7 @@ export const getMemberCardMembershipLevelStatus = createSelector(
 export const getMemberCardMembershipProgressMessageIn18nParams = createSelector(
   getCustomerTierLevelName,
   getCustomerTierTotalSpent,
+  getCustomerTierPointsTotal,
   getCustomerTierNextReviewTime,
   getMembershipTierList,
   getHighestMembershipTier,
@@ -418,7 +419,6 @@ export const getMemberCardMembershipProgressMessageIn18nParams = createSelector(
   getMerchantCountry,
   getCustomerMembershipNextLevel,
   getMemberCardMembershipLevelStatus,
-  getCustomerTierPointsTotal,
   (
     customerTierLevelName,
     customerTierTotalSpent,
@@ -447,10 +447,12 @@ export const getMemberCardMembershipProgressMessageIn18nParams = createSelector(
       switch (paramKey) {
         case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.UNLOCK_COLLECT_POINTS:
           membershipProgressMessageI18nParams[paramKey] = nextPointsThreshold - customerTierPointsTotal;
+          break;
         case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.MAINTAIN_COLLECT_POINTS:
-        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.UNLOCK_SPEND_PRICE:
           membershipProgressMessageI18nParams[paramKey] =
             highestMembershipTier.pointsThreshold - customerTierPointsTotal;
+          break;
+        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.UNLOCK_SPEND_PRICE:
           membershipProgressMessageI18nParams[paramKey] = getPrice(nextTierSpendingThreshold - customerTierTotalSpent, {
             locale: merchantLocale,
             currency: merchantCurrency,
