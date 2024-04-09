@@ -24,12 +24,17 @@ import {
   CLAIMED_POINTS_REWARD_ERROR_I18N_KEYS,
 } from '../utils/constants';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
-import { getOrderReceiptClaimedCashbackStatus, getOrderReceiptClaimedCashback } from '../../../redux/common/selectors';
+import {
+  getOrderReceiptClaimedCashbackStatus,
+  getOrderReceiptClaimedCashback,
+  getRemainingCashbackExpiredDays,
+} from '../../../redux/common/selectors';
 import {
   getMerchantCurrency,
   getMerchantLocale,
   getMerchantCountry,
   getIsMerchantEnabledCashback,
+  getIsMerchantEnabledLoyalty,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
   getIsMerchantMembershipPointsEnabled,
@@ -497,3 +502,16 @@ export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRe
     descriptionI18nKey: 'SomethingWentWrongDescription',
   };
 });
+
+export const getIsRewardsCashbackCreditsButtonShow = createSelector(
+  getIsMerchantEnabledCashback,
+  getIsMerchantEnabledLoyalty,
+  (isMerchantEnabledCashback, isMerchantEnabledLoyalty) => isMerchantEnabledCashback || isMerchantEnabledLoyalty
+);
+
+export const getIsExpiringIconShown = createSelector(
+  getIsMerchantEnabledCashback,
+  getRemainingCashbackExpiredDays,
+  (isMerchantEnabledCashback, remainingCashbackExpiredDays) =>
+    isMerchantEnabledCashback && remainingCashbackExpiredDays !== null
+);
