@@ -78,7 +78,6 @@ export const getIsCashbackHistoryListEmpty = createSelector(
 export const getStoreCreditsHistoryList = createSelector(
   getLoadStoreCreditsHistoryListData,
   getMerchantCountry,
-  getMerchantCountry,
   getMerchantCurrency,
   getMerchantLocale,
   (loadStoreCreditsHistoryList, merchantCountry, merchantCurrency, merchantLocale) =>
