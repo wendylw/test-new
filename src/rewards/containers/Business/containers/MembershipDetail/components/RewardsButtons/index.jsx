@@ -13,11 +13,9 @@ import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledStoreCredits,
 } from '../../../../../../../redux/modules/merchant/selectors';
-import {
-  getCustomerAvailablePointsBalance,
-  getCustomerCashback,
-} from '../../../../../../redux/modules/customer/selectors';
+import { getCustomerAvailablePointsBalance } from '../../../../../../redux/modules/customer/selectors';
 import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
+import { getCustomerCashbackPriceWithoutCurrency } from '../../../../redux/common/selectors';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './RewardsButtons.module.scss';
@@ -29,7 +27,7 @@ const RewardsButtons = () => {
   const isMerchantEnabledCashback = useSelector(getIsMerchantEnabledCashback);
   const isMerchantEnabledStoreCredits = useSelector(getIsMerchantEnabledStoreCredits);
   const availablePointsBalance = useSelector(getCustomerAvailablePointsBalance);
-  const customerCashback = useSelector(getCustomerCashback);
+  const customerCashbackPriceWithoutCurrency = useSelector(getCustomerCashbackPriceWithoutCurrency);
   const search = useSelector(getLocationSearch);
   let cashbackCreditsButton = null;
   const handlePointsDetailButtonClick = useCallback(() => {
@@ -69,9 +67,9 @@ const RewardsButtons = () => {
           <span className={styles.RewardsButtonCashbackText}>{t('Cashback')}</span>
           <CaretRight size={12} />
         </div>
-        <data className={styles.RewardsButtonCashback} value={customerCashback}>
-          {customerCashback}
-          <WarningCircle size={18} weight="fill" />
+        <data className={styles.RewardsButtonCashback} value={customerCashbackPriceWithoutCurrency}>
+          {customerCashbackPriceWithoutCurrency}
+          <WarningCircle className={styles.RewardsButtonCashbackWarningIcon} size={18} weight="fill" />
         </data>
       </Button>
     );
@@ -92,8 +90,8 @@ const RewardsButtons = () => {
           <span className={styles.RewardsButtonStoreCreditsText}>{t('Cashback')}</span>
           <CaretRight size={12} />
         </div>
-        <data className={styles.RewardsButtonStoreCredits} value={customerCashback}>
-          {customerCashback}
+        <data className={styles.RewardsButtonStoreCredits} value={customerCashbackPriceWithoutCurrency}>
+          {customerCashbackPriceWithoutCurrency}
         </data>
       </Button>
     );
