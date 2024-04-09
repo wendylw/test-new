@@ -38,3 +38,11 @@
 .RewardsButtonStoreCredits {
   @apply tw-text-2xl tw-font-bold;
 }
+
+.RewardsButtonCashback {
+  @apply tw-flex tw-items-center tw-gap-x-4 sm:tw-gap-x-4px;
+}
+
+.RewardsButtonCashbackWarningIcon {
+  @apply tw-fill-current tw-text-red;
+}
