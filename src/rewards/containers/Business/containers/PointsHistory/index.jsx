@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
+import RewardsPointsHistoryBannerImage from '../../../../../images/rewards-points-history-banner.svg';
 import { getCustomerAvailablePointsBalance } from '../../../../redux/modules/customer/selectors';
 import { getPointsHistoryList, getIsPointsHistoryListEmpty } from './redux/selectors';
 import { actions as PointsHistoryActions } from './redux';
@@ -36,6 +37,7 @@ const PointsHistory = () => {
         valueText={t('CustomerPoints', { customerAvailablePointsBalance })}
         prompt={t('PointsExpiringTimePrompt')}
         infoButtonText={t('HowToUsePoints')}
+        historyBannerImage={RewardsPointsHistoryBannerImage}
         onClickInfoButton={handleClickHowToUseButton}
         infoButtonTestId="rewards.business.points-history.how-to-use-button"
       />
