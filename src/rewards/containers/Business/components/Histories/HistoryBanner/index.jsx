@@ -6,7 +6,16 @@ import Button from '../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../common/components/Image';
 import styles from './HistoryBanner.module.scss';
 
-const HistoryBanner = ({ title, value, valueText, prompt, infoButtonText, onClickInfoButton, infoButtonTestId }) => (
+const HistoryBanner = ({
+  title,
+  value,
+  valueText,
+  prompt,
+  infoButtonText,
+  historyBannerImage,
+  onClickInfoButton,
+  infoButtonTestId,
+}) => (
   <section className={styles.HistoryBanner}>
     <div className={styles.HistoryBannerCustomerInfo}>
       <h4 className={styles.HistoryBannerTitle}>{title}:</h4>
@@ -30,7 +39,7 @@ const HistoryBanner = ({ title, value, valueText, prompt, infoButtonText, onClic
       </div>
     </div>
     <div className={styles.HistoryBannerImage}>
-      <ObjectFitImage noCompression src={RewardsHistoryBannerImage} alt="Beep Rewards Banner" />
+      <ObjectFitImage noCompression src={historyBannerImage || RewardsHistoryBannerImage} alt="Beep Rewards Banner" />
     </div>
   </section>
 );
@@ -43,6 +52,7 @@ HistoryBanner.propTypes = {
   valueText: PropTypes.string,
   prompt: PropTypes.string || PropTypes.node,
   infoButtonText: PropTypes.string,
+  historyBannerImage: PropTypes.string,
   onClickInfoButton: PropTypes.func,
   infoButtonTestId: PropTypes.string,
 };
@@ -53,6 +63,7 @@ HistoryBanner.defaultProps = {
   valueText: '',
   prompt: '',
   infoButtonText: '',
+  historyBannerImage: null,
   onClickInfoButton: () => {},
   infoButtonTestId: '',
 };

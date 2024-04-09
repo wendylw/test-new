@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import RewardsStoreCreditsHistoryBannerImage from '../../../../../images/rewards-store-credits-history-banner.svg';
 import { getCustomerCashbackPrice } from '../../redux/common/selectors';
 import { getStoreCreditsHistoryList, getIsStoreCreditsHistoryListEmpty } from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
@@ -33,6 +34,7 @@ const StoreCreditsHistory = () => {
         valueText={customerCashbackPrice}
         prompt=""
         infoButtonText={t('HowToUseStoreCredits')}
+        historyBannerImage={RewardsStoreCreditsHistoryBannerImage}
         onClickInfoButton={handleClickHowToUseButton}
         infoButtonTestId="rewards.business.store-credits-history.how-to-use-button"
       />
