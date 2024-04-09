@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CaretRight } from 'phosphor-react';
+import { CaretRight, WarningCircle } from 'phosphor-react';
 import RewardsIcon from '../../../../../../../images/rewards-icon.svg';
 import RewardsCashbackIcon from '../../../../../../../images/rewards-earned-cashback.svg';
 import RewardsStoreCreditsIcon from '../../../../../../../images/rewards-store-credits-icon.svg';
@@ -71,6 +71,7 @@ const RewardsButtons = () => {
         </div>
         <data className={styles.RewardsButtonCashback} value={customerCashback}>
           {customerCashback}
+          <WarningCircle size={18} weight="fill" />
         </data>
       </Button>
     );
