@@ -43,7 +43,7 @@ const CashbackBlock = () => {
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.CASHBACK_CREDITS_HISTORY}`,
       search,
     });
-  }, [history]);
+  }, [history, search]);
 
   return (
     <div className={styles.CashbackBlock}>
