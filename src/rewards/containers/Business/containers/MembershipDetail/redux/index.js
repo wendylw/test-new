@@ -26,6 +26,9 @@ export const { reducer, actions } = createSlice({
     earnedPointsPromptDrawerHidden: state => {
       state.isEarnedPointsPromptDrawerShow = false;
     },
+    claimPointsRewardRequestReset: state => {
+      state.claimPointsRewardRequest = initialState.claimPointsRewardRequest;
+    },
   },
   extraReducers: {
     [fetchPointsRewardList.pending.type]: state => {

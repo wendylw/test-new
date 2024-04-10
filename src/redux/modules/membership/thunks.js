@@ -5,9 +5,9 @@ import { postUserMembership, getMembershipsInfo } from './api-request';
 
 export const joinMembership = createAsyncThunk(
   'app/membership/joinMembership',
-  async ({ business, source, consumerId }) => {
+  async ({ business, source, consumerId, storeId }) => {
     try {
-      const result = await postUserMembership({ consumerId, business, source });
+      const result = await postUserMembership({ consumerId, business, source, storeId });
       return result;
     } catch (error) {
       alert(i18next.t('UnknownErrorDescription'), {

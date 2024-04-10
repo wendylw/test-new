@@ -22,7 +22,7 @@ import {
   getBusiness,
   getUserPhone,
 } from '../../../../../redux/modules/app';
-import { getOrder, getReceiptNumber } from '../../../redux/selector';
+import { getOrder, getReceiptNumber, getOrderStoreInfo } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
 import { joinMembership } from '../../../../../../redux/modules/membership/thunks';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
@@ -254,9 +254,10 @@ export const joinBusinessMembership = createAsyncThunk(
     const state = getState();
     const business = getBusiness(state);
     const consumerId = getUserConsumerId(state);
+    const storeId = getOrderStoreInfo(state);
     const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
 
-    await dispatch(joinMembership({ business, source, consumerId }));
+    await dispatch(joinMembership({ business, source, consumerId, storeId }));
     await dispatch(appActions.loadCustomerInfo(consumerId));
   }
 );
