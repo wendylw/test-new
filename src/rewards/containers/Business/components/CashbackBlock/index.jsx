@@ -1,35 +1,35 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import CashbackHistoryButtonIcon from '../../../../../images/membership-history.svg';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
 import { getClassName } from '../../../../../common/utils/ui';
-import { getMerchantBusiness, getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
+import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
 import { getDisplayCashbackExpiredDate, getIsCashbackExpired } from '../../../../redux/modules/customer/selectors';
+import { getLocationSearch } from '../../../../redux/modules/common/selectors';
 import {
   getCustomerCashbackPrice,
   getRemainingCashbackExpiredDays,
   getIsTodayExpired,
   getIsExpiringTagShown,
 } from '../../redux/common/selectors';
+import Button from '../../../../../common/components/Button';
 import Tag from '../../../../../common/components/Tag';
 import styles from './CashbackBlock.module.scss';
 
 const CashbackBlock = () => {
   const { t } = useTranslation(['Rewards']);
-  const merchantBusiness = useSelector(getMerchantBusiness);
+  const history = useHistory();
   const merchantCountry = useSelector(getMerchantCountry);
+  const search = useSelector(getLocationSearch);
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
   const isCashbackExpired = useSelector(getIsCashbackExpired);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const isExpiringTagShown = useSelector(getIsExpiringTagShown);
   const remainingCashbackExpiredDays = useSelector(getRemainingCashbackExpiredDays);
   const isTodayExpired = useSelector(getIsTodayExpired);
-  const cashbackHistoryLogPageURL = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace(
-    '%business%',
-    merchantBusiness
-  )}${PATH_NAME_MAPPING.CASHBACK_BASE}${PATH_NAME_MAPPING.CASHBACK_HISTORIES}`;
   const cashbackBlockBalanceContainerClassName = getClassName([
     styles.CashbackBlockBalanceContainer,
     isCashbackExpired ? styles.CashbackBlockBalanceContainer__Expired : null,
@@ -38,6 +38,12 @@ const CashbackBlock = () => {
     styles.CashbackBlockExpiredDate,
     isCashbackExpired ? styles.CashbackBlockExpiredDate__Expired : null,
   ]);
+  const handleHistoryButtonClick = useCallback(() => {
+    history.push({
+      pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.CASHBACK_CREDITS_HISTORY}`,
+      search,
+    });
+  }, [history, search]);
 
   return (
     <div className={styles.CashbackBlock}>
@@ -48,17 +54,19 @@ const CashbackBlock = () => {
             {customerCashbackPrice}
           </data>
         </div>
-        <a
+        <Button
           className={styles.CashbackBlockHistoryLink}
           data-test-id="rewards.membership-detail.cashback-history-link"
-          href={cashbackHistoryLogPageURL}
+          type="text"
+          size="small"
+          onClick={handleHistoryButtonClick}
         >
           <img
             className={styles.CashbackBlockHistoryLinkImage}
             src={CashbackHistoryButtonIcon}
             alt="Store cashback history in StoreHub"
           />
-        </a>
+        </Button>
       </div>
       {displayCashbackExpiredDate && (
         <div className={styles.CashbackBlockInfoBottom}>

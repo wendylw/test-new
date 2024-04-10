@@ -122,5 +122,6 @@
   "Refunded": "Refunded",
   "Spent": "Spent",
   "Adjustment": "Adjustment",
-  "Pending": "Pending"
+  "Pending": "Pending",
+  "StoreCredits": "Store Credits"
 }

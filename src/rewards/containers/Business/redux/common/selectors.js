@@ -71,6 +71,14 @@ export const getCustomerCashbackPrice = createSelector(
   (cashback, locale, currency, country) => getPrice(cashback, { locale, currency, country })
 );
 
+export const getCustomerCashbackPriceWithoutCurrency = createSelector(
+  getCustomerCashback,
+  getMerchantLocale,
+  getMerchantCurrency,
+  getMerchantCountry,
+  (cashback, locale, currency, country) => getPrice(cashback, { locale, currency, country, withCurrency: false })
+);
+
 export const getRemainingCashbackExpiredDays = createSelector(
   getCashbackExpiredDate,
   getIsCashbackExpired,
