@@ -12,7 +12,10 @@ import {
   getIsMerchantMembershipPointsEnabled,
   getIsMerchantEnabledCashback,
 } from '../../../../../../../redux/modules/merchant/selectors';
-import { getCustomerAvailablePointsBalance } from '../../../../../../redux/modules/customer/selectors';
+import {
+  getCustomerAvailablePointsBalance,
+  getCustomerRewardsTotal,
+} from '../../../../../../redux/modules/customer/selectors';
 import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
 import { getCustomerCashbackPriceWithoutCurrency } from '../../../../redux/common/selectors';
 import { getIsRewardsCashbackCreditsButtonShow, getIsExpiringIconShown } from '../../redux/selectors';
@@ -28,6 +31,7 @@ const RewardsButtons = () => {
   const isRewardsCashbackCreditsButtonShow = useSelector(getIsRewardsCashbackCreditsButtonShow);
   const availablePointsBalance = useSelector(getCustomerAvailablePointsBalance);
   const customerCashbackPriceWithoutCurrency = useSelector(getCustomerCashbackPriceWithoutCurrency);
+  const customerRewardsTotal = useSelector(getCustomerRewardsTotal);
   const isExpiringIconShown = useSelector(getIsExpiringIconShown);
   const search = useSelector(getLocationSearch);
   const handlePointsDetailButtonClick = useCallback(() => {
@@ -119,6 +123,9 @@ const RewardsButtons = () => {
             <span className={styles.RewardsButtonRewardsText}>{t('MyRewards')}</span>
             <CaretRight size={12} />
           </div>
+          <data className={styles.RewardsButtonMyRewards} value={customerRewardsTotal}>
+            {customerRewardsTotal}
+          </data>
         </Button>
       ) : null}
     </section>

@@ -38,12 +38,16 @@ export const getCustomerTierPointsTotalEarned = createSelector(getCustomerData, 
   _get(customerData, 'customerTier.pointsTotalEarned', null)
 );
 
+export const getCustomerTierNextReviewTime = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier.nextReviewTime', null)
+);
+
 export const getCustomerAvailablePointsBalance = createSelector(getCustomerData, customerData =>
   getDecimalNumber(_get(customerData, 'availablePointsBalance', 0))
 );
 
-export const getCustomerTierNextReviewTime = createSelector(getCustomerData, customerData =>
-  _get(customerData, 'customerTier.nextReviewTime', null)
+export const getCustomerRewardsTotal = createSelector(getCustomerData, customerData =>
+  getDecimalNumber(_get(customerData, 'rewardsTotal', 0))
 );
 
 /**
