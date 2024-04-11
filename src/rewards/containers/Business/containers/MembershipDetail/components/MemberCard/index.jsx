@@ -5,7 +5,6 @@ import { Info } from 'phosphor-react';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import { MemberIcon } from '../../../../../../../common/components/Icons';
 import { MEMBERSHIP_LEVEL_I18N_KEYS } from '../../utils/constants';
-import { getMerchantDisplayName } from '../../../../../../../redux/modules/merchant/selectors';
 import { getCustomerTierLevelName } from '../../../../../../redux/modules/customer/selectors';
 import {
   getMemberCardStyles,
@@ -20,7 +19,6 @@ import styles from './MemberCard.module.scss';
 
 const MemberCard = () => {
   const { t } = useTranslation('Rewards');
-  const merchantDisplayName = useSelector(getMerchantDisplayName);
   const customerTierLevelName = useSelector(getCustomerTierLevelName);
   const memberCardStyles = useSelector(getMemberCardStyles);
   const memberCardIconColors = useSelector(getMemberCardIconColors);
@@ -50,10 +48,9 @@ const MemberCard = () => {
   return (
     <section className={styles.MemberCardSection}>
       <div className={styles.MemberCard} style={memberCardStyles}>
-        <h1 className={styles.MemberCardStoreName}>{merchantDisplayName}</h1>
+        <h1 className={styles.MemberCardLevelName}>{customerTierLevelName}</h1>
         {isMemberCardMembershipProgressBarShow ? (
           <div className={styles.MemberCardLevelProgressContainer}>
-            <span className={styles.MemberCardLevelName}>{customerTierLevelName}</span>
             {messageI18nKey ? (
               <p className={styles.MemberCardLevelProgressPrompt}>
                 {messageI18nParamsKeys
@@ -130,7 +127,6 @@ const MemberCard = () => {
           </div>
         ) : (
           <div className={styles.MemberCardLevelContainer}>
-            <span className={styles.MemberCardLevelName}>{customerTierLevelName}</span>
             <MemberIcon
               className={styles.MemberCardLevelIcon}
               crownStartColor={crownStartColor}
