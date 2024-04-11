@@ -10,9 +10,10 @@ import {
   loginUserByBeepApp,
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
+import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
+import { getCustomerCustomerId } from '../../../../../redux/modules/customer/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import {
   getIsWebview,
@@ -25,11 +26,10 @@ import { getPointsHistoryList } from './api-request';
 
 export const fetchPointsHistoryList = createAsyncThunk(
   'rewards/business/pointsHistory/fetchPointsHistoryList',
-  async (_, { getState }) => {
+  async (customerId, { getState }) => {
     const state = getState();
-    const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
-    const result = await getPointsHistoryList({ consumerId, business });
+    const result = await getPointsHistoryList({ customerId, business });
 
     return result;
   }
@@ -72,8 +72,11 @@ export const mounted = createAsyncThunk('rewards/business/pointsHistory/mounted'
 
   if (isLogin) {
     dispatch(fetchMerchantInfo(business));
-    dispatch(fetchCustomerInfo(business));
-    dispatch(fetchPointsHistoryList());
+    await dispatch(fetchCustomerInfo(business));
+
+    const customerId = getCustomerCustomerId(getState());
+
+    dispatch(fetchPointsHistoryList(customerId));
   }
 });
 

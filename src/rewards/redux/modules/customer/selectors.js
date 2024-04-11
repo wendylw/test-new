@@ -10,6 +10,10 @@ export const getLoadCustomerRequestStatus = state => state.customer.loadCustomer
 
 export const getLoadCustomerRequestError = state => state.customer.loadCustomerRequest.error;
 
+export const getCustomerCustomerId = createSelector(getCustomerData, customerData =>
+  getDecimalNumber(_get(customerData, 'customerId', null))
+);
+
 export const getCustomerCashback = createSelector(getCustomerData, customerData =>
   getDecimalNumber(_get(customerData, 'storeCreditInfo.storeCreditsBalance', 0))
 );
