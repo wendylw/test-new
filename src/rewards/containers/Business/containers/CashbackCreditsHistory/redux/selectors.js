@@ -2,7 +2,11 @@ import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
-import { CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS, DATE_OPTIONS } from '../utils/constants';
+import {
+  CASHBACK_CREDITS_HISTORY_TYPES,
+  CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS,
+  DATE_OPTIONS,
+} from '../utils/constants';
 import {
   getMerchantCountry,
   getMerchantCurrency,
@@ -43,7 +47,17 @@ export const getCashbackHistoryList = createSelector(
   getMerchantLocale,
   (loadCashbackHistoryList, merchantCountry, merchantCurrency, merchantLocale) =>
     loadCashbackHistoryList.map((cashbackHistoryItem, index) => {
-      const { type, eventTime, changeAmount } = cashbackHistoryItem || {};
+      const { type, eventTime, changeAmount = 0 } = cashbackHistoryItem || {};
+      const historyItem = {
+        id: `cashback-history-log-${index}`,
+        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[type],
+        logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
+      };
+
+      if (type === CASHBACK_CREDITS_HISTORY_TYPES.PENDING) {
+        return historyItem;
+      }
+
       const isReduce = changeAmount < 0;
       const changeValue = `${isReduce ? '-' : '+'}${getPrice(Math.abs(changeAmount), {
         country: merchantCountry,
@@ -52,9 +66,7 @@ export const getCashbackHistoryList = createSelector(
       })}`;
 
       return {
-        id: `cashback-history-log-${index}`,
-        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[type],
-        logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
+        ...historyItem,
         changeValueText: changeValue,
         changeValue,
         isReduce,
@@ -82,7 +94,17 @@ export const getStoreCreditsHistoryList = createSelector(
   getMerchantLocale,
   (loadStoreCreditsHistoryList, merchantCountry, merchantCurrency, merchantLocale) =>
     loadStoreCreditsHistoryList.map((storeCreditsHistoryItem, index) => {
-      const { type, eventTime, changeAmount } = storeCreditsHistoryItem || {};
+      const { type, eventTime, changeAmount = 0 } = storeCreditsHistoryItem || {};
+      const historyItem = {
+        id: `store-credits-history-log-${index}`,
+        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[type],
+        logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
+      };
+
+      if (type === CASHBACK_CREDITS_HISTORY_TYPES.PENDING) {
+        return historyItem;
+      }
+
       const isReduce = changeAmount < 0;
       const changeValue = `${isReduce ? '-' : '+'}${getPrice(Math.abs(changeAmount), {
         country: merchantCountry,
@@ -91,9 +113,7 @@ export const getStoreCreditsHistoryList = createSelector(
       })}`;
 
       return {
-        id: `store-credits-history-log-${index}`,
-        nameI18nKey: CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS[type],
-        logDateTime: toLocaleDateString(eventTime, merchantCountry, DATE_OPTIONS),
+        ...historyItem,
         changeValueText: changeValue,
         changeValue,
         isReduce,

@@ -10,12 +10,13 @@ import {
   loginUserByBeepApp,
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
+import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
 import {
   getMerchantBusiness,
   getIsMerchantEnabledStoreCredits,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
+import { getCustomerCustomerId } from '../../../../../redux/modules/customer/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import {
   getIsWebview,
@@ -28,11 +29,10 @@ import { getCashbackHistoryList, getStoreCreditsHistoryList } from './api-reques
 
 export const fetchCashbackHistoryList = createAsyncThunk(
   'rewards/business/cashbackCreditsHistory/fetchCashbackHistoryList',
-  async (_, { getState }) => {
+  async (customerId, { getState }) => {
     const state = getState();
-    const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
-    const result = await getCashbackHistoryList({ consumerId, business });
+    const result = await getCashbackHistoryList({ customerId, business, rewardType: 'cashback' });
 
     return result;
   }
@@ -40,11 +40,10 @@ export const fetchCashbackHistoryList = createAsyncThunk(
 
 export const fetchStoreCreditsHistoryList = createAsyncThunk(
   'rewards/business/cashbackCreditsHistory/fetchStoreCreditsHistoryList',
-  async (_, { getState }) => {
+  async (customerId, { getState }) => {
     const state = getState();
-    const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
-    const result = await getStoreCreditsHistoryList({ consumerId, business });
+    const result = await getStoreCreditsHistoryList({ customerId, business });
 
     return result;
   }
@@ -89,11 +88,14 @@ export const mounted = createAsyncThunk(
 
     if (isLogin) {
       await dispatch(fetchMerchantInfo(business));
-      dispatch(fetchCustomerInfo(business));
+      await dispatch(fetchCustomerInfo(business));
 
       const isMerchantEnabledStoreCredits = getIsMerchantEnabledStoreCredits(getState());
+      const customerId = getCustomerCustomerId(getState());
 
-      isMerchantEnabledStoreCredits ? dispatch(fetchStoreCreditsHistoryList()) : dispatch(fetchCashbackHistoryList());
+      isMerchantEnabledStoreCredits
+        ? dispatch(fetchStoreCreditsHistoryList(customerId))
+        : dispatch(fetchCashbackHistoryList(customerId));
     }
   }
 );
