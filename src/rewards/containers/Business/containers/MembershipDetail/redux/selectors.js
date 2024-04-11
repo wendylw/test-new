@@ -33,6 +33,7 @@ import {
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
   getIsMerchantMembershipPointsEnabled,
+  getIsLoadMerchantRequestCompleted,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getMembershipTierList, getHighestMembershipTier } from '../../../../../../redux/modules/membership/selectors';
 import {
@@ -100,6 +101,7 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
 
 export const getNewMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
+  getIsLoadMerchantRequestCompleted,
   getIsMerchantEnabledCashback,
   getIsMerchantMembershipPointsEnabled,
   getCustomerCashback,
@@ -109,6 +111,7 @@ export const getNewMemberPromptCategory = createSelector(
   getIsFromEarnedCashbackQrScan,
   (
     isLoadCustomerRequestCompleted,
+    isLoadMerchantRequestCompleted,
     isMerchantEnabledCashback,
     isMerchantMembershipPointsEnabled,
     customerCashback,
@@ -121,14 +124,18 @@ export const getNewMemberPromptCategory = createSelector(
       return NEW_MEMBER_TYPES.DEFAULT;
     }
 
-    if (isFromSeamlessLoyaltyQrScan && isMerchantMembershipPointsEnabled) {
-      return NEW_MEMBER_TYPES.ENABLED_POINTS;
-    }
+    if (isFromSeamlessLoyaltyQrScan) {
+      if (isLoadMerchantRequestCompleted) {
+        return isMerchantMembershipPointsEnabled ? NEW_MEMBER_TYPES.ENABLED_POINTS : NEW_MEMBER_TYPES.DEFAULT;
+      }
 
-    if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
-      return isMerchantEnabledCashback && customerCashback > 0
-        ? NEW_MEMBER_TYPES.REDEEM_CASHBACK
-        : NEW_MEMBER_TYPES.DEFAULT;
+      if (isLoadMerchantRequestCompleted && isLoadCustomerRequestCompleted) {
+        return isMerchantEnabledCashback && customerCashback > 0
+          ? NEW_MEMBER_TYPES.REDEEM_CASHBACK
+          : NEW_MEMBER_TYPES.DEFAULT;
+      }
+
+      return null;
     }
 
     if (isFromEarnedCashbackQrScan) {
@@ -165,6 +172,7 @@ export const getNewMemberTitleIn18nParams = createSelector(
 
 export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
+  getIsLoadMerchantRequestCompleted,
   getIsMerchantEnabledCashback,
   getIsMerchantMembershipPointsEnabled,
   getCustomerCashback,
@@ -174,6 +182,7 @@ export const getReturningMemberPromptCategory = createSelector(
   getIsFromEarnedCashbackQrScan,
   (
     isLoadCustomerRequestCompleted,
+    isLoadMerchantRequestCompleted,
     isMerchantEnabledCashback,
     isMerchantMembershipPointsEnabled,
     customerCashback,
@@ -186,14 +195,16 @@ export const getReturningMemberPromptCategory = createSelector(
       return RETURNING_MEMBER_TYPES.DEFAULT;
     }
 
-    if (isFromSeamlessLoyaltyQrScan && isMerchantMembershipPointsEnabled) {
-      return RETURNING_MEMBER_TYPES.ENABLED_POINTS;
-    }
+    if (isFromSeamlessLoyaltyQrScan) {
+      if (isLoadMerchantRequestCompleted && isMerchantMembershipPointsEnabled) {
+        return RETURNING_MEMBER_TYPES.ENABLED_POINTS;
+      }
 
-    if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
-      return isMerchantEnabledCashback && customerCashback > 0
-        ? RETURNING_MEMBER_TYPES.REDEEM_CASHBACK
-        : RETURNING_MEMBER_TYPES.THANKS_COMING_BACK;
+      if (isLoadMerchantRequestCompleted && isLoadCustomerRequestCompleted) {
+        return isMerchantEnabledCashback && customerCashback > 0
+          ? RETURNING_MEMBER_TYPES.REDEEM_CASHBACK
+          : RETURNING_MEMBER_TYPES.THANKS_COMING_BACK;
+      }
     }
 
     if (isFromEarnedCashbackQrScan) {

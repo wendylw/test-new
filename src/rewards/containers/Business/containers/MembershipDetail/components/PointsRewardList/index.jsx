@@ -86,7 +86,7 @@ const PointsRewardList = () => {
         }
       );
     }
-  }, [t, isClaimPointsRewardSuccessfulAlertShow]);
+  }, [t, isClaimPointsRewardSuccessfulAlertShow, dispatch]);
 
   useEffect(() => {
     if (claimPointsRewardErrorI18nKeys) {
@@ -99,7 +99,7 @@ const PointsRewardList = () => {
         },
       });
     }
-  }, [claimPointsRewardErrorI18nKeys, t]);
+  }, [claimPointsRewardErrorI18nKeys, t, dispatch]);
 
   if (!isPointsRewardListShown) {
     return null;
