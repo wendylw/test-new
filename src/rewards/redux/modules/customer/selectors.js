@@ -34,8 +34,8 @@ export const getCustomerTierTotalSpent = createSelector(getCustomerData, custome
   _get(customerData, 'customerTier.totalSpent', null)
 );
 
-export const getCustomerTierPointsTotal = createSelector(getCustomerData, customerData =>
-  _get(customerData, 'customerTier.pointsTotal', null)
+export const getCustomerTierPointsTotalEarned = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier.pointsTotalEarned', null)
 );
 
 export const getCustomerAvailablePointsBalance = createSelector(getCustomerData, customerData =>

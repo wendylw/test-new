@@ -43,7 +43,7 @@ import { getMembershipTierList, getHighestMembershipTier } from '../../../../../
 import {
   getCustomerCashback,
   getCustomerTierTotalSpent,
-  getCustomerTierPointsTotal,
+  getCustomerTierPointsTotalEarned,
   getCustomerTierLevel,
   getCustomerTierNextReviewTime,
   getIsLoadCustomerRequestCompleted,
@@ -300,7 +300,7 @@ export const getMemberCardMembershipProgressTierList = createSelector(
   getMembershipTierList,
   getIsMerchantMembershipPointsEnabled,
   getCurrentCustomerLevelPointsThreshold,
-  getCustomerTierPointsTotal,
+  getCustomerTierPointsTotalEarned,
   (
     customerTierLevel,
     customerMembershipNextLevel,
@@ -309,7 +309,7 @@ export const getMemberCardMembershipProgressTierList = createSelector(
     membershipTierList,
     isMerchantMembershipPointsEnabled,
     currentCustomerLevelPointsThreshold,
-    customerTierPointsTotal
+    customerTierPointsTotalEarned
   ) =>
     membershipTierList.map(({ level, name, spendingThreshold, pointsThreshold }) => {
       const tierColorPalette = MEMBER_CARD_COLOR_PALETTES[level] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER];
@@ -335,7 +335,7 @@ export const getMemberCardMembershipProgressTierList = createSelector(
       } else if (level === customerMembershipNextLevel) {
         // calculate current level spent total or collected points
         const unlockSpentCollectNumber = isMerchantMembershipPointsEnabled
-          ? customerTierPointsTotal - currentCustomerLevelPointsThreshold
+          ? customerTierPointsTotalEarned - currentCustomerLevelPointsThreshold
           : customerTierTotalSpent - currentCustomerLevelSpendingThreshold;
         // calculate current level should spending total or collecting points total
         const unlockSpentCollectThreshold = isMerchantMembershipPointsEnabled
@@ -358,13 +358,13 @@ export const getMemberCardMembershipLevelStatus = createSelector(
   getCustomerTierTotalSpent,
   getHighestMembershipTier,
   getIsMerchantMembershipPointsEnabled,
-  getCustomerTierPointsTotal,
+  getCustomerTierPointsTotalEarned,
   (
     customerTierLevel,
     customerTierTotalSpent,
     highestMembershipTier,
     isMerchantMembershipPointsEnabled,
-    customerTierPointsTotal
+    customerTierPointsTotalEarned
   ) => {
     const {
       level: highestTierLevel,
@@ -377,13 +377,13 @@ export const getMemberCardMembershipLevelStatus = createSelector(
         return MEMBERSHIP_LEVEL_STATUS.POINTS_UNLOCK_NEXT_LEVEL;
       }
 
-      if (customerTierLevel === highestTierLevel && customerTierPointsTotal >= highestTierPointsThreshold) {
+      if (customerTierLevel === highestTierLevel && customerTierPointsTotalEarned >= highestTierPointsThreshold) {
         return MEMBERSHIP_LEVEL_STATUS.LEVEL_COMPLETED;
       }
 
       // Customer achieved highest points threshold last review time, customer still maintain highest level.
       // But we will prompt customer to maintain highest level. Because collect points total will be cleared.
-      if (customerTierLevel === highestTierLevel && customerTierPointsTotal < highestTierPointsThreshold) {
+      if (customerTierLevel === highestTierLevel && customerTierPointsTotalEarned < highestTierPointsThreshold) {
         return MEMBERSHIP_LEVEL_STATUS.POINTS_LEVEL_MAINTAIN;
       }
     }
@@ -410,7 +410,7 @@ export const getMemberCardMembershipLevelStatus = createSelector(
 export const getMemberCardMembershipProgressMessageIn18nParams = createSelector(
   getCustomerTierLevelName,
   getCustomerTierTotalSpent,
-  getCustomerTierPointsTotal,
+  getCustomerTierPointsTotalEarned,
   getCustomerTierNextReviewTime,
   getMembershipTierList,
   getHighestMembershipTier,
@@ -422,7 +422,7 @@ export const getMemberCardMembershipProgressMessageIn18nParams = createSelector(
   (
     customerTierLevelName,
     customerTierTotalSpent,
-    customerTierPointsTotal,
+    customerTierPointsTotalEarned,
     customerTierNextReviewTime,
     membershipTierList,
     highestMembershipTier,
@@ -446,11 +446,11 @@ export const getMemberCardMembershipProgressMessageIn18nParams = createSelector(
     messageI18nParamsKeys.forEach(paramKey => {
       switch (paramKey) {
         case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.UNLOCK_COLLECT_POINTS:
-          membershipProgressMessageI18nParams[paramKey] = nextPointsThreshold - customerTierPointsTotal;
+          membershipProgressMessageI18nParams[paramKey] = nextPointsThreshold - customerTierPointsTotalEarned;
           break;
         case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.MAINTAIN_COLLECT_POINTS:
           membershipProgressMessageI18nParams[paramKey] =
-            highestMembershipTier.pointsThreshold - customerTierPointsTotal;
+            highestMembershipTier.pointsThreshold - customerTierPointsTotalEarned;
           break;
         case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.UNLOCK_SPEND_PRICE:
           membershipProgressMessageI18nParams[paramKey] = getPrice(nextTierSpendingThreshold - customerTierTotalSpent, {
