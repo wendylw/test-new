@@ -58,11 +58,11 @@
 .PointsRewardClaimedAlertIcon {
   @apply tw-mb-8 sm:tw-mb-8px tw-overflow-hidden;
 
-  width: 88px;
-  height: 88px;
+  width: 120px;
+  height: 80px;
 
   > figure {
-    @apply tw-bg-transparent;
+    @apply tw-h-full tw-bg-transparent;
   }
 }
 
