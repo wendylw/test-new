@@ -9,7 +9,7 @@ const UniquePromoListSection = () => {
   const { t } = useTranslation(['Rewards']);
   const isMyRewardsSectionShow = useSelector(getIsMyRewardsSectionShow);
 
-  if (isMyRewardsSectionShow) {
+  if (!isMyRewardsSectionShow) {
     return null;
   }
 
