@@ -1,6 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import {
+  API_REQUEST_STATUS,
   CLAIM_CASHBACK_QUERY_NAMES,
   CLAIM_CASHBACK_TYPES,
   PROMO_VOUCHER_DISCOUNT_TYPES,
@@ -161,4 +162,16 @@ export const getUniquePromoList = createSelector(
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };
     })
+);
+
+export const getIsLoadUniquePromoListCompleted = createSelector(
+  getLoadUniquePromoListStatus,
+  loadUniquePromoListStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadUniquePromoListStatus)
+);
+
+export const getIsUniquePromoListEmpty = createSelector(
+  getUniquePromoList,
+  getIsLoadUniquePromoListCompleted,
+  (uniquePromoList, isLoadUniquePromoListCompleted) => uniquePromoList.length === 0 && isLoadUniquePromoListCompleted
 );

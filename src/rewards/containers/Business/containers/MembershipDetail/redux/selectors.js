@@ -28,6 +28,7 @@ import {
   getOrderReceiptClaimedCashbackStatus,
   getOrderReceiptClaimedCashback,
   getRemainingCashbackExpiredDays,
+  getIsUniquePromoListEmpty,
 } from '../../../redux/common/selectors';
 import {
   getMerchantCurrency,
@@ -577,4 +578,11 @@ export const getIsExpiringIconShown = createSelector(
   getRemainingCashbackExpiredDays,
   (isMerchantEnabledCashback, remainingCashbackExpiredDays) =>
     isMerchantEnabledCashback && remainingCashbackExpiredDays !== null
+);
+
+export const getIsMyRewardsSectionShow = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getIsUniquePromoListEmpty,
+  (isMerchantMembershipPointsEnabled, isUniquePromoListEmpty) =>
+    !isMerchantMembershipPointsEnabled && !isUniquePromoListEmpty
 );

@@ -42,8 +42,8 @@ const StoreCreditsHistory = () => {
         <h2 className={styles.StoreCreditsHistoryListTitle}>{t('StoreCreditsHistory')}</h2>
         <HistoryList
           isEmpty={isStoreCreditsHistoryListEmpty}
-          emptyTitle={t('NoCashbackCollectedTitle')}
-          emptyDescription={t('NoCashbackCollectedDescription')}
+          emptyTitle={t('NoStoreCreditsCollectedTitle')}
+          emptyDescription={t('NoStoreCreditsCollectedDescription')}
           historyList={storeCreditsHistoryList}
         />
       </section>

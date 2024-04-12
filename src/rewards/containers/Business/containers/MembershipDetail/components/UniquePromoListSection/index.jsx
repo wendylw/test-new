@@ -1,15 +1,15 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { getIsMerchantMembershipPointsEnabled } from '../../../../../../../redux/modules/merchant/selectors';
+import { getIsMyRewardsSectionShow } from '../../redux/selectors';
 import UniquePromoList from '../../../../components/UniquePromoList';
 import styles from './UniquePromoListSection.module.scss';
 
 const UniquePromoListSection = () => {
   const { t } = useTranslation(['Rewards']);
-  const isMerchantMembershipPointsEnabled = useSelector(getIsMerchantMembershipPointsEnabled);
+  const isMyRewardsSectionShow = useSelector(getIsMyRewardsSectionShow);
 
-  if (isMerchantMembershipPointsEnabled) {
+  if (isMyRewardsSectionShow) {
     return null;
   }
 
