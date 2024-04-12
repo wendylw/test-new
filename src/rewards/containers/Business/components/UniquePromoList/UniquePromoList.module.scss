@@ -2,19 +2,6 @@
   @apply tw-flex tw-flex-col tw-gap-y-12 sm:tw-gap-y-12px;
 }
 
-.UniquePromoListEmptySection {
-  @apply tw-flex tw-flex-col tw-items-center tw-p-16 sm:tw-p-16px tw-my-16 sm:tw-my-16px tw-space-y-8 sm:tw-space-y-8px;
-}
-
-.UniquePromoListEmptyImage {
-  width: 21.333333%;
-  max-width: 80px;
-}
-
-.UniquePromoListEmptyTitle {
-  @apply tw-text-gray-700 tw-font-bold tw-leading-loose;
-}
-
 .UniquePromoCard {
   @apply tw-p-12 sm:tw-p-12px tw-rounded-lg tw-divide-y tw-divide-gray-200 tw-divide-solid tw-bg-gray-50 tw-shadow;
 }

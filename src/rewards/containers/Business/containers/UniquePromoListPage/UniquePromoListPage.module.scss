@@ -1,3 +1,18 @@
+.UniquePromoListEmptySection {
+  @apply tw-flex tw-flex-col tw-items-center tw-p-16 sm:tw-p-16px tw-my-16 sm:tw-my-16px tw-space-y-8 sm:tw-space-y-8px;
+
+  margin-top: 14vh;
+}
+
+.UniquePromoListEmptyImage {
+  width: 21.333333%;
+  max-width: 80px;
+}
+
+.UniquePromoListEmptyTitle {
+  @apply tw-text-gray-700 tw-font-bold tw-leading-loose;
+}
+
 .UniquePromoListPageContent {
   @apply tw-p-16 sm:tw-p-16px;
 }
