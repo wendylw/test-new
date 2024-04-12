@@ -125,17 +125,23 @@ export const getNewMemberPromptCategory = createSelector(
     }
 
     if (isFromSeamlessLoyaltyQrScan) {
-      if (isLoadMerchantRequestCompleted) {
-        return isMerchantMembershipPointsEnabled ? NEW_MEMBER_TYPES.ENABLED_POINTS : NEW_MEMBER_TYPES.DEFAULT;
+      if (!isLoadMerchantRequestCompleted) {
+        return null;
       }
 
-      if (isLoadMerchantRequestCompleted && isLoadCustomerRequestCompleted) {
-        return isMerchantEnabledCashback && customerCashback > 0
-          ? NEW_MEMBER_TYPES.REDEEM_CASHBACK
-          : NEW_MEMBER_TYPES.DEFAULT;
+      if (isMerchantMembershipPointsEnabled) {
+        return NEW_MEMBER_TYPES.ENABLED_POINTS;
       }
 
-      return null;
+      if (!isLoadCustomerRequestCompleted) {
+        return null;
+      }
+
+      if (isMerchantEnabledCashback && customerCashback > 0) {
+        return NEW_MEMBER_TYPES.REDEEM_CASHBACK;
+      }
+
+      return NEW_MEMBER_TYPES.DEFAULT;
     }
 
     if (isFromEarnedCashbackQrScan) {
