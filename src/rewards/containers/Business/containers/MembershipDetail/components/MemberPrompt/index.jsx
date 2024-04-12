@@ -65,6 +65,7 @@ const NewMember = () => {
       }, CELEBRATION_ANIMATION_TIME);
 
       alert(content, {
+        id: `NewMember${newMemberPromptCategory}`,
         onClose: handleCloseNewMemberPrompt,
       });
     }
@@ -134,6 +135,7 @@ const ReturningMember = () => {
             onClose: handleCloseReturningMemberPrompt,
           })
         : alert(content, {
+            id: `ReturningMember${returningMemberPromptCategory}`,
             onClose: handleCloseReturningMemberPrompt,
           });
     }
