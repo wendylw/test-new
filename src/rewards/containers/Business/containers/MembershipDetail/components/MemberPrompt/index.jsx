@@ -77,6 +77,7 @@ const NewMember = () => {
     newMemberIcon,
     newMemberTitleIn18nParams,
     handleCloseNewMemberPrompt,
+    newMemberPromptCategory,
   ]);
 
   return (
@@ -148,6 +149,7 @@ const ReturningMember = () => {
     returningMemberIcon,
     returningMemberTitleIn18nParams,
     handleCloseReturningMemberPrompt,
+    returningMemberPromptCategory,
   ]);
 
   return <></>;
