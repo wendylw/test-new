@@ -140,6 +140,8 @@ export const getNewMemberPromptCategory = createSelector(
       if (isMerchantEnabledCashback && customerCashback > 0) {
         return NEW_MEMBER_TYPES.REDEEM_CASHBACK;
       }
+
+      return NEW_MEMBER_TYPES.DEFAULT;
     }
 
     if (isFromEarnedCashbackQrScan) {
@@ -148,8 +150,7 @@ export const getNewMemberPromptCategory = createSelector(
       return claimedCashbackType || NEW_MEMBER_TYPES.DEFAULT;
     }
 
-    // WB-6499: show default new member prompt.
-    return NEW_MEMBER_TYPES.DEFAULT;
+    return null;
   }
 );
 
