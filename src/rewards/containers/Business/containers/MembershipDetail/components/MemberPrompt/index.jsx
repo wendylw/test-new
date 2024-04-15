@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import NewMemberCelebrationAnimateImage from '../../../../../../../images/succeed-animation.gif';
 import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
@@ -25,6 +26,7 @@ import styles from './MemberPrompt.module.scss';
 const CELEBRATION_ANIMATION_TIME = 3600;
 const NewMember = () => {
   const { t } = useTranslation(['Rewards']);
+  const history = useHistory();
   const merchantBusiness = useSelector(getMerchantBusiness);
   const newMemberPromptCategory = useSelector(getNewMemberPromptCategory);
   const newMemberTitleIn18nParams = useSelector(getNewMemberTitleIn18nParams);
@@ -34,11 +36,11 @@ const NewMember = () => {
   const [celebrationAnimateImage, setCelebrationAnimateImage] = useState(NewMemberCelebrationAnimateImage);
   const isCelebrationAnimationDisplay = celebrationAnimateImage && newMemberPromptCategory;
   const handleCloseNewMemberPrompt = useCallback(() => {
-    const pathname = `${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`;
+    const pathname = `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`;
     const search = `?business=${merchantBusiness}`;
     // Replace the current URL with the original URL: Fixed shown pop-up issue when user click the back button
-    window.history.replaceState(window.history.state, '', `${pathname}${search}`);
-  }, [merchantBusiness]);
+    history.replace({ pathname, search });
+  }, [merchantBusiness, history]);
 
   useEffect(() => {
     if (newMemberContentI18nKeys) {
@@ -63,6 +65,7 @@ const NewMember = () => {
       }, CELEBRATION_ANIMATION_TIME);
 
       alert(content, {
+        id: `NewMember${newMemberPromptCategory}`,
         onClose: handleCloseNewMemberPrompt,
       });
     }
@@ -74,6 +77,7 @@ const NewMember = () => {
     newMemberIcon,
     newMemberTitleIn18nParams,
     handleCloseNewMemberPrompt,
+    newMemberPromptCategory,
   ]);
 
   return (
@@ -93,6 +97,7 @@ NewMember.displayName = 'NewMember';
 
 const ReturningMember = () => {
   const { t } = useTranslation(['Rewards']);
+  const history = useHistory();
   const merchantBusiness = useSelector(getMerchantBusiness);
   const isFromJoinMembershipUrlClick = useSelector(getIsFromJoinMembershipUrlClick);
   const returningMemberPromptCategory = useSelector(getReturningMemberPromptCategory);
@@ -101,12 +106,12 @@ const ReturningMember = () => {
   const returningMemberContentI18nKeys = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory];
   const { titleI18nKey, descriptionI18nKey } = returningMemberContentI18nKeys || {};
   const handleCloseReturningMemberPrompt = useCallback(() => {
-    const pathname = `${PATH_NAME_MAPPING.REWARDS_BASE}${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`;
+    const pathname = `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`;
     const search = `?business=${merchantBusiness}`;
 
     // Replace the current URL with the original URL: Fixed shown pop-up issue when user click the back button
-    window.history.replaceState(window.history.state, '', `${pathname}${search}`);
-  }, [merchantBusiness]);
+    history.replace({ pathname, search });
+  }, [merchantBusiness, history]);
 
   useEffect(() => {
     if (returningMemberContentI18nKeys) {
@@ -131,6 +136,7 @@ const ReturningMember = () => {
             onClose: handleCloseReturningMemberPrompt,
           })
         : alert(content, {
+            id: `ReturningMember${returningMemberPromptCategory}`,
             onClose: handleCloseReturningMemberPrompt,
           });
     }
@@ -143,6 +149,7 @@ const ReturningMember = () => {
     returningMemberIcon,
     returningMemberTitleIn18nParams,
     handleCloseReturningMemberPrompt,
+    returningMemberPromptCategory,
   ]);
 
   return <></>;

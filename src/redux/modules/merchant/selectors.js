@@ -45,6 +45,10 @@ export const getIsMerchantMembershipEnabled = createSelector(getMerchantData, me
   _get(merchantData, 'membershipEnabled', false)
 );
 
+export const getIsMerchantPointsEnabled = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'pointsEnabled', false)
+);
+
 export const getIsMerchantEnabledDelivery = createSelector(getMerchantData, merchantData =>
   _get(merchantData, 'qrOrderingSettings.enableDelivery', false)
 );
@@ -66,4 +70,10 @@ export const getIsLoadMerchantRequestCompleted = createSelector(
   getLoadMerchantRequestStatus,
   loadMerchantRequestStatus =>
     [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadMerchantRequestStatus)
+);
+
+export const getIsMerchantMembershipPointsEnabled = createSelector(
+  getIsMerchantPointsEnabled,
+  getIsMerchantMembershipEnabled,
+  (isPointsEnabled, isMembershipEnabled) => isPointsEnabled && isMembershipEnabled
 );

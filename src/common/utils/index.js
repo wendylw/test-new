@@ -570,6 +570,7 @@ export const isJSON = value => {
 export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
 
+// The BE might return number in scientific notation format, like "1.2e3.4", convert to integers.
 export const getDecimalNumber = (number = 0) => {
   const scientificNotationRegex = /^[+-]?\d+(\.\d+)?[eE][+-]?\d+$/;
   const isScientificNotation = scientificNotationRegex.test(number);
