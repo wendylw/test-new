@@ -18,7 +18,17 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'rewards/business/membershipDetail',
   initialState,
-  reducers: {},
+  reducers: {
+    earnedPointsPromptDrawerShown: state => {
+      state.isEarnedPointsPromptDrawerShow = true;
+    },
+    earnedPointsPromptDrawerHidden: state => {
+      state.isEarnedPointsPromptDrawerShow = false;
+    },
+    claimPointsRewardRequestReset: state => {
+      state.claimPointsRewardRequest = initialState.claimPointsRewardRequest;
+    },
+  },
   extraReducers: {
     [fetchPointsRewardList.pending.type]: state => {
       state.loadPointsRewardListRequest.status = API_REQUEST_STATUS.PENDING;
