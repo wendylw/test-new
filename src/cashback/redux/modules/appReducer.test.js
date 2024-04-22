@@ -1,13 +1,4 @@
-import appReducers, {
-  initialState,
-  getUser,
-  getBusiness,
-  getBusinessInfo,
-  getError,
-  getOnlineStoreInfo,
-  getRequestInfo,
-  getMessageInfo,
-} from './app';
+import appReducers, { initialState, getUser, getBusiness, getBusinessInfo, getError, getRequestInfo } from './app';
 import rootReducer from './index';
 import { APP_TYPES as types } from '../types';
 import { getReducerNewState } from '../../../utils/testHelper';
@@ -209,18 +200,6 @@ describe('src/cashback/redux/modules/app.js:reducers', () => {
       expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
     });
 
-    it('types.SET_CASHBACK_MESSAGE_SUCCESS', () => {
-      const action = {
-        type: types.SET_CASHBACK_MESSAGE_SUCCESS,
-        ...messageActionInfo,
-      };
-      const expectedState = {
-        ...initialState.messageInfo,
-        key: 'mockStatus',
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
-    });
-
     it('default', () => {
       expect(getReducerNewState(appReducers, { type: 'default' }, nameField)).toEqual({
         ...initialState.messageInfo,
@@ -253,15 +232,9 @@ describe('src/cashback/redux/modules/app.js:selectors', () => {
     const expectedState = initialState.error;
     expect(getError(state)).toEqual(expectedState);
   });
-  it('getOnlineStoreInfo', () => {
-    expect(getOnlineStoreInfo(state)).toEqual(undefined);
-  });
+
   it('getRequestInfo', () => {
     const expectedState = initialState.requestInfo;
     expect(getRequestInfo(state)).toEqual(expectedState);
-  });
-  it('getMessageInfo', () => {
-    const expectedState = initialState.messageInfo;
-    expect(getMessageInfo(state)).toEqual(expectedState);
   });
 });

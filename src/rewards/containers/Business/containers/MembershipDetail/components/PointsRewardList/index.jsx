@@ -13,6 +13,7 @@ import {
   getIsClaimPointsRewardSuccessfulAlertShow,
   getClaimPointsRewardErrorI18nKeys,
 } from '../../redux/selectors';
+import { actions as membershipDetailActions } from '../../redux';
 import { pointsClaimRewardButtonClicked, skipProfileButtonClicked, saveProfileButtonClicked } from '../../redux/thunks';
 import { alert, confirm } from '../../../../../../../common/utils/feedback';
 import PageToast from '../../../../../../../common/components/PageToast';
@@ -77,10 +78,15 @@ const PointsRewardList = () => {
           </div>
           <h4 className={styles.PointsRewardClaimedAlertTitle}>{t('PointsRewardClaimedTitle')}</h4>
           <p className={styles.PointsRewardClaimedAlertDescription}>{t('PointsRewardClaimedDescription')}</p>
-        </div>
+        </div>,
+        {
+          onClose: () => {
+            dispatch(membershipDetailActions.claimPointsRewardRequestReset());
+          },
+        }
       );
     }
-  }, [t, isClaimPointsRewardSuccessfulAlertShow]);
+  }, [t, isClaimPointsRewardSuccessfulAlertShow, dispatch]);
 
   useEffect(() => {
     if (claimPointsRewardErrorI18nKeys) {
@@ -88,9 +94,12 @@ const PointsRewardList = () => {
 
       alert(t(descriptionI18nKey), {
         title: t(titleI18nKey),
+        onClose: () => {
+          dispatch(membershipDetailActions.claimPointsRewardRequestReset());
+        },
       });
     }
-  }, [claimPointsRewardErrorI18nKeys, t]);
+  }, [claimPointsRewardErrorI18nKeys, t, dispatch]);
 
   if (!isPointsRewardListShown) {
     return null;

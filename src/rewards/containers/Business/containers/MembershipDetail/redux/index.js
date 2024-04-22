@@ -18,7 +18,11 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'rewards/business/membershipDetail',
   initialState,
-  reducers: {},
+  reducers: {
+    claimPointsRewardRequestReset: state => {
+      state.claimPointsRewardRequest = initialState.claimPointsRewardRequest;
+    },
+  },
   extraReducers: {
     [fetchPointsRewardList.pending.type]: state => {
       state.loadPointsRewardListRequest.status = API_REQUEST_STATUS.PENDING;

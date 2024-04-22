@@ -7,3 +7,5 @@ export const getIsWebview = () => isWebview();
 export const getIsAlipayMiniProgram = () => isAlipayMiniProgram();
 
 export const getIsWeb = () => !isWebview() && !isAlipayMiniProgram();
+
+export const getMessageInfo = state => state.common.messageInfo;

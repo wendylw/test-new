@@ -1,22 +1,26 @@
 import { combineReducers } from 'redux';
 import entities from '../../../redux/modules/entities';
 import app from './app';
+import common from './common';
 import customer from './customer';
-import home from './home';
 import user from '../../../redux/modules/user';
 import merchant from '../../../redux/modules/merchant';
+import cashbackHome from '../../containers/Home/redux';
 import claimCashback from '../../containers/ClaimCashback/redux';
 import storeRedemption from '../../containers/StoreRedemption/redux';
+import cashbackHistory from '../../containers/CashbackHistory/redux';
 
 const rootReducer = combineReducers({
   entities,
   app,
+  common,
   customer,
-  home,
+  cashbackHome,
   user,
   merchant,
   claimCashback,
   storeRedemption,
+  cashbackHistory,
 });
 
 export default rootReducer;
