@@ -567,16 +567,17 @@ export const getCountry = (phone, language, countries, defaultCountry) => {
   }
 
   const languageSplit = language.split('-').map(l => l.toUpperCase());
+  const upperCasesCountries = countries.map(c => c.toUpperCase());
 
   if (!languageSplit[0] && !languageSplit[1]) {
     return defaultCountry;
   }
 
-  if (languageSplit[1] && countries.includes(languageSplit[1])) {
+  if (languageSplit[1] && upperCasesCountries.includes(languageSplit[1])) {
     return languageSplit[1];
   }
 
-  if (languageSplit[0] && countries.includes(languageSplit[0])) {
+  if (languageSplit[0] && upperCasesCountries.includes(languageSplit[0])) {
     return languageSplit[0];
   }
 
@@ -861,6 +862,10 @@ export const getPrice = (number = 0, { locale, currency, country, withCurrency =
 export const toCapitalize = (string = '') => {
   if (!string) {
     return '';
+  }
+
+  if (typeof string !== 'string') {
+    return string;
   }
 
   return string.charAt(0).toUpperCase() + string.slice(1);
