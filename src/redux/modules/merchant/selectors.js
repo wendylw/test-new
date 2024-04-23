@@ -37,8 +37,16 @@ export const getIsMerchantEnabledCashback = createSelector(getMerchantData, merc
   _get(merchantData, 'enableCashback', false)
 );
 
+export const getMerchantClaimCashbackCountPerDay = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'claimCashbackCountPerDay', 0)
+);
+
 export const getIsMerchantMembershipEnabled = createSelector(getMerchantData, merchantData =>
   _get(merchantData, 'membershipEnabled', false)
+);
+
+export const getIsMerchantPointsEnabled = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'pointsEnabled', false)
 );
 
 export const getIsMerchantEnabledDelivery = createSelector(getMerchantData, merchantData =>
@@ -62,4 +70,10 @@ export const getIsLoadMerchantRequestCompleted = createSelector(
   getLoadMerchantRequestStatus,
   loadMerchantRequestStatus =>
     [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadMerchantRequestStatus)
+);
+
+export const getIsMerchantMembershipPointsEnabled = createSelector(
+  getIsMerchantPointsEnabled,
+  getIsMerchantMembershipEnabled,
+  (isPointsEnabled, isMembershipEnabled) => isPointsEnabled && isMembershipEnabled
 );

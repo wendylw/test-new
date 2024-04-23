@@ -21,10 +21,10 @@ import {
 } from '../../../../../../redux/modules/user/thunks';
 import { getMerchantBusiness, getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
-import { joinMembership } from '../../../../../../redux/modules/membership/thunks';
+import { joinMembership, fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
-import { getShouldShowProfileForm } from './selectors';
+import { getShouldShowProfileForm, getStoreId } from './selectors';
 
 export const showWebProfileForm = createAsyncThunk(
   'rewards/business/membershipForm/showWebProfileForm',
@@ -51,8 +51,9 @@ export const joinBusinessMembership = createAsyncThunk(
     const business = getBusiness(state);
     const source = getSource(state);
     const consumerId = getConsumerId(state);
+    const storeId = getStoreId(state);
 
-    await dispatch(joinMembership({ business, source, consumerId }));
+    await dispatch(joinMembership({ business, source, consumerId, storeId }));
     await dispatch(fetchCustomerInfo(business));
   }
 );
@@ -145,6 +146,7 @@ export const mounted = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     const business = getBusiness(getState());
 
+    dispatch(fetchMembershipsInfo(business));
     await dispatch(fetchMerchantInfo(business));
 
     const country = getMerchantCountry(getState());

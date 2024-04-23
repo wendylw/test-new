@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
 import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
+import { getQueryString } from '../../../../../../common/utils';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import {
   getIsLogin,
@@ -20,6 +21,8 @@ import {
   getLoadCustomerRequestError,
   getHasUserJoinedMerchantMembership,
 } from '../../../../../redux/modules/customer/selectors';
+
+export const getStoreId = () => getQueryString('storeId');
 
 export const getIsLoadCustomerRequestStatusRejected = createSelector(
   getLoadCustomerRequestStatus,

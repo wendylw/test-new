@@ -26,16 +26,13 @@ import logger from '../../../utils/monitoring/logger';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { post } from '../../../utils/api/api-fetch';
 import { getConsumerLoginStatus, getProfileInfo, getCoreBusinessInfo } from './api-request';
-import { getAllLoyaltyHistories } from '../../../redux/modules/entities/loyaltyHistories';
 import { REGISTRATION_SOURCE, PATH_NAME_MAPPING } from '../../../common/utils/constants';
-import { isJSON, isWebview } from '../../../common/utils';
+import { isJSON } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { ERROR_TYPES } from '../../../utils/api/constants';
-import { getCustomerId } from './customer/selectors';
 
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const { AUTH_INFO, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
@@ -75,22 +72,9 @@ export const initialState = {
       status: null,
     },
     showLoginModal: false,
-    totalCredits: 0,
   },
-  customerInfo: {},
   error: null, // network error
-  messageInfo: {
-    show: false,
-    key: null,
-    message: null,
-  }, // message modal
   business: config.business,
-  onlineStoreInfo: {
-    id: '',
-    logo: null,
-    isFetching: false,
-    loadOnlineStoreInfoStatus: null,
-  },
   coreBusiness: {
     enableCashback: true,
     loadCoreBusinessStatus: null,
@@ -359,32 +343,6 @@ export const actions = {
     type: types.CLEAR_ERROR,
   }),
 
-  setMessageInfo: ({ key, message }) => ({
-    type: types.SET_MESSAGE_INFO,
-    key,
-    message,
-  }),
-
-  setCashbackMessage: () => dispatch => {
-    const status = Utils.getLocalStorageVariable('cashback.status');
-
-    if (status) {
-      Utils.removeLocalStorageVariable('cashback.status');
-      dispatch({
-        type: types.SET_CASHBACK_MESSAGE_SUCCESS,
-        status,
-      });
-    }
-  },
-
-  showMessageInfo: () => ({
-    type: types.SHOW_MESSAGE_MODAL,
-  }),
-
-  hideMessageInfo: () => ({
-    type: types.HIDE_MESSAGE_MODAL,
-  }),
-
   setLoginPrompt: prompt => ({
     type: types.SET_LOGIN_PROMPT,
     prompt,
@@ -412,17 +370,6 @@ export const actions = {
     }
   },
 
-  fetchOnlineStoreInfo: () => ({
-    [FETCH_GRAPHQL]: {
-      types: [
-        types.FETCH_ONLINE_STORE_INFO_REQUEST,
-        types.FETCH_ONLINE_STORE_INFO_SUCCESS,
-        types.FETCH_ONLINE_STORE_INFO_FAILURE,
-      ],
-      endpoint: Url.apiGql('OnlineStoreInfo'),
-    },
-  }),
-
   fetchCashbackBusiness: () => ({
     [API_REQUEST]: {
       types: [
@@ -436,28 +383,11 @@ export const actions = {
       },
     },
   }),
-
-  getCashbackHistory: customerId => ({
-    [API_REQUEST]: {
-      types: [
-        types.GET_CASHBACK_HISTORIES_REQUEST,
-        types.GET_CASHBACK_HISTORIES_SUCCESS,
-        types.GET_CASHBACK_HISTORIES_FAILURE,
-      ],
-      ...Url.API_URLS.GET_CASHBACK_HISTORIES,
-      params: {
-        customerId,
-      },
-    },
-  }),
 };
 
 const user = (state = initialState.user, action) => {
-  const { type, response, responseGql, prompt, error, payload } = action || {};
-  const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken, totalCredits } =
-    response || {};
-  const { data } = responseGql || {};
-  const { business, onlineStoreInfo } = data || {};
+  const { type, response, prompt, error, payload } = action || {};
+  const { login, consumerId, supportWhatsApp, access_token: accessToken, refresh_token: refreshToken } = response || {};
   const otpType = _get(payload, 'otpType', null);
 
   switch (type) {
@@ -569,18 +499,6 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     }
-    // fetch online store info success
-    // fetch core business success
-    case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
-      if (!state.phone && business && business.country) {
-        return { ...state, country: business.country };
-      }
-
-      if (!state.phone && onlineStoreInfo && onlineStoreInfo.country) {
-        return { ...state, country: onlineStoreInfo.country };
-      }
-
-      return state;
     case types.UPDATE_USER:
       return { ...state, ...action.user };
     case types.SET_LOGIN_PROMPT:
@@ -612,20 +530,6 @@ const user = (state = initialState.user, action) => {
           status: API_REQUEST_STATUS.REJECTED,
           error,
         },
-      };
-    case types.GET_CASHBACK_HISTORIES_REQUEST:
-      return {
-        ...state,
-      };
-    case types.GET_CASHBACK_HISTORIES_SUCCESS: {
-      return {
-        ...state,
-        totalCredits,
-      };
-    }
-    case types.GET_CASHBACK_HISTORIES_FAILURE:
-      return {
-        ...state,
       };
     default:
       return state;
@@ -664,28 +568,6 @@ const business = (state = initialState.business, action) => {
   }
 };
 
-const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
-  const { type, responseGql } = action;
-  const { data } = responseGql || {};
-  const { onlineStoreInfo: info } = data || {};
-
-  switch (type) {
-    case types.FETCH_ONLINE_STORE_INFO_REQUEST:
-      return { ...state, isFetching: true, loadOnlineStoreInfoStatus: API_REQUEST_STATUS.PENDING };
-    case types.FETCH_ONLINE_STORE_INFO_SUCCESS:
-      return {
-        ...state,
-        isFetching: false,
-        id: info.id || '',
-        loadOnlineStoreInfoStatus: API_REQUEST_STATUS.FULFILLED,
-      };
-    case types.FETCH_ONLINE_STORE_INFO_FAILURE:
-      return { ...state, isFetching: false, loadOnlineStoreInfoStatus: API_REQUEST_STATUS.REJECTED };
-    default:
-      return state;
-  }
-};
-
 const coreBusiness = (state = initialState.coreBusiness, action) => {
   const { payload, type } = action || {};
   const enableCashback = payload || {};
@@ -702,46 +584,17 @@ const coreBusiness = (state = initialState.coreBusiness, action) => {
   }
 };
 
-const messageInfo = (state = initialState.messageInfo, action) => {
-  switch (action.type) {
-    case types.SET_MESSAGE_INFO: {
-      const { key, message } = action;
-      return { ...state, key, message };
-    }
-    case types.SHOW_MESSAGE_MODAL: {
-      return { ...state, show: true };
-    }
-    case types.HIDE_MESSAGE_MODAL: {
-      return { ...state, show: false, key: null, message: null };
-    }
-    case types.SET_CASHBACK_MESSAGE_SUCCESS: {
-      const { status } = action;
-
-      return {
-        ...state,
-        key: status,
-      };
-    }
-    default:
-      return state;
-  }
-};
-
 const requestInfo = (state = initialState.requestInfo) => state;
 
 export default combineReducers({
   user,
   error,
-  messageInfo,
   business,
-  onlineStoreInfo,
   coreBusiness,
   requestInfo,
 });
 
 // selectors
-export const getIsWeb = () => !isWebview() && !isAlipayMiniProgram();
-export const getIsWebview = () => isWebview();
 export const getUser = state => state.app.user;
 export const getOtpRequest = state => state.app.user.otpRequest;
 export const getLoginAlipayMiniProgramRequest = state => state.app.user.loginAlipayMiniProgramRequest;
@@ -749,47 +602,11 @@ export const getUserProfile = state => state.app.user.profile;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => getBusinessByName(state, state.app.business);
 export const getError = state => state.app.error;
-export const getOnlineStoreInfo = state => state.entities.onlineStores[state.app.onlineStoreInfo.id];
 export const getCoreBusiness = state => state.app.coreBusiness;
 export const getRequestInfo = state => state.app.requestInfo;
-export const getMessageInfo = state => state.app.messageInfo;
-
-export const getOnlineStoreInfoFavicon = createSelector(getOnlineStoreInfo, info => _get(info, 'favicon', null));
-
-export const getOnlineStoreInfoLogo = createSelector(getOnlineStoreInfo, info => _get(info, 'logo', null));
-
-export const getLoadOnlineStoreInfoStatus = state => _get(state.app.onlineStoreInfo, 'loadOnlineStoreInfoStatus', null);
-
-export const getIsOnlineStoreInfoLoaded = createSelector(
-  getLoadOnlineStoreInfoStatus,
-  loadOnlineStoreInfoStatus => loadOnlineStoreInfoStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadOnlineStoreInfoFailed = createSelector(
-  getLoadOnlineStoreInfoStatus,
-  loadOnlineStoreInfoStatus => loadOnlineStoreInfoStatus === API_REQUEST_STATUS.REJECTED
-);
 
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'timezoneOffset', 480)
-);
-
-export const getLoadCoreBusinessStatus = createSelector(getCoreBusiness, coreBusinessInfo =>
-  _get(coreBusinessInfo, 'loadCoreBusinessStatus', null)
-);
-
-export const getIsCoreBusinessLoaded = createSelector(
-  getLoadCoreBusinessStatus,
-  loadCoreBusinessStatus => loadCoreBusinessStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadCoreBusinessFailed = createSelector(
-  getLoadCoreBusinessStatus,
-  loadCoreBusinessStatus => loadCoreBusinessStatus === API_REQUEST_STATUS.REJECTED
-);
-
-export const getIsCoreBusinessEnableCashback = createSelector(getCoreBusiness, coreBusinessInfo =>
-  _get(coreBusinessInfo, 'enableCashback', false)
 );
 
 // TODO: Will remove from reducer, prompt should in component
@@ -918,15 +735,4 @@ export const getShouldShowLoader = createSelector(
   getIsOtpRequestStatusPending,
   getIsLoginRequestStatusPending,
   (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
-);
-
-export const getLoginAlipayMiniProgramRequestError = createSelector(
-  getLoginAlipayMiniProgramRequest,
-  loginAlipayMiniProgramRequest => loginAlipayMiniProgramRequest?.error || null
-);
-
-export const getCashbackHistory = createSelector(
-  getCustomerId,
-  getAllLoyaltyHistories,
-  (customerId, allLoyaltyHistories) => allLoyaltyHistories[customerId]
 );

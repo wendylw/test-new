@@ -1,13 +1,13 @@
 import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { alert } from '../../../common/utils/feedback';
-import { postUserMembership } from './api-request';
+import { postUserMembership, getMembershipsInfo } from './api-request';
 
 export const joinMembership = createAsyncThunk(
   'app/membership/joinMembership',
-  async ({ business, source, consumerId }) => {
+  async ({ business, source, consumerId, storeId }) => {
     try {
-      const result = await postUserMembership({ consumerId, business, source });
+      const result = await postUserMembership({ consumerId, business, source, storeId });
       return result;
     } catch (error) {
       alert(i18next.t('UnknownErrorDescription'), {
@@ -17,3 +17,9 @@ export const joinMembership = createAsyncThunk(
     }
   }
 );
+
+export const fetchMembershipsInfo = createAsyncThunk('app/membership/fetchMembershipsInfo', async business => {
+  const result = await getMembershipsInfo(business);
+
+  return result;
+});

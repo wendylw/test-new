@@ -130,6 +130,7 @@ export const PATH_NAME_MAPPING = {
   MEMBERSHIP_DETAIL: '/membership-detail',
   SEAMLESS_LOYALTY: '/seamless-loyalty',
   UNIQUE_PROMO: '/promo',
+  LIST: '/list',
   CLAIM: '/claim',
   REWARDS_LOGIN: '/login',
   CASHBACK: '/cashback',
@@ -329,12 +330,14 @@ export const MEMBER_CARD_COLOR_PALETTES = {
         startColor: '#DCFCFF',
         endColor: '#D2DEFF',
       },
+      outlineColor: '#303030',
     },
     background: {
       startColor: '#91F7E7',
       midColor: '#99C8FF',
       endColor: '#52A1FF',
     },
+    progress: '#303030',
     font: '#303030',
   },
   [MEMBER_LEVELS.SLIVER]: {
@@ -347,12 +350,14 @@ export const MEMBER_CARD_COLOR_PALETTES = {
         startColor: '#F3F3F3',
         endColor: '#CCCCCC',
       },
+      outlineColor: '#303030',
     },
     background: {
       startColor: '#AFAFAF',
       midColor: '#E0E0E0',
       endColor: '#CCC',
     },
+    progress: '#303030',
     font: '#303030',
   },
   [MEMBER_LEVELS.GOLD]: {
@@ -365,12 +370,14 @@ export const MEMBER_CARD_COLOR_PALETTES = {
         startColor: '#FFFBE6',
         endColor: '#FFFEAD',
       },
+      outlineColor: '#303030',
     },
     background: {
       startColor: '#FFF143',
       midColor: '#FFBD17',
       endColor: '#FFCF43',
     },
+    progress: '#303030',
     font: '#303030',
   },
   [MEMBER_LEVELS.PLATINUM]: {
@@ -383,12 +390,14 @@ export const MEMBER_CARD_COLOR_PALETTES = {
         startColor: '#EAEAEA',
         endColor: '#AFAFAF',
       },
+      outlineColor: '#717171',
     },
     background: {
       startColor: '#000000',
       midColor: '#4E4E4E',
       endColor: '#000000',
     },
+    progress: '#717171',
     font: '#FFFFFF',
   },
 };

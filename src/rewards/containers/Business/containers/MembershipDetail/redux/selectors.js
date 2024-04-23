@@ -5,17 +5,23 @@ import {
   PROMO_VOUCHER_STATUS,
   MEMBER_LEVELS,
   MEMBER_CARD_COLOR_PALETTES,
+  API_REQUEST_STATUS,
 } from '../../../../../../common/utils/constants';
-import { getPrice } from '../../../../../../common/utils';
+import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
-  I18N_PARAM_KEYS,
+  MEMBER_TYPE_I18N_PARAM_KEYS,
   NEW_MEMBER_TYPES,
   NEW_MEMBER_CASHBACK_STATUS_TYPES,
   NEW_MEMBER_I18N_KEYS,
   RETURNING_MEMBER_TYPES,
   RETURNING_MEMBER_CASHBACK_STATUS_TYPES,
   RETURNING_MEMBER_I18N_KEYS,
+  MEMBERSHIP_LEVEL_I18N_PARAM_KEYS,
+  MEMBERSHIP_LEVEL_I18N_KEYS,
+  MEMBERSHIP_LEVEL_STATUS,
+  CLAIMED_POINTS_REWARD_ERROR_CODES,
+  CLAIMED_POINTS_REWARD_ERROR_I18N_KEYS,
 } from '../utils/constants';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
 import { getOrderReceiptClaimedCashbackStatus, getOrderReceiptClaimedCashback } from '../../../redux/common/selectors';
@@ -26,19 +32,36 @@ import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledDelivery,
   getIsMerchantEnabledOROrdering,
+  getIsMerchantMembershipPointsEnabled,
+  getIsLoadMerchantRequestCompleted,
 } from '../../../../../../redux/modules/merchant/selectors';
+import { getMembershipTierList, getHighestMembershipTier } from '../../../../../../redux/modules/membership/selectors';
 import {
   getCustomerCashback,
+  getCustomerTierTotalSpent,
   getCustomerTierLevel,
+  getCustomerTierNextReviewTime,
   getIsLoadCustomerRequestCompleted,
+  getCustomerTierLevelName,
+  getCustomerAvailablePointsBalance,
 } from '../../../../../redux/modules/customer/selectors';
 
-export const getLoadUniquePromoListData = state =>
-  state.business.membershipDetail.loadUniquePromoListRequest.data || [];
+export const getIsProfileModalShow = state => state.business.membershipDetail.isProfileModalShow;
 
-export const getLoadUniquePromoListStatus = state => state.business.membershipDetail.loadUniquePromoListRequest.status;
+export const getIsEarnedPointsPromptDrawerShow = state =>
+  state.business.membershipDetail.isEarnedPointsPromptDrawerShow;
 
-export const getLoadUniquePromoListError = state => state.business.membershipDetail.loadUniquePromoListRequest.error;
+export const getLoadPointsRewardListData = state =>
+  state.business.membershipDetail.loadPointsRewardListRequest.data || [];
+
+export const getLoadPointsRewardListStatus = state =>
+  state.business.membershipDetail.loadPointsRewardListRequest.status;
+
+export const getLoadPointsRewardListError = state => state.business.membershipDetail.loadPointsRewardListRequest.error;
+
+export const getClaimPointsRewardStatus = state => state.business.membershipDetail.claimPointsRewardRequest.status;
+
+export const getClaimPointsRewardError = state => state.business.membershipDetail.claimPointsRewardRequest.error;
 
 /**
  * Derived selectors
@@ -76,53 +99,11 @@ export const getIsOrderAndRedeemButtonDisplay = createSelector(
     !isUserFromOrdering && isOROrderingEnabled && isDeliveryEnabled
 );
 
-export const getUniquePromoList = createSelector(
-  getMerchantCurrency,
-  getMerchantLocale,
-  getMerchantCountry,
-  getLoadUniquePromoListData,
-  (merchantCurrency, merchantLocale, merchantCountry, uniquePromoList) =>
-    uniquePromoList.map(promo => {
-      if (!promo) {
-        return promo;
-      }
-
-      const { id, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
-
-      return {
-        id,
-        value:
-          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
-            ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
-        name,
-        status,
-        limitations: [
-          minSpendAmount && {
-            key: `unique-promo-${id}-limitation-0`,
-            i18nKey: 'MinConsumption',
-            params: {
-              amount: getPrice(minSpendAmount, {
-                locale: merchantLocale,
-                currency: merchantCurrency,
-                country: merchantCountry,
-              }),
-            },
-          },
-          validTo && {
-            key: `unique-promo-${id}-limitation-1`,
-            i18nKey: 'ValidUntil',
-            params: { date: formatTimeToDateString(merchantCountry, validTo) },
-          },
-        ].filter(limitation => Boolean(limitation)),
-        isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
-      };
-    })
-);
-
 export const getNewMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
+  getIsLoadMerchantRequestCompleted,
   getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
   getCustomerCashback,
   getOrderReceiptClaimedCashbackStatus,
   getIsFromSeamlessLoyaltyQrScan,
@@ -130,7 +111,9 @@ export const getNewMemberPromptCategory = createSelector(
   getIsFromEarnedCashbackQrScan,
   (
     isLoadCustomerRequestCompleted,
+    isLoadMerchantRequestCompleted,
     isMerchantEnabledCashback,
+    isMerchantMembershipPointsEnabled,
     customerCashback,
     claimedCashbackStatus,
     isFromSeamlessLoyaltyQrScan,
@@ -141,10 +124,24 @@ export const getNewMemberPromptCategory = createSelector(
       return NEW_MEMBER_TYPES.DEFAULT;
     }
 
-    if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
-      return isMerchantEnabledCashback && customerCashback > 0
-        ? NEW_MEMBER_TYPES.REDEEM_CASHBACK
-        : NEW_MEMBER_TYPES.DEFAULT;
+    if (isFromSeamlessLoyaltyQrScan) {
+      if (!isLoadMerchantRequestCompleted) {
+        return null;
+      }
+
+      if (isMerchantMembershipPointsEnabled) {
+        return NEW_MEMBER_TYPES.ENABLED_POINTS;
+      }
+
+      if (!isLoadCustomerRequestCompleted) {
+        return null;
+      }
+
+      if (isMerchantEnabledCashback && customerCashback > 0) {
+        return NEW_MEMBER_TYPES.REDEEM_CASHBACK;
+      }
+
+      return NEW_MEMBER_TYPES.DEFAULT;
     }
 
     if (isFromEarnedCashbackQrScan) {
@@ -153,8 +150,7 @@ export const getNewMemberPromptCategory = createSelector(
       return claimedCashbackType || NEW_MEMBER_TYPES.DEFAULT;
     }
 
-    // WB-6499: show default new member prompt.
-    return NEW_MEMBER_TYPES.DEFAULT;
+    return null;
   }
 );
 
@@ -170,7 +166,7 @@ export const getNewMemberTitleIn18nParams = createSelector(
     }
 
     titleI18nParamsKeys.forEach(paramKey => {
-      if (paramKey === I18N_PARAM_KEYS.CASHBACK_VALUE) {
+      if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE) {
         newMemberTitleI18nParams[paramKey] = claimedCashback;
       }
     });
@@ -181,7 +177,9 @@ export const getNewMemberTitleIn18nParams = createSelector(
 
 export const getReturningMemberPromptCategory = createSelector(
   getIsLoadCustomerRequestCompleted,
+  getIsLoadMerchantRequestCompleted,
   getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
   getCustomerCashback,
   getOrderReceiptClaimedCashbackStatus,
   getIsFromJoinMembershipUrlClick,
@@ -189,7 +187,9 @@ export const getReturningMemberPromptCategory = createSelector(
   getIsFromEarnedCashbackQrScan,
   (
     isLoadCustomerRequestCompleted,
+    isLoadMerchantRequestCompleted,
     isMerchantEnabledCashback,
+    isMerchantMembershipPointsEnabled,
     customerCashback,
     claimedCashbackStatus,
     isFromJoinMembershipUrlClick,
@@ -200,10 +200,16 @@ export const getReturningMemberPromptCategory = createSelector(
       return RETURNING_MEMBER_TYPES.DEFAULT;
     }
 
-    if (isFromSeamlessLoyaltyQrScan && isLoadCustomerRequestCompleted) {
-      return isMerchantEnabledCashback && customerCashback > 0
-        ? RETURNING_MEMBER_TYPES.REDEEM_CASHBACK
-        : RETURNING_MEMBER_TYPES.THANKS_COMING_BACK;
+    if (isFromSeamlessLoyaltyQrScan) {
+      if (isLoadMerchantRequestCompleted && isMerchantMembershipPointsEnabled) {
+        return RETURNING_MEMBER_TYPES.ENABLED_POINTS;
+      }
+
+      if (isLoadMerchantRequestCompleted && isLoadCustomerRequestCompleted) {
+        return isMerchantEnabledCashback && customerCashback > 0
+          ? RETURNING_MEMBER_TYPES.REDEEM_CASHBACK
+          : RETURNING_MEMBER_TYPES.THANKS_COMING_BACK;
+      }
     }
 
     if (isFromEarnedCashbackQrScan) {
@@ -228,7 +234,7 @@ export const getReturningMemberTitleIn18nParams = createSelector(
     }
 
     titleI18nParamsKeys.forEach(paramKey => {
-      if (paramKey === I18N_PARAM_KEYS.CASHBACK_VALUE) {
+      if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE) {
         returningMemberTitleI18nParams[paramKey] = claimedCashback;
       }
     });
@@ -254,9 +260,259 @@ export const getMemberCardStyles = createSelector(getMemberColorPalettes, member
   background: `linear-gradient(105deg, ${memberCardColorPalettes.background.startColor} 0%, ${memberCardColorPalettes.background.midColor} 50%,${memberCardColorPalettes.background.endColor} 100%)`,
 }));
 
+export const getMemberCardTierProgressBarStyles = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
+  color: memberCardColorPalettes.font,
+  activeBackground: memberCardColorPalettes.icon.outlineColor,
+  progressBackground: memberCardColorPalettes.progress,
+}));
+
 export const getMemberCardIconColors = createSelector(getMemberColorPalettes, memberCardColorPalettes => ({
   crownStartColor: memberCardColorPalettes.icon.crown.startColor,
   crownEndColor: memberCardColorPalettes.icon.crown.endColor,
   backgroundStartColor: memberCardColorPalettes.icon.background.startColor,
   backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
 }));
+
+export const getIsMemberCardMembershipProgressBarShow = createSelector(
+  getMembershipTierList,
+  membershipTierList => membershipTierList.length > 1
+);
+
+export const getCustomerMembershipNextLevel = createSelector(getCustomerTierLevel, customerTierLevel => {
+  const memberLevels = Object.values(MEMBER_LEVELS);
+  const currentLevelIndex = memberLevels.indexOf(customerTierLevel);
+
+  return memberLevels[currentLevelIndex + 1];
+});
+
+export const getCurrentCustomerLevelSpendingThreshold = createSelector(
+  getCustomerTierLevel,
+  getMembershipTierList,
+  (customerTierLevel, membershipTierList) => {
+    const currentTier = membershipTierList.find(({ level }) => level === customerTierLevel);
+
+    return currentTier ? currentTier.spendingThreshold : 0;
+  }
+);
+
+export const getMemberCardMembershipProgressTierList = createSelector(
+  getCustomerTierLevel,
+  getCustomerMembershipNextLevel,
+  getCurrentCustomerLevelSpendingThreshold,
+  getCustomerTierTotalSpent,
+  getMembershipTierList,
+  (
+    customerTierLevel,
+    customerMembershipNextLevel,
+    currentCustomerLevelSpendingThreshold,
+    customerTierTotalSpent,
+    membershipTierList
+  ) =>
+    membershipTierList.map(({ level, name, spendingThreshold }) => {
+      const tierColorPalette = MEMBER_CARD_COLOR_PALETTES[level] || MEMBER_CARD_COLOR_PALETTES[MEMBER_LEVELS.MEMBER];
+      const tier = {
+        level,
+        name,
+        spendingThreshold,
+        progress: '0%',
+        active: false,
+        iconColors: {
+          crownStartColor: tierColorPalette.icon.crown.startColor,
+          crownEndColor: tierColorPalette.icon.crown.endColor,
+          backgroundStartColor: tierColorPalette.icon.background.startColor,
+          backgroundEndColor: tierColorPalette.icon.background.endColor,
+        },
+      };
+      const isAchievedCurrentLevel = level <= customerTierLevel;
+
+      if (isAchievedCurrentLevel) {
+        tier.progress = '100%';
+        tier.active = true;
+      } else if (level === customerMembershipNextLevel) {
+        const unlockSpentNumber = customerTierTotalSpent - currentCustomerLevelSpendingThreshold;
+        const unlockSpentThreshold = spendingThreshold - currentCustomerLevelSpendingThreshold;
+        const progressPercentageNumber = Number.parseFloat(
+          ((unlockSpentNumber < 0 ? 0 : unlockSpentNumber) / unlockSpentThreshold) * 100
+        ).toFixed(6);
+
+        tier.progress = `${progressPercentageNumber}%`;
+      }
+
+      return tier;
+    })
+);
+
+export const getMemberCardMembershipLevelStatus = createSelector(
+  getCustomerTierLevel,
+  getCustomerTierTotalSpent,
+  getHighestMembershipTier,
+  (customerTierLevel, customerTierTotalSpent, highestMembershipTier) => {
+    const { level: highestTierLevel, spendingThreshold: highestTierSpendingThreshold } = highestMembershipTier;
+
+    if (customerTierLevel < highestTierLevel) {
+      return MEMBERSHIP_LEVEL_STATUS.UNLOCK_NEXT_LEVEL;
+    }
+
+    // Customer achieved highest spending threshold for next review time.
+    if (customerTierLevel === highestTierLevel && customerTierTotalSpent >= highestTierSpendingThreshold) {
+      return MEMBERSHIP_LEVEL_STATUS.LEVEL_COMPLETED;
+    }
+
+    // Customer achieved highest spending threshold last review time, customer still maintain highest level.
+    // But we will prompt customer to maintain highest level. Because spend total will be cleared.
+    if (customerTierLevel === highestTierLevel && customerTierTotalSpent < highestTierSpendingThreshold) {
+      return MEMBERSHIP_LEVEL_STATUS.LEVEL_MAINTAIN;
+    }
+
+    return null;
+  }
+);
+
+export const getMemberCardMembershipProgressMessageIn18nParams = createSelector(
+  getCustomerTierLevelName,
+  getCustomerTierTotalSpent,
+  getCustomerTierNextReviewTime,
+  getMembershipTierList,
+  getHighestMembershipTier,
+  getMerchantLocale,
+  getMerchantCurrency,
+  getMerchantCountry,
+  getCustomerMembershipNextLevel,
+  getMemberCardMembershipLevelStatus,
+  (
+    customerTierLevelName,
+    customerTierTotalSpent,
+    customerTierNextReviewTime,
+    membershipTierList,
+    highestMembershipTier,
+    merchantLocale,
+    merchantCurrency,
+    merchantCountry,
+    customerMembershipNextLevel,
+    membershipLevelStatus
+  ) => {
+    const membershipProgressMessageI18nParams = {};
+
+    if (!membershipLevelStatus) {
+      return membershipProgressMessageI18nParams;
+    }
+
+    const { messageI18nParamsKeys } = MEMBERSHIP_LEVEL_I18N_KEYS[membershipLevelStatus];
+    const nextTier = membershipTierList.find(({ level }) => level === customerMembershipNextLevel);
+    const { name: nextTierName, spendingThreshold: nextTierSpendingThreshold } = nextTier || {};
+
+    messageI18nParamsKeys.forEach(paramKey => {
+      switch (paramKey) {
+        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.UNLOCK_SPEND_PRICE:
+          membershipProgressMessageI18nParams[paramKey] = getPrice(nextTierSpendingThreshold - customerTierTotalSpent, {
+            locale: merchantLocale,
+            currency: merchantCurrency,
+            country: merchantCountry,
+          });
+          break;
+        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE:
+          membershipProgressMessageI18nParams[paramKey] = getPrice(
+            highestMembershipTier.spendingThreshold - customerTierTotalSpent,
+            {
+              locale: merchantLocale,
+              currency: merchantCurrency,
+              country: merchantCountry,
+            }
+          );
+          break;
+        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_REVIEW_DATE:
+          membershipProgressMessageI18nParams[paramKey] = formatTimeToDateString(
+            merchantCountry,
+            customerTierNextReviewTime
+          );
+          break;
+        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_LEVEL_NAME:
+          membershipProgressMessageI18nParams[paramKey] = toCapitalize(nextTierName);
+          break;
+        case MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.CURRENT_LEVEL_NAME:
+          membershipProgressMessageI18nParams[paramKey] = toCapitalize(customerTierLevelName);
+          break;
+        default:
+          break;
+      }
+    });
+
+    return membershipProgressMessageI18nParams;
+  }
+);
+
+export const getPointsRewardList = createSelector(
+  getLoadPointsRewardListData,
+  getCustomerAvailablePointsBalance,
+  getMerchantCurrency,
+  getMerchantLocale,
+  getMerchantCountry,
+  (pointsRewardList, customerAvailablePointsBalance, merchantCurrency, merchantLocale, merchantCountry) =>
+    pointsRewardList.map(reward => {
+      if (!reward) {
+        return reward;
+      }
+
+      const { id, type, discountType, discountValue, name, redeemedStatus, costOfPoints } = reward;
+      const isUnavailableStatus = [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(
+        redeemedStatus
+      );
+      const isInsufficientPoints = customerAvailablePointsBalance < costOfPoints;
+
+      return {
+        id,
+        type,
+        value:
+          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
+            ? `${discountValue}%`
+            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        name,
+        costOfPoints,
+        isUnavailable: isUnavailableStatus || isInsufficientPoints,
+      };
+    })
+);
+
+export const getIsPointsRewardListShown = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getPointsRewardList,
+  (isMerchantMembershipPointsEnabled, pointsRewardList) =>
+    isMerchantMembershipPointsEnabled && pointsRewardList.length > 0
+);
+
+export const getIsClaimPointsRewardPending = createSelector(
+  getClaimPointsRewardStatus,
+  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsClaimPointsRewardFulfilled = createSelector(
+  getClaimPointsRewardStatus,
+  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsClaimPointsRewardLoaderShow = createSelector(
+  getIsClaimPointsRewardPending,
+  isClaimPointsRewardPending => isClaimPointsRewardPending
+);
+
+export const getIsClaimPointsRewardSuccessfulAlertShow = createSelector(
+  getIsClaimPointsRewardFulfilled,
+  isClaimPointsRewardFulfilled => isClaimPointsRewardFulfilled
+);
+
+export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRewardError, claimPointsRewardError => {
+  if (!claimPointsRewardError) {
+    return null;
+  }
+
+  const { code } = claimPointsRewardError;
+
+  if (CLAIMED_POINTS_REWARD_ERROR_CODES[code]) {
+    return CLAIMED_POINTS_REWARD_ERROR_I18N_KEYS[CLAIMED_POINTS_REWARD_ERROR_CODES[code]];
+  }
+
+  return {
+    titleI18nKey: 'SomethingWentWrongTitle',
+    descriptionI18nKey: 'SomethingWentWrongDescription',
+  };
+});

@@ -25,6 +25,8 @@ export const getCancelOperator = createSelector(getOrder, order => _get(order, '
 
 export const getOrderStoreInfo = createSelector(getOrder, order => _get(order, 'storeInfo', null));
 
+export const getOrderStoreId = createSelector(getOrder, order => _get(order, 'storeId', null));
+
 export const getIsPayLater = createSelector(getOrder, order => _get(order, 'isPayLater', false));
 
 export const getOrderOriginalShippingType = createSelector(getOrder, order =>

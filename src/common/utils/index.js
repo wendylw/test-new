@@ -816,6 +816,7 @@ export const containerHeight = ({ headerEls, footerEls }) =>
 export const getIsThePageHidden = () =>
   window.document.hidden || window.document.mozHidden || window.document.msHidden || window.document.webkitHidden;
 
+// The BE might return number in scientific notation format, like "1.2e3.4", convert to integers.
 export const getDecimalNumber = (number = 0) => {
   const scientificNotationRegex = /^[+-]?\d+(\.\d+)?[eE][+-]?\d+$/;
   const isScientificNotation = scientificNotationRegex.test(number);
@@ -855,4 +856,12 @@ export const getPrice = (number = 0, { locale, currency, country, withCurrency =
   } catch (error) {
     return numberToFixed(number);
   }
+};
+
+export const toCapitalize = (string = '') => {
+  if (!string) {
+    return '';
+  }
+
+  return string.charAt(0).toUpperCase() + string.slice(1);
 };
