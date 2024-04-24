@@ -1,7 +1,4 @@
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-
-dayjs.extend(utc);
 
 export const PROFILE_FIELD_ERROR_TYPES = {
   REQUIRED: 'required',
