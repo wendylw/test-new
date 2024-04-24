@@ -2145,7 +2145,7 @@ describe('getMerchantStoreUrl', () => {
 
   beforeEach(() => {
     business = 'my-business';
-    queryObject = { source: 'my-source', foo: 'bar' };
+    queryObject = { source: 'my-source', foo: 'bar', h: 'test' };
     process.env.REACT_APP_MERCHANT_STORE_URL = 'https://%business%.beep.com';
   });
 
@@ -2168,7 +2168,7 @@ describe('getMerchantStoreUrl', () => {
   });
 
   it('returns the correct URL with query parameters', () => {
-    const expectedUrl = 'https://my-business.beep.com/ordering/?source=my-source&foo=bar';
+    const expectedUrl = 'https://my-business.beep.com/ordering/?source=my-source&foo=bar&h=test';
     const actualUrl = getMerchantStoreUrl(business, queryObject);
     expect(actualUrl).toEqual(expectedUrl);
   });

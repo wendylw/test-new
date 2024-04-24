@@ -61,7 +61,7 @@ export const submitStoreMenu = async ({ deliveryAddress, store, source, shipping
   const { redirectTo } = response || {};
   const redirectUrl = Utils.getMerchantStoreUrl(store.business, {
     h: redirectTo,
-    source,
+    source: encodeURIComponent(source),
     type: shippingType,
   });
 

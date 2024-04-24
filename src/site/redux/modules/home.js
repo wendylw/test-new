@@ -175,12 +175,12 @@ const storeLinkInfo = (state = initialState.storeLinkInfo, action) => {
       ...state,
       deliveryUrl: Utils.getMerchantStoreUrl(context.business, {
         h: redirectTo,
-        source: context.source,
+        source: encodeURIComponent(context.source),
         type: 'delivery',
       }),
       pickupUrl: Utils.getMerchantStoreUrl(context.business, {
         h: redirectTo,
-        source: context.source,
+        source: encodeURIComponent(context.source),
         type: 'pickup',
       }),
       business: context.business,
