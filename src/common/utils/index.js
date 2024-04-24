@@ -159,20 +159,6 @@ export const copyDataToClipboard = async text => {
   }
 };
 
-export const getUserAgentInfo = _once(() => {
-  /* https://www.regextester.com/97574 */
-  const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d.apre]+)/g;
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(
-    navigator.userAgent
-  );
-  const browsers = navigator.userAgent.match(regex);
-
-  return {
-    isMobile,
-    browser: browsers ? browsers[0] : '',
-  };
-});
-
 export const getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
@@ -206,6 +192,20 @@ export const getQueryObject = (history, paramName) => {
 
   return params.get(paramName);
 };
+
+export const getUserAgentInfo = _once(() => {
+  /* https://www.regextester.com/97574 */
+  const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d.apre]+)/g;
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(
+    navigator.userAgent
+  );
+  const browsers = navigator.userAgent.match(regex);
+
+  return {
+    isMobile,
+    browser: browsers ? browsers[0] : '',
+  };
+});
 
 export const isSafari = _once(() => getUserAgentInfo().browser.includes('Safari'));
 
