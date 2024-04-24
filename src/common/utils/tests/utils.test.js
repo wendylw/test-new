@@ -474,18 +474,18 @@ describe('checkEmailIsValid', () => {
   });
 });
 
-describe('getFileExtension', function() {
-  it('should return the file extension when it exists', function() {
+describe('getFileExtension', () => {
+  it('should return the file extension when it exists', () => {
     const file = { name: 'test.jpg', type: 'image/jpeg' };
     expect(getFileExtension(file)).toEqual('jpg');
   });
 
-  it('should return the file type when the extension does not exist', function() {
+  it('should return the file type when the extension does not exist', () => {
     const file = { name: 'test', type: 'image/jpeg' };
     expect(getFileExtension(file)).toEqual('jpeg');
   });
 
-  it('should throw an error when the file object is invalid', function() {
+  it('should throw an error when the file object is invalid', () => {
     expect(() => getFileExtension({ type: 'image/jpeg' })).toThrow();
     expect(() => getFileExtension(undefined)).toThrow();
   });
@@ -3094,7 +3094,7 @@ describe('windowSize', () => {
   });
 });
 
-describe('mainTop', function() {
+describe('mainTop', () => {
   it('returns 0 when no header elements are provided', () => {
     const top = mainTop({});
     expect(top).toEqual(0);
@@ -3113,7 +3113,7 @@ describe('mainTop', function() {
   });
 });
 
-describe('marginBottom', function() {
+describe('marginBottom', () => {
   it('returns 0 when footerEls is an empty array', () => {
     const bottom = marginBottom({ footerEls: [] });
     expect(bottom).toEqual(0);
@@ -3132,7 +3132,7 @@ describe('marginBottom', function() {
   });
 });
 
-describe('containerHeight', function() {
+describe('containerHeight', () => {
   it("returns a 768px with 'px' suffix", () => {
     const result = containerHeight({ headerEls: [], footerEls: [] });
     expect(result).toBe('768px');
