@@ -124,11 +124,14 @@
   "EarnedStoreCreditsPromptRedeemInStoreTitle": "Redeem in-store",
   "EarnedStoreCreditsPromptRedeemInStoreDescription": "Inform the cashier during payment that you'd like to redeem your store credit balance.",
   "MembershipBenefits": "Membership Benefits",
+  "Earn": "Payment",
   "Earned": "Earned",
-  "Returned": "Returned",
-  "Refunded": "Refunded",
-  "Redemption": "Redemption",
+  "Returned": "Payment Refunded",
+  "Refunded": "Payment Refunded",
+  "Spend": "Redemption",
   "Adjustment": "Adjustment",
+  "ManualAdjustment": "Manual Adjustment",
   "Pending": "Pending",
+  "PointsHistoryExpired": "Expiry",
   "StoreCredits": "Store Credits"
 }
