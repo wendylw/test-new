@@ -4,6 +4,7 @@ import { getPrice } from '../../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
 import {
   CASHBACK_CREDITS_HISTORY_TYPES,
+  CASHBACK_CREDITS_HISTORY_REDUCE_TYPES,
   CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS,
   DATE_OPTIONS,
 } from '../utils/constants';
@@ -58,7 +59,7 @@ export const getCashbackHistoryList = createSelector(
         return historyItem;
       }
 
-      const isReduce = changeAmount < 0;
+      const isReduce = changeAmount < 0 || (changeAmount === 0 && CASHBACK_CREDITS_HISTORY_REDUCE_TYPES.includes(type));
       const changeValue = `${isReduce ? '-' : '+'}${getPrice(Math.abs(changeAmount), {
         country: merchantCountry,
         currency: merchantCurrency,
@@ -105,7 +106,7 @@ export const getStoreCreditsHistoryList = createSelector(
         return historyItem;
       }
 
-      const isReduce = changeAmount < 0;
+      const isReduce = changeAmount < 0 || (changeAmount === 0 && CASHBACK_CREDITS_HISTORY_REDUCE_TYPES.includes(type));
       const changeValue = `${isReduce ? '-' : '+'}${getPrice(Math.abs(changeAmount), {
         country: merchantCountry,
         currency: merchantCurrency,

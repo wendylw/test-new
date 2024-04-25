@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
-import { POINTS_HISTORY_LOG_I18N_KEYS, DATE_OPTIONS } from '../utils/constants';
+import { POINTS_HISTORY_LOG_I18N_KEYS, POINTS_HISTORY_REDUCE_TYPES, DATE_OPTIONS } from '../utils/constants';
 import { getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
 
 export const getIsEarnedPointsPromptDrawerShow = state => state.business.pointsHistory.isEarnedPointsPromptDrawerShow;
@@ -23,7 +23,7 @@ export const getPointsHistoryList = createSelector(
   (getLoadPointsHistoryList, merchantCountry) =>
     getLoadPointsHistoryList.map(pointsHistoryItem => {
       const { id, type, eventTime, changeAmount } = pointsHistoryItem || {};
-      const isReduce = changeAmount < 0;
+      const isReduce = changeAmount < 0 || (changeAmount === 0 && POINTS_HISTORY_REDUCE_TYPES.includes(type));
       const changeValue = `${isReduce ? '-' : '+'}${Math.abs(changeAmount)}`;
 
       return {
