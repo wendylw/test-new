@@ -11,12 +11,26 @@
 }
 
 .PointsRewardCard {
-  @apply tw-flex tw-items-center tw-justify-between tw-bg-white tw-pl-12 sm:tw-pl-12px tw-py-12 sm:tw-py-12px tw-rounded-lg tw-shadow;
+  @apply tw-bg-white tw-rounded-lg tw-shadow;
+}
+
+.PointsRewardCardButton {
+  @apply tw-border-0;
+
+  &:global(.type-text-ghost) {
+    @apply disabled:tw-text-gray-800;
+  }
+}
+
+.PointsRewardCardButtonContent {
+  @apply tw-flex tw-items-center tw-justify-between tw-pl-4 sm:tw-pl-4px tw-py-4 sm:tw-py-4px tw-w-full;
 }
 
 .PointsRewardInfoLeft {
+  @apply tw-text-left;
+
   &__Unavailable {
-    @apply tw-opacity-40;
+    @apply tw-text-gray-400;
   }
 }
 
@@ -29,20 +43,10 @@
 }
 
 .PointsRewardInfoRight {
-  @apply tw-border-l-0 tw-border-r-0;
+  @apply tw-flex tw-items-center tw-justify-center tw--mr-8 sm:tw--mr-8px tw-bg-gray-200 tw-rounded-sm tw-font-bold;
 
-  &__Unavailable {
-    @apply tw-border-opacity-40;
-  }
-}
-
-.PointsRewardConstButton {
+  height: 30px;
   min-width: 100px;
-  max-height: 30px;
-}
-
-.PointsRewardConstButtonContent {
-  @apply tw-font-bold tw-text-gray-800;
 }
 
 .PointsRewardConfirm {
