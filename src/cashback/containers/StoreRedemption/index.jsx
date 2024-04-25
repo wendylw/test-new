@@ -56,7 +56,7 @@ const StoreRedemption = () => {
 
   if (!isLoadCustomerRequestCompleted) {
     return (
-      <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-h-full">
+      <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center">
         <Loader className="tw-text-3xl tw-text-orange" weight="bold" />
       </div>
     );

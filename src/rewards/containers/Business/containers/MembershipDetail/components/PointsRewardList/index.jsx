@@ -116,33 +116,36 @@ const PointsRewardList = () => {
               styles.PointsRewardInfoLeft,
               isUnavailable ? styles.PointsRewardInfoLeft__Unavailable : null,
             ]);
-            const pointsRewardInfoRightClassName = getClassName([styles.PointsRewardInfoRight]);
+            const pointsRewardInfoRightClassName = getClassName([
+              styles.PointsRewardInfoRight,
+              isUnavailable ? styles.PointsRewardInfoRight__Unavailable : null,
+            ]);
 
             return (
               <li className={styles.PointsRewardCard} key={id}>
-                <Button
-                  block
-                  data-test-id="rewards.membership-detail.points-claim-reward-button"
-                  theme="ghost"
-                  type="text"
-                  className={styles.PointsRewardCardButton}
-                  contentClassName={styles.PointsRewardCardButtonContent}
-                  disabled={isUnavailable}
-                  onClick={() => {
-                    setSelectedRewardId(id);
-                    handlePointsClaimRewardButtonClick(id, type, costOfPoints);
-                  }}
-                >
-                  <div className={pointsRewardInfoLeftClassName}>
-                    <data className={styles.PointsRewardDiscount} value={value}>
-                      {t('DiscountValueText', { discount: value })}
-                    </data>
-                    <h5 className={styles.PointsRewardDiscountName}>{name}</h5>
-                  </div>
-                  <data className={pointsRewardInfoRightClassName} value={costOfPoints}>
-                    {t('RewardsCostOfPointsText', { costOfPoints })}
+                <div className={pointsRewardInfoLeftClassName}>
+                  <data className={styles.PointsRewardDiscount} value={value}>
+                    {t('DiscountValueText', { discount: value })}
                   </data>
-                </Button>
+                  <h5 className={styles.PointsRewardDiscountName}>{name}</h5>
+                </div>
+                <div className={pointsRewardInfoRightClassName}>
+                  <Button
+                    data-test-id="rewards.membership-detail.points-claim-reward-button"
+                    theme="ghost"
+                    type="secondary"
+                    size="small"
+                    className={styles.PointsRewardConstButton}
+                    contentClassName={styles.PointsRewardConstButtonContent}
+                    disabled={isUnavailable}
+                    onClick={() => {
+                      setSelectedRewardId(id);
+                      handlePointsClaimRewardButtonClick(id, type, costOfPoints);
+                    }}
+                  >
+                    {t('RewardsCostOfPointsText', { costOfPoints })}
+                  </Button>
+                </div>
               </li>
             );
           })}
