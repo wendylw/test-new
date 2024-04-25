@@ -40,7 +40,7 @@ export const { reducer, actions } = createSlice({
       state.loadCashbackHistoryListRequest.error = null;
     },
     [fetchCashbackHistoryList.fulfilled.type]: (state, { payload }) => {
-      state.loadCashbackHistoryListRequest.data = state.loadCashbackHistoryListRequest.data.concat(payload || []);
+      state.loadCashbackHistoryListRequest.data = payload;
       state.loadCashbackHistoryListRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.loadCashbackHistoryListRequest.error = null;
     },
@@ -53,9 +53,7 @@ export const { reducer, actions } = createSlice({
       state.loadStoreCreditsHistoryListRequest.error = null;
     },
     [fetchStoreCreditsHistoryList.fulfilled.type]: (state, { payload }) => {
-      state.loadStoreCreditsHistoryListRequest.data = state.loadStoreCreditsHistoryListRequest.data.concat(
-        payload || []
-      );
+      state.loadStoreCreditsHistoryListRequest.data = payload;
       state.loadStoreCreditsHistoryListRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.loadStoreCreditsHistoryListRequest.error = null;
     },
