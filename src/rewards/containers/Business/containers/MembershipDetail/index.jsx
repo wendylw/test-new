@@ -40,7 +40,7 @@ const MembershipDetail = () => {
       <MemberCard />
       <RewardsButtons />
       <PointsRewardList />
-      <UniquePromoListSection />
+      {/* <UniquePromoListSection /> */}
       <MembershipTiersInfoTabs />
       <MemberPrompt />
     </Frame>

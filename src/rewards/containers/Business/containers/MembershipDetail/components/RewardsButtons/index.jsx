@@ -107,27 +107,25 @@ const RewardsButtons = () => {
         </Button>
       ) : null}
 
-      {isMerchantMembershipPointsEnabled ? (
-        <Button
-          data-test-id="rewards.business.rewards-button.rewards-button"
-          theme="ghost"
-          type="text"
-          className={styles.RewardsButton}
-          contentClassName={styles.RewardsButtonContent}
-          onClick={handleMyRewardsButtonClick}
-        >
-          <div className={styles.RewardsButtonRewardsIconContainer}>
-            <ObjectFitImage noCompression src={RewardsIcon} />
-          </div>
-          <div className={styles.RewardsButtonTitle}>
-            <span className={styles.RewardsButtonRewardsText}>{t('MyRewards')}</span>
-            <CaretRight size={12} />
-          </div>
-          <data className={styles.RewardsButtonMyRewards} value={customerRewardsTotal}>
-            {customerRewardsTotal}
-          </data>
-        </Button>
-      ) : null}
+      <Button
+        data-test-id="rewards.business.rewards-button.rewards-button"
+        theme="ghost"
+        type="text"
+        className={styles.RewardsButton}
+        contentClassName={styles.RewardsButtonContent}
+        onClick={handleMyRewardsButtonClick}
+      >
+        <div className={styles.RewardsButtonRewardsIconContainer}>
+          <ObjectFitImage noCompression src={RewardsIcon} />
+        </div>
+        <div className={styles.RewardsButtonTitle}>
+          <span className={styles.RewardsButtonRewardsText}>{t('MyRewards')}</span>
+          <CaretRight size={12} />
+        </div>
+        <data className={styles.RewardsButtonMyRewards} value={customerRewardsTotal}>
+          {customerRewardsTotal}
+        </data>
+      </Button>
     </section>
   );
 };
