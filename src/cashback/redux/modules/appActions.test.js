@@ -33,26 +33,6 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       return expect(actions.clearError()).toEqual(expectedAction);
     });
 
-    it('setMessageInfo', () => {
-      const reqParams = { key: 'Claimed_FirstTime', message: 'hello' };
-      const expectedAction = {
-        type: types.SET_MESSAGE_INFO,
-        key: reqParams.key,
-        message: reqParams.message,
-      };
-      return expect(actions.setMessageInfo(reqParams)).toEqual(expectedAction);
-    });
-
-    it('showMessageInfo', () => {
-      const expectedAction = { type: types.SHOW_MESSAGE_MODAL };
-      return expect(actions.showMessageInfo()).toEqual(expectedAction);
-    });
-
-    it('hideMessageInfo', () => {
-      const expectedAction = { type: types.HIDE_MESSAGE_MODAL };
-      return expect(actions.hideMessageInfo()).toEqual(expectedAction);
-    });
-
     it('setLoginPrompt', () => {
       const reqParams = { prompt: 'mockPrompt' };
       const expectedAction = {
@@ -89,17 +69,6 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
       });
     });
 
-    describe('fetchOnlineStoreInfo', () => {
-      it(':Success', () => {
-        successMockFetch();
-        const expectedActions = [
-          { type: types.FETCH_ONLINE_STORE_INFO_REQUEST },
-          { type: types.FETCH_ONLINE_STORE_INFO_SUCCESS, responseGql: commonSuccessData },
-        ];
-        return expectedActionsCheck(actions.fetchOnlineStoreInfo(), expectedActions);
-      });
-    });
-
     describe('fetchCashbackBusiness', () => {
       it(':Success', () => {
         successMockFetch();
@@ -109,18 +78,6 @@ describe('src/cashback/redux/modules/app.js:actions', () => {
         ];
         return expectedActionsCheck(actions.fetchCashbackBusiness(), expectedActions);
       });
-    });
-  });
-
-  describe('getCashbackHistory', () => {
-    const reqParams = { customerId: '111111' };
-    it(':Success', () => {
-      successMockFetch();
-      const expectedActions = [
-        { type: types.GET_CASHBACK_HISTORIES_REQUEST },
-        { type: types.GET_CASHBACK_HISTORIES_SUCCESS, response: commonSuccessData, params: reqParams },
-      ];
-      return expectedActionsCheck(actions.getCashbackHistory(reqParams.customerId), expectedActions);
     });
   });
 });

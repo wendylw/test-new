@@ -1,17 +1,9 @@
-.UniquePromoListSection {
-  @apply tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-space-y-12 sm:tw-space-y-12px;
-}
-
-.UniquePromoListSectionTitle {
-  @apply tw-text-xl tw-leading-normal tw-font-bold;
-}
-
 .UniquePromoList {
   @apply tw-flex tw-flex-col tw-gap-y-12 sm:tw-gap-y-12px;
 }
 
 .UniquePromoCard {
-  @apply tw-bg-white tw-p-12 sm:tw-p-12px tw-border tw-border-gray-500 tw-border-solid tw-rounded-lg tw-divide-y tw-divide-gray-200 tw-divide-solid;
+  @apply tw-p-12 sm:tw-p-12px tw-rounded-lg tw-divide-y tw-divide-gray-200 tw-divide-solid tw-bg-gray-50 tw-shadow;
 }
 
 .UniquePromoInfoTop {

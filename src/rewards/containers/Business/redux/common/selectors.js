@@ -1,8 +1,13 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { CLAIM_CASHBACK_QUERY_NAMES, CLAIM_CASHBACK_TYPES } from '../../../../../common/utils/constants';
+import {
+  CLAIM_CASHBACK_QUERY_NAMES,
+  CLAIM_CASHBACK_TYPES,
+  PROMO_VOUCHER_DISCOUNT_TYPES,
+  PROMO_VOUCHER_STATUS,
+} from '../../../../../common/utils/constants';
 import { getPrice, getQueryString } from '../../../../../common/utils';
-import { getDifferenceTodayInDays } from '../../../../../utils/datetime-lib';
+import { getDifferenceTodayInDays, formatTimeToDateString } from '../../../../../utils/datetime-lib';
 import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
   getMerchantLocale,
@@ -40,6 +45,12 @@ export const getIsConfirmSharingNewMember = createSelector(
   getConfirmSharingConsumerInfoData,
   confirmSharingConsumerInfoData => _get(confirmSharingConsumerInfoData, 'joinMembershipResult.isNewMember', false)
 );
+
+export const getLoadUniquePromoListData = state => state.business.common.loadUniquePromoListRequest.data || [];
+
+export const getLoadUniquePromoListStatus = state => state.business.common.loadUniquePromoListRequest.status;
+
+export const getLoadUniquePromoListError = state => state.business.common.loadUniquePromoListRequest.error;
 
 /**
  * Derived selectors
@@ -98,4 +109,48 @@ export const getOrderReceiptClaimedCashback = createSelector(
 
     return '';
   }
+);
+
+export const getUniquePromoList = createSelector(
+  getMerchantCurrency,
+  getMerchantLocale,
+  getMerchantCountry,
+  getLoadUniquePromoListData,
+  (merchantCurrency, merchantLocale, merchantCountry, uniquePromoList) =>
+    uniquePromoList.map(promo => {
+      if (!promo) {
+        return promo;
+      }
+
+      const { id, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+
+      return {
+        id,
+        value:
+          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
+            ? `${discountValue}%`
+            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        name,
+        status,
+        limitations: [
+          minSpendAmount && {
+            key: `unique-promo-${id}-limitation-0`,
+            i18nKey: 'MinConsumption',
+            params: {
+              amount: getPrice(minSpendAmount, {
+                locale: merchantLocale,
+                currency: merchantCurrency,
+                country: merchantCountry,
+              }),
+            },
+          },
+          validTo && {
+            key: `unique-promo-${id}-limitation-1`,
+            i18nKey: 'ValidUntil',
+            params: { date: formatTimeToDateString(merchantCountry, validTo) },
+          },
+        ].filter(limitation => Boolean(limitation)),
+        isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
+      };
+    })
 );

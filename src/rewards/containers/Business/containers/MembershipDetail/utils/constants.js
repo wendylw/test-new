@@ -3,12 +3,34 @@ import RewardsEarnedCashbackIcon from '../../../../../../images/rewards-earned-c
 import RewardsWarningIcon from '../../../../../../images/rewards-warning.svg';
 import { CLAIMED_CASHBACK_STATUS } from '../../../utils/constants';
 
+export const CLAIMED_POINTS_REWARD_ERROR_CODES = {
+  395279: 'promotionIsNotRedeemable',
+  395280: 'insufficientPoints',
+  395281: 'insufficientPoints',
+};
+
+export const CLAIMED_POINTS_REWARD_ERROR_I18N_KEYS = {
+  [CLAIMED_POINTS_REWARD_ERROR_CODES['395279']]: {
+    titleI18nKey: 'PromotionIsNotRedeemableTitle',
+    descriptionI18nKey: 'PromotionIsNotRedeemableDescription',
+  },
+  [CLAIMED_POINTS_REWARD_ERROR_CODES['395280']]: {
+    titleI18nKey: 'InsufficientPointsTitle',
+    descriptionI18nKey: 'InsufficientPointsDescription',
+  },
+  [CLAIMED_POINTS_REWARD_ERROR_CODES['395281']]: {
+    titleI18nKey: 'InsufficientPointsTitle',
+    descriptionI18nKey: 'InsufficientPointsDescription',
+  },
+};
+
 export const MEMBER_TYPE_I18N_PARAM_KEYS = {
   CASHBACK_VALUE: 'cashbackValue',
 };
 
 export const NEW_MEMBER_TYPES = {
   DEFAULT: 'default',
+  ENABLED_POINTS: 'enabledPoints',
   REDEEM_CASHBACK: 'redeemCashback',
   EARNED_CASHBACK: 'earnedCashback',
   CLAIMED_REPEAT: 'claimedRepeat',
@@ -22,6 +44,7 @@ export const NEW_MEMBER_TYPES = {
 
 export const RETURNING_MEMBER_TYPES = {
   DEFAULT: 'default',
+  ENABLED_POINTS: 'enabledPoints',
   REDEEM_CASHBACK: 'redeemCashback',
   THANKS_COMING_BACK: 'thanksComingBack',
   EARNED_CASHBACK: 'earnedCashback',
@@ -50,6 +73,7 @@ export const NEW_MEMBER_CASHBACK_STATUS_TYPES = {
 
 export const NEW_MEMBER_ICONS = {
   [NEW_MEMBER_TYPES.DEFAULT]: MembershipLevelIcon,
+  [NEW_MEMBER_TYPES.ENABLED_POINTS]: MembershipLevelIcon,
   [NEW_MEMBER_TYPES.REDEEM_CASHBACK]: MembershipLevelIcon,
   [NEW_MEMBER_TYPES.EARNED_CASHBACK]: RewardsEarnedCashbackIcon,
   [NEW_MEMBER_TYPES.CLAIMED_REPEAT]: RewardsWarningIcon,
@@ -65,6 +89,10 @@ export const NEW_MEMBER_I18N_KEYS = {
   [NEW_MEMBER_TYPES.DEFAULT]: {
     titleI18nKey: 'DefaultNewMemberTitle',
     descriptionI18nKey: 'DefaultNewMemberDescription',
+  },
+  [NEW_MEMBER_TYPES.ENABLED_POINTS]: {
+    titleI18nKey: 'EnabledPointsNewMemberTitle',
+    descriptionI18nKey: 'EnabledPointsNewMemberDescription',
   },
   [NEW_MEMBER_TYPES.REDEEM_CASHBACK]: {
     titleI18nKey: 'RedeemCashbackNewMemberTitle',
@@ -120,6 +148,7 @@ export const RETURNING_MEMBER_CASHBACK_STATUS_TYPES = {
 
 export const RETURNING_MEMBER_ICONS = {
   [RETURNING_MEMBER_TYPES.REDEEM_CASHBACK]: RewardsEarnedCashbackIcon,
+  [RETURNING_MEMBER_TYPES.ENABLED_POINTS]: RewardsEarnedCashbackIcon,
   [RETURNING_MEMBER_TYPES.EARNED_CASHBACK]: RewardsEarnedCashbackIcon,
   [RETURNING_MEMBER_TYPES.CLAIMED_REPEAT]: RewardsWarningIcon,
   [RETURNING_MEMBER_TYPES.CLAIMED_SOMEONE_ELSE]: RewardsWarningIcon,
@@ -133,6 +162,9 @@ export const RETURNING_MEMBER_ICONS = {
 export const RETURNING_MEMBER_I18N_KEYS = {
   [RETURNING_MEMBER_TYPES.DEFAULT]: {
     titleI18nKey: 'DefaultReturningMemberMessage',
+  },
+  [RETURNING_MEMBER_TYPES.ENABLED_POINTS]: {
+    titleI18nKey: 'EnabledPointsReturningMemberTitle',
   },
   [RETURNING_MEMBER_TYPES.REDEEM_CASHBACK]: {
     titleI18nKey: 'RedeemCashbackReturningMemberMessage',
