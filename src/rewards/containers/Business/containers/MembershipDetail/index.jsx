@@ -11,7 +11,7 @@ import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MemberCard from './components/MemberCard';
 import RewardsButtons from './components/RewardsButtons';
-import UniquePromoListSection from './components/UniquePromoListSection';
+// import UniquePromoListSection from './components/UniquePromoListSection';
 import PointsRewardList from './components/PointsRewardList';
 import MembershipTiersInfoTabs from '../../components/MembershipTiersInfoTabs';
 import MemberPrompt from './components/MemberPrompt';
