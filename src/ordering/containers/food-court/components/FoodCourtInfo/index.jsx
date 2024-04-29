@@ -6,6 +6,7 @@ import FoodSyopzLogo from '../../../../../images/food-court-temp/food-Syopz-logo
 import HamiltonWalkLogo from '../../../../../images/food-court-temp/hamilton-walk-logo.jpg';
 import FoodStararkLogo from '../../../../../images/food-court-temp/food-Starark-logo.jpeg';
 import FoodNurulLogo from '../../../../../images/food-court-temp/food-Nurul-logo.jpg';
+import CamayaCoastLogo from '../../../../../images/food-court-temp/food-court-camaya-logo.png';
 import styles from './FoodCourtInfo.module.scss';
 
 const OWNERS_MAPPING = {
@@ -38,6 +39,11 @@ const OWNERS_MAPPING = {
     name: 'Nurul Sate Batang Pinang',
     logo: FoodNurulLogo,
     location: 'Nurul Sate Batang Pinang & Asam Pedas Johor',
+  },
+  camayacoast: {
+    name: 'CAMAYA COAST',
+    logo: CamayaCoastLogo,
+    location: 'Mariveles, Bataan',
   },
 };
 

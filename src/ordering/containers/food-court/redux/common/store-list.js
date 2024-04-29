@@ -41,6 +41,18 @@ import ClassicBowlImage from '../../../../../images/food-court-temp/merchant-Cla
 import XOXOCoffeeImage from '../../../../../images/food-court-temp/merchant-XOXO-Coffee.png';
 import TintoCafeImage from '../../../../../images/food-court-temp/merchant-Tinto-Cafe.png';
 import BillyBoysKopitiamImage from '../../../../../images/food-court-temp/merchant-Billy-Boys-Kopitiam.jpg';
+import ArmyNavyImage from '../../../../../images/food-court-temp/merchant-army-navy.png';
+import BigChillImage from '../../../../../images/food-court-temp/merchant-big-chill.png';
+import CloudKitchenImage from '../../../../../images/food-court-temp/merchant-cloud-kitchen.png';
+import FigaroImage from '../../../../../images/food-court-temp/merchant-figaro.png';
+import NachoKingImage from '../../../../../images/food-court-temp/merchant-nacho-king.png';
+import PotatoCornerImage from '../../../../../images/food-court-temp/merchant-potato-corner.png';
+import SandBarImage from '../../../../../images/food-court-temp/merchant-sand-bar.png';
+import SeasideBbqGrillImage from '../../../../../images/food-court-temp/merchant-seaside-bbq-grill.png';
+import SnackBarImage from '../../../../../images/food-court-temp/merchant-snack-bar.png';
+import TullysImage from '../../../../../images/food-court-temp/merchant-tullys.png';
+import TwpImage from '../../../../../images/food-court-temp/merchant-twp.png';
+import YellowCabImage from '../../../../../images/food-court-temp/merchant-yellow-cab.png';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -386,6 +398,84 @@ export const AllFoodCourtStoreList = {
     imageNoCompression: IronBarImage,
     title: 'Iron Bar',
     tags: ['Alcohol'],
+  },
+  '65d444b4e4f607000779c1e4': {
+    id: '65d444b4e4f607000779c1e4',
+    imageNoCompression: ArmyNavyImage,
+    title: 'ARMY NAVY',
+    tags: [],
+  },
+  '65ee68464fd4b000070fae61': {
+    id: '65ee68464fd4b000070fae61',
+    imageNoCompression: BigChillImage,
+    title: 'BIG CHILL',
+    tags: [],
+  },
+  '65ee68356f5f290007ab0b2e': {
+    id: '65ee68356f5f290007ab0b2e',
+    imageNoCompression: FigaroImage,
+    title: 'FIGARO',
+    tags: [],
+  },
+  '65ee68874fd4b000070fb954': {
+    id: '65ee68874fd4b000070fb954',
+    imageNoCompression: TwpImage,
+    title: "MAX'S / THE WOOD PAVILLION",
+    tags: [],
+  },
+  '65ee67cd8683b5000725751d': {
+    id: '65ee67cd8683b5000725751d',
+    imageNoCompression: NachoKingImage,
+    title: 'NACHO KING',
+    tags: [],
+  },
+  '65ee686a7d16400007f9d4b6': {
+    id: '65ee686a7d16400007f9d4b6',
+    imageNoCompression: CloudKitchenImage,
+    title: "PANCAKE HOUSE, TERIYAKI BOY, DENCIO'S, SIZZLING STEAK",
+    tags: [],
+  },
+  '65d444b5e4f607000779c201': {
+    id: '65d444b5e4f607000779c201',
+    imageNoCompression: PotatoCornerImage,
+    title: 'POTATO CORNER',
+    tags: [],
+  },
+  '65ee6fff4811c30007dc332e': {
+    id: '65ee6fff4811c30007dc332e',
+    imageNoCompression: SandBarImage,
+    title: 'SAND BAR',
+    tags: [],
+  },
+  '65ee68917d16400007f9db43': {
+    id: '65ee68917d16400007f9db43',
+    imageNoCompression: SeasideBbqGrillImage,
+    title: 'SEASIDE BBQ&GRILL',
+    tags: [],
+  },
+  '65ee68506f5f290007ab0e92': {
+    id: '65ee68506f5f290007ab0e92',
+    imageNoCompression: SnackBarImage,
+    title: 'SNACK BAR',
+    tags: [],
+  },
+  '65ee68270e4a800007d2b6c0': {
+    id: '65ee68270e4a800007d2b6c0',
+    imageNoCompression: TullysImage,
+    title: "TULLY'S",
+    tags: [],
+  },
+  '65ee681c81f42400070eeb60': {
+    id: '65ee681c81f42400070eeb60',
+    imageNoCompression: YellowCabImage,
+    title: 'YELLOW CAB',
+    tags: [],
+  },
+  '65ee685a6368e10007490188': {
+    id: '65ee685a6368e10007490188',
+    // imageNoCompression: ,
+    title: 'ROOF DECK',
+    tags: [],
   },
   '608b7c77cc9fd00006d831f3': {
     id: '608b7c77cc9fd00006d831f3',
