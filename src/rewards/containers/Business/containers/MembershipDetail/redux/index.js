@@ -4,7 +4,6 @@ import { fetchPointsRewardList, claimPointsReward, showWebProfileForm, hideWebPr
 
 const initialState = {
   isProfileModalShow: false,
-  isEarnedPointsPromptDrawerShow: false,
   loadPointsRewardListRequest: {
     data: [],
     status: null,
@@ -20,12 +19,6 @@ export const { reducer, actions } = createSlice({
   name: 'rewards/business/membershipDetail',
   initialState,
   reducers: {
-    earnedPointsPromptDrawerShown: state => {
-      state.isEarnedPointsPromptDrawerShow = true;
-    },
-    earnedPointsPromptDrawerHidden: state => {
-      state.isEarnedPointsPromptDrawerShow = false;
-    },
     claimPointsRewardRequestReset: state => {
       state.claimPointsRewardRequest = initialState.claimPointsRewardRequest;
     },

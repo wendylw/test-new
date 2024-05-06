@@ -5,7 +5,7 @@ import { getConsumerId } from '../../../../redux/modules/user/selectors';
 export const fetchCustomerInfo = createAsyncThunk('app/customer/fetchCustomerInfo', async (business, { getState }) => {
   const state = getState();
   const consumerId = getConsumerId(state);
-  const result = await getCustomerInfo({ consumerId, business });
+  const result = await getCustomerInfo({ consumerId, business, pointsTotalEarned: true, rewardsTotal: true });
 
   return result;
 });

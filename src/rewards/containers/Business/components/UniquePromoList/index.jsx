@@ -15,7 +15,7 @@ const UniquePromoList = () => {
   const { t } = useTranslation(['Rewards']);
   const uniquePromoList = useSelector(getUniquePromoList);
 
-  if (uniquePromoList.length <= 0) {
+  if (uniquePromoList.length === 0) {
     return null;
   }
 
@@ -41,18 +41,20 @@ const UniquePromoList = () => {
               </data>
               <h5 className={styles.UniquePromoDiscountName}>{name}</h5>
             </div>
-            <div className={getClassName(uniquePromoInfoBottomClassList)}>
-              <ul className={getClassName(uniquePromoLimitationListClassList)}>
-                {limitations.map(({ key, i18nKey, params }) => (
-                  <li className={styles.UniquePromoDiscountLimitation} key={key}>
-                    {t(i18nKey, params)}
-                  </li>
-                ))}
-              </ul>
-              {isUnavailable && (
-                <Tag className={styles.UniquePromoStatusTag}>{t(UNIQUE_PROMO_STATUS_I18KEYS[status])}</Tag>
-              )}
-            </div>
+            {limitations.length > 0 ? (
+              <div className={getClassName(uniquePromoInfoBottomClassList)}>
+                <ul className={getClassName(uniquePromoLimitationListClassList)}>
+                  {limitations.map(({ key, i18nKey, params }) => (
+                    <li className={styles.UniquePromoDiscountLimitation} key={key}>
+                      {t(i18nKey, params)}
+                    </li>
+                  ))}
+                </ul>
+                {isUnavailable && (
+                  <Tag className={styles.UniquePromoStatusTag}>{t(UNIQUE_PROMO_STATUS_I18KEYS[status])}</Tag>
+                )}
+              </div>
+            ) : null}
           </li>
         );
       })}

@@ -3,6 +3,7 @@ import { FEATURE_KEYS } from '../../../../redux/modules/growthbook/constants';
 import { getQueryString, isWebview, isTNGMiniProgram, isGCashMiniProgram } from '../../../../common/utils';
 import { isAlipayMiniProgram } from '../../../../common/utils/alipay-miniprogram-client';
 import { getFeatureFlagResult } from '../../../../redux/modules/growthbook/selectors';
+import { getIsLogin } from '../../../../redux/modules/user/selectors';
 import { getMembershipTierList } from '../../../../redux/modules/membership/selectors';
 
 /** Utils */
@@ -19,6 +20,8 @@ export const getIsWeb = () => !isWebview() && !isAlipayMiniProgram();
 export const getSource = () => getQueryString('source');
 
 export const getBusiness = () => getQueryString('business');
+
+export const getIsNotLoginInWeb = createSelector(getIsLogin, getIsWeb, (isLogin, isWeb) => !isLogin && isWeb);
 
 /** Router */
 export const getRouter = state => state.router;

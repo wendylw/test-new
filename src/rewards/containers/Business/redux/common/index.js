@@ -37,12 +37,12 @@ export const { actions, reducer } = createSlice({
       state.loadUniquePromoListRequest.error = null;
     },
     [fetchUniquePromoList.fulfilled.type]: (state, { payload }) => {
-      state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.SUCCESS;
+      state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.loadUniquePromoListRequest.data = payload;
       state.loadUniquePromoListRequest.error = null;
     },
     [fetchUniquePromoList.rejected.type]: (state, { error }) => {
-      state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.ERROR;
+      state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.REJECTED;
       state.loadUniquePromoListRequest.error = error;
     },
   },

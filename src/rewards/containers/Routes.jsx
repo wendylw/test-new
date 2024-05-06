@@ -16,6 +16,14 @@ const MembershipDetail = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_MER_DETL" */ './Business/containers/MembershipDetail'))
 );
 
+const PointsHistory = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_PH" */ './Business/containers/PointsHistory'))
+);
+
+const CashbackCreditsHistory = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_PH" */ './Business/containers/CashbackCreditsHistory'))
+);
+
 const UniquePromoListPage = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_UP" */ './Business/containers/UniquePromoListPage'))
 );
@@ -51,6 +59,16 @@ const Routes = () => (
           exact
           path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`}
           component={MembershipDetail}
+        />
+        <Route
+          exact
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.POINTS_HISTORY}`}
+          component={PointsHistory}
+        />
+        <Route
+          exact
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.CASHBACK_CREDITS_HISTORY}`}
+          component={CashbackCreditsHistory}
         />
         <Route
           exact

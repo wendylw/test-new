@@ -203,6 +203,8 @@ export const RETURNING_MEMBER_I18N_KEYS = {
 };
 
 export const MEMBERSHIP_LEVEL_I18N_PARAM_KEYS = {
+  UNLOCK_COLLECT_POINTS: 'unlockCollectPoints',
+  MAINTAIN_COLLECT_POINTS: 'maintainCollectPoints',
   UNLOCK_SPEND_PRICE: 'unlockSpendPrice',
   MAINTAIN_SPEND_PRICE: 'maintainSpendPrice',
   NEXT_REVIEW_DATE: 'nextReviewDate',
@@ -211,12 +213,30 @@ export const MEMBERSHIP_LEVEL_I18N_PARAM_KEYS = {
 };
 
 export const MEMBERSHIP_LEVEL_STATUS = {
+  POINTS_UNLOCK_NEXT_LEVEL: 'pointsUnlockNextLevel',
+  POINTS_LEVEL_MAINTAIN: 'pointsLevelMaintain',
   UNLOCK_NEXT_LEVEL: 'unlockNextLevel',
   LEVEL_COMPLETED: 'levelCompleted',
   LEVEL_MAINTAIN: 'levelMaintain',
 };
 
 export const MEMBERSHIP_LEVEL_I18N_KEYS = {
+  [MEMBERSHIP_LEVEL_STATUS.POINTS_UNLOCK_NEXT_LEVEL]: {
+    messageI18nKey: 'PointsUnlockNextLevelMessage',
+    messageI18nParamsKeys: [
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.UNLOCK_COLLECT_POINTS,
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_REVIEW_DATE,
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_LEVEL_NAME,
+    ],
+  },
+  [MEMBERSHIP_LEVEL_STATUS.POINTS_LEVEL_MAINTAIN]: {
+    messageI18nKey: 'PointsLevelMaintainMessage',
+    messageI18nParamsKeys: [
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.MAINTAIN_COLLECT_POINTS,
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_REVIEW_DATE,
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.CURRENT_LEVEL_NAME,
+    ],
+  },
   [MEMBERSHIP_LEVEL_STATUS.UNLOCK_NEXT_LEVEL]: {
     messageI18nKey: 'UnlockNextLevelMessage',
     messageI18nParamsKeys: [
@@ -227,7 +247,10 @@ export const MEMBERSHIP_LEVEL_I18N_KEYS = {
   },
   [MEMBERSHIP_LEVEL_STATUS.LEVEL_COMPLETED]: {
     messageI18nKey: 'LevelCompletedMessage',
-    messageI18nParamsKeys: [MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_REVIEW_DATE],
+    messageI18nParamsKeys: [
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.CURRENT_LEVEL_NAME,
+      MEMBERSHIP_LEVEL_I18N_PARAM_KEYS.NEXT_REVIEW_DATE,
+    ],
   },
   [MEMBERSHIP_LEVEL_STATUS.LEVEL_MAINTAIN]: {
     messageI18nKey: 'LevelMaintainMessage',

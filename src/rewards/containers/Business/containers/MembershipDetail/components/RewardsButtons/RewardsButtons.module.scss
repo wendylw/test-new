@@ -11,6 +11,8 @@
 }
 
 .RewardsButtonPointsIconContainer,
+.RewardsButtonCashbackIconContainer,
+.RewardsButtonStoreCreditsIconContainer,
 .RewardsButtonRewardsIconContainer {
   width: 34px;
   height: 34px;
@@ -25,10 +27,23 @@
 }
 
 .RewardsButtonPointsText,
+.RewardsButtonCashbackText,
+.RewardsButtonStoreCreditsText,
 .RewardsButtonRewardsText {
   @apply tw-text-sm tw-leading-relaxed;
 }
 
-.RewardsButtonPoints {
+.RewardsButtonPoints,
+.RewardsButtonCashback,
+.RewardsButtonStoreCredits,
+.RewardsButtonMyRewards {
   @apply tw-text-2xl tw-font-bold;
+}
+
+.RewardsButtonCashback {
+  @apply tw-flex tw-items-center tw-gap-x-4 sm:tw-gap-x-4px;
+}
+
+.RewardsButtonCashbackWarningIcon {
+  @apply tw-fill-current tw-text-red;
 }
