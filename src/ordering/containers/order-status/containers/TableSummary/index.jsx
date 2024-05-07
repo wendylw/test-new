@@ -60,6 +60,7 @@ import {
   getOrderApplyCashback,
   getOrderVoucherDiscount,
   getPromoOrVoucherExist,
+  getIsAddingPromoOrVoucherButtonShow,
   getShouldShowRedirectLoader,
   getShouldShowPayNowButton,
   getShouldShowSwitchButton,
@@ -555,7 +556,13 @@ export class TableSummary extends React.Component {
   }
 
   renderPromotionItem() {
-    const { t, oderPromoDiscount, orderVoucherDiscount, promoOrVoucherExist } = this.props;
+    const {
+      t,
+      oderPromoDiscount,
+      orderVoucherDiscount,
+      promoOrVoucherExist,
+      isAddingPromoOrVoucherButtonShow,
+    } = this.props;
 
     return (
       <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
@@ -582,7 +589,7 @@ export class TableSummary extends React.Component {
               />
             </div>
           </>
-        ) : (
+        ) : isAddingPromoOrVoucherButtonShow ? (
           <button
             className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
             onClick={this.handleGotoPromotion}
@@ -591,7 +598,7 @@ export class TableSummary extends React.Component {
             <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
             <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
           </button>
-        )}
+        ) : null}
       </li>
     );
   }
@@ -968,6 +975,7 @@ export default compose(
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),
       promoOrVoucherExist: getPromoOrVoucherExist(state),
+      isAddingPromoOrVoucherButtonShow: getIsAddingPromoOrVoucherButtonShow(state),
       cleverTapAttributes: getCleverTapAttributes(state),
       isWebview: getIsWebview(state),
       isAlipayMiniProgram: getIsAlipayMiniProgram(state),

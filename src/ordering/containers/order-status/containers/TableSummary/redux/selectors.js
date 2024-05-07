@@ -142,6 +142,14 @@ export const getPromoOrVoucherExist = createSelector(
   (orderBillingPromoIfExist, voucherBillingIfExist) => !!(orderBillingPromoIfExist || voucherBillingIfExist)
 );
 
+export const getIsAddingPromoOrVoucherButtonShow = createSelector(
+  getIsOrderPlaced,
+  getOrderBillingPromoIfExist,
+  getVoucherBillingIfExist,
+  (isOrderPlaced, orderBillingPromoIfExist, voucherBillingIfExist) =>
+    isOrderPlaced && !orderBillingPromoIfExist && !voucherBillingIfExist
+);
+
 export const getOrderApplyCashback = createSelector(getOrder, order => order.applyCashback);
 
 export const getShouldShowRedirectLoader = state => state.orderStatus.tableSummary.redirectLoaderVisible;
