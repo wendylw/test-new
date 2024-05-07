@@ -564,6 +564,10 @@ export class TableSummary extends React.Component {
       isAddingPromoOrVoucherButtonShow,
     } = this.props;
 
+    if (!isAddingPromoOrVoucherButtonShow) {
+      return null;
+    }
+
     return (
       <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
         {promoOrVoucherExist ? (
@@ -589,7 +593,7 @@ export class TableSummary extends React.Component {
               />
             </div>
           </>
-        ) : isAddingPromoOrVoucherButtonShow ? (
+        ) : (
           <button
             className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
             onClick={this.handleGotoPromotion}
@@ -598,7 +602,7 @@ export class TableSummary extends React.Component {
             <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
             <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
           </button>
-        ) : null}
+        )}
       </li>
     );
   }
@@ -861,6 +865,7 @@ TableSummary.propTypes = {
   orderVoucherCode: PropTypes.string,
   orderVoucherDiscount: PropTypes.number,
   promoOrVoucherExist: PropTypes.bool,
+  isAddingPromoOrVoucherButtonShow: PropTypes.bool,
   gotoPayment: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
   cleverTapAttributes: PropTypes.object,
@@ -920,6 +925,7 @@ TableSummary.defaultProps = {
   orderVoucherCode: '',
   orderVoucherDiscount: 0,
   promoOrVoucherExist: false,
+  isAddingPromoOrVoucherButtonShow: false,
   gotoPayment: () => {},
   cleverTapAttributes: {},
   isWebview: false,
