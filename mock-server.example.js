@@ -7,9 +7,7 @@ module.exports = {
    * @value {apifoxResponseId?: string}
    */
   mockApis: {
-    '[GET][ordering] /api/ping': {
-      apifoxResponseId: 216836707,
-    },
+    '[GET][ordering] /api/ping': {},
     '[DELETE][default] /api/v3/cart/items/:itemId': {},
     '[GET][default] /api/consumers/:consumerId/store/:storeId/address': {},
   },
