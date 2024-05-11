@@ -12,14 +12,15 @@
    4. [Start F&B && Loyalty](#start-ordering-loyalty)
    5. [Start Beep Entrance](#beep-entrance)
    6. [Online Debug](#online-debug)
-5. [Customize Workbox Service Workers](#customize-workbox-service-workers)
-6. [I18N JSON File Style Guide](#i18n-json-style-guide)
-7. [Style Guide](#style-guide)
-8. [Analyzing bundle size](#analyzing-bundle-size)
-9. [GTM settings for 3rd-party(TNGD & GCash) providers from Alipay MP](#gtm-settings-for-alipay-mp)
-10. [Trouble Shooting](#trouble-shooting)
-11. [data-test-id name convention for log](https://storehub.atlassian.net/wiki/spaces/TS/pages/617087695/data-test-id+name+convention)
-12. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
+5. [Mock Server from Apifox](#mock-server-from-apifox)
+6. [Customize Workbox Service Workers](#customize-workbox-service-workers)
+7. [I18N JSON File Style Guide](#i18n-json-style-guide)
+8. [Style Guide](#style-guide)
+9. [Analyzing bundle size](#analyzing-bundle-size)
+10. [GTM settings for 3rd-party(TNGD & GCash) providers from Alipay MP](#gtm-settings-for-alipay-mp)
+11. [Trouble Shooting](#trouble-shooting)
+12. [data-test-id name convention for log](https://storehub.atlassian.net/wiki/spaces/TS/pages/617087695/data-test-id+name+convention)
+13. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
 
 <a name="abstraction"></a>
 
@@ -170,6 +171,37 @@ Please contact the project administrator to access apollo https://apollo.shub.us
    ```sh
    yarn serve:sourcemap --bucket beep-v2-staging
    ```
+
+<a name="mock-server-from-apifox"></a>
+
+## Mock Server from Apifox
+
+### Environments
+
+- Installed and open Apifox app
+- Completed Beep setup and installation
+- Under the frontend folder
+
+```sh
+cp mock-server.example.js mock-server.js
+```
+
+### Start Mock
+
+1. Update .env
+
+   > 1. Update to `MOCK_ORIGINAL_SERVER_PROXY=https://{business}.beep.test{11~20}.shub.us` on `frontend/.env` (1. original domain)
+
+1. Update mock-server.js
+
+   > 1. Update `projectId` to `beep-v1-bff project id of Apifox` (1. mock server project id)
+
+1. Start mock-server
+
+- Quickly start mock-server using the Apifox (Recommendation)
+  > 1. Update mock api urls in `mock-server.js` (1. The rules for mock url have been written in mock-server. example. js inside)
+  > 2. `cd frontend/ && yarn start:mock-server`
+  > 3. Visiting any Beep page to check mock result
 
 <a name="customize-workbox-service-workers"></a>
 
