@@ -1,0 +1,39 @@
+.RewardsDescription {
+  @apply tw-flex tw-flex-col tw-items-center tw-px-12 sm:tw-px-12px tw-pb-24 sm:tw-pb-24px;
+}
+
+.RewardsDescriptionImageContainer {
+  width: 40%;
+  max-width: 150px;
+
+  figure {
+    @apply tw-bg-transparent;
+  }
+}
+
+.RewardsDescriptionPrompt {
+  @apply tw-text-center tw-py-12 sm:tw-py-12px tw-text-2xl tw-leading-normal tw-text-gray-50;
+
+  max-width: 210px;
+}
+
+.RewardsDescriptionIconList {
+  @apply tw-flex tw-items-center tw-gap-x-24 sm:tw-gap-x-24px;
+}
+
+.RewardsDescriptionIconItem {
+  @apply tw-flex tw-flex-col tw-items-center tw-gap-y-4 sm:tw-gap-y-4px;
+}
+
+.RewardsDescriptionIconContainer {
+  width: 10.666666%;
+  width: 40px;
+
+  figure {
+    @apply tw-bg-transparent;
+  }
+}
+
+.RewardsDescriptionItemText {
+  @apply tw-leading-normal tw-text-gray-50;
+}
