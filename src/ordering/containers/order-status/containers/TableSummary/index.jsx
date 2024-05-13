@@ -60,7 +60,6 @@ import {
   getOrderApplyCashback,
   getOrderVoucherDiscount,
   getPromoOrVoucherExist,
-  getIsAddingPromoOrVoucherButtonShow,
   getShouldShowRedirectLoader,
   getShouldShowPayNowButton,
   getShouldShowSwitchButton,
@@ -556,55 +555,47 @@ export class TableSummary extends React.Component {
   }
 
   renderPromotionItem() {
-    const {
-      t,
-      oderPromoDiscount,
-      orderVoucherDiscount,
-      promoOrVoucherExist,
-      isAddingPromoOrVoucherButtonShow,
-    } = this.props;
+    const { t, oderPromoDiscount, orderVoucherDiscount, promoOrVoucherExist, isOrderPlaced } = this.props;
 
-    if (!isAddingPromoOrVoucherButtonShow) {
-      return null;
+    if (promoOrVoucherExist) {
+      return (
+        <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
+          <div className="table-summary__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
+            <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
+            <span className="margin-left-right-smaller text-size-big text-weight-bolder text-omit__single-line">
+              {t(this.orderPromoType())} ({this.showShortPromoCode()})
+            </span>
+            <button
+              onClick={this.handleDismissPromotion}
+              className="button flex__shrink-fixed"
+              data-test-id="ordering.table-summary.dismiss-promo"
+            >
+              <IconClose className="icon icon__small" />
+            </button>
+          </div>
+          <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
+            -{' '}
+            <CurrencyNumber
+              className="text-size-big text-weight-bolder"
+              money={oderPromoDiscount || orderVoucherDiscount}
+            />
+          </div>
+        </li>
+      );
     }
 
-    return (
+    return isOrderPlaced ? (
       <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
-        {promoOrVoucherExist ? (
-          <>
-            <div className="table-summary__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
-              <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
-              <span className="margin-left-right-smaller text-size-big text-weight-bolder text-omit__single-line">
-                {t(this.orderPromoType())} ({this.showShortPromoCode()})
-              </span>
-              <button
-                onClick={this.handleDismissPromotion}
-                className="button flex__shrink-fixed"
-                data-test-id="ordering.table-summary.dismiss-promo"
-              >
-                <IconClose className="icon icon__small" />
-              </button>
-            </div>
-            <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
-              -{' '}
-              <CurrencyNumber
-                className="text-size-big text-weight-bolder"
-                money={oderPromoDiscount || orderVoucherDiscount}
-              />
-            </div>
-          </>
-        ) : (
-          <button
-            className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
-            onClick={this.handleGotoPromotion}
-            data-test-id="ordering.table-summary.add-promo"
-          >
-            <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
-            <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
-          </button>
-        )}
+        <button
+          className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
+          onClick={this.handleGotoPromotion}
+          data-test-id="ordering.table-summary.add-promo"
+        >
+          <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
+          <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
+        </button>
       </li>
-    );
+    ) : null;
   }
 
   renderSubOrders() {
@@ -865,7 +856,6 @@ TableSummary.propTypes = {
   orderVoucherCode: PropTypes.string,
   orderVoucherDiscount: PropTypes.number,
   promoOrVoucherExist: PropTypes.bool,
-  isAddingPromoOrVoucherButtonShow: PropTypes.bool,
   gotoPayment: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
   cleverTapAttributes: PropTypes.object,
@@ -925,7 +915,6 @@ TableSummary.defaultProps = {
   orderVoucherCode: '',
   orderVoucherDiscount: 0,
   promoOrVoucherExist: false,
-  isAddingPromoOrVoucherButtonShow: false,
   gotoPayment: () => {},
   cleverTapAttributes: {},
   isWebview: false,
@@ -981,7 +970,6 @@ export default compose(
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),
       promoOrVoucherExist: getPromoOrVoucherExist(state),
-      isAddingPromoOrVoucherButtonShow: getIsAddingPromoOrVoucherButtonShow(state),
       cleverTapAttributes: getCleverTapAttributes(state),
       isWebview: getIsWebview(state),
       isAlipayMiniProgram: getIsAlipayMiniProgram(state),
