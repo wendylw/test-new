@@ -7,10 +7,13 @@ import RewardsCashbackWhiteIcon from '../../../../../../../images/rewards-cashba
 import RewardsDiscountWhiteIcon from '../../../../../../../images/rewards-discount-icon-white.svg';
 import RewardsVouchersWhiteIcon from '../../../../../../../images/rewards-vouchers-icon-white.svg';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
+import { getIsMerchantEnabledCashback } from '../../../../../../../redux/modules/merchant/selectors';
 import styles from './RewardsDescription.module.scss';
+import { useSelector } from 'react-redux';
 
 const RewardsDescription = () => {
   const { t } = useTranslation(['Rewards']);
+  const isMerchantEnabledCashback = useSelector(getIsMerchantEnabledCashback);
 
   return (
     <div className={styles.RewardsDescription}>
@@ -25,12 +28,14 @@ const RewardsDescription = () => {
           </div>
           <span></span>
         </li> */}
-        <li className={styles.RewardsDescriptionIconItem}>
-          <div className={styles.RewardsDescriptionIconContainer}>
-            <ObjectFitImage noCompression src={RewardsCashbackWhiteIcon} />
-          </div>
-          <span className={styles.RewardsDescriptionItemText}>{t('Cashback')}</span>
-        </li>
+        {isMerchantEnabledCashback && (
+          <li className={styles.RewardsDescriptionIconItem}>
+            <div className={styles.RewardsDescriptionIconContainer}>
+              <ObjectFitImage noCompression src={RewardsCashbackWhiteIcon} />
+            </div>
+            <span className={styles.RewardsDescriptionItemText}>{t('Cashback')}</span>
+          </li>
+        )}
         {/* <li className={styles.RewardsDescriptionIconItem}>
           <div className={styles.RewardsDescriptionIconContainer}>
             <ObjectFitImage noCompression src={RewardsStoreCreditsWhiteIcon} />
