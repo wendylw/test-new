@@ -46,6 +46,9 @@ export const getBusinessRewardsUrl = state =>
 export const getCongratulationUrl = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.FOUNDATION_OF_TIERED_MEMBERSHIP).congratsURL;
 
+export const getIsJoinMembershipNewFeatures = state =>
+  getFeatureFlagResult(state, FEATURE_KEYS.JOIN_MEMBERSHIP_NEW_DESIGN);
+
 export const getShouldShowSkeletonLoader = createSelector(
   getIsLoadMerchantRequestCompleted,
   isLoadMerchantRequestCompleted => !isLoadMerchantRequestCompleted
