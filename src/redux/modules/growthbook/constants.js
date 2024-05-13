@@ -15,5 +15,5 @@ export const DEFAULT_FEATURE_FLAG_RESULTS = {
     congratsURL: 'https://lp.storehub.com/promotion-claimed',
   },
   [FEATURE_KEYS.SHOW_TIERED_MEMBERSHIP_BENEFIT]: [],
-  JOIN_MEMBERSHIP_NEW_DESIGN: false,
+  [FEATURE_KEYS.JOIN_MEMBERSHIP_NEW_DESIGN]: false,
 };
