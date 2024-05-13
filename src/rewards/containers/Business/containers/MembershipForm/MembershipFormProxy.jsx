@@ -11,11 +11,14 @@ import {
   getShouldShowUnsupportedError,
   getShouldShowUnknownError,
   getShouldShowBackButton,
+  getIsJoinMembershipNewDesign,
+  getShouldHideHeader,
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
 import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
 import MembershipForm from '.';
+import NewMembershipForm from './MembershipForm';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 
 const MembershipFormProxy = () => {
@@ -32,6 +35,8 @@ const MembershipFormProxy = () => {
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
   const hasJoinedMembership = useSelector(getHasUserJoinedMerchantMembership);
+  const isJoinMembershipNewDesign = useSelector(getIsJoinMembershipNewDesign);
+  const shouldHideHeader = useSelector(getShouldHideHeader);
 
   useEffect(() => {
     if (isLogin) {
@@ -50,11 +55,14 @@ const MembershipFormProxy = () => {
 
   return (
     <Frame>
-      <PageHeader
-        title={t('JoinOurMembership')}
-        onBackArrowClick={handleClickBackButton}
-        isShowBackButton={shouldShowBackButton}
-      />
+      {shouldHideHeader ? null : (
+        <PageHeader
+          title={t('JoinOurMembership')}
+          onBackArrowClick={handleClickBackButton}
+          isShowBackButton={shouldShowBackButton}
+        />
+      )}
+
       {shouldShowSkeletonLoader ? (
         <SkeletonLoader />
       ) : shouldShowUnsupportedError ? (
@@ -67,6 +75,8 @@ const MembershipFormProxy = () => {
           imageSrc={BeepWarningImage}
           onCloseButtonClick={handleClickRetryButton}
         />
+      ) : isJoinMembershipNewDesign ? (
+        <NewMembershipForm />
       ) : (
         <MembershipForm />
       )}

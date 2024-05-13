@@ -15,7 +15,7 @@ import {
   getIsLoadMerchantRequestStatusRejected,
   getIsLoadMerchantRequestCompleted,
 } from '../../../../../../redux/modules/merchant/selectors';
-import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
+import { getIsWeb, getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
@@ -46,7 +46,7 @@ export const getBusinessRewardsUrl = state =>
 export const getCongratulationUrl = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.FOUNDATION_OF_TIERED_MEMBERSHIP).congratsURL;
 
-export const getIsJoinMembershipNewFeatures = state =>
+export const getIsJoinMembershipNewDesign = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.JOIN_MEMBERSHIP_NEW_DESIGN);
 
 export const getShouldShowSkeletonLoader = createSelector(
@@ -124,4 +124,10 @@ export const getShouldShowProfileForm = createSelector(
   getHasUserJoinedMerchantMembership,
   (isUserProfileIncomplete, hasUserJoinedMerchantMembership) =>
     isUserProfileIncomplete && !hasUserJoinedMerchantMembership
+);
+
+export const getShouldHideHeader = createSelector(
+  getIsJoinMembershipNewDesign,
+  getIsWeb,
+  (isJoinMembershipNewDesign, isWeb) => isJoinMembershipNewDesign && isWeb
 );
