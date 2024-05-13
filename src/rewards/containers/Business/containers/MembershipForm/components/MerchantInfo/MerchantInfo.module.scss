@@ -1,0 +1,16 @@
+.MerchantInfo {
+  @apply tw-flex tw-items-center tw-gap-12 sm:tw-gap-12px tw-p-12 sm:tw-p-12px;
+}
+
+.MerchantInfoLogoContainer {
+  width: 16%;
+  max-width: 60px;
+}
+
+.MerchantInfoLogo {
+  @apply tw-rounded;
+}
+
+.MerchantInfoName {
+  @apply tw-flex tw-items-center tw-text-xl tw-my-0 tw-leading-normal tw-text-gray-50;
+}
