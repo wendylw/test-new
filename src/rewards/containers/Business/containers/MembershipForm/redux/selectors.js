@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import i18next from 'i18next';
 import RewardsCashbackWhiteIcon from '../../../../../../images/rewards-cashback-icon-white.svg';
+import RewardsStoreCreditsWhiteIcon from '../../../../../../images/rewards-store-credits-icon-white.svg';
 import RewardsDiscountWhiteIcon from '../../../../../../images/rewards-discount-icon-white.svg';
 import RewardsVouchersWhiteIcon from '../../../../../../images/rewards-vouchers-icon-white.svg';
 import { API_REQUEST_STATUS, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
@@ -18,6 +19,7 @@ import {
   getIsLoadMerchantRequestStatusFulfilled,
   getIsLoadMerchantRequestStatusRejected,
   getIsLoadMerchantRequestCompleted,
+  getIsMerchantEnabledStoreCredits,
   getIsMerchantEnabledCashback,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getIsWeb, getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
@@ -137,27 +139,37 @@ export const getShouldHideHeader = createSelector(
   (isJoinMembershipNewDesign, isWeb) => isJoinMembershipNewDesign && isWeb
 );
 
-export const getJoinMembershipRewardList = createSelector(getIsMerchantEnabledCashback, isMerchantEnabledCashback => {
-  const rewards = [
-    {
-      key: 'discounts',
-      icon: RewardsDiscountWhiteIcon,
-      text: i18next.t('Rewards:Discounts'),
-    },
-    {
-      key: 'vouchers',
-      icon: RewardsVouchersWhiteIcon,
-      text: i18next.t('Rewards:Vouchers'),
-    },
-  ];
+export const getJoinMembershipRewardList = createSelector(
+  getIsMerchantEnabledCashback,
+  getIsMerchantEnabledStoreCredits,
+  (isMerchantEnabledCashback, isMerchantEnabledStoreCredits) => {
+    const rewards = [
+      {
+        key: 'discounts',
+        icon: RewardsDiscountWhiteIcon,
+        text: i18next.t('Rewards:Discounts'),
+      },
+      {
+        key: 'vouchers',
+        icon: RewardsVouchersWhiteIcon,
+        text: i18next.t('Rewards:Vouchers'),
+      },
+    ];
 
-  if (isMerchantEnabledCashback) {
-    rewards.unshift({
-      key: 'cashback',
-      icon: RewardsCashbackWhiteIcon,
-      text: i18next.t('Common:Cashback'),
-    });
+    if (isMerchantEnabledCashback) {
+      rewards.unshift({
+        key: 'cashback',
+        icon: RewardsCashbackWhiteIcon,
+        text: i18next.t('Common:Cashback'),
+      });
+    } else if (isMerchantEnabledStoreCredits) {
+      rewards.unshift({
+        key: 'storeCredits',
+        icon: RewardsStoreCreditsWhiteIcon,
+        text: i18next.t('Rewards:StoreCredits'),
+      });
+    }
+
+    return rewards;
   }
-
-  return rewards;
-});
+);
