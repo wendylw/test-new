@@ -2,16 +2,13 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import RewardsJoinMembershipImage from '../../../../../../../images/rewards-join-membership.svg';
-import RewardsCashbackWhiteIcon from '../../../../../../../images/rewards-cashback-icon-white.svg';
-import RewardsDiscountWhiteIcon from '../../../../../../../images/rewards-discount-icon-white.svg';
-import RewardsVouchersWhiteIcon from '../../../../../../../images/rewards-vouchers-icon-white.svg';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
-import { getIsMerchantEnabledCashback } from '../../../../../../../redux/modules/merchant/selectors';
+import { getJoinMembershipRewardList } from '../../redux/selectors';
 import styles from './RewardsDescription.module.scss';
 
 const RewardsDescription = () => {
   const { t } = useTranslation(['Rewards']);
-  const isMerchantEnabledCashback = useSelector(getIsMerchantEnabledCashback);
+  const joinMembershipRewardList = useSelector(getJoinMembershipRewardList);
 
   return (
     <div className={styles.RewardsDescription}>
@@ -20,26 +17,14 @@ const RewardsDescription = () => {
       </div>
       <p className={styles.RewardsDescriptionPrompt}>{t('JoinMembershipRewardsPrompt')}</p>
       <ol className={styles.RewardsDescriptionIconList}>
-        {isMerchantEnabledCashback && (
-          <li className={styles.RewardsDescriptionIconItem}>
+        {joinMembershipRewardList.map(({ key, icon, text }) => (
+          <li key={`join-membership-rewards-${key}`} className={styles.RewardsDescriptionIconItem}>
             <div className={styles.RewardsDescriptionIconContainer}>
-              <ObjectFitImage noCompression src={RewardsCashbackWhiteIcon} />
+              <ObjectFitImage noCompression src={icon} />
             </div>
-            <span className={styles.RewardsDescriptionItemText}>{t('Cashback')}</span>
+            <span className={styles.RewardsDescriptionItemText}>{text}</span>
           </li>
-        )}
-        <li className={styles.RewardsDescriptionIconItem}>
-          <div className={styles.RewardsDescriptionIconContainer}>
-            <ObjectFitImage noCompression src={RewardsDiscountWhiteIcon} />
-          </div>
-          <span className={styles.RewardsDescriptionItemText}>{t('Discounts')}</span>
-        </li>
-        <li className={styles.RewardsDescriptionIconItem}>
-          <div className={styles.RewardsDescriptionIconContainer}>
-            <ObjectFitImage noCompression src={RewardsVouchersWhiteIcon} />
-          </div>
-          <span className={styles.RewardsDescriptionItemText}>{t('Vouchers')}</span>
-        </li>
+        ))}
       </ol>
     </div>
   );

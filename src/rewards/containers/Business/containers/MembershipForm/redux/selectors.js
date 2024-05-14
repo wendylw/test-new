@@ -1,4 +1,8 @@
 import { createSelector } from 'reselect';
+import i18next from 'i18next';
+import RewardsCashbackWhiteIcon from '../../../../../../images/rewards-cashback-icon-white.svg';
+import RewardsDiscountWhiteIcon from '../../../../../../images/rewards-discount-icon-white.svg';
+import RewardsVouchersWhiteIcon from '../../../../../../images/rewards-vouchers-icon-white.svg';
 import { API_REQUEST_STATUS, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
 import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
@@ -14,6 +18,7 @@ import {
   getIsLoadMerchantRequestStatusFulfilled,
   getIsLoadMerchantRequestStatusRejected,
   getIsLoadMerchantRequestCompleted,
+  getIsMerchantEnabledCashback,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getIsWeb, getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import {
@@ -131,3 +136,28 @@ export const getShouldHideHeader = createSelector(
   getIsWeb,
   (isJoinMembershipNewDesign, isWeb) => isJoinMembershipNewDesign && isWeb
 );
+
+export const getJoinMembershipRewardList = createSelector(getIsMerchantEnabledCashback, isMerchantEnabledCashback => {
+  const rewards = [
+    {
+      key: 'discounts',
+      icon: RewardsDiscountWhiteIcon,
+      text: i18next.t('Rewards:Discounts'),
+    },
+    {
+      key: 'vouchers',
+      icon: RewardsVouchersWhiteIcon,
+      text: i18next.t('Rewards:Vouchers'),
+    },
+  ];
+
+  if (isMerchantEnabledCashback) {
+    rewards.unshift({
+      key: 'cashback',
+      icon: RewardsCashbackWhiteIcon,
+      text: i18next.t('Common:Cashback'),
+    });
+  }
+
+  return rewards;
+});
