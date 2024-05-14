@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 import i18next from 'i18next';
+import RewardsPointsWhiteIcon from '../../../../../../images/rewards-points-icon-white.svg';
 import RewardsCashbackWhiteIcon from '../../../../../../images/rewards-cashback-icon-white.svg';
 import RewardsStoreCreditsWhiteIcon from '../../../../../../images/rewards-store-credits-icon-white.svg';
 import RewardsDiscountWhiteIcon from '../../../../../../images/rewards-discount-icon-white.svg';
@@ -21,6 +22,7 @@ import {
   getIsLoadMerchantRequestCompleted,
   getIsMerchantEnabledStoreCredits,
   getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getIsWeb, getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import {
@@ -142,7 +144,8 @@ export const getShouldHideHeader = createSelector(
 export const getJoinMembershipRewardList = createSelector(
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledStoreCredits,
-  (isMerchantEnabledCashback, isMerchantEnabledStoreCredits) => {
+  getIsMerchantMembershipPointsEnabled,
+  (isMerchantEnabledCashback, isMerchantEnabledStoreCredits, isMerchantMembershipPointsEnabled) => {
     const rewards = [
       {
         key: 'discounts',
@@ -167,6 +170,14 @@ export const getJoinMembershipRewardList = createSelector(
         key: 'storeCredits',
         icon: RewardsStoreCreditsWhiteIcon,
         text: i18next.t('Rewards:StoreCredits'),
+      });
+    }
+
+    if (isMerchantMembershipPointsEnabled) {
+      rewards.unshift({
+        key: 'points',
+        icon: RewardsPointsWhiteIcon,
+        text: i18next.t('Rewards:Points'),
       });
     }
 
