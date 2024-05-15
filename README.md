@@ -188,15 +188,11 @@ cp mock-server.example.js mock-server.js
 
 ### Start Mock
 
-1. Update .env
-
-   > 1. Update to `MOCK_ORIGINAL_SERVER_PROXY=https://{business}.beep.test{11~20}.shub.us` on `frontend/.env` (1. original domain)
-
 1. Update mock-server.js
 
    > 1. Update `projectId` to `beep-v1-bff project id of Apifox` (1. mock server project id)
 
-1. Start mock-server
+2. Start mock-server
 
 - Quickly start mock-server using the Apifox (Recommendation)
   > 1. Update mock api urls in `mock-server.js` (1. The rules for mock url have been written in mock-server. example. js inside)
