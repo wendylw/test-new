@@ -497,7 +497,9 @@ export const getMerchantStoreUrl = (business, queryObject) => {
     return `${domain}${pathname}`;
   }
 
-  return `${domain}${pathname}/?${qs.stringify(queryObject)}`;
+  const queryList = Object.keys(queryObject).map(queryItemKey => `${queryItemKey}=${queryObject[queryItemKey]}`);
+
+  return `${domain}${pathname}/?${queryList.join('&')}`;
 };
 
 export const getFulfillDate = (businessUTCOffset = 480) => {
