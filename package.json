@@ -166,7 +166,6 @@
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1",
     "express": "^4.17.1",
-    "frontend-mock-server": "^1.4.1",
     "http-proxy-middleware": "^1.0.6",
     "husky": "^3.1.0",
     "jest-fetch-mock": "^3.0.1",

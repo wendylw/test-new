@@ -11071,10 +11071,10 @@ from2@^2.1.0:
     inherits "^2.0.1"
     readable-stream "^2.0.0"
 
-frontend-mock-server@^1.4.1:
-  version "1.4.1"
-  resolved "https://npm-proxy.fury.io/byP2nuz4Las5rf72y98D/storehub/~/up/ver_1jgimW/frontend-mock-server-1.4.1.tgz#0342a877f42aa4dab083b5e7760dd163558302fc"
-  integrity sha1-A0Kod/QqpNqwg7Xndg3RY1WDAvw=
+frontend-mock-server@^1.4.2:
+  version "1.4.2"
+  resolved "https://npm-proxy.fury.io/byP2nuz4Las5rf72y98D/storehub/~/up/ver_14DVMX/frontend-mock-server-1.4.2.tgz#473236986662c448b583eecfd3cbe1fabf6beddc"
+  integrity sha1-RzI2mGZixEi1g+7P08vh+r9r7dw=
   dependencies:
     "@types/express" "^4.17.2"
     "@types/http-proxy-middleware" "^0.19.3"
