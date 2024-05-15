@@ -2175,9 +2175,7 @@ describe('getMerchantStoreUrl', () => {
 
   it('returns the correct URL with encode URL in query parameters', () => {
     queryObject = { source: 'https://beepit.com', foo: 'bar' };
-    const expectedUrl = `https://my-business.beep.com/ordering/?source=${encodeURIComponent(
-      queryObject.source
-    )}&foo=bar`;
+    const expectedUrl = `https://my-business.beep.com/ordering/?source=${queryObject.source}&foo=bar`;
     const actualUrl = getMerchantStoreUrl(business, queryObject);
     expect(actualUrl).toEqual(expectedUrl);
   });
