@@ -1,6 +1,5 @@
 import React, { useEffect, useState, createRef } from 'react';
 import { useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../common/utils/ui';
 import {
   getIsMembershipBenefitTabsShown,
@@ -24,7 +23,6 @@ const getCurrentActiveBlockInfo = activeIndex => {
 };
 
 const MembershipTiersTabs = () => {
-  const { t } = useTranslation(['Rewards']);
   const isMembershipBenefitTabsShown = useSelector(getIsMembershipBenefitTabsShown);
   const membershipTiersBenefit = useSelector(getMerchantMembershipTiersBenefit);
   const isMembershipBenefitInfoShown = useSelector(getIsMembershipBenefitInfoShown);
@@ -57,19 +55,18 @@ const MembershipTiersTabs = () => {
 
   return (
     <section className={styles.MembershipTiersTabsSection}>
-      <h5 className={styles.MembershipTiersTabsTitle}>{t('MembershipBenefits')}</h5>
       <div className={styles.MembershipTiersTabsContainer}>
         {isMembershipBenefitTabsShown ? (
           <>
             <ul className={styles.MembershipTiersTabs}>
               {membershipTiersBenefit.map((tier, index) => {
                 const membershipTiersBenefitButtonClassName = getClassName([
-                  styles.MembershipTiersTabsName,
+                  styles.MembershipTiersTabName,
                   activeIndex === index && styles.MembershipTiersTabsName__active,
                 ]);
 
                 return (
-                  <li key={`membership-tier-name-${tier.level}`} className={styles.MembershipTiersTabs}>
+                  <li key={`membership-tier-name-${tier.level}`} className={styles.MembershipTiersTab}>
                     <button
                       ref={elRefs[index]}
                       id={`membership-tier-button-${index}`}
@@ -95,9 +92,9 @@ const MembershipTiersTabs = () => {
             />
             {membershipTiersBenefit.map((benefit, index) => {
               const benefitDescriptionClassName = getClassName([
-                styles.MembershipTiersTabsContent,
-                styles.MembershipTiersTabsContent__tab,
-                activeIndex === index && styles.MembershipTiersTabsContent__active,
+                styles.MembershipTiersTabContent,
+                styles.MembershipTiersTabContent__tab,
+                activeIndex === index && styles.MembershipTiersTabContent__active,
               ]);
 
               return (
@@ -113,7 +110,7 @@ const MembershipTiersTabs = () => {
           </>
         ) : (
           <div
-            className={`${styles.MembershipTiersTabsContent} ${styles.MembershipTiersTabsContent__active}`}
+            className={`${styles.MembershipTiersTabContent} ${styles.MembershipTiersTabContent__active}`}
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{ __html: membershipTiersBenefit[0].description }}
             data-test-id="rewards.business.membership-tiers-info-tabs.benefit-description"

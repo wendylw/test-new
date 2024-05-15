@@ -1,31 +1,27 @@
-.MembershipTiersInfoTabsSection {
-  @apply tw-p-16 sm:tw-p-16px tw-mx-auto;
+.MembershipTiersTabsSection {
+  @apply tw-mx-auto;
 }
 
-.MembershipTiersInfoTabsTitle {
-  @apply tw-text-xl tw-font-bold;
+.MembershipTiersTabsContainer {
+  @apply tw-relative;
 }
 
-.MembershipTiersInfoTabsContainer {
-  @apply tw-relative tw-my-16 sm:tw-my-16px tw-border tw-border-solid tw-border-gray-400 tw-rounded;
-}
-
-.MembershipTiersInfoTabs {
+.MembershipTiersTabs {
   @apply tw-flex tw-justify-between tw-border-0 tw-border-b tw-border-solid tw-border-gray-400;
 }
 
-.MembershipTiersInfoTabsActiveBlock {
+.MembershipTiersTabsActiveBlock {
   @apply tw-absolute tw-left-0 tw-bg-orange;
 
   top: 37px;
   height: 2px;
 }
 
-.MembershipTiersInfoTab {
+.MembershipTiersTab {
   @apply tw-flex-1 tw-text-center tw-cursor-pointer;
 }
 
-.MembershipTiersInfoTabName {
+.MembershipTiersTabName {
   @apply tw-w-full tw-p-8 sm:tw-p-8px tw-border-0 tw-bg-transparent tw-capitalize tw-leading-loose tw-text-gray-800 tw-cursor-pointer;
 
   outline: none;
@@ -36,7 +32,7 @@
   }
 }
 
-.MembershipTiersInfoTabContent {
+.MembershipTiersTabContent {
   @apply tw-hidden tw-p-12 sm:tw-p-12px;
 
   &__tab {
@@ -49,8 +45,6 @@
 
   ol,
   ul {
-    @apply tw-list-disc;
-
     padding-left: 20px;
   }
 
