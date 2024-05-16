@@ -555,45 +555,47 @@ export class TableSummary extends React.Component {
   }
 
   renderPromotionItem() {
-    const { t, oderPromoDiscount, orderVoucherDiscount, promoOrVoucherExist } = this.props;
+    const { t, oderPromoDiscount, orderVoucherDiscount, promoOrVoucherExist, isOrderPlaced } = this.props;
 
-    return (
-      <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
-        {promoOrVoucherExist ? (
-          <>
-            <div className="table-summary__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
-              <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
-              <span className="margin-left-right-smaller text-size-big text-weight-bolder text-omit__single-line">
-                {t(this.orderPromoType())} ({this.showShortPromoCode()})
-              </span>
-              <button
-                onClick={this.handleDismissPromotion}
-                className="button flex__shrink-fixed"
-                data-test-id="ordering.table-summary.dismiss-promo"
-              >
-                <IconClose className="icon icon__small" />
-              </button>
-            </div>
-            <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
-              -{' '}
-              <CurrencyNumber
-                className="text-size-big text-weight-bolder"
-                money={oderPromoDiscount || orderVoucherDiscount}
-              />
-            </div>
-          </>
-        ) : (
-          <button
-            className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
-            onClick={this.handleGotoPromotion}
-            data-test-id="ordering.table-summary.add-promo"
-          >
+    if (promoOrVoucherExist) {
+      return (
+        <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
+          <div className="table-summary__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
             <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
-            <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
-          </button>
-        )}
+            <span className="margin-left-right-smaller text-size-big text-weight-bolder text-omit__single-line">
+              {t(this.orderPromoType())} ({this.showShortPromoCode()})
+            </span>
+            <button
+              onClick={this.handleDismissPromotion}
+              className="button flex__shrink-fixed"
+              data-test-id="ordering.table-summary.dismiss-promo"
+            >
+              <IconClose className="icon icon__small" />
+            </button>
+          </div>
+          <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
+            -{' '}
+            <CurrencyNumber
+              className="text-size-big text-weight-bolder"
+              money={oderPromoDiscount || orderVoucherDiscount}
+            />
+          </div>
+        </li>
+      );
+    }
+
+    return isOrderPlaced ? (
+      <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
+        <button
+          className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
+          onClick={this.handleGotoPromotion}
+          data-test-id="ordering.table-summary.add-promo"
+        >
+          <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
+          <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
+        </button>
       </li>
-    );
+    ) : null;
   }
 
   renderSubOrders() {
