@@ -1,3 +1,5 @@
+$active-tier-color: #231651;
+
 .MembershipTiersTabsSection {
   @apply tw-mx-auto;
 }
@@ -11,10 +13,11 @@
 }
 
 .MembershipTiersTabsActiveBlock {
-  @apply tw-absolute tw-left-0 tw-bg-orange;
+  @apply tw-absolute tw-left-0;
 
-  top: 37px;
+  top: 32px;
   height: 2px;
+  background-color: $active-tier-color;
 }
 
 .MembershipTiersTab {
@@ -22,13 +25,15 @@
 }
 
 .MembershipTiersTabName {
-  @apply tw-w-full tw-p-8 sm:tw-p-8px tw-border-0 tw-bg-transparent tw-capitalize tw-leading-loose tw-text-gray-800 tw-cursor-pointer;
+  @apply tw-flex tw-items-center tw-justify-center tw-gap-4 sm:tw-gap-4px tw-w-full tw-p-6 sm:tw-p-6px tw-border-0 tw-bg-transparent tw-capitalize tw-leading-loose tw-text-gray-700 tw-cursor-pointer;
 
   outline: none;
   box-shadow: none;
 
   &__active {
-    @apply tw-text-orange tw-font-bold;
+    @apply tw-font-bold;
+
+    color: $active-tier-color;
   }
 }
 

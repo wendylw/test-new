@@ -1,5 +1,6 @@
 import React, { useEffect, useState, createRef } from 'react';
 import { useSelector } from 'react-redux';
+import { Lock } from 'phosphor-react';
 import { getClassName } from '../../../../../common/utils/ui';
 import {
   getIsMembershipBenefitTabsShown,
@@ -62,7 +63,7 @@ const MembershipTiersTabs = () => {
               {membershipTiersBenefit.map((tier, index) => {
                 const membershipTiersBenefitButtonClassName = getClassName([
                   styles.MembershipTiersTabName,
-                  activeIndex === index && styles.MembershipTiersTabsName__active,
+                  activeIndex === index && styles.MembershipTiersTabName__active,
                 ]);
 
                 return (
@@ -76,6 +77,7 @@ const MembershipTiersTabs = () => {
                         handleClickMembershipTierButton(index);
                       }}
                     >
+                      {tier.isLocked && <Lock size={16} />}
                       {tier.name}
                     </button>
                   </li>
