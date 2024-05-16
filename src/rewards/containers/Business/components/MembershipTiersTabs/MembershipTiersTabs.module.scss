@@ -38,7 +38,7 @@ $active-tier-color: #231651;
 }
 
 .MembershipTiersTabContent {
-  @apply tw-hidden tw-p-12 sm:tw-p-12px;
+  @apply tw-hidden tw-px-12 sm:tw-px-12px;
 
   &__tab {
     min-height: 136px;
@@ -56,4 +56,11 @@ $active-tier-color: #231651;
   li {
     @apply tw-leading-loose;
   }
+}
+
+.MembershipTiersTabContentPrompt {
+  @apply tw-my-16 sm:tw-my-16px;
+}
+
+.MembershipTiersTabContentDescription {
 }
