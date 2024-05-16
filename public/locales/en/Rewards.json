@@ -133,5 +133,8 @@
   "ManualAdjustment": "Manual Adjustment",
   "Pending": "Pending",
   "PointsHistoryExpired": "Expiry",
-  "StoreCredits": "Store Credits"
+  "StoreCredits": "Store Credits",
+  "JoinMembershipRewardsPrompt": "Join as a Member and Get these Perks!",
+  "Discounts": "Discounts",
+  "Vouchers": "Vouchers"
 }

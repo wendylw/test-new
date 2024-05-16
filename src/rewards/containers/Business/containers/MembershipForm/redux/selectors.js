@@ -1,4 +1,10 @@
 import { createSelector } from 'reselect';
+import i18next from 'i18next';
+import RewardsPointsWhiteIcon from '../../../../../../images/rewards-points-icon-white.svg';
+import RewardsCashbackWhiteIcon from '../../../../../../images/rewards-cashback-icon-white.svg';
+import RewardsStoreCreditsWhiteIcon from '../../../../../../images/rewards-store-credits-icon-white.svg';
+import RewardsDiscountWhiteIcon from '../../../../../../images/rewards-discount-icon-white.svg';
+import RewardsVouchersWhiteIcon from '../../../../../../images/rewards-vouchers-icon-white.svg';
 import { API_REQUEST_STATUS, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
 import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
@@ -14,8 +20,11 @@ import {
   getIsLoadMerchantRequestStatusFulfilled,
   getIsLoadMerchantRequestStatusRejected,
   getIsLoadMerchantRequestCompleted,
+  getIsMerchantEnabledStoreCredits,
+  getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
 } from '../../../../../../redux/modules/merchant/selectors';
-import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
+import { getIsWeb, getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
@@ -46,7 +55,7 @@ export const getBusinessRewardsUrl = state =>
 export const getCongratulationUrl = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.FOUNDATION_OF_TIERED_MEMBERSHIP).congratsURL;
 
-export const getIsJoinMembershipNewFeatures = state =>
+export const getIsJoinMembershipNewDesign = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.JOIN_MEMBERSHIP_NEW_DESIGN);
 
 export const getShouldShowSkeletonLoader = createSelector(
@@ -124,4 +133,54 @@ export const getShouldShowProfileForm = createSelector(
   getHasUserJoinedMerchantMembership,
   (isUserProfileIncomplete, hasUserJoinedMerchantMembership) =>
     isUserProfileIncomplete && !hasUserJoinedMerchantMembership
+);
+
+export const getShouldHideHeader = createSelector(
+  getIsJoinMembershipNewDesign,
+  getIsWeb,
+  (isJoinMembershipNewDesign, isWeb) => isJoinMembershipNewDesign && isWeb
+);
+
+export const getJoinMembershipRewardList = createSelector(
+  getIsMerchantEnabledCashback,
+  getIsMerchantEnabledStoreCredits,
+  getIsMerchantMembershipPointsEnabled,
+  (isMerchantEnabledCashback, isMerchantEnabledStoreCredits, isMerchantMembershipPointsEnabled) => {
+    const rewards = [
+      {
+        key: 'discounts',
+        icon: RewardsDiscountWhiteIcon,
+        text: i18next.t('Rewards:Discounts'),
+      },
+      {
+        key: 'vouchers',
+        icon: RewardsVouchersWhiteIcon,
+        text: i18next.t('Rewards:Vouchers'),
+      },
+    ];
+
+    if (isMerchantEnabledCashback) {
+      rewards.unshift({
+        key: 'cashback',
+        icon: RewardsCashbackWhiteIcon,
+        text: i18next.t('Common:Cashback'),
+      });
+    } else if (isMerchantEnabledStoreCredits) {
+      rewards.unshift({
+        key: 'storeCredits',
+        icon: RewardsStoreCreditsWhiteIcon,
+        text: i18next.t('Rewards:StoreCredits'),
+      });
+    }
+
+    if (isMerchantMembershipPointsEnabled) {
+      rewards.unshift({
+        key: 'points',
+        icon: RewardsPointsWhiteIcon,
+        text: i18next.t('Rewards:Points'),
+      });
+    }
+
+    return rewards;
+  }
 );
