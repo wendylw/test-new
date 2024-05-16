@@ -1,7 +1,11 @@
 import React, { useEffect, useState, createRef } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Lock } from 'phosphor-react';
+import { useTranslation } from 'react-i18next';
+import { MEMBER_LEVELS } from '../../../../../common/utils/constants';
 import { getClassName } from '../../../../../common/utils/ui';
+import { getCustomerTierLevel } from '../../../../redux/modules/customer/selectors';
 import {
   getIsMembershipBenefitTabsShown,
   getMerchantMembershipTiersBenefit,
@@ -23,7 +27,9 @@ const getCurrentActiveBlockInfo = activeIndex => {
   return null;
 };
 
-const MembershipTiersTabs = () => {
+const MembershipTiersTabs = ({ unLockLevel }) => {
+  const { t } = useTranslation(['Rewards']);
+  const customerTierLevel = useSelector(getCustomerTierLevel);
   const isMembershipBenefitTabsShown = useSelector(getIsMembershipBenefitTabsShown);
   const membershipTiersBenefit = useSelector(getMerchantMembershipTiersBenefit);
   const isMembershipBenefitInfoShown = useSelector(getIsMembershipBenefitInfoShown);
@@ -65,6 +71,7 @@ const MembershipTiersTabs = () => {
                   styles.MembershipTiersTabName,
                   activeIndex === index && styles.MembershipTiersTabName__active,
                 ]);
+                const isLocked = tier.level > (unLockLevel || customerTierLevel || MEMBER_LEVELS.MEMBER);
 
                 return (
                   <li key={`membership-tier-name-${tier.level}`} className={styles.MembershipTiersTab}>
@@ -77,7 +84,7 @@ const MembershipTiersTabs = () => {
                         handleClickMembershipTierButton(index);
                       }}
                     >
-                      {tier.isLocked && <Lock size={16} />}
+                      {isLocked && <Lock size={16} />}
                       {tier.name}
                     </button>
                   </li>
@@ -98,15 +105,25 @@ const MembershipTiersTabs = () => {
                 styles.MembershipTiersTabContent__tab,
                 activeIndex === index && styles.MembershipTiersTabContent__active,
               ]);
+              let unlockLevelPrompt = null;
+
+              if (unLockLevel && benefit.level === unLockLevel) {
+                unlockLevelPrompt = t('UnlockLevelPrompt');
+              }
+
+              if (unLockLevel && benefit.level > unLockLevel) {
+                unlockLevelPrompt = t('UnlockHigherLevelPrompt', { levelName: benefit.name });
+              }
 
               return (
-                <div
-                  key={`membership-tier-benefit-${benefit.level}`}
-                  className={benefitDescriptionClassName}
-                  // eslint-disable-next-line react/no-danger
-                  dangerouslySetInnerHTML={{ __html: benefit.description }}
-                  data-test-id="rewards.business.membership-tiers-info-tabs.benefit-description"
-                />
+                <div key={`membership-tier-benefit-${benefit.level}`} className={benefitDescriptionClassName}>
+                  {unlockLevelPrompt && <p className={styles.MembershipTiersTabContent}>{unlockLevelPrompt}</p>}
+                  <div
+                    // eslint-disable-next-line react/no-danger
+                    dangerouslySetInnerHTML={{ __html: benefit.description }}
+                    data-test-id="rewards.business.membership-tiers-info-tabs.benefit-description"
+                  />
+                </div>
               );
             })}
           </>
@@ -124,5 +141,13 @@ const MembershipTiersTabs = () => {
 };
 
 MembershipTiersTabs.displayName = 'MembershipTiersTabs';
+
+MembershipTiersTabs.defaultProps = {
+  unLockLevel: null,
+};
+
+MembershipTiersTabs.propTypes = {
+  unLockLevel: PropTypes.oneOf(Object.values(MEMBER_LEVELS)),
+};
 
 export default MembershipTiersTabs;

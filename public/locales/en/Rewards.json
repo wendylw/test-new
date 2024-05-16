@@ -136,5 +136,7 @@
   "StoreCredits": "Store Credits",
   "JoinMembershipRewardsPrompt": "Join as a Member and Get these Perks!",
   "Discounts": "Discounts",
-  "Vouchers": "Vouchers"
+  "Vouchers": "Vouchers",
+  "UnlockLevelPrompt": "You’ll unlock this tier",
+  "UnlockHigherLevelPrompt": "Become a {{levelName}} Member and unlock"
 }

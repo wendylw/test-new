@@ -1,11 +1,9 @@
 import { createSelector } from 'reselect';
 import { FEATURE_KEYS } from '../../../../redux/modules/growthbook/constants';
 import { getQueryString, isWebview, isTNGMiniProgram, isGCashMiniProgram } from '../../../../common/utils';
-import { MEMBER_LEVELS } from '../../../../common/utils/constants';
 import { isAlipayMiniProgram } from '../../../../common/utils/alipay-miniprogram-client';
 import { getFeatureFlagResult } from '../../../../redux/modules/growthbook/selectors';
 import { getIsLogin } from '../../../../redux/modules/user/selectors';
-import { getCustomerTierLevel } from '../customer/selectors';
 import { getMembershipTierList } from '../../../../redux/modules/membership/selectors';
 
 /** Utils */
@@ -47,21 +45,21 @@ export const getIsMembershipBenefitInfoShown = createSelector(
 );
 
 export const getMerchantMembershipTiersBenefit = createSelector(
-  getCustomerTierLevel,
   getMembershipTiersBenefit,
   getMembershipTierList,
-  (customerTierLevel, membershipTiersBenefit, membershipTierList) => {
+  (membershipTiersBenefit, membershipTierList) => {
     if (membershipTiersBenefit.length === 0) {
       return [];
     }
-
-    const currentLevel = customerTierLevel || MEMBER_LEVELS.MEMBER;
 
     return membershipTierList.map(tier => {
       const { level } = tier;
       const currentBenefit = membershipTiersBenefit.find(benefit => benefit.level === level);
 
-      return { ...tier, ...currentBenefit, isLocked: level > currentLevel };
+      return {
+        ...tier,
+        ...currentBenefit,
+      };
     });
   }
 );
