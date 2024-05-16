@@ -171,15 +171,20 @@ const storeLinkInfo = (state = initialState.storeLinkInfo, action) => {
   if (type === types.FETCH_STORE_HASHCODE_SUCCESS) {
     const { redirectTo } = action.response || {};
     const storeUrlParams = {
-      business: context.business,
-      hash: redirectTo,
-      source: context.source,
+      h: redirectTo,
+      source: encodeURIComponent(context.source),
     };
 
     return {
       ...state,
-      deliveryUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'delivery' }),
-      pickupUrl: Utils.getMerchantStoreUrl({ ...storeUrlParams, type: 'pickup' }),
+      deliveryUrl: Utils.getMerchantStoreUrl(context.business, {
+        ...storeUrlParams,
+        type: 'delivery',
+      }),
+      pickupUrl: Utils.getMerchantStoreUrl(context.business, {
+        ...storeUrlParams,
+        type: 'pickup',
+      }),
       business: context.business,
       shippingType: context.shippingType,
       storeId: context.storeId,

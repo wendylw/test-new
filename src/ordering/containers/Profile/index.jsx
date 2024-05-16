@@ -31,6 +31,8 @@ const Profile = ({ show, onClose }) => {
   });
 
   useMount(() => {
+    CleverTap.pushEvent('Complete Profile Page - View Page');
+
     dispatch(init());
   });
 

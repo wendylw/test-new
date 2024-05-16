@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import qs from 'qs';
 import Constants from '../../../../utils/constants';
 import config from '../../../../config';
-import Utils from '../../../../utils/utils';
+import { getCookieVariable, getShippingTypeFromUrl } from '../../../../common/utils';
 import logger from '../../../../utils/monitoring/logger';
 import paymentMasterImage from '../../../../images/payment-mastercard.svg';
 import paymentVisaImage from '../../../../images/payment-visa.svg';
@@ -130,11 +130,59 @@ export function creditCardDetector(cardNumberString) {
   return card;
 }
 
-export const getPaymentRedirectAndWebHookUrl = business => {
-  const h = config.h();
-  const tracker = Utils.getCookieVariable('__sh_tracker');
+export function getCreditCardDate(dateString, deletedDelimiter) {
+  if (!dateString) {
+    return '';
+  }
 
-  const type = Utils.getOrderTypeFromUrl();
+  const datePattern = ['m', 'y'];
+  const blocks = [2, 2];
+  let date = dateString.replace(/[^\d]/g, '');
+  const dateArray = [];
+
+  if (!date.length) {
+    return '';
+  }
+
+  // Split the card number is groups of Block
+  blocks.forEach(block => {
+    if (date.substring(0, block) && date.substring(0, block).length) {
+      dateArray.push(date.substring(0, block));
+      date = date.substring(block);
+    }
+  });
+
+  datePattern.forEach((pattern, index) => {
+    if (pattern === 'm') {
+      if (dateArray[index] === '00') {
+        dateArray[index] = '01';
+      } else if (parseInt(dateArray[index].slice(0, 1), 10) > 1) {
+        dateArray[index] = `0${dateArray[index].slice(0, 1)}`;
+      } else if (parseInt(dateArray[index], 10) > 12) {
+        dateArray[index] = '12';
+      }
+    } else if (pattern === 'y') {
+      if (parseInt(dateArray[index], 10) < 0) {
+        dateArray[index] = '00';
+      } else if (parseInt(dateArray[index], 10) > 99) {
+        dateArray[index] = '99';
+      }
+    }
+
+    if (index !== datePattern.length - 1) {
+      dateArray[index] =
+        dateArray[index].length === blocks[index] && !deletedDelimiter ? `${dateArray[index]} / ` : dateArray[index][0];
+    }
+  });
+
+  return dateArray.join('');
+}
+
+export function getPaymentRedirectAndWebHookUrl(business) {
+  const h = config.h();
+  const tracker = getCookieVariable('__sh_tracker');
+
+  const type = getShippingTypeFromUrl();
   const queryString = qs.stringify(
     { h, type, tracker: tracker && tracker !== 'undefined' ? tracker : undefined },
     { addQueryPrefix: true }
@@ -148,7 +196,7 @@ export const getPaymentRedirectAndWebHookUrl = business => {
     redirectURL,
     webhookURL,
   };
-};
+}
 
 export const getCardLabel = cardType => {
   let cardLabel = '';

@@ -22,8 +22,8 @@ import {
 import { getIfAddressInfoExists, getAddressCoords } from '../../../redux/modules/address/selectors';
 import Utils from '../../../utils/utils';
 import Tag from '../../../components/Tag';
-import './OrderingStores.scss';
 import { checkStoreIsOpened } from '../../../utils/store-utils';
+import './OrderingStores.scss';
 
 const { ADDRESS_RANGE } = Constants;
 
@@ -201,16 +201,12 @@ class StoreList extends Component {
     }
 
     const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
-    const formatBreakTimes = [Utils.formatHour(breakTimeFrom), Utils.formatHour(breakTimeTo)];
-    const formatValidTimes = [Utils.formatHour(validTimeFrom), Utils.formatHour(validTimeTo)];
 
     return Utils.getOpeningHours({
       validTimeFrom,
       validTimeTo,
       breakTimeFrom,
       breakTimeTo,
-      formatBreakTimes,
-      formatValidTimes,
     });
   };
 

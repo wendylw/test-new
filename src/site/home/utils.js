@@ -59,12 +59,11 @@ export const submitStoreMenu = async ({ deliveryAddress, store, source, shipping
 
   const response = await get(Url.API_URLS.GET_STORE_HASH_DATA(store.id).url);
   const { redirectTo } = response || {};
-  const storeUrlParams = {
-    business: store.business,
-    hash: redirectTo,
-    source,
-  };
-  const redirectUrl = Utils.getMerchantStoreUrl({ ...storeUrlParams, type: shippingType });
+  const redirectUrl = Utils.getMerchantStoreUrl(store.business, {
+    h: redirectTo,
+    source: encodeURIComponent(source),
+    type: shippingType,
+  });
 
   if (!deliveryAddress) {
     logger.error('Site_Utils_GoToStoreFailedByEmptyDeliveryAddress');

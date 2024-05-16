@@ -548,10 +548,7 @@ const COLLECTIONS_TYPE = {
   CAROUSEL: 'Carrousel',
 };
 // storeHub Logistics valid time period
-const SH_LOGISTICS_VALID_TIME = {
-  FROM: '09:00',
-  TO: '21:00',
-};
+const { SH_LOGISTICS_VALID_TIME } = ConstantsV2;
 
 const { WEB_VIEW_SOURCE } = ConstantsV2;
 const PAYMENT_API_PAYMENT_OPTIONS = {

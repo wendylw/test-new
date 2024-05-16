@@ -682,6 +682,8 @@ export class ThankYou extends PureComponent {
   handleViewMembershipDetail = () => {
     const { goToMembershipDetailPage } = this.props;
 
+    CleverTap.pushEvent('Thank You Page - Click Membership Card');
+
     goToMembershipDetailPage();
   };
 

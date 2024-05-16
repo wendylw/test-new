@@ -60,7 +60,6 @@ import {
 } from '../../../../../redux/modules/address/selectors';
 import { STORE_OPENING_STATUS } from '../../constants';
 import { computeStraightDistance } from '../../../../../utils/geoUtils';
-import { formatTime } from '../../../../../utils/time-lib';
 
 export {
   getTableId,
@@ -707,15 +706,11 @@ export const getStoreOpeningTimeList = createSelector(
       7: 'Saturday',
     };
     const { validTimeFrom, validTimeTo, validDays, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
-    const formatBreakTimes = breakTimeFrom && breakTimeTo ? [formatTime(breakTimeFrom), formatTime(breakTimeTo)] : [];
-    const formatValidTimes = [formatTime(validTimeFrom), formatTime(validTimeTo)];
     const openingHours = getOpeningHours({
       validTimeFrom,
       validTimeTo,
       breakTimeFrom,
       breakTimeTo,
-      formatBreakTimes,
-      formatValidTimes,
     });
 
     return _map(weekInfo, (week, day) => ({
