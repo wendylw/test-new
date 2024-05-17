@@ -47,15 +47,6 @@ $active-tier-color: #231651;
   &__active {
     @apply tw-block;
   }
-
-  ol,
-  ul {
-    @apply tw-space-y-16 sm:tw-space-y-16px;
-  }
-
-  li {
-    @apply tw-flex tw-items-center tw-gap-8 sm:tw-gap-8px tw-leading-loose;
-  }
 }
 
 .MembershipTiersTabContentPrompt {
@@ -63,5 +54,17 @@ $active-tier-color: #231651;
 }
 
 .MembershipTiersTabContentDescription {
-  @apply tw-my-16 sm:tw-my-16px;
+  @apply tw-my-16 sm:tw-my-16px tw-space-y-16 sm:tw-space-y-16px;
+}
+
+.MembershipTiersTabContentDescriptionItem {
+  @apply tw-flex tw-items-center tw-gap-8 sm:tw-gap-8px tw-leading-loose;
+
+  &__locked {
+    @apply tw-text-gray-700;
+  }
+}
+
+.MembershipTiersTabContentDescriptionItemCheckedIcon {
+  @apply tw-text-green;
 }

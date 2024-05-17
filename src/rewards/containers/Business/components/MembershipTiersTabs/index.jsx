@@ -1,12 +1,12 @@
 import React, { useEffect, useState, createRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Lock } from 'phosphor-react';
+import { Lock, CheckCircle } from 'phosphor-react';
 import { getClassName } from '../../../../../common/utils/ui';
 import {
   getIsMembershipBenefitTabsShown,
-  getMerchantMembershipTiersBenefit,
-  getIsMembershipBenefitInfoShown,
-  getMerchantMembershipTiersBenefitLength,
+  getMerchantMembershipTiersBenefits,
+  getIsMembershipBenefitsShown,
+  getMerchantMembershipTiersBenefitsLength,
 } from '../../../../redux/modules/common/selectors';
 import styles from './MembershipTiersTabs.module.scss';
 
@@ -25,9 +25,9 @@ const getCurrentActiveBlockInfo = activeIndex => {
 
 const MembershipTiersTabs = () => {
   const isMembershipBenefitTabsShown = useSelector(getIsMembershipBenefitTabsShown);
-  const membershipTiersBenefit = useSelector(getMerchantMembershipTiersBenefit);
-  const isMembershipBenefitInfoShown = useSelector(getIsMembershipBenefitInfoShown);
-  const benefitLength = useSelector(getMerchantMembershipTiersBenefitLength);
+  const merchantMembershipTiersBenefits = useSelector(getMerchantMembershipTiersBenefits);
+  const isMembershipBenefitsShown = useSelector(getIsMembershipBenefitsShown);
+  const benefitsLength = useSelector(getMerchantMembershipTiersBenefitsLength);
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeBlockInfo, setActiveBlockInfo] = useState(null);
   const [elRefs, setElRefs] = useState([]);
@@ -38,19 +38,19 @@ const MembershipTiersTabs = () => {
 
   useEffect(() => {
     setElRefs(item =>
-      Array(benefitLength)
+      Array(benefitsLength)
         .fill()
         .map((_, i) => item[i] || createRef())
     );
-  }, [benefitLength]);
+  }, [benefitsLength]);
 
   useEffect(() => {
-    if (benefitLength && elRefs[0] && !activeBlockInfo) {
+    if (benefitsLength && elRefs[0] && !activeBlockInfo) {
       setActiveBlockInfo(getCurrentActiveBlockInfo(0));
     }
-  }, [benefitLength, elRefs, activeBlockInfo]);
+  }, [benefitsLength, elRefs, activeBlockInfo]);
 
-  if (!isMembershipBenefitInfoShown) {
+  if (!isMembershipBenefitsShown) {
     return null;
   }
 
@@ -60,7 +60,7 @@ const MembershipTiersTabs = () => {
         {isMembershipBenefitTabsShown ? (
           <>
             <ul className={styles.MembershipTiersTabs}>
-              {membershipTiersBenefit.map((tier, index) => {
+              {merchantMembershipTiersBenefits.map((tier, index) => {
                 const membershipTiersBenefitButtonClassName = getClassName([
                   styles.MembershipTiersTabName,
                   activeIndex === index && styles.MembershipTiersTabName__active,
@@ -92,36 +92,58 @@ const MembershipTiersTabs = () => {
                 transition: 'left 0.3s, width 0.3s',
               }}
             />
-            {membershipTiersBenefit.map((benefit, index) => {
+            {merchantMembershipTiersBenefits.map((benefit, index) => {
+              const { prompt, description, isLocked, key } = benefit;
               const benefitDescriptionClassName = getClassName([
                 styles.MembershipTiersTabContent,
                 styles.MembershipTiersTabContent__tab,
                 activeIndex === index && styles.MembershipTiersTabContent__active,
               ]);
+              const benefitDescriptionItemClassName = getClassName([
+                styles.MembershipTiersTabContentDescriptionItem,
+                isLocked && styles.MembershipTiersTabContentDescriptionItem__locked,
+              ]);
 
               return (
-                <div key={`membership-tier-benefit-${benefit.level}`} className={benefitDescriptionClassName}>
-                  {benefit.prompt && <p className={styles.MembershipTiersTabContentPrompt}>{benefit.prompt}</p>}
-                  <div
-                    className={styles.MembershipTiersTabContentDescription}
-                    // eslint-disable-next-line react/no-danger
-                    dangerouslySetInnerHTML={{ __html: benefit.displayDescription }}
-                    data-test-id="rewards.business.membership-tiers-info-tabs.benefit-description"
-                  />
+                <div key={key} className={benefitDescriptionClassName}>
+                  {prompt && <p className={styles.MembershipTiersTabContentPrompt}>{prompt}</p>}
+                  <ul className={styles.MembershipTiersTabContentDescription}>
+                    {description.map((item, descriptionItemIndex) => (
+                      <li
+                        // eslint-disable-next-line react/no-array-index-key
+                        key={`${key}-item-${descriptionItemIndex}`}
+                        className={benefitDescriptionItemClassName}
+                      >
+                        {isLocked ? (
+                          <Lock size={20} />
+                        ) : (
+                          <CheckCircle
+                            className={styles.MembershipTiersTabContentDescriptionItemCheckedIcon}
+                            size={20}
+                          />
+                        )}
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               );
             })}
           </>
         ) : (
           <div className={`${styles.MembershipTiersTabContent} ${styles.MembershipTiersTabContent__active}`}>
-            {membershipTiersBenefit[0].prompt && (
-              <p className={styles.MembershipTiersTabContentPrompt}>{membershipTiersBenefit[0].prompt}</p>
+            {merchantMembershipTiersBenefits[0].prompt && (
+              <p className={styles.MembershipTiersTabContentPrompt}>{merchantMembershipTiersBenefits[0].prompt}</p>
             )}
-            <div
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={{ __html: membershipTiersBenefit[0].displayDescription }}
-              data-test-id="rewards.business.membership-tiers-info-tabs.benefit-description"
-            />
+            <ul className={styles.MembershipTiersTabContentDescription}>
+              {merchantMembershipTiersBenefits[0].description.map((item, index) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <li key={`${item.key}-item-${index}`} className={styles.MembershipTiersTabContentDescriptionItem}>
+                  <CheckCircle className={styles.MembershipTiersTabContentDescriptionItemCheckedIcon} size={20} />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>
