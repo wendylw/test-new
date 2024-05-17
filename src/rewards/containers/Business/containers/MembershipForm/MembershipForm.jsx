@@ -1,5 +1,4 @@
 import React from 'react';
-import { MEMBER_LEVELS } from '../../../../../common/utils/constants';
 import MerchantInfo from './components/MerchantInfo';
 import RewardsDescription from './components/RewardsDescription';
 import MembershipTiersTabs from '../../components/MembershipTiersTabs';
@@ -11,7 +10,7 @@ const MembershipForm = () => (
       <MerchantInfo />
       <RewardsDescription />
     </section>
-    <MembershipTiersTabs unlockLevel={MEMBER_LEVELS.MEMBER} />
+    <MembershipTiersTabs />
   </>
 );
 
