@@ -11,7 +11,7 @@ const MembershipForm = () => (
       <MerchantInfo />
       <RewardsDescription />
     </section>
-    <MembershipTiersTabs unLockLevel={MEMBER_LEVELS.MEMBER} />
+    <MembershipTiersTabs unlockLevel={MEMBER_LEVELS.MEMBER} />
   </>
 );
 

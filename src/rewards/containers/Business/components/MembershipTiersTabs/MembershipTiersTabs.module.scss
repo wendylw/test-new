@@ -61,3 +61,7 @@ $active-tier-color: #231651;
 .MembershipTiersTabContentPrompt {
   @apply tw-my-16 sm:tw-my-16px tw-font-bold;
 }
+
+.MembershipTiersTabContentDescription {
+  @apply tw-my-16 sm:tw-my-16px;
+}

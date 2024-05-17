@@ -56,6 +56,11 @@ export const getMerchantMembershipTiersBenefit = createSelector(
       const { level } = tier;
       const currentBenefit = membershipTiersBenefit.find(benefit => benefit.level === level);
 
+      console.log({
+        ...tier,
+        ...currentBenefit,
+      });
+
       return {
         ...tier,
         ...currentBenefit,
