@@ -50,17 +50,14 @@ $active-tier-color: #231651;
 
   ol,
   ul {
-    padding-left: 20px;
+    @apply tw-space-y-16 sm:tw-space-y-16px;
   }
 
   li {
-    @apply tw-leading-loose;
+    @apply tw-flex tw-items-center tw-gap-8 sm:tw-gap-8px tw-leading-loose;
   }
 }
 
 .MembershipTiersTabContentPrompt {
-  @apply tw-my-16 sm:tw-my-16px;
-}
-
-.MembershipTiersTabContentDescription {
+  @apply tw-my-16 sm:tw-my-16px tw-font-bold;
 }

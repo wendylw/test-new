@@ -115,13 +115,13 @@ const MembershipTiersTabs = ({ unLockLevel }) => {
                 unlockLevelPrompt = t('UnlockHigherLevelPrompt', { levelName: benefit.name });
               }
 
-              console.log(unlockLevelPrompt);
-
               return (
                 <div key={`membership-tier-benefit-${benefit.level}`} className={benefitDescriptionClassName}>
                   {unlockLevelPrompt && <p className={styles.MembershipTiersTabContentPrompt}>{unlockLevelPrompt}</p>}
                   <div
-                    className={styles.MembershipTiersTabContentDescription}
+                    style={{
+                      margin: '16px auto',
+                    }}
                     // eslint-disable-next-line react/no-danger
                     dangerouslySetInnerHTML={{ __html: benefit.description }}
                     data-test-id="rewards.business.membership-tiers-info-tabs.benefit-description"
@@ -131,12 +131,15 @@ const MembershipTiersTabs = ({ unLockLevel }) => {
             })}
           </>
         ) : (
-          <div
-            className={`${styles.MembershipTiersTabContent} ${styles.MembershipTiersTabContent__active}`}
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: membershipTiersBenefit[0].description }}
-            data-test-id="rewards.business.membership-tiers-info-tabs.benefit-description"
-          />
+          <>
+            {unLockLevel && <p className={styles.MembershipTiersTabContentPrompt}>{t('UnlockLevelPrompt')}</p>}
+            <div
+              className={`${styles.MembershipTiersTabContent} ${styles.MembershipTiersTabContent__active}`}
+              // eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={{ __html: membershipTiersBenefit[0].description }}
+              data-test-id="rewards.business.membership-tiers-info-tabs.benefit-description"
+            />
+          </>
         )}
       </div>
     </section>
