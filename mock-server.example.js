@@ -1,5 +1,13 @@
+import { MOCK_SERVER_PROJECTS_IDS } from 'frontend-mock-server/build/utils/constants';
+
 module.exports = {
-  projectId: '2755399',
+  /**
+   * projectIdMapping:
+   * beep-v1-bff: MOCK_SERVER_PROJECTS_IDS.BEEP_V1_BFF
+   * backoffice-v2-bff: MOCK_SERVER_PROJECTS_IDS.BACKOFFICE_V2_BFF
+   * shmanager-v1-bff: MOCK_SERVER_PROJECTS_IDS.SH_MANAGER_V1_BFF
+   */
+  projectId: MOCK_SERVER_PROJECTS_IDS.BEEP_V1_BFF,
   /**
    * @key '[method array][server name] {API url}'
    * [server name] mapping (Check api url prefix of `本地 Mock` in Apifox, compare with under prefix)
