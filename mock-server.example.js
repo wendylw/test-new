@@ -1,4 +1,4 @@
-import { MOCK_SERVER_PROJECTS_IDS } from 'frontend-mock-server/build/utils/constants';
+const { MOCK_SERVER_PROJECTS_IDS } = require('frontend-mock-server/build/utils/constants');
 
 module.exports = {
   /**
