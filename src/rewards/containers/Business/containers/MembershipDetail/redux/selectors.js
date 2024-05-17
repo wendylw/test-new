@@ -23,7 +23,11 @@ import {
   CLAIMED_POINTS_REWARD_ERROR_CODES,
   CLAIMED_POINTS_REWARD_ERROR_I18N_KEYS,
 } from '../utils/constants';
-import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
+import {
+  getSource,
+  getIsWebview,
+  getIsFromJoinMembershipUrlClick,
+} from '../../../../../redux/modules/common/selectors';
 import {
   getOrderReceiptClaimedCashbackStatus,
   getOrderReceiptClaimedCashback,
@@ -74,11 +78,6 @@ export const getClaimPointsRewardError = state => state.business.membershipDetai
 export const getIsFromEarnedCashbackQRScan = createSelector(
   getSource,
   source => source === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
-);
-
-export const getIsFromJoinMembershipUrlClick = createSelector(
-  getSource,
-  source => source === BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK
 );
 
 export const getIsFromSeamlessLoyaltyQrScan = createSelector(

@@ -12,8 +12,8 @@ import {
 } from '../../utils/constants';
 import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import { getIsNewMember } from '../../../../redux/common/selectors';
+import { getIsFromJoinMembershipUrlClick } from '../../../../../../redux/modules/common/selectors';
 import {
-  getIsFromJoinMembershipUrlClick,
   getNewMemberPromptCategory,
   getNewMemberTitleIn18nParams,
   getReturningMemberPromptCategory,
