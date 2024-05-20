@@ -81,6 +81,7 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
     const isClaimedCashbackForCustomerFulfilled = getIsClaimedCashbackForCustomerFulfilled(getState());
 
     if (isClaimedCashbackForCustomerFulfilled) {
+      // set cashback after claimed cashback, claimedCashbackForCustomerCashbackPrice is from post API
       const cashback = isPriceCashback
         ? encodeURIComponent(claimedCashbackForCustomerCashbackPrice)
         : orderCashbackPercentageNumber;
