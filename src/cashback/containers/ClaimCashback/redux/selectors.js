@@ -54,6 +54,11 @@ export const getClaimedCashbackForCustomerStatus = state =>
 
 export const getClaimedCashbackForCustomerError = state => state.claimCashback.claimedCashbackForCustomerRequest.error;
 
+export const getClaimedCashbackForCustomerCashback = createSelector(
+  getClaimedCashbackForCustomerData,
+  claimedCashbackForCustomerData => getDecimalNumber(_get(claimedCashbackForCustomerData, 'cashback', 0))
+);
+
 export const getClaimedOrderCashbackStatus = createSelector(
   getClaimedCashbackForCustomerData,
   claimedCashbackForCustomerData => _get(claimedCashbackForCustomerData, 'status', null)
@@ -67,6 +72,15 @@ export const getIsClaimedOrderCashbackNewMember = createSelector(
 /**
  * Derived selectors
  */
+export const getClaimedCashbackForCustomerCashbackPrice = createSelector(
+  getClaimedCashbackForCustomerCashback,
+  getOrderCashbackMerchantLocale,
+  getOrderCashbackMerchantCurrency,
+  getOrderCashbackMerchantCountry,
+  (claimedCashbackForCustomerCashback, locale, currency, country) =>
+    getPrice(claimedCashbackForCustomerCashback, { locale, currency, country })
+);
+
 export const getIsClaimedCashbackForCustomerPending = createSelector(
   getClaimedCashbackForCustomerStatus,
   claimedCashbackForCustomerStatus => claimedCashbackForCustomerStatus === API_REQUEST_STATUS.PENDING

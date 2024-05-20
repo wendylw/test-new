@@ -18,7 +18,7 @@ import {
   getClaimCashbackPageHash,
   getOrderReceiptNumber,
   getIsPriceCashback,
-  getOrderCashbackPrice,
+  getClaimedCashbackForCustomerCashbackPrice,
   getOrderCashbackPercentageNumber,
   getClaimedOrderCashbackStatus,
   getIsClaimedOrderCashbackNewMember,
@@ -72,10 +72,12 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
     const merchantBusiness = getMerchantBusiness(state);
     const isMerchantMembershipEnabled = getIsMerchantMembershipEnabled(state);
     const isPriceCashback = getIsPriceCashback(state);
-    const orderCashbackPrice = getOrderCashbackPrice(state);
+    const claimedCashbackForCustomerCashbackPrice = getClaimedCashbackForCustomerCashbackPrice(state);
     const orderCashbackPercentageNumber = getOrderCashbackPercentageNumber(state);
     const cashbackType = isPriceCashback ? CLAIM_CASHBACK_TYPES.ABSOLUTE : CLAIM_CASHBACK_TYPES.PERCENTAGE;
-    const cashback = isPriceCashback ? encodeURIComponent(orderCashbackPrice) : orderCashbackPercentageNumber;
+    const cashback = isPriceCashback
+      ? encodeURIComponent(claimedCashbackForCustomerCashbackPrice)
+      : orderCashbackPercentageNumber;
 
     await dispatch(claimedCashbackForCustomer());
 
