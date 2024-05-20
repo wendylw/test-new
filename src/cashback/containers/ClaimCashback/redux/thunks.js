@@ -75,15 +75,15 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
     const claimedCashbackForCustomerCashbackPrice = getClaimedCashbackForCustomerCashbackPrice(state);
     const orderCashbackPercentageNumber = getOrderCashbackPercentageNumber(state);
     const cashbackType = isPriceCashback ? CLAIM_CASHBACK_TYPES.ABSOLUTE : CLAIM_CASHBACK_TYPES.PERCENTAGE;
-    const cashback = isPriceCashback
-      ? encodeURIComponent(claimedCashbackForCustomerCashbackPrice)
-      : orderCashbackPercentageNumber;
 
     await dispatch(claimedCashbackForCustomer());
 
     const isClaimedCashbackForCustomerFulfilled = getIsClaimedCashbackForCustomerFulfilled(getState());
 
     if (isClaimedCashbackForCustomerFulfilled) {
+      const cashback = isPriceCashback
+        ? encodeURIComponent(claimedCashbackForCustomerCashbackPrice)
+        : orderCashbackPercentageNumber;
       const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
       const isClaimedOrderCashbackNewMember = getIsClaimedOrderCashbackNewMember(getState());
       const {
