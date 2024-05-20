@@ -37,8 +37,14 @@ function resolveBusinessName(hostname) {
 }
 
 function replaceHostBusiness(requestHost, targetHost) {
+  debug(`replaceHostBusiness arguments: requestHost: ${requestHost}, targetHost: ${targetHost}`);
   // if it's beep site host name then no need replace business name
-  if (!requestHost || isBeepSite(requestHost) || requestHost.toLowerCase() === 'localhost') {
+  if (
+    !requestHost ||
+    isBeepSite(requestHost) ||
+    requestHost.toLowerCase().startsWith('localhost') ||
+    targetHost.toLowerCase().startsWith('localhost')
+  ) {
     return targetHost;
   }
 

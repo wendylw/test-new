@@ -28,17 +28,47 @@ export const COUNTRIES_DEFAULT_LOCALE = {
   [COUNTRIES.CN]: 'ZH-CN',
 };
 
+export const WEB_VIEW_SOURCE = {
+  IOS: 'iOS',
+  Android: 'Android',
+};
+
+export const CLIENTS = {
+  WEB: 'web',
+  IOS: 'iOS',
+  ANDROID: 'Android',
+  MAC: 'Mac',
+  PC: 'PC',
+  TNG_MINI_PROGRAM: 'tngMiniProgram',
+  GCASH_MINI_PROGRAM: 'gcashMiniProgram',
+};
+
+export const REGISTRATION_SOURCE = {
+  BEEP_APP: 'BeepApp',
+  RECEIPT: 'Receipt',
+  BEEP_STORE: 'BeepStore',
+  BEEP_SITE: 'BeepSite',
+  TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
+  GCASH_MINI_PROGRAM: 'BeepGCashMiniProgram',
+  SHARED_LINK: 'SharedLink',
+};
+
+export const SOURCE_TYPE = {
+  SHOPPING_CART: 'shoppingCart',
+  SHARED_LINK: 'SharedLink',
+  PUSH_NOTIFICATION: 'PushNotification',
+  SMS: 'SMS',
+};
+
 export const URL_TYPES = {
   STATIC: 'static',
   DYNAMIC: 'dynamic',
 };
 
-export const SHIPPING_TYPES = {
-  DELIVERY: 'delivery',
-  PICKUP: 'pickup',
-  DINE_IN: 'dine-in',
-  TAKE_AWAY: 'takeaway',
-  DIGITAL: 'digital',
+export const API_REQUEST_STATUS = {
+  PENDING: 'pending',
+  FULFILLED: 'fulfilled',
+  REJECTED: 'rejected',
 };
 
 export const PATH_NAME_MAPPING = {
@@ -113,6 +143,14 @@ export const PATH_NAME_MAPPING = {
   STORE_REVIEW: '/store-review',
 };
 
+export const SHIPPING_TYPES = {
+  DELIVERY: 'delivery',
+  PICKUP: 'pickup',
+  DINE_IN: 'dine-in',
+  TAKE_AWAY: 'takeaway',
+  DIGITAL: 'digital',
+};
+
 export const PROMOTION_CLIENT_TYPES = {
   TNG_MINI_PROGRAM: 'tngMiniProgram',
   GCASH_MINI_PROGRAM: 'gcashMiniProgram',
@@ -120,13 +158,12 @@ export const PROMOTION_CLIENT_TYPES = {
   WEB: 'web',
 };
 
-export const API_REQUEST_STATUS = {
-  PENDING: 'pending',
-  FULFILLED: 'fulfilled',
-  REJECTED: 'rejected',
-};
-
 export const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+export const SH_LOGISTICS_VALID_TIME = {
+  FROM: '09:00',
+  TO: '21:00',
+};
 
 export const LOCATION_SELECTION_REASON_CODES = {
   OUT_OF_DELIVERY_RANGE: 'OutOfDeliveryRange',
@@ -138,54 +175,6 @@ export const ADDRESS_RANGE = {
   CITY: 4,
   STATE: 5,
   COUNTRY: 6,
-};
-
-export const SOURCE_TYPE = {
-  SHOPPING_CART: 'shoppingCart',
-  SHARED_LINK: 'SharedLink',
-  PUSH_NOTIFICATION: 'PushNotification',
-  SMS: 'SMS',
-};
-
-export const WEB_VIEW_SOURCE = {
-  IOS: 'iOS',
-  Android: 'Android',
-};
-
-export const CLIENTS = {
-  WEB: 'web',
-  IOS: 'iOS',
-  ANDROID: 'Android',
-  MAC: 'Mac',
-  PC: 'PC',
-  TNG_MINI_PROGRAM: 'tngMiniProgram',
-  GCASH_MINI_PROGRAM: 'gcashMiniProgram',
-};
-
-export const REGISTRATION_TOUCH_POINT = {
-  CLAIM_CASHBACK: 'ClaimCashback',
-  ONLINE_ORDER: 'OnlineOrder',
-  QR_ORDER: 'QROrder',
-  TNG: 'TNG',
-  GCash: 'GCash',
-};
-
-export const REGISTRATION_SOURCE = {
-  BEEP_APP: 'BeepApp',
-  RECEIPT: 'Receipt',
-  BEEP_STORE: 'BeepStore',
-  BEEP_SITE: 'BeepSite',
-  TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
-  GCASH_MINI_PROGRAM: 'BeepGCashMiniProgram',
-  SHARED_LINK: 'SharedLink',
-};
-
-export const ORDER_SOURCE = {
-  TNG_MINI_PROGRAM: 'BeepTngMiniProgram',
-  GCASH_MINI_PROGRAM: 'BeepGCashMiniProgram',
-  BEEP_APP: 'BeepApp',
-  BEEP_SITE: 'BeepSite',
-  BEEP_STORE: 'BeepStore',
 };
 
 export const PAYMENT_METHOD_LABELS = {
@@ -218,8 +207,6 @@ export const PAYMENT_PROVIDERS = {
   GCASH_MINI_PROGRAM: 'GCashMiniProgram',
 };
 
-export const TIME_SLOT_NOW = 'now';
-
 export const PRODUCT_STOCK_STATUS = {
   NOT_TRACK_INVENTORY: 'notTrackInventory',
   IN_STOCK: 'inStock',
@@ -228,10 +215,12 @@ export const PRODUCT_STOCK_STATUS = {
   UNAVAILABLE: 'unavailable',
 };
 
-export const TIME_SLOT = {
-  NOW: 'now',
-  TODAY: 'Today',
-  TOMORROW: 'Tomorrow',
+export const ORDER_SOURCE = {
+  TNG_MINI_PROGRAM: 'BeepTngMiniProgram',
+  GCASH_MINI_PROGRAM: 'BeepGCashMiniProgram',
+  BEEP_APP: 'BeepApp',
+  BEEP_SITE: 'BeepSite',
+  BEEP_STORE: 'BeepStore',
 };
 
 export const PRE_ORDER_IMMEDIATE_TAG = {
@@ -259,6 +248,23 @@ export const ORDER_STATUS = {
    * if shipping type is self-pickup, pickedUp means picked up by customer
    * */
   PICKED_UP: 'pickedUp',
+};
+
+export const REGISTRATION_TOUCH_POINT = {
+  CLAIM_CASHBACK: 'ClaimCashback',
+  ONLINE_ORDER: 'OnlineOrder',
+  QR_ORDER: 'QROrder',
+  TNG: 'TNG',
+  GCash: 'GCash',
+};
+
+// TODO: remove this after we have a better solution
+export const TIME_SLOT_NOW = 'now';
+
+export const TIME_SLOT = {
+  NOW: 'now',
+  TODAY: 'Today',
+  TOMORROW: 'Tomorrow',
 };
 
 export const CASHBACK_SOURCE = {
