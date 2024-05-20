@@ -99,22 +99,22 @@ export const getMerchantMembershipTiersBenefits = createSelector(
       return [];
     }
 
-    return membershipTierList.map(tier => {
-      const { level } = tier;
-      const isLocked = tier.level > (isFromJoinMembershipUrlClick ? MEMBER_LEVELS.MEMBER : customerTierLevel);
-      const currentBenefit = newTierBenefitRedesign.find(benefit => benefit.level === level);
+    return newTierBenefitRedesign.map(benefit => {
+      const { level } = benefit;
+      const isLocked = benefit.level > (isFromJoinMembershipUrlClick ? MEMBER_LEVELS.MEMBER : customerTierLevel);
+      const currentTier = membershipTierList.find(tier => tier.level === level);
       let prompt = null;
 
       if (isFromJoinMembershipUrlClick) {
         prompt =
-          tier.level === MEMBER_LEVELS.MEMBER
+          benefit.level === MEMBER_LEVELS.MEMBER
             ? i18next.t('Rewards:UnlockLevelPrompt')
-            : i18next.t('Rewards:UnlockHigherLevelPrompt', { levelName: currentBenefit.name });
+            : i18next.t('Rewards:UnlockHigherLevelPrompt', { levelName: currentTier.name });
       }
 
       return {
-        ...tier,
-        ...currentBenefit,
+        ...benefit,
+        ...currentTier,
         key: `membership-tier-benefit-${level}`,
         isLocked,
         prompt,
