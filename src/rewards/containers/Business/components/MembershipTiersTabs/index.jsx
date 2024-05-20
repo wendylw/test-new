@@ -72,7 +72,7 @@ const MembershipTiersTabs = () => {
                       ref={elRefs[index]}
                       id={`membership-tier-button-${index}`}
                       className={membershipTiersBenefitButtonClassName}
-                      data-test-id="rewards.business.membership-tiers-info-tabs.tier-button"
+                      data-test-id="rewards.business.membership-tiers-info-tabs.tier-tab"
                       onClick={() => {
                         handleClickMembershipTierButton(index);
                       }}
