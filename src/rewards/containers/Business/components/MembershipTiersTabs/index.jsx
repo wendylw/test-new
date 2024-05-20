@@ -89,6 +89,7 @@ const MembershipTiersTabs = () => {
               style={{
                 left: `${activeBlockInfo?.offsetLeft}px`,
                 width: `${activeBlockInfo?.width}px`,
+                minWidth: `${100 / benefitsLength}%`,
                 transition: 'left 0.3s, width 0.3s',
               }}
             />
