@@ -3,7 +3,6 @@ import { createSelector } from 'reselect';
 import {
   API_REQUEST_STATUS,
   CLAIM_CASHBACK_QUERY_NAMES,
-  CLAIM_CASHBACK_TYPES,
   PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
 } from '../../../../../common/utils/constants';
@@ -22,8 +21,6 @@ import {
 } from '../../../../redux/modules/customer/selectors';
 
 export const getOrderReceiptClaimedCashbackStatus = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.STATUS);
-
-export const getOrderReceiptClaimedCashbackType = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.CASHBACK_TYPE);
 
 export const getOrderReceiptClaimedCashbackValue = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.VALUE);
 
@@ -105,19 +102,12 @@ export const getIsExpiringTagShown = createSelector(
 );
 
 export const getOrderReceiptClaimedCashback = createSelector(
-  getOrderReceiptClaimedCashbackType,
   getOrderReceiptClaimedCashbackValue,
-  (claimedCashbackType, claimedCashbackValue) => {
-    if (claimedCashbackType === CLAIM_CASHBACK_TYPES.PERCENTAGE) {
-      return `${claimedCashbackValue}%`;
-    }
-
-    if (claimedCashbackType === CLAIM_CASHBACK_TYPES.ABSOLUTE) {
-      return decodeURIComponent(claimedCashbackValue);
-    }
-
-    return '';
-  }
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+  (claimedCashbackValue, merchantCountry, merchantCurrency, merchantLocale) =>
+    getPrice(claimedCashbackValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry })
 );
 
 export const getUniquePromoList = createSelector(

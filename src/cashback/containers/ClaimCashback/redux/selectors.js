@@ -72,15 +72,6 @@ export const getIsClaimedOrderCashbackNewMember = createSelector(
 /**
  * Derived selectors
  */
-export const getClaimedCashbackForCustomerCashbackPrice = createSelector(
-  getClaimedCashbackForCustomerCashback,
-  getOrderCashbackMerchantLocale,
-  getOrderCashbackMerchantCurrency,
-  getOrderCashbackMerchantCountry,
-  (claimedCashbackForCustomerCashback, locale, currency, country) =>
-    getPrice(claimedCashbackForCustomerCashback, { locale, currency, country })
-);
-
 export const getIsClaimedCashbackForCustomerPending = createSelector(
   getClaimedCashbackForCustomerStatus,
   claimedCashbackForCustomerStatus => claimedCashbackForCustomerStatus === API_REQUEST_STATUS.PENDING
