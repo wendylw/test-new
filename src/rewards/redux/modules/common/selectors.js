@@ -102,7 +102,7 @@ export const getMerchantMembershipTiersBenefits = createSelector(
     return newTierBenefitRedesign.map(benefit => {
       const { level } = benefit;
       const isLocked = benefit.level > (isFromJoinMembershipUrlClick ? MEMBER_LEVELS.MEMBER : customerTierLevel);
-      const currentTier = membershipTierList.find(tier => tier.level === level);
+      const currentTier = membershipTierList.find(tier => tier.level === level) || {};
       let prompt = null;
 
       if (isFromJoinMembershipUrlClick) {
