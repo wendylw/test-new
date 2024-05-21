@@ -137,6 +137,7 @@
   "JoinMembershipRewardsPrompt": "Join as a Member and Get these Perks!",
   "Discounts": "Discounts",
   "Vouchers": "Vouchers",
+  "UnlockOneTierLevelPrompt": "You’ll unlock",
   "UnlockLevelPrompt": "You’ll unlock this tier",
   "UnlockHigherLevelPrompt": "Become a {{levelName}} Member and unlock"
 }
