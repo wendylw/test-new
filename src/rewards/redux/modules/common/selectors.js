@@ -106,13 +106,13 @@ export const getMerchantMembershipTiersBenefits = createSelector(
       let prompt = null;
 
       if (isFromJoinMembershipUrlClick) {
-        if (newTierBenefitRedesign.length > 1) {
+        if (membershipTierList.length > 1) {
           prompt =
             benefit.level === MEMBER_LEVELS.MEMBER
               ? i18next.t('Rewards:UnlockLevelPrompt')
               : i18next.t('Rewards:UnlockHigherLevelPrompt', { levelName: currentTier.name });
         } else {
-          prompt = i18next.t('UnlockOneTierLevelPrompt');
+          prompt = i18next.t('Rewards:UnlockOneTierLevelPrompt');
         }
       }
 
