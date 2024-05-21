@@ -75,7 +75,7 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
 
     if (isClaimedCashbackForCustomerFulfilled) {
       // set cashback after claimed cashback, claimedCashbackForCustomerCashbackPrice is from post API
-      const claimedCashbackForCustomerCashback = getClaimedCashbackForCustomerCashback(state);
+      const claimedCashbackForCustomerCashback = getClaimedCashbackForCustomerCashback(getState());
       const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
       const isClaimedOrderCashbackNewMember = getIsClaimedOrderCashbackNewMember(getState());
       const {
@@ -90,8 +90,6 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
       const pathName = `${REWARDS_BASE}${REWARDS_BUSINESS}${
         isMerchantMembershipEnabled ? `${REWARDS_MEMBERSHIP}${MEMBERSHIP_DETAIL}` : `${CASHBACK}${CASHBACK_DETAIL}`
       }`;
-
-      console.log(claimedCashbackForCustomerCashback);
 
       const search = [
         `isNewMember=${isClaimedOrderCashbackNewMember}`,
