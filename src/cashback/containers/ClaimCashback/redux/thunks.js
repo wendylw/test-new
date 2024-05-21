@@ -91,6 +91,8 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
         isMerchantMembershipEnabled ? `${REWARDS_MEMBERSHIP}${MEMBERSHIP_DETAIL}` : `${CASHBACK}${CASHBACK_DETAIL}`
       }`;
 
+      console.log(claimedCashbackForCustomerCashback);
+
       const search = [
         `isNewMember=${isClaimedOrderCashbackNewMember}`,
         `business=${merchantBusiness}`,
