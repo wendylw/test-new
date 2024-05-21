@@ -5,6 +5,8 @@
 }
 
 .MerchantInfoLogoContainer {
+  @apply tw-flex-shrink-0;
+
   width: 16%;
   max-width: 60px;
 }
