@@ -123,7 +123,7 @@ const MembershipTiersTabs = () => {
                             size={20}
                           />
                         )}
-                        {item}
+                        <p className={styles.MembershipTiersTabContentDescriptionItemCheckedText}>{item}</p>
                       </li>
                     ))}
                   </ul>
@@ -141,7 +141,7 @@ const MembershipTiersTabs = () => {
                 // eslint-disable-next-line react/no-array-index-key
                 <li key={`${item.key}-item-${index}`} className={styles.MembershipTiersTabContentDescriptionItem}>
                   <CheckCircle className={styles.MembershipTiersTabContentDescriptionItemCheckedIcon} size={20} />
-                  {item}
+                  <p className={styles.MembershipTiersTabContentDescriptionItemCheckedText}>{item}</p>
                 </li>
               ))}
             </ul>

@@ -59,7 +59,7 @@ $active-tier-color: #231651;
 }
 
 .MembershipTiersTabContentDescriptionItem {
-  @apply tw-flex tw-items-center tw-gap-8 sm:tw-gap-8px tw-leading-loose;
+  @apply tw-flex tw-items-start tw-gap-8 sm:tw-gap-8px;
 
   &__locked {
     @apply tw-text-gray-700;
@@ -67,5 +67,11 @@ $active-tier-color: #231651;
 }
 
 .MembershipTiersTabContentDescriptionItemCheckedIcon {
-  @apply tw-text-green;
+  @apply tw-flex-shrink-0 tw-text-green;
+
+  min-height: 22.4px;
+}
+
+.MembershipTiersTabContentDescriptionItemCheckedText {
+  @apply tw-leading-loose;
 }
