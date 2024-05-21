@@ -1,7 +1,13 @@
 import i18next from 'i18next';
 import { createSelector } from 'reselect';
 import { FEATURE_KEYS } from '../../../../redux/modules/growthbook/constants';
-import { getQueryString, isWebview, isTNGMiniProgram, isGCashMiniProgram } from '../../../../common/utils';
+import {
+  getQueryString,
+  isWebview,
+  isTNGMiniProgram,
+  isGCashMiniProgram,
+  toCapitalize,
+} from '../../../../common/utils';
 import { BECOME_MERCHANT_MEMBER_METHODS, MEMBER_LEVELS } from '../../../../common/utils/constants';
 import { isAlipayMiniProgram } from '../../../../common/utils/alipay-miniprogram-client';
 import { getFeatureFlagResult } from '../../../../redux/modules/growthbook/selectors';
@@ -110,7 +116,7 @@ export const getMerchantMembershipTiersBenefits = createSelector(
           prompt =
             benefit.level === MEMBER_LEVELS.MEMBER
               ? i18next.t('Rewards:UnlockLevelPrompt')
-              : i18next.t('Rewards:UnlockHigherLevelPrompt', { levelName: currentTier.name });
+              : i18next.t('Rewards:UnlockHigherLevelPrompt', { levelName: toCapitalize(currentTier.name) });
         } else {
           prompt = i18next.t('Rewards:UnlockOneTierLevelPrompt');
         }
