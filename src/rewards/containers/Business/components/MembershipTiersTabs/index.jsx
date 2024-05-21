@@ -116,14 +116,14 @@ const MembershipTiersTabs = () => {
                         className={benefitDescriptionItemClassName}
                       >
                         {isLocked ? (
-                          <Lock size={20} />
+                          <Lock className={styles.MembershipTiersTabContentDescriptionItemLockIcon} size={20} />
                         ) : (
                           <CheckCircle
                             className={styles.MembershipTiersTabContentDescriptionItemCheckedIcon}
                             size={20}
                           />
                         )}
-                        <p className={styles.MembershipTiersTabContentDescriptionItemCheckedText}>{item}</p>
+                        <p className={styles.MembershipTiersTabContentDescriptionItemText}>{item}</p>
                       </li>
                     ))}
                   </ul>
@@ -141,7 +141,7 @@ const MembershipTiersTabs = () => {
                 // eslint-disable-next-line react/no-array-index-key
                 <li key={`${item.key}-item-${index}`} className={styles.MembershipTiersTabContentDescriptionItem}>
                   <CheckCircle className={styles.MembershipTiersTabContentDescriptionItemCheckedIcon} size={20} />
-                  <p className={styles.MembershipTiersTabContentDescriptionItemCheckedText}>{item}</p>
+                  <p className={styles.MembershipTiersTabContentDescriptionItemText}>{item}</p>
                 </li>
               ))}
             </ul>
