@@ -14,7 +14,7 @@ module.exports = {
    * default - http://127.0.0.1:4523/m1/2755399-0-default
    * ordering - http://127.0.0.1:4523/m1/2755399-0-0a18a6d8
    * home - http://127.0.0.1:4523/m1/2755399-0-fff498c8
-   * home - http://127.0.0.1:4523/m1/2755399-0-36d50f9b
+   * auth - http://127.0.0.1:4523/m1/2755399-0-36d50f9b
    * pos - http://127.0.0.1:4523/m1/2755399-0-53c847ce
    * @value {apifoxResponseId?: string}
    */

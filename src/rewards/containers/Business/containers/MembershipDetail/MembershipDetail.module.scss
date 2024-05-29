@@ -6,14 +6,6 @@
   }
 }
 
-.MembershipDetailCashbackSection {
-  @apply tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-space-y-12 sm:tw-space-y-12px;
-}
-
-.MembershipDetailCashbackSectionTitle {
-  @apply tw-text-xl tw-leading-normal tw-font-bold;
-}
-
 @media (min-width: 770px) {
   .MembershipDetailWebPageHeader {
     @apply tw-right-auto tw-left-auto;
