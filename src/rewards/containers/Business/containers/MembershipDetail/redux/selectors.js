@@ -8,6 +8,8 @@ import {
   API_REQUEST_STATUS,
 } from '../../../../../../common/utils/constants';
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
+import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
+import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
   MEMBER_TYPE_I18N_PARAM_KEYS,
@@ -56,6 +58,9 @@ import {
   getCustomerTierLevelName,
   getCustomerAvailablePointsBalance,
 } from '../../../../../redux/modules/customer/selectors';
+
+export const getIsMembershipDetailNewDesign = state =>
+  getFeatureFlagResult(state, FEATURE_KEYS.MEMBERSHIP_DETAIL_NEW_DESIGN);
 
 export const getIsProfileModalShow = state => state.business.membershipDetail.isProfileModalShow;
 
