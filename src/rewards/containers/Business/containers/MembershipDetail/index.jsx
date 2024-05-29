@@ -6,7 +6,7 @@ import { getClassName } from '../../../../../common/utils/ui';
 import { getMerchantDisplayName } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWeb } from '../../../../redux/modules/common/selectors';
 import { mounted, backButtonClicked } from './redux/thunks';
-import { getShouldShowBackButton } from './redux/selectors';
+import { getShouldShowBackButton, getIsMembershipDetailNewDesign } from './redux/selectors';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MemberCard from './components/MemberCard';
@@ -23,6 +23,7 @@ const MembershipDetail = () => {
   const merchantDisplayName = useSelector(getMerchantDisplayName);
   const isWeb = useSelector(getIsWeb);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
+  const isMembershipDetailNewDesign = useSelector(getIsMembershipDetailNewDesign);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
 
   useMount(() => {
@@ -31,12 +32,24 @@ const MembershipDetail = () => {
 
   return (
     <Frame>
-      <PageHeader
-        className={getClassName([isWeb && styles.MembershipDetailWebPageHeader])}
-        isShowBackButton={shouldShowBackButton}
-        title={t('MembershipDetailPageTitle', { merchantDisplayName })}
-        onBackArrowClick={handleClickHeaderBackButton}
-      />
+      {isMembershipDetailNewDesign ? (
+        <PageHeader
+          className={styles.MembershipDetailPageHeader}
+          leftContentClassName={styles.MembershipDetailPageHeaderLeftContent}
+          titleClassName={styles.MembershipDetailPageHeaderTitle}
+          isShowBackButton={shouldShowBackButton}
+          title={merchantDisplayName}
+          onBackArrowClick={handleClickHeaderBackButton}
+        />
+      ) : (
+        <PageHeader
+          className={getClassName([isWeb && styles.MembershipDetailWebPageHeader])}
+          isShowBackButton={shouldShowBackButton}
+          title={t('MembershipDetailPageTitle', { merchantDisplayName })}
+          onBackArrowClick={handleClickHeaderBackButton}
+        />
+      )}
+
       <MemberCard />
       <RewardsButtons />
       <PointsRewardList />
