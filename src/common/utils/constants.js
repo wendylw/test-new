@@ -276,12 +276,6 @@ export const CASHBACK_SOURCE = {
 export const CLAIM_CASHBACK_QUERY_NAMES = {
   STATUS: 'claimedStatus',
   VALUE: 'cashback',
-  CASHBACK_TYPE: 'cashbackType',
-};
-
-export const CLAIM_CASHBACK_TYPES = {
-  PERCENTAGE: 'percentage',
-  ABSOLUTE: 'absolute',
 };
 
 export const REFERRER_SOURCE_TYPES = {

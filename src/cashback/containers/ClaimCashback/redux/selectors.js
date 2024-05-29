@@ -54,6 +54,11 @@ export const getClaimedCashbackForCustomerStatus = state =>
 
 export const getClaimedCashbackForCustomerError = state => state.claimCashback.claimedCashbackForCustomerRequest.error;
 
+export const getClaimedCashbackForCustomerCashback = createSelector(
+  getClaimedCashbackForCustomerData,
+  claimedCashbackForCustomerData => getDecimalNumber(_get(claimedCashbackForCustomerData, 'cashback', 0))
+);
+
 export const getClaimedOrderCashbackStatus = createSelector(
   getClaimedCashbackForCustomerData,
   claimedCashbackForCustomerData => _get(claimedCashbackForCustomerData, 'status', null)

@@ -2,7 +2,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
   CASHBACK_SOURCE,
   CLAIM_CASHBACK_QUERY_NAMES,
-  CLAIM_CASHBACK_TYPES,
   PATH_NAME_MAPPING,
   BECOME_MERCHANT_MEMBER_METHODS,
 } from '../../../../common/utils/constants';
@@ -17,9 +16,7 @@ import { getOrderQRReceiptNumber, getOrderCashbackInfo, postClaimedCashbackForCu
 import {
   getClaimCashbackPageHash,
   getOrderReceiptNumber,
-  getIsPriceCashback,
-  getOrderCashbackPrice,
-  getOrderCashbackPercentageNumber,
+  getClaimedCashbackForCustomerCashback,
   getClaimedOrderCashbackStatus,
   getIsClaimedOrderCashbackNewMember,
   getIsClaimedCashbackForCustomerFulfilled,
@@ -71,17 +68,14 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
     const state = getState();
     const merchantBusiness = getMerchantBusiness(state);
     const isMerchantMembershipEnabled = getIsMerchantMembershipEnabled(state);
-    const isPriceCashback = getIsPriceCashback(state);
-    const orderCashbackPrice = getOrderCashbackPrice(state);
-    const orderCashbackPercentageNumber = getOrderCashbackPercentageNumber(state);
-    const cashbackType = isPriceCashback ? CLAIM_CASHBACK_TYPES.ABSOLUTE : CLAIM_CASHBACK_TYPES.PERCENTAGE;
-    const cashback = isPriceCashback ? encodeURIComponent(orderCashbackPrice) : orderCashbackPercentageNumber;
 
     await dispatch(claimedCashbackForCustomer());
 
     const isClaimedCashbackForCustomerFulfilled = getIsClaimedCashbackForCustomerFulfilled(getState());
 
     if (isClaimedCashbackForCustomerFulfilled) {
+      // set cashback after claimed cashback, claimedCashbackForCustomerCashbackPrice is from post API
+      const claimedCashbackForCustomerCashback = getClaimedCashbackForCustomerCashback(getState());
       const claimedOrderCashbackStatus = getClaimedOrderCashbackStatus(getState());
       const isClaimedOrderCashbackNewMember = getIsClaimedOrderCashbackNewMember(getState());
       const {
@@ -96,13 +90,13 @@ export const claimedCashbackAndContinueNextStep = createAsyncThunk(
       const pathName = `${REWARDS_BASE}${REWARDS_BUSINESS}${
         isMerchantMembershipEnabled ? `${REWARDS_MEMBERSHIP}${MEMBERSHIP_DETAIL}` : `${CASHBACK}${CASHBACK_DETAIL}`
       }`;
+
       const search = [
         `isNewMember=${isClaimedOrderCashbackNewMember}`,
         `business=${merchantBusiness}`,
         `source=${BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN}`,
         `${CLAIM_CASHBACK_QUERY_NAMES.STATUS}=${claimedOrderCashbackStatus}`,
-        `${CLAIM_CASHBACK_QUERY_NAMES.CASHBACK_TYPE}=${cashbackType}`,
-        `${CLAIM_CASHBACK_QUERY_NAMES.VALUE}=${cashback}`,
+        `${CLAIM_CASHBACK_QUERY_NAMES.VALUE}=${claimedCashbackForCustomerCashback}`,
       ];
 
       window.location.href = `${rewardsBaseRoute}${pathName}?${search.join('&')}`;
