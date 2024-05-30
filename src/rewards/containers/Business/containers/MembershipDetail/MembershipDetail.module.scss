@@ -8,22 +8,6 @@
   }
 }
 
-.MembershipDetailPageHeader {
-  @apply tw-fixed tw-top-0 tw-left-0 tw-px-4 sm:tw-px-4px tw-w-full tw-text-gray-50 tw-bg-blue-darkest tw-z-100;
-
-  & + * {
-    margin-top: 49px;
-  }
-}
-
-.MembershipDetailPageHeaderLeftContent {
-  @apply tw-flex-1;
-}
-
-.MembershipDetailPageHeaderTitle {
-  @include text-line-clamp(1);
-}
-
 @media (min-width: 770px) {
   .MembershipDetailWebPageHeader {
     @apply tw-right-auto tw-left-auto;
