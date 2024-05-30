@@ -206,7 +206,6 @@ export const MEMBERSHIP_LEVEL_I18N_PARAM_KEYS = {
   UNLOCK_COLLECT_POINTS: 'unlockCollectPoints',
   MAINTAIN_COLLECT_POINTS: 'maintainCollectPoints',
   UNLOCK_SPEND_PRICE: 'unlockSpendPrice',
-  SPENDING_THRESHOLD_PRICE: 'spendingThresholdPrice',
   MAINTAIN_SPEND_PRICE: 'maintainSpendPrice',
   NEXT_REVIEW_DATE: 'nextReviewDate',
   NEXT_LEVEL_NAME: 'nextLevelName',

@@ -65,7 +65,6 @@
   "LevelCompletedMessage": "Enjoy {{currentLevelName}} benefits until {{nextReviewDate}}",
   "LevelMaintainMessage": "Spend {{maintainSpendPrice}} more by {{nextReviewDate}} to maintain {{currentLevelName}}",
   "PointsLevelMaintainMessage": "Collect {{maintainCollectPoints}} points by {{nextReviewDate}} to maintain {{currentLevelName}}",
-  "UnlockNextLevelMessageV2": "{{unlockSpendPrice}}/{{spendingThresholdPrice}} by {{nextReviewDate}} to unlock {{nextLevelName}}",
   "LevelUpdateRuleText": "Your progress updates on a daily basis",
   "EarnedCashbackTitle": "You’ve claimed {{cashbackValue}} cashback!",
   "EarnedCashbackDescription": "Check your total balance",
