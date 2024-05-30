@@ -6,7 +6,7 @@ import { getClassName } from '../../../../../common/utils/ui';
 import { getMerchantDisplayName } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWeb } from '../../../../redux/modules/common/selectors';
 import { mounted, backButtonClicked } from './redux/thunks';
-import { getShouldShowBackButton, getIsMembershipDetailNewDesign } from './redux/selectors';
+import { getShouldShowBackButton } from './redux/selectors';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MemberCard from './components/MemberCard';
@@ -15,7 +15,6 @@ import RewardsButtons from './components/RewardsButtons';
 import PointsRewardList from './components/PointsRewardList';
 import MembershipTiersInfoTabs from '../../components/MembershipTiersInfoTabs';
 import MemberPrompt from './components/MemberPrompt';
-import MembershipDetailV2 from '../MembershipDetailV2';
 import styles from './MembershipDetail.module.scss';
 
 const MembershipDetail = () => {
@@ -24,18 +23,11 @@ const MembershipDetail = () => {
   const merchantDisplayName = useSelector(getMerchantDisplayName);
   const isWeb = useSelector(getIsWeb);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
-  const isMembershipDetailNewDesign = useSelector(getIsMembershipDetailNewDesign);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
 
   useMount(() => {
-    if (!isMembershipDetailNewDesign) {
-      dispatch(mounted());
-    }
+    dispatch(mounted());
   });
-
-  if (isMembershipDetailNewDesign) {
-    return <MembershipDetailV2 />;
-  }
 
   return (
     <Frame>
