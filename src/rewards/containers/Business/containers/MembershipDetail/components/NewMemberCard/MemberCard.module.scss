@@ -1,0 +1,129 @@
+.MemberCardSection {
+  @apply tw-p-16 sm:tw-p-16px;
+}
+
+.MemberCard {
+  @apply tw-relative tw-rounded-xl;
+
+  &::before {
+    @apply tw-block tw-top-0 tw-left-0 tw-w-full;
+
+    content: "";
+    padding-top: 43.148688%;
+  }
+}
+
+.MemberCardLevelName {
+  @apply tw-absolute tw-left-0 tw-top-0 tw-m-12 sm:tw-m-12px tw-leading-loose tw-text-xl tw-font-black tw-capitalize;
+}
+
+.MemberCardLevelContainer {
+  @apply tw-absolute tw-right-0 tw-bottom-0 tw-flex tw-items-center tw-m-12 sm:tw-m-12px tw-space-x-12 sm:tw-space-x-12px;
+}
+
+.MemberCardLevelProgressContainer {
+  @apply tw-absolute tw-left-0 tw-right-0 tw-bottom-0 tw-m-12 sm:tw-m-12px;
+}
+
+.MemberCardLevelIcon {
+  @apply tw-rounded-full;
+
+  width: 60px;
+  height: 60px;
+
+  > figure {
+    @apply tw-bg-transparent;
+  }
+}
+
+.MemberCardLevelProgressPrompt {
+  @apply tw-flex tw-items-center tw-gap-6 sm:tw-gap-6px tw-my-2 sm:tw-my-2px tw-text-xs;
+}
+
+.MemberCardLevelProgressPromptToolTipContainer {
+  @apply tw-relative tw-inline-flex tw-border-0 tw-bg-transparent;
+
+  outline: none;
+  box-shadow: none;
+
+  &::before {
+    @apply tw-absolute tw-top-1/2 tw-mt-2px tw-w-0 tw-h-0 tw-border-solid tw-border-transparent tw-invisible tw-opacity-0;
+
+    border-width: 9px;
+    border-bottom-width: 6px;
+    border-bottom-color: rgba(0, 0, 0, 0.75);
+    content: "";
+  }
+
+  &__show::before {
+    @apply tw-visible tw-opacity-100;
+
+    transition: all 0.3s ease-in-out;
+  }
+
+  svg {
+    @apply tw-fill-current tw-text-gray-800;
+  }
+}
+
+.MemberCardLevelProgressPromptToolTip {
+  @apply tw-absolute tw-top-full tw-pt-8 sm:tw-pt-8px tw-z-100 tw-invisible tw-opacity-0;
+
+  transform: translateX(-75%);
+}
+
+.MemberCardLevelProgressPromptToolTipContainer__show > * {
+  @apply tw-visible tw-opacity-100;
+
+  transition: all 0.3s ease-in-out;
+}
+
+.MemberCardLevelProgressPromptToolTipText {
+  @apply tw-flex tw-p-6 sm:tw-p-6px tw-text-gray-50 tw-bg-black tw-bg-opacity-75 tw-rounded tw-whitespace-nowrap;
+}
+
+.MemberCardLevelProgress {
+  @apply tw-relative tw-flex tw-items-center tw-justify-between tw-pt-4 sm:tw-pt-4px tw-pb-20 sm:tw-pb-20px tw-mx-6 sm:tw-mx-6px;
+}
+
+.MemberCardLevelProgressItem {
+  @apply tw-flex tw-flex-col tw-items-center;
+
+  z-index: 1;
+}
+
+.MemberCardLevelProgressItemIcon {
+  @apply tw-inline-flex tw-flex-shrink-0 tw-bg-gray-50 tw-rounded-full;
+
+  padding: 1.5px;
+  width: 30px;
+  height: 30px;
+
+  > svg {
+    @apply tw-h-full;
+  }
+
+  > figure {
+    @apply tw-bg-transparent;
+  }
+}
+
+.MemberCardLevelProgressItemLevelName {
+  @apply tw-absolute tw-bottom-0 tw-text-xs tw-font-bold tw-leading-loose tw-capitalize;
+}
+
+.MemberCardLevelProgressItemProgress {
+  @apply tw-relative tw-flex-1 tw-bg-gray-50;
+
+  height: 8px;
+  margin-left: -1.5px;
+  margin-right: -1.5px;
+}
+
+.MemberCardLevelProgressItemFill {
+  @apply tw-absolute tw-top-0 tw-left-0 tw-inline-block tw-bg-black tw-h-full;
+
+  &__notAchieved {
+    @apply tw-rounded-r;
+  }
+}
