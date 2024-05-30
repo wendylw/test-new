@@ -11,7 +11,6 @@ import {
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
 import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
-import { fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
 import {
   getIsWebview,
   getIsAlipayMiniProgram,
@@ -20,7 +19,6 @@ import {
 } from '../../../../../redux/modules/common/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
-import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 
 export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted', async (_, { dispatch, getState }) => {
   const state = getState();
@@ -59,8 +57,6 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
 
   if (isLogin) {
     dispatch(fetchMerchantInfo(business));
-    dispatch(fetchMembershipsInfo(business));
-    dispatch(fetchCustomerInfo(business));
   }
 });
 
