@@ -1,7 +1,7 @@
 @import "../../../../../common/styles/variables.scss";
 
 .MembershipDetailPageHeader {
-  @apply tw-fixed tw-top-0 tw-left-0 tw-px-4 sm:tw-px-4px tw-w-full tw-text-gray-50 tw-bg-blue-darkest tw-z-100;
+  @apply tw-fixed tw-top-0 tw-left-0 tw-w-full tw-text-gray-50 tw-bg-blue-darkest tw-z-100;
 
   & + * {
     margin-top: 49px;
@@ -14,6 +14,18 @@
 
 .MembershipDetailPageHeaderTitle {
   @include text-line-clamp(1);
+}
+
+.MembershipDetailPageHeaderTitleNoBack {
+  @apply tw-px-12 sm:tw-px-12px;
+}
+
+.MembershipDetailBenefitsSection {
+  @apply tw-space-y-8 sm:tw-space-y-8px;
+}
+
+.MembershipDetailBenefitsTitle {
+  @apply tw-px-12 sm:tw-px-12px tw-text-xl tw-leading-normal tw-font-bold;
 }
 
 @media (min-width: 770px) {
