@@ -1,0 +1,17 @@
+import { createSelector } from 'reselect';
+import { BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
+import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
+
+/**
+ * Derived selectors
+ */
+
+export const getIsUserFromOrdering = createSelector(getSource, source =>
+  [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
+);
+
+export const getShouldShowBackButton = createSelector(
+  getIsWebview,
+  getIsUserFromOrdering,
+  (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
+);

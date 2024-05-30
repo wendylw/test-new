@@ -15,6 +15,7 @@ import RewardsButtons from './components/RewardsButtons';
 import PointsRewardList from './components/PointsRewardList';
 import MembershipTiersInfoTabs from '../../components/MembershipTiersInfoTabs';
 import MemberPrompt from './components/MemberPrompt';
+import MembershipDetailV2 from '../MembershipDetailV2';
 import styles from './MembershipDetail.module.scss';
 
 const MembershipDetail = () => {
@@ -27,28 +28,23 @@ const MembershipDetail = () => {
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
 
   useMount(() => {
-    dispatch(mounted());
+    if (!isMembershipDetailNewDesign) {
+      dispatch(mounted());
+    }
   });
+
+  if (isMembershipDetailNewDesign) {
+    return <MembershipDetailV2 />;
+  }
 
   return (
     <Frame>
-      {isMembershipDetailNewDesign ? (
-        <PageHeader
-          className={styles.MembershipDetailPageHeader}
-          leftContentClassName={styles.MembershipDetailPageHeaderLeftContent}
-          titleClassName={styles.MembershipDetailPageHeaderTitle}
-          isShowBackButton={shouldShowBackButton}
-          title={merchantDisplayName}
-          onBackArrowClick={handleClickHeaderBackButton}
-        />
-      ) : (
-        <PageHeader
-          className={getClassName([isWeb && styles.MembershipDetailWebPageHeader])}
-          isShowBackButton={shouldShowBackButton}
-          title={t('MembershipDetailPageTitle', { merchantDisplayName })}
-          onBackArrowClick={handleClickHeaderBackButton}
-        />
-      )}
+      <PageHeader
+        className={getClassName([isWeb && styles.MembershipDetailWebPageHeader])}
+        isShowBackButton={shouldShowBackButton}
+        title={t('MembershipDetailPageTitle', { merchantDisplayName })}
+        onBackArrowClick={handleClickHeaderBackButton}
+      />
 
       <MemberCard />
       <RewardsButtons />
