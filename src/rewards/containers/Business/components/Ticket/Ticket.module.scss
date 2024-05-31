@@ -34,7 +34,7 @@
 }
 
 .TicketRight {
-  @apply tw-flex-shrink-0 tw-border-0 tw-border-l tw-border-dashed tw-border-gray-400;
+  @apply tw-flex-shrink-0 tw-px-8 sm:tw-px-8px tw-border-0 tw-border-l tw-border-dashed tw-border-gray-400;
 
   min-width: 18px;
 }
