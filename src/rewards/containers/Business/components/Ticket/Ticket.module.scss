@@ -5,7 +5,7 @@
 .Ticket {
   @apply tw-relative tw-flex tw-border tw-border-solid tw-border-gray-400 tw-rounded tw-bg-gray-50;
 
-  min-height: 32px;
+  min-height: 80px;
 
   &::before,
   &::after {
@@ -19,22 +19,22 @@
   &::before {
     @apply tw-left-0;
 
-    transform: translate(calc(-50% + 1px), -50%);
+    transform: translate(-62.5%, -50%);
   }
 
   &::after {
     @apply tw-right-0;
 
-    transform: translate(50%, -50%);
+    transform: translate(62.5%, -50%);
   }
 }
 
 .TicketLeft {
-  @apply tw-flex-1;
+  @apply tw-flex-1 tw-flex tw-items-center tw-p-8 sm:tw-p-8px;
 }
 
 .TicketRight {
-  @apply tw-flex-shrink-0 tw-px-8 sm:tw-px-8px tw-border-0 tw-border-l tw-border-dashed tw-border-gray-400;
+  @apply tw-flex-shrink-0 tw-flex tw-items-center tw-p-8 sm:tw-p-8px tw-border-0 tw-border-l tw-border-dashed tw-border-gray-400;
 
   min-width: 18px;
 }

@@ -2,6 +2,26 @@
   @apply tw-p-12 sm:tw-p-12px tw-space-y-12 sm:tw-space-y-12px;
 }
 
+.MyRewardsSectionTopContainer {
+  @apply tw-flex tw-items-center tw-justify-between;
+}
+
 .MyRewardsSectionTitle {
   @apply tw-text-xl tw-leading-normal tw-font-bold;
+}
+
+.MyRewardsSectionViewAllButton:global(.type-text-info) {
+  @apply tw-p-0 tw-underline;
+
+  .MyRewardsSectionViewAllButtonContent {
+    @apply tw-font-normal;
+  }
+}
+
+.MyRewardsTicketLeftContent {
+  @apply tw-p-8 sm:tw-p-8px tw-text-base tw-leading-normal tw-font-bold;
+}
+
+.MyRewardsTicketRightContent {
+  width: 33.903134%;
 }

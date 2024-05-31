@@ -154,6 +154,10 @@ export const getUniquePromoList = createSelector(
     })
 );
 
+export const getUniquePromoListLength = createSelector(getUniquePromoList, uniquePromoList => uniquePromoList.length);
+
+export const getTopTwoUniquePromos = createSelector(getUniquePromoList, uniquePromoList => uniquePromoList.slice(0, 2));
+
 export const getIsLoadUniquePromoListCompleted = createSelector(
   getLoadUniquePromoListStatus,
   loadUniquePromoListStatus =>

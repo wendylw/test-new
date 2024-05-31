@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { getClassName } from '../../../../../common/utils/ui';
 import styles from './Ticket.module.scss';
 
-const Ticket = ({ leftContent, rightContent }) => (
-  <div className={styles.TicketContainer}>
+const Ticket = ({ className, rightContentClassName, leftContent, rightContent }) => (
+  <div className={getClassName([styles.TicketContainer, className])}>
     <div className={styles.Ticket}>
       <div className={styles.TicketLeft}>{leftContent}</div>
-      <div className={styles.TicketRight}>{rightContent}</div>
+      <div className={getClassName([styles.TicketRight, rightContentClassName])}>{rightContent}</div>
     </div>
   </div>
 );
@@ -14,11 +15,15 @@ const Ticket = ({ leftContent, rightContent }) => (
 Ticket.displayName = 'Ticket';
 
 Ticket.propTypes = {
+  className: PropTypes.string,
+  rightContentClassName: PropTypes.string,
   leftContent: PropTypes.node || PropTypes.string,
   rightContent: PropTypes.node || PropTypes.string,
 };
 
 Ticket.defaultProps = {
+  className: null,
+  rightContentClassName: null,
   leftContent: '',
   rightContent: '',
 };

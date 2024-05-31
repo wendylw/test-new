@@ -139,5 +139,6 @@
   "Vouchers": "Vouchers",
   "UnlockOneTierLevelPrompt": "You’ll unlock",
   "UnlockLevelPrompt": "You’ll unlock this tier",
-  "UnlockHigherLevelPrompt": "Become a {{levelName}} Member and unlock"
+  "UnlockHigherLevelPrompt": "Become a {{levelName}} Member and unlock",
+  "ViewAll": "View all"
 }
