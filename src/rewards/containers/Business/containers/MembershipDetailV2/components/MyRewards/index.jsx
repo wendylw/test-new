@@ -22,7 +22,7 @@ const MyRewards = () => {
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,
       search,
     });
-  });
+  }, [history, search]);
 
   if (!isMyRewardsSectionShow) {
     return null;
