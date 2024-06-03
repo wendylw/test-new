@@ -21,7 +21,7 @@ import {
   getLocationSearch,
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
-import { fetchUniquePromoList } from '../../../redux/common/thunks';
+import { fetchUniquePromoListBanners } from '../../../redux/common/thunks';
 
 export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted', async (_, { dispatch, getState }) => {
   const state = getState();
@@ -64,7 +64,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     const consumerId = getConsumerId(getState());
 
     dispatch(fetchCustomerInfo(business));
-    dispatch(fetchUniquePromoList(consumerId));
+    dispatch(fetchUniquePromoListBanners(consumerId));
   }
 });
 

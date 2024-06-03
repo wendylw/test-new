@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { PATH_NAME_MAPPING, PROMO_VOUCHER_STATUS } from '../../../../../../../common/utils/constants';
-import { getUniquePromoListLength, getTopTwoUniquePromos } from '../../../../redux/common/selectors';
+import { getUniquePromoListLength, getUniquePromoListBanners } from '../../../../redux/common/selectors';
 import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
 import { getIsMyRewardsSectionShow } from '../../redux/selectors';
 import Button from '../../../../../../../common/components/Button';
@@ -19,7 +19,7 @@ const UNIQUE_PROMO_STATUS_I18KEYS = {
 const MyRewards = () => {
   const { t } = useTranslation(['Rewards']);
   const history = useHistory();
-  const topTwoUniquePromos = useSelector(getTopTwoUniquePromos);
+  const uniquePromoListBanners = useSelector(getUniquePromoListBanners);
   const uniquePromoListLength = useSelector(getUniquePromoListLength);
   const isMyRewardsSectionShow = useSelector(getIsMyRewardsSectionShow);
   const search = useSelector(getLocationSearch);
@@ -52,7 +52,7 @@ const MyRewards = () => {
       </div>
 
       <ul className={styles.MyRewardsList}>
-        {topTwoUniquePromos.map(promo => {
+        {uniquePromoListBanners.map(promo => {
           const { id, name, value, status, conditions, isUnavailable } = promo;
           const { minSpend, expiringDays } = conditions;
 
