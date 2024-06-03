@@ -19,7 +19,15 @@
 }
 
 .MyRewardsTicketLeftContent {
-  @apply tw-p-8 sm:tw-p-8px tw-text-base tw-leading-normal tw-font-bold;
+  @apply tw-p-8 sm:tw-p-8px tw-space-y-8 sm:tw-space-y-8px;
+}
+
+.MyRewardsTicketLeftContentTitle {
+  @apply tw-text-base tw-leading-normal tw-font-bold;
+}
+
+.MyRewardsTicketLeftContentDiscount {
+  @apply tw-block tw-text-sm tw-leading-normal tw-text-gray-700 tw-uppercase;
 }
 
 .MyRewardsTicketRightContent {

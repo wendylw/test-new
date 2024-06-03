@@ -49,7 +49,14 @@ const MyRewards = () => {
         <Ticket
           key={promo.id}
           rightContentClassName={styles.MyRewardsTicketRightContent}
-          leftContent={<h3 className={styles.MyRewardsTicketLeftContent}>{promo.name}</h3>}
+          leftContent={
+            <div className={styles.MyRewardsTicketLeftContent}>
+              <h3 className={styles.MyRewardsTicketLeftContentTitle}>{promo.name}</h3>
+              <data className={styles.MyRewardsTicketLeftContentDiscount} value={promo.value}>
+                {t('DiscountValueText', { discount: promo.value })}
+              </data>
+            </div>
+          }
         />
       ))}
     </section>
