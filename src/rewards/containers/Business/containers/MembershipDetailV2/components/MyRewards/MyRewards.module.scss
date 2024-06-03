@@ -18,10 +18,39 @@
   }
 }
 
+.MyRewardsList {
+  @apply tw-space-y-8 sm:tw-space-y-8px;
+}
+
 .MyRewardsTicketLeftContent {
-  @apply tw-p-8 sm:tw-p-8px tw-text-base tw-leading-normal tw-font-bold;
+  @apply tw-p-8 sm:tw-p-8px tw-space-y-8 sm:tw-space-y-8px;
+}
+
+.MyRewardsTicketLeftContentTitle {
+  @apply tw-text-base tw-leading-normal tw-font-bold;
+}
+
+.MyRewardsTicketLeftContentDiscount {
+  @apply tw-block tw-text-sm tw-leading-normal tw-text-gray-700 tw-uppercase;
 }
 
 .MyRewardsTicketRightContent {
+  @apply tw-flex tw-flex-col tw-items-start tw-justify-center tw-gap-12 sm:tw-gap-12px;
+
   width: 33.903134%;
+}
+
+.MyRewardsTicketRightContentRemainingExpiredDaysTag {
+  @apply tw-font-bold;
+}
+
+.MyRewardsTicketRightContentMinSpend {
+  @apply tw-text-sm tw-text-gray-700;
+}
+
+.MyRewardsTicketUnavailable {
+  .MyRewardsTicketLeftContent,
+  .MyRewardsTicketRightContent > *:not(.MyRewardsTicketRightContentStatusTag) {
+    @apply tw-opacity-50;
+  }
 }

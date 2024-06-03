@@ -53,7 +53,9 @@ const CashbackHistory = () => {
             {isCashbackExpired && <Tag className={styles.CashbackHistoryExpiredTag}>{t('Expired')}</Tag>}
             {isExpiringTagShown ? (
               <Tag color="red" className={styles.CashbackHistoryRemainingExpiredDaysTag}>
-                {isTodayExpired ? t('ExpiringToday') : t('ExpiringInDays', { remainingCashbackExpiredDays })}
+                {isTodayExpired
+                  ? t('ExpiringToday')
+                  : t('ExpiringInDays', { remainingExpiredDays: remainingCashbackExpiredDays })}
               </Tag>
             ) : null}
           </>

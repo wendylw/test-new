@@ -122,6 +122,9 @@ export const getUniquePromoList = createSelector(
       }
 
       const { id, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+      const diffDays = getDifferenceTodayInDays(new Date(validTo));
+      const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
+      const isTodayExpired = remainingExpiredDays === 0;
 
       return {
         id,
@@ -149,6 +152,24 @@ export const getUniquePromoList = createSelector(
             params: { date: formatTimeToDateString(merchantCountry, validTo) },
           },
         ].filter(limitation => Boolean(limitation)),
+        conditions: {
+          minSpend: minSpendAmount && {
+            value: minSpendAmount,
+            i18nKey: 'MinSpend',
+            params: {
+              amount: getPrice(minSpendAmount, {
+                locale: merchantLocale,
+                currency: merchantCurrency,
+                country: merchantCountry,
+              }),
+            },
+          },
+          expiringDays: typeof remainingExpiredDays === 'number' && {
+            value: remainingExpiredDays,
+            i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
+            params: !isTodayExpired && { remainingExpiredDays },
+          },
+        },
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };
     })
