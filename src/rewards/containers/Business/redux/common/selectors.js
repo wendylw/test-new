@@ -50,6 +50,15 @@ export const getLoadUniquePromoListStatus = state => state.business.common.loadU
 
 export const getLoadUniquePromoListError = state => state.business.common.loadUniquePromoListRequest.error;
 
+export const getLoadUniquePromoListBannersData = state =>
+  state.business.common.loadUniquePromoListBannersRequest.data || [];
+
+export const getLoadUniquePromoListBannersStatus = state =>
+  state.business.common.loadUniquePromoListBannersRequest.status;
+
+export const getLoadUniquePromoListBannersError = state =>
+  state.business.common.loadUniquePromoListBannersRequest.error;
+
 /**
  * Derived selectors
  */
@@ -177,8 +186,6 @@ export const getUniquePromoList = createSelector(
 
 export const getUniquePromoListLength = createSelector(getUniquePromoList, uniquePromoList => uniquePromoList.length);
 
-export const getTopTwoUniquePromos = createSelector(getUniquePromoList, uniquePromoList => uniquePromoList.slice(0, 2));
-
 export const getIsLoadUniquePromoListCompleted = createSelector(
   getLoadUniquePromoListStatus,
   loadUniquePromoListStatus =>
@@ -189,4 +196,64 @@ export const getIsUniquePromoListEmpty = createSelector(
   getUniquePromoList,
   getIsLoadUniquePromoListCompleted,
   (uniquePromoList, isLoadUniquePromoListCompleted) => uniquePromoList.length === 0 && isLoadUniquePromoListCompleted
+);
+
+export const getUniquePromoListBanners = createSelector(
+  getMerchantCurrency,
+  getMerchantLocale,
+  getMerchantCountry,
+  getLoadUniquePromoListBannersData,
+  (merchantCurrency, merchantLocale, merchantCountry, uniquePromoListBanners) =>
+    uniquePromoListBanners.map(promo => {
+      if (!promo) {
+        return promo;
+      }
+
+      const { id, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+      const diffDays = getDifferenceTodayInDays(new Date(validTo));
+      const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
+      const isTodayExpired = remainingExpiredDays === 0;
+
+      return {
+        id,
+        value:
+          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
+            ? `${discountValue}%`
+            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        name,
+        status,
+        conditions: {
+          minSpend: minSpendAmount && {
+            value: minSpendAmount,
+            i18nKey: 'MinSpend',
+            params: {
+              amount: getPrice(minSpendAmount, {
+                locale: merchantLocale,
+                currency: merchantCurrency,
+                country: merchantCountry,
+              }),
+            },
+          },
+          expiringDays: typeof remainingExpiredDays === 'number' && {
+            value: remainingExpiredDays,
+            i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
+            params: !isTodayExpired && { remainingExpiredDays },
+          },
+        },
+        isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
+      };
+    })
+);
+
+export const getIsLoadUniquePromoListBannersCompleted = createSelector(
+  getLoadUniquePromoListBannersStatus,
+  loadUniquePromoListBannersStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadUniquePromoListBannersStatus)
+);
+
+export const getIsUniquePromoListBannersEmpty = createSelector(
+  getUniquePromoListBanners,
+  getIsLoadUniquePromoListBannersCompleted,
+  (uniquePromoListBanners, isLoadUniquePromoListBannersCompleted) =>
+    uniquePromoListBanners.length === 0 && isLoadUniquePromoListBannersCompleted
 );
