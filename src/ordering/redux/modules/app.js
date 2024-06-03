@@ -898,10 +898,11 @@ export const actions = {
     }
   },
 
-  updateProfile: ({ firstName, email, birthday }) => ({
+  updateProfile: ({ firstName, lastName, email, birthday }) => ({
     type: types.UPDATE_CONSUMER_PROFILE,
     payload: {
       firstName,
+      lastName,
       email,
       birthday,
     },
