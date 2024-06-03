@@ -2,7 +2,7 @@
   @apply tw-relative tw-p-12 sm:tw-p-12px;
 
   &::before {
-    @apply tw-absolute tw-left-0 tw-top-0 tw-block tw-w-full tw-bg-blue-darkest;
+    @apply tw-absolute tw-left-0 tw-top-0 tw-w-full tw-bg-blue-darkest;
 
     content: "";
     height: 64.8%;
@@ -10,7 +10,11 @@
 }
 
 .MemberCard {
-  @apply tw-rounded tw-shadow-lg tw-w-full;
+  @apply tw-relative tw-p-12 sm:tw-p-12px tw-space-y-12 sm:tw-space-y-12px tw-rounded tw-shadow-lg tw-w-full tw-bg-gray-50;
 
   min-height: 94px;
+}
+
+.MemberCardCustomerTierLevelName {
+  @apply tw-text-xl tw-font-bold tw-capitalize;
 }
