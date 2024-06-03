@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
+import { PATH_NAME_MAPPING, PROMO_VOUCHER_STATUS } from '../../../../../../../common/utils/constants';
 import { getUniquePromoListLength, getTopTwoUniquePromos } from '../../../../redux/common/selectors';
 import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
 import { getIsMyRewardsSectionShow } from '../../redux/selectors';
@@ -10,6 +10,11 @@ import Button from '../../../../../../../common/components/Button';
 import Tag from '../../../../../../../common/components/Tag';
 import Ticket from '../../../../components/Ticket';
 import styles from './MyRewards.module.scss';
+
+const UNIQUE_PROMO_STATUS_I18KEYS = {
+  [PROMO_VOUCHER_STATUS.EXPIRED]: 'Expired',
+  [PROMO_VOUCHER_STATUS.REDEEMED]: 'Redeemed',
+};
 
 const MyRewards = () => {
   const { t } = useTranslation(['Rewards']);
@@ -46,40 +51,50 @@ const MyRewards = () => {
         </Button>
       </div>
 
-      {topTwoUniquePromos.map(promo => {
-        const { id, name, value, conditions } = promo;
-        const { minSpend, expiringDays } = conditions;
+      <ul className={styles.MyRewardsList}>
+        {topTwoUniquePromos.map(promo => {
+          const { id, name, value, status, conditions, isUnavailable } = promo;
+          const { minSpend, expiringDays } = conditions;
 
-        return (
-          <Ticket
-            key={id}
-            rightContentClassName={styles.MyRewardsTicketRightContent}
-            leftContent={
-              <div className={styles.MyRewardsTicketLeftContent}>
-                <h3 className={styles.MyRewardsTicketLeftContentTitle}>{name}</h3>
-                <data className={styles.MyRewardsTicketLeftContentDiscount} value={value}>
-                  {t('DiscountValueText', { discount: value })}
-                </data>
-              </div>
-            }
-            rightContent={
-              <>
-                {expiringDays && (
-                  <Tag color="red" className={styles.MyRewardsTicketRightContentRemainingExpiredDaysTag}>
-                    {t(expiringDays.i18nKey, expiringDays.params)}
-                  </Tag>
-                )}
+          return (
+            <li key={id}>
+              <Ticket
+                className={isUnavailable ? styles.MyRewardsTicketUnavailable : null}
+                rightContentClassName={styles.MyRewardsTicketRightContent}
+                leftContent={
+                  <div className={styles.MyRewardsTicketLeftContent}>
+                    <h3 className={styles.MyRewardsTicketLeftContentTitle}>{name}</h3>
+                    <data className={styles.MyRewardsTicketLeftContentDiscount} value={value}>
+                      {t('DiscountValueText', { discount: value })}
+                    </data>
+                  </div>
+                }
+                rightContent={
+                  <>
+                    {isUnavailable && (
+                      <Tag className={styles.MyRewardsTicketRightContentStatusTag}>
+                        {t(UNIQUE_PROMO_STATUS_I18KEYS[status])}
+                      </Tag>
+                    )}
 
-                {minSpend && (
-                  <data className={styles.MyRewardsTicketRightContentMinSpend} value={minSpend.value}>
-                    <Trans t={t} i18nKey={minSpend.i18nKey} components={[<br />]} values={minSpend.params} />
-                  </data>
-                )}
-              </>
-            }
-          />
-        );
-      })}
+                    {expiringDays && (
+                      <Tag color="red" className={styles.MyRewardsTicketRightContentRemainingExpiredDaysTag}>
+                        {t(expiringDays.i18nKey, expiringDays.params)}
+                      </Tag>
+                    )}
+
+                    {minSpend && (
+                      <data className={styles.MyRewardsTicketRightContentMinSpend} value={minSpend.value}>
+                        <Trans t={t} i18nKey={minSpend.i18nKey} components={[<br />]} values={minSpend.params} />
+                      </data>
+                    )}
+                  </>
+                }
+              />
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 };
