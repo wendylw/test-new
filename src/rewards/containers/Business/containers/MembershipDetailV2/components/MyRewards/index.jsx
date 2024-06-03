@@ -60,31 +60,31 @@ const MyRewards = () => {
             <li key={id}>
               <Ticket
                 className={isUnavailable ? styles.MyRewardsTicketUnavailable : null}
-                rightContentClassName={styles.MyRewardsTicketRightContent}
-                leftContent={
-                  <div className={styles.MyRewardsTicketLeftContent}>
-                    <h3 className={styles.MyRewardsTicketLeftContentTitle}>{name}</h3>
-                    <data className={styles.MyRewardsTicketLeftContentDiscount} value={value}>
+                stubClassName={styles.MyRewardsTicketStub}
+                main={
+                  <div className={styles.MyRewardsTicketMain}>
+                    <h3 className={styles.MyRewardsTicketMainTitle}>{name}</h3>
+                    <data className={styles.MyRewardsTicketMainDiscount} value={value}>
                       {t('DiscountValueText', { discount: value })}
                     </data>
                   </div>
                 }
-                rightContent={
+                stub={
                   <>
                     {isUnavailable && (
-                      <Tag className={styles.MyRewardsTicketRightContentStatusTag}>
+                      <Tag className={styles.MyRewardsTicketStubStatusTag}>
                         {t(UNIQUE_PROMO_STATUS_I18KEYS[status])}
                       </Tag>
                     )}
 
                     {expiringDays && (
-                      <Tag color="red" className={styles.MyRewardsTicketRightContentRemainingExpiredDaysTag}>
+                      <Tag color="red" className={styles.MyRewardsTicketStubRemainingExpiredDaysTag}>
                         {t(expiringDays.i18nKey, expiringDays.params)}
                       </Tag>
                     )}
 
                     {minSpend && (
-                      <data className={styles.MyRewardsTicketRightContentMinSpend} value={minSpend.value}>
+                      <data className={styles.MyRewardsTicketStubMinSpend} value={minSpend.value}>
                         <Trans t={t} i18nKey={minSpend.i18nKey} components={[<br />]} values={minSpend.params} />
                       </data>
                     )}

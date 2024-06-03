@@ -29,11 +29,11 @@
   }
 }
 
-.TicketLeft {
+.TicketMainBond {
   @apply tw-flex-1 tw-flex tw-items-center tw-p-8 sm:tw-p-8px;
 }
 
-.TicketRight {
+.TicketStub {
   @apply tw-flex-shrink-0 tw-flex tw-items-center tw-p-8 sm:tw-p-8px tw-border-0 tw-border-l tw-border-dashed tw-border-gray-400;
 
   min-width: 18px;
