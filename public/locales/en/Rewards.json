@@ -47,10 +47,11 @@
   "DiscountValueText": "{{discount}} off",
   "History": "History",
   "Expired": "Expired",
-  "ExpiringInDays": "Expiring in {{remainingCashbackExpiredDays}} days",
+  "ExpiringInDays": "Expiring in {{remainingExpiredDays}} days",
   "ExpiringToday": "Expiring today",
   "Redeemed": "Redeemed",
   "MinConsumption": "Min. spend {{amount}}",
+  "MinSpend": "Min. spend: <0 /> {{amount}}",
   "ValidUntil": "Valid until {{date}}",
   "Joining": "Joining...",
   "ClaimPromotion": "Claim Promotion",
@@ -139,5 +140,6 @@
   "Vouchers": "Vouchers",
   "UnlockOneTierLevelPrompt": "You’ll unlock",
   "UnlockLevelPrompt": "You’ll unlock this tier",
-  "UnlockHigherLevelPrompt": "Become a {{levelName}} Member and unlock"
+  "UnlockHigherLevelPrompt": "Become a {{levelName}} Member and unlock",
+  "ViewAll": "View all"
 }

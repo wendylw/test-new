@@ -9,6 +9,7 @@ import { getShouldShowBackButton } from './redux/selectors';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MembershipTiersTabs from '../../components/MembershipTiersTabs';
+import MyRewards from './components/MyRewards';
 import styles from './MembershipDetail.module.scss';
 
 const MembershipDetail = () => {
@@ -35,6 +36,7 @@ const MembershipDetail = () => {
         title={merchantDisplayName}
         onBackArrowClick={handleClickHeaderBackButton}
       />
+      <MyRewards />
       <section className={styles.MembershipDetailBenefitsSection}>
         <h2 className={styles.MembershipDetailBenefitsTitle}>{t('MembershipBenefits')}</h2>
         <MembershipTiersTabs />

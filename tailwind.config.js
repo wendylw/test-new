@@ -7,6 +7,7 @@ module.exports = {
     preflight: false,
   },
   theme: {
+    // usage: tw-rounded[-sm|-lg|-xl|-2xl|-full]
     borderRadius: {
       DEFAULT: '8px',
       sm: '4px',

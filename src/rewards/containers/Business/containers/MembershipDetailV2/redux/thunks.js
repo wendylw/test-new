@@ -10,7 +10,7 @@ import {
   loginUserByBeepApp,
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
@@ -21,6 +21,7 @@ import {
   getLocationSearch,
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
+import { fetchUniquePromoListBanners } from '../../../redux/common/thunks';
 
 export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted', async (_, { dispatch, getState }) => {
   const state = getState();
@@ -38,6 +39,8 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     source: getClient(),
   });
 
+  dispatch(fetchMerchantInfo(business));
+  dispatch(fetchMembershipsInfo(business));
   await dispatch(initUserInfo());
 
   if (isWebview) {
@@ -58,9 +61,10 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   }
 
   if (isLogin) {
-    dispatch(fetchMerchantInfo(business));
-    dispatch(fetchMembershipsInfo(business));
+    const consumerId = getConsumerId(getState());
+
     dispatch(fetchCustomerInfo(business));
+    dispatch(fetchUniquePromoListBanners(consumerId));
   }
 });
 

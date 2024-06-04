@@ -1,4 +1,5 @@
 import _get from 'lodash/get';
+import _isNull from 'lodash/isNull';
 import { createSelector } from 'reselect';
 import {
   API_REQUEST_STATUS,
@@ -49,6 +50,15 @@ export const getLoadUniquePromoListData = state => state.business.common.loadUni
 export const getLoadUniquePromoListStatus = state => state.business.common.loadUniquePromoListRequest.status;
 
 export const getLoadUniquePromoListError = state => state.business.common.loadUniquePromoListRequest.error;
+
+export const getLoadUniquePromoListBannersData = state =>
+  state.business.common.loadUniquePromoListBannersRequest.data || [];
+
+export const getLoadUniquePromoListBannersStatus = state =>
+  state.business.common.loadUniquePromoListBannersRequest.status;
+
+export const getLoadUniquePromoListBannersError = state =>
+  state.business.common.loadUniquePromoListBannersRequest.error;
 
 /**
  * Derived selectors
@@ -122,6 +132,9 @@ export const getUniquePromoList = createSelector(
       }
 
       const { id, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+      const diffDays = getDifferenceTodayInDays(new Date(validTo));
+      const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
+      const isTodayExpired = remainingExpiredDays === 0;
 
       return {
         id,
@@ -149,10 +162,30 @@ export const getUniquePromoList = createSelector(
             params: { date: formatTimeToDateString(merchantCountry, validTo) },
           },
         ].filter(limitation => Boolean(limitation)),
+        conditions: {
+          minSpend: minSpendAmount && {
+            value: minSpendAmount,
+            i18nKey: 'MinSpend',
+            params: {
+              amount: getPrice(minSpendAmount, {
+                locale: merchantLocale,
+                currency: merchantCurrency,
+                country: merchantCountry,
+              }),
+            },
+          },
+          expiringDays: !_isNull(remainingExpiredDays) && {
+            value: remainingExpiredDays,
+            i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
+            params: !isTodayExpired && { remainingExpiredDays },
+          },
+        },
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };
     })
 );
+
+export const getUniquePromoListLength = createSelector(getUniquePromoList, uniquePromoList => uniquePromoList.length);
 
 export const getIsLoadUniquePromoListCompleted = createSelector(
   getLoadUniquePromoListStatus,
@@ -164,4 +197,64 @@ export const getIsUniquePromoListEmpty = createSelector(
   getUniquePromoList,
   getIsLoadUniquePromoListCompleted,
   (uniquePromoList, isLoadUniquePromoListCompleted) => uniquePromoList.length === 0 && isLoadUniquePromoListCompleted
+);
+
+export const getUniquePromoListBanners = createSelector(
+  getMerchantCurrency,
+  getMerchantLocale,
+  getMerchantCountry,
+  getLoadUniquePromoListBannersData,
+  (merchantCurrency, merchantLocale, merchantCountry, uniquePromoListBanners) =>
+    uniquePromoListBanners.map(promo => {
+      if (!promo) {
+        return promo;
+      }
+
+      const { id, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+      const diffDays = getDifferenceTodayInDays(new Date(validTo));
+      const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
+      const isTodayExpired = remainingExpiredDays === 0;
+
+      return {
+        id,
+        value:
+          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
+            ? `${discountValue}%`
+            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        name,
+        status,
+        conditions: {
+          minSpend: minSpendAmount && {
+            value: minSpendAmount,
+            i18nKey: 'MinSpend',
+            params: {
+              amount: getPrice(minSpendAmount, {
+                locale: merchantLocale,
+                currency: merchantCurrency,
+                country: merchantCountry,
+              }),
+            },
+          },
+          expiringDays: typeof remainingExpiredDays === 'number' && {
+            value: remainingExpiredDays,
+            i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
+            params: !isTodayExpired && { remainingExpiredDays },
+          },
+        },
+        isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
+      };
+    })
+);
+
+export const getIsLoadUniquePromoListBannersCompleted = createSelector(
+  getLoadUniquePromoListBannersStatus,
+  loadUniquePromoListBannersStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadUniquePromoListBannersStatus)
+);
+
+export const getIsUniquePromoListBannersEmpty = createSelector(
+  getUniquePromoListBanners,
+  getIsLoadUniquePromoListBannersCompleted,
+  (uniquePromoListBanners, isLoadUniquePromoListBannersCompleted) =>
+    uniquePromoListBanners.length === 0 && isLoadUniquePromoListBannersCompleted
 );

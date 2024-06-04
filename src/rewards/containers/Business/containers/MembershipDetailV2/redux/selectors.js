@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect';
 import { BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
+import { getIsMerchantMembershipPointsEnabled } from '../../../../../../redux/modules/merchant/selectors';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
+import { getIsUniquePromoListBannersEmpty } from '../../../redux/common/selectors';
 
 /**
  * Derived selectors
@@ -14,4 +16,11 @@ export const getShouldShowBackButton = createSelector(
   getIsWebview,
   getIsUserFromOrdering,
   (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
+);
+
+export const getIsMyRewardsSectionShow = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getIsUniquePromoListBannersEmpty,
+  (isMerchantMembershipPointsEnabled, isUniquePromoListBannersEmpty) =>
+    !isMerchantMembershipPointsEnabled && !isUniquePromoListBannersEmpty
 );
