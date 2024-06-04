@@ -7,8 +7,8 @@ import {
 import { getIsMerchantMembershipPointsEnabled } from '../../../../../../redux/modules/merchant/selectors';
 import { getMembershipTierList } from '../../../../../../redux/modules/membership/selectors';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
-import { getIsUniquePromoListEmpty, getIsUniquePromoListBannersEmpty } from '../../../redux/common/selectors';
 import { getCustomerTierLevel } from '../../../../../redux/modules/customer/selectors';
+import { getIsUniquePromoListBannersEmpty } from '../../../redux/common/selectors';
 
 /**
  * Derived selectors
@@ -49,8 +49,7 @@ export const getMerchantMembershipTierList = createSelector(getMembershipTierLis
 
 export const getIsMyRewardsSectionShow = createSelector(
   getIsMerchantMembershipPointsEnabled,
-  getIsUniquePromoListEmpty,
   getIsUniquePromoListBannersEmpty,
-  (isMerchantMembershipPointsEnabled, isUniquePromoListEmpty, isUniquePromoListBannersEmpty) =>
-    !isMerchantMembershipPointsEnabled && (!isUniquePromoListEmpty || !isUniquePromoListBannersEmpty)
+  (isMerchantMembershipPointsEnabled, isUniquePromoListBannersEmpty) =>
+    !isMerchantMembershipPointsEnabled && !isUniquePromoListBannersEmpty
 );

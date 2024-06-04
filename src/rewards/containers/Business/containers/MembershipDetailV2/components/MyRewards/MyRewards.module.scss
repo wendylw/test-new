@@ -22,35 +22,35 @@
   @apply tw-space-y-8 sm:tw-space-y-8px;
 }
 
-.MyRewardsTicketLeftContent {
+.MyRewardsTicketMain {
   @apply tw-p-8 sm:tw-p-8px tw-space-y-8 sm:tw-space-y-8px;
 }
 
-.MyRewardsTicketLeftContentTitle {
+.MyRewardsTicketMainTitle {
   @apply tw-text-base tw-leading-normal tw-font-bold;
 }
 
-.MyRewardsTicketLeftContentDiscount {
+.MyRewardsTicketMainDiscount {
   @apply tw-block tw-text-sm tw-leading-normal tw-text-gray-700 tw-uppercase;
 }
 
-.MyRewardsTicketRightContent {
+.MyRewardsTicketStub {
   @apply tw-flex tw-flex-col tw-items-start tw-justify-center tw-gap-12 sm:tw-gap-12px;
 
   width: 33.903134%;
 }
 
-.MyRewardsTicketRightContentRemainingExpiredDaysTag {
+.MyRewardsTicketStubRemainingExpiredDaysTag {
   @apply tw-font-bold;
 }
 
-.MyRewardsTicketRightContentMinSpend {
+.MyRewardsTicketStubMinSpend {
   @apply tw-text-sm tw-text-gray-700;
 }
 
 .MyRewardsTicketUnavailable {
-  .MyRewardsTicketLeftContent,
-  .MyRewardsTicketRightContent > *:not(.MyRewardsTicketRightContentStatusTag) {
+  .MyRewardsTicketMain,
+  .MyRewardsTicketStub > *:not(.MyRewardsTicketStubStatusTag) {
     @apply tw-opacity-50;
   }
 }
