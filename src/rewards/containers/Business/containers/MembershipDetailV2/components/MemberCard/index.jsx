@@ -46,14 +46,6 @@ const MemberCard = () => {
             })}
           </ul>
         </div>
-        {/* <div>
-          <progress />
-          <ul>
-            {membershipTierList.map(membershipTier => {
-              return <li></li>;
-            })}
-          </ul> */}
-        {/* </div> */}
       </div>
     </section>
   );
