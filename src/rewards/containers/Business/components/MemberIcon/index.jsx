@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // Must be added an id to the svg to avoid the same id error, when the component is used multiple times
-export const MemberIcon = ({
+const MemberIcon = ({
   className,
   style,
   id,
@@ -73,3 +73,5 @@ MemberIcon.defaultProps = {
 };
 
 MemberIcon.displayName = 'MemberIcon';
+
+export default MemberIcon;

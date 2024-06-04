@@ -7,7 +7,7 @@ import {
 import { getIsMerchantMembershipPointsEnabled } from '../../../../../../redux/modules/merchant/selectors';
 import { getMembershipTierList } from '../../../../../../redux/modules/membership/selectors';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
-import { getCustomerTierLevel } from '../../../../../redux/modules/customer/selectors';
+import { getCustomerTierLevel, getCustomerTierTotalSpent } from '../../../../../redux/modules/customer/selectors';
 import { getIsUniquePromoListBannersEmpty } from '../../../redux/common/selectors';
 
 /**
@@ -42,9 +42,56 @@ export const getMerchantMembershipTierList = createSelector(getMembershipTierLis
 
     return {
       ...membershipTier,
-      iconColorPalettes: MEMBER_CARD_LEVELS_PALETTES[level],
+      iconColorPalettes: MEMBER_CARD_LEVELS_PALETTES[level].icon,
     };
   })
+);
+
+export const getCustomerMemberLevelProgressStyles = createSelector(
+  getMembershipTierList,
+  getCustomerTierTotalSpent,
+  (membershipTierList, customerTierTotalSpent) => {
+    const MEMBER_ICON_WIDTH = 30;
+    const membershipTiersLength = membershipTierList.length;
+
+    if (membershipTiersLength === 1) {
+      return null;
+    }
+
+    let currentLevel = null;
+    let currentSpendingThreshold = 0;
+    let exceedCurrentLevelSpending = 0;
+
+    membershipTierList.forEach(membershipTier => {
+      const { spendingThreshold, level } = membershipTier;
+
+      if (spendingThreshold <= customerTierTotalSpent && level > currentLevel) {
+        currentLevel = level;
+        currentSpendingThreshold = spendingThreshold;
+        exceedCurrentLevelSpending = customerTierTotalSpent - spendingThreshold;
+      }
+    });
+
+    if (currentLevel === membershipTierList.length) {
+      return { width: '100%' };
+    }
+
+    const eachTierRate = 1 / (membershipTiersLength - 1);
+    const currentLevelTotalRate = eachTierRate * (currentLevel - 1);
+
+    if (exceedCurrentLevelSpending === 0) {
+      return { width: `calc(${100 * currentLevelTotalRate}% + ${currentLevel * MEMBER_ICON_WIDTH}px)` };
+    }
+
+    const nextTier = membershipTierList.find(({ level }) => level === currentLevel + 1);
+    const { spendingThreshold: nextSpendingThreshold } = nextTier;
+    const exceedSpendingRate =
+      eachTierRate * (exceedCurrentLevelSpending / (nextSpendingThreshold - currentSpendingThreshold));
+
+    return {
+      width: `calc(${100 * (exceedSpendingRate + currentLevelTotalRate)}% + ${currentLevel * MEMBER_ICON_WIDTH}px)`,
+    };
+  }
 );
 
 export const getIsMyRewardsSectionShow = createSelector(
