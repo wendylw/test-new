@@ -409,7 +409,7 @@ export const MEMBER_CARD_LEVELS_PALETTES = {
         startColor: '#DCFCFF',
         endColor: '#D2DEFF',
       },
-      borderColor: '#5CADFC',
+      strokeColor: '#5CADFC',
     },
     background: {
       startColor: '#CFFFF7',
@@ -429,7 +429,7 @@ export const MEMBER_CARD_LEVELS_PALETTES = {
         startColor: '#FFFFFF',
         endColor: '#D9D9D9',
       },
-      borderColor: '#9E9E9E',
+      strokeColor: '#9E9E9E',
     },
     background: {
       startColor: '#D2D2D2',
@@ -449,7 +449,7 @@ export const MEMBER_CARD_LEVELS_PALETTES = {
         startColor: '#FDFBC1',
         endColor: '#E3B151',
       },
-      borderColor: '#C4900C',
+      strokeColor: '#C4900C',
     },
     background: {
       startColor: '#FFFDCA',
@@ -469,7 +469,7 @@ export const MEMBER_CARD_LEVELS_PALETTES = {
         startColor: '#757575',
         endColor: '#000000',
       },
-      borderColor: '#141414',
+      strokeColor: '#141414',
     },
     background: {
       startColor: '#000000',
