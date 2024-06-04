@@ -1,4 +1,5 @@
 import _get from 'lodash/get';
+import _isNull from 'lodash/isNull';
 import { createSelector } from 'reselect';
 import {
   API_REQUEST_STATUS,
@@ -173,7 +174,7 @@ export const getUniquePromoList = createSelector(
               }),
             },
           },
-          expiringDays: typeof remainingExpiredDays === 'number' && {
+          expiringDays: !_isNull(remainingExpiredDays) && {
             value: remainingExpiredDays,
             i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
             params: !isTodayExpired && { remainingExpiredDays },
