@@ -20,9 +20,12 @@ const MemberCard = () => {
       <div className={styles.MemberCard} style={memberCardStyles}>
         <h2 className={styles.MemberCardCustomerTierLevelName}>{customerTierLevelName}</h2>
         <div className={styles.MemberCardLevelsProgress}>
-          <div role="progressbar" className={styles.MemberCardProgress}>
-            <div className={styles.MemberCardProgressBar} style={customerMemberLevelProgressStyles} />
-          </div>
+          {customerMemberLevelProgressStyles && (
+            <div role="progressbar" className={styles.MemberCardProgress}>
+              <div className={styles.MemberCardProgressBar} style={customerMemberLevelProgressStyles} />
+            </div>
+          )}
+
           <ul className={styles.MemberCardLevels}>
             {merchantMembershipTierList.map(merchantMembershipTier => {
               const { level, iconColorPalettes } = merchantMembershipTier;
