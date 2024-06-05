@@ -113,34 +113,44 @@ export const getCustomerMemberTierProgressStyles = createSelector(
       return { width: '100%' };
     }
 
-    const eachTierRate = 1 / (membershipTierListLength - 1);
+    const eachTierRate = (1 / (membershipTierListLength - 1)).toFixed(4);
     const currentLevelTotalRate = eachTierRate * (currentLevel - 1);
 
     if (exceedCurrentLevelSpending === 0) {
-      return { width: `calc(${100 * currentLevelTotalRate}% + ${currentLevel * MEMBER_ICON_WIDTH}px)` };
+      return { width: `${100 * currentLevelTotalRate}%` };
     }
 
     const { spendingThreshold: nextSpendingThreshold } = customerSpendingTotalNextTier;
     const exceedSpendingRate =
-      eachTierRate * (exceedCurrentLevelSpending / (nextSpendingThreshold - currentSpendingThreshold));
+      eachTierRate * (exceedCurrentLevelSpending / (nextSpendingThreshold - currentSpendingThreshold)).toFixed(4);
+
+    // eachTierRate point is at the center of the icon (except for Tier 1)
+    // Tier 1 adds the diameter, and Tier > 1 adds the radius.
+    const iconCoveredWidth = MEMBER_ICON_WIDTH / (currentLevel > 1 ? 2 : 1);
 
     return {
-      width: `calc(${100 * (exceedSpendingRate + currentLevelTotalRate)}% + ${currentLevel * MEMBER_ICON_WIDTH}px)`,
+      width: `calc(${100 * (exceedSpendingRate + currentLevelTotalRate)}% + ${iconCoveredWidth}px)`,
     };
   }
+);
+
+export const getCustomerCurrentTierMembershipInfo = createSelector(
+  getMembershipTierList,
+  getCustomerTierLevel,
+  (membershipTierList, customerTierLevel) => membershipTierList.find(({ level }) => level === customerTierLevel)
 );
 
 export const getCustomerMemberTierStatus = createSelector(
   getCustomerTierLevel,
   getCustomerTierTotalSpent,
   getMembershipTierListLength,
-  getCurrentSpendingTotalTier,
+  getCustomerCurrentTierMembershipInfo,
   getHighestMembershipTier,
   (
     customerTierLevel,
     customerTierTotalSpent,
     membershipTierListLength,
-    currentSpendingTotalTier,
+    customerCurrentTierMembershipInfo,
     highestMembershipTier
   ) => {
     if (membershipTierListLength === 1) {
@@ -151,13 +161,15 @@ export const getCustomerMemberTierStatus = createSelector(
       return MEMBERSHIP_TIER_STATUS.UNLOCK_NEXT_TIER;
     }
 
-    const { spendingThreshold: currentTierSpendingThreshold } = currentSpendingTotalTier;
+    const { spendingThreshold: currentTierSpendingThreshold } = customerCurrentTierMembershipInfo;
 
     if (currentTierSpendingThreshold > customerTierTotalSpent) {
       return MEMBERSHIP_TIER_STATUS.TIER_MAINTAIN;
     }
 
-    return customerTierLevel === highestMembershipTier
+    const { level: highestTierLevel, spendingThreshold: highestTierSpendingThreshold } = highestMembershipTier || {};
+
+    return customerTierLevel === highestTierLevel || currentTierSpendingThreshold === highestTierSpendingThreshold
       ? MEMBERSHIP_TIER_STATUS.TIER_COMPLETED
       : MEMBERSHIP_TIER_STATUS.UNLOCK_NEXT_TIER;
   }
