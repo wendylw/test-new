@@ -9,6 +9,7 @@
   "UnableBackMenuTitle": "Want to view the menu?",
   "UnableBackMenuDescription": "You may only return to the menu once you <bold>completed your payment</bold>. Select ‘Pay Now’ to proceed.",
   "UnableBackMenuAndPendingPaymentDescription": "You may only return to the menu once you <bold>completed your payment</bold>. Select payment method to proceed",
+  "UnableBackMenuDynamicUrlExpiredDescription": "QR has expired, please ask the cashier for a new QR code and scan again to Add items",
   "AddItems": "Add Items",
   "ReceiptNumberInValidTitle": "Order does not exist",
   "ReceiptNumberInValidDescription": "Please return to the cart and try again. You may also reach out to the staff for assistance",

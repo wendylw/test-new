@@ -23,9 +23,10 @@ export const postLoginGuest = () => post('/api/login/guest');
 
 export const getUserProfile = consumerId => get(`/api/v3/consumers/${consumerId}/profile`);
 
-export const putProfileInfo = (consumerId, { firstName, email, birthday }) =>
+export const putProfileInfo = (consumerId, { firstName, lastName, email, birthday }) =>
   put(`/api/v3/consumers/${consumerId}/profile`, {
     firstName,
+    lastName,
     email,
     birthday,
   });

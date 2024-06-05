@@ -1,5 +1,3 @@
-$description-background-color: #231651;
-
 .MembershipFormDescription {
-  background-color: $description-background-color;
+  @apply tw-bg-blue-darkest;
 }

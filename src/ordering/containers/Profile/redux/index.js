@@ -1,17 +1,25 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { profileUpdated, nameUpdated, emailUpdated, birthdaySelected, birthdayUpdated } from './thunk';
+import {
+  profileUpdated,
+  firstNameUpdated,
+  lastNameUpdated,
+  emailUpdated,
+  birthdaySelected,
+  birthdayUpdated,
+} from './thunk';
 
 // if name, email or birthday is updated will inset state
 const initialState = {
-  name: '',
+  firstName: '',
+  lastName: '',
   email: '',
   birthday: '',
   profileUpdatedStatus: null,
-  nameErrorType: null,
+  firstNameErrorType: null,
   emailErrorType: null,
   birthdayErrorType: null,
-  isNameInputFilled: false,
+  isFirstNameInputFilled: false,
   isEmailInputFilledStatus: false,
   isBirthdayInputFilledStatus: false,
 };
@@ -20,8 +28,8 @@ export const { actions, reducer } = createSlice({
   name: 'ordering/profile',
   initialState,
   reducers: {
-    nameInputFilledStatusUpdated: (state, { payload }) => {
-      state.isNameInputFilled = payload;
+    firstNameInputFilledStatusUpdated: (state, { payload }) => {
+      state.isFirstNameInputFilled = payload;
     },
     emailInputFilledStatusUpdated: (state, { payload }) => {
       state.isEmailInputFilledStatus = payload;
@@ -30,14 +38,15 @@ export const { actions, reducer } = createSlice({
       state.isBirthdayInputFilledStatus = payload;
     },
     resetProfilePageData: state => {
-      state.name = '';
+      state.firstName = '';
+      state.lastName = '';
       state.email = '';
       state.birthday = '';
       state.profileUpdatedStatus = null;
-      state.nameErrorType = null;
+      state.firstNameErrorType = null;
       state.emailErrorType = null;
       state.birthdayErrorType = null;
-      state.isNameInputFilled = false;
+      state.isFirstNameInputFilled = false;
       state.isEmailInputFilledStatus = false;
       state.isBirthdayInputFilledStatus = false;
     },
@@ -52,9 +61,12 @@ export const { actions, reducer } = createSlice({
     [profileUpdated.rejected.type]: state => {
       state.profileUpdatedStatus = API_REQUEST_STATUS.REJECTED;
     },
-    [nameUpdated.fulfilled.type]: (state, { payload }) => {
-      state.name = payload.name;
-      state.nameErrorType = payload.errorType;
+    [firstNameUpdated.fulfilled.type]: (state, { payload }) => {
+      state.firstName = payload.firstName;
+      state.firstNameErrorType = payload.errorType;
+    },
+    [lastNameUpdated.fulfilled.type]: (state, { payload }) => {
+      state.lastName = payload.lastName;
     },
     [emailUpdated.fulfilled.type]: (state, { payload }) => {
       state.email = payload.email;
