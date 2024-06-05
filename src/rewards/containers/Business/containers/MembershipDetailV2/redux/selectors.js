@@ -4,10 +4,23 @@ import {
   MEMBER_LEVELS,
   MEMBER_CARD_LEVELS_PALETTES,
 } from '../../../../../../common/utils/constants';
-import { getIsMerchantMembershipPointsEnabled } from '../../../../../../redux/modules/merchant/selectors';
-import { getMembershipTierList } from '../../../../../../redux/modules/membership/selectors';
+import { MEMBERSHIP_TIER_STATUS, MEMBERSHIP_TIER_I18N_PARAM_KEYS, MEMBERSHIP_TIER_I18N_KEYS } from '../utils/constants';
+import { getPrice, toCapitalize } from '../../../../../../common/utils';
+import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
+import {
+  getIsMerchantMembershipPointsEnabled,
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+} from '../../../../../../redux/modules/merchant/selectors';
+import { getMembershipTierList, getHighestMembershipTier } from '../../../../../../redux/modules/membership/selectors';
 import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
-import { getCustomerTierLevel, getCustomerTierTotalSpent } from '../../../../../redux/modules/customer/selectors';
+import {
+  getCustomerTierLevel,
+  getCustomerTierTotalSpent,
+  getCustomerTierNextReviewTime,
+  getCustomerTierLevelName,
+} from '../../../../../redux/modules/customer/selectors';
 import { getIsUniquePromoListBannersEmpty } from '../../../redux/common/selectors';
 
 /**
@@ -47,50 +60,194 @@ export const getMerchantMembershipTierList = createSelector(getMembershipTierLis
   })
 );
 
-export const getCustomerMemberLevelProgressStyles = createSelector(
+export const getCurrentSpendingTotalTier = createSelector(
   getMembershipTierList,
   getCustomerTierTotalSpent,
   (membershipTierList, customerTierTotalSpent) => {
-    const MEMBER_ICON_WIDTH = 30;
-    const membershipTiersLength = membershipTierList.length;
-
-    if (membershipTiersLength === 1) {
-      return null;
-    }
-
-    let currentLevel = null;
-    let currentSpendingThreshold = 0;
-    let exceedCurrentLevelSpending = 0;
+    const currentSpendingTier = {
+      currentLevel: null,
+      currentSpendingThreshold: 0,
+      exceedCurrentLevelSpending: 0,
+    };
 
     membershipTierList.forEach(membershipTier => {
       const { spendingThreshold, level } = membershipTier;
 
-      if (spendingThreshold <= customerTierTotalSpent && level > currentLevel) {
-        currentLevel = level;
-        currentSpendingThreshold = spendingThreshold;
-        exceedCurrentLevelSpending = customerTierTotalSpent - spendingThreshold;
+      if (spendingThreshold <= customerTierTotalSpent && level > currentSpendingTier.currentLevel) {
+        currentSpendingTier.currentLevel = level;
+        currentSpendingTier.currentSpendingThreshold = spendingThreshold;
+        currentSpendingTier.exceedCurrentLevelSpending = customerTierTotalSpent - spendingThreshold;
       }
     });
 
-    if (currentLevel === membershipTierList.length) {
+    return currentSpendingTier;
+  }
+);
+
+export const getCustomerSpendingTotalNextTier = createSelector(
+  getCurrentSpendingTotalTier,
+  getMembershipTierList,
+  (currentSpendingTotalTier, membershipTierList) =>
+    membershipTierList.find(({ level }) => level === currentSpendingTotalTier.currentLevel + 1)
+);
+
+export const getMembershipTierListLength = createSelector(
+  getMembershipTierList,
+  membershipTierList => membershipTierList.length
+);
+
+export const getCustomerMemberTierProgressStyles = createSelector(
+  getMembershipTierListLength,
+  getCurrentSpendingTotalTier,
+  getCustomerSpendingTotalNextTier,
+  (membershipTierListLength, currentSpendingTotalTier, customerSpendingTotalNextTier) => {
+    const MEMBER_ICON_WIDTH = 30;
+
+    if (membershipTierListLength === 1) {
+      return null;
+    }
+
+    const { currentLevel, currentSpendingThreshold, exceedCurrentLevelSpending } = currentSpendingTotalTier;
+
+    if (currentLevel === membershipTierListLength) {
       return { width: '100%' };
     }
 
-    const eachTierRate = 1 / (membershipTiersLength - 1);
+    const eachTierRate = 1 / (membershipTierListLength - 1);
     const currentLevelTotalRate = eachTierRate * (currentLevel - 1);
 
     if (exceedCurrentLevelSpending === 0) {
       return { width: `calc(${100 * currentLevelTotalRate}% + ${currentLevel * MEMBER_ICON_WIDTH}px)` };
     }
 
-    const nextTier = membershipTierList.find(({ level }) => level === currentLevel + 1);
-    const { spendingThreshold: nextSpendingThreshold } = nextTier;
+    const { spendingThreshold: nextSpendingThreshold } = customerSpendingTotalNextTier;
     const exceedSpendingRate =
       eachTierRate * (exceedCurrentLevelSpending / (nextSpendingThreshold - currentSpendingThreshold));
 
     return {
       width: `calc(${100 * (exceedSpendingRate + currentLevelTotalRate)}% + ${currentLevel * MEMBER_ICON_WIDTH}px)`,
     };
+  }
+);
+
+export const getCustomerMemberTierStatus = createSelector(
+  getCustomerTierLevel,
+  getCustomerTierTotalSpent,
+  getMembershipTierListLength,
+  getCurrentSpendingTotalTier,
+  getHighestMembershipTier,
+  (
+    customerTierLevel,
+    customerTierTotalSpent,
+    membershipTierListLength,
+    currentSpendingTotalTier,
+    highestMembershipTier
+  ) => {
+    if (membershipTierListLength === 1) {
+      return null;
+    }
+
+    if (!customerTierLevel) {
+      return MEMBERSHIP_TIER_STATUS.UNLOCK_NEXT_TIER;
+    }
+
+    const { spendingThreshold: currentTierSpendingThreshold } = currentSpendingTotalTier;
+
+    if (currentTierSpendingThreshold > customerTierTotalSpent) {
+      return MEMBERSHIP_TIER_STATUS.TIER_MAINTAIN;
+    }
+
+    return customerTierLevel === highestMembershipTier
+      ? MEMBERSHIP_TIER_STATUS.TIER_COMPLETED
+      : MEMBERSHIP_TIER_STATUS.UNLOCK_NEXT_TIER;
+  }
+);
+
+export const getCustomerMemberTierPromptParams = createSelector(
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+  getCustomerTierLevel,
+  getCustomerTierLevelName,
+  getCustomerTierTotalSpent,
+  getCustomerSpendingTotalNextTier,
+  getMembershipTierList,
+  getCustomerTierNextReviewTime,
+  (
+    merchantCountry,
+    merchantCurrency,
+    merchantLocale,
+    customerTierLevel,
+    customerTierLevelName,
+    customerTierTotalSpent,
+    customerSpendingTotalNextTier,
+    membershipTierList,
+    customerTierNextReviewTime
+  ) => {
+    const { spendingThreshold: nextTierSpendingThreshold, name: nextTierName } = customerSpendingTotalNextTier || {};
+    const maintainTier = membershipTierList.find(({ level }) => level === customerTierLevel);
+    const { spendingThreshold: maintainTierSpendingThreshold } = maintainTier || {};
+    const params = {};
+
+    Object.values(MEMBERSHIP_TIER_I18N_PARAM_KEYS).forEach(paramKey => {
+      switch (paramKey) {
+        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.TOTAL_SPEND_PRICE:
+          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.TOTAL_SPEND_PRICE] = getPrice(customerTierTotalSpent, {
+            country: merchantCountry,
+            currency: merchantCurrency,
+            locale: merchantLocale,
+          });
+          break;
+        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_SPENDING_THRESHOLD_PRICE:
+          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_SPENDING_THRESHOLD_PRICE] = getPrice(
+            nextTierSpendingThreshold,
+            {
+              country: merchantCountry,
+              currency: merchantCurrency,
+              locale: merchantLocale,
+            }
+          );
+          break;
+        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE:
+          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE] = getPrice(maintainTierSpendingThreshold, {
+            country: merchantCountry,
+            currency: merchantCurrency,
+            locale: merchantLocale,
+          });
+          break;
+        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_REVIEW_DATE:
+          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_REVIEW_DATE] = formatTimeToDateString(
+            merchantCountry,
+            customerTierNextReviewTime
+          );
+          break;
+        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_NAME:
+          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_NAME] = toCapitalize(nextTierName);
+          break;
+        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.CURRENT_TIER_NAME:
+          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.CURRENT_TIER_NAME] = toCapitalize(customerTierLevelName);
+          break;
+        default:
+          break;
+      }
+    });
+
+    return params;
+  }
+);
+
+export const getCustomerCurrentStatusParams = createSelector(
+  getCustomerMemberTierStatus,
+  getCustomerMemberTierPromptParams,
+  (customerMemberTierStatus, customerMemberTierPromptParams) => {
+    const { messageI18nParamsKeys } = MEMBERSHIP_TIER_I18N_KEYS[customerMemberTierStatus];
+    const promptParams = {};
+
+    messageI18nParamsKeys.forEach(paramsKey => {
+      promptParams[paramsKey] = customerMemberTierPromptParams[paramsKey];
+    });
+
+    return promptParams;
   }
 );
 

@@ -1,28 +1,37 @@
+import _isEmpty from 'lodash/isEmpty';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation, Trans } from 'react-i18next';
+import { MEMBERSHIP_TIER_I18N_KEYS } from '../../utils/constants';
 import { getCustomerTierLevelName } from '../../../../../../redux/modules/customer/selectors';
 import {
   getMemberCardStyles,
   getMerchantMembershipTierList,
-  getCustomerMemberLevelProgressStyles,
+  getCustomerMemberTierProgressStyles,
+  getCustomerMemberTierStatus,
+  getCustomerCurrentStatusParams,
 } from '../../redux/selectors';
 import MemberIcon from '../../../../components/MemberIcon';
 import styles from './MemberCard.module.scss';
 
 const MemberCard = () => {
+  const { t } = useTranslation(['Rewards']);
   const customerTierLevelName = useSelector(getCustomerTierLevelName);
   const memberCardStyles = useSelector(getMemberCardStyles);
   const merchantMembershipTierList = useSelector(getMerchantMembershipTierList);
-  const customerMemberLevelProgressStyles = useSelector(getCustomerMemberLevelProgressStyles);
+  const customerMemberTierProgressStyles = useSelector(getCustomerMemberTierProgressStyles);
+  const customerMemberTierStatus = useSelector(getCustomerMemberTierStatus);
+  const customerCurrentStatusParams = useSelector(getCustomerCurrentStatusParams);
+  const { messageI18nKey } = MEMBERSHIP_TIER_I18N_KEYS[customerMemberTierStatus];
 
   return (
     <section className={styles.MemberCardSection}>
       <div className={styles.MemberCard} style={memberCardStyles}>
         <h2 className={styles.MemberCardCustomerTierLevelName}>{customerTierLevelName}</h2>
         <div className={styles.MemberCardLevelsProgress}>
-          {customerMemberLevelProgressStyles && (
+          {customerMemberTierProgressStyles && (
             <div role="progressbar" className={styles.MemberCardProgress}>
-              <div className={styles.MemberCardProgressBar} style={customerMemberLevelProgressStyles} />
+              <div className={styles.MemberCardProgressBar} style={customerMemberTierProgressStyles} />
             </div>
           )}
 
@@ -46,6 +55,13 @@ const MemberCard = () => {
             })}
           </ul>
         </div>
+        <p>
+          {_isEmpty(customerCurrentStatusParams) ? (
+            t(messageI18nKey)
+          ) : (
+            <Trans t={t} i18nKey={messageI18nKey} values={customerCurrentStatusParams} components={<strong />} />
+          )}
+        </p>
       </div>
     </section>
   );
