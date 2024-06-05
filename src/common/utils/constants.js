@@ -397,3 +397,86 @@ export const MEMBER_CARD_COLOR_PALETTES = {
     font: '#FFFFFF',
   },
 };
+
+export const MEMBER_CARD_LEVELS_PALETTES = {
+  [MEMBER_LEVELS.MEMBER]: {
+    icon: {
+      crown: {
+        startColor: '#91F7E7',
+        endColor: '#52A1FF',
+      },
+      background: {
+        startColor: '#DCFCFF',
+        endColor: '#D2DEFF',
+      },
+      strokeColor: '#5CADFC',
+    },
+    background: {
+      startColor: '#CFFFF7',
+      midColor: '#C8E1FF',
+      endColor: '#97C4FA',
+    },
+    progress: '#231651',
+    font: '#1C1C1C',
+  },
+  [MEMBER_LEVELS.SLIVER]: {
+    icon: {
+      crown: {
+        startColor: '#869696',
+        endColor: '#CDCDCD',
+      },
+      background: {
+        startColor: '#FFFFFF',
+        endColor: '#D9D9D9',
+      },
+      strokeColor: '#9E9E9E',
+    },
+    background: {
+      startColor: '#D2D2D2',
+      midColor: '#F2F2F2',
+      endColor: '#CCCCCC',
+    },
+    progress: '#231651',
+    font: '#303030',
+  },
+  [MEMBER_LEVELS.GOLD]: {
+    icon: {
+      crown: {
+        startColor: '#E6AF20',
+        endColor: '#BF8B09',
+      },
+      background: {
+        startColor: '#FDFBC1',
+        endColor: '#E3B151',
+      },
+      strokeColor: '#C4900C',
+    },
+    background: {
+      startColor: '#FFFDCA',
+      midColor: '#FED48E',
+      endColor: '#FFEED0',
+    },
+    progress: '#231651',
+    font: '#303030',
+  },
+  [MEMBER_LEVELS.PLATINUM]: {
+    icon: {
+      crown: {
+        startColor: '#FFFFFF',
+        endColor: '#999999',
+      },
+      background: {
+        startColor: '#757575',
+        endColor: '#000000',
+      },
+      strokeColor: '#141414',
+    },
+    background: {
+      startColor: '#000000',
+      midColor: '#6A6A6A',
+      endColor: '#202020',
+    },
+    progress: '#231651',
+    font: '#FFFFFF',
+  },
+};

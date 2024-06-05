@@ -11,6 +11,7 @@ import PageHeader from '../../../../../common/components/PageHeader';
 import MembershipTiersTabs from '../../components/MembershipTiersTabs';
 import MyRewards from './components/MyRewards';
 import styles from './MembershipDetail.module.scss';
+import MemberCard from './components/MemberCard';
 
 const MembershipDetail = () => {
   const { t } = useTranslation(['Rewards']);
@@ -36,6 +37,7 @@ const MembershipDetail = () => {
         title={merchantDisplayName}
         onBackArrowClick={handleClickHeaderBackButton}
       />
+      <MemberCard />
       <MyRewards />
       <section className={styles.MembershipDetailBenefitsSection}>
         <h2 className={styles.MembershipDetailBenefitsTitle}>{t('MembershipBenefits')}</h2>
