@@ -196,7 +196,7 @@ export const getCustomerMemberTierStatus = createSelector(
       return MEMBERSHIP_TIER_STATUS.UNLOCK_NEXT_TIER;
     }
 
-    const { spendingThreshold: currentTierSpendingThreshold } = customerCurrentTierMembershipInfo;
+    const { spendingThreshold: currentTierSpendingThreshold } = customerCurrentTierMembershipInfo || {};
 
     if (currentTierSpendingThreshold > customerTierTotalSpent) {
       return MEMBERSHIP_TIER_STATUS.TIER_MAINTAIN;
@@ -233,6 +233,10 @@ export const getCustomerCurrentStatusPromptI18nInfo = createSelector(
     membershipTierList,
     customerTierNextReviewTime
   ) => {
+    if (membershipTierList.length === 1) {
+      return null;
+    }
+
     const priceOptional = {
       country: merchantCountry,
       currency: merchantCurrency,

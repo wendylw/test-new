@@ -19,7 +19,8 @@ const MemberCard = () => {
   const memberCardStyles = useSelector(getMemberCardStyles);
   const merchantMembershipTierList = useSelector(getMerchantMembershipTierList);
   const customerMemberTierProgressStyles = useSelector(getCustomerMemberTierProgressStyles);
-  const { messageI18nKey, messageI18nParams } = useSelector(getCustomerCurrentStatusPromptI18nInfo);
+  const customerCurrentStatusPromptI18nInfo = useSelector(getCustomerCurrentStatusPromptI18nInfo);
+  const { messageI18nKey, messageI18nParams } = customerCurrentStatusPromptI18nInfo || {};
   const { promptToolTipShown, setPromptToolTipShown } = useState(false);
   const handleClickCurrentMemberTierPromptToolTip = useCallback(() => {
     setPromptToolTipShown(!promptToolTipShown);
@@ -56,25 +57,27 @@ const MemberCard = () => {
             })}
           </ul>
         </div>
-        <div className={styles.MemberCardTierProgressPromptContainer}>
-          <p className={styles.MemberCardTierProgressPrompt}>
-            <Trans t={t} i18nKey={messageI18nKey} values={messageI18nParams} components={<strong />} />
-          </p>
+        {customerCurrentStatusPromptI18nInfo && (
+          <div className={styles.MemberCardTierProgressPromptContainer}>
+            <p className={styles.MemberCardTierProgressPrompt}>
+              <Trans t={t} i18nKey={messageI18nKey} values={messageI18nParams} components={<strong />} />
+            </p>
 
-          <button
-            data-test-id="rewards.business.membership-detail.member-card.progress-info-tooltip-button"
-            className={getClassName([
-              styles.MemberCardTierProgressPromptToolTipContainer,
-              promptToolTipShown ? styles.MemberCardTierProgressPromptToolTipContainer__show : null,
-            ])}
-            onClick={handleClickCurrentMemberTierPromptToolTip}
-          >
-            <Info size={16} />
-            <div className={styles.MemberCardTierProgressPromptToolTip}>
-              <span className={styles.MemberCardTierProgressPromptToolTipText}>{t('LevelUpdateRuleText')}</span>
-            </div>
-          </button>
-        </div>
+            <button
+              data-test-id="rewards.business.membership-detail.member-card.progress-info-tooltip-button"
+              className={getClassName([
+                styles.MemberCardTierProgressPromptToolTipContainer,
+                promptToolTipShown ? styles.MemberCardTierProgressPromptToolTipContainer__show : null,
+              ])}
+              onClick={handleClickCurrentMemberTierPromptToolTip}
+            >
+              <Info size={16} />
+              <div className={styles.MemberCardTierProgressPromptToolTip}>
+                <span className={styles.MemberCardTierProgressPromptToolTipText}>{t('LevelUpdateRuleText')}</span>
+              </div>
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
