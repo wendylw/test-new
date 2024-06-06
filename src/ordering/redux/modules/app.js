@@ -12,7 +12,12 @@ import _cloneDeep from 'lodash/cloneDeep';
 import { replace } from 'connected-react-router';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants, { API_REQUEST_STATUS, REGISTRATION_SOURCE } from '../../../utils/constants';
-import { URL_TYPES, MEMBER_LEVELS, MEMBER_CARD_COLOR_PALETTES } from '../../../common/utils/constants';
+import {
+  URL_TYPES,
+  MEMBER_LEVELS,
+  MEMBER_CARD_COLOR_PALETTES,
+  PATH_NAME_MAPPING,
+} from '../../../common/utils/constants';
 import Utils from '../../../utils/utils';
 import {
   isAlipayMiniProgram as isAlipayMiniProgramUtil,
@@ -893,10 +898,11 @@ export const actions = {
     }
   },
 
-  updateProfile: ({ firstName, email, birthday }) => ({
+  updateProfile: ({ firstName, lastName, email, birthday }) => ({
     type: types.UPDATE_CONSUMER_PROFILE,
     payload: {
       firstName,
+      lastName,
       email,
       birthday,
     },
@@ -2171,6 +2177,16 @@ export const getIsAddOrUpdateShoppingCartItemRejected = createSelector(
 
 export const getShouldShowCashbackSwitchButton = createSelector(getCartCashback, cashback => cashback > 0);
 
+export const getIsStaticPage = () =>
+  [
+    PATH_NAME_MAPPING.ORDERING_TABLE_SUMMARY,
+    PATH_NAME_MAPPING.ORDERING_PAYMENT,
+    PATH_NAME_MAPPING.THANK_YOU,
+    PATH_NAME_MAPPING.ORDER_DETAILS,
+    PATH_NAME_MAPPING.ORDERING_LOGIN,
+    PATH_NAME_MAPPING.ORDERING_PROMOTION,
+  ].some(path => window.location.pathname.includes(path));
+
 export const getQrCodeInfoUrlType = createSelector(getQrCodeInfo, qrCodeInfoDetail =>
   _get(qrCodeInfoDetail, 'data.urlType', null)
 );
@@ -2185,6 +2201,12 @@ export const getIsDynamicUrlExpired = createSelector(
   getIsQrCodeInfoUrlExpired,
   getIsDynamicUrl,
   (isDynamicQrCodeUrlExpired, isDynamicUrl) => isDynamicQrCodeUrlExpired && isDynamicUrl
+);
+
+export const getIsDynamicUrlExpiredResultShown = createSelector(
+  getIsStaticPage,
+  getIsDynamicUrlExpired,
+  (isStaticPage, isDynamicUrlExpired) => !isStaticPage && isDynamicUrlExpired
 );
 
 /* Tiered Membership */

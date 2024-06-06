@@ -20,6 +20,7 @@ import {
   getHasLoginGuardPassed,
   getEnableCashback,
   getIsAlipayMiniProgram,
+  getIsDynamicUrlExpired,
 } from '../../../../redux/modules/app';
 import logger from '../../../../../utils/monitoring/logger';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -225,15 +226,19 @@ export class TableSummary extends React.Component {
   };
 
   showUnableBackMenuPageAlert = () => {
-    const { t, isOrderPendingPayment } = this.props;
+    const { t, isOrderPendingPayment, isDynamicUrlExpired } = this.props;
 
     alert(
       <p className="block">
-        <Trans
-          t={t}
-          i18nKey={isOrderPendingPayment ? 'UnableBackMenuAndPendingPaymentDescription' : 'UnableBackMenuDescription'}
-          components={{ bold: <strong className="text-size-big" /> }}
-        />
+        {isDynamicUrlExpired ? (
+          t('UnableBackMenuDynamicUrlExpiredDescription')
+        ) : (
+          <Trans
+            t={t}
+            i18nKey={isOrderPendingPayment ? 'UnableBackMenuAndPendingPaymentDescription' : 'UnableBackMenuDescription'}
+            components={{ bold: <strong className="text-size-big" /> }}
+          />
+        )}
       </p>,
       {
         id: 'UnableBackMenuPageAlert',
@@ -248,7 +253,7 @@ export class TableSummary extends React.Component {
   };
 
   handleHeaderNavFunc = () => {
-    const { isOrderPlaced, cleverTapAttributes, hasTableIdChanged } = this.props;
+    const { isOrderPlaced, cleverTapAttributes, hasTableIdChanged, isDynamicUrlExpired } = this.props;
 
     CleverTap.pushEvent('Table Summary - Back', cleverTapAttributes);
 
@@ -256,7 +261,7 @@ export class TableSummary extends React.Component {
       return;
     }
 
-    if (isOrderPlaced) {
+    if (isOrderPlaced && !isDynamicUrlExpired) {
       this.goToMenuPage();
 
       return;
@@ -441,6 +446,18 @@ export class TableSummary extends React.Component {
       search: window.location.search,
       state: { shouldGoBack: true },
     });
+  };
+
+  handleClickAddItemsButton = () => {
+    const { isDynamicUrlExpired } = this.props;
+
+    if (!isDynamicUrlExpired) {
+      this.goToMenuPage();
+
+      return;
+    }
+
+    this.showUnableBackMenuPageAlert();
   };
 
   showShortPromoCode() {
@@ -794,7 +811,7 @@ export class TableSummary extends React.Component {
               <button
                 className="table-summary__outline-button button button__outline button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
                 data-test-id="ordering.order-status.table-summary.add-btn"
-                onClick={this.goToMenuPage}
+                onClick={this.handleClickAddItemsButton}
               >
                 {t('AddItems')}
               </button>
@@ -881,6 +898,7 @@ TableSummary.propTypes = {
   hasTableIdChanged: PropTypes.bool,
   storeHash: PropTypes.string,
   orderTableId: PropTypes.string,
+  isDynamicUrlExpired: PropTypes.bool,
 };
 
 TableSummary.defaultProps = {
@@ -939,6 +957,7 @@ TableSummary.defaultProps = {
   hasTableIdChanged: false,
   storeHash: null,
   orderTableId: null,
+  isDynamicUrlExpired: false,
 };
 
 export default compose(
@@ -987,6 +1006,7 @@ export default compose(
       hasTableIdChanged: getHasTableIdChanged(state),
       storeHash: getStoreHash(state),
       orderTableId: getOrderTableId(state),
+      isDynamicUrlExpired: getIsDynamicUrlExpired(state),
     }),
 
     {
