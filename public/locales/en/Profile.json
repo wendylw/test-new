@@ -3,7 +3,7 @@
   "DateOfBirth": "Date of Birth",
   "CompleteProfile": "Complete Profile",
   "GetRewarded": "Get Rewarded",
-  "NameIsRequired": "Please enter your name",
+  "FirstNameIsRequired": "Please enter your name",
   "EmailIsRequired": "Please enter your email",
   "BirthdayIsRequired": "Please select your birthday",
   "NotValidEmail": "Please enter a valid email address",

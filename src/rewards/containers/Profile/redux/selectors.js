@@ -4,17 +4,19 @@ import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
-export const getProfileName = state => state.profile.name;
+export const getProfileFirstName = state => state.profile.firstName;
 
-export const getIsValidName = createSelector(getProfileName, name => !!_trim(name));
+export const getIsValidFirstName = createSelector(getProfileFirstName, firstName => !!_trim(firstName));
 
-export const getIsNameInputFilled = state => state.profile.isNameInputFilled;
+export const getIsFirstNameInputFilled = state => state.profile.isFirstNameInputFilled;
 
-export const getIsNameInputErrorDisplay = createSelector(
-  getIsNameInputFilled,
-  getIsValidName,
-  (isNameInputFilled, isValidName) => isNameInputFilled && !isValidName
+export const getIsFirstNameInputErrorDisplay = createSelector(
+  getIsFirstNameInputFilled,
+  getIsValidFirstName,
+  (isFirstNameInputFilled, isValidFirstName) => isFirstNameInputFilled && !isValidFirstName
 );
+
+export const getProfileLastName = state => state.profile.lastName;
 
 export const getProfileEmail = state => state.profile.email;
 
@@ -65,13 +67,13 @@ export const getHasProfileUpdated = createSelector(
 );
 
 export const getIsDisabledProfileSaveButton = createSelector(
-  getIsValidName,
+  getIsValidFirstName,
   getIsValidEmail,
   getIsValidBirthday,
   getIsProfileDataUpdating,
   getHasProfileUpdated,
-  (isValidName, isValidEmail, isValidBirthday, isProfileDataUpdating, hasProfileUpdated) => {
-    const isValidForm = isValidName && isValidEmail && isValidBirthday;
+  (isValidFirstName, isValidEmail, isValidBirthday, isProfileDataUpdating, hasProfileUpdated) => {
+    const isValidForm = isValidFirstName && isValidEmail && isValidBirthday;
 
     if (!isValidForm) {
       return true;

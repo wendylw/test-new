@@ -106,6 +106,8 @@
   "DeliveryDetails": "Delivery Details",
   "PickUpDetails": "Pickup Details",
   "Name": "Name",
+  "FirstName": "First Name",
+  "LastName": "Last Name",
   "MobileNumber": "Mobile Number",
   "AddDeliveryTimePlaceholder": "Add in your delivery time",
   "PickUpAtPlaceholder": "Add in your pick up time",

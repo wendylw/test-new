@@ -2,19 +2,23 @@ import _isNull from 'lodash/isNull';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
-export const getProfileName = state => state.profile.name;
+export const getProfileFirstName = state => state.profile.firstName;
 
-export const getNameErrorType = state => state.profile.nameErrorType;
+export const getFirstNameErrorType = state => state.profile.firstNameErrorType;
 
-export const getIsValidName = createSelector(getNameErrorType, nameErrorType => _isNull(nameErrorType));
-
-export const getIsNameInputFilled = state => state.profile.isNameInputFilled;
-
-export const getIsNameInputErrorDisplay = createSelector(
-  getIsNameInputFilled,
-  getIsValidName,
-  (isNameInputFilled, isValidName) => isNameInputFilled && !isValidName
+export const getIsValidFirstName = createSelector(getFirstNameErrorType, firstNameErrorType =>
+  _isNull(firstNameErrorType)
 );
+
+export const getIsFirstNameInputFilled = state => state.profile.isFirstNameInputFilled;
+
+export const getIsFirstNameInputErrorDisplay = createSelector(
+  getIsFirstNameInputFilled,
+  getIsValidFirstName,
+  (isFirstNameInputFilled, isValidFirstName) => isFirstNameInputFilled && !isValidFirstName
+);
+
+export const getProfileLastName = state => state.profile.lastName;
 
 export const getProfileEmail = state => state.profile.email;
 
@@ -47,12 +51,12 @@ export const getIsBirthdayInputErrorDisplay = createSelector(
 export const getIsProfileDataUpdating = state => state.profile.profileUpdatedStatus === API_REQUEST_STATUS.PENDING;
 
 export const getIsDisabledProfileSaveButton = createSelector(
-  getIsValidName,
+  getIsValidFirstName,
   getIsValidEmail,
   getIsValidBirthday,
   getIsProfileDataUpdating,
-  (isValidName, isValidEmail, isValidBirthday, isProfileDataUpdating) => {
-    const isValidForm = isValidName && isValidEmail && isValidBirthday;
+  (isValidFirstName, isValidEmail, isValidBirthday, isProfileDataUpdating) => {
+    const isValidForm = isValidFirstName && isValidEmail && isValidBirthday;
 
     if (!isValidForm) {
       return true;

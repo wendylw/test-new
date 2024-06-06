@@ -75,11 +75,11 @@ export const fetchUserProfileInfo = createAsyncThunk('app/user/fetchUserProfileI
  */
 export const uploadUserProfileInfo = createAsyncThunk(
   'app/user/uploadUserProfileInfo',
-  async ({ firstName, email, birthday }, { getState }) => {
+  async ({ firstName, lastName, email, birthday }, { getState }) => {
     const state = getState();
     const consumerId = getConsumerId(state);
 
-    await putProfileInfo(consumerId, { firstName, email, birthday });
+    await putProfileInfo(consumerId, { firstName, lastName, email, birthday });
   }
 );
 
