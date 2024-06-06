@@ -3,12 +3,21 @@ import PropTypes from 'prop-types';
 import { CaretLeft } from 'phosphor-react';
 import styles from './PageHeader.module.scss';
 import { isWebview } from '../../utils';
+import { getClassName } from '../../utils/ui';
 import NativeHeader from '../../../components/NativeHeader';
 
 const isInWebview = isWebview();
 
 const PageHeader = props => {
-  const { className, title, isShowBackButton, onBackArrowClick, rightContent } = props;
+  const {
+    className,
+    leftContentClassName,
+    titleClassName,
+    title,
+    isShowBackButton,
+    onBackArrowClick,
+    rightContent,
+  } = props;
 
   return (
     <>
@@ -16,7 +25,7 @@ const PageHeader = props => {
         <NativeHeader isPage rightContent={rightContent} title={title} navFunc={onBackArrowClick} />
       ) : (
         <header className={`${styles.PageHeaderContainer} ${className}`}>
-          <div className={styles.PageHeaderLeftContainer}>
+          <div className={getClassName([styles.PageHeaderLeftContainer, leftContentClassName])}>
             {isShowBackButton && (
               <button
                 className={styles.PageHeaderIconWrapper}
@@ -27,9 +36,11 @@ const PageHeader = props => {
               </button>
             )}
             <div
-              className={
-                isShowBackButton ? `${styles.PageHeaderTitle}` : `${styles.PageHeaderTitle} tw-px-16 sm:tw-px-16px`
-              }
+              className={getClassName([
+                styles.PageHeaderTitle,
+                titleClassName,
+                isShowBackButton ? null : 'tw-px-16 sm:tw-px-16px',
+              ])}
             >
               {title}
             </div>
@@ -45,6 +56,8 @@ PageHeader.displayName = 'PageHeader';
 
 PageHeader.propTypes = {
   className: PropTypes.string,
+  leftContentClassName: PropTypes.string,
+  titleClassName: PropTypes.string,
   title: PropTypes.string,
   isShowBackButton: PropTypes.bool,
   onBackArrowClick: PropTypes.func,
@@ -53,6 +66,8 @@ PageHeader.propTypes = {
 
 PageHeader.defaultProps = {
   className: '',
+  leftContentClassName: '',
+  titleClassName: '',
   title: '',
   isShowBackButton: true,
   onBackArrowClick: () => {},

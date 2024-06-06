@@ -1,5 +1,7 @@
+@import "../../styles/variables.scss";
+
 .PageHeaderContainer {
-  @apply tw-flex tw-justify-between tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
+  @apply tw-flex tw-justify-between tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200 tw-text-gray;
 
   height: 49px;
 }
@@ -14,5 +16,7 @@
 
 .PageHeaderIconWrapper {
   @apply tw-flex tw-flex-shrink-0 tw-items-stretch sm:tw-p-12px tw-p-12
-    tw-border-none tw-outline-none tw-bg-transparent tw-text-gray tw-cursor-pointer;
+    tw-border-none tw-outline-none tw-bg-transparent tw-cursor-pointer;
+
+  color: inherit;
 }

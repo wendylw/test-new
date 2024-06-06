@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { confirmToShareConsumerInfo, fetchUniquePromoList } from './thunks';
+import { confirmToShareConsumerInfo, fetchUniquePromoList, fetchUniquePromoListBanners } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
 const initialState = {
@@ -9,6 +9,11 @@ const initialState = {
     error: null,
   },
   loadUniquePromoListRequest: {
+    data: [],
+    status: null,
+    error: null,
+  },
+  loadUniquePromoListBannersRequest: {
     data: [],
     status: null,
     error: null,
@@ -44,6 +49,19 @@ export const { actions, reducer } = createSlice({
     [fetchUniquePromoList.rejected.type]: (state, { error }) => {
       state.loadUniquePromoListRequest.status = API_REQUEST_STATUS.REJECTED;
       state.loadUniquePromoListRequest.error = error;
+    },
+    [fetchUniquePromoListBanners.pending.type]: state => {
+      state.loadUniquePromoListBannersRequest.status = API_REQUEST_STATUS.PENDING;
+      state.loadUniquePromoListBannersRequest.error = null;
+    },
+    [fetchUniquePromoListBanners.fulfilled.type]: (state, { payload }) => {
+      state.loadUniquePromoListBannersRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.loadUniquePromoListBannersRequest.data = payload;
+      state.loadUniquePromoListBannersRequest.error = null;
+    },
+    [fetchUniquePromoListBanners.rejected.type]: (state, { error }) => {
+      state.loadUniquePromoListBannersRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.loadUniquePromoListBannersRequest.error = error;
     },
   },
 });

@@ -78,7 +78,9 @@ const CashbackBlock = () => {
           {isCashbackExpired && <Tag className={styles.CashbackBlockExpiredTag}>{t('Expired')}</Tag>}
           {isExpiringTagShown ? (
             <Tag color="red" className={styles.CashbackBlockRemainingExpiredDaysTag}>
-              {isTodayExpired ? t('ExpiringToday') : t('ExpiringInDays', { remainingCashbackExpiredDays })}
+              {isTodayExpired
+                ? t('ExpiringToday')
+                : t('ExpiringInDays', { remainingExpiredDays: remainingCashbackExpiredDays })}
             </Tag>
           ) : null}
         </div>

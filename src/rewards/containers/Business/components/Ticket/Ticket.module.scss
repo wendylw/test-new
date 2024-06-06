@@ -1,0 +1,40 @@
+.TicketContainer {
+  @apply tw-rounded tw-overflow-hidden tw-shadow;
+}
+
+.Ticket {
+  @apply tw-relative tw-flex tw-border tw-border-solid tw-border-gray-400 tw-rounded tw-bg-gray-50;
+
+  min-height: 80px;
+
+  &::before,
+  &::after {
+    @apply tw-absolute tw-top-1/2 tw-inline-flex tw-border tw-border-solid tw-border-gray-400 tw-rounded-full tw-bg-gray-100;
+
+    content: "";
+    width: 16px;
+    height: 16px;
+  }
+
+  &::before {
+    @apply tw-left-0;
+
+    transform: translate(-62.5%, -50%);
+  }
+
+  &::after {
+    @apply tw-right-0;
+
+    transform: translate(62.5%, -50%);
+  }
+}
+
+.TicketMain {
+  @apply tw-flex-1 tw-flex tw-items-center tw-p-8 sm:tw-p-8px;
+}
+
+.TicketStub {
+  @apply tw-flex-shrink-0 tw-flex tw-items-center tw-p-8 sm:tw-p-8px tw-border-0 tw-border-l tw-border-dashed tw-border-gray-400;
+
+  min-width: 18px;
+}

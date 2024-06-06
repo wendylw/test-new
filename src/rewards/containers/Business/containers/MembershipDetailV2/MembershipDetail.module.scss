@@ -1,0 +1,37 @@
+@import "../../../../../common/styles/variables.scss";
+
+.MembershipDetailPageHeader {
+  @apply tw-fixed tw-top-0 tw-left-0 tw-w-full tw-text-gray-50 tw-border-blue-darkest tw-bg-blue-darkest tw-z-100;
+
+  & + * {
+    margin-top: 48px;
+  }
+}
+
+.MembershipDetailPageHeaderLeftContent {
+  @apply tw-flex-1;
+}
+
+.MembershipDetailPageHeaderTitle {
+  @include text-line-clamp(1);
+}
+
+.MembershipDetailPageHeaderTitleNoBack {
+  @apply tw-px-12 sm:tw-px-12px;
+}
+
+.MembershipDetailBenefitsSection {
+  @apply tw-my-12 sm:tw-my-12px tw-space-y-8 sm:tw-space-y-8px;
+}
+
+.MembershipDetailBenefitsTitle {
+  @apply tw-px-12 sm:tw-px-12px tw-text-xl tw-leading-normal tw-font-bold;
+}
+
+@media (min-width: 770px) {
+  .MembershipDetailPageHeader {
+    @apply tw-right-auto tw-left-auto;
+
+    max-width: 412px;
+  }
+}

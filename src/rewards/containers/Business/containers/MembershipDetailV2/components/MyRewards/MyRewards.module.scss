@@ -1,0 +1,72 @@
+@import "../../../../../../../common/styles/variables.scss";
+
+.MyRewardsSection {
+  @apply tw-p-12 sm:tw-p-12px tw-space-y-12 sm:tw-space-y-12px;
+}
+
+.MyRewardsSectionTopContainer {
+  @apply tw-flex tw-items-center tw-justify-between;
+}
+
+.MyRewardsSectionTitle {
+  @apply tw-text-xl tw-leading-normal tw-font-bold;
+}
+
+.MyRewardsSectionViewAllButton:global(.type-text-info) {
+  @apply tw-p-0 tw-underline;
+
+  .MyRewardsSectionViewAllButtonContent {
+    @apply tw-font-normal;
+  }
+}
+
+.MyRewardsList {
+  @apply tw-space-y-8 sm:tw-space-y-8px;
+}
+
+.MyRewardsTicketMain {
+  @apply tw-p-8 sm:tw-p-8px tw-space-y-8 sm:tw-space-y-8px;
+}
+
+.MyRewardsTicketMainTitle {
+  @apply tw-text-base tw-leading-normal tw-font-bold;
+  @include text-line-clamp(2, null);
+}
+
+.MyRewardsTicketMainDiscount {
+  @apply tw-block tw-text-sm tw-leading-normal tw-text-gray-700 tw-uppercase;
+}
+
+.MyRewardsTicketStub {
+  @apply tw-flex tw-flex-col tw-items-start tw-justify-center tw-gap-12 sm:tw-gap-12px;
+
+  width: 33.903134%;
+}
+
+.MyRewardsTicketStubRemainingExpiredDaysTag {
+  @apply tw-font-bold;
+
+  > span {
+    @apply tw-flex tw-items-center;
+  }
+}
+
+.MyRewardsTicketStubRemainingExpiredDaysTagLetter {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.MyRewardsTicketStubRemainingExpiredDaysTagLetterHidden {
+  display: none;
+}
+
+.MyRewardsTicketStubMinSpend {
+  @apply tw-text-sm tw-text-gray-700;
+}
+
+.MyRewardsTicketUnavailable {
+  .MyRewardsTicketMain,
+  .MyRewardsTicketStub > *:not(.MyRewardsTicketStubStatusTag) {
+    @apply tw-opacity-50;
+  }
+}
