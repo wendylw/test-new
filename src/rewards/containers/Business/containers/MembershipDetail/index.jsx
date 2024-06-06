@@ -33,6 +33,8 @@ const MembershipDetail = () => {
     <Frame>
       <PageHeader
         className={getClassName([isWeb && styles.MembershipDetailWebPageHeader])}
+        leftContentClassName={styles.MembershipDetailWebPageHeaderLeftContent}
+        titleClassName={styles.MembershipDetailWebPageHeaderTitle}
         isShowBackButton={shouldShowBackButton}
         title={t('MembershipDetailPageTitle', { merchantDisplayName })}
         onBackArrowClick={handleClickHeaderBackButton}
