@@ -45,6 +45,19 @@
 
 .MyRewardsTicketStubRemainingExpiredDaysTag {
   @apply tw-font-bold;
+
+  > span {
+    @apply tw-flex tw-items-center;
+  }
+}
+
+.MyRewardsTicketStubRemainingExpiredDaysTagLetter {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.MyRewardsTicketStubRemainingExpiredDaysTagLetterHidden {
+  display: none;
 }
 
 .MyRewardsTicketStubMinSpend {

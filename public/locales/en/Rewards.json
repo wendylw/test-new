@@ -47,7 +47,7 @@
   "DiscountValueText": "{{discount}} off",
   "History": "History",
   "Expired": "Expired",
-  "ExpiringInDays": "Expiring in {{remainingExpiredDays}} days",
+  "ExpiringInDays": "Expiring in {{remainingExpiredDays}} day<0>s</0>",
   "ExpiringToday": "Expiring today",
   "Redeemed": "Redeemed",
   "MinConsumption": "Min. spend {{amount}}",

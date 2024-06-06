@@ -79,13 +79,26 @@ const MyRewards = () => {
 
                     {expiringDays && (
                       <Tag color="red" className={styles.MyRewardsTicketStubRemainingExpiredDaysTag}>
-                        {t(expiringDays.i18nKey, expiringDays.params)}
+                        <Trans
+                          t={t}
+                          i18nKey={expiringDays.i18nKey}
+                          values={expiringDays.params}
+                          components={[
+                            <span
+                              className={
+                                expiringDays.value === 1
+                                  ? styles.MyRewardsTicketStubRemainingExpiredDaysTagLetterHidden
+                                  : styles.MyRewardsTicketStubRemainingExpiredDaysTagLetter
+                              }
+                            />,
+                          ]}
+                        />
                       </Tag>
                     )}
 
                     {minSpend && (
                       <data className={styles.MyRewardsTicketStubMinSpend} value={minSpend.value}>
-                        <Trans t={t} i18nKey={minSpend.i18nKey} components={[<br />]} values={minSpend.params} />
+                        <Trans t={t} i18nKey={minSpend.i18nKey} values={minSpend.params} components={[<br />]} />
                       </data>
                     )}
                   </>
