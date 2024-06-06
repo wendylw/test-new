@@ -1,3 +1,5 @@
+@import "../../../../../../../common/styles/variables.scss";
+
 .MyRewardsSection {
   @apply tw-p-12 sm:tw-p-12px tw-space-y-12 sm:tw-space-y-12px;
 }
@@ -8,6 +10,7 @@
 
 .MyRewardsSectionTitle {
   @apply tw-text-xl tw-leading-normal tw-font-bold;
+  @include text-line-clamp(2, null);
 }
 
 .MyRewardsSectionViewAllButton:global(.type-text-info) {
