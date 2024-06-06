@@ -1,17 +1,14 @@
-import _isEmpty from 'lodash/isEmpty';
 import React, { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { Info } from 'phosphor-react';
-import { MEMBERSHIP_TIER_I18N_KEYS } from '../../utils/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import { getCustomerTierLevelName } from '../../../../../../redux/modules/customer/selectors';
 import {
   getMemberCardStyles,
   getMerchantMembershipTierList,
   getCustomerMemberTierProgressStyles,
-  getCustomerMemberTierStatus,
-  getCustomerCurrentStatusParams,
+  getCustomerCurrentStatusPromptI18nInfo,
 } from '../../redux/selectors';
 import MemberIcon from '../../../../components/MemberIcon';
 import styles from './MemberCard.module.scss';
@@ -22,9 +19,7 @@ const MemberCard = () => {
   const memberCardStyles = useSelector(getMemberCardStyles);
   const merchantMembershipTierList = useSelector(getMerchantMembershipTierList);
   const customerMemberTierProgressStyles = useSelector(getCustomerMemberTierProgressStyles);
-  const customerMemberTierStatus = useSelector(getCustomerMemberTierStatus);
-  const customerCurrentStatusParams = useSelector(getCustomerCurrentStatusParams);
-  const { messageI18nKey } = MEMBERSHIP_TIER_I18N_KEYS[customerMemberTierStatus];
+  const { messageI18nKey, messageI18nParams } = useSelector(getCustomerCurrentStatusPromptI18nInfo);
   const { promptToolTipShown, setPromptToolTipShown } = useState(false);
   const handleClickCurrentMemberTierPromptToolTip = useCallback(() => {
     setPromptToolTipShown(!promptToolTipShown);
@@ -63,21 +58,15 @@ const MemberCard = () => {
         </div>
         <div className={styles.MemberCardTierProgressPromptContainer}>
           <p className={styles.MemberCardTierProgressPrompt}>
-            {_isEmpty(customerCurrentStatusParams) ? (
-              t(messageI18nKey)
-            ) : (
-              <Trans t={t} i18nKey={messageI18nKey} values={customerCurrentStatusParams} components={<strong />} />
-            )}
+            <Trans t={t} i18nKey={messageI18nKey} values={messageI18nParams} components={<strong />} />
           </p>
 
           <button
             data-test-id="rewards.business.membership-detail.member-card.progress-info-tooltip-button"
-            className={getClassName(
-              getClassName([
-                styles.MemberCardTierProgressPromptToolTipContainer,
-                promptToolTipShown ? styles.MemberCardTierProgressPromptToolTipContainer__show : null,
-              ])
-            )}
+            className={getClassName([
+              styles.MemberCardTierProgressPromptToolTipContainer,
+              promptToolTipShown ? styles.MemberCardTierProgressPromptToolTipContainer__show : null,
+            ])}
             onClick={handleClickCurrentMemberTierPromptToolTip}
           >
             <Info size={16} />

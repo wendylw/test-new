@@ -188,7 +188,8 @@ export const getCustomerMemberTierStatus = createSelector(
   }
 );
 
-export const getCustomerMemberTierPromptParams = createSelector(
+export const getCustomerCurrentStatusPromptI18nInfo = createSelector(
+  getCustomerMemberTierStatus,
   getMerchantCountry,
   getMerchantCurrency,
   getMerchantLocale,
@@ -199,6 +200,7 @@ export const getCustomerMemberTierPromptParams = createSelector(
   getMembershipTierList,
   getCustomerTierNextReviewTime,
   (
+    customerMemberTierStatus,
     merchantCountry,
     merchantCurrency,
     merchantLocale,
@@ -209,70 +211,39 @@ export const getCustomerMemberTierPromptParams = createSelector(
     membershipTierList,
     customerTierNextReviewTime
   ) => {
+    const priceOptional = {
+      country: merchantCountry,
+      currency: merchantCurrency,
+      locale: merchantLocale,
+    };
     const { spendingThreshold: nextTierSpendingThreshold, name: nextTierName } = customerSpendingTotalNextTier || {};
     const maintainTier = membershipTierList.find(({ level }) => level === customerTierLevel);
     const { spendingThreshold: maintainTierSpendingThreshold } = maintainTier || {};
-    const params = {};
-
-    Object.values(MEMBERSHIP_TIER_I18N_PARAM_KEYS).forEach(paramKey => {
-      switch (paramKey) {
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.TOTAL_SPEND_PRICE:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.TOTAL_SPEND_PRICE] = getPrice(customerTierTotalSpent, {
-            country: merchantCountry,
-            currency: merchantCurrency,
-            locale: merchantLocale,
-          });
-          break;
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_SPENDING_THRESHOLD_PRICE:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_SPENDING_THRESHOLD_PRICE] = getPrice(
-            nextTierSpendingThreshold,
-            {
-              country: merchantCountry,
-              currency: merchantCurrency,
-              locale: merchantLocale,
-            }
-          );
-          break;
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE] = getPrice(maintainTierSpendingThreshold, {
-            country: merchantCountry,
-            currency: merchantCurrency,
-            locale: merchantLocale,
-          });
-          break;
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_REVIEW_DATE:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_REVIEW_DATE] = formatTimeToDateString(
-            merchantCountry,
-            customerTierNextReviewTime
-          );
-          break;
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_NAME:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_NAME] = toCapitalize(nextTierName);
-          break;
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.CURRENT_TIER_NAME:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.CURRENT_TIER_NAME] = toCapitalize(customerTierLevelName);
-          break;
-        default:
-          break;
-      }
-    });
-
-    return params;
-  }
-);
-
-export const getCustomerCurrentStatusParams = createSelector(
-  getCustomerMemberTierStatus,
-  getCustomerMemberTierPromptParams,
-  (customerMemberTierStatus, customerMemberTierPromptParams) => {
-    const { messageI18nParamsKeys } = MEMBERSHIP_TIER_I18N_KEYS[customerMemberTierStatus];
-    const promptParams = {};
+    const params = {
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.TOTAL_SPEND_PRICE]: getPrice(customerTierTotalSpent, priceOptional),
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_SPENDING_THRESHOLD_PRICE]: getPrice(
+        nextTierSpendingThreshold,
+        priceOptional
+      ),
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE]: getPrice(maintainTierSpendingThreshold, priceOptional),
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_REVIEW_DATE]: formatTimeToDateString(
+        merchantCountry,
+        customerTierNextReviewTime
+      ),
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_NAME]: toCapitalize(nextTierName),
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.CURRENT_TIER_NAME]: toCapitalize(customerTierLevelName),
+    };
+    const { messageI18nKey, messageI18nParamsKeys } = MEMBERSHIP_TIER_I18N_KEYS[customerMemberTierStatus];
+    const messageI18nParams = {};
 
     messageI18nParamsKeys.forEach(paramsKey => {
-      promptParams[paramsKey] = customerMemberTierPromptParams[paramsKey];
+      messageI18nParams[paramsKey] = params[paramsKey];
     });
 
-    return promptParams;
+    return {
+      messageI18nKey,
+      messageI18nParams,
+    };
   }
 );
 
