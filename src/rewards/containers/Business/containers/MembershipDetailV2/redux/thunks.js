@@ -65,7 +65,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
 
     dispatch(fetchCustomerInfo(business));
     dispatch(fetchUniquePromoList(consumerId));
-    dispatch(fetchUniquePromoListBanners(consumerId));
+    dispatch(fetchUniquePromoListBanners({ consumerId, limit: 2 }));
   }
 });
 

@@ -10,9 +10,10 @@ export const getUniquePromoList = async ({ consumerId, business }) =>
     },
   });
 
-export const getUniquePromoListBanners = async ({ consumerId, business }) =>
+export const getUniquePromoListBanners = async ({ consumerId, business, limit }) =>
   get(`/api/v3/consumers/${consumerId}/unique-promos/banners`, {
     queryParams: {
       business,
+      limit,
     },
   });

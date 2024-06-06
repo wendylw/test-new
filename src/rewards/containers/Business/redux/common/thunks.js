@@ -26,10 +26,10 @@ export const fetchUniquePromoList = createAsyncThunk(
 
 export const fetchUniquePromoListBanners = createAsyncThunk(
   'rewards/business/common/fetchUniquePromoListBanners',
-  async (consumerId, { getState }) => {
+  async ({ consumerId, limit }, { getState }) => {
     const state = getState();
     const business = getMerchantBusiness(state);
-    const result = await getUniquePromoListBanners({ consumerId, business });
+    const result = await getUniquePromoListBanners({ consumerId, business, limit });
 
     return result;
   }
