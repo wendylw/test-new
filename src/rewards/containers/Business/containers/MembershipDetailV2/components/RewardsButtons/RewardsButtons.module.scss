@@ -1,0 +1,51 @@
+.RewardsButtons {
+  @apply tw-flex tw-items-stretch tw-gap-x-8 sm:tw-gap-x-8px tw-px-16 sm:tw-px-16px tw-mb-8 sm:tw-mb-8px;
+}
+
+.RewardsButton {
+  @apply tw-flex-1 tw-border-0 tw-bg-gray-50;
+
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+}
+
+.RewardsButtonContent {
+  @apply tw-flex tw-items-center tw-gap-x-12 sm:tw-gap-x-12px;
+}
+
+.RewardsButtonPointsIconContainer,
+.RewardsButtonCashbackIconContainer,
+.RewardsButtonStoreCreditsIconContainer,
+.RewardsButtonRewardsIconContainer {
+  width: 40px;
+  height: 40px;
+
+  > figure {
+    @apply tw-bg-transparent;
+  }
+}
+
+.RewardsButtonText {
+  @apply tw-flex tw-flex-col tw-items-center tw-gap-x-4 sm:tw-gap-x-4px;
+}
+
+.RewardsButtonPoints,
+.RewardsButtonCashback,
+.RewardsButtonStoreCredits,
+.RewardsButtonMyRewards {
+  @apply tw-text-xl tw-font-bold tw-leading-normal;
+}
+
+.RewardsButtonPointsText,
+.RewardsButtonCashbackText,
+.RewardsButtonStoreCreditsText,
+.RewardsButtonRewardsText {
+  @apply tw-text-sm tw-leading-normal;
+}
+
+.RewardsButtonCashback {
+  @apply tw-flex tw-items-center tw-gap-x-4 sm:tw-gap-x-4px;
+}
+
+.RewardsButtonCashbackWarningIcon {
+  @apply tw-fill-current tw-text-red;
+}

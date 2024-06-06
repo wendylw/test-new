@@ -4,7 +4,16 @@ import {
   MEMBER_LEVELS,
   MEMBER_CARD_LEVELS_PALETTES,
 } from '../../../../../../common/utils/constants';
-import { MEMBERSHIP_TIER_STATUS, MEMBERSHIP_TIER_I18N_PARAM_KEYS, MEMBERSHIP_TIER_I18N_KEYS } from '../utils/constants';
+import {
+  MEMBERSHIP_TIER_STATUS,
+  MEMBERSHIP_TIER_I18N_PARAM_KEYS,
+  MEMBERSHIP_TIER_I18N_KEYS,
+  NEW_MEMBER_TYPES,
+  NEW_MEMBER_I18N_KEYS,
+  MEMBER_TYPE_I18N_PARAM_KEYS,
+  RETURNING_MEMBER_TYPES,
+  RETURNING_MEMBER_I18N_KEYS,
+} from '../utils/constants';
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
@@ -12,16 +21,22 @@ import {
   getMerchantCountry,
   getMerchantCurrency,
   getMerchantLocale,
+  getIsLoadMerchantRequestCompleted,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getMembershipTierList, getHighestMembershipTier } from '../../../../../../redux/modules/membership/selectors';
-import { getSource, getIsWebview } from '../../../../../redux/modules/common/selectors';
+import {
+  getSource,
+  getIsWebview,
+  getIsFromJoinMembershipUrlClick,
+} from '../../../../../redux/modules/common/selectors';
 import {
   getCustomerTierLevel,
   getCustomerTierTotalSpent,
   getCustomerTierNextReviewTime,
   getCustomerTierLevelName,
+  getIsLoadCustomerRequestCompleted,
 } from '../../../../../redux/modules/customer/selectors';
-import { getIsUniquePromoListBannersEmpty } from '../../../redux/common/selectors';
+import { getIsUniquePromoListBannersEmpty, getOrderReceiptClaimedCashback } from '../../../redux/common/selectors';
 
 /**
  * Derived selectors
@@ -31,12 +46,19 @@ export const getIsUserFromOrdering = createSelector(getSource, source =>
   [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
 );
 
+export const getIsFromSeamlessLoyaltyQrScan = createSelector(
+  getSource,
+  source => source === BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN
+);
+
+// Header
 export const getShouldShowBackButton = createSelector(
   getIsWebview,
   getIsUserFromOrdering,
   (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
 );
 
+// Member Card
 // If the level is not by design, use member style by default.
 export const getMemberColorPalettes = createSelector(
   getCustomerTierLevel,
@@ -247,9 +269,95 @@ export const getCustomerCurrentStatusPromptI18nInfo = createSelector(
   }
 );
 
+// My Rewards
 export const getIsMyRewardsSectionShow = createSelector(
   getIsMerchantMembershipPointsEnabled,
   getIsUniquePromoListBannersEmpty,
   (isMerchantMembershipPointsEnabled, isUniquePromoListBannersEmpty) =>
     !isMerchantMembershipPointsEnabled && !isUniquePromoListBannersEmpty
+);
+
+// Member Prompt
+export const getNewMemberPromptCategory = createSelector(
+  getIsLoadCustomerRequestCompleted,
+  getIsLoadMerchantRequestCompleted,
+  getIsFromSeamlessLoyaltyQrScan,
+  getIsFromJoinMembershipUrlClick,
+  (
+    isLoadCustomerRequestCompleted,
+    isLoadMerchantRequestCompleted,
+    isFromSeamlessLoyaltyQrScan,
+    isFromJoinMembershipUrlClick
+  ) => {
+    if (isFromJoinMembershipUrlClick) {
+      return NEW_MEMBER_TYPES.DEFAULT;
+    }
+
+    if (isFromSeamlessLoyaltyQrScan) {
+      if (!isLoadMerchantRequestCompleted) {
+        return null;
+      }
+
+      if (!isLoadCustomerRequestCompleted) {
+        return null;
+      }
+
+      return NEW_MEMBER_TYPES.DEFAULT;
+    }
+
+    return null;
+  }
+);
+
+export const getNewMemberTitleIn18nParams = createSelector(
+  getOrderReceiptClaimedCashback,
+  getNewMemberPromptCategory,
+  (claimedCashback, newMemberPromptCategory) => {
+    const { titleI18nParamsKeys } = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory] || {};
+    const newMemberTitleI18nParams = {};
+
+    if (!titleI18nParamsKeys) {
+      return null;
+    }
+
+    titleI18nParamsKeys.forEach(paramKey => {
+      if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE) {
+        newMemberTitleI18nParams[paramKey] = claimedCashback;
+      }
+    });
+
+    return newMemberTitleI18nParams;
+  }
+);
+
+export const getReturningMemberPromptCategory = createSelector(
+  getIsFromJoinMembershipUrlClick,
+  isFromJoinMembershipUrlClick => {
+    if (isFromJoinMembershipUrlClick) {
+      return RETURNING_MEMBER_TYPES.DEFAULT;
+    }
+
+    return null;
+  }
+);
+
+export const getReturningMemberTitleIn18nParams = createSelector(
+  getOrderReceiptClaimedCashback,
+  getReturningMemberPromptCategory,
+  (claimedCashback, returningMemberPromptCategory) => {
+    const { titleI18nParamsKeys } = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory] || {};
+    const returningMemberTitleI18nParams = {};
+
+    if (!titleI18nParamsKeys) {
+      return null;
+    }
+
+    titleI18nParamsKeys.forEach(paramKey => {
+      if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE) {
+        returningMemberTitleI18nParams[paramKey] = claimedCashback;
+      }
+    });
+
+    return returningMemberTitleI18nParams;
+  }
 );
