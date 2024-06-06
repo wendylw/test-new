@@ -272,8 +272,9 @@ export const getStatusDescriptionImage = createSelector(
   getOrderDelayReason,
   getOrderShippingType,
   getIsPreOrder,
+  getIsPayLater,
   getOrderStatus,
-  (isWebview, orderDelayReason, shippingType, isPreOrder, orderStatus) => {
+  (isWebview, orderDelayReason, shippingType, isPreOrder, isPayLater, orderStatus) => {
     const showMapInApp =
       isWebview && orderStatus === ORDER_STATUS.PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY;
     const delayByBadWeatherImageSource =
@@ -282,12 +283,16 @@ export const getStatusDescriptionImage = createSelector(
       shippingType === DELIVERY_METHOD.DELIVERY &&
       isPreOrder &&
       [ORDER_STATUS.PAID, ORDER_STATUS.ACCEPTED].includes(orderStatus);
-    const ImageSource =
+    let imageSource =
       preOrderPendingRiderConfirm || shippingType !== DELIVERY_METHOD.DELIVERY
         ? NOT_DELIVERY_STATUS_IMAGES_MAPPING[orderStatus]
         : DELIVERY_STATUS_IMAGES_MAPPING[orderStatus];
 
-    return showMapInApp ? null : delayByBadWeatherImageSource || ImageSource;
+    if ([ORDER_STATUS.CREATED, ORDER_STATUS.PENDING_PAYMENT].includes(orderStatus) && isPayLater) {
+      imageSource = NOT_DELIVERY_STATUS_IMAGES_MAPPING[ORDER_STATUS.PENDING_PAYMENT];
+    }
+
+    return showMapInApp ? null : delayByBadWeatherImageSource || imageSource;
   }
 );
 

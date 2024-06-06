@@ -10,7 +10,7 @@ import {
   getUser,
   getApiError,
   getBusinessInfo,
-  getIsDynamicUrlExpired,
+  getIsDynamicUrlExpiredResultShown,
   getIsDynamicUrl,
 } from '../../redux/modules/app';
 import {
@@ -262,7 +262,7 @@ class App extends Component {
   }
 
   render() {
-    const { t, onlineStoreInfo, apiError, isDynamicUrlExpired } = this.props;
+    const { t, onlineStoreInfo, apiError, isDynamicUrlExpiredResultShown } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
@@ -279,7 +279,7 @@ class App extends Component {
             }}
           />
         ) : null}
-        {isDynamicUrlExpired ? (
+        {isDynamicUrlExpiredResultShown ? (
           <Result
             customizeContent
             closeButtonClassName={styles.UrlExpiredButton}
@@ -332,7 +332,7 @@ App.propTypes = {
   onlineStoreInfo: PropTypes.object,
   /* eslint-enable */
   ifAddressInfoExists: PropTypes.bool,
-  isDynamicUrlExpired: PropTypes.bool,
+  isDynamicUrlExpiredResultShown: PropTypes.bool,
   isDynamicUrl: PropTypes.bool,
   getAddressInfo: PropTypes.func,
   setAddressInfo: PropTypes.func,
@@ -364,7 +364,7 @@ App.defaultProps = {
   businessInfo: {},
   onlineStoreInfo: {},
   ifAddressInfoExists: false,
-  isDynamicUrlExpired: false,
+  isDynamicUrlExpiredResultShown: false,
   isDynamicUrl: false,
   getAddressInfo: () => {},
   setAddressInfo: () => {},
@@ -381,7 +381,7 @@ export default compose(
       pageError: getPageError(state),
       apiError: getApiError(state),
       ifAddressInfoExists: getIfAddressInfoExists(state),
-      isDynamicUrlExpired: getIsDynamicUrlExpired(state),
+      isDynamicUrlExpiredResultShown: getIsDynamicUrlExpiredResultShown(state),
       isDynamicUrl: getIsDynamicUrl(state),
     }),
     dispatch => ({

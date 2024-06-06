@@ -2,16 +2,17 @@ import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  getIsNameInputErrorDisplay,
+  getIsFirstNameInputErrorDisplay,
   getEmailErrorType,
   getIsEmailInputErrorDisplay,
   getBirthdayErrorType,
   getIsBirthdayInputErrorDisplay,
-  getProfileName,
+  getProfileFirstName,
+  getProfileLastName,
   getProfileEmail,
   getProfileBirthday,
 } from '../redux/selectors';
-import { nameUpdated, emailUpdated, birthdaySelected, birthdayUpdated } from '../redux/thunk';
+import { firstNameUpdated, lastNameUpdated, emailUpdated, birthdaySelected, birthdayUpdated } from '../redux/thunk';
 import { actions as profileActions } from '../redux';
 import { getIsSupportedShowPicker, getIsDateInputOnUpperLayer } from '../utils';
 import {
@@ -27,16 +28,20 @@ const ProfileFields = () => {
   const dispatch = useDispatch();
   const emailInputRef = useRef(null);
   const birthdayInputRef = useRef(null);
-  const profileName = useSelector(getProfileName);
+  const profileFirstName = useSelector(getProfileFirstName);
+  const profileLastName = useSelector(getProfileLastName);
   const profileEmail = useSelector(getProfileEmail);
   const profileBirthday = useSelector(getProfileBirthday);
-  const isNameInputErrorDisplay = useSelector(getIsNameInputErrorDisplay);
+  const isFirstNameInputErrorDisplay = useSelector(getIsFirstNameInputErrorDisplay);
   const emailErrorType = useSelector(getEmailErrorType);
   const isEmailInputErrorDisplay = useSelector(getIsEmailInputErrorDisplay);
   const birthdayErrorType = useSelector(getBirthdayErrorType);
   const isBirthdayInputErrorDisplay = useSelector(getIsBirthdayInputErrorDisplay);
-  const handleChangeName = e => {
-    dispatch(nameUpdated(e.target.value));
+  const handleChangeFirstName = e => {
+    dispatch(firstNameUpdated(e.target.value));
+  };
+  const handleChangeLastName = e => {
+    dispatch(lastNameUpdated(e.target.value));
   };
   const handleChangeEmail = e => {
     dispatch(emailUpdated(e.target.value));
@@ -44,11 +49,11 @@ const ProfileFields = () => {
   const handleSelectBirthDay = e => {
     dispatch(birthdaySelected(e.target.value));
   };
-  const handleFocusNameInput = useCallback(() => {
-    dispatch(profileActions.nameInputFilledStatusUpdated(false));
+  const handleFocusFirstNameInput = useCallback(() => {
+    dispatch(profileActions.firstNameInputFilledStatusUpdated(false));
   }, [dispatch]);
-  const handleBlurNameInput = () => {
-    dispatch(profileActions.nameInputFilledStatusUpdated(true));
+  const handleBlurFirstNameInput = () => {
+    dispatch(profileActions.firstNameInputFilledStatusUpdated(true));
   };
   const handleFocusEmailInput = useCallback(() => {
     dispatch(profileActions.emailInputFilledStatusUpdated(false));
@@ -72,30 +77,50 @@ const ProfileFields = () => {
       <div className="margin-top-bottom-normal">
         <div
           className={`profile__form-item form__group padding-small padding-left-right-normal border-radius-large ${
-            isNameInputErrorDisplay ? 'profile__form-item--error' : ''
+            isFirstNameInputErrorDisplay ? 'profile__form-item--error' : ''
           }`}
         >
-          <label htmlFor={profileName} className="profile__label profile__label--required text-size-small text-top">
-            {t('Name')}
+          <label
+            htmlFor={profileFirstName}
+            className="profile__label profile__label--required text-size-small text-top"
+          >
+            {t('FirstName')}
           </label>
           <input
             className="profile__input form__input"
-            name="profileName"
+            name="profileFirstName"
             type="text"
             required
-            value={profileName}
+            value={profileFirstName}
             data-test-id="ordering.profile.name-input"
-            onChange={handleChangeName}
-            onFocus={handleFocusNameInput}
-            onBlur={handleBlurNameInput}
+            onChange={handleChangeFirstName}
+            onFocus={handleFocusFirstNameInput}
+            onBlur={handleBlurFirstNameInput}
           />
         </div>
-        {isNameInputErrorDisplay ? (
+        {isFirstNameInputErrorDisplay ? (
           <p className="form__error-message padding-top-bottom-smaller text-size-small">
             {t(ERROR_TRANSLATION_KEYS[PROFILE_FIELD_ERROR_TYPES.REQUIRED].name)}
           </p>
         ) : null}
       </div>
+
+      <div className="margin-top-bottom-normal">
+        <div className="profile__form-item form__group padding-small padding-left-right-normal border-radius-large">
+          <label htmlFor={profileLastName} className="profile__label text-size-small text-top">
+            {t('LastName')}
+          </label>
+          <input
+            className="profile__input form__input"
+            name="profileLastName"
+            type="text"
+            value={profileLastName}
+            data-test-id="ordering.profile.name-input"
+            onChange={handleChangeLastName}
+          />
+        </div>
+      </div>
+
       <div className="margin-top-bottom-normal">
         <div
           className={`profile__form-item form__group padding-small border-radius-large padding-left-right-normal ${

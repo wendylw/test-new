@@ -1,20 +1,26 @@
 import _trim from 'lodash/trim';
 import dayjs from 'dayjs';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getUserFirstName, getUserEmail, getUserBirthday } from '../../../../redux/modules/user/selectors';
+import {
+  getUserFirstName,
+  getUserLastName,
+  getUserEmail,
+  getUserBirthday,
+} from '../../../../redux/modules/user/selectors';
 import { fetchUserProfileInfo, uploadUserProfileInfo } from '../../../../redux/modules/user/thunks';
 import Utils from '../../../../utils/utils';
 import { setCookieVariable } from '../../../../common/utils';
 import { isValidBirthdayDateString, isAfterTodayBirthdayDate, getRequestBirthdayData } from '../utils';
 import { showCompleteProfilePageAsync } from '../../../../utils/native-methods';
 import { PROFILE_SKIP_CYCLE, PROFILE_FIELD_ERROR_TYPES, PROFILE_BIRTHDAY_FORMAT } from '../utils/constants';
-import { getProfileBirthday, getProfileEmail, getProfileName } from './selectors';
+import { getProfileBirthday, getProfileEmail, getProfileFirstName, getProfileLastName } from './selectors';
 
 export const profileUpdated = createAsyncThunk('rewards/profile/profileUpdated', async (_, { dispatch, getState }) => {
   const state = getState();
   const birthday = getProfileBirthday(state);
   const payload = {
-    firstName: getProfileName(state),
+    firstName: getProfileFirstName(state),
+    lastName: getProfileLastName(state),
     email: getProfileEmail(state),
     birthday: getRequestBirthdayData(birthday),
   };
@@ -36,7 +42,9 @@ export const profileMissingSkippedLimitUpdated = createAsyncThunk(
   }
 );
 
-export const nameUpdated = createAsyncThunk('rewards/profile/nameUpdated', name => name);
+export const firstNameUpdated = createAsyncThunk('rewards/profile/firstNameUpdated', firstName => firstName);
+
+export const lastNameUpdated = createAsyncThunk('rewards/profile/lastNameUpdated', lastName => lastName);
 
 export const emailUpdated = createAsyncThunk('rewards/profile/emailUpdated', profileEmail => {
   const email = _trim(profileEmail);
@@ -91,13 +99,15 @@ export const birthdayUpdated = createAsyncThunk('rewards/profile/birthdayUpdated
 
 export const init = createAsyncThunk('rewards/profile/init', (_, { dispatch, getState }) => {
   const state = getState();
-  const name = getUserFirstName(state);
+  const firstName = getUserFirstName(state);
+  const lastName = getUserLastName(state);
   const email = getUserEmail(state);
   const birthday = getUserBirthday(state);
 
   // In fact, the profile data does not need to be returned with the redux merge of the page every time,
   // it only needs to be put in redux during initialization
-  dispatch(nameUpdated(name));
+  dispatch(firstNameUpdated(firstName));
+  dispatch(lastNameUpdated(lastName));
   dispatch(emailUpdated(email));
   dispatch(birthdaySelected(birthday));
 });

@@ -7,7 +7,7 @@ import Utils from '../../../../utils/utils';
 import { setCookieVariable } from '../../../../common/utils';
 import { isValidBirthdayDateString, isAfterTodayBirthdayDate, getRequestBirthdayData } from '../utils';
 import { PROFILE_SKIP_CYCLE, PROFILE_FIELD_ERROR_TYPES, PROFILE_BIRTHDAY_FORMAT } from '../utils/constants';
-import { getProfileBirthday, getProfileEmail, getProfileName } from './selectors';
+import { getProfileBirthday, getProfileEmail, getProfileFirstName, getProfileLastName } from './selectors';
 import logger from '../../../../utils/monitoring/logger';
 
 export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated', async (_, { dispatch, getState }) => {
@@ -16,7 +16,8 @@ export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated'
     const consumerId = getUserConsumerId(state);
     const birthday = getProfileBirthday(state);
     const payload = {
-      firstName: getProfileName(state),
+      firstName: getProfileFirstName(state),
+      lastName: getProfileLastName(state),
       email: getProfileEmail(state),
       birthday: getRequestBirthdayData(birthday),
     };
@@ -45,19 +46,22 @@ export const profileMissingSkippedLimitUpdated = createAsyncThunk(
   }
 );
 
-export const nameUpdated = createAsyncThunk('ordering/profile/nameUpdated', profileName => {
-  const name = _trim(profileName);
+export const firstNameUpdated = createAsyncThunk('ordering/profile/firstNameUpdated', profileFirstName => {
   let errorType = null;
 
-  if (!name) {
+  if (!_trim(profileFirstName)) {
     errorType = PROFILE_FIELD_ERROR_TYPES.REQUIRED;
   }
 
   return {
-    name,
+    firstName: profileFirstName,
     errorType,
   };
 });
+
+export const lastNameUpdated = createAsyncThunk('ordering/profile/lastNameUpdated', profileLastName => ({
+  lastName: profileLastName,
+}));
 
 export const emailUpdated = createAsyncThunk('ordering/profile/emailUpdated', profileEmail => {
   const email = _trim(profileEmail);
@@ -112,11 +116,12 @@ export const birthdayUpdated = createAsyncThunk('ordering/profile/birthdayUpdate
 
 export const init = createAsyncThunk('ordering/profile/init', (_, { dispatch, getState }) => {
   const state = getState();
-  const { name, email, birthday } = getUserProfile(state);
+  const { firstName, lastName, email, birthday } = getUserProfile(state);
 
   // In fact, the profile data does not need to be returned with the redux merge of the page every time,
   // it only needs to be put in redux during initialization
-  dispatch(nameUpdated(name));
+  dispatch(firstNameUpdated(firstName));
+  dispatch(lastNameUpdated(lastName));
   dispatch(emailUpdated(email));
   dispatch(birthdaySelected(birthday));
 });
