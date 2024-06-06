@@ -118,11 +118,23 @@ export const getMembershipTierListLength = createSelector(
   membershipTierList => membershipTierList.length
 );
 
+/**
+ * progress bar percentage calculation method:
+ * only 1 tier: no progress bar
+ *
+ * merchant tiers > 1
+ * 1. current spending total's level === highest tier level: 100%
+ * 2. current spending total === current tier spendThreshold: 100 * ((level - 1) / (total tier length - 1))%
+ * 3. current spending total > current tier spendThreshold && current spending total < next tier spendThreshold:
+ * - exceed total rate = (exceed current total / tier spendThreshold gap) * each tier rate
+ * - 100 * (No.2 result + exceed total rate)% + icon radius
+ */
 export const getCustomerMemberTierProgressStyles = createSelector(
   getMembershipTierListLength,
   getCurrentSpendingTotalTier,
   getCustomerSpendingTotalNextTier,
-  (membershipTierListLength, currentSpendingTotalTier, customerSpendingTotalNextTier) => {
+  getHighestMembershipTier,
+  (membershipTierListLength, currentSpendingTotalTier, customerSpendingTotalNextTier, highestMembershipTier) => {
     const MEMBER_ICON_WIDTH = 30;
 
     if (membershipTierListLength === 1) {
@@ -130,12 +142,13 @@ export const getCustomerMemberTierProgressStyles = createSelector(
     }
 
     const { currentLevel, currentSpendingThreshold, exceedCurrentLevelSpending } = currentSpendingTotalTier;
+    const { level: highestTierLevel } = highestMembershipTier;
 
-    if (currentLevel === membershipTierListLength) {
+    if (currentLevel === highestTierLevel) {
       return { width: '100%' };
     }
 
-    const eachTierRate = (1 / (membershipTierListLength - 1)).toFixed(4);
+    const eachTierRate = 1 / (membershipTierListLength - 1);
     const currentLevelTotalRate = eachTierRate * (currentLevel - 1);
 
     if (exceedCurrentLevelSpending === 0) {
@@ -144,7 +157,7 @@ export const getCustomerMemberTierProgressStyles = createSelector(
 
     const { spendingThreshold: nextSpendingThreshold } = customerSpendingTotalNextTier;
     const exceedSpendingRate =
-      eachTierRate * (exceedCurrentLevelSpending / (nextSpendingThreshold - currentSpendingThreshold)).toFixed(4);
+      (eachTierRate * exceedCurrentLevelSpending) / (nextSpendingThreshold - currentSpendingThreshold);
 
     // eachTierRate point is at the center of the icon (except for Tier 1)
     // Tier 1 adds the diameter, and Tier > 1 adds the radius.
@@ -197,7 +210,8 @@ export const getCustomerMemberTierStatus = createSelector(
   }
 );
 
-export const getCustomerMemberTierPromptParams = createSelector(
+export const getCustomerCurrentStatusPromptI18nInfo = createSelector(
+  getCustomerMemberTierStatus,
   getMerchantCountry,
   getMerchantCurrency,
   getMerchantLocale,
@@ -208,6 +222,7 @@ export const getCustomerMemberTierPromptParams = createSelector(
   getMembershipTierList,
   getCustomerTierNextReviewTime,
   (
+    customerMemberTierStatus,
     merchantCountry,
     merchantCurrency,
     merchantLocale,
@@ -218,70 +233,39 @@ export const getCustomerMemberTierPromptParams = createSelector(
     membershipTierList,
     customerTierNextReviewTime
   ) => {
+    const priceOptional = {
+      country: merchantCountry,
+      currency: merchantCurrency,
+      locale: merchantLocale,
+    };
     const { spendingThreshold: nextTierSpendingThreshold, name: nextTierName } = customerSpendingTotalNextTier || {};
     const maintainTier = membershipTierList.find(({ level }) => level === customerTierLevel);
     const { spendingThreshold: maintainTierSpendingThreshold } = maintainTier || {};
-    const params = {};
-
-    Object.values(MEMBERSHIP_TIER_I18N_PARAM_KEYS).forEach(paramKey => {
-      switch (paramKey) {
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.TOTAL_SPEND_PRICE:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.TOTAL_SPEND_PRICE] = getPrice(customerTierTotalSpent, {
-            country: merchantCountry,
-            currency: merchantCurrency,
-            locale: merchantLocale,
-          });
-          break;
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_SPENDING_THRESHOLD_PRICE:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_SPENDING_THRESHOLD_PRICE] = getPrice(
-            nextTierSpendingThreshold,
-            {
-              country: merchantCountry,
-              currency: merchantCurrency,
-              locale: merchantLocale,
-            }
-          );
-          break;
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE] = getPrice(maintainTierSpendingThreshold, {
-            country: merchantCountry,
-            currency: merchantCurrency,
-            locale: merchantLocale,
-          });
-          break;
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_REVIEW_DATE:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_REVIEW_DATE] = formatTimeToDateString(
-            merchantCountry,
-            customerTierNextReviewTime
-          );
-          break;
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_NAME:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_NAME] = toCapitalize(nextTierName);
-          break;
-        case MEMBERSHIP_TIER_I18N_PARAM_KEYS.CURRENT_TIER_NAME:
-          params[MEMBERSHIP_TIER_I18N_PARAM_KEYS.CURRENT_TIER_NAME] = toCapitalize(customerTierLevelName);
-          break;
-        default:
-          break;
-      }
-    });
-
-    return params;
-  }
-);
-
-export const getCustomerCurrentStatusParams = createSelector(
-  getCustomerMemberTierStatus,
-  getCustomerMemberTierPromptParams,
-  (customerMemberTierStatus, customerMemberTierPromptParams) => {
-    const { messageI18nParamsKeys } = MEMBERSHIP_TIER_I18N_KEYS[customerMemberTierStatus];
-    const promptParams = {};
+    const params = {
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.TOTAL_SPEND_PRICE]: getPrice(customerTierTotalSpent, priceOptional),
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_SPENDING_THRESHOLD_PRICE]: getPrice(
+        nextTierSpendingThreshold,
+        priceOptional
+      ),
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE]: getPrice(maintainTierSpendingThreshold, priceOptional),
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_REVIEW_DATE]: formatTimeToDateString(
+        merchantCountry,
+        customerTierNextReviewTime
+      ),
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_NAME]: toCapitalize(nextTierName),
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.CURRENT_TIER_NAME]: toCapitalize(customerTierLevelName),
+    };
+    const { messageI18nKey, messageI18nParamsKeys } = MEMBERSHIP_TIER_I18N_KEYS[customerMemberTierStatus];
+    const messageI18nParams = {};
 
     messageI18nParamsKeys.forEach(paramsKey => {
-      promptParams[paramsKey] = customerMemberTierPromptParams[paramsKey];
+      messageI18nParams[paramsKey] = params[paramsKey];
     });
 
-    return promptParams;
+    return {
+      messageI18nKey,
+      messageI18nParams,
+    };
   }
 );
 
