@@ -113,7 +113,7 @@ export const getCustomerMemberTierProgressStyles = createSelector(
       return { width: '100%' };
     }
 
-    const eachTierRate = (1 / (membershipTierListLength - 1)).toFixed(4);
+    const eachTierRate = 1 / (membershipTierListLength - 1);
     const currentLevelTotalRate = eachTierRate * (currentLevel - 1);
 
     if (exceedCurrentLevelSpending === 0) {

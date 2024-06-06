@@ -28,7 +28,7 @@ const MemberCard = () => {
   const { promptToolTipShown, setPromptToolTipShown } = useState(false);
   const handleClickCurrentMemberTierPromptToolTip = useCallback(() => {
     setPromptToolTipShown(!promptToolTipShown);
-  }, [promptToolTipShown]);
+  }, [promptToolTipShown, setPromptToolTipShown]);
 
   return (
     <section className={styles.MemberCardSection}>
