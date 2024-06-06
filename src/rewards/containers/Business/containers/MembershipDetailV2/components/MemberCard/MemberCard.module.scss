@@ -10,16 +10,17 @@
 }
 
 .MemberCard {
-  @apply tw-relative tw-p-12 sm:tw-p-12px tw-space-y-12 sm:tw-space-y-12px tw-rounded tw-shadow-lg tw-w-full tw-bg-gray-50;
+  @apply tw-relative tw-p-12 sm:tw-p-12px tw-space-y-12 sm:tw-space-y-12px tw-rounded tw-w-full tw-bg-gray-50;
 
   min-height: 94px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
 }
 
-.MemberCardCustomerTierLevelName {
+.MemberCardCustomerTierName {
   @apply tw-text-xl tw-font-bold tw-capitalize;
 }
 
-.MemberCardLevelsProgress {
+.MemberCardTiersProgress {
   @apply tw-relative;
 }
 
@@ -33,11 +34,11 @@
   @apply tw-absolute tw-left-0 tw-top-0 tw-inline-block tw-h-full tw-rounded tw-bg-blue-darkest;
 }
 
-.MemberCardLevels {
+.MemberCardTiers {
   @apply tw-relative tw-flex tw-items-center tw-justify-between;
 }
 
-.MemberCardLevelIcon {
+.MemberCardTierIcon {
   width: 30px;
   height: 30px;
 
@@ -45,4 +46,61 @@
     width: 100%;
     height: 100%;
   }
+}
+
+.MemberCardTierProgressPromptContainer {
+  @apply tw-flex tw-items-start tw-gap-2 sm:tw-gap-2px tw-my-2 sm:tw-my-2px;
+}
+
+.MemberCardTierProgressPrompt {
+  @apply tw-text-sm tw-leading-normal;
+
+  > strong {
+    font-size: inherit;
+  }
+}
+
+.MemberCardTierProgressPromptToolTipContainer {
+  @apply tw-relative tw-inline-flex tw-border-0 tw-bg-transparent;
+
+  outline: none;
+  box-shadow: none;
+  color: inherit;
+
+  &::before {
+    @apply tw-absolute tw-top-1/2 tw-mt-2px tw-w-0 tw-h-0 tw-border-solid tw-border-transparent tw-invisible tw-opacity-0;
+
+    border-width: 9px;
+    border-bottom-width: 6px;
+    border-bottom-color: rgba(0, 0, 0, 0.75);
+    content: "";
+  }
+
+  &__show::before {
+    @apply tw-visible tw-opacity-100;
+
+    transition: all 0.3s ease-in-out;
+  }
+
+  svg {
+    @apply tw-text-gray-800;
+
+    color: inherit;
+  }
+}
+
+.MemberCardTierProgressPromptToolTip {
+  @apply tw-absolute tw-top-full tw-pt-8 sm:tw-pt-8px tw-z-100 tw-invisible tw-opacity-0;
+
+  transform: translateX(-75%);
+}
+
+.MemberCardTierProgressPromptToolTipContainer__show > * {
+  @apply tw-visible tw-opacity-100;
+
+  transition: all 0.3s ease-in-out;
+}
+
+.MemberCardTierProgressPromptToolTipText {
+  @apply tw-flex tw-p-6 sm:tw-p-6px tw-text-gray-50 tw-bg-black tw-bg-opacity-75 tw-rounded tw-whitespace-nowrap;
 }
