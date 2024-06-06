@@ -25,20 +25,10 @@ const MemberCard = () => {
   const customerMemberTierStatus = useSelector(getCustomerMemberTierStatus);
   const customerCurrentStatusParams = useSelector(getCustomerCurrentStatusParams);
   const { messageI18nKey } = MEMBERSHIP_TIER_I18N_KEYS[customerMemberTierStatus];
-  const [promptToolTipContainerClassNameList, setPromptToolTipContainerClassNameList] = useState([
-    styles.MemberCardTierProgressPromptToolTipContainer,
-  ]);
+  const { promptToolTipShown, setPromptToolTipShown } = useState(false);
   const handleClickCurrentMemberTierPromptToolTip = useCallback(() => {
-    const toolTipShownClassName = styles.MemberCardTierProgressPromptToolTipContainer__show;
-
-    if (promptToolTipContainerClassNameList.includes(toolTipShownClassName)) {
-      setPromptToolTipContainerClassNameList(
-        promptToolTipContainerClassNameList.filter(item => item !== toolTipShownClassName)
-      );
-    } else {
-      setPromptToolTipContainerClassNameList([...promptToolTipContainerClassNameList, toolTipShownClassName]);
-    }
-  }, [promptToolTipContainerClassNameList]);
+    setPromptToolTipShown(!promptToolTipShown);
+  }, [promptToolTipShown]);
 
   return (
     <section className={styles.MemberCardSection}>
@@ -82,7 +72,12 @@ const MemberCard = () => {
 
           <button
             data-test-id="rewards.business.membership-detail.member-card.progress-info-tooltip-button"
-            className={getClassName(promptToolTipContainerClassNameList)}
+            className={getClassName(
+              getClassName([
+                styles.MemberCardTierProgressPromptToolTipContainer,
+                promptToolTipShown ? styles.MemberCardTierProgressPromptToolTipContainer__show : null,
+              ])
+            )}
             onClick={handleClickCurrentMemberTierPromptToolTip}
           >
             <Info size={16} />
