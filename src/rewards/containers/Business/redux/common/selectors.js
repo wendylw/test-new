@@ -1,5 +1,4 @@
 import _get from 'lodash/get';
-import _isNull from 'lodash/isNull';
 import _isInteger from 'lodash/isInteger';
 import { createSelector } from 'reselect';
 import {
