@@ -102,9 +102,10 @@ export const getMembershipTierListLength = createSelector(
  *
  * merchant tiers > 1
  * 1. current spending total's level === highest tier level: 100%
- * 2. current spending total === current tier spendThreshold: 100 * ((level - 1) / (total tier length - 1))
- * 3. current spending total > current tier spendThreshold && current spending total < next tier spendThreshold
- * : exceed current rate = (exceed current total / tier spendThreshold gap) * each tier rate
+ * 2. current spending total === current tier spendThreshold: 100 * ((level - 1) / (total tier length - 1))%
+ * 3. current spending total > current tier spendThreshold && current spending total < next tier spendThreshold:
+ * - exceed total rate = (exceed current total / tier spendThreshold gap) * each tier rate
+ * - 100 * (No.2 result + exceed total rate)% + icon radius
  */
 export const getCustomerMemberTierProgressStyles = createSelector(
   getMembershipTierListLength,
