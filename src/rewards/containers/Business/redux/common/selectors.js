@@ -1,5 +1,6 @@
 import _get from 'lodash/get';
 import _isNull from 'lodash/isNull';
+import _isInteger from 'lodash/isInteger';
 import { createSelector } from 'reselect';
 import {
   API_REQUEST_STATUS,
@@ -174,7 +175,7 @@ export const getUniquePromoList = createSelector(
               }),
             },
           },
-          expiringDays: !_isNull(remainingExpiredDays) && {
+          expiringDays: _isInteger(remainingExpiredDays) && {
             value: remainingExpiredDays,
             i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
             params: !isTodayExpired && { remainingExpiredDays },
@@ -235,7 +236,7 @@ export const getUniquePromoListBanners = createSelector(
               }),
             },
           },
-          expiringDays: typeof remainingExpiredDays === 'number' && {
+          expiringDays: _isInteger(remainingExpiredDays) && {
             value: remainingExpiredDays,
             i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
             params: !isTodayExpired && { remainingExpiredDays },
