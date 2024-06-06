@@ -10,7 +10,6 @@
 
 .MyRewardsSectionTitle {
   @apply tw-text-xl tw-leading-normal tw-font-bold;
-  @include text-line-clamp(2, null);
 }
 
 .MyRewardsSectionViewAllButton:global(.type-text-info) {
@@ -31,6 +30,7 @@
 
 .MyRewardsTicketMainTitle {
   @apply tw-text-base tw-leading-normal tw-font-bold;
+  @include text-line-clamp(2, null);
 }
 
 .MyRewardsTicketMainDiscount {
