@@ -96,11 +96,22 @@ export const getMembershipTierListLength = createSelector(
   membershipTierList => membershipTierList.length
 );
 
+/**
+ * progress bar percentage calculation method:
+ * only 1 tier: no progress bar
+ *
+ * merchant tiers > 1
+ * 1. current spending total's level === highest tier level: 100%
+ * 2. current spending total === current tier spendThreshold: 100 * ((level - 1) / (total tier length - 1))
+ * 3. current spending total > current tier spendThreshold && current spending total < next tier spendThreshold
+ * : exceed current rate = (exceed current total / tier spendThreshold gap) * each tier rate
+ */
 export const getCustomerMemberTierProgressStyles = createSelector(
   getMembershipTierListLength,
   getCurrentSpendingTotalTier,
   getCustomerSpendingTotalNextTier,
-  (membershipTierListLength, currentSpendingTotalTier, customerSpendingTotalNextTier) => {
+  getHighestMembershipTier,
+  (membershipTierListLength, currentSpendingTotalTier, customerSpendingTotalNextTier, highestMembershipTier) => {
     const MEMBER_ICON_WIDTH = 30;
 
     if (membershipTierListLength === 1) {
@@ -108,8 +119,9 @@ export const getCustomerMemberTierProgressStyles = createSelector(
     }
 
     const { currentLevel, currentSpendingThreshold, exceedCurrentLevelSpending } = currentSpendingTotalTier;
+    const { level: highestTierLevel } = highestMembershipTier;
 
-    if (currentLevel === membershipTierListLength) {
+    if (currentLevel === highestTierLevel) {
       return { width: '100%' };
     }
 
@@ -122,7 +134,7 @@ export const getCustomerMemberTierProgressStyles = createSelector(
 
     const { spendingThreshold: nextSpendingThreshold } = customerSpendingTotalNextTier;
     const exceedSpendingRate =
-      eachTierRate * (exceedCurrentLevelSpending / (nextSpendingThreshold - currentSpendingThreshold)).toFixed(4);
+      (eachTierRate * exceedCurrentLevelSpending) / (nextSpendingThreshold - currentSpendingThreshold);
 
     // eachTierRate point is at the center of the icon (except for Tier 1)
     // Tier 1 adds the diameter, and Tier > 1 adds the radius.
