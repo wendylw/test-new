@@ -10,9 +10,10 @@
 }
 
 .MemberCard {
-  @apply tw-relative tw-p-12 sm:tw-p-12px tw-space-y-12 sm:tw-space-y-12px tw-rounded tw-shadow-lg tw-w-full tw-bg-gray-50;
+  @apply tw-relative tw-p-12 sm:tw-p-12px tw-space-y-12 sm:tw-space-y-12px tw-rounded tw-w-full tw-bg-gray-50;
 
   min-height: 94px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
 }
 
 .MemberCardCustomerTierName {
