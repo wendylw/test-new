@@ -21,7 +21,7 @@ const MemberCard = () => {
   const customerMemberTierProgressStyles = useSelector(getCustomerMemberTierProgressStyles);
   const customerCurrentStatusPromptI18nInfo = useSelector(getCustomerCurrentStatusPromptI18nInfo);
   const { messageI18nKey, messageI18nParams } = customerCurrentStatusPromptI18nInfo || {};
-  const { promptToolTipShown, setPromptToolTipShown } = useState(false);
+  const [promptToolTipShown, setPromptToolTipShown] = useState(false);
   const handleClickCurrentMemberTierPromptToolTip = useCallback(() => {
     setPromptToolTipShown(!promptToolTipShown);
   }, [promptToolTipShown, setPromptToolTipShown]);
