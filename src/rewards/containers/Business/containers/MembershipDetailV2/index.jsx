@@ -10,6 +10,7 @@ import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MembershipTiersTabs from '../../components/MembershipTiersTabs';
 import MemberCard from './components/MemberCard';
+import RewardsButtons from './components/RewardsButtons';
 import MyRewards from './components/MyRewards';
 import MemberPrompt from './components/MemberPrompt';
 import styles from './MembershipDetail.module.scss';
@@ -39,6 +40,7 @@ const MembershipDetail = () => {
         onBackArrowClick={handleClickHeaderBackButton}
       />
       <MemberCard />
+      <RewardsButtons />
       <MyRewards />
       <section className={styles.MembershipDetailBenefitsSection}>
         <h2 className={styles.MembershipDetailBenefitsTitle}>{t('MembershipBenefits')}</h2>
