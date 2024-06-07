@@ -1,6 +1,6 @@
 @import "../../../../../common/styles/variables.scss";
 
-.MembershipDetailPageHeader {
+header.MembershipDetailPageHeader {
   @apply tw-fixed tw-top-0 tw-left-0 tw-w-full tw-text-gray-50 tw-border-blue-darkest tw-bg-blue-darkest tw-z-100;
 
   & + * {
