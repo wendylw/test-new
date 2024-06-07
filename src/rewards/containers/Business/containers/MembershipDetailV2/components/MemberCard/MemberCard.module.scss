@@ -39,8 +39,10 @@
 }
 
 .MemberCardTierIcon {
-  width: 30px;
-  height: 30px;
+  @apply tw-inline-flex;
+
+  width: 32px;
+  height: 32px;
 
   > svg {
     width: 100%;
@@ -63,6 +65,7 @@
 .MemberCardTierProgressPromptToolTipContainer {
   @apply tw-relative tw-inline-flex tw-border-0 tw-bg-transparent;
 
+  height: 1.4285rem;
   outline: none;
   box-shadow: none;
   color: inherit;

@@ -71,7 +71,7 @@ const MemberCard = () => {
               ])}
               onClick={handleClickCurrentMemberTierPromptToolTip}
             >
-              <Info size={16} />
+              <Info size={18} />
               <div className={styles.MemberCardTierProgressPromptToolTip}>
                 <span className={styles.MemberCardTierProgressPromptToolTipText}>{t('LevelUpdateRuleText')}</span>
               </div>

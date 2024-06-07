@@ -224,7 +224,7 @@ export const getUniquePromoListBanners = createSelector(
         name,
         status,
         conditions: {
-          minSpend: minSpendAmount && {
+          minSpend: !!minSpendAmount && {
             value: minSpendAmount,
             i18nKey: 'MinSpend',
             params: {
