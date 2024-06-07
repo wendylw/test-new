@@ -22,6 +22,36 @@ import {
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
 import { fetchUniquePromoList, fetchUniquePromoListBanners } from '../../../redux/common/thunks';
+import { getPointsRewardList, postClaimedPointsReward } from './api-request';
+import { getFetchUniquePromoListBannersLimit } from './selectors';
+
+export const showWebProfileForm = createAsyncThunk('rewards/business/memberDetail/showWebProfileForm', async () => {});
+
+export const hideWebProfileForm = createAsyncThunk('rewards/business/memberDetail/hideWebProfileForm', async () => {});
+
+export const fetchPointsRewardList = createAsyncThunk(
+  'rewards/business/memberDetail/fetchPointsRewardList',
+  async (_, { getState }) => {
+    const state = getState();
+    const consumerId = getConsumerId(state);
+    const business = getMerchantBusiness(state);
+    const result = await getPointsRewardList({ consumerId, business });
+
+    return result;
+  }
+);
+
+export const claimPointsReward = createAsyncThunk(
+  'rewards/business/memberDetail/claimPointsReward',
+  async (id, { getState }) => {
+    const state = getState();
+    const consumerId = getConsumerId(state);
+    const business = getMerchantBusiness(state);
+    const result = await postClaimedPointsReward({ consumerId, business, id });
+
+    return result;
+  }
+);
 
 export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted', async (_, { dispatch, getState }) => {
   const state = getState();
@@ -62,10 +92,12 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
 
   if (isLogin) {
     const consumerId = getConsumerId(getState());
+    const fetchUniquePromoListBannersLimit = getFetchUniquePromoListBannersLimit(getState());
 
     dispatch(fetchCustomerInfo(business));
     dispatch(fetchUniquePromoList(consumerId));
-    dispatch(fetchUniquePromoListBanners({ consumerId, limit: 2 }));
+    dispatch(fetchUniquePromoListBanners({ consumerId, limit: fetchUniquePromoListBannersLimit }));
+    dispatch(fetchPointsRewardList());
   }
 });
 

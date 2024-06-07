@@ -61,7 +61,11 @@
 }
 
 .MyRewardsTicketStubMinSpend {
-  @apply tw-text-sm tw-text-gray-700;
+  @apply tw-flex tw-items-center tw-flex-wrap	tw-gap-2px tw-text-sm tw-text-gray-700;
+}
+
+.MyRewardsTicketStubMinSpendPrice {
+  font-size: inherit;
 }
 
 .MyRewardsTicketUnavailable {
