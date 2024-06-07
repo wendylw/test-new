@@ -13,7 +13,7 @@ const MembershipFormProxy = lazy(() =>
 );
 
 const MembershipDetail = lazy(() =>
-  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_MER_DETL" */ './Business/containers/MembershipDetail'))
+  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_MER_DETL" */ './Business/containers/MembershipDetail/Proxy'))
 );
 
 const PointsHistory = lazy(() =>
