@@ -3,6 +3,8 @@ import {
   BECOME_MERCHANT_MEMBER_METHODS,
   MEMBER_LEVELS,
   MEMBER_CARD_LEVELS_PALETTES,
+  PROMO_VOUCHER_STATUS,
+  PROMO_VOUCHER_DISCOUNT_TYPES,
 } from '../../../../../../common/utils/constants';
 import {
   MEMBERSHIP_TIER_STATUS,
@@ -36,6 +38,7 @@ import {
   getCustomerTierNextReviewTime,
   getCustomerTierLevelName,
   getIsLoadCustomerRequestCompleted,
+  getCustomerAvailablePointsBalance,
 } from '../../../../../redux/modules/customer/selectors';
 import { getIsUniquePromoListBannersEmpty, getOrderReceiptClaimedCashback } from '../../../redux/common/selectors';
 
@@ -362,6 +365,46 @@ export const getIsMyRewardsSectionShow = createSelector(
   getIsUniquePromoListBannersEmpty,
   (isMerchantMembershipPointsEnabled, isUniquePromoListBannersEmpty) =>
     !isMerchantMembershipPointsEnabled && !isUniquePromoListBannersEmpty
+);
+
+// Points Rewards
+export const getPointsRewardList = createSelector(
+  getLoadPointsRewardListData,
+  getCustomerAvailablePointsBalance,
+  getMerchantCurrency,
+  getMerchantLocale,
+  getMerchantCountry,
+  (pointsRewardList, customerAvailablePointsBalance, merchantCurrency, merchantLocale, merchantCountry) =>
+    pointsRewardList.map(reward => {
+      if (!reward) {
+        return reward;
+      }
+
+      const { id, type, discountType, discountValue, name, redeemedStatus, costOfPoints } = reward;
+      const isUnavailableStatus = [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(
+        redeemedStatus
+      );
+      const isInsufficientPoints = customerAvailablePointsBalance < costOfPoints;
+
+      return {
+        id,
+        type,
+        value:
+          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
+            ? `${discountValue}%`
+            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        name,
+        costOfPoints,
+        isUnavailable: isUnavailableStatus || isInsufficientPoints,
+      };
+    })
+);
+
+export const getIsPointsRewardListShown = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getPointsRewardList,
+  (isMerchantMembershipPointsEnabled, pointsRewardList) =>
+    isMerchantMembershipPointsEnabled && pointsRewardList.length > 0
 );
 
 // Member Prompt
