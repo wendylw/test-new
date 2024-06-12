@@ -5,6 +5,7 @@ import {
   MEMBER_CARD_LEVELS_PALETTES,
   PROMO_VOUCHER_STATUS,
   PROMO_VOUCHER_DISCOUNT_TYPES,
+  API_REQUEST_STATUS,
 } from '../../../../../../common/utils/constants';
 import {
   MEMBERSHIP_TIER_STATUS,
@@ -15,6 +16,7 @@ import {
   MEMBER_TYPE_I18N_PARAM_KEYS,
   RETURNING_MEMBER_TYPES,
   RETURNING_MEMBER_I18N_KEYS,
+  CLAIMED_POINTS_REWARD_ERROR_CODES,
 } from '../utils/constants';
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
@@ -406,6 +408,38 @@ export const getIsPointsRewardListShown = createSelector(
   (isMerchantMembershipPointsEnabled, pointsRewardList) =>
     isMerchantMembershipPointsEnabled && pointsRewardList.length > 0
 );
+
+export const getIsClaimPointsRewardFulfilled = createSelector(
+  getClaimPointsRewardStatus,
+  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRewardError, claimPointsRewardError => {
+  if (!claimPointsRewardError) {
+    return null;
+  }
+
+  const { code } = claimPointsRewardError;
+  const errorI18nKeys = {};
+
+  switch (code) {
+    case CLAIMED_POINTS_REWARD_ERROR_CODES.PROMO_IS_NOT_REDEEMABLE:
+      errorI18nKeys.titleI18nKey = 'PromotionIsNotRedeemableTitle';
+      errorI18nKeys.descriptionI18nKey = 'PromotionIsNotRedeemableDescription';
+      break;
+    case CLAIMED_POINTS_REWARD_ERROR_CODES.INVALID_POINT_SOURCE:
+    case CLAIMED_POINTS_REWARD_ERROR_CODES.POINT_LOG_NOT_FOUND:
+      errorI18nKeys.titleI18nKey = 'InsufficientPointsTitle';
+      errorI18nKeys.descriptionI18nKey = 'InsufficientPointsDescription';
+      break;
+    default:
+      errorI18nKeys.titleI18nKey = 'SomethingWentWrongTitle';
+      errorI18nKeys.descriptionI18nKey = 'SomethingWentWrongDescription';
+      break;
+  }
+
+  return errorI18nKeys;
+});
 
 // Member Prompt
 export const getNewMemberPromptCategory = createSelector(

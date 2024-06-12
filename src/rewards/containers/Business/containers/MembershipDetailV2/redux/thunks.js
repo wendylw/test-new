@@ -4,13 +4,13 @@ import Growthbook from '../../../../../../utils/growthbook';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import { getClient } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
-import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
+import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
 import {
   initUserInfo,
   loginUserByBeepApp,
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
+import { getIsLogin, getConsumerId, getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
@@ -50,6 +50,75 @@ export const claimPointsReward = createAsyncThunk(
     const result = await postClaimedPointsReward({ consumerId, business, id });
 
     return result;
+  }
+);
+
+export const showProfileForm = createAsyncThunk(
+  'rewards/business/memberDetail/showProfileForm',
+  async (_, { dispatch, getState }) => {
+    const isWebview = getIsWebview(getState());
+
+    if (isWebview) {
+      await showCompleteProfilePageAsync();
+      return;
+    }
+
+    await dispatch(showWebProfileForm());
+  }
+);
+
+export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
+  'rewards/business/memberDetail/claimPointsRewardAndRefreshRewardsList',
+  async (id, { dispatch, getState }) => {
+    const state = getState();
+    const business = getMerchantBusiness(state);
+
+    await dispatch(claimPointsReward(id));
+    dispatch(fetchPointsRewardList());
+    dispatch(fetchCustomerInfo(business));
+  }
+);
+
+export const pointsClaimRewardButtonClicked = createAsyncThunk(
+  'rewards/business/memberDetail/pointsClaimRewardButtonClicked',
+  async ({ id, status, type, costOfPoints }, { dispatch, getState }) => {
+    if (status) {
+      CleverTap.pushEvent('Points Reward Claimed - Click confirm', {
+        type,
+        costOfPoints,
+      });
+
+      const state = getState();
+      const isUserProfileIncomplete = getIsUserProfileIncomplete(state);
+
+      if (isUserProfileIncomplete) {
+        dispatch(showProfileForm());
+
+        return;
+      }
+      dispatch(claimPointsRewardAndRefreshRewardsList(id));
+    } else {
+      CleverTap.pushEvent('Points Reward Claimed - Click cancel', {
+        type,
+        costOfPoints,
+      });
+    }
+  }
+);
+
+export const skipProfileButtonClicked = createAsyncThunk(
+  'rewards/business/memberDetail/skipProfileButtonClicked',
+  async (id, { dispatch }) => {
+    dispatch(hideWebProfileForm());
+    dispatch(claimPointsRewardAndRefreshRewardsList(id));
+  }
+);
+
+export const saveProfileButtonClicked = createAsyncThunk(
+  'rewards/business/memberDetail/saveProfileButtonClicked',
+  async (id, { dispatch }) => {
+    dispatch(hideWebProfileForm());
+    dispatch(claimPointsRewardAndRefreshRewardsList(id));
   }
 );
 
