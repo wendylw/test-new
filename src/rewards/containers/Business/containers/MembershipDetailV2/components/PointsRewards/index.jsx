@@ -127,8 +127,10 @@ const PointsRewards = () => {
             className={styles.PointsRewardsTicketButton}
             contentClassName={styles.PointsRewardsTicketButtonContent}
             onClick={() => {
-              setSelectedRewardId(id);
-              handlePointsClaimRewardButtonClick(id, type, costOfPoints);
+              if (!isUnavailable) {
+                setSelectedRewardId(id);
+                handlePointsClaimRewardButtonClick(id, type, costOfPoints);
+              }
             }}
           >
             <Ticket
