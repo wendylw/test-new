@@ -22,12 +22,14 @@
 }
 
 .PointsRewardsTicketMain {
-  @apply tw-p-8 sm:tw-p-8px tw-space-y-8 sm:tw-space-y-8px;
+  @apply tw-py-4 sm:tw-py-4px tw-px-8 sm:tw-px-8px tw-space-y-8 sm:tw-space-y-8px;
 }
 
 .PointsRewardsTicketMainTitle {
   @apply tw-leading-normal tw-font-bold;
   @include text-line-clamp(2, null);
+
+  min-height: 2.8em;
 }
 
 .PointsRewardsClaimedPointsContainer {
