@@ -24,7 +24,7 @@ const UniquePromoListPage = () => {
   return (
     <Frame>
       <PageHeader
-        className={styles.UniquePromoListPagePageHeader}
+        className={styles.UniquePromoListPageHeader}
         title={t('MyRewards')}
         onBackArrowClick={handleClickHeaderBackButton}
       />

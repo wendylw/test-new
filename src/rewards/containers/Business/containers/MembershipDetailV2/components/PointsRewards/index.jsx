@@ -12,6 +12,7 @@ import { getClassName } from '../../../../../../../common/utils/ui';
 import { getIsWebview, getLocationSearch } from '../../../../../../redux/modules/common/selectors';
 import {
   getIsPointsRewardListShown,
+  getIsClaimPointsRewardPending,
   getIsClaimPointsRewardFulfilled,
   getClaimPointsRewardErrorI18nKeys,
 } from '../../../../redux/common/selectors';
@@ -25,6 +26,8 @@ import { pointsClaimRewardButtonClicked, skipProfileButtonClicked, saveProfileBu
 import Button from '../../../../../../../common/components/Button';
 import Slider from '../../../../../../../common/components/Slider';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
+import PageToast from '../../../../../../../common/components/PageToast';
+import Loader from '../../../../../../../common/components/Loader';
 import { alert, confirm } from '../../../../../../../common/utils/feedback';
 import Ticket from '../../../../components/Ticket';
 import Profile from '../../../../../Profile';
@@ -58,6 +61,7 @@ const PointsRewards = () => {
   const membershipDetailPointsRewardList = useSelector(getMembershipDetailPointsRewardList);
   const isPointsRewardListMoreButtonShown = useSelector(getIsPointsRewardListMoreButtonShown);
   const isPointsRewardListShown = useSelector(getIsPointsRewardListShown);
+  const isClaimPointsRewardPending = useSelector(getIsClaimPointsRewardPending);
   const isClaimPointsRewardFulfilled = useSelector(getIsClaimPointsRewardFulfilled);
   const claimPointsRewardErrorI18nKeys = useSelector(getClaimPointsRewardErrorI18nKeys);
   const isWebview = useSelector(getIsWebview);
@@ -245,6 +249,9 @@ const PointsRewards = () => {
           )}
         </div>
       </section>
+      {isClaimPointsRewardPending && (
+        <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
+      )}
       {!isWebview && (
         <Profile
           show={isProfileModalShow}
