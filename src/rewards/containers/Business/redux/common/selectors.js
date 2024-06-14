@@ -301,6 +301,11 @@ export const getIsPointsRewardListShown = createSelector(
     isMerchantMembershipPointsEnabled && pointsRewardList.length > 0
 );
 
+export const getIsClaimPointsRewardPending = createSelector(
+  getClaimPointsRewardStatus,
+  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.PENDING
+);
+
 export const getIsClaimPointsRewardFulfilled = createSelector(
   getClaimPointsRewardStatus,
   claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
