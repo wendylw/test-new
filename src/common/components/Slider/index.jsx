@@ -14,12 +14,15 @@ const Slider = ({
   slideContainerClassName,
   slideContainerStyle,
   slideStyle,
+  beforeAddonSlide,
+  afterAddonSlide,
   loop,
   autoplay,
   autoplayTime,
 }) => {
   const timeout = useRef();
   const mouseOver = useRef(false);
+
   function clearNextTimeout() {
     clearTimeout(timeout.current);
   }
@@ -92,11 +95,21 @@ const Slider = ({
         className={`keen-slider ${styles.SliderContainer} ${slideContainerClassName}`}
         style={slideContainerStyle}
       >
+        {beforeAddonSlide.content && (
+          <li className="keen-slider__slide" key="slide-before-addon" style={beforeAddonSlide.style}>
+            {beforeAddonSlide.content}
+          </li>
+        )}
         {React.Children.map(children, child => (
-          <li className="keen-slider__slide" key={`slide-${child.key}`} style={slideStyle}>
+          <li className="keen-slider__slide" key={`slide-${child?.key}`} style={slideStyle}>
             {child}
           </li>
         ))}
+        {afterAddonSlide.content && (
+          <li className="keen-slider__slide" key="slide-after-addon" style={afterAddonSlide.style}>
+            {afterAddonSlide.content}
+          </li>
+        )}
       </ul>
       {/* showPagination controls whether dots show */}
       {/* loaded and instanceRef.current are used here because dots are dependent on slider instance */}
@@ -138,6 +151,10 @@ Slider.propTypes = {
   slideContainerStyle: propTypes.object,
   // eslint-disable-next-line react/forbid-prop-types
   slideStyle: propTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
+  beforeAddonSlide: propTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
+  afterAddonSlide: propTypes.object,
   autoplay: propTypes.bool,
   autoplayTime: propTypes.number,
 };
@@ -151,6 +168,8 @@ Slider.defaultProps = {
   origin: 'auto',
   slideContainerClassName: '',
   slideContainerStyle: {},
+  beforeAddonSlide: {},
+  afterAddonSlide: {},
   slideStyle: {},
   autoplay: false,
   autoplayTime: 2000,

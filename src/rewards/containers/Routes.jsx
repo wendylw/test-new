@@ -28,6 +28,10 @@ const UniquePromoListPage = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_UP" */ './Business/containers/UniquePromoListPage'))
 );
 
+const PointsRewardsPage = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_UP" */ './Business/containers/PointsRewardsPage'))
+);
+
 const SeamlessLoyalty = lazy(() =>
   Utils.attemptLoad(() =>
     import(/* webpackChunkName: "RWD_SL" */ './Business/containers/SeamlessLoyalty/SeamlessLoyaltyProxy')
@@ -69,6 +73,11 @@ const Routes = () => (
           exact
           path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.CASHBACK_CREDITS_HISTORY}`}
           component={CashbackCreditsHistory}
+        />
+        <Route
+          exact
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.POINTS_REWARDS}${PATH_NAME_MAPPING.LIST}`}
+          component={PointsRewardsPage}
         />
         <Route
           exact

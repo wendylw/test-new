@@ -1,4 +1,7 @@
 import MembershipLevelIcon from '../../../../../../images/membership-level.svg';
+import RewardsEarnedCashbackIcon from '../../../../../../images/rewards-earned-cashback.svg';
+
+export const GET_REWARDS_MAX_LENGTH = 5;
 
 export const MEMBER_TYPE_I18N_PARAM_KEYS = {
   CASHBACK_VALUE: 'cashbackValue',
@@ -6,10 +9,12 @@ export const MEMBER_TYPE_I18N_PARAM_KEYS = {
 
 export const NEW_MEMBER_TYPES = {
   DEFAULT: 'default',
+  ENABLED_POINTS: 'enabledPoints',
 };
 
 export const NEW_MEMBER_ICONS = {
   [NEW_MEMBER_TYPES.DEFAULT]: MembershipLevelIcon,
+  [NEW_MEMBER_TYPES.ENABLED_POINTS]: MembershipLevelIcon,
 };
 
 export const NEW_MEMBER_I18N_KEYS = {
@@ -17,14 +22,21 @@ export const NEW_MEMBER_I18N_KEYS = {
     titleI18nKey: 'DefaultNewMemberTitle',
     descriptionI18nKey: 'DefaultNewMemberDescription',
   },
+  [NEW_MEMBER_TYPES.ENABLED_POINTS]: {
+    titleI18nKey: 'EnabledPointsNewMemberTitle',
+    descriptionI18nKey: 'EnabledPointsNewMemberDescription',
+  },
 };
 
 export const RETURNING_MEMBER_TYPES = {
   DEFAULT: 'default',
   THANKS_COMING_BACK: 'thanksComingBack',
+  ENABLED_POINTS: 'enabledPoints',
 };
 
-export const RETURNING_MEMBER_ICONS = {};
+export const RETURNING_MEMBER_ICONS = {
+  [RETURNING_MEMBER_TYPES.ENABLED_POINTS]: RewardsEarnedCashbackIcon,
+};
 
 export const RETURNING_MEMBER_I18N_KEYS = {
   [RETURNING_MEMBER_TYPES.DEFAULT]: {
@@ -33,6 +45,9 @@ export const RETURNING_MEMBER_I18N_KEYS = {
   [RETURNING_MEMBER_TYPES.THANKS_COMING_BACK]: {
     titleI18nKey: 'ThanksComingBackReturningMemberTitle',
     descriptionI18nKey: 'ThanksComingBackReturningMemberDescription',
+  },
+  [RETURNING_MEMBER_TYPES.ENABLED_POINTS]: {
+    titleI18nKey: 'EnabledPointsReturningMemberTitle',
   },
 };
 

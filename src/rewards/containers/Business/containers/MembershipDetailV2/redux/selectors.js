@@ -3,9 +3,6 @@ import {
   BECOME_MERCHANT_MEMBER_METHODS,
   MEMBER_LEVELS,
   MEMBER_CARD_LEVELS_PALETTES,
-  PROMO_VOUCHER_STATUS,
-  PROMO_VOUCHER_DISCOUNT_TYPES,
-  API_REQUEST_STATUS,
 } from '../../../../../../common/utils/constants';
 import {
   MEMBERSHIP_TIER_STATUS,
@@ -16,7 +13,7 @@ import {
   MEMBER_TYPE_I18N_PARAM_KEYS,
   RETURNING_MEMBER_TYPES,
   RETURNING_MEMBER_I18N_KEYS,
-  CLAIMED_POINTS_REWARD_ERROR_CODES,
+  GET_REWARDS_MAX_LENGTH,
 } from '../utils/constants';
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
@@ -40,26 +37,16 @@ import {
   getCustomerTierNextReviewTime,
   getCustomerTierLevelName,
   getIsLoadCustomerRequestCompleted,
-  getCustomerAvailablePointsBalance,
 } from '../../../../../redux/modules/customer/selectors';
-import { getIsUniquePromoListBannersEmpty, getOrderReceiptClaimedCashback } from '../../../redux/common/selectors';
+import {
+  getIsUniquePromoListBannersEmpty,
+  getOrderReceiptClaimedCashback,
+  getPointsRewardList,
+} from '../../../redux/common/selectors';
 
 export const getIsProfileModalShow = state => state.business.membershipDetailV2.isProfileModalShow;
 
 export const getFetchUniquePromoListBannersLimit = state => state.business.membershipDetailV2.isProfileModalShow;
-
-export const getLoadPointsRewardListData = state =>
-  state.business.membershipDetailV2.loadPointsRewardListRequest.data || [];
-
-export const getLoadPointsRewardListStatus = state =>
-  state.business.membershipDetailV2.loadPointsRewardListRequest.status;
-
-export const getLoadPointsRewardListError = state =>
-  state.business.membershipDetailV2.loadPointsRewardListRequest.error;
-
-export const getClaimPointsRewardStatus = state => state.business.membershipDetailV2.claimPointsRewardRequest.status;
-
-export const getClaimPointsRewardError = state => state.business.membershipDetailV2.claimPointsRewardRequest.error;
 
 /**
  * Derived selectors
@@ -370,76 +357,14 @@ export const getIsMyRewardsSectionShow = createSelector(
 );
 
 // Points Rewards
-export const getPointsRewardList = createSelector(
-  getLoadPointsRewardListData,
-  getCustomerAvailablePointsBalance,
-  getMerchantCurrency,
-  getMerchantLocale,
-  getMerchantCountry,
-  (pointsRewardList, customerAvailablePointsBalance, merchantCurrency, merchantLocale, merchantCountry) =>
-    pointsRewardList.map(reward => {
-      if (!reward) {
-        return reward;
-      }
-
-      const { id, type, discountType, discountValue, name, redeemedStatus, costOfPoints } = reward;
-      const isUnavailableStatus = [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(
-        redeemedStatus
-      );
-      const isInsufficientPoints = customerAvailablePointsBalance < costOfPoints;
-
-      return {
-        id,
-        type,
-        value:
-          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
-            ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
-        name,
-        costOfPoints,
-        isUnavailable: isUnavailableStatus || isInsufficientPoints,
-      };
-    })
+export const getMembershipDetailPointsRewardList = createSelector(getPointsRewardList, pointsRewardList =>
+  pointsRewardList.slice(0, GET_REWARDS_MAX_LENGTH)
 );
 
-export const getIsPointsRewardListShown = createSelector(
-  getIsMerchantMembershipPointsEnabled,
-  getPointsRewardList,
-  (isMerchantMembershipPointsEnabled, pointsRewardList) =>
-    isMerchantMembershipPointsEnabled && pointsRewardList.length > 0
+export const getIsPointsRewardListMoreButtonShown = createSelector(
+  getMembershipDetailPointsRewardList,
+  membershipDetailPointsRewardList => membershipDetailPointsRewardList.length === GET_REWARDS_MAX_LENGTH
 );
-
-export const getIsClaimPointsRewardFulfilled = createSelector(
-  getClaimPointsRewardStatus,
-  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRewardError, claimPointsRewardError => {
-  if (!claimPointsRewardError) {
-    return null;
-  }
-
-  const { code } = claimPointsRewardError;
-  const errorI18nKeys = {};
-
-  switch (code) {
-    case CLAIMED_POINTS_REWARD_ERROR_CODES.PROMO_IS_NOT_REDEEMABLE:
-      errorI18nKeys.titleI18nKey = 'PromotionIsNotRedeemableTitle';
-      errorI18nKeys.descriptionI18nKey = 'PromotionIsNotRedeemableDescription';
-      break;
-    case CLAIMED_POINTS_REWARD_ERROR_CODES.INVALID_POINT_SOURCE:
-    case CLAIMED_POINTS_REWARD_ERROR_CODES.POINT_LOG_NOT_FOUND:
-      errorI18nKeys.titleI18nKey = 'InsufficientPointsTitle';
-      errorI18nKeys.descriptionI18nKey = 'InsufficientPointsDescription';
-      break;
-    default:
-      errorI18nKeys.titleI18nKey = 'SomethingWentWrongTitle';
-      errorI18nKeys.descriptionI18nKey = 'SomethingWentWrongDescription';
-      break;
-  }
-
-  return errorI18nKeys;
-});
 
 // Member Prompt
 export const getNewMemberPromptCategory = createSelector(
@@ -447,11 +372,13 @@ export const getNewMemberPromptCategory = createSelector(
   getIsLoadMerchantRequestCompleted,
   getIsFromSeamlessLoyaltyQrScan,
   getIsFromJoinMembershipUrlClick,
+  getIsMerchantMembershipPointsEnabled,
   (
     isLoadCustomerRequestCompleted,
     isLoadMerchantRequestCompleted,
     isFromSeamlessLoyaltyQrScan,
-    isFromJoinMembershipUrlClick
+    isFromJoinMembershipUrlClick,
+    isMerchantMembershipPointsEnabled
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return NEW_MEMBER_TYPES.DEFAULT;
@@ -460,6 +387,10 @@ export const getNewMemberPromptCategory = createSelector(
     if (isFromSeamlessLoyaltyQrScan) {
       if (!isLoadMerchantRequestCompleted) {
         return null;
+      }
+
+      if (isMerchantMembershipPointsEnabled) {
+        return NEW_MEMBER_TYPES.ENABLED_POINTS;
       }
 
       if (!isLoadCustomerRequestCompleted) {
@@ -496,9 +427,23 @@ export const getNewMemberTitleIn18nParams = createSelector(
 
 export const getReturningMemberPromptCategory = createSelector(
   getIsFromJoinMembershipUrlClick,
-  isFromJoinMembershipUrlClick => {
+  getIsFromSeamlessLoyaltyQrScan,
+  getIsLoadMerchantRequestCompleted,
+  getIsMerchantMembershipPointsEnabled,
+  (
+    isFromJoinMembershipUrlClick,
+    isFromSeamlessLoyaltyQrScan,
+    isLoadMerchantRequestCompleted,
+    isMerchantMembershipPointsEnabled
+  ) => {
     if (isFromJoinMembershipUrlClick) {
       return RETURNING_MEMBER_TYPES.DEFAULT;
+    }
+
+    if (isFromSeamlessLoyaltyQrScan) {
+      if (isLoadMerchantRequestCompleted && isMerchantMembershipPointsEnabled) {
+        return RETURNING_MEMBER_TYPES.ENABLED_POINTS;
+      }
     }
 
     return null;
