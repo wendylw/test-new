@@ -96,7 +96,8 @@ export const getCurrentSpendingTotalTier = createSelector(
   getMembershipTierList,
   getCustomerTierTotalSpent,
   getCustomerTierPointsTotalEarned,
-  (membershipTierList, customerTierTotalSpent, customerTierPointsTotalEarned) => {
+  getIsMerchantMembershipPointsEnabled,
+  (membershipTierList, customerTierTotalSpent, customerTierPointsTotalEarned, isMerchantMembershipPointsEnabled) => {
     const currentSpendingTier = {
       currentLevel: null,
       currentSpendingThreshold: 0,
@@ -106,8 +107,11 @@ export const getCurrentSpendingTotalTier = createSelector(
 
     membershipTierList.forEach(membershipTier => {
       const { spendingThreshold, pointsThreshold, level } = membershipTier;
+      const isCurrentSpendingTotalPoints = isMerchantMembershipPointsEnabled
+        ? pointsThreshold <= customerTierPointsTotalEarned
+        : spendingThreshold <= customerTierTotalSpent;
 
-      if (spendingThreshold <= customerTierTotalSpent && level > currentSpendingTier.currentLevel) {
+      if (isCurrentSpendingTotalPoints && level > currentSpendingTier.currentLevel) {
         currentSpendingTier.currentLevel = level;
         currentSpendingTier.currentSpendingThreshold = spendingThreshold;
         currentSpendingTier.currentPointsThreshold = pointsThreshold;
