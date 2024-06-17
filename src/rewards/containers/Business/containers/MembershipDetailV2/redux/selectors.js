@@ -92,7 +92,7 @@ export const getMerchantMembershipTierList = createSelector(getMembershipTierLis
   })
 );
 
-export const getCurrentSpendingTotalTier = createSelector(
+export const getCurrentSpendingTotalOrPointsTier = createSelector(
   getMembershipTierList,
   getCustomerTierTotalSpent,
   getCustomerTierPointsTotalEarned,
@@ -125,10 +125,10 @@ export const getCurrentSpendingTotalTier = createSelector(
 );
 
 export const getCustomerSpendingTotalNextTier = createSelector(
-  getCurrentSpendingTotalTier,
+  getCurrentSpendingTotalOrPointsTier,
   getMembershipTierList,
-  (currentSpendingTotalTier, membershipTierList) =>
-    membershipTierList.find(({ level }) => level === currentSpendingTotalTier.currentLevel + 1) || {}
+  (currentSpendingTotalPointsTier, membershipTierList) =>
+    membershipTierList.find(({ level }) => level === currentSpendingTotalPointsTier.currentLevel + 1) || {}
 );
 
 export const getMembershipTierListLength = createSelector(
@@ -149,13 +149,13 @@ export const getMembershipTierListLength = createSelector(
  */
 export const getCustomerMemberTierProgressStyles = createSelector(
   getMembershipTierListLength,
-  getCurrentSpendingTotalTier,
+  getCurrentSpendingTotalOrPointsTier,
   getCustomerSpendingTotalNextTier,
   getHighestMembershipTier,
   getIsMerchantMembershipPointsEnabled,
   (
     membershipTierListLength,
-    currentSpendingTotalTier,
+    currentSpendingTotalOrPointsTier,
     customerSpendingTotalNextTier,
     highestMembershipTier,
     isMerchantMembershipPointsEnabled
@@ -172,7 +172,7 @@ export const getCustomerMemberTierProgressStyles = createSelector(
       currentSpendingThreshold,
       exceedCurrentLevelSpending,
       exceedCurrentLevelPoints,
-    } = currentSpendingTotalTier;
+    } = currentSpendingTotalOrPointsTier;
     const { level: highestTierLevel } = highestMembershipTier;
     const {
       spendingThreshold: nextSpendingThreshold,
@@ -261,7 +261,7 @@ export const getCustomerMemberTierStatus = createSelector(
         return MEMBERSHIP_TIER_STATUS.POINTS_TIER_MAINTAIN;
       }
 
-      return customerTierLevel === highestTierLevel || currentTierPointsThreshold === highestPointsThreshold
+      return customerTierLevel === highestTierLevel || customerTierPointsTotalEarned >= highestPointsThreshold
         ? MEMBERSHIP_TIER_STATUS.TIER_COMPLETED
         : MEMBERSHIP_TIER_STATUS.POINTS_UNLOCK_NEXT_TIER;
     }
@@ -274,7 +274,7 @@ export const getCustomerMemberTierStatus = createSelector(
       return MEMBERSHIP_TIER_STATUS.TIER_MAINTAIN;
     }
 
-    return customerTierLevel === highestTierLevel || currentTierSpendingThreshold === highestTierSpendingThreshold
+    return customerTierLevel === highestTierLevel || customerTierTotalSpent >= highestTierSpendingThreshold
       ? MEMBERSHIP_TIER_STATUS.TIER_COMPLETED
       : MEMBERSHIP_TIER_STATUS.UNLOCK_NEXT_TIER;
   }
