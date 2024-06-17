@@ -42,7 +42,7 @@
 }
 
 .PointsRewardsTicketMain {
-  @apply tw-text-left tw-py-4 sm:tw-py-4px tw-px-8 sm:tw-px-8px tw-space-y-8 sm:tw-space-y-8px;
+  @apply tw-flex-1 tw-text-left tw-py-4 sm:tw-py-4px tw-pl-8 sm:tw-pl-8px tw-space-y-8 sm:tw-space-y-8px;
 }
 
 .PointsRewardsTicketMainTitle {
@@ -52,8 +52,8 @@
   min-height: 2.8em;
 }
 
-.PointsRewardsTicketMainStatusTagContainer {
-  height: 24px;
+.PointsRewardsTicketMainContent {
+  @apply tw-flex tw-items-center tw-justify-between;
 }
 
 .PointsRewardsTicketMainStatusTag {

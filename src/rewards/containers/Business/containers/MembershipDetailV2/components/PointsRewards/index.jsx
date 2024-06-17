@@ -139,11 +139,7 @@ const PointsRewards = () => {
               main={
                 <div className={styles.PointsRewardsTicketMain}>
                   <h3 className={styles.PointsRewardsTicketMainTitle}>{name}</h3>
-                  {isUnavailableStatus ? (
-                    <div className={styles.PointsRewardsTicketMainStatusTagContainer}>
-                      <Tag className={styles.PointsRewardsTicketMainStatusTag}>{redeemedStatus}</Tag>
-                    </div>
-                  ) : (
+                  <div className={styles.PointsRewardsTicketMainContent}>
                     <data
                       value={costOfPoints}
                       className={getClassName([
@@ -156,7 +152,10 @@ const PointsRewards = () => {
                       </div>
                       {t('RewardsCostOfPointsText', { costOfPoints })}
                     </data>
-                  )}
+                    {isUnavailableStatus ? (
+                      <Tag className={styles.PointsRewardsTicketMainStatusTag}>{redeemedStatus}</Tag>
+                    ) : null}
+                  </div>
                 </div>
               }
             />
