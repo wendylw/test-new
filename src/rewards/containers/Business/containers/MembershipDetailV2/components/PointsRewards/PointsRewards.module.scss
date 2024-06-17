@@ -42,14 +42,22 @@
 }
 
 .PointsRewardsTicketMain {
-  @apply tw-py-4 sm:tw-py-4px tw-px-8 sm:tw-px-8px tw-space-y-8 sm:tw-space-y-8px;
+  @apply tw-text-left tw-py-4 sm:tw-py-4px tw-px-8 sm:tw-px-8px tw-space-y-8 sm:tw-space-y-8px;
 }
 
 .PointsRewardsTicketMainTitle {
-  @apply tw-text-left tw-leading-normal tw-font-bold;
+  @apply tw-leading-normal tw-font-bold;
   @include text-line-clamp(2, null);
 
   min-height: 2.8em;
+}
+
+.PointsRewardsTicketMainStatusTagContainer {
+  height: 24px;
+}
+
+.PointsRewardsTicketMainStatusTag {
+  @apply tw-font-bold tw-capitalize;
 }
 
 .PointsRewardsClaimedPointsContainer {

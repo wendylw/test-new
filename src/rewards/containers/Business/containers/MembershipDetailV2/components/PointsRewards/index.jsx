@@ -28,6 +28,7 @@ import Slider from '../../../../../../../common/components/Slider';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import PageToast from '../../../../../../../common/components/PageToast';
 import Loader from '../../../../../../../common/components/Loader';
+import Tag from '../../../../../../../common/components/Tag';
 import { alert, confirm } from '../../../../../../../common/utils/feedback';
 import Ticket from '../../../../components/Ticket';
 import Profile from '../../../../../Profile';
@@ -116,7 +117,7 @@ const PointsRewards = () => {
   const pointsRewardListElements = useMemo(
     () =>
       membershipDetailPointsRewardList.map(pointsReward => {
-        const { id, type, name, costOfPoints, isUnavailable } = pointsReward;
+        const { id, type, redeemedStatus, isUnavailableStatus, name, costOfPoints, isUnavailable } = pointsReward;
 
         return (
           <Button
@@ -138,18 +139,24 @@ const PointsRewards = () => {
               main={
                 <div className={styles.PointsRewardsTicketMain}>
                   <h3 className={styles.PointsRewardsTicketMainTitle}>{name}</h3>
-                  <data
-                    value={costOfPoints}
-                    className={getClassName([
-                      styles.PointsRewardsClaimedPointsContainer,
-                      isUnavailable ? styles.PointsRewardsClaimedPointsContainer__unavailable : null,
-                    ])}
-                  >
-                    <div className={styles.PointsRewardsPointsIconContainer}>
-                      <ObjectFitImage noCompression src={RewardsPointsIcon} />
+                  {isUnavailableStatus ? (
+                    <div className={styles.PointsRewardsTicketMainStatusTagContainer}>
+                      <Tag className={styles.PointsRewardsTicketMainStatusTag}>{redeemedStatus}</Tag>
                     </div>
-                    {t('RewardsCostOfPointsText', { costOfPoints })}
-                  </data>
+                  ) : (
+                    <data
+                      value={costOfPoints}
+                      className={getClassName([
+                        styles.PointsRewardsClaimedPointsContainer,
+                        isUnavailable ? styles.PointsRewardsClaimedPointsContainer__unavailable : null,
+                      ])}
+                    >
+                      <div className={styles.PointsRewardsPointsIconContainer}>
+                        <ObjectFitImage noCompression src={RewardsPointsIcon} />
+                      </div>
+                      {t('RewardsCostOfPointsText', { costOfPoints })}
+                    </data>
+                  )}
                 </div>
               }
             />

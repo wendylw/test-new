@@ -289,6 +289,8 @@ export const getPointsRewardList = createSelector(
         type,
         name,
         costOfPoints,
+        redeemedStatus,
+        isUnavailableStatus,
         isUnavailable: isUnavailableStatus || isInsufficientPoints,
       };
     })
