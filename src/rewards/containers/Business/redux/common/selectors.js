@@ -289,8 +289,8 @@ export const getPointsRewardList = createSelector(
         type,
         name,
         costOfPoints,
-        redeemedStatus,
-        isUnavailableStatus,
+        isSoldOut: redeemedStatus === PROMO_VOUCHER_STATUS.REDEEMED,
+        isExpired: redeemedStatus === PROMO_VOUCHER_STATUS.EXPIRED,
         isUnavailable: isUnavailableStatus || isInsufficientPoints,
       };
     })

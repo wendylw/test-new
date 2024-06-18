@@ -117,7 +117,7 @@ const PointsRewards = () => {
   const pointsRewardListElements = useMemo(
     () =>
       membershipDetailPointsRewardList.map(pointsReward => {
-        const { id, type, redeemedStatus, isUnavailableStatus, name, costOfPoints, isUnavailable } = pointsReward;
+        const { id, type, isSoldOut, isExpired, name, costOfPoints, isUnavailable } = pointsReward;
 
         return (
           <Button
@@ -152,8 +152,10 @@ const PointsRewards = () => {
                       </div>
                       {t('RewardsCostOfPointsText', { costOfPoints })}
                     </data>
-                    {isUnavailableStatus ? (
-                      <Tag className={styles.PointsRewardsTicketMainStatusTag}>{redeemedStatus}</Tag>
+                    {isSoldOut || isExpired ? (
+                      <Tag className={styles.PointsRewardsTicketMainStatusTag}>
+                        {isExpired ? t('Expired') : t('SoldOut')}
+                      </Tag>
                     ) : null}
                   </div>
                 </div>
