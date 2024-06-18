@@ -17,3 +17,26 @@ export const getUniquePromoListBanners = async ({ consumerId, business, limit })
       limit,
     },
   });
+
+export const getPointsRewardList = async ({ consumerId, business: merchantName }) =>
+  get(`/api/v3/points/rewards`, {
+    queryParams: {
+      consumerId,
+      merchantName,
+    },
+  });
+
+export const postClaimedPointsReward = async ({ consumerId, business: merchantName, id }) =>
+  post(
+    `/api/v3/points/rewards`,
+    {
+      id,
+      merchantName,
+    },
+    {
+      queryParams: {
+        consumerId,
+        merchantName,
+      },
+    }
+  );

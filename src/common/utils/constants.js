@@ -4,6 +4,8 @@
  * file to a reference to this file, so that each constant is defined only once.
  */
 
+export const DESKTOP_PAGE_WIDTH = 414;
+
 export const COUNTRIES = {
   MY: 'MY',
   TH: 'TH',
@@ -132,6 +134,7 @@ export const PATH_NAME_MAPPING = {
   CASHBACK_CREDITS_HISTORY: '/cashback-credits-history',
   SEAMLESS_LOYALTY: '/seamless-loyalty',
   UNIQUE_PROMO: '/promo',
+  POINTS_REWARDS: '/points-rewards',
   LIST: '/list',
   CLAIM: '/claim',
   REWARDS_LOGIN: '/login',

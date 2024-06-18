@@ -1,0 +1,128 @@
+@import "../../../../../../../common/styles/variables.scss";
+
+.PointsRewardsSection {
+  @apply tw-p-12 sm:tw-p-12px tw-space-y-12 sm:tw-space-y-12px;
+}
+
+.PointsRewardsSectionTopContainer {
+  @apply tw-flex tw-items-center tw-justify-between;
+}
+
+.PointsRewardsSectionTitle {
+  @apply tw-text-xl tw-leading-normal tw-font-bold;
+}
+
+.PointsRewardsSectionViewAllButton:global(.type-text-info) {
+  @apply tw-p-0 tw-underline;
+
+  .PointsRewardsSectionViewAllButtonContent {
+    @apply tw-font-normal;
+  }
+}
+
+.PointsRewardsContentContainer {
+  @apply tw--mx-12 sm:tw--mx-12px;
+
+  :global(.keen-slider__slide):first-child {
+    @apply tw-pl-12 sm:tw-pl-12px;
+  }
+
+  :global(.keen-slider__slide):last-child {
+    @apply tw-pr-12 sm:tw-pr-12px;
+  }
+}
+
+.PointsRewardsTicketButton:global(.type-text-ghost) {
+  @apply tw-p-0 tw-w-full;
+}
+
+.PointsRewardsTicketButtonContent,
+.PointsRewardsTicket {
+  @apply tw-w-full;
+}
+
+.PointsRewardsTicketMain {
+  @apply tw-flex-1 tw-text-left tw-py-4 sm:tw-py-4px tw-pl-8 sm:tw-pl-8px tw-space-y-8 sm:tw-space-y-8px;
+}
+
+.PointsRewardsTicketMainTitle {
+  @apply tw-leading-normal tw-font-bold;
+  @include text-line-clamp(2, null);
+
+  min-height: 2.8em;
+}
+
+.PointsRewardsTicketMainContent {
+  @apply tw-flex tw-items-center tw-justify-between;
+}
+
+.PointsRewardsTicketMainStatusTag {
+  @apply tw-font-bold tw-capitalize;
+}
+
+.PointsRewardsClaimedPointsContainer {
+  @apply tw-flex tw-items-center tw-capitalize tw-font-bold tw-text-blue-dark;
+
+  &__unavailable {
+    @apply tw-text-gray-600;
+
+    img {
+      filter: grayscale(100%) brightness(140%) contrast(110%);
+    }
+  }
+}
+
+.PointsRewardsPointsIconContainer {
+  width: 24px;
+  height: 24px;
+
+  > figure {
+    @apply tw-bg-transparent;
+  }
+}
+
+.PointsRewardsMoreButton:global(.type-text-ghost) {
+  @apply tw-p-0 tw-h-full;
+}
+
+.PointsRewardsMoreButtonIcon {
+  @apply tw-flex tw-items-center tw-justify-center tw-bg-gray-50 tw-rounded-full tw-shadow;
+
+  width: 40px;
+  height: 40px;
+}
+
+.PointsRewardsMoreButtonText {
+  @apply tw-text-sm tw-leading-normal;
+}
+
+.PointsRewardsClaimedAlertContent {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-leading-loose;
+}
+
+.PointsRewardsClaimedAlertIcon {
+  @apply tw-mb-8 sm:tw-mb-8px tw-overflow-hidden;
+
+  width: 120px;
+  height: 80px;
+
+  > figure {
+    @apply tw-h-full tw-bg-transparent;
+  }
+}
+
+.PointsRewardsClaimedAlertTitle {
+  @apply tw-flex tw-justify-center tw-text-center tw-m-auto tw-text-xl tw-leading-normal tw-text-gray-800 tw-font-bold;
+
+  max-width: 264px;
+  word-break: break-word;
+}
+
+.PointsRewardsClaimedAlertDescription {
+  @apply tw-flex tw-justify-center tw-text-center tw-mt-4 sm:tw-mt-4px tw-mb-8 sm:tw-mb-8px tw-leading-relaxed tw-text-gray-700;
+
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 360px;
+  word-break: break-word;
+}
