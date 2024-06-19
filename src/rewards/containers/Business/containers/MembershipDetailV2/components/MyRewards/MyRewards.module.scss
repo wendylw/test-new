@@ -29,12 +29,12 @@
 }
 
 .MyRewardsTicketMainTitle {
-  @apply tw-text-base tw-leading-normal tw-font-bold;
+  @apply tw-leading-normal tw-font-bold;
   @include text-line-clamp(2, null);
 }
 
 .MyRewardsTicketMainDiscount {
-  @apply tw-block tw-text-sm tw-leading-normal tw-text-gray-700 tw-uppercase;
+  @apply tw-block tw-leading-normal tw-text-gray-700 tw-uppercase;
 }
 
 .MyRewardsTicketStub {
@@ -61,7 +61,11 @@
 }
 
 .MyRewardsTicketStubMinSpend {
-  @apply tw-text-sm tw-text-gray-700;
+  @apply tw-flex tw-items-center tw-flex-wrap	tw-gap-2px tw-text-sm tw-text-gray-700;
+}
+
+.MyRewardsTicketStubMinSpendPrice {
+  font-size: inherit;
 }
 
 .MyRewardsTicketUnavailable {

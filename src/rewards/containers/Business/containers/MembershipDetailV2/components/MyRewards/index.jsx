@@ -98,7 +98,12 @@ const MyRewards = () => {
 
                     {minSpend && (
                       <data className={styles.MyRewardsTicketStubMinSpend} value={minSpend.value}>
-                        <Trans t={t} i18nKey={minSpend.i18nKey} values={minSpend.params} components={[<br />]} />
+                        <Trans
+                          t={t}
+                          i18nKey={minSpend.i18nKey}
+                          values={minSpend.params}
+                          components={[<span className={styles.MyRewardsTicketStubMinSpendPrice} />]}
+                        />
                       </data>
                     )}
                   </>

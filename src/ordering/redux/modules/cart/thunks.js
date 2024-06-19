@@ -1,10 +1,13 @@
 /* eslint-disable import/no-cycle */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
+import config from '../../../../config';
 import Utils from '../../../../utils/utils';
 import Constants from '../../../../utils/constants';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import { GLOBAL_ERROR_CODE } from '../../../../common/utils/error-codes';
 import { alert } from '../../../../common/feedback';
+import { result as resultFeedback } from '../../../../common/utils/feedback';
 import { getBusinessUTCOffset } from '../app';
 import { CART_SUBMISSION_STATUS, AVAILABLE_QUERY_CART_STATUS_ROUTES } from './constants';
 import { getCartVersion, getCartSource, getCartItems } from './selectors';
@@ -264,6 +267,13 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
 
             window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}`;
           }
+        },
+      });
+    } else if (GLOBAL_ERROR_CODE.BUSINESS_QR_ORDERING_ENABLED_CLOSED === error.code) {
+      resultFeedback(i18next.t('Common:StoreNotFoundDesc'), {
+        title: i18next.t('Common:StoreNotFound'),
+        onClose: () => {
+          window.location.href = config.beepitComUrl;
         },
       });
     }
