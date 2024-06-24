@@ -2,15 +2,24 @@ import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { WarningCircle } from 'phosphor-react';
 import RewardsIcon from '../../../../../../../images/rewards-icon-rewards.svg';
 import RewardsPointsIcon from '../../../../../../../images/rewards-icon-points.svg';
+import RewardsCashbackIcon from '../../../../../../../images/rewards-icon-cashback.svg';
+import RewardsStoreCreditsIcon from '../../../../../../../images/rewards-icon-store-credits.svg';
 import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
-import { getIsMerchantMembershipPointsEnabled } from '../../../../../../../redux/modules/merchant/selectors';
+import { getClassName } from '../../../../../../../common/utils/ui';
+import {
+  getIsMerchantMembershipPointsEnabled,
+  getIsMerchantEnabledCashback,
+} from '../../../../../../../redux/modules/merchant/selectors';
 import {
   getCustomerAvailablePointsBalance,
   getCustomerRewardsTotal,
 } from '../../../../../../redux/modules/customer/selectors';
 import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
+import { getCustomerCashbackPriceWithoutCurrency } from '../../../../redux/common/selectors';
+import { getIsRewardsCashbackCreditsButtonShow, getIsExpiringIconShown } from '../../redux/selectors';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './RewardsButtons.module.scss';
@@ -21,10 +30,24 @@ const RewardsButtons = () => {
   const isMerchantMembershipPointsEnabled = useSelector(getIsMerchantMembershipPointsEnabled);
   const availablePointsBalance = useSelector(getCustomerAvailablePointsBalance);
   const customerRewardsTotal = useSelector(getCustomerRewardsTotal);
+  const isMerchantEnabledCashback = useSelector(getIsMerchantEnabledCashback);
+  const isRewardsCashbackCreditsButtonShow = useSelector(getIsRewardsCashbackCreditsButtonShow);
+  const customerCashbackPriceWithoutCurrency = useSelector(getCustomerCashbackPriceWithoutCurrency);
+  const isExpiringIconShown = useSelector(getIsExpiringIconShown);
   const search = useSelector(getLocationSearch);
+  const buttonContentClassName = getClassName([
+    styles.RewardsButtonContent,
+    isRewardsCashbackCreditsButtonShow ? 'tw-flex-col' : null,
+  ]);
   const handlePointsDetailButtonClick = useCallback(() => {
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.POINTS_HISTORY}`,
+      search,
+    });
+  }, [history, search]);
+  const handleCashbackCreditsHistoryButtonClick = useCallback(() => {
+    history.push({
+      pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.CASHBACK_CREDITS_HISTORY}`,
       search,
     });
   }, [history, search]);
@@ -42,11 +65,11 @@ const RewardsButtons = () => {
   return (
     <section className={styles.RewardsButtons}>
       <Button
-        data-test-id="rewards.business.rewards-button.pints-button"
+        data-test-id="rewards.business.membershipDetail.rewards-buttons.pints-button"
         theme="ghost"
         type="text"
         className={styles.RewardsButton}
-        contentClassName={styles.RewardsButtonContent}
+        contentClassName={buttonContentClassName}
         onClick={handlePointsDetailButtonClick}
       >
         <div className={styles.RewardsButtonPointsIconContainer}>
@@ -60,12 +83,41 @@ const RewardsButtons = () => {
         </div>
       </Button>
 
+      {isRewardsCashbackCreditsButtonShow ? (
+        <Button
+          data-test-id="rewards.business.membershipDetail.rewards-buttons.cashback-button"
+          theme="ghost"
+          type="text"
+          className={styles.RewardsButton}
+          contentClassName={buttonContentClassName}
+          onClick={handleCashbackCreditsHistoryButtonClick}
+        >
+          <div className={styles.RewardsButtonCashbackIconContainer}>
+            <ObjectFitImage
+              noCompression
+              src={isMerchantEnabledCashback ? RewardsCashbackIcon : RewardsStoreCreditsIcon}
+            />
+          </div>
+          <div className={styles.RewardsButtonText}>
+            <data className={styles.RewardsButtonCashback} value={customerCashbackPriceWithoutCurrency}>
+              {customerCashbackPriceWithoutCurrency}
+              {isExpiringIconShown && (
+                <WarningCircle className={styles.RewardsButtonCashbackWarningIcon} size={18} weight="fill" />
+              )}
+            </data>
+            <span className={styles.RewardsButtonCashbackText}>
+              {isMerchantEnabledCashback ? t('Cashback') : t('StoreCredits')}
+            </span>
+          </div>
+        </Button>
+      ) : null}
+
       <Button
-        data-test-id="rewards.business.rewards-button.rewards-button"
+        data-test-id="rewards.business.membershipDetail.rewards-buttons.rewards-button"
         theme="ghost"
         type="text"
         className={styles.RewardsButton}
-        contentClassName={styles.RewardsButtonContent}
+        contentClassName={buttonContentClassName}
         onClick={handleMyRewardsButtonClick}
       >
         <div className={styles.RewardsButtonRewardsIconContainer}>
