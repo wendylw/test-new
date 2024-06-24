@@ -8,7 +8,7 @@ module.exports = {
   languages: ['en', 'th'],
   allowIncompleteIn: [],
   notification: {
-    groupId: 't_6218677764852829',
+    webhook: 'https://open.larksuite.com/open-apis/bot/v2/hook/3e5cba56-6a83-429f-b87d-e951d515193c',
   },
   proofreadRules: {
     htmlLike: true,

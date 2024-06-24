@@ -48,9 +48,9 @@ HistoryBanner.displayName = 'HistoryBanner';
 
 HistoryBanner.propTypes = {
   title: PropTypes.string,
-  value: PropTypes.string || PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   valueText: PropTypes.string,
-  prompt: PropTypes.string || PropTypes.node,
+  prompt: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   infoButtonText: PropTypes.string,
   historyBannerImage: PropTypes.string,
   onClickInfoButton: PropTypes.func,
