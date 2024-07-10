@@ -17,6 +17,7 @@ const Result = props => {
     isFullScreen,
     show,
     className,
+    isCloseButtonShow,
     closeButtonContent,
     closeButtonClassName,
     closeButtonStyle,
@@ -62,20 +63,22 @@ const Result = props => {
       <div className={`${styles.result} ${className}`}>
         <div ref={contentContainerRef} className={styles.resultContent}>
           {children}
-          <div className={styles.resultFooter}>
-            <Button
-              type="primary"
-              size="small"
-              className={`${styles.closeButtonClassName} tw-uppercase${
-                closeButtonClassName ? ` ${closeButtonClassName}` : ''
-              }`}
-              onClick={onClose}
-              style={closeButtonStyle}
-              data-test-id="common.result.close-btn"
-            >
-              {closeButtonContent || t('Okay')}
-            </Button>
-          </div>
+          {isCloseButtonShow ? (
+            <div className={styles.resultFooter}>
+              <Button
+                type="primary"
+                size="small"
+                className={`${styles.closeButtonClassName} tw-uppercase${
+                  closeButtonClassName ? ` ${closeButtonClassName}` : ''
+                }`}
+                onClick={onClose}
+                style={closeButtonStyle}
+                data-test-id="common.result.close-btn"
+              >
+                {closeButtonContent || t('Okay')}
+              </Button>
+            </div>
+          ) : null}
         </div>
       </div>
     </>
@@ -101,6 +104,7 @@ Result.propTypes = {
   isFullScreen: PropTypes.bool,
   show: PropTypes.bool,
   mountAtRoot: PropTypes.bool,
+  isCloseButtonShow: PropTypes.bool,
   closeByBackButton: PropTypes.bool,
   closeButtonContent: PropTypes.node,
   className: PropTypes.string,
@@ -119,6 +123,7 @@ Result.defaultProps = {
   isFullScreen: false,
   show: false,
   mountAtRoot: false,
+  isCloseButtonShow: true,
   closeButtonContent: null,
   closeByBackButton: false,
   className: '',

@@ -1,0 +1,37 @@
+html:global(#e-invoice-html) {
+  @apply tw-relative tw-min-h-full;
+}
+
+.EInvoiceContainer {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-between tw-w-full tw-h-full;
+
+  padding-bottom: 68px;
+  min-height: inherit;
+}
+
+.EInvoiceDetail {
+  @apply tw-flex-1 tw-w-full;
+}
+
+.EInvoiceTitle {
+  @apply tw-p-16 sm:tw-p-16px tw-text-3xl tw-leading-normal tw-font-bold;
+}
+
+.EInvoiceFooter {
+  @apply tw-absolute tw-left-0 tw-right-0 tw-bottom-0 tw-mx-auto tw-text-center tw-p-16 sm:tw-p-16px tw-w-full;
+
+  max-width: 414px;
+}
+
+.EInvoiceFooterText,
+.EInvoiceFooterPowerByText {
+  @apply tw-leading-normal;
+}
+
+.EInvoiceFooterPowerByText {
+  @apply tw-text-sm;
+}
+
+.EInvoiceFooterBrand {
+  @apply tw-text-sm tw-text-orange tw-font-bold;
+}

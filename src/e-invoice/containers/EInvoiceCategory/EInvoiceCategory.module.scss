@@ -1,0 +1,19 @@
+.EInvoiceCategoryItem {
+  @apply tw-py-16 sm:tw-py-16px tw-mx-16 sm:tw-mx-16px;
+}
+
+.EInvoiceCategoryItemTitle {
+  @apply tw-text-lg tw-leading-normal tw-font-bold;
+}
+
+.EInvoiceCategoryItemButton {
+  @apply tw-flex tw-items-center tw-justify-between tw-px-16 sm:tw-px-16px tw-py-20 sm:tw-py-20px tw-my-16 sm:tw-my-16px tw-w-full tw-bg-gray-50 tw-rounded tw-shadow-lg tw-no-underline;
+}
+
+.EInvoiceCategoryButtonText {
+  @apply tw-text-xl tw-leading-normal tw-text-gray;
+}
+
+.EInvoiceCategoryButtonIcon {
+  @apply tw-text-gray;
+}

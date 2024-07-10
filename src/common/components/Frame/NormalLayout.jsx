@@ -17,18 +17,20 @@ NormalLayoutInner.propTypes = PropTypes.node.isRequired;
 NormalLayoutInner.displayName = 'NormalLayoutInner';
 
 const NormalLayout = props => {
-  const { children } = props;
+  const { children, id } = props;
+  const containerId = id || 'beep-app-container';
+
   // modify the v1 styles and restore it after the component is unmounted.
   useEffect(() => {
     const outerBodyStyle = document.body.getAttribute('style');
     document.body.setAttribute('style', '');
-    const appContainerClassName = document.getElementById('beep-app-container').getAttribute('class');
-    document.getElementById('beep-app-container').setAttribute('class', '');
+    const appContainerClassName = document.getElementById(containerId).getAttribute('class');
+    document.getElementById(containerId).setAttribute('class', '');
     return () => {
       document.body.setAttribute('style', outerBodyStyle);
-      document.getElementById('beep-app-container').setAttribute('class', appContainerClassName);
+      document.getElementById(containerId).setAttribute('class', appContainerClassName);
     };
-  }, []);
+  }, [containerId]);
   return (
     <SpaceOccupationContextProvider>
       <NormalLayoutInner>{children}</NormalLayoutInner>

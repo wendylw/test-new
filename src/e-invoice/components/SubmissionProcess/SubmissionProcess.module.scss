@@ -1,0 +1,21 @@
+.SubmissionProcess > div {
+  @apply tw-items-center tw-justify-center;
+
+  top: 0;
+  margin-top: 9vh;
+}
+
+.SubmissionProcessLoader {
+  @apply tw-mt-8 sm:tw-mt-8px tw-mb-24 sm:tw-mb-24px tw-text-gray-600;
+
+  width: 80px;
+  height: 80px;
+}
+
+.SubmissionProcessTitle {
+  @apply tw-text-center tw-text-xl tw-leading-normal tw-font-bold;
+}
+
+.SubmissionProcessDescription {
+  @apply tw-mt-20 sm:tw-mt-20px tw-mb-8 sm:tw-mb-8px tw-text-xl tw-leading-normal tw-font-bold tw-text-red;
+}

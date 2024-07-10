@@ -4,6 +4,11 @@
  * file to a reference to this file, so that each constant is defined only once.
  */
 
+/**
+ * yarn build always set NODE_ENV as production
+ */
+export const BUILD_NODE_ENV = 'production';
+
 export const DESKTOP_PAGE_WIDTH = 414;
 
 export const COUNTRIES = {

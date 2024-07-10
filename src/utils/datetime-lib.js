@@ -302,3 +302,19 @@ export const getReduceOneSecondForDate = date => {
     return null;
   }
 };
+
+/**
+ * get locale date time format to `YYYY/MM/DD HH:MM:ss`
+ * @param {string} dateTime (e.g. `2021-11-30T14:58:30+08:00`)
+ * @param {number} utcOffset
+ * @returns {string} of locale time
+ */
+export const getFormatLocaleDateTime = ({
+  dateTime,
+  utcOffset = dayjs().utcOffset(),
+  formatter = 'YYYY/MM/DD HH:mm:ss',
+}) => {
+  const dateTimeDayjs = dayjs(dateTime).utcOffset(utcOffset);
+
+  return dateTimeDayjs.format(formatter);
+};

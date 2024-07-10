@@ -10,11 +10,11 @@ import '../../styles/base.scss';
 import NormalLayout from './NormalLayout';
 
 const Frame = props => {
-  const { children } = props;
+  const { children, id } = props;
   // Keep both for now, refer to the comment in Frame.module.scss.
   // return <FlexLayout>{children}</FlexLayout>;
 
-  return <NormalLayout>{children}</NormalLayout>;
+  return <NormalLayout id={id}>{children}</NormalLayout>;
 };
 
 Frame.propTypes = PropTypes.node.isRequired;

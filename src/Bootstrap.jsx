@@ -5,6 +5,7 @@ import { ErrorBoundary } from '@sentry/react';
 import { Translation } from 'react-i18next';
 import Constants from './utils/constants';
 import Utils from './utils/utils';
+import { isEInvoiceDomain } from './e-invoice/utils';
 import NotFound from './containers/NotFound';
 import ErrorComponent from './components/Error';
 import i18n from './i18n';
@@ -27,6 +28,8 @@ const AsyncSite = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName:
 const AsyncVoucher = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "VOU" */ './voucher')));
 
 const AsyncRewards = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "RWD" */ './rewards')));
+
+const AsyncEInvoice = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "EINV" */ './e-invoice')));
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -80,15 +83,6 @@ class Bootstrap extends Component {
     }
   };
 
-  renderSitePages = () => (
-    <Suspense fallback={<div className="loader theme full-page" />}>
-      <Switch>
-        <Route path={ROUTER_PATHS.REWARDS_BASE} component={AsyncRewards} />
-        <Route path="*" component={AsyncSite} />
-      </Switch>
-    </Suspense>
-  );
-
   renderMerchantPages = () => (
     <Suspense fallback={<div className="loader theme full-page" />}>
       <Switch>
@@ -124,6 +118,23 @@ class Bootstrap extends Component {
     </Suspense>
   );
 
+  renderSitePages = () => (
+    <Suspense fallback={<div className="loader theme full-page" />}>
+      <Switch>
+        <Route path={ROUTER_PATHS.REWARDS_BASE} component={AsyncRewards} />
+        <Route path="*" component={AsyncSite} />
+      </Switch>
+    </Suspense>
+  );
+
+  renderEInvoicePages = () => (
+    <Suspense fallback={<div className="loader theme full-page" />}>
+      <Switch>
+        <Route path="*" component={AsyncEInvoice} />
+      </Switch>
+    </Suspense>
+  );
+
   renderError = ({ eventId }) => (
     <Translation i18n={i18n}>
       {t => (
@@ -144,12 +155,24 @@ class Bootstrap extends Component {
     </Translation>
   );
 
+  renderPages = () => {
+    if (Utils.isSiteApp()) {
+      return this.renderSitePages();
+    }
+
+    if (isEInvoiceDomain()) {
+      return this.renderEInvoicePages();
+    }
+
+    return this.renderMerchantPages();
+  };
+
   render() {
     const { remountKey } = this.state;
 
     return (
       <ErrorBoundary fallback={this.renderError} onError={this.handleError}>
-        <Router key={remountKey}>{Utils.isSiteApp() ? this.renderSitePages() : this.renderMerchantPages()}</Router>
+        <Router key={remountKey}>{this.renderPages()}</Router>
       </ErrorBoundary>
     );
   }

@@ -7,8 +7,10 @@ $pinkBackgroundColor: #fff2e3;
 
   @if $color == "red" {
     @apply tw-text-gray-50 tw-bg-red tw-font-bold;
-  } @else if $color == "green" {
+  } @else if $color == "cyan" {
     @apply tw-text-gray-50 tw-bg-cyan tw-font-bold;
+  } @else if $color == "green" {
+    @apply tw-text-gray-50 tw-bg-green tw-font-bold;
   } @else if $color == "pink" {
     @apply tw-text-gray-800;
 
@@ -40,6 +42,10 @@ $pinkBackgroundColor: #fff2e3;
 
   &:global(.pink) {
     @include tagStyle("pink");
+  }
+
+  &:global(.cyan) {
+    @include tagStyle("cyan");
   }
 
   &:global(.green) {

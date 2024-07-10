@@ -17,7 +17,7 @@ const Tag = props => {
 Tag.displayName = 'Tag';
 Tag.propTypes = {
   children: PropTypes.node,
-  color: PropTypes.oneOf(['red', 'pink', 'green']),
+  color: PropTypes.oneOf(['red', 'pink', 'cyan', 'green']),
   // If radiusSize is set to 'xs', the tag's border radius will be 2px and padding will change to 4px.
   radiusSize: PropTypes.oneOf(['xs']),
   className: PropTypes.string,

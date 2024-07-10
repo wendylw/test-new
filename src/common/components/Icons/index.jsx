@@ -9,3 +9,4 @@ export { StoreIcon } from './StoreIcon';
 export { DateIcon } from './DateIcon';
 export { TimeIcon } from './TimeIcon';
 export { MemberIcon } from './MemberIcon';
+export { ClockCountdown } from './ClockCountdown';

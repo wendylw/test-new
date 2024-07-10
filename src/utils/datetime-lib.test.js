@@ -1,4 +1,10 @@
-import { toNumericTime, toNumericTimeRange, toDayDateMonth, getDifferenceInMilliseconds } from './datetime-lib';
+import {
+  toNumericTime,
+  toNumericTimeRange,
+  toDayDateMonth,
+  getDifferenceInMilliseconds,
+  getFormatLocaleDateTime,
+} from './datetime-lib';
 
 describe('utils/datetime-lib', () => {
   it('toNumericTime', () => {
@@ -30,5 +36,19 @@ describe('utils/datetime-lib', () => {
       new Date(2014, 6, 2, 12, 30, 20, 600)
     );
     expect(result).toBe(1100);
+  });
+
+  it('getFormatLocaleDateTime', () => {
+    const check = ({ dateTime, utcOffset, formatter }, value) => {
+      expect(getFormatLocaleDateTime({ dateTime, utcOffset, formatter })).toBe(value);
+    };
+
+    check({ dateTime: '2024-06-19T06:23:23.437Z' }, '2024/06/19 14:23:23');
+    check({ dateTime: '2024-06-19T06:23:23.437Z', formatter: 'YYYY.MM.DD HH:mm:ss' }, '2024.06.19 14:23:23');
+    check({ dateTime: '2024-06-19T06:23:23.437Z', utcOffset: 0 }, '2024/06/19 06:23:23');
+    check(
+      { dateTime: '2024-06-19T06:23:23.437Z', utcOffset: 0, formatter: 'YYYY.MM.DD HH:mm:ss' },
+      '2024.06.19 06:23:23'
+    );
   });
 });

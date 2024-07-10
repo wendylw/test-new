@@ -1,0 +1,69 @@
+.EInvoiceImageContainer {
+  @apply tw-relative tw-mx-16 sm:tw-mx-16px;
+
+  &::before {
+    @apply tw-block tw-w-full;
+
+    content: "";
+    padding-top: 51%;
+  }
+}
+
+.EInvoiceImage {
+  @apply tw-absolute tw-left-0 tw-top-0 tw-m-0 tw-w-full tw-h-full tw-bg-transparent;
+}
+
+.EInvoiceContentSection {
+  @apply tw-p-16 sm:tw-p-16px tw-m-16 sm:tw-m-16px tw-bg-gray-50 tw-rounded-xl tw-shadow;
+}
+
+.EInvoiceContentItem {
+  @apply tw-space-y-12 sm:tw-space-y-12px;
+
+  + .EInvoiceContentItem {
+    @apply tw-mt-12 sm:tw-mt-12px;
+  }
+}
+
+.EInvoiceContentItemTitle {
+  @apply tw-text-lg tw-leading-normal tw-font-bold;
+}
+
+.EInvoiceContentList {
+  @apply tw-space-y-4 sm:tw-space-y-4px;
+}
+
+.EInvoiceContentListItem {
+  @apply tw-flex tw-items-start tw-gap-x-4 sm:tw-gap-x-4px;
+}
+
+.EInvoiceContentListItemTitle {
+  @apply tw-flex tw-items-start tw-flex-shrink-0 tw-justify-between;
+
+  width: 112px;
+
+  > span {
+    @apply tw-leading-normal;
+  }
+}
+
+.EInvoiceContentItemTagContainer {
+  height: 1.4em;
+}
+
+.EInvoiceContentItemTag {
+  @apply tw-capitalize tw-font-bold;
+}
+
+.EInvoiceContentListItemText {
+  @apply tw-leading-normal;
+}
+
+.EInvoiceContentButtonsContainer {
+  @apply tw-mt-24 sm:tw-mt-24px tw-space-y-16 sm:tw-space-y-16px;
+}
+
+.EInvoiceContentButton:global(.type-primary-default),
+.EInvoiceContentButton:global(.type-secondary-default) {
+  @apply tw-uppercase;
+}
