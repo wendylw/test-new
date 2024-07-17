@@ -57,6 +57,8 @@
 
 .EInvoiceContentListItemText {
   @apply tw-leading-normal;
+
+  word-break: break-word;
 }
 
 .EInvoiceContentButtonsContainer {

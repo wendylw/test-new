@@ -1,8 +1,3 @@
-export const isEInvoiceDomain = (domain = window.location.hostname) => {
-  const domainList = (process.env.REACT_APP_EINVOICE_DOMAIN || '')
-    .split(',')
-    .map(d => d.trim())
-    .filter(d => d);
+import { PATHS } from './constants';
 
-  return domainList.some(d => domain.toLowerCase() === d.toLowerCase());
-};
+export const isEInvoicePathname = (pathname = window.location.pathname) => pathname.startsWith(PATHS.E_INVOICE);

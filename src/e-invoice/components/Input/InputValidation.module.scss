@@ -1,0 +1,9 @@
+.InputValidationContainer {
+  @apply tw-relative;
+
+  padding-bottom: 23.6px;
+}
+
+.InputValidationErrorMessage {
+  @apply tw-absolute tw-bottom-0 tw-block tw-my-4 sm:tw-my-4px tw-text-sm tw-text-red;
+}

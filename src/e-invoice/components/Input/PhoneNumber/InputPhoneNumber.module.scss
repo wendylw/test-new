@@ -1,0 +1,23 @@
+.InputPhoneNumber {
+  @apply tw-text-gray;
+
+  input {
+    @apply tw-border-0 tw-w-full tw-bg-transparent tw-leading-normal tw-shadow-none tw-outline-none;
+
+    height: 20px;
+  }
+
+  div:global(.PhoneInputCountryIcon),
+  div:global(.PhoneInputCountrySelect:focus + .PhoneInputCountryIcon--border) {
+    @apply tw-border-0 tw-mx-2 sm:tw-mx-2px tw-shadow-none;
+
+    width: calc(0.51em * 3.4);
+    height: calc(0.51em * 2.3);
+  }
+}
+
+.InputPhoneNumberError {
+  input {
+    @apply tw-text-red;
+  }
+}

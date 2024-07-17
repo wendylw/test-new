@@ -1,0 +1,30 @@
+$info-background-color: #def5ff;
+$warning-background-color: #fffbe6;
+
+.BannerAlert {
+  @apply tw-flex tw-items-start tw-gap-x-8 sm:tw-gap-x-8px tw-p-12 sm:tw-p-12px tw-rounded;
+
+  &:global(.info) {
+    background-color: $info-background-color;
+  }
+
+  &:global(.warning) {
+    background-color: $warning-background-color;
+  }
+}
+
+.BannerAlertInfoIcon {
+  @apply tw-flex-shrink-0 tw-text-blue;
+}
+
+.BannerAlertWarningIcon {
+  @apply tw-flex-shrink-0 tw-text-red;
+}
+
+.BannerAlertTitle {
+  @apply tw-leading-relaxed tw-font-bold;
+}
+
+.BannerAlertDescription {
+  @apply tw-text-sm tw-leading-relaxed;
+}

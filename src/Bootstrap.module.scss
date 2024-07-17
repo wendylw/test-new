@@ -1,0 +1,34 @@
+.BootstrapRenderError {
+  @apply tw-relative tw-left-0 tw-right-0 tw-text-center tw-h-full;
+
+  min-height: 100vh;
+
+  > section:global(.error) {
+    figure:global(.error__image-container) {
+      @apply tw-mx-auto;
+    }
+
+    h2:global(.error__title) {
+      @apply tw-text-xl tw-text-gray tw-font-bold;
+    }
+
+    div:global(.error__description) {
+      @apply tw-mt-16 sm:tw-mt-16px tw-mx-auto tw-text-sm tw-text-gray-700;
+    }
+  }
+}
+
+.BootstrapRenderErrorFooter {
+  @apply tw-flex-shrink-0 tw-sticky tw-bottom-0 tw-px-16 sm:tw-px-16px tw-py-8 sm:tw-py-8px tw-bg-gray-50;
+}
+
+.BootstrapRenderErrorFooterButton {
+  @apply tw-p-16 sm:tw-p-16px tw-my-8 sm:tw-my-8px tw-border-0 tw-border-transparent tw-w-full tw-bg-orange tw-rounded tw-text-gray-50 tw-font-bold tw-uppercase;
+
+  height: 8vh;
+  max-height: 56px;
+
+  &:disabled {
+    @apply tw-pointer-events-none tw-text-gray-50 tw-bg-gray-400;
+  }
+}

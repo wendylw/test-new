@@ -14,6 +14,8 @@ import {
   getEInvoiceReferenceNumber,
   getIsEInvoiceValid,
   getIsEInvoiceCanceled,
+  getEInvoiceExternalEInvoiceUrl,
+  getEInvoiceInternalEInvoiceUrl,
 } from '../../redux/selectors';
 import { ObjectFitImage } from '../../../../../common/components/Image';
 import Button from '../../../../../common/components/Button';
@@ -25,20 +27,39 @@ const EInvoiceContentButton = () => {
   const history = useHistory();
   const isEInvoiceValid = useSelector(getIsEInvoiceValid);
   const isEInvoiceCanceled = useSelector(getIsEInvoiceCanceled);
+  const eInvoiceExternalEInvoiceUrl = useSelector(getEInvoiceExternalEInvoiceUrl);
+  const eInvoiceInternalEInvoiceUrl = useSelector(getEInvoiceInternalEInvoiceUrl);
   const handleRequestEInvoice = useCallback(() => {
     history.push({
       pathname: PAGE_ROUTES.CATEGORY,
       search: window.location.search,
     });
   }, [history]);
+  const handleGotoIRBMPage = useCallback(() => {
+    window.location.href = eInvoiceExternalEInvoiceUrl;
+  }, [eInvoiceExternalEInvoiceUrl]);
+  const handleViewEInvoicePage = useCallback(() => {
+    window.location.href = eInvoiceInternalEInvoiceUrl;
+  }, [eInvoiceInternalEInvoiceUrl]);
 
   if (isEInvoiceValid) {
     return (
       <div className={styles.EInvoiceContentButtonsContainer}>
-        <Button block className={styles.EInvoiceContentButton}>
+        <Button
+          data-test-id="eInvoice.home.valid.content.view-eInvoice-button"
+          block
+          className={styles.EInvoiceContentButton}
+          onClick={handleViewEInvoicePage}
+        >
           {t('ViewEInvoiceButtonText')}
         </Button>
-        <Button block className={styles.EInvoiceContentButton} type="secondary">
+        <Button
+          data-test-id="eInvoice.home.valid.content.view-status-on-IRBM-button"
+          block
+          type="secondary"
+          className={styles.EInvoiceContentButton}
+          onClick={handleGotoIRBMPage}
+        >
           {t('ViewStatusOnIRBMButtonText')}
         </Button>
       </div>
@@ -48,7 +69,12 @@ const EInvoiceContentButton = () => {
   if (isEInvoiceCanceled) {
     return (
       <div className={styles.EInvoiceContentButtonsContainer}>
-        <Button block className={styles.EInvoiceContentButton}>
+        <Button
+          data-test-id="eInvoice.home.cancel.content.view-status-on-IRBM-button"
+          block
+          className={styles.EInvoiceContentButton}
+          onClick={handleGotoIRBMPage}
+        >
           {t('ViewStatusOnIRBMButtonText')}
         </Button>
       </div>
@@ -58,9 +84,9 @@ const EInvoiceContentButton = () => {
   return (
     <div className={styles.EInvoiceContentButtonsContainer}>
       <Button
+        data-test-id="eInvoice.home.content.request-eInvoice-button"
         block
         className={styles.EInvoiceContentButton}
-        data-test-id="e-invoice.home.request-eInvoice-button"
         onClick={handleRequestEInvoice}
       >
         {t('RequestEInvoiceButtonText')}
@@ -106,7 +132,9 @@ const EInvoiceContent = () => {
                 <h4 className={styles.EInvoiceContentListItemTitle}>
                   <span>{t('ReferenceNumber')}</span>:
                 </h4>
-                <span className={styles.EInvoiceContentListItemText}>{referenceNumber}</span>
+                <data className={styles.EInvoiceContentListItemText} value={referenceNumber}>
+                  {referenceNumber}
+                </data>
               </li>
             </ul>
           </div>
@@ -119,25 +147,31 @@ const EInvoiceContent = () => {
               <h4 className={styles.EInvoiceContentListItemTitle}>
                 <span>{t('StoreName')}</span>:
               </h4>
-              <span className={styles.EInvoiceContentListItemText}>{storeName}</span>
+              <data className={styles.EInvoiceContentListItemText} value={storeName}>
+                {storeName}
+              </data>
             </li>
             <li className={styles.EInvoiceContentListItem}>
               <h4 className={styles.EInvoiceContentListItemTitle}>
                 <span>{t('Date')}</span>:
               </h4>
-              <span className={styles.EInvoiceContentListItemText}>{formattedCreateTime}</span>
+              <time className={styles.EInvoiceContentListItemText}>{formattedCreateTime}</time>
             </li>
             <li className={styles.EInvoiceContentListItem}>
               <h4 className={styles.EInvoiceContentListItemTitle}>
                 <span>{t('ReceiptNumber')}</span>:
               </h4>
-              <span className={styles.EInvoiceContentListItemText}>{receiptNumber}</span>
+              <data className={styles.EInvoiceContentListItemText} value={receiptNumber}>
+                {receiptNumber}
+              </data>
             </li>
             <li className={styles.EInvoiceContentListItem}>
               <h4 className={styles.EInvoiceContentListItemTitle}>
                 <span>{t('Total')}</span>:
               </h4>
-              <span className={styles.EInvoiceContentListItemText}>{totalPrice}</span>
+              <data className={styles.EInvoiceContentListItemText} value={totalPrice}>
+                {totalPrice}
+              </data>
             </li>
           </ul>
         </div>

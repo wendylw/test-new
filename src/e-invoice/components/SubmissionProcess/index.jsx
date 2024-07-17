@@ -2,16 +2,16 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useLifecycles } from 'react-use';
 import { useTranslation } from 'react-i18next';
+import { E_INVOICE_STATUS_TIMEOUT } from '../../utils/constants';
 import Loader from '../../../common/components/Loader';
 import Result from '../../../common/components/Result';
 import styles from './SubmissionProcess.module.scss';
 
 const INTERVAL_TIME = 1 * 1000;
-const COUNTDOWN_TIME = 10 * 1000;
 
 const SubmissionProcess = ({ breakSubmission, onTimeOut }) => {
   const { t } = useTranslation(['EInvoice']);
-  const [timeLeft, setTimeLeft] = useState(COUNTDOWN_TIME);
+  const [timeLeft, setTimeLeft] = useState(E_INVOICE_STATUS_TIMEOUT);
   const timer = useRef(null);
   const handleTimerCountDown = useCallback(() => {
     // eslint-disable-next-line no-shadow

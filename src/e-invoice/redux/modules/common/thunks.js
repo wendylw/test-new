@@ -2,18 +2,16 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import logger from '../../../../utils/monitoring/logger';
 import Poller from '../../../../common/utils/poller';
-import { AVAILABLE_QUERY_E_INVOICE_STATUS_PAGES } from '../../../utils/constants';
+import { E_INVOICE_STATUS_TIMEOUT } from '../../../utils/constants';
 import { getEInvoiceStatus, getEInvoiceSubmissionDetail } from './api-request';
 import {
   getHash,
   getEInvoiceMerchantName,
   getEInvoiceReceiptNumber,
   getEInvoiceChannel,
-  getIsAvailableQuerySubmissionPage,
-  getQuerySubmissionPagePollerKey,
+  getIsQueryEInvoiceSubmissionCompleted,
 } from './selectors';
 
-const E_INVOICE_STATUS_TIMEOUT = 10 * 1000;
 const E_INVOICE_STATUS_INTERVAL = 2 * 1000;
 
 export const fetchEInvoiceStatus = createAsyncThunk('eInvoice/common/fetchEInvoiceStatus', async (_, { getState }) => {
@@ -51,59 +49,35 @@ export const fetchEInvoiceSubmissionDetail = createAsyncThunk(
   }
 );
 
-// Diff page should use diff poller, otherwise can not stop poller correctly
-const EInvoiceStatusPollers = {
-  pollers: {
-    [AVAILABLE_QUERY_E_INVOICE_STATUS_PAGES.HOME]: null,
-    [AVAILABLE_QUERY_E_INVOICE_STATUS_PAGES.CONSUMER_PREVIEW]: null,
-    [AVAILABLE_QUERY_E_INVOICE_STATUS_PAGES.BUSINESS_PREVIEW]: null,
-  },
-  clearPoller() {
-    const keys = Object.keys(this.pollers);
-
-    keys.forEach(key => {
-      if (!this.pollers[key]) {
-        return;
-      }
-
-      this.pollers[key].stop();
-      this.pollers[key] = null;
-    });
-  },
-};
-
 export const queryEInvoiceStatus = () => async (dispatch, getState) => {
-  EInvoiceStatusPollers.clearPoller();
   logger.log('EInvoice_PollEInvoiceStatus', { action: 'start' });
 
   try {
-    const pollerKey = getQuerySubmissionPagePollerKey(getState());
-
-    if (!pollerKey) {
-      return;
-    }
-
-    EInvoiceStatusPollers.pollers[pollerKey] = new Poller({
+    const eInvoiceStatusPoller = new Poller({
       fetchData: async () => {
-        const isAvailableQuerySubmissionPage = getIsAvailableQuerySubmissionPage(getState());
+        await dispatch(fetchEInvoiceStatus());
+      },
+      onData: async () => {
+        const isQueryEInvoiceSubmissionCompleted = getIsQueryEInvoiceSubmissionCompleted(getState());
 
-        // Add a judgment condition. There may be requests that have not been cleared before and are still being polled.
-        if (isAvailableQuerySubmissionPage) {
-          await dispatch(fetchEInvoiceStatus());
+        if (isQueryEInvoiceSubmissionCompleted) {
+          eInvoiceStatusPoller.stop();
+          logger.log('EInvoice_QueryEInvoiceStatusSuccess');
         }
       },
       onError: error => {
-        EInvoiceStatusPollers.pollers[pollerKey].stop();
-        logger.log('EInvoice_PollEInvoiceStatusFailed', { action: 'stop', error: error?.message, pollerKey });
+        eInvoiceStatusPoller.stop();
+        logger.log('EInvoice_PollEInvoiceStatusFailed', { action: 'stop', error: error?.message });
       },
       onTimeout: () => {
-        EInvoiceStatusPollers.pollers[pollerKey].stop();
+        eInvoiceStatusPoller.stop();
+        logger.log('EInvoice_QueryEInvoiceStatusTimeout');
       },
       timeout: E_INVOICE_STATUS_TIMEOUT,
       interval: E_INVOICE_STATUS_INTERVAL,
     });
 
-    EInvoiceStatusPollers.pollers[pollerKey].start();
+    eInvoiceStatusPoller.start();
   } catch (error) {
     logger.error('EInvoice_QueryEInvoiceStatusFailed', { message: error?.message });
 

@@ -872,5 +872,7 @@ export const toCapitalize = (string = '') => {
     return string;
   }
 
-  return string.charAt(0).toUpperCase() + string.slice(1);
+  const lowerCaseString = string.toLowerCase();
+
+  return lowerCaseString.charAt(0).toUpperCase() + lowerCaseString.slice(1);
 };

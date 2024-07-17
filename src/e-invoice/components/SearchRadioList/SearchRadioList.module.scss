@@ -1,0 +1,19 @@
+.SearchRadioListSearchInputContainer {
+  @apply tw-sticky tw-top-0 tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-bg-gray-50 tw-z-60;
+}
+
+.SearchRadioListRadioContainer {
+  @apply tw-flex tw-items-center tw-mx-16 sm:tw-mx-16px tw-cursor-pointer;
+
+  > span {
+    @apply tw-flex-1 tw-py-12 sm:tw-py-12px tw-leading-normal;
+  }
+}
+
+.SearchRadioListRadioContainer + .SearchRadioListRadioContainer {
+  @apply tw-border-0 tw-border-t tw-border-solid tw-border-gray-200;
+}
+
+.SearchRadioListRadioHide {
+  @apply tw-opacity-0;
+}

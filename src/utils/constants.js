@@ -391,7 +391,6 @@ const ERROR_CODE_MAP = {
   },
 };
 
-const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
 const LANGUAGES = ['en', 'th'];
 const POLYFILL_FEATURES = ['Object.values', 'Intl'];
 
@@ -707,7 +706,6 @@ export default {
   PEOPLE_COUNT,
   AUTH_INFO,
   REQUEST_ERROR_KEYS,
-  POLYFILL_FEATURES_URL,
   POLYFILL_FEATURES,
   LANGUAGES,
   ASIDE_NAMES,

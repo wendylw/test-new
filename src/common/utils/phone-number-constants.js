@@ -1,9 +1,19 @@
-export const PHONE_NUMBER_COUNTRIES = {
-  MY: '60',
-  TH: '66',
-  PH: '63',
-  SG: '65',
-  CN: '86',
+export const COUNTRIES = {
+  MY: 'MY',
+  TH: 'TH',
+  PH: 'PH',
+  SG: 'SG',
+  CN: 'CN',
 };
 
-export const AVAILABLE_COUNTRIES = Object.keys(PHONE_NUMBER_COUNTRIES);
+export const PHONE_NUMBER_COUNTRIES = {
+  [COUNTRIES.MY]: '60',
+  [COUNTRIES.TH]: '66',
+  [COUNTRIES.PH]: '63',
+  [COUNTRIES.SG]: '65',
+  [COUNTRIES.CN]: '86',
+};
+
+export const AVAILABLE_COUNTRIES = Object.values(COUNTRIES);
+
+export const SYSTEM_DEFAULT_COUNTRY = COUNTRIES.MY;

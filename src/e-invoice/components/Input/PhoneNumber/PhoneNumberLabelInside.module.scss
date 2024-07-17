@@ -1,0 +1,25 @@
+.PhoneNumberLabelInsideContainer {
+  @apply tw-relative;
+
+  padding-bottom: 23.6px;
+}
+
+.PhoneNumberLabelInsideInputContainer {
+  @apply tw-flex tw-flex-col tw-gap-2 sm:tw-gap-2px tw-px-12 sm:tw-px-12px tw-py-8 sm:tw-py-8px tw-border tw-border-solid tw-border-gray-500 tw-bg-gray-50 tw-rounded;
+}
+
+.PhoneNumberLabelInsideLabel {
+  @apply tw-flex tw-gap-2 sm:tw-gap-2px;
+}
+
+.PhoneNumberLabelInsideLabelText {
+  @apply tw-text-sm tw-leading-normal;
+}
+
+.PhoneNumberLabelInsideLabelRequiredIcon {
+  @apply tw-text-red;
+}
+
+.PhoneNumberLabelInsideErrorMessage {
+  @apply tw-absolute tw-bottom-0 tw-block tw-my-4 sm:tw-my-4px tw-text-sm tw-text-red;
+}

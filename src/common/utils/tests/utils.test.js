@@ -3241,7 +3241,7 @@ describe('toCapitalize', () => {
   // Returns a capitalized string when given an uppercase string
   it('should return a capitalized string when given an uppercase string', () => {
     const input = 'HELLO';
-    const expectedOutput = 'HELLO';
+    const expectedOutput = 'Hello';
 
     const result = toCapitalize(input);
 
@@ -3251,7 +3251,7 @@ describe('toCapitalize', () => {
   // Returns a capitalized string when given a mixed case string
   it('should return a capitalized string when given a mixed case string', () => {
     const input = 'HeLlO';
-    const expectedOutput = 'HeLlO';
+    const expectedOutput = 'Hello';
 
     const result = toCapitalize(input);
 

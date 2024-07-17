@@ -1,7 +1,15 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { getCookieVariable, isWebview } from '../../../../common/utils';
-import { E_INVOICE_STATUS, AVAILABLE_QUERY_E_INVOICE_STATUS_ROUTES, E_INVOICE_TYPES } from '../../../utils/constants';
+import {
+  E_INVOICE_STATUS,
+  PATHS,
+  E_INVOICE_TYPES,
+  COUNTRIES,
+  MALAYSIA_STATES,
+  CLASSIFICATIONS,
+} from '../../../utils/constants';
 
 export const getIsWebview = () => isWebview();
 
@@ -37,22 +45,20 @@ export const getEInvoiceSubmissionInfoType = createSelector(
 /**
  * Derived selectors
  */
-export const getIsAvailableQuerySubmissionPage = () => {
+export const getIsLoadEInvoiceStatusPending = createSelector(
+  getLoadEInvoiceStatusStatus,
+  loadEInvoiceStatusStatus => loadEInvoiceStatusStatus === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsLoadEInvoiceStatusFulfilled = createSelector(
+  getLoadEInvoiceStatusStatus,
+  loadEInvoiceStatusStatus => loadEInvoiceStatusStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getCurrentPageRoute = () => {
   const { pathname } = window.location;
-  const routes = Object.values(AVAILABLE_QUERY_E_INVOICE_STATUS_ROUTES);
-  const isAvailableQuerySubmissionPage = routes.some(route => route === pathname || `${route}/` === pathname);
 
-  return isAvailableQuerySubmissionPage;
-};
-
-export const getQuerySubmissionPagePollerKey = () => {
-  const { pathname } = window.location;
-
-  return Object.keys(AVAILABLE_QUERY_E_INVOICE_STATUS_ROUTES).find(key => {
-    const route = AVAILABLE_QUERY_E_INVOICE_STATUS_ROUTES[key];
-
-    return route === pathname || `${route}/` === pathname;
-  });
+  return pathname.replace(PATHS.E_INVOICE, '');
 };
 
 export const getIsQueryEInvoiceStatusValid = createSelector(
@@ -70,6 +76,11 @@ export const getIsQueryEInvoiceStatusRejected = createSelector(
   queryEInvoiceStatus => queryEInvoiceStatus === E_INVOICE_STATUS.REJECT
 );
 
+export const getIsQueryEInvoiceStatusSubmitted = createSelector(
+  getQueryEInvoiceStatus,
+  queryEInvoiceStatus => queryEInvoiceStatus === E_INVOICE_STATUS.SUBMITTED
+);
+
 export const getIsQueryEInvoiceSubmissionCompleted = createSelector(getQueryEInvoiceStatus, queryEInvoiceStatus =>
   [E_INVOICE_STATUS.VALID, E_INVOICE_STATUS.CANCEL, E_INVOICE_STATUS.REJECT].includes(queryEInvoiceStatus)
 );
@@ -78,10 +89,46 @@ export const getIsQueryEInvoiceStatusBreak = createSelector(
   getQueryEInvoiceStatus,
   getLoadEInvoiceStatusError,
   (queryEInvoiceStatus, loadEInvoiceStatusError) =>
-    queryEInvoiceStatus !== E_INVOICE_STATUS.SUBMITTED || !!loadEInvoiceStatusError
+    (queryEInvoiceStatus && queryEInvoiceStatus !== E_INVOICE_STATUS.SUBMITTED) || !!loadEInvoiceStatusError
+);
+
+export const getIsLoadEInvoiceSubmissionDetailsPending = createSelector(
+  getLoadEInvoiceSubmissionDetailStatus,
+  loadEInvoiceSubmissionDetailStatus => loadEInvoiceSubmissionDetailStatus === API_REQUEST_STATUS.PENDING
 );
 
 export const getIsBusinessEInvoiceSubmission = createSelector(
   getEInvoiceSubmissionInfoType,
   eInvoiceSubmissionInfoType => [E_INVOICE_TYPES.BUSINESS].includes(eInvoiceSubmissionInfoType)
 );
+
+export const getCountries = () => {
+  const countries = Object.values(COUNTRIES);
+
+  return countries.map(country => ({
+    id: country.countryCode,
+    ...country,
+  }));
+};
+
+export const getMalaysiaStates = () => {
+  const states = Object.values(MALAYSIA_STATES);
+
+  return states
+    .map(state => ({
+      id: state.state,
+      ...state,
+    }))
+    .sort((previous, next) => previous.state - next.state);
+};
+
+export const getClassifications = () => {
+  const classifications = Object.values(CLASSIFICATIONS);
+
+  return classifications
+    .map(classification => ({
+      id: classification.classification,
+      ...classification,
+    }))
+    .sort((previous, next) => previous.classification - next.classification);
+};

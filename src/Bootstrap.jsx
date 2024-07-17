@@ -5,12 +5,12 @@ import { ErrorBoundary } from '@sentry/react';
 import { Translation } from 'react-i18next';
 import Constants from './utils/constants';
 import Utils from './utils/utils';
-import { isEInvoiceDomain } from './e-invoice/utils';
+import { isEInvoicePathname } from './e-invoice/utils';
 import NotFound from './containers/NotFound';
 import ErrorComponent from './components/Error';
 import i18n from './i18n';
 import 'react-loading-skeleton/dist/skeleton.css';
-import './Bootstrap.scss';
+import styles from './Bootstrap.module.scss';
 import * as NativeMethods from './utils/native-methods';
 import logger from './utils/monitoring/logger';
 import { initDevTools } from './utils/dev-tools';
@@ -138,11 +138,11 @@ class Bootstrap extends Component {
   renderError = ({ eventId }) => (
     <Translation i18n={i18n}>
       {t => (
-        <main className="fixed-wrapper fixed-wrapper__main bootstrap__render-error">
+        <main className={styles.BootstrapRenderError}>
           <ErrorComponent title={t('CommonErrorMessage')} description={t('ErrorId', { id: eventId })}>
-            <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+            <footer className={styles.BootstrapRenderErrorFooter}>
               <button
-                className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+                className={styles.BootstrapRenderErrorFooterButton}
                 data-test-id="common.render-error.back-btn"
                 onClick={this.onErrorScreenBackToHomeButtonClick}
               >
@@ -160,7 +160,7 @@ class Bootstrap extends Component {
       return this.renderSitePages();
     }
 
-    if (isEInvoiceDomain()) {
+    if (isEInvoicePathname()) {
       return this.renderEInvoicePages();
     }
 

@@ -1,6 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from '@reduxjs/toolkit';
 import i18next from 'i18next';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { getPrice } from '../../../../common/utils';
 import {
   E_INVOICE_STATUS,
@@ -40,6 +41,14 @@ export const getEInvoiceInfo = createSelector(getLoadEInvoiceData, loadEInvoiceD
 
 export const getEInvoiceStatus = createSelector(getEInvoiceInfo, eInvoiceInfo => _get(eInvoiceInfo, 'status', null));
 
+export const getEInvoiceInternalEInvoiceUrl = createSelector(getEInvoiceInfo, eInvoiceInfo =>
+  _get(eInvoiceInfo, 'internalEInvoiceUrl', '')
+);
+
+export const getEInvoiceExternalEInvoiceUrl = createSelector(getEInvoiceInfo, eInvoiceInfo =>
+  _get(eInvoiceInfo, 'externalEInvoiceUrl', '')
+);
+
 export const getEInvoiceReferenceNumber = createSelector(getEInvoiceInfo, eInvoiceInfo =>
   _get(eInvoiceInfo, 'externalDocumentId', '')
 );
@@ -49,6 +58,9 @@ export const getEInvoiceSubmittedTimeoutError = state => state.eInvoice.timeoutE
 /**
  * Derived selectors
  */
+export const getIsLoadEInvoiceCompleted = createSelector(getLoadEInvoiceStatus, loadEInvoiceStatus =>
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadEInvoiceStatus)
+);
 
 export const getIsEInvoiceCanceled = createSelector(
   getEInvoiceStatus,
@@ -63,6 +75,11 @@ export const getIsEInvoiceSubmitted = createSelector(
 export const getIsEInvoiceValid = createSelector(
   getEInvoiceStatus,
   eInvoiceStatus => eInvoiceStatus === E_INVOICE_STATUS.VALID
+);
+
+export const getIsEInvoiceReject = createSelector(
+  getEInvoiceStatus,
+  eInvoiceStatus => eInvoiceStatus === E_INVOICE_STATUS.REJECT
 );
 
 export const getEInvoiceStatusColor = createSelector(
@@ -112,7 +129,7 @@ export const getEInvoiceErrorResultInfo = createSelector(
   (loadEInvoiceError, loadEInvoiceStatusError, eInvoiceSubmittedTimeoutError) => {
     const { code: getEInvoiceErrorCode } = loadEInvoiceError || {};
     const { code: getEInvoiceStatusErrorCode } = loadEInvoiceStatusError || {};
-    const resultInfo = { code: getEInvoiceErrorCode || getEInvoiceStatusErrorCode };
+    let resultInfo = { code: getEInvoiceErrorCode || getEInvoiceStatusErrorCode };
 
     // local error
     if (eInvoiceSubmittedTimeoutError) {
@@ -123,6 +140,10 @@ export const getEInvoiceErrorResultInfo = createSelector(
       case GET_E_INVOICE_ERROR_CODES.ORDER_NOT_FOUND:
         resultInfo.title = i18next.t('EInvoice:ErrorOrderNotFoundTitle');
         resultInfo.description = i18next.t('EInvoice:ErrorOrderNotFoundDescription');
+        break;
+      case GET_E_INVOICE_ERROR_CODES.ORDER_TRANSACTION_TYPE_NOT_SUPPORT:
+        resultInfo.title = i18next.t('EInvoice:ErrorOrderTransactionTypeNotSupportTitle');
+        resultInfo.description = i18next.t('EInvoice:ErrorOrderTransactionTypeNotSupportDescription');
         break;
       case GET_E_INVOICE_ERROR_CODES.ORDER_CANCELLED_OR_REFUNDED:
         resultInfo.title = i18next.t('EInvoice:ErrorOrderCanceledOrRefundedTitle');
@@ -137,9 +158,14 @@ export const getEInvoiceErrorResultInfo = createSelector(
         resultInfo.description = i18next.t('EInvoice:ErrorNoEInvoiceSubmitRecordDescription');
         break;
       default:
-        return null;
+        resultInfo = null;
     }
 
     return resultInfo;
   }
+);
+
+export const getIsEInvoiceDataInitialized = createSelector(
+  getIsLoadEInvoiceCompleted,
+  isLoadEInvoiceCompleted => isLoadEInvoiceCompleted
 );
