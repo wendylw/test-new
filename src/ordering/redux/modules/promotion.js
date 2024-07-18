@@ -55,7 +55,7 @@ export const actions = {
         ...Url.API_URLS.APPLY_PROMOTION_CODE,
         payload: {
           promoId: selectedPromo.id,
-          promotionCodeId: selectedPromo.promotionCodeId,
+          uniquePromotionCodeId: selectedPromo.uniquePromotionCodeId,
           fulfillDate: Utils.getFulfillDate(businessUTCOffset),
           shippingType: Utils.getApiRequestShippingType(),
         },
@@ -393,8 +393,8 @@ export function getSelectedPromoId(state) {
   return _get(state.promotion, 'selectedPromo.id', '');
 }
 
-export function getSelectedPromotionCodeId(state) {
-  return _get(state.promotion, 'selectedPromo.promotionCodeId', '');
+export function getSelectedUniquePromotionCodeId(state) {
+  return _get(state.promotion, 'selectedPromo.uniquePromotionCodeId', '');
 }
 
 export function getSelectedPromoCode(state) {
