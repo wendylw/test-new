@@ -3,8 +3,8 @@ import { post } from '../../../../../utils/api/api-fetch';
 /**
  * Promotion part
  */
-export const applyPromotion = ({ receiptNumber, promotionId }) => {
-  const payload = { promotionId };
+export const applyPromotion = ({ receiptNumber, promotionId, promotionCodeId }) => {
+  const payload = { promotionId, promotionCodeId };
 
   return post(`/api/v3/transactions/${receiptNumber}/apply-promotions`, payload);
 };
