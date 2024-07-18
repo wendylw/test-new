@@ -1,5 +1,6 @@
 /* eslint-disable no-use-before-define */
 import _get from 'lodash/get';
+import { createSelector } from 'reselect';
 import { PROMOTION_TYPES } from '../types';
 import Url from '../../../utils/url';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
@@ -197,11 +198,13 @@ export const actions = {
     }
   },
   selectPromo: promo => (dispatch, getState) => {
+    const { id, uniquePromotionCodeId } = promo || {};
     const state = getState();
     const { selectedPromo } = state.promotion;
+    const { id: selectedPromoId, uniquePromotionCodeId: selectedPromoUniquePromotionCodeId } = selectedPromo || {};
 
     // Double click will invert the selection
-    if (!promo || !promo.id || selectedPromo.id === promo.id) {
+    if (!promo || !id || (selectedPromoId === id && selectedPromoUniquePromotionCodeId === uniquePromotionCodeId)) {
       dispatch({
         type: PROMOTION_TYPES.DESELECT_PROMO,
       });
@@ -400,3 +403,35 @@ export function getSelectedUniquePromotionCodeId(state) {
 export function getSelectedPromoCode(state) {
   return _get(state.promotion, 'selectedPromo.code', '');
 }
+
+export const getSearchedPromoList = createSelector(getFoundPromotion, foundPromotion => {
+  const { availablePromos = [], quantity, unavailablePromos = [] } = foundPromotion || {};
+
+  return {
+    availablePromos: availablePromos.map(availablePromo => ({
+      ...availablePromo,
+      key: `${availablePromo.type}-${availablePromo.id}${availablePromo.uniquePromotionCodeId || ''}`,
+    })),
+    quantity,
+    unavailablePromos: unavailablePromos.map(unavailablePromo => ({
+      ...unavailablePromo,
+      key: `${unavailablePromo.type}-${unavailablePromo.id}${unavailablePromo.uniquePromotionCodeId || ''}`,
+    })),
+  };
+});
+
+export const getConsumerVouchersInfo = createSelector(getVoucherList, voucherList => {
+  const { availablePromos = [], quantity, unavailablePromos = [] } = voucherList || {};
+
+  return {
+    availablePromos: availablePromos.map(availablePromo => ({
+      ...availablePromo,
+      key: `${availablePromo.type}-${availablePromo.id}${availablePromo.uniquePromotionCodeId || ''}`,
+    })),
+    quantity,
+    unavailablePromos: unavailablePromos.map(unavailablePromo => ({
+      ...unavailablePromo,
+      key: `${unavailablePromo.type}-${unavailablePromo.id}${unavailablePromo.uniquePromotionCodeId || ''}`,
+    })),
+  };
+});

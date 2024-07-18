@@ -9,8 +9,8 @@ import SearchPromoEmpty from '../../../../../images/beep-search-empty.png';
 
 import {
   actions as promotionActionCreators,
-  getVoucherList,
-  getFoundPromotion,
+  getConsumerVouchersInfo,
+  getSearchedPromoList,
   isPromoSearchMode,
   hasSearchedForPromo as userHasSearchedForPromo,
   getSelectedPromo,
@@ -58,9 +58,9 @@ class PromoList extends Component {
         <ul>
           {promoList.map(promo => (
             <PromoItem
-              key={`promotion-${promo.id}`}
+              key={promo.key}
               promo={promo}
-              isSelected={selectedPromo.id === promo.id}
+              isSelected={selectedPromo.key === promo.key}
               onSelectPromo={() => {
                 CleverTap.pushEvent('Cart Page - select voucher', {
                   ...storeInfoForCleverTap,
@@ -185,8 +185,8 @@ export default compose(
   withTranslation(['OrderingPromotion']),
   connect(
     state => ({
-      voucherList: getVoucherList(state),
-      foundPromo: getFoundPromotion(state),
+      voucherList: getConsumerVouchersInfo(state),
+      foundPromo: getSearchedPromoList(state),
       searchMode: isPromoSearchMode(state),
       hasSearchedForPromo: userHasSearchedForPromo(state),
       selectedPromo: getSelectedPromo(state),
