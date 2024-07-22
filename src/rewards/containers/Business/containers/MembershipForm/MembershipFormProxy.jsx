@@ -6,19 +6,17 @@ import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import ErrorResult from './components/ErrorResult';
 import SkeletonLoader from './components/SkeletonLoader';
+import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import {
   getShouldShowSkeletonLoader,
   getShouldShowUnsupportedError,
   getShouldShowUnknownError,
   getShouldShowBackButton,
-  getIsJoinMembershipNewDesign,
-  getShouldHideHeader,
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
 import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
 import MembershipForm from '.';
-import NewMembershipForm from './MembershipForm';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 
 const MembershipFormProxy = () => {
@@ -35,8 +33,7 @@ const MembershipFormProxy = () => {
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
   const hasJoinedMembership = useSelector(getHasUserJoinedMerchantMembership);
-  const isJoinMembershipNewDesign = useSelector(getIsJoinMembershipNewDesign);
-  const shouldHideHeader = useSelector(getShouldHideHeader);
+  const isWebview = useSelector(getIsWebview);
 
   useEffect(() => {
     if (isLogin) {
@@ -55,7 +52,7 @@ const MembershipFormProxy = () => {
 
   return (
     <Frame>
-      {shouldHideHeader ? null : (
+      {isWebview && (
         <PageHeader
           title={t('JoinOurMembership')}
           onBackArrowClick={handleClickBackButton}
@@ -75,8 +72,6 @@ const MembershipFormProxy = () => {
           imageSrc={BeepWarningImage}
           onCloseButtonClick={handleClickRetryButton}
         />
-      ) : isJoinMembershipNewDesign ? (
-        <NewMembershipForm />
       ) : (
         <MembershipForm />
       )}
