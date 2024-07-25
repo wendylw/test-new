@@ -1,6 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { applyPromotion, removePromotion, applyVoucher, removeVoucher } from './api-request';
-import { getSelectedPromoId, getSelectedPromoCode } from '../../../../redux/modules/promotion';
+import {
+  getSelectedPromoId,
+  getSelectedUniquePromotionCodeId,
+  getSelectedPromoCode,
+} from '../../../../redux/modules/promotion';
 import Utils from '../../../../../utils/utils';
 import logger from '../../../../../utils/monitoring/logger';
 
@@ -25,9 +29,10 @@ export const applyPromo = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     const state = getState();
     const promotionId = getSelectedPromoId(state);
+    const uniquePromotionCodeId = getSelectedUniquePromotionCodeId(state);
     const receiptNumber = Utils.getQueryString('receiptNumber');
     try {
-      const result = await applyPromotion({ receiptNumber, promotionId });
+      const result = await applyPromotion({ receiptNumber, promotionId, uniquePromotionCodeId });
 
       return result;
     } catch (e) {
