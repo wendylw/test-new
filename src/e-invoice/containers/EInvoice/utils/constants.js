@@ -5,6 +5,11 @@ export const PAGE_HTML_ID = {
   value: 'e-invoice-html',
 };
 
+export const E_INVOICE_DOCUMENT_TYPES = {
+  INVOICE: 'INVOICE',
+  REFUND: 'REFUND',
+};
+
 export const GET_E_INVOICE_ERROR_CODES = {
   ORDER_NOT_FOUND: '41028',
   ORDER_TRANSACTION_TYPE_NOT_SUPPORT: '41029',

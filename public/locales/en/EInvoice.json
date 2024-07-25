@@ -10,6 +10,7 @@
   "RequestEInvoiceButtonText": "Request e-invoice",
   "ViewStatusOnIRBMButtonText": "View status on IRBM",
   "ViewEInvoiceButtonText": "View e-invoice",
+  "ViewCreditNoteButtonText": "View credit note",
   "EInvoiceCompliance": "e-Invoice Compliance",
   "EInvoicePowerByStoreHub": "Powered by <0>StoreHub</0>",
   "Canceled": "Canceled",

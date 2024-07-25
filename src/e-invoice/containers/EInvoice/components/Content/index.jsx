@@ -16,6 +16,7 @@ import {
   getIsEInvoiceCanceled,
   getEInvoiceExternalEInvoiceUrl,
   getEInvoiceInternalEInvoiceUrl,
+  getIsEInvoiceDocumentTypeRefund,
 } from '../../redux/selectors';
 import { ObjectFitImage } from '../../../../../common/components/Image';
 import Button from '../../../../../common/components/Button';
@@ -29,6 +30,7 @@ const EInvoiceContentButton = () => {
   const isEInvoiceCanceled = useSelector(getIsEInvoiceCanceled);
   const eInvoiceExternalEInvoiceUrl = useSelector(getEInvoiceExternalEInvoiceUrl);
   const eInvoiceInternalEInvoiceUrl = useSelector(getEInvoiceInternalEInvoiceUrl);
+  const isEInvoiceDocumentTypeRefund = useSelector(getIsEInvoiceDocumentTypeRefund);
   const handleRequestEInvoice = useCallback(() => {
     history.push({
       pathname: PAGE_ROUTES.CATEGORY,
@@ -51,7 +53,7 @@ const EInvoiceContentButton = () => {
           className={styles.EInvoiceContentButton}
           onClick={handleViewEInvoicePage}
         >
-          {t('ViewEInvoiceButtonText')}
+          {isEInvoiceDocumentTypeRefund ? t('ViewCreditNoteButtonText') : t('ViewEInvoiceButtonText')}
         </Button>
         <Button
           data-test-id="eInvoice.home.valid.content.view-status-on-IRBM-button"

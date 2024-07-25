@@ -8,7 +8,12 @@ import {
   GET_E_INVOICE_STATUS_ERROR_CODES,
   SUBMITTED_TIMEOUT_ERROR_MESSAGE,
 } from '../../../utils/constants';
-import { GET_E_INVOICE_ERROR_CODES, STATUS_TAG_COLORS, STATUS_I18N_KEYS } from '../utils/constants';
+import {
+  GET_E_INVOICE_ERROR_CODES,
+  STATUS_TAG_COLORS,
+  STATUS_I18N_KEYS,
+  E_INVOICE_DOCUMENT_TYPES,
+} from '../utils/constants';
 import { getFormatLocaleDateTime } from '../../../../utils/datetime-lib';
 import {
   getMerchantCountry,
@@ -51,6 +56,10 @@ export const getEInvoiceExternalEInvoiceUrl = createSelector(getEInvoiceInfo, eI
 
 export const getEInvoiceReferenceNumber = createSelector(getEInvoiceInfo, eInvoiceInfo =>
   _get(eInvoiceInfo, 'externalDocumentId', '')
+);
+
+export const getEInvoiceDocumentType = createSelector(getEInvoiceInfo, eInvoiceInfo =>
+  _get(eInvoiceInfo, 'eInvoiceDocumentType', null)
 );
 
 export const getEInvoiceSubmittedTimeoutError = state => state.eInvoice.timeoutError;
@@ -168,4 +177,9 @@ export const getEInvoiceErrorResultInfo = createSelector(
 export const getIsEInvoiceDataInitialized = createSelector(
   getIsLoadEInvoiceCompleted,
   isLoadEInvoiceCompleted => isLoadEInvoiceCompleted
+);
+
+export const getIsEInvoiceDocumentTypeRefund = createSelector(
+  getEInvoiceDocumentType,
+  eInvoiceDocumentType => eInvoiceDocumentType === E_INVOICE_DOCUMENT_TYPES.REFUND
 );
