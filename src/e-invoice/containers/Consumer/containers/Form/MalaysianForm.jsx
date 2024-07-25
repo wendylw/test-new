@@ -149,7 +149,7 @@ const EInvoiceConsumerMalaysianForm = () => {
           data-test-id="eInvoice.consumer.form.malaysian.myKadIdentificationNo"
           label={t('IdentificationNumberFieldTitle')}
           name="myKadIdentificationNo"
-          rules={{ required: true, pattern: /^\d*$/ }}
+          rules={{ required: true, pattern: /^\d{12}$/ }}
           maxlength={12}
           value={consumerMalaysianSubmissionMYKadIdentificationNo}
           onBlur={handleUpdateMYKadIdentificationNumber}
