@@ -327,5 +327,6 @@
   "LoginSessionExpiredTitle": "Oops! This session has expired",
   "LoginSessionExpiredDescription": "Please close this page and start again",
   "UnexpectedErrorOccurred": "Oops! An unexpected error has occurred",
-  "More": "More"
+  "More": "More",
+  "UniquePromosCountText": "{{uniquePromosAvailableCount}} rewards!"
 }

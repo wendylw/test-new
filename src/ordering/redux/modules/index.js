@@ -4,6 +4,7 @@ import entities from '../../../redux/modules/entities';
 import app from './app';
 import profile from '../../containers/Profile/redux/index';
 import cart from './cart';
+import rewards from './rewards';
 import shoppingCart from '../../containers/shopping-cart/redux';
 import promotion from './promotion';
 import payments from '../../containers/payments/redux';
@@ -26,6 +27,7 @@ const rootReducer = history =>
     entities,
     app,
     cart,
+    rewards,
     shoppingCart,
     customer,
     payments,

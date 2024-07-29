@@ -22,6 +22,8 @@ import {
   getIsAlipayMiniProgram,
   getIsDynamicUrlExpired,
 } from '../../../../redux/modules/app';
+import { getUniquePromosAvailableCount } from '../../../../redux/modules/rewards/selectors';
+import { fetchUniquePromosAvailableCount as fetchUniquePromosAvailableCountThunk } from '../../../../redux/modules/rewards/thunks';
 import logger from '../../../../../utils/monitoring/logger';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import { actions as cartSubmissionActions } from '../../../../redux/modules/cart';
@@ -99,9 +101,13 @@ export class TableSummary extends React.Component {
   }
 
   async componentDidMount() {
-    const { t, history, queryOrdersAndStatus } = this.props;
+    const { t, history, queryOrdersAndStatus, fetchUniquePromosAvailableCount, isLogin } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber');
     const emptyString = ['null', 'undefined', ''];
+
+    if (isLogin) {
+      fetchUniquePromosAvailableCount();
+    }
 
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
@@ -132,6 +138,13 @@ export class TableSummary extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevStates) {
+    const { isLogin: prevIsLogin } = prevProps;
+    const { isLogin, fetchUniquePromosAvailableCount } = this.props;
+
+    if (isLogin && !prevIsLogin) {
+      fetchUniquePromosAvailableCount();
+    }
+
     this.setCartContainerHeight(prevStates.cartContainerHeight);
 
     const { hasTableIdChanged: prevHasTableIdChanged, cleverTapAttributes: prevCleverTapAttributes } = prevProps;
@@ -572,7 +585,14 @@ export class TableSummary extends React.Component {
   }
 
   renderPromotionItem() {
-    const { t, oderPromoDiscount, orderVoucherDiscount, promoOrVoucherExist, isOrderPlaced } = this.props;
+    const {
+      t,
+      oderPromoDiscount,
+      orderVoucherDiscount,
+      promoOrVoucherExist,
+      isOrderPlaced,
+      uniquePromosAvailableCount,
+    } = this.props;
 
     if (promoOrVoucherExist) {
       return (
@@ -604,12 +624,21 @@ export class TableSummary extends React.Component {
     return isOrderPlaced ? (
       <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
         <button
-          className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
+          className="table-summary__button-acquisition button button__block flex flex-middle flex-space-between text-left padding-top-bottom-smaller padding-left-right-normal"
           onClick={this.handleGotoPromotion}
           data-test-id="ordering.table-summary.add-promo"
         >
-          <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
-          <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
+          <div>
+            <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
+            <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
+          </div>
+          {uniquePromosAvailableCount > 0 ? (
+            <div className="table-summary__rewards-number-text-container">
+              <span className="table-summary__rewards-number-text text-size-small text-line-height-base text-weight-bolder padding-top-bottom-smaller">
+                {t('UniquePromosCountText', { uniquePromosAvailableCount })}
+              </span>
+            </div>
+          ) : null}
         </button>
       </li>
     ) : null;
@@ -899,6 +928,8 @@ TableSummary.propTypes = {
   storeHash: PropTypes.string,
   orderTableId: PropTypes.string,
   isDynamicUrlExpired: PropTypes.bool,
+  uniquePromosAvailableCount: PropTypes.number,
+  fetchUniquePromosAvailableCount: PropTypes.func,
 };
 
 TableSummary.defaultProps = {
@@ -958,6 +989,8 @@ TableSummary.defaultProps = {
   storeHash: null,
   orderTableId: null,
   isDynamicUrlExpired: false,
+  uniquePromosAvailableCount: 0,
+  fetchUniquePromosAvailableCount: () => {},
 };
 
 export default compose(
@@ -1007,6 +1040,7 @@ export default compose(
       storeHash: getStoreHash(state),
       orderTableId: getOrderTableId(state),
       isDynamicUrlExpired: getIsDynamicUrlExpired(state),
+      uniquePromosAvailableCount: getUniquePromosAvailableCount(state),
     }),
 
     {
@@ -1023,6 +1057,7 @@ export default compose(
       updateCashbackApplyStatus: commonActionCreators.updateCashbackApplyStatus,
       showProcessingLoader: showProcessingLoaderThunk,
       hideProcessingLoader: hideProcessingLoaderThunk,
+      fetchUniquePromosAvailableCount: fetchUniquePromosAvailableCountThunk,
     }
   )
 )(TableSummary);

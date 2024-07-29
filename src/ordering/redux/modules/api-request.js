@@ -2,7 +2,11 @@ import { get, post } from '../../../utils/api/api-fetch';
 
 export const getProfileInfo = consumerId => get(`/api/v3/consumers/${consumerId}/profile`);
 
-export const getVoucherConsumerList = consumerId => get(`/api/consumers/${consumerId}/vouchers`);
+// shippingType field: https://storehub.atlassian.net/browse/WB-8827
+export const getVoucherConsumerList = (consumerId, shippingType) =>
+  get(`/api/consumers/${consumerId}/vouchers`, {
+    queryParams: { shippingType },
+  });
 
 export const getSearchPromotionInfo = ({ consumerId, business, promoCode }) =>
   get(`/api/consumers/${consumerId}/vouchers`, {

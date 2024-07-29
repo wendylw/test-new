@@ -7,7 +7,7 @@ import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getVoucherConsumerList, getSearchPromotionInfo } from './api-request';
-import { getBusiness, getBusinessUTCOffset, getCartBilling, getUserConsumerId } from './app';
+import { getBusiness, getBusinessUTCOffset, getCartBilling, getUserConsumerId, getApiRequestShippingType } from './app';
 
 const { PROMO_TYPE } = Constants;
 
@@ -143,7 +143,8 @@ export const actions = {
 
       const state = getState();
       const consumerId = getUserConsumerId(state);
-      const result = await getVoucherConsumerList(consumerId);
+      const shippingType = getApiRequestShippingType(state);
+      const result = await getVoucherConsumerList(consumerId, shippingType);
 
       await dispatch({
         type: PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_SUCCESS,

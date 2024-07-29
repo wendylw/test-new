@@ -2027,6 +2027,10 @@ export const getIsTakeawayType = createSelector(
   shippingType => shippingType === DELIVERY_METHOD.TAKE_AWAY
 );
 
+export const getApiRequestShippingType = createSelector(getShippingType, shippingType =>
+  Utils.getApiRequestShippingType(shippingType)
+);
+
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)
 );

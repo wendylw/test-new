@@ -44,6 +44,8 @@ import {
   getIsFreeOrder,
   getIsGuestCheckout,
 } from '../../../../redux/modules/app';
+import { getUniquePromosAvailableCount } from '../../../../redux/modules/rewards/selectors';
+import { fetchUniquePromosAvailableCount as fetchUniquePromosAvailableCountThunk } from '../../../../redux/modules/rewards/thunks';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import {
   loadStockStatus as loadStockStatusThunk,
@@ -78,7 +80,14 @@ class PayFirst extends Component {
   }
 
   async componentDidMount() {
-    const { history, appActions, storeInfoForCleverTap, isGuestCheckout } = this.props;
+    const {
+      history,
+      appActions,
+      storeInfoForCleverTap,
+      isGuestCheckout,
+      isLogin,
+      fetchUniquePromosAvailableCount,
+    } = this.props;
     const from = Utils.getCookieVariable('__pl_cp_source');
     Utils.removeCookieVariable('__pl_cp_source');
 
@@ -91,6 +100,10 @@ class PayFirst extends Component {
 
     await appActions.loadShoppingCart();
 
+    if (isLogin) {
+      fetchUniquePromosAvailableCount();
+    }
+
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
@@ -100,8 +113,15 @@ class PayFirst extends Component {
   }
 
   componentDidUpdate(prevProps, prevStates) {
+    const { isLogin: prevIsLogin } = prevProps;
+    const { isLogin, fetchUniquePromosAvailableCount } = this.props;
+
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
+
+    if (isLogin && !prevIsLogin) {
+      fetchUniquePromosAvailableCount();
+    }
   }
 
   componentWillUnmount = () => {
@@ -674,7 +694,7 @@ class PayFirst extends Component {
   }
 
   renderPromotionItem() {
-    const { t, cartBilling } = this.props;
+    const { t, cartBilling, uniquePromosAvailableCount } = this.props;
     const { promotion } = cartBilling || {};
 
     return (
@@ -700,12 +720,21 @@ class PayFirst extends Component {
           </>
         ) : (
           <button
-            className="cart-promotion__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
+            className="cart-promotion__button-acquisition button button__block flex flex-middle flex-space-between text-left padding-top-bottom-smaller padding-left-right-normal"
             onClick={this.handleGotoPromotion}
             data-test-id="ordering.cart.add-promo"
           >
-            <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
-            <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
+            <div>
+              <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
+              <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
+            </div>
+            {uniquePromosAvailableCount > 0 ? (
+              <div className="cart-promotion__rewards-number-text-container">
+                <span className="cart-promotion__rewards-number-text text-size-small text-line-height-base text-weight-bolder padding-top-bottom-smaller">
+                  {t('UniquePromosCountText', { uniquePromosAvailableCount })}
+                </span>
+              </div>
+            ) : null}
           </button>
         )}
       </li>
@@ -937,6 +966,8 @@ PayFirst.propTypes = {
   shouldShowSwitchButton: PropTypes.bool,
   shouldShowProcessingLoader: PropTypes.bool,
   hasUpdateCashbackApplyStatusFailed: PropTypes.bool,
+  uniquePromosAvailableCount: PropTypes.number,
+  fetchUniquePromosAvailableCount: PropTypes.func,
 };
 
 PayFirst.defaultProps = {
@@ -985,6 +1016,8 @@ PayFirst.defaultProps = {
   shouldShowSwitchButton: false,
   shouldShowProcessingLoader: false,
   hasUpdateCashbackApplyStatusFailed: false,
+  uniquePromosAvailableCount: 0,
+  fetchUniquePromosAvailableCount: () => {},
 };
 
 /* TODO: backend data */
@@ -1019,12 +1052,14 @@ export default compose(
       shouldShowSwitchButton: getShouldShowCashbackSwitchButton(state),
       shouldShowProcessingLoader: getIsReloadBillingByCashbackRequestPending(state),
       hasUpdateCashbackApplyStatusFailed: getIsReloadBillingByCashbackRequestRejected(state),
+      uniquePromosAvailableCount: getUniquePromosAvailableCount(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),
       reloadBillingByCashback: bindActionCreators(reloadBillingByCashbackThunk, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
+      fetchUniquePromosAvailableCount: bindActionCreators(fetchUniquePromosAvailableCountThunk, dispatch),
     })
   )
 )(PayFirst);
