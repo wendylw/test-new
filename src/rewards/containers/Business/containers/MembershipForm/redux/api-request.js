@@ -7,11 +7,3 @@ export const getOrderRewards = async ({ receiptNumber, business, channel }) =>
       channel,
     },
   });
-
-export const postClaimedOrderRewards = async ({ receiptNumber, business, channel }) =>
-  post(`/api/v3/transaction/${receiptNumber}/rewards`, {
-    queryParams: {
-      business,
-      channel,
-    },
-  });
