@@ -2,6 +2,14 @@
   @apply tw-flex tw-flex-col tw-items-center tw-px-12 sm:tw-px-12px tw-pb-24 sm:tw-pb-24px;
 }
 
+.RewardsDescriptionGetRewardsTitle {
+  @apply tw-text-center tw-text-2xl tw-leading-normal tw-text-gray-50 tw-font-bold;
+}
+
+.RewardsDescriptionGetRewardsDescription {
+  @apply tw-text-center tw-text-2xl tw-leading-normal tw-text-gray-50;
+}
+
 .RewardsDescriptionImageContainer {
   width: 40%;
   max-width: 150px;

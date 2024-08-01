@@ -190,3 +190,10 @@ export const getIsRequestOrderRewardsEnabled = createSelector(
   (receiptNumber, isMerchantEnabledCashback, isMerchantMembershipPointsEnabled) =>
     receiptNumber && (isMerchantEnabledCashback || isMerchantMembershipPointsEnabled)
 );
+
+export const getIsOrderRewardsDescriptionShow = createSelector(
+  getIsRequestOrderRewardsEnabled,
+  getLoadOrderRewardsRequestError,
+  (isRequestOrderRewardsEnabled, loadOrderRewardsRequestError) =>
+    isRequestOrderRewardsEnabled || loadOrderRewardsRequestError
+);
