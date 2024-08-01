@@ -24,6 +24,10 @@ import {
   getCustomerAvailablePointsBalance,
 } from '../../../../redux/modules/customer/selectors';
 
+export const getReceiptNumber = () => window.atob(getQueryString('receiptNumber'));
+
+export const getChannel = () => getQueryString('channel');
+
 export const getOrderReceiptClaimedCashbackStatus = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.STATUS);
 
 export const getOrderReceiptClaimedCashbackValue = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.VALUE);

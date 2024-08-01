@@ -5,15 +5,8 @@ import { getCookieVariable, setCookieVariable, removeCookieVariable, getClient }
 import { PATH_NAME_MAPPING, REFERRER_SOURCE_TYPES } from '../../../../../../common/utils/constants';
 import logger from '../../../../../../utils/monitoring/logger';
 import CleverTap from '../../../../../../utils/clevertap';
-import {
-  getIsAlipayMiniProgram,
-  getIsWebview,
-  getLocationSearch,
-  getSource,
-  getBusiness,
-} from '../../../../../redux/modules/common/selectors';
-import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
 import Growthbook from '../../../../../../utils/growthbook';
+import { getIsLogin, getConsumerId } from '../../../../../../redux/modules/user/selectors';
 import {
   initUserInfo,
   loginUserByBeepApp,
@@ -22,9 +15,18 @@ import {
 import { getMerchantBusiness, getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { joinMembership, fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
+import {
+  getIsAlipayMiniProgram,
+  getIsWebview,
+  getLocationSearch,
+  getSource,
+  getBusiness,
+} from '../../../../../redux/modules/common/selectors';
+import { getReceiptNumber, getChannel } from '../../../redux/common/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
 import { getShouldShowProfileForm, getStoreId } from './selectors';
+import { getOrderRewards, postClaimedOrderPointsCashback } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
   'rewards/business/membershipForm/showWebProfileForm',
@@ -41,6 +43,34 @@ export const loadCustomerInfo = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     const business = getBusiness(getState());
     await dispatch(fetchCustomerInfo(business));
+  }
+);
+
+export const loadOrderRewards = createAsyncThunk(
+  'rewards/business/membershipForm/loadOrderRewards',
+  async (_, { getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+    const receiptNumber = getReceiptNumber(state);
+    const channel = getChannel(state);
+
+    const result = await getOrderRewards({ receiptNumber, business, channel });
+
+    return result;
+  }
+);
+
+export const claimOrderRewards = createAsyncThunk(
+  'rewards/business/membershipForm/claimOrderRewards',
+  async (_, { getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+    const receiptNumber = getReceiptNumber(state);
+    const channel = getChannel(state);
+
+    const result = await postClaimedOrderPointsCashback({ receiptNumber, business, channel });
+
+    return result;
   }
 );
 

@@ -33,8 +33,15 @@ import {
 
 export const getStoreId = () => getQueryString('storeId');
 
-export const getReceiptNumberAndChannel = () => window.atob(getQueryString('receiptNumber'));
+export const getLoadOrderRewardsRequestData = state => state.business.membershipForm.loadOrderRewardsRequest.data;
 
+export const getLoadOrderRewardsRequestStatus = state => state.business.membershipForm.loadOrderRewardsRequest.status;
+
+export const getLoadOrderRewardsRequestError = state => state.business.membershipForm.loadOrderRewardsRequest.error;
+
+/**
+ * Derived selectors
+ */
 export const getIsLoadCustomerRequestStatusRejected = createSelector(
   getLoadCustomerRequestStatus,
   loadCustomerRequestStatus => loadCustomerRequestStatus === API_REQUEST_STATUS.REJECTED
@@ -173,4 +180,11 @@ export const getJoinMembershipRewardList = createSelector(
 
     return rewards;
   }
+);
+
+export const getIsMerchantEnabledPointsOrCashback = createSelector(
+  getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
+  (isMerchantEnabledCashback, isMerchantMembershipPointsEnabled) =>
+    isMerchantEnabledCashback || isMerchantMembershipPointsEnabled
 );
