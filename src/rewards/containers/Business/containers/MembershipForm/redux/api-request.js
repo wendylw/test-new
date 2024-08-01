@@ -8,8 +8,8 @@ export const getOrderRewards = async ({ receiptNumber, business, channel }) =>
     },
   });
 
-export const postClaimedOrderPointsCashback = async ({ receiptNumber, business, channel }) =>
-  post(`/api/v3/transaction/${receiptNumber}/membership`, {
+export const postClaimedOrderRewards = async ({ receiptNumber, business, channel }) =>
+  post(`/api/v3/transaction/${receiptNumber}/rewards`, {
     queryParams: {
       business,
       channel,

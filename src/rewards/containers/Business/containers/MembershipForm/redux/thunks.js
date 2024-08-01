@@ -26,7 +26,7 @@ import { getReceiptNumber, getChannel } from '../../../redux/common/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
 import { getShouldShowProfileForm, getStoreId } from './selectors';
-import { getOrderRewards, postClaimedOrderPointsCashback } from './api-request';
+import { getOrderRewards, postClaimedOrderRewards } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
   'rewards/business/membershipForm/showWebProfileForm',
@@ -68,7 +68,7 @@ export const claimOrderRewards = createAsyncThunk(
     const receiptNumber = getReceiptNumber(state);
     const channel = getChannel(state);
 
-    const result = await postClaimedOrderPointsCashback({ receiptNumber, business, channel });
+    const result = await postClaimedOrderRewards({ receiptNumber, business, channel });
 
     return result;
   }
