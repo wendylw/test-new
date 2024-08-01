@@ -5,6 +5,7 @@ import {
   fetchUniquePromoListBanners,
   fetchPointsRewardList,
   claimPointsReward,
+  claimOrderRewards,
 } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
