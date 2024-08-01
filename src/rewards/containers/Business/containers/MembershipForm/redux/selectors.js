@@ -1,3 +1,4 @@
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import i18next from 'i18next';
 import RewardsPointsWhiteIcon from '../../../../../../images/rewards-points-icon-white.svg';
@@ -8,7 +9,7 @@ import RewardsVouchersWhiteIcon from '../../../../../../images/rewards-vouchers-
 import { API_REQUEST_STATUS, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
 import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
-import { getQueryString } from '../../../../../../common/utils';
+import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import {
   getIsLogin,
@@ -23,6 +24,9 @@ import {
   getIsMerchantEnabledStoreCredits,
   getIsMerchantEnabledCashback,
   getIsMerchantMembershipPointsEnabled,
+  getMerchantCountry,
+  getMerchantLocale,
+  getMerchantCurrency,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import {
@@ -39,6 +43,18 @@ export const getLoadOrderRewardsRequestData = state => state.business.membership
 export const getLoadOrderRewardsRequestStatus = state => state.business.membershipForm.loadOrderRewardsRequest.status;
 
 export const getLoadOrderRewardsRequestError = state => state.business.membershipForm.loadOrderRewardsRequest.error;
+
+export const getOrderRewardsPoints = createSelector(
+  getLoadOrderRewardsRequestData,
+  loadOrderRewardsRequestData => _get(loadOrderRewardsRequestData, 'points.amount'),
+  0
+);
+
+export const getOrderRewardsCashback = createSelector(
+  getLoadOrderRewardsRequestData,
+  loadOrderRewardsRequestData => _get(loadOrderRewardsRequestData, 'cashback.amount'),
+  0
+);
 
 /**
  * Derived selectors
@@ -196,4 +212,13 @@ export const getIsOrderRewardsDescriptionShow = createSelector(
   getLoadOrderRewardsRequestError,
   (isRequestOrderRewardsEnabled, loadOrderRewardsRequestError) =>
     isRequestOrderRewardsEnabled || loadOrderRewardsRequestError
+);
+
+export const getOrderRewardsCashbackPrice = createSelector(
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+  getOrderRewardsCashback,
+  (merchantCountry, merchantCurrency, merchantLocale, orderRewardsCashback) =>
+    getPrice(orderRewardsCashback, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry })
 );
