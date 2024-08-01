@@ -33,6 +33,8 @@ import {
 
 export const getStoreId = () => getQueryString('storeId');
 
+export const getReceiptNumberAndChannel = () => window.atob(getQueryString('receiptNumber'));
+
 export const getIsLoadCustomerRequestStatusRejected = createSelector(
   getLoadCustomerRequestStatus,
   loadCustomerRequestStatus => loadCustomerRequestStatus === API_REQUEST_STATUS.REJECTED
