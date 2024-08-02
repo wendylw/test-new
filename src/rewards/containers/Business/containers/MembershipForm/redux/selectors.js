@@ -207,7 +207,7 @@ export const getIsOrderRewardsDescriptionShow = createSelector(
   getIsRequestOrderRewardsEnabled,
   getLoadOrderRewardsRequestError,
   (isRequestOrderRewardsEnabled, loadOrderRewardsRequestError) =>
-    isRequestOrderRewardsEnabled || loadOrderRewardsRequestError
+    isRequestOrderRewardsEnabled && !loadOrderRewardsRequestError
 );
 
 export const getOrderRewardsCashbackPrice = createSelector(
