@@ -44,16 +44,12 @@ export const getLoadOrderRewardsRequestStatus = state => state.business.membersh
 
 export const getLoadOrderRewardsRequestError = state => state.business.membershipForm.loadOrderRewardsRequest.error;
 
-export const getOrderRewardsPoints = createSelector(
-  getLoadOrderRewardsRequestData,
-  loadOrderRewardsRequestData => _get(loadOrderRewardsRequestData, 'points.amount'),
-  0
+export const getOrderRewardsPoints = createSelector(getLoadOrderRewardsRequestData, loadOrderRewardsRequestData =>
+  _get(loadOrderRewardsRequestData, 'points.amount', 0)
 );
 
-export const getOrderRewardsCashback = createSelector(
-  getLoadOrderRewardsRequestData,
-  loadOrderRewardsRequestData => _get(loadOrderRewardsRequestData, 'cashback.amount'),
-  0
+export const getOrderRewardsCashback = createSelector(getLoadOrderRewardsRequestData, loadOrderRewardsRequestData =>
+  _get(loadOrderRewardsRequestData, 'cashback.amount', 0)
 );
 
 /**

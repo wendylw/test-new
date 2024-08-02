@@ -25,30 +25,40 @@ const RewardsDescription = () => {
   return (
     <div className={styles.RewardsDescription}>
       {isOrderRewardsDescriptionShow ? (
-        <>
+        <div className={styles.RewardsDescriptionGetRewardsContainer}>
           <h3 className={styles.RewardsDescriptionGetRewardsTitle}>{t('JoinMembershipGetRewardsTitle')}</h3>
-          <ul>
+          <ul className={styles.RewardsDescriptionTicketList}>
             {orderRewardsPoints ? (
-              <li>
+              <li className={styles.RewardsDescriptionTicketItem}>
                 <Ticket
+                  className={styles.RewardsDescriptionTicketContainer}
+                  ticketClassName={`${styles.RewardsDescriptionPointsTicket} ${styles.RewardsDescriptionTicket}`}
+                  stubClassName={styles.RewardsDescriptionTicketStub}
                   main={<RewardsPoint />}
                   stub={
                     <>
-                      <data value={orderRewardsPoints}>{orderRewardsPoints}</data>
-                      <span>{t('Points')}</span>
+                      <data className={styles.RewardsDescriptionTicketValue} value={orderRewardsPoints}>
+                        {orderRewardsPoints}
+                      </data>
+                      <span className={styles.RewardsDescriptionTicketText}>{t('Points')}</span>
                     </>
                   }
                 />
               </li>
             ) : null}
             {orderRewardsCashback ? (
-              <li>
+              <li className={styles.RewardsDescriptionTicketItem}>
                 <Ticket
-                  main={<RewardsCashback />}
+                  className={styles.RewardsDescriptionTicketContainer}
+                  ticketClassName={`${styles.RewardsDescriptionCashbackTicket} ${styles.RewardsDescriptionTicket}`}
+                  stubClassName={styles.RewardsDescriptionTicketStub}
+                  main={<RewardsCashback color="#1c1c1c" />}
                   stub={
                     <>
-                      <data value={orderRewardsCashbackPrice}>{orderRewardsCashbackPrice}</data>
-                      <span>{t('Cashback')}</span>
+                      <data className={styles.RewardsDescriptionTicketValue} value={orderRewardsCashbackPrice}>
+                        {orderRewardsCashbackPrice}
+                      </data>
+                      <span className={styles.RewardsDescriptionTicketText}>{t('Cashback')}</span>
                     </>
                   }
                 />
@@ -56,8 +66,8 @@ const RewardsDescription = () => {
             ) : null}
           </ul>
           <p className={styles.RewardsDescriptionGetRewardsDescription}>{t('JoinMembershipGetRewardsDescription')}</p>
-          <DirectionArrow />
-        </>
+          <DirectionArrow className={styles.RewardsDescriptionGetRewardsDirectionArrow} />
+        </div>
       ) : (
         <>
           <div className={styles.RewardsDescriptionImageContainer}>
