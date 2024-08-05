@@ -7,7 +7,7 @@ import RewardsStoreCreditsWhiteIcon from '../../../../../../images/rewards-store
 import RewardsDiscountWhiteIcon from '../../../../../../images/rewards-discount-icon-white.svg';
 import RewardsVouchersWhiteIcon from '../../../../../../images/rewards-vouchers-icon-white.svg';
 import { API_REQUEST_STATUS, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
-import { CUSTOMER_NOT_FOUND_ERROR_CODE } from '../constants';
+import { CUSTOMER_NOT_FOUND_ERROR_CODE, REWARDS_NAMES } from '../constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
@@ -217,4 +217,29 @@ export const getOrderRewardsCashbackPrice = createSelector(
   getOrderRewardsCashback,
   (merchantCountry, merchantCurrency, merchantLocale, orderRewardsCashback) =>
     getPrice(orderRewardsCashback, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry })
+);
+
+export const getOrderRewards = createSelector(
+  getOrderRewardsPoints,
+  getOrderRewardsCashback,
+  getOrderRewardsCashbackPrice,
+  (orderRewardsPoints, orderRewardsCashback, orderRewardsCashbackPrice) => {
+    const rewards = [];
+
+    if (!!orderRewardsPoints) {
+      rewards.push({
+        key: REWARDS_NAMES.POINTS,
+        value: orderRewardsPoints,
+      });
+    }
+
+    if (!!orderRewardsCashback) {
+      rewards.push({
+        key: REWARDS_NAMES.CASHBACK,
+        value: orderRewardsCashbackPrice,
+      });
+    }
+
+    return rewards;
+  }
 );
