@@ -143,6 +143,7 @@ export const continueJoinMembership = createAsyncThunk(
     }
 
     const shouldShowProfileForm = getShouldShowProfileForm(getState());
+    const isRequestOrderRewardsEnabled = getIsRequestOrderRewardsEnabled(getState());
 
     try {
       if (shouldShowProfileForm) {
@@ -150,6 +151,7 @@ export const continueJoinMembership = createAsyncThunk(
         throw new Error('Incomplete user profile');
       }
 
+      isRequestOrderRewardsEnabled && (await dispatch(claimOrderRewards()));
       await dispatch(joinBusinessMembership());
     } catch (error) {
       logger.error('Rewards_Business_JoinMembershipFailed', { message: error?.message });
@@ -191,7 +193,6 @@ export const mounted = createAsyncThunk(
 
     if (from === REFERRER_SOURCE_TYPES.LOGIN) {
       await dispatch(continueJoinMembership());
-      isRequestOrderRewardsEnabled && (await dispatch(claimOrderRewards()));
     }
   }
 );
