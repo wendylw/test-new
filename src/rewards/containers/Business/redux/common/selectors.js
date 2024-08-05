@@ -24,6 +24,7 @@ import {
   getCustomerAvailablePointsBalance,
 } from '../../../../redux/modules/customer/selectors';
 
+// BE prevent users from manually changing the URL to obtain point and cashback, using base64 encryption
 export const getReceiptNumber = () => window.atob(getQueryString('receiptNumber'));
 
 export const getChannel = () => getQueryString('channel');
