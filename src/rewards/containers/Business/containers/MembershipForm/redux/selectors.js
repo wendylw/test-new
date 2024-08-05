@@ -226,14 +226,14 @@ export const getOrderRewards = createSelector(
   (orderRewardsPoints, orderRewardsCashback, orderRewardsCashbackPrice) => {
     const rewards = [];
 
-    if (!!orderRewardsPoints) {
+    if (orderRewardsPoints) {
       rewards.push({
         key: REWARDS_NAMES.POINTS,
         value: orderRewardsPoints,
       });
     }
 
-    if (!!orderRewardsCashback) {
+    if (orderRewardsCashback) {
       rewards.push({
         key: REWARDS_NAMES.CASHBACK,
         value: orderRewardsCashbackPrice,
