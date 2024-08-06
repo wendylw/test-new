@@ -7,6 +7,7 @@ export const GET_REWARDS_MAX_LENGTH = 5;
 
 export const MEMBER_TYPE_I18N_PARAM_KEYS = {
   CASHBACK_VALUE: 'cashbackValue',
+  REWARD_TYPE: 'rewardType',
 };
 
 export const NEW_MEMBER_TYPES = {

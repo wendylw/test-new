@@ -15,6 +15,15 @@ export const CLAIMED_CASHBACK_STATUS = {
   NOT_CLAIMED: 'NotClaimed',
 };
 
+export const CLAIMED_POINTS_STATUS = {
+  CLAIMED_SOMEONE_ELSE: 'Claimed_Someone_Else',
+  NOT_CLAIMED_EXPIRED: 'NotClaimed_Expired',
+  CLAIMED_REPEAT: 'Claimed_Repeat',
+  NOT_CLAIMED_REACH_LIMIT: 'NotClaimed_ReachLimit',
+  NOT_CLAIMED_CANCELLED: 'NotClaimed_Cancelled',
+  NotClaimed: 'NotClaimed',
+};
+
 export const CLAIMED_POINTS_REWARD_ERROR_CODES = {
   PROMO_IS_NOT_REDEEMABLE: '395279',
   INVALID_POINT_SOURCE: '395280',
