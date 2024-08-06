@@ -28,13 +28,17 @@ import {
   getMerchantLocale,
   getMerchantCurrency,
 } from '../../../../../../redux/modules/merchant/selectors';
-import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
+import {
+  getIsWebview,
+  getSource,
+  getIsFromReceiptJoinMembershipUrlQRScan,
+} from '../../../../../redux/modules/common/selectors';
 import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
   getHasUserJoinedMerchantMembership,
 } from '../../../../../redux/modules/customer/selectors';
-import { getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
+import { getIsReceiptMerchantPointsCashbackEnabled } from '../../../redux/common/selectors';
 
 export const getStoreId = () => getQueryString('storeId');
 
@@ -195,11 +199,18 @@ export const getJoinMembershipRewardList = createSelector(
   }
 );
 
-export const getIsClaimedOrderRewardsEnabled = createSelector(
-  getIsRequestOrderRewardsEnabled,
+export const getIsJoinMembershipRequestOrderRewardsEnabled = createSelector(
+  getIsReceiptMerchantPointsCashbackEnabled,
+  getIsFromReceiptJoinMembershipUrlQRScan,
+  (isReceiptMerchantPointsCashbackEnabled, isFromReceiptJoinMembershipUrlQRScan) =>
+    isReceiptMerchantPointsCashbackEnabled && isFromReceiptJoinMembershipUrlQRScan
+);
+
+export const getIsJoinMembershipClaimedOrderRewardsEnabled = createSelector(
+  getIsJoinMembershipRequestOrderRewardsEnabled,
   getLoadOrderRewardsRequestError,
-  (isRequestOrderRewardsEnabled, loadOrderRewardsRequestError) =>
-    isRequestOrderRewardsEnabled && !loadOrderRewardsRequestError
+  (isJoinMembershipRequestOrderRewardsEnabled, loadOrderRewardsRequestError) =>
+    isJoinMembershipRequestOrderRewardsEnabled && !loadOrderRewardsRequestError
 );
 
 export const getOrderRewardsCashbackPrice = createSelector(

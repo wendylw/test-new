@@ -22,11 +22,16 @@ import {
   getSource,
   getBusiness,
 } from '../../../../../redux/modules/common/selectors';
-import { getReceiptNumber, getChannel, getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
+import { getReceiptNumber, getChannel } from '../../../redux/common/selectors';
 import { claimOrderRewards } from '../../../redux/common/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
-import { getShouldShowProfileForm, getStoreId, getIsClaimedOrderRewardsEnabled } from './selectors';
+import {
+  getShouldShowProfileForm,
+  getStoreId,
+  getIsJoinMembershipRequestOrderRewardsEnabled,
+  getIsJoinMembershipClaimedOrderRewardsEnabled,
+} from './selectors';
 import { getOrderRewards } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
@@ -143,7 +148,7 @@ export const continueJoinMembership = createAsyncThunk(
     }
 
     const shouldShowProfileForm = getShouldShowProfileForm(getState());
-    const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
+    const isJoinMembershipClaimedOrderRewardsEnabled = getIsJoinMembershipClaimedOrderRewardsEnabled(getState());
 
     try {
       if (shouldShowProfileForm) {
@@ -151,7 +156,7 @@ export const continueJoinMembership = createAsyncThunk(
         throw new Error('Incomplete user profile');
       }
 
-      isClaimedOrderRewardsEnabled && (await dispatch(claimOrderRewards()));
+      isJoinMembershipClaimedOrderRewardsEnabled && (await dispatch(claimOrderRewards()));
       await dispatch(joinBusinessMembership());
     } catch (error) {
       logger.error('Rewards_Business_JoinMembershipFailed', { message: error?.message });
@@ -169,9 +174,9 @@ export const mounted = createAsyncThunk(
     await dispatch(fetchMerchantInfo(business));
 
     const country = getMerchantCountry(getState());
-    const isRequestOrderRewardsEnabled = getIsRequestOrderRewardsEnabled(getState());
+    const isJoinMembershipRequestOrderRewardsEnabled = getIsJoinMembershipRequestOrderRewardsEnabled(getState());
 
-    if (isRequestOrderRewardsEnabled) {
+    if (isJoinMembershipRequestOrderRewardsEnabled) {
       dispatch(loadOrderRewards());
     }
 

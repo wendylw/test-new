@@ -361,7 +361,7 @@ export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRe
   return errorI18nKeys;
 });
 
-export const getIsRequestOrderRewardsEnabled = createSelector(
+export const getIsReceiptMerchantPointsCashbackEnabled = createSelector(
   getReceiptNumber,
   getIsMerchantEnabledCashback,
   getIsMerchantMembershipPointsEnabled,
