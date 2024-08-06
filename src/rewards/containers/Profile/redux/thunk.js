@@ -11,7 +11,6 @@ import { fetchUserProfileInfo, uploadUserProfileInfo } from '../../../../redux/m
 import Utils from '../../../../utils/utils';
 import { setCookieVariable } from '../../../../common/utils';
 import { isValidBirthdayDateString, isAfterTodayBirthdayDate, getRequestBirthdayData } from '../utils';
-import { showCompleteProfilePageAsync } from '../../../../utils/native-methods';
 import { PROFILE_SKIP_CYCLE, PROFILE_FIELD_ERROR_TYPES, PROFILE_BIRTHDAY_FORMAT } from '../utils/constants';
 import { getProfileBirthday, getProfileEmail, getProfileFirstName, getProfileLastName } from './selectors';
 
