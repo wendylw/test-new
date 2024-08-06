@@ -1,5 +1,6 @@
 import _get from 'lodash/get';
 import _isInteger from 'lodash/isInteger';
+import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import {
   API_REQUEST_STATUS,
@@ -25,7 +26,15 @@ import {
 } from '../../../../redux/modules/customer/selectors';
 
 // BE prevent users from manually changing the URL to obtain point and cashback, using base64 encryption
-export const getReceiptNumber = () => window.atob(getQueryString('receiptNumber'));
+export const getReceiptNumber = () => {
+  const receiptNumber = getQueryString('receiptNumber');
+
+  if (_isEmpty(receiptNumber)) {
+    return null;
+  }
+
+  return window.atob(getQueryString('receiptNumber'));
+};
 
 export const getChannel = () => getQueryString('channel');
 
