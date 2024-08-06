@@ -14,6 +14,7 @@ import { getIsLogin, getConsumerId, getIsUserProfileIncomplete } from '../../../
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
+import { getCustomerTier } from '../../../../../redux/modules/customer/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import {
   getIsWebview,
@@ -144,10 +145,20 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     const consumerId = getConsumerId(getState());
     const fetchUniquePromoListBannersLimit = getFetchUniquePromoListBannersLimit(getState());
 
-    dispatch(fetchCustomerInfo(business));
     dispatch(fetchUniquePromoListBanners({ consumerId, limit: fetchUniquePromoListBannersLimit }));
     dispatch(fetchPointsRewardList(consumerId));
     dispatch(fetchUniquePromoList(consumerId));
+    await dispatch(fetchCustomerInfo(business));
+
+    const customerTier = getCustomerTier(getState());
+
+    if (!customerTier) {
+      dispatch(
+        push(
+          `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.SIGN_UP}${search}`
+        )
+      );
+    }
   }
 });
 
