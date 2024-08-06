@@ -21,7 +21,6 @@ import {
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
-import { getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
 import { claimOrderRewards, fetchUniquePromoList } from '../../../redux/common/thunks';
 import { getIsMembershipDetailClaimedOrderRewardsEnabled } from './selectors';
 
