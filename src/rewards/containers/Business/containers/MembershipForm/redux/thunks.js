@@ -26,7 +26,12 @@ import { getReceiptNumber, getChannel } from '../../../redux/common/selectors';
 import { claimOrderRewards } from '../../../redux/common/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
-import { getShouldShowProfileForm, getStoreId, getIsRequestOrderRewardsEnabled } from './selectors';
+import {
+  getShouldShowProfileForm,
+  getStoreId,
+  getIsRequestOrderRewardsEnabled,
+  getIsClaimedOrderRewardsEnabled,
+} from './selectors';
 import { getOrderRewards } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
@@ -143,7 +148,7 @@ export const continueJoinMembership = createAsyncThunk(
     }
 
     const shouldShowProfileForm = getShouldShowProfileForm(getState());
-    const isRequestOrderRewardsEnabled = getIsRequestOrderRewardsEnabled(getState());
+    const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
 
     try {
       if (shouldShowProfileForm) {
@@ -151,7 +156,7 @@ export const continueJoinMembership = createAsyncThunk(
         throw new Error('Incomplete user profile');
       }
 
-      isRequestOrderRewardsEnabled && (await dispatch(claimOrderRewards()));
+      isClaimedOrderRewardsEnabled && (await dispatch(claimOrderRewards()));
       await dispatch(joinBusinessMembership());
     } catch (error) {
       logger.error('Rewards_Business_JoinMembershipFailed', { message: error?.message });
