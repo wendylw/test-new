@@ -23,6 +23,7 @@ import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/se
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
 import { claimOrderRewards, fetchUniquePromoList } from '../../../redux/common/thunks';
+import { getIsMembershipDetailClaimedOrderRewardsEnabled } from './selectors';
 
 import { getPointsRewardList, postClaimedPointsReward } from './api-request';
 
@@ -98,9 +99,9 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   await dispatch(fetchMerchantInfo(business));
 
   // claiming order rewards depends on pints or cashback is enabled by merchant
-  const isRequestOrderRewardsEnabled = getIsRequestOrderRewardsEnabled(getState());
+  const isMembershipDetailClaimedOrderRewardsEnabled = getIsMembershipDetailClaimedOrderRewardsEnabled(getState());
 
-  if (isRequestOrderRewardsEnabled) {
+  if (isMembershipDetailClaimedOrderRewardsEnabled) {
     dispatch(claimOrderRewards());
   }
 });

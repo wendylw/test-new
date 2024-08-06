@@ -3,7 +3,11 @@ import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import RewardsJoinMembershipImage from '../../../../../../../images/rewards-join-membership.svg';
 import { REWARDS_NAMES } from '../../constants';
-import { getJoinMembershipRewardList, getIsClaimedOrderRewardsEnabled, getOrderRewards } from '../../redux/selectors';
+import {
+  getJoinMembershipRewardList,
+  getIsJoinMembershipClaimedOrderRewardsEnabled,
+  getOrderRewards,
+} from '../../redux/selectors';
 import { RewardsPoint, RewardsCashback, DirectionArrow } from '../../../../../../../common/components/Icons';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import Ticket from '../../../../components/Ticket';
@@ -25,12 +29,12 @@ const REWARDS_UI_SETTINGS = {
 const RewardsDescription = () => {
   const { t } = useTranslation(['Rewards']);
   const joinMembershipRewardList = useSelector(getJoinMembershipRewardList);
-  const isClaimedOrderRewardsEnabled = useSelector(getIsClaimedOrderRewardsEnabled);
+  const isJoinMembershipClaimedOrderRewardsEnabled = useSelector(getIsJoinMembershipClaimedOrderRewardsEnabled);
   const orderRewards = useSelector(getOrderRewards);
 
   return (
     <div className={styles.RewardsDescription}>
-      {isClaimedOrderRewardsEnabled ? (
+      {isJoinMembershipClaimedOrderRewardsEnabled ? (
         <div className={styles.RewardsDescriptionGetRewardsContainer}>
           <h3 className={styles.RewardsDescriptionGetRewardsTitle}>{t('JoinMembershipGetRewardsTitle')}</h3>
           <ul className={styles.RewardsDescriptionTicketList}>
