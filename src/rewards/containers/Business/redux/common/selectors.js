@@ -16,6 +16,7 @@ import {
   getMerchantLocale,
   getMerchantCurrency,
   getMerchantCountry,
+  getIsMerchantEnabledCashback,
   getIsMerchantMembershipPointsEnabled,
 } from '../../../../../redux/modules/merchant/selectors';
 import {
@@ -359,3 +360,11 @@ export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRe
 
   return errorI18nKeys;
 });
+
+export const getIsRequestOrderRewardsEnabled = createSelector(
+  getReceiptNumber,
+  getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
+  (receiptNumber, isMerchantEnabledCashback, isMerchantMembershipPointsEnabled) =>
+    receiptNumber && (isMerchantEnabledCashback || isMerchantMembershipPointsEnabled)
+);

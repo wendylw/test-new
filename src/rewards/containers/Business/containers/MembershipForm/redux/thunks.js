@@ -22,16 +22,11 @@ import {
   getSource,
   getBusiness,
 } from '../../../../../redux/modules/common/selectors';
-import { getReceiptNumber, getChannel } from '../../../redux/common/selectors';
+import { getReceiptNumber, getChannel, getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
 import { claimOrderRewards } from '../../../redux/common/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
-import {
-  getShouldShowProfileForm,
-  getStoreId,
-  getIsRequestOrderRewardsEnabled,
-  getIsClaimedOrderRewardsEnabled,
-} from './selectors';
+import { getShouldShowProfileForm, getStoreId, getIsClaimedOrderRewardsEnabled } from './selectors';
 import { getOrderRewards } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
