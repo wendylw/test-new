@@ -85,7 +85,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     return;
   }
 
-  // get consumer info
+  // customer info doesn't depend on merchant requested info, so can request independently
   if (isLogin) {
     const consumerId = getConsumerId(getState());
 
@@ -97,6 +97,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   dispatch(fetchMembershipsInfo(business));
   await dispatch(fetchMerchantInfo(business));
 
+  // claiming order rewards depends on pints or cashback is enabled by merchant
   const isRequestOrderRewardsEnabled = getIsRequestOrderRewardsEnabled(getState());
 
   if (isRequestOrderRewardsEnabled) {
