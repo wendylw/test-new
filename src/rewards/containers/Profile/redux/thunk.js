@@ -111,18 +111,3 @@ export const init = createAsyncThunk('rewards/profile/init', (_, { dispatch, get
   dispatch(emailUpdated(email));
   dispatch(birthdaySelected(birthday));
 });
-
-export const callNativeProfile = createAsyncThunk(
-  'rewards/profile/callNativeProfile',
-  async ({ saveCallback, skipCallback }, { dispatch }) => {
-    const { fulfilled } = await showCompleteProfilePageAsync();
-
-    if (!fulfilled) {
-      skipCallback();
-      return;
-    }
-
-    await dispatch(fetchUserProfileInfo());
-    saveCallback();
-  }
-);

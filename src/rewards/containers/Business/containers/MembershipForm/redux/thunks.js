@@ -61,7 +61,7 @@ export const joinBusinessMembership = createAsyncThunk(
 export const showNativeProfileForm = createAsyncThunk(
   'rewards/business/membershipForm/showNativeProfileForm',
   async (_, { dispatch }) => {
-    await showCompleteProfilePageAsync();
+    await showCompleteProfilePageAsync({ hideSkipButton: true });
     await dispatch(joinBusinessMembership());
   }
 );
