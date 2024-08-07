@@ -34,7 +34,7 @@ export const getReceiptNumber = () => {
     return null;
   }
 
-  return window.atob(getQueryString('receiptNumber'));
+  return window.atob(receiptNumber);
 };
 
 export const getChannel = () => getQueryString('channel');

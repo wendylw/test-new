@@ -199,18 +199,18 @@ export const getJoinMembershipRewardList = createSelector(
   }
 );
 
-export const getIsJoinMembershipRequestOrderRewardsEnabled = createSelector(
+export const getIsRequestOrderRewardsEnabled = createSelector(
   getIsReceiptMerchantPointsCashbackEnabled,
   getIsFromReceiptJoinMembershipUrlQRScan,
   (isReceiptMerchantPointsCashbackEnabled, isFromReceiptJoinMembershipUrlQRScan) =>
     isReceiptMerchantPointsCashbackEnabled && isFromReceiptJoinMembershipUrlQRScan
 );
 
-export const getIsJoinMembershipClaimedOrderRewardsEnabled = createSelector(
-  getIsJoinMembershipRequestOrderRewardsEnabled,
+export const getIsClaimedOrderRewardsEnabled = createSelector(
+  getIsRequestOrderRewardsEnabled,
   getLoadOrderRewardsRequestError,
-  (isJoinMembershipRequestOrderRewardsEnabled, loadOrderRewardsRequestError) =>
-    isJoinMembershipRequestOrderRewardsEnabled && !loadOrderRewardsRequestError
+  (isRequestOrderRewardsEnabled, loadOrderRewardsRequestError) =>
+    isRequestOrderRewardsEnabled && !loadOrderRewardsRequestError
 );
 
 export const getOrderRewardsCashbackPrice = createSelector(
