@@ -56,6 +56,12 @@ export const getOrderRewardsCashback = createSelector(getLoadOrderRewardsRequest
   _get(loadOrderRewardsRequestData, 'cashback.amount', 0)
 );
 
+export const getClaimOrderRewardsRequestData = state => state.business.membershipForm.claimOrderRewardsRequest.data;
+
+export const getClaimOrderRewardsRequestStatus = state => state.business.membershipForm.claimOrderRewardsRequest.status;
+
+export const getClaimOrderRewardsRequestError = state => state.business.membershipForm.claimOrderRewardsRequest.error;
+
 /**
  * Derived selectors
  */

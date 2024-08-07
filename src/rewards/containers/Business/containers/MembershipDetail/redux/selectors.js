@@ -29,14 +29,12 @@ import {
   getSource,
   getIsWebview,
   getIsFromJoinMembershipUrlClick,
-  getIsFromReceiptMembershipDetailQRScan,
 } from '../../../../../redux/modules/common/selectors';
 import {
   getOrderReceiptClaimedCashbackStatus,
   getOrderReceiptClaimedCashback,
   getRemainingCashbackExpiredDays,
   getIsUniquePromoListEmpty,
-  getIsReceiptMerchantPointsCashbackEnabled,
 } from '../../../redux/common/selectors';
 import {
   getMerchantCurrency,
