@@ -29,14 +29,12 @@ import {
   getSource,
   getIsWebview,
   getIsFromJoinMembershipUrlClick,
-  getIsFromReceiptMembershipDetailQRScan,
 } from '../../../../../redux/modules/common/selectors';
 import {
   getOrderReceiptClaimedCashbackStatus,
   getOrderReceiptClaimedCashback,
   getRemainingCashbackExpiredDays,
   getIsUniquePromoListEmpty,
-  getIsReceiptMerchantPointsCashbackEnabled,
 } from '../../../redux/common/selectors';
 import {
   getMerchantCurrency,
@@ -607,11 +605,4 @@ export const getIsMyRewardsSectionShow = createSelector(
   getIsUniquePromoListEmpty,
   (isMerchantMembershipPointsEnabled, isUniquePromoListEmpty) =>
     !isMerchantMembershipPointsEnabled && !isUniquePromoListEmpty
-);
-
-export const getIsClaimedOrderRewardsEnabled = createSelector(
-  getIsFromReceiptMembershipDetailQRScan,
-  getIsReceiptMerchantPointsCashbackEnabled,
-  (isFromReceiptMembershipDetailQRScan, isReceiptMerchantPointsCashbackEnabled) =>
-    isFromReceiptMembershipDetailQRScan && isReceiptMerchantPointsCashbackEnabled
 );

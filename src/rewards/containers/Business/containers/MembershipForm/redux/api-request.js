@@ -1,7 +1,15 @@
-import { get } from '../../../../../../utils/api/api-fetch';
+import { get, post } from '../../../../../../utils/api/api-fetch';
 
 export const getOrderRewards = async ({ receiptNumber, business, channel }) =>
   get(`/api/v3/transaction/${receiptNumber}/rewards`, {
+    queryParams: {
+      business,
+      channel,
+    },
+  });
+
+export const postClaimedOrderRewards = async ({ receiptNumber, business, channel }) =>
+  post(`/api/v3/transaction/${receiptNumber}/rewards`, {
     queryParams: {
       business,
       channel,
