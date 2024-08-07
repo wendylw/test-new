@@ -88,6 +88,12 @@ export const getClaimPointsRewardStatus = state => state.business.common.claimPo
 
 export const getClaimPointsRewardError = state => state.business.common.claimPointsRewardRequest.error;
 
+export const getClaimOrderRewardsRequestData = state => state.business.common.claimOrderRewardsRequest.data;
+
+export const getClaimOrderRewardsRequestStatus = state => state.business.common.claimOrderRewardsRequest.status;
+
+export const getClaimOrderRewardsRequestError = state => state.business.common.claimOrderRewardsRequest.error;
+
 /**
  * Derived selectors
  */
