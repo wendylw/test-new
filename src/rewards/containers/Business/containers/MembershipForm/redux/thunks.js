@@ -169,9 +169,9 @@ export const mounted = createAsyncThunk(
     await dispatch(fetchMerchantInfo(business));
 
     const country = getMerchantCountry(getState());
-    const isJoinMembershipRequestOrderRewardsEnabled = getIsJoinMembershipRequestOrderRewardsEnabled(getState());
+    const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
 
-    if (isJoinMembershipRequestOrderRewardsEnabled) {
+    if (isClaimedOrderRewardsEnabled) {
       dispatch(loadOrderRewards());
     }
 
