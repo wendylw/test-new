@@ -1,5 +1,6 @@
 import _get from 'lodash/get';
 import _isInteger from 'lodash/isInteger';
+import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import {
   API_REQUEST_STATUS,
@@ -15,6 +16,7 @@ import {
   getMerchantLocale,
   getMerchantCurrency,
   getMerchantCountry,
+  getIsMerchantEnabledCashback,
   getIsMerchantMembershipPointsEnabled,
 } from '../../../../../redux/modules/merchant/selectors';
 import {
@@ -25,7 +27,15 @@ import {
 } from '../../../../redux/modules/customer/selectors';
 
 // BE prevent users from manually changing the URL to obtain point and cashback, using base64 encryption
-export const getReceiptNumber = () => window.atob(getQueryString('receiptNumber'));
+export const getReceiptNumber = () => {
+  const receiptNumber = getQueryString('receiptNumber');
+
+  if (_isEmpty(receiptNumber)) {
+    return null;
+  }
+
+  return window.atob(receiptNumber);
+};
 
 export const getChannel = () => getQueryString('channel');
 
@@ -350,3 +360,11 @@ export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRe
 
   return errorI18nKeys;
 });
+
+export const getIsReceiptMerchantPointsCashbackEnabled = createSelector(
+  getReceiptNumber,
+  getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
+  (receiptNumber, isMerchantEnabledCashback, isMerchantMembershipPointsEnabled) =>
+    receiptNumber && (isMerchantEnabledCashback || isMerchantMembershipPointsEnabled)
+);

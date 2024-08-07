@@ -46,6 +46,16 @@ export const getIsFromJoinMembershipUrlClick = createSelector(
   source => source === BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK
 );
 
+export const getIsFromReceiptJoinMembershipUrlQRScan = createSelector(
+  getSource,
+  source => source === BECOME_MERCHANT_MEMBER_METHODS.RECEIPT_JOIN_MEMBERSHIP_URL_QR_SCAN
+);
+
+export const getIsFromReceiptMembershipDetailQRScan = createSelector(
+  getSource,
+  source => source === BECOME_MERCHANT_MEMBER_METHODS.RECEIPT_MEMBERSHIP_DETAIL_QR_SCAN
+);
+
 export const getLocationSearch = createSelector(getLocation, location => location.search);
 
 export const getIsMembershipBenefitTabsShown = createSelector(
