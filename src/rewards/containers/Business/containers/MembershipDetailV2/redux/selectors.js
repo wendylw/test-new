@@ -33,6 +33,7 @@ import {
   getSource,
   getIsWebview,
   getIsFromJoinMembershipUrlClick,
+  getIsFromReceiptJoinMembershipUrlQRScan,
 } from '../../../../../redux/modules/common/selectors';
 import {
   getCustomerTierLevel,
@@ -49,6 +50,8 @@ import {
   getPointsRewardList,
   getRemainingCashbackExpiredDays,
   getOrderReceiptClaimedCashbackStatus,
+  getClaimOrderRewardsPointsStatus,
+  getClaimOrderRewardsCashbackStatus,
 } from '../../../redux/common/selectors';
 
 export const getIsProfileModalShow = state => state.business.membershipDetailV2.isProfileModalShow;
@@ -398,25 +401,34 @@ export const getIsPointsRewardListMoreButtonShown = createSelector(
 
 // Member Prompt
 export const getNewMemberPromptCategory = createSelector(
+  getIsFromJoinMembershipUrlClick,
   getIsLoadCustomerRequestCompleted,
   getIsLoadMerchantRequestCompleted,
   getIsFromSeamlessLoyaltyQrScan,
-  getIsFromJoinMembershipUrlClick,
-  getIsFromEarnedCashbackQrScan,
   getIsMerchantMembershipPointsEnabled,
   getIsMerchantEnabledCashback,
+  getIsFromEarnedCashbackQrScan,
   getOrderReceiptClaimedCashbackStatus,
   getCustomerCashback,
+  getIsFromReceiptJoinMembershipUrlQRScan,
+  getClaimOrderRewardsPointsStatus,
+  getClaimOrderRewardsCashbackStatus,
   (
+    isFromJoinMembershipUrlClick,
+    // From seamless loyalty
     isLoadCustomerRequestCompleted,
     isLoadMerchantRequestCompleted,
     isFromSeamlessLoyaltyQrScan,
-    isFromJoinMembershipUrlClick,
-    isFromEarnedCashbackQrScan,
     isMerchantMembershipPointsEnabled,
     isMerchantEnabledCashback,
+    // From claim cashback page
+    isFromEarnedCashbackQrScan,
     claimedCashbackStatus,
-    customerCashback
+    customerCashback,
+    // From receipt join membership URL
+    isFromReceiptJoinMembershipUrlQRScan,
+    claimOrderRewardsPointsStatus,
+    claimOrderRewardsCashbackStatus
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return NEW_MEMBER_TYPES.DEFAULT;
@@ -446,6 +458,9 @@ export const getNewMemberPromptCategory = createSelector(
       const claimedCashbackType = NEW_MEMBER_CASHBACK_STATUS_TYPES[claimedCashbackStatus];
 
       return claimedCashbackType || NEW_MEMBER_TYPES.DEFAULT;
+    }
+
+    if (isFromReceiptJoinMembershipUrlQRScan) {
     }
 
     return null;

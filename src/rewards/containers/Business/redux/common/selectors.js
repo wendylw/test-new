@@ -94,6 +94,16 @@ export const getClaimOrderRewardsRequestStatus = state => state.business.common.
 
 export const getClaimOrderRewardsRequestError = state => state.business.common.claimOrderRewardsRequest.error;
 
+export const getClaimOrderRewardsPointsStatus = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'points.status', null)
+);
+
+export const getClaimOrderRewardsCashbackStatus = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'cashback.status', null)
+);
+
 /**
  * Derived selectors
  */
