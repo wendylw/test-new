@@ -608,10 +608,3 @@ export const getIsMyRewardsSectionShow = createSelector(
   (isMerchantMembershipPointsEnabled, isUniquePromoListEmpty) =>
     !isMerchantMembershipPointsEnabled && !isUniquePromoListEmpty
 );
-
-export const getIsClaimedOrderRewardsEnabled = createSelector(
-  getIsFromReceiptMembershipDetailQRScan,
-  getIsReceiptMerchantPointsCashbackEnabled,
-  (isFromReceiptMembershipDetailQRScan, isReceiptMerchantPointsCashbackEnabled) =>
-    isFromReceiptMembershipDetailQRScan && isReceiptMerchantPointsCashbackEnabled
-);
