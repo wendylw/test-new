@@ -7,7 +7,7 @@ export const GET_REWARDS_MAX_LENGTH = 5;
 
 export const MEMBER_TYPE_I18N_PARAM_KEYS = {
   CASHBACK_VALUE: 'cashbackValue',
-  REWARD_TYPE: 'rewardType',
+  POINTS_VALUE: 'pointsValue',
 };
 
 export const NEW_MEMBER_TYPES = {
@@ -22,6 +22,9 @@ export const NEW_MEMBER_TYPES = {
   NOT_CLAIMED_REACH_LIMIT: 'notClaimedReachLimit',
   NOT_CLAIMED_REACH_MERCHANT_LIMIT: 'notClaimedReachMerchantLimit',
   NOT_CLAIMED_DEFAULT: 'notClaimedDefault',
+  RECEIPT_EARNED_POINTS: 'receiptEarnedPoints',
+  RECEIPT_EARNED_CASHBACK: 'receiptEarnedCashback',
+  RECEIPT_EARNED_POINTS_CASHBACK: 'receiptEarnedPointsCashback',
 };
 
 export const NEW_MEMBER_CASHBACK_STATUS_TYPES = {
@@ -96,6 +99,21 @@ export const NEW_MEMBER_I18N_KEYS = {
   [NEW_MEMBER_TYPES.NOT_CLAIMED_DEFAULT]: {
     titleI18nKey: 'NotClaimDefaultNewMemberTitle',
     descriptionI18nKey: 'NotClaimDefaultNewMemberDescription',
+  },
+  [NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS]: {
+    titleI18nKey: 'ReceiptEarnedOnlyPointsTitle',
+    descriptionI18nKey: 'YouAreNowAMember',
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.POINTS_VALUE],
+  },
+  [NEW_MEMBER_TYPES.RECEIPT_EARNED_CASHBACK]: {
+    titleI18nKey: 'ReceiptEarnedOnlyCashbackTitle',
+    descriptionI18nKey: 'YouAreNowAMember',
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE],
+  },
+  [NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS_CASHBACK]: {
+    titleI18nKey: 'ReceiptEarnedPointsAndCashbackTitle',
+    descriptionI18nKey: 'YouAreNowAMember',
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE, MEMBER_TYPE_I18N_PARAM_KEYS.POINTS_VALUE],
   },
 };
 
