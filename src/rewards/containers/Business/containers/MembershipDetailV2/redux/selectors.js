@@ -53,6 +53,8 @@ import {
   getOrderReceiptClaimedCashbackStatus,
   getClaimOrderRewardsPointsStatus,
   getClaimOrderRewardsCashbackStatus,
+  getClaimOrderRewardsPointsValue,
+  getClaimOrderRewardsCashbackPrice,
 } from '../../../redux/common/selectors';
 
 export const getIsProfileModalShow = state => state.business.membershipDetailV2.isProfileModalShow;
@@ -471,8 +473,10 @@ export const getNewMemberPromptCategory = createSelector(
 
 export const getNewMemberTitleIn18nParams = createSelector(
   getOrderReceiptClaimedCashback,
+  getClaimOrderRewardsPointsValue,
+  getClaimOrderRewardsCashbackPrice,
   getNewMemberPromptCategory,
-  (claimedCashback, newMemberPromptCategory) => {
+  (claimedCashback, claimOrderRewardsPointsValue, claimOrderRewardsCashbackPrice, newMemberPromptCategory) => {
     const { titleI18nParamsKeys } = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory] || {};
     const newMemberTitleI18nParams = {};
 
@@ -483,6 +487,10 @@ export const getNewMemberTitleIn18nParams = createSelector(
     titleI18nParamsKeys.forEach(paramKey => {
       if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE) {
         newMemberTitleI18nParams[paramKey] = claimedCashback;
+      } else if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_CASHBACK_VALUE) {
+        newMemberTitleI18nParams[paramKey] = claimOrderRewardsCashbackPrice;
+      } else if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_POINTS_VALUE) {
+        newMemberTitleI18nParams[paramKey] = claimOrderRewardsPointsValue;
       }
     });
 

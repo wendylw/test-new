@@ -10,45 +10,63 @@ export const getReceiptOrderRewardsStatusCategories = ({
     CLAIMED_CASHBACK_STATUS.CLAIMED_NOT_FIRST_TIME,
   ].includes(claimOrderRewardsCashbackStatus);
   const isPointsEarned = claimOrderRewardsPointsStatus === CLAIMED_POINTS_STATUS.CLAIMED;
-  const categories = [];
+  const categories = {
+    cashback: null,
+    points: null,
+  };
 
   if (isCashbackEarned && isPointsEarned) {
-    return [NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS_CASHBACK];
+    return NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS_CASHBACK;
   }
 
   if (isCashbackEarned) {
-    categories.push(NEW_MEMBER_TYPES.RECEIPT_EARNED_CASHBACK);
+    categories.cashback = NEW_MEMBER_TYPES.RECEIPT_EARNED_CASHBACK;
   }
 
   if (isPointsEarned) {
-    categories.push(NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS);
+    categories.points = NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS;
   }
 
   switch (claimOrderRewardsPointsStatus) {
-    case value:
+    case CLAIMED_POINTS_STATUS.CLAIMED_SOMEONE_ELSE:
+      categories.points = NEW_MEMBER_TYPES.CLAIMED_SOMEONE_ELSE;
       break;
-
+    case CLAIMED_POINTS_STATUS.NOT_CLAIMED_EXPIRED:
+      categories.points = NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_EXPIRED;
+      break;
+    case CLAIMED_POINTS_STATUS.CLAIMED_REPEAT:
+      categories.points = NEW_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT;
+      break;
+    case CLAIMED_POINTS_STATUS.NOT_CLAIMED_REACH_LIMIT:
+      categories.points = NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT;
+      break;
+    case CLAIMED_POINTS_STATUS.NOT_CLAIMED_CANCELLED:
+      categories.points = NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION;
+    case CLAIMED_POINTS_STATUS.NOT_CLAIMED:
+      categories.points = NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT;
     default:
       break;
   }
 
   switch (claimOrderRewardsCashbackStatus) {
-    case CLAIMED_POINTS_STATUS.CLAIMED_SOMEONE_ELSE:
-      categories.push(NEW_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE);
+    case CLAIMED_CASHBACK_STATUS.CLAIMED_SOMEONE_ELSE:
+      categories.cashback = NEW_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE;
       break;
-    case CLAIMED_POINTS_STATUS.NOT_CLAIMED_EXPIRED:
-      categories.push(NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_EXPIRED);
+    case CLAIMED_CASHBACK_STATUS.NOT_CLAIMED_EXPIRED:
+      categories.cashback = NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_EXPIRED;
       break;
-    case CLAIMED_POINTS_STATUS.CLAIMED_REPEAT:
-      categories.push(NEW_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT);
+    case CLAIMED_CASHBACK_STATUS.CLAIMED_REPEAT:
+      categories.cashback = NEW_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT;
       break;
-    case CLAIMED_POINTS_STATUS.NOT_CLAIMED_REACH_LIMIT:
-      categories.push(NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT);
+    case CLAIMED_CASHBACK_STATUS.NOT_CLAIMED_REACH_LIMIT:
+      categories.cashback = NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT;
       break;
-    case CLAIMED_POINTS_STATUS.NOT_CLAIMED_CANCELLED:
-      categories.push(NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION);
-    case CLAIMED_POINTS_STATUS.NOT_CLAIMED:
-      categories.push(NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT);
+    case CLAIMED_CASHBACK_STATUS.NOT_CLAIMED_CANCELLED:
+    case CLAIMED_CASHBACK_STATUS.NOT_CLAIMED_NO_TRANSACTION:
+      categories.cashback = NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION;
+    case CLAIMED_CASHBACK_STATUS.NOT_CLAIMED_REACH_MERCHANT_LIMIT:
+    case CLAIMED_CASHBACK_STATUS.NOT_CLAIMED:
+      categories.cashback = NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT;
     default:
       break;
   }

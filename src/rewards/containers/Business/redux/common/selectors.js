@@ -94,9 +94,19 @@ export const getClaimOrderRewardsRequestStatus = state => state.business.common.
 
 export const getClaimOrderRewardsRequestError = state => state.business.common.claimOrderRewardsRequest.error;
 
+export const getClaimOrderRewardsPointsValue = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'points.amount', null)
+);
+
 export const getClaimOrderRewardsPointsStatus = createSelector(
   getClaimOrderRewardsRequestData,
   claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'points.status', null)
+);
+
+export const getClaimOrderRewardsCashbackValue = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'cashback.amount', null)
 );
 
 export const getClaimOrderRewardsCashbackStatus = createSelector(
@@ -377,4 +387,13 @@ export const getIsReceiptMerchantPointsCashbackEnabled = createSelector(
   getIsMerchantMembershipPointsEnabled,
   (receiptNumber, isMerchantEnabledCashback, isMerchantMembershipPointsEnabled) =>
     receiptNumber && (isMerchantEnabledCashback || isMerchantMembershipPointsEnabled)
+);
+
+export const getClaimOrderRewardsCashbackPrice = createSelector(
+  getClaimOrderRewardsCashbackValue,
+  getMerchantLocale,
+  getMerchantCurrency,
+  getMerchantCountry,
+  (claimOrderRewardsCashbackValue, locale, currency, country) =>
+    getPrice(claimOrderRewardsCashbackValue, { locale, currency, country })
 );
