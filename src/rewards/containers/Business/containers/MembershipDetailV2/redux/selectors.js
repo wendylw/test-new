@@ -19,7 +19,7 @@ import {
 } from '../utils/constants';
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
-import { getReceiptOrderRewardsStatus } from '../utils';
+import { getReceiptOrderRewardsStatusCategories } from '../utils';
 import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledLoyalty,
@@ -462,7 +462,7 @@ export const getNewMemberPromptCategory = createSelector(
     }
 
     if (isFromReceiptJoinMembershipUrlQRScan) {
-      return getReceiptOrderRewardsStatus({ claimOrderRewardsPointsStatus, claimOrderRewardsCashbackStatus });
+      return getReceiptOrderRewardsStatusCategories({ claimOrderRewardsPointsStatus, claimOrderRewardsCashbackStatus });
     }
 
     return null;

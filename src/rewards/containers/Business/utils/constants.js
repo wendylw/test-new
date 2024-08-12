@@ -21,7 +21,7 @@ export const CLAIMED_POINTS_STATUS = {
   CLAIMED_REPEAT: 'Claimed_Repeat',
   NOT_CLAIMED_REACH_LIMIT: 'NotClaimed_ReachLimit',
   NOT_CLAIMED_CANCELLED: 'NotClaimed_Cancelled',
-  NotClaimed: 'NotClaimed',
+  NOT_CLAIMED: 'NotClaimed',
 };
 
 export const CLAIMED_POINTS_REWARD_ERROR_CODES = {
