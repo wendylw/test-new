@@ -41,10 +41,12 @@ export const postClaimedPointsReward = async ({ consumerId, business: merchantNa
     }
   );
 
-export const postClaimedOrderRewards = async ({ receiptNumber, business, channel }) =>
+export const postClaimedOrderRewards = async ({ receiptNumber, business: merchantName, channel, storeId, source }) =>
   post(`/api/v3/transaction/${receiptNumber}/rewards`, {
     queryParams: {
-      business,
+      merchantName,
       channel,
+      storeId,
+      source,
     },
   });

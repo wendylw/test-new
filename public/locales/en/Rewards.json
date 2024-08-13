@@ -48,7 +48,7 @@
   "ReceiptNotClaimedExpiredTitle": "Oops! This QR code has already expired",
   "ReceiptClaimedRepeatTitle": "Oops! You have already claimed {{rewardType}} for this order",
   "ReceiptNotClaimedReachLimitTitle": "You’ve reached the daily {{rewardType}} claim limit",
-  "ReceiptNotClaimedCancelledNoTransactionTitle": "This transaction has been cancelled/refunded.",
+  "ReceiptNotClaimedCancelledNoTransactionTitle": "Transaction not found. Could not claim {{rewardType}}",
   "ReceiptNotClaimedDefaultTitle": "Something went wrong with claiming {{rewardType}}",
   "ReceiptNotClaimedDefaultDescription": "Please scan the QR again, or ask the staff for help.",
   "ReceiptCanNotClaimRewardsDescription": "Could not claim {{rewardType}} from this store",

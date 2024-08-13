@@ -1,7 +1,7 @@
 import MembershipLevelIcon from '../../../../../../images/membership-level.svg';
 import RewardsEarnedCashbackIcon from '../../../../../../images/rewards-earned-cashback.svg';
 import RewardsWarningIcon from '../../../../../../images/rewards-warning.svg';
-import { CLAIMED_CASHBACK_STATUS } from '../../../utils/constants';
+import { CLAIMED_CASHBACK_STATUS, CLAIMED_POINTS_STATUS } from '../../../utils/constants';
 
 export const GET_REWARDS_MAX_LENGTH = 5;
 

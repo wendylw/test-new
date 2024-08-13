@@ -19,7 +19,7 @@ import {
 } from '../utils/constants';
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
-import { getReceiptOrderRewardsStatusCategories } from '../utils';
+import { getReceiptOrderRewardsEarnedStatus, getReceiptOrderRewardsStatusCategories } from '../utils';
 import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledLoyalty,
@@ -403,6 +403,13 @@ export const getIsPointsRewardListMoreButtonShown = createSelector(
 );
 
 // Member Prompt
+export const getNewMemberClaimOrderRewardsPromptCategory = createSelector(
+  getClaimOrderRewardsPointsStatus,
+  getClaimOrderRewardsCashbackStatus,
+  (claimOrderRewardsPointsStatus, claimOrderRewardsCashbackStatus) =>
+    getReceiptOrderRewardsStatusCategories({ claimOrderRewardsPointsStatus, claimOrderRewardsCashbackStatus })
+);
+
 export const getNewMemberPromptCategory = createSelector(
   getIsFromJoinMembershipUrlClick,
   getIsLoadCustomerRequestCompleted,
@@ -464,7 +471,14 @@ export const getNewMemberPromptCategory = createSelector(
     }
 
     if (isFromReceiptJoinMembershipUrlQRScan) {
-      return getReceiptOrderRewardsStatusCategories({ claimOrderRewardsPointsStatus, claimOrderRewardsCashbackStatus });
+      const { isCashbackEarned, isPointsEarned } = getReceiptOrderRewardsEarnedStatus({
+        claimOrderRewardsCashbackStatus,
+        claimOrderRewardsPointsStatus,
+      });
+
+      return isCashbackEarned && isPointsEarned
+        ? getReceiptOrderRewardsStatusCategories({ claimOrderRewardsPointsStatus, claimOrderRewardsCashbackStatus })
+        : null;
     }
 
     return null;
