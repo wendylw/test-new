@@ -19,7 +19,7 @@ import {
 } from '../utils/constants';
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
-import { getReceiptOrderRewardsEarnedStatus, getReceiptOrderRewardsStatusCategories } from '../utils';
+import { getReceiptOrderRewardsStatusCategories } from '../utils';
 import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledLoyalty,
@@ -53,6 +53,7 @@ import {
   getOrderReceiptClaimedCashbackStatus,
   getClaimOrderRewardsPointsStatus,
   getClaimOrderRewardsCashbackStatus,
+  getClaimOrderRewardsTransactionStatus,
   getClaimOrderRewardsPointsValue,
   getClaimOrderRewardsCashbackPrice,
 } from '../../../redux/common/selectors';
@@ -406,8 +407,13 @@ export const getIsPointsRewardListMoreButtonShown = createSelector(
 export const getNewMemberClaimOrderRewardsPromptCategory = createSelector(
   getClaimOrderRewardsPointsStatus,
   getClaimOrderRewardsCashbackStatus,
-  (claimOrderRewardsPointsStatus, claimOrderRewardsCashbackStatus) =>
-    getReceiptOrderRewardsStatusCategories({ claimOrderRewardsPointsStatus, claimOrderRewardsCashbackStatus })
+  getClaimOrderRewardsTransactionStatus,
+  (pointsStatus, cashbackStatus, transactionStatus) =>
+    getReceiptOrderRewardsStatusCategories({
+      pointsStatus,
+      cashbackStatus,
+      transactionStatus,
+    })
 );
 
 export const getNewMemberPromptCategory = createSelector(
@@ -421,8 +427,6 @@ export const getNewMemberPromptCategory = createSelector(
   getOrderReceiptClaimedCashbackStatus,
   getCustomerCashback,
   getIsFromReceiptJoinMembershipUrlQRScan,
-  getClaimOrderRewardsPointsStatus,
-  getClaimOrderRewardsCashbackStatus,
   (
     isFromJoinMembershipUrlClick,
     // From seamless loyalty
@@ -436,9 +440,7 @@ export const getNewMemberPromptCategory = createSelector(
     claimedCashbackStatus,
     customerCashback,
     // From receipt join membership URL
-    isFromReceiptJoinMembershipUrlQRScan,
-    claimOrderRewardsPointsStatus,
-    claimOrderRewardsCashbackStatus
+    isFromReceiptJoinMembershipUrlQRScan
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return NEW_MEMBER_TYPES.DEFAULT;
@@ -471,14 +473,7 @@ export const getNewMemberPromptCategory = createSelector(
     }
 
     if (isFromReceiptJoinMembershipUrlQRScan) {
-      const { isCashbackEarned, isPointsEarned } = getReceiptOrderRewardsEarnedStatus({
-        claimOrderRewardsCashbackStatus,
-        claimOrderRewardsPointsStatus,
-      });
-
-      return isCashbackEarned && isPointsEarned
-        ? getReceiptOrderRewardsStatusCategories({ claimOrderRewardsPointsStatus, claimOrderRewardsCashbackStatus })
-        : null;
+      return null;
     }
 
     return null;

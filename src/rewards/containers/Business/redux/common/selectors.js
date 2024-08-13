@@ -114,6 +114,16 @@ export const getClaimOrderRewardsCashbackStatus = createSelector(
   claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'cashback.status', null)
 );
 
+export const getClaimOrderRewardsTransactionStatus = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'transactionValidation.status', null)
+);
+
+export const getIsClaimOrderRewardsIsNewMember = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'joinMembershipResult.isNewMember', false)
+);
+
 /**
  * Derived selectors
  */
@@ -121,8 +131,17 @@ export const getIsNewMember = createSelector(
   getIsJoinMembershipNewMember,
   getIsConfirmSharingNewMember,
   getIsClaimedOrderCashbackNewMember,
-  (isJoinMembershipNewMember, isConfirmSharingNewMember, isClaimedOrderCashbackNewMember) =>
-    isJoinMembershipNewMember || isConfirmSharingNewMember || isClaimedOrderCashbackNewMember
+  getIsClaimOrderRewardsIsNewMember,
+  (
+    isJoinMembershipNewMember,
+    isConfirmSharingNewMember,
+    isClaimedOrderCashbackNewMember,
+    isClaimOrderRewardsIsNewMember
+  ) =>
+    isJoinMembershipNewMember ||
+    isConfirmSharingNewMember ||
+    isClaimedOrderCashbackNewMember ||
+    isClaimOrderRewardsIsNewMember
 );
 
 export const getCustomerCashbackPrice = createSelector(
