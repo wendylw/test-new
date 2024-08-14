@@ -44,13 +44,11 @@
   "NotClaimReachLimitReturningMemberTitle": "Oops, you've exceeded your cashback limit for today.",
   "NotClaimReachMerchantLimitReturningMemberTitle": "The cashback is processed, you will receive a confirmation SMS.",
   "NotClaimDefaultReturningMemberTitle": "Something went wrong. Please scan the QR again, or ask the staff for help.",
-
   "ReceiptClaimedRepeatTitle": "Oops! You have already claimed {{rewardType}} for this order",
   "ReceiptNotClaimedReachLimitTitle": "You’ve reached the daily {{rewardType}} claim limit",
   "ReceiptNotClaimedDefaultTitle": "Something went wrong with claiming {{rewardType}}",
   "ReceiptNotClaimedDefaultDescription": "Please scan the QR again, or ask the staff for help.",
   "ReceiptClaimedSomeElseTitle": "Oops! Someone else has already claimed {{rewardType}} for this order",
-
   "ReceiptNotClaimedExpiredTitle": "Oops! This QR code has already expired",
   "ReceiptNotClaimedCancelledNoTransactionTitle": "Transaction error. Could not claim rewards",
   "ReceiptEarnedOnlyCashbackTitle": "You’ve claimed {{receiptCashbackValue}} cashback!",

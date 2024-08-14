@@ -1,6 +1,8 @@
 import MembershipLevelIcon from '../../../../../../images/membership-level.svg';
 import RewardsEarnedCashbackIcon from '../../../../../../images/rewards-earned-cashback.svg';
+import RewardsEarnedPointsIcon from '../../../../../../images/rewards-earned-points.svg';
 import RewardsWarningIcon from '../../../../../../images/rewards-warning.svg';
+import RewardsFailedIcon from '../../../../../../images/rewards-failed.svg';
 import { CLAIMED_CASHBACK_STATUS } from '../../../utils/constants';
 
 export const GET_REWARDS_MAX_LENGTH = 5;
@@ -61,6 +63,15 @@ export const NEW_MEMBER_ICONS = {
   [NEW_MEMBER_TYPES.NOT_CLAIMED_REACH_LIMIT]: RewardsWarningIcon,
   [NEW_MEMBER_TYPES.NOT_CLAIMED_REACH_MERCHANT_LIMIT]: RewardsWarningIcon,
   [NEW_MEMBER_TYPES.NOT_CLAIMED_DEFAULT]: RewardsWarningIcon,
+  [NEW_MEMBER_TYPES.RECEIPT_EARNED_CASHBACK]: RewardsEarnedCashbackIcon,
+  [NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS]: RewardsEarnedPointsIcon,
+  [NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS_CASHBACK]: [RewardsEarnedPointsIcon, RewardsEarnedCashbackIcon],
+  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION]: RewardsWarningIcon,
+  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_EXPIRED]: RewardsWarningIcon,
+  [NEW_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE]: RewardsFailedIcon,
+  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT]: RewardsFailedIcon,
+  [NEW_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT]: RewardsFailedIcon,
+  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT]: RewardsFailedIcon,
 };
 
 export const NEW_MEMBER_I18N_KEYS = {
@@ -122,6 +133,33 @@ export const NEW_MEMBER_I18N_KEYS = {
     titleI18nKey: 'ReceiptEarnedPointsAndCashbackTitle',
     descriptionI18nKey: 'YouAreNowAMember',
     titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE, MEMBER_TYPE_I18N_PARAM_KEYS.POINTS_VALUE],
+  },
+  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION]: {
+    titleI18nKey: 'ReceiptNotClaimedCancelledNoTransactionTitle',
+    descriptionI18nKey: 'YouAreNowAMember',
+  },
+  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_EXPIRED]: {
+    titleI18nKey: 'ReceiptNotClaimedExpiredTitle',
+    descriptionI18nKey: 'YouAreNowAMember',
+  },
+  [NEW_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE]: {
+    titleI18nKey: 'ReceiptClaimedSomeElseTitle',
+    descriptionI18nKey: 'YouAreNowAMember',
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.REWARD_TYPE],
+  },
+  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT]: {
+    titleI18nKey: 'ReceiptNotClaimedReachLimitTitle',
+    descriptionI18nKey: 'YouAreNowAMember',
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.REWARD_TYPE],
+  },
+  RECEIPT_CLAIMED_REPEAT: {
+    titleI18nKey: 'ReceiptClaimedRepeatTitle',
+    descriptionI18nKey: 'YouAreNowAMember',
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.REWARD_TYPE],
+  },
+  RECEIPT_NOT_CLAIMED_DEFAULT: {
+    titleI18nKey: 'ReceiptNotClaimedDefaultTitle',
+    descriptionI18nKey: 'ReceiptNotClaimedDefaultDescription',
   },
 };
 
