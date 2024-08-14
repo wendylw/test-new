@@ -65,16 +65,12 @@ export const getReceiptOrderRewardsStatusCategories = ({ pointsStatus, cashbackS
   }
 
   categories.cashback = {
-    status: isCashbackEarned
-      ? NEW_MEMBER_TYPES.RECEIPT_EARNED_CASHBACK
-      : cashbackStatusCategories[claimOrderRewardsPointsStatus],
+    status: isCashbackEarned ? NEW_MEMBER_TYPES.RECEIPT_EARNED_CASHBACK : cashbackStatusCategories[pointsStatus],
     available: isCashbackEarned,
   };
 
   categories.points = {
-    status: isPointsEarned
-      ? NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS
-      : pointsStatusCategories[claimOrderRewardsCashbackStatus],
+    status: isPointsEarned ? NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS : pointsStatusCategories[cashbackStatus],
     available: isPointsEarned,
   };
 

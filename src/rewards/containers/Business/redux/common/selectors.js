@@ -26,6 +26,8 @@ import {
   getCustomerAvailablePointsBalance,
 } from '../../../../redux/modules/customer/selectors';
 
+export const getStoreId = () => getQueryString('storeId');
+
 // BE prevent users from manually changing the URL to obtain point and cashback, using base64 encryption
 export const getReceiptNumber = () => {
   const receiptNumber = getQueryString('receiptNumber');
