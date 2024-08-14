@@ -7,12 +7,25 @@ export const getReceiptOrderRewardsStatusCategories = ({ pointsStatus, cashbackS
       NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION,
     [CLAIMED_TRANSACTION_STATUS.FAILED_ORDER_NOTFOUND]: NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION,
     [CLAIMED_TRANSACTION_STATUS.FAILED_EXPIRED]: NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_EXPIRED,
+    [CLAIMED_TRANSACTION_STATUS.FAILED_CUSTOMER_NOT_MATCH]: NEW_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE,
+  };
+  const pointsStatusCategories = {
+    [CLAIMED_POINTS_STATUS.CLAIMED_SOMEONE_ELSE]: NEW_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE,
+    [CLAIMED_POINTS_STATUS.NOT_CLAIMED_REACH_LIMIT]: NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT,
+    [CLAIMED_POINTS_STATUS.CLAIMED_REPEAT]: NEW_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT,
+    [CLAIMED_POINTS_STATUS.FAILED]: NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT,
+  };
+  const cashbackStatusCategories = {
+    [CLAIMED_CASHBACK_STATUS.NOT_CLAIMED_REACH_LIMIT]: NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT,
+    [CLAIMED_CASHBACK_STATUS.CLAIMED_SOMEONE_ELSE]: NEW_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE,
+    [CLAIMED_CASHBACK_STATUS.CLAIMED_REPEAT]: NEW_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT,
+    [CLAIMED_CASHBACK_STATUS.NOT_CLAIMED]: NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT,
   };
   const isCashbackEarned = [
     CLAIMED_CASHBACK_STATUS.CLAIMED_FIRST_TIME,
     CLAIMED_CASHBACK_STATUS.CLAIMED_NOT_FIRST_TIME,
   ].includes(cashbackStatus);
-  const isPointsEarned = pointsStatus === CLAIMED_POINTS_STATUS.CLAIMED;
+  const isPointsEarned = pointsStatus === CLAIMED_POINTS_STATUS.SUCCESS;
   const categories = {
     cashback: null,
     points: null,
@@ -52,12 +65,16 @@ export const getReceiptOrderRewardsStatusCategories = ({ pointsStatus, cashbackS
   }
 
   categories.cashback = {
-    status: isCashbackEarned ? NEW_MEMBER_TYPES.RECEIPT_EARNED_CASHBACK : cashbackStatus[claimOrderRewardsPointsStatus],
+    status: isCashbackEarned
+      ? NEW_MEMBER_TYPES.RECEIPT_EARNED_CASHBACK
+      : cashbackStatusCategories[claimOrderRewardsPointsStatus],
     available: isCashbackEarned,
   };
 
   categories.points = {
-    status: isPointsEarned ? NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS : pointsStatus[claimOrderRewardsCashbackStatus],
+    status: isPointsEarned
+      ? NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS
+      : pointsStatusCategories[claimOrderRewardsCashbackStatus],
     available: isPointsEarned,
   };
 

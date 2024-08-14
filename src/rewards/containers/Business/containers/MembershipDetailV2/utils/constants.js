@@ -27,11 +27,11 @@ export const NEW_MEMBER_TYPES = {
   RECEIPT_EARNED_POINTS: 'receiptEarnedPoints',
   RECEIPT_EARNED_CASHBACK: 'receiptEarnedCashback',
   RECEIPT_EARNED_POINTS_CASHBACK: 'receiptEarnedPointsCashback',
-  RECEIPT_CLAIMED_REPEAT: 'receiptClaimedRepeat',
-  RECEIPT_NOT_CLAIMED_REACH_LIMIT: 'receiptNotClaimedReachLimit',
-  RECEIPT_CLAIMED_SOME_ELSE: 'receiptClaimedSomeElse',
-  RECEIPT_NOT_CLAIMED_EXPIRED: 'receiptNotClaimedExpired',
   RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION: 'receiptNotClaimedCancelledNoTransaction',
+  RECEIPT_NOT_CLAIMED_EXPIRED: 'receiptNotClaimedExpired',
+  RECEIPT_CLAIMED_SOME_ELSE: 'receiptClaimedSomeElse',
+  RECEIPT_NOT_CLAIMED_REACH_LIMIT: 'receiptNotClaimedReachLimit',
+  RECEIPT_CLAIMED_REPEAT: 'receiptClaimedRepeat',
   RECEIPT_NOT_CLAIMED_DEFAULT: 'receiptNotClaimedDefault',
 };
 
