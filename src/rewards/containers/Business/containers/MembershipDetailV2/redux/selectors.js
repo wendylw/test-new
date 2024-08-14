@@ -1,4 +1,6 @@
+import _isArray from 'lodash/isArray';
 import { createSelector } from 'reselect';
+import i18next from 'i18next';
 import {
   BECOME_MERCHANT_MEMBER_METHODS,
   MEMBER_LEVELS,
@@ -15,7 +17,9 @@ import {
   RETURNING_MEMBER_I18N_KEYS,
   GET_REWARDS_MAX_LENGTH,
   NEW_MEMBER_CASHBACK_STATUS_TYPES,
+  NEW_MEMBER_ICONS,
   RETURNING_MEMBER_CASHBACK_STATUS_TYPES,
+  CLAIMED_ORDER_REWARD_NAMES,
 } from '../utils/constants';
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
@@ -56,6 +60,7 @@ import {
   getClaimOrderRewardsTransactionStatus,
   getClaimOrderRewardsPointsValue,
   getClaimOrderRewardsCashbackPrice,
+  getIsNewMember,
 } from '../../../redux/common/selectors';
 
 export const getIsProfileModalShow = state => state.business.membershipDetailV2.isProfileModalShow;
@@ -404,16 +409,56 @@ export const getIsPointsRewardListMoreButtonShown = createSelector(
 );
 
 // Member Prompt
-export const getNewMemberClaimOrderRewardsPromptCategory = createSelector(
+export const getClaimOrderRewardsPrompt = createSelector(
   getClaimOrderRewardsPointsStatus,
   getClaimOrderRewardsCashbackStatus,
   getClaimOrderRewardsTransactionStatus,
-  (pointsStatus, cashbackStatus, transactionStatus) =>
-    getReceiptOrderRewardsStatusCategories({
+  getClaimOrderRewardsPointsValue,
+  getClaimOrderRewardsCashbackPrice,
+  getIsNewMember,
+  (pointsStatus, cashbackStatus, transactionStatus, pointsValue, cashbackPrice, isNewMember) => {
+    const baseParams = {
+      [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_POINTS_VALUE]: pointsValue,
+      [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_CASHBACK_VALUE]: cashbackPrice,
+    };
+    const categories = getReceiptOrderRewardsStatusCategories({
       pointsStatus,
       cashbackStatus,
       transactionStatus,
-    })
+      isNewMember,
+    });
+
+    categories.map(category => {
+      const { key, status } = category;
+      const { titleI18nKey, descriptionI18nKey, titleI18nParamsKeys } = NEW_MEMBER_I18N_KEYS[status] || {};
+      const rewardsParams = {
+        [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARDS]: i18next.t('Rewards:Rewards').toLowerCase(),
+        [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARD_TYPE]: i18next.t('Rewards:Reward').toLowerCase(),
+      };
+      const titleI18nParams = null;
+
+      if (key === CLAIMED_ORDER_REWARD_NAMES.CASHBACK) {
+        rewardsParams[MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARDS] = i18next.t('Common:Cashback').toLowerCase();
+        rewardsParams[MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARD_TYPE] = i18next.t('Common:Cashback').toLowerCase();
+      } else if (key === CLAIMED_ORDER_REWARD_NAMES.POINTS) {
+        rewardsParams[MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARDS] = i18next.t('Rewards:Points').toLowerCase();
+        rewardsParams[MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARD_TYPE] = i18next.t('Rewards:Points').toLowerCase();
+      }
+
+      if (titleI18nParamsKeys) {
+        titleI18nParamsKeys.forEach(paramKey => {
+          titleI18nParams[paramKey] = baseParams[paramKey] || rewardsParams[paramKey];
+        });
+      }
+
+      return {
+        id: status,
+        title: i18next.t(`Rewards:${titleI18nKey}`, titleI18nParams),
+        description: descriptionI18nKey && i18next.t(`Rewards:${descriptionI18nKey}`),
+        icons: _isArray(NEW_MEMBER_ICONS[status]) ? NEW_MEMBER_ICONS[status] : [NEW_MEMBER_ICONS[status]],
+      };
+    });
+  }
 );
 
 export const getNewMemberPromptCategory = createSelector(
@@ -482,10 +527,8 @@ export const getNewMemberPromptCategory = createSelector(
 
 export const getNewMemberTitleIn18nParams = createSelector(
   getOrderReceiptClaimedCashback,
-  getClaimOrderRewardsPointsValue,
-  getClaimOrderRewardsCashbackPrice,
   getNewMemberPromptCategory,
-  (claimedCashback, claimOrderRewardsPointsValue, claimOrderRewardsCashbackPrice, newMemberPromptCategory) => {
+  (claimedCashback, newMemberPromptCategory) => {
     const { titleI18nParamsKeys } = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory] || {};
     const newMemberTitleI18nParams = {};
 
@@ -496,10 +539,6 @@ export const getNewMemberTitleIn18nParams = createSelector(
     titleI18nParamsKeys.forEach(paramKey => {
       if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE) {
         newMemberTitleI18nParams[paramKey] = claimedCashback;
-      } else if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_CASHBACK_VALUE) {
-        newMemberTitleI18nParams[paramKey] = claimOrderRewardsCashbackPrice;
-      } else if (paramKey === MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_POINTS_VALUE) {
-        newMemberTitleI18nParams[paramKey] = claimOrderRewardsPointsValue;
       }
     });
 
@@ -517,6 +556,7 @@ export const getReturningMemberPromptCategory = createSelector(
   getIsMerchantEnabledCashback,
   getOrderReceiptClaimedCashbackStatus,
   getCustomerCashback,
+  getIsFromReceiptJoinMembershipUrlQRScan,
   (
     isFromJoinMembershipUrlClick,
     isFromSeamlessLoyaltyQrScan,
@@ -526,7 +566,9 @@ export const getReturningMemberPromptCategory = createSelector(
     isLoadCustomerRequestCompleted,
     isMerchantEnabledCashback,
     claimedCashbackStatus,
-    customerCashback
+    customerCashback,
+    // From receipt join membership URL
+    isFromReceiptJoinMembershipUrlQRScan
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return RETURNING_MEMBER_TYPES.DEFAULT;
@@ -548,6 +590,10 @@ export const getReturningMemberPromptCategory = createSelector(
       const claimedCashbackType = RETURNING_MEMBER_CASHBACK_STATUS_TYPES[claimedCashbackStatus];
 
       return claimedCashbackType || RETURNING_MEMBER_TYPES.DEFAULT;
+    }
+
+    if (isFromReceiptJoinMembershipUrlQRScan) {
+      return null;
     }
 
     return null;

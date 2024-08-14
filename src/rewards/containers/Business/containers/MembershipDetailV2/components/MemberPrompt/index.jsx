@@ -1,4 +1,3 @@
-import _isArray from 'lodash/isArray';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -19,19 +18,22 @@ import {
   getNewMemberTitleIn18nParams,
   getReturningMemberPromptCategory,
   getReturningMemberTitleIn18nParams,
+  getClaimOrderRewardsPrompt,
 } from '../../redux/selectors';
 import { alert, toast } from '../../../../../../../common/utils/feedback';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './MemberPrompt.module.scss';
 
 const CELEBRATION_ANIMATION_TIME = 3600;
+
 const NewMember = () => {
   const { t } = useTranslation(['Rewards']);
   const history = useHistory();
   const merchantBusiness = useSelector(getMerchantBusiness);
   const newMemberPromptCategory = useSelector(getNewMemberPromptCategory);
   const newMemberTitleIn18nParams = useSelector(getNewMemberTitleIn18nParams);
-  const newMemberIcons = NEW_MEMBER_ICONS[newMemberPromptCategory];
+  const newMemberClaimOrderRewardsPrompt = useSelector(getClaimOrderRewardsPrompt);
+  const newMemberIcon = NEW_MEMBER_ICONS[newMemberPromptCategory];
   const newMemberContentI18nKeys = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory];
   const { titleI18nKey, descriptionI18nKey } = newMemberContentI18nKeys || {};
   const [celebrationAnimateImage, setCelebrationAnimateImage] = useState(NewMemberCelebrationAnimateImage);
@@ -42,34 +44,66 @@ const NewMember = () => {
     // Replace the current URL with the original URL: Fixed shown pop-up issue when user click the back button
     history.replace({ pathname, search });
   }, [merchantBusiness, history]);
+  const getContent = ({ title, description, icons }) => (
+    <div className={styles.NewMemberContent}>
+      {icons && icons}
+      {title && <h4 className={styles.NewMemberTitle}>{title}</h4>}
+      {description && <p className={styles.NewMemberDescription}>{description}</p>}
+    </div>
+  );
 
   useEffect(() => {
-    if (newMemberContentI18nKeys) {
-      const content = (
-        <div className={styles.NewMemberContent}>
-          {newMemberIcons &&
-            (!_isArray(newMemberIcons) ? [newMemberIcons] : newMemberIcons).map((newMemberIcon, index) => (
-              <div key={`new-member-icon-${index}`} className={styles.NewMemberIcon}>
-                <ObjectFitImage noCompression src={newMemberIcon} alt="Store New Member Icon in StoreHub" />
-              </div>
-            ))}
-          {titleI18nKey && (
-            <h4 className={styles.NewMemberTitle}>
-              {newMemberTitleIn18nParams ? t(titleI18nKey, newMemberTitleIn18nParams) : t(titleI18nKey)}
-            </h4>
-          )}
-          {descriptionI18nKey && <p className={styles.NewMemberDescription}>{t(descriptionI18nKey)}</p>}
-        </div>
-      );
-
+    if (newMemberClaimOrderRewardsPrompt) {
       setTimeout(() => {
         setCelebrationAnimateImage(null);
       }, CELEBRATION_ANIMATION_TIME);
 
-      alert(content, {
-        id: `NewMember${newMemberPromptCategory}`,
-        onClose: handleCloseNewMemberPrompt,
+      newMemberClaimOrderRewardsPrompt.forEach(prompt => {
+        const { id, title, description, icons } = prompt;
+
+        alert(
+          getContent({
+            title,
+            description,
+            icons:
+              icons &&
+              icons.map(icon => (
+                <div key={`new-member-icon-${id}`} className={styles.NewMemberIcon}>
+                  <ObjectFitImage noCompression src={icon} alt="Store New Member Icon in StoreHub" />
+                </div>
+              )),
+          }),
+          {
+            id: `NewMember${id}`,
+            onClose: handleCloseNewMemberPrompt,
+          }
+        );
       });
+    }
+  }, [newMemberClaimOrderRewardsPrompt, handleCloseNewMemberPrompt]);
+
+  useEffect(() => {
+    if (newMemberContentI18nKeys) {
+      setTimeout(() => {
+        setCelebrationAnimateImage(null);
+      }, CELEBRATION_ANIMATION_TIME);
+
+      alert(
+        getContent({
+          title:
+            titleI18nKey && newMemberTitleIn18nParams ? t(titleI18nKey, newMemberTitleIn18nParams) : t(titleI18nKey),
+          description: descriptionI18nKey && t(descriptionI18nKey),
+          icons: newMemberIcon && (
+            <div className={styles.NewMemberIcon}>
+              <ObjectFitImage noCompression src={newMemberIcon} alt="Store New Member Icon in StoreHub" />
+            </div>
+          ),
+        }),
+        {
+          id: `NewMember${newMemberPromptCategory}`,
+          onClose: handleCloseNewMemberPrompt,
+        }
+      );
     }
   }, [
     newMemberContentI18nKeys,
@@ -104,6 +138,7 @@ const ReturningMember = () => {
   const isFromJoinMembershipUrlClick = useSelector(getIsFromJoinMembershipUrlClick);
   const returningMemberPromptCategory = useSelector(getReturningMemberPromptCategory);
   const returningMemberTitleIn18nParams = useSelector(getReturningMemberTitleIn18nParams);
+  const returnMemberClaimOrderRewardsPrompt = useSelector(getClaimOrderRewardsPrompt);
   const returningMemberIcon = RETURNING_MEMBER_ICONS[returningMemberPromptCategory];
   const returningMemberContentI18nKeys = RETURNING_MEMBER_I18N_KEYS[returningMemberPromptCategory];
   const { titleI18nKey, descriptionI18nKey } = returningMemberContentI18nKeys || {};
@@ -114,33 +149,64 @@ const ReturningMember = () => {
     // Replace the current URL with the original URL: Fixed shown pop-up issue when user click the back button
     history.replace({ pathname, search });
   }, [merchantBusiness, history]);
+  const getContent = ({ title, description, icons }) => (
+    <div className={styles.NewMemberContent}>
+      {icons && icons}
+      {title && <h4 className={styles.NewMemberTitle}>{title}</h4>}
+      {description && <p className={styles.NewMemberDescription}>{description}</p>}
+    </div>
+  );
+
+  useEffect(() => {
+    if (returnMemberClaimOrderRewardsPrompt) {
+      returnMemberClaimOrderRewardsPrompt.forEach(prompt => {
+        const { id, title, description, icons } = prompt;
+
+        alert(
+          getContent({
+            title,
+            description,
+            icons:
+              icons &&
+              icons.map(icon => (
+                <div key={`returning-member-icon-${id}`} className={styles.NewMemberIcon}>
+                  <ObjectFitImage noCompression src={icon} alt="Store Return Member Icon in StoreHub" />
+                </div>
+              )),
+          }),
+          {
+            id: `NewMember${id}`,
+            onClose: handleCloseReturningMemberPrompt,
+          }
+        );
+      });
+    }
+  }, [returnMemberClaimOrderRewardsPrompt, handleCloseReturningMemberPrompt]);
 
   useEffect(() => {
     if (returningMemberContentI18nKeys) {
-      const content = (
-        <div className={styles.ReturningMemberContent}>
-          {returningMemberIcon && (
-            <div className={styles.ReturningMemberIcon}>
-              <ObjectFitImage noCompression src={returningMemberIcon} alt="Store Returning Member Icon in StoreHub" />
-            </div>
-          )}
-          {titleI18nKey && (
-            <h4 className={styles.ReturningMemberTitle}>
-              {returningMemberTitleIn18nParams ? t(titleI18nKey, returningMemberTitleIn18nParams) : t(titleI18nKey)}
-            </h4>
-          )}
-          {descriptionI18nKey && <p className={styles.ReturningMemberDescription}>{t(descriptionI18nKey)}</p>}
-        </div>
-      );
-
       isFromJoinMembershipUrlClick
         ? toast.success(t(titleI18nKey), {
             onClose: handleCloseReturningMemberPrompt,
           })
-        : alert(content, {
-            id: `ReturningMember${returningMemberPromptCategory}`,
-            onClose: handleCloseReturningMemberPrompt,
-          });
+        : alert(
+            getContent({
+              title:
+                titleI18nKey && returningMemberTitleIn18nParams
+                  ? t(titleI18nKey, returningMemberTitleIn18nParams)
+                  : t(titleI18nKey),
+              description: descriptionI18nKey && t(descriptionI18nKey),
+              icons: newMemberIcon && (
+                <div className={styles.returningMemberIcon}>
+                  <ObjectFitImage noCompression src={returningMemberIcon} alt="Store Return Member Icon in StoreHub" />
+                </div>
+              ),
+            }),
+            {
+              id: `ReturningMember${returningMemberPromptCategory}`,
+              onClose: handleCloseReturningMemberPrompt,
+            }
+          );
     }
   }, [
     returningMemberContentI18nKeys,
