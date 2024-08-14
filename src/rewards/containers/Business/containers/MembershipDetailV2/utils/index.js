@@ -60,7 +60,7 @@ export const getReceiptOrderRewardsStatusCategories = ({ pointsStatus, cashbackS
     return NEW_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT;
   }
 
-  if (pointsStatus === CLAIMED_POINTS_STATUS.NOT_CLAIMED && cashbackStatus === CLAIMED_CASHBACK_STATUS.NOT_CLAIMED) {
+  if (pointsStatus === CLAIMED_POINTS_STATUS.FAILED && cashbackStatus === CLAIMED_CASHBACK_STATUS.NOT_CLAIMED) {
     return NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT;
   }
 
