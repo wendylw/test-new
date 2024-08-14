@@ -7,9 +7,9 @@ import RewardsStoreCreditsWhiteIcon from '../../../../../../images/rewards-store
 import RewardsDiscountWhiteIcon from '../../../../../../images/rewards-discount-icon-white.svg';
 import RewardsVouchersWhiteIcon from '../../../../../../images/rewards-vouchers-icon-white.svg';
 import { API_REQUEST_STATUS, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
-import { CUSTOMER_NOT_FOUND_ERROR_CODE, REWARDS_NAMES } from '../constants';
 import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getPrice } from '../../../../../../common/utils';
+import { CUSTOMER_NOT_FOUND_ERROR_CODE, REWARDS_NAMES, GET_REWARDS_ESTIMATION_ERROR_CODES } from '../constants';
 import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import {
   getIsLogin,
@@ -242,5 +242,35 @@ export const getOrderRewards = createSelector(
     }
 
     return rewards;
+  }
+);
+
+export const getIsLoadOrderRewardsNoTransaction = createSelector(
+  getLoadOrderRewardsRequestError,
+  loadOrderRewardsRequestError => loadOrderRewardsRequestError === GET_REWARDS_ESTIMATION_ERROR_CODES.NO_TRANSACTION
+);
+
+export const getLoadOrderRewardsError = createSelector(
+  getLoadOrderRewardsRequestError,
+  loadOrderRewardsRequestError => {
+    if (!loadOrderRewardsRequestError) {
+      return null;
+    }
+
+    const { code } = loadOrderRewardsRequestError || {};
+    const error = {
+      title: i18next.t('Common:SomethingWentWrongTitle'),
+      description: i18next.t('Common:SomethingWentWrongDescription'),
+    };
+
+    if (code === GET_REWARDS_ESTIMATION_ERROR_CODES.EXPIRED) {
+      error.title = t('Rewards:ErrorGetRewardsExpiredTitle');
+      error.description = null;
+    } else if (code === GET_REWARDS_ESTIMATION_ERROR_CODES.ORDER_CANCELED_REFUND) {
+      error.title = t('Rewards:ErrorGetRewardsCanceledRefundTitle');
+      error.description = null;
+    }
+
+    return error;
   }
 );

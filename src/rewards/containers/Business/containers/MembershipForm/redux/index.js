@@ -21,6 +21,11 @@ const initialState = {
 export const { actions, reducer } = createSlice({
   name: 'rewards/business/membershipForm',
   initialState,
+  reducers: {
+    loadOrderRewardsErrorReset: state => {
+      state.loadOrderRewardsRequest.error = initialState.loadOrderRewardsRequest.error;
+    },
+  },
   extraReducers: {
     [joinNowButtonClicked.pending.type]: state => {
       state.isJoinNowButtonDisabled = true;

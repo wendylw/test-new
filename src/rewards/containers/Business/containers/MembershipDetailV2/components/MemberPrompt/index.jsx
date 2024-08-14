@@ -196,7 +196,7 @@ const ReturningMember = () => {
                   ? t(titleI18nKey, returningMemberTitleIn18nParams)
                   : t(titleI18nKey),
               description: descriptionI18nKey && t(descriptionI18nKey),
-              icons: newMemberIcon && (
+              icons: returningMemberIcon && (
                 <div className={styles.returningMemberIcon}>
                   <ObjectFitImage noCompression src={returningMemberIcon} alt="Store Return Member Icon in StoreHub" />
                 </div>

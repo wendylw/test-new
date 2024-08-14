@@ -2,6 +2,8 @@ import { useMount } from 'react-use';
 import React, { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
+import BeepWarningImage from '../../../../../images/beep-warning.svg';
+import RewardsFailedIcon from '../../../../../images/rewards-failed.svg';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import ErrorResult from './components/ErrorResult';
@@ -12,12 +14,12 @@ import {
   getShouldShowUnsupportedError,
   getShouldShowUnknownError,
   getShouldShowBackButton,
+  getIsLoadOrderRewardsNoTransaction,
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
 import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
 import MembershipForm from '.';
-import BeepWarningImage from '../../../../../images/beep-warning.svg';
 
 const MembershipFormProxy = () => {
   const dispatch = useDispatch();
@@ -31,6 +33,7 @@ const MembershipFormProxy = () => {
   const shouldShowSkeletonLoader = useSelector(getShouldShowSkeletonLoader);
   const shouldShowUnsupportedError = useSelector(getShouldShowUnsupportedError);
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
+  const isGetOrderRewardsNoTransaction = useSelector(getIsLoadOrderRewardsNoTransaction);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
   const hasJoinedMembership = useSelector(getHasUserJoinedMerchantMembership);
   const isWebview = useSelector(getIsWebview);
@@ -64,6 +67,12 @@ const MembershipFormProxy = () => {
         <SkeletonLoader />
       ) : shouldShowUnsupportedError ? (
         <ErrorResult title={t('PageNotFound')} isCloseButtonVisible={false} />
+      ) : isGetOrderRewardsNoTransaction ? (
+        <ErrorResult
+          isCloseButtonVisible={false}
+          title={t('ErrorReceiptGetRewardsNoTransaction')}
+          imageSrc={RewardsFailedIcon}
+        />
       ) : shouldShowUnknownError ? (
         <ErrorResult
           title={t('SomethingWentWrongTitle')}

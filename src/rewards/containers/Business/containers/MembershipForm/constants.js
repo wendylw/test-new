@@ -10,3 +10,9 @@ export const REWARDS_NAMES = {
   CASHBACK: 'cashback',
   STORE_CREDITS: 'storeCredits',
 };
+
+export const GET_REWARDS_ESTIMATION_ERROR_CODES = {
+  EXPIRED: '41032',
+  NO_TRANSACTION: '41028',
+  ORDER_CANCELED_REFUND: '41030',
+};
