@@ -9,7 +9,7 @@ import {
 } from './api-request';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getBusiness, getSource } from '../../../../redux/modules/common/selectors';
-import { getReceiptNumber, getChannel } from './selectors';
+import { getReceiptNumber, getChannel, getStoreId } from './selectors';
 
 export const confirmToShareConsumerInfo = createAsyncThunk(
   'rewards/business/common/confirmToShareConsumerInfo',
@@ -74,8 +74,9 @@ export const claimOrderRewards = createAsyncThunk(
     const receiptNumber = getReceiptNumber(state);
     const channel = getChannel(state);
     const source = getSource(state);
+    const storeId = getStoreId(state);
 
-    const result = await postClaimedOrderRewards({ receiptNumber, business, channel, source });
+    const result = await postClaimedOrderRewards({ receiptNumber, business, channel, source, storeId });
 
     return result;
   }
