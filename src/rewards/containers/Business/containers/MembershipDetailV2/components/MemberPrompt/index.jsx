@@ -1,3 +1,4 @@
+import _isArray from 'lodash/isArray';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -30,7 +31,7 @@ const NewMember = () => {
   const merchantBusiness = useSelector(getMerchantBusiness);
   const newMemberPromptCategory = useSelector(getNewMemberPromptCategory);
   const newMemberTitleIn18nParams = useSelector(getNewMemberTitleIn18nParams);
-  const newMemberIcon = NEW_MEMBER_ICONS[newMemberPromptCategory];
+  const newMemberIcons = NEW_MEMBER_ICONS[newMemberPromptCategory];
   const newMemberContentI18nKeys = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory];
   const { titleI18nKey, descriptionI18nKey } = newMemberContentI18nKeys || {};
   const [celebrationAnimateImage, setCelebrationAnimateImage] = useState(NewMemberCelebrationAnimateImage);
@@ -46,11 +47,12 @@ const NewMember = () => {
     if (newMemberContentI18nKeys) {
       const content = (
         <div className={styles.NewMemberContent}>
-          {newMemberIcon && (
-            <div className={styles.NewMemberIcon}>
-              <ObjectFitImage noCompression src={newMemberIcon} alt="Store New Member Icon in StoreHub" />
-            </div>
-          )}
+          {newMemberIcons &&
+            (!_isArray(newMemberIcons) ? [newMemberIcons] : newMemberIcons).map((newMemberIcon, index) => (
+              <div key={`new-member-icon-${index}`} className={styles.NewMemberIcon}>
+                <ObjectFitImage noCompression src={newMemberIcon} alt="Store New Member Icon in StoreHub" />
+              </div>
+            ))}
           {titleI18nKey && (
             <h4 className={styles.NewMemberTitle}>
               {newMemberTitleIn18nParams ? t(titleI18nKey, newMemberTitleIn18nParams) : t(titleI18nKey)}
