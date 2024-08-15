@@ -428,7 +428,7 @@ export const getClaimOrderRewardsPrompt = createSelector(
       isNewMember,
     });
 
-    categories.map(category => {
+    return categories.map(category => {
       const { key, status } = category;
       const { titleI18nKey, descriptionI18nKey, titleI18nParamsKeys } = NEW_MEMBER_I18N_KEYS[status] || {};
       const rewardsParams = {
