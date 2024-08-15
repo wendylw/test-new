@@ -139,7 +139,10 @@ export const continueJoinMembership = createAsyncThunk(
 
     await dispatch(fetchCustomerInfo(business));
 
+    const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
     const hasUserJoinedMerchantMembership = getHasUserJoinedMerchantMembership(getState());
+
+    isClaimedOrderRewardsEnabled && (await dispatch(claimOrderRewards()));
 
     if (hasUserJoinedMerchantMembership) {
       // NOTE: this case has been handled in MembershipFormProxy useEffect. No need to do any manual redirect here.
@@ -147,7 +150,6 @@ export const continueJoinMembership = createAsyncThunk(
     }
 
     const shouldShowProfileForm = getShouldShowProfileForm(getState());
-    const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
 
     try {
       if (shouldShowProfileForm) {
@@ -155,7 +157,6 @@ export const continueJoinMembership = createAsyncThunk(
         throw new Error('Incomplete user profile');
       }
 
-      isClaimedOrderRewardsEnabled && (await dispatch(claimOrderRewards()));
       await dispatch(joinBusinessMembership());
     } catch (error) {
       logger.error('Rewards_Business_JoinMembershipFailed', { message: error?.message });

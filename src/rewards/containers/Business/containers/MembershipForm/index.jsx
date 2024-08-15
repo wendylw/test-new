@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useMount } from 'react-use';
+import { useLifecycles } from 'react-use';
 import { WarningCircle } from 'phosphor-react';
 import { getClient } from '../../../../../common/utils';
 import CleverTap from '../../../../../utils/clevertap';
@@ -33,12 +33,17 @@ const MembershipForm = () => {
     [dispatch]
   );
 
-  useMount(() => {
-    CleverTap.pushEvent('Join Membership Page - View Page', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
-  });
+  useLifecycles(
+    () => {
+      CleverTap.pushEvent('Join Membership Page - View Page', {
+        'account name': merchantBusiness,
+        source: getClient(),
+      });
+    },
+    () => {
+      handleResetGetOrderRewardsError();
+    }
+  );
 
   useEffect(() => {
     if (loadOrderRewardsError) {
@@ -52,11 +57,10 @@ const MembershipForm = () => {
         </div>,
         {
           customizeContent: true,
-          onClose: handleResetGetOrderRewardsError,
         }
       );
     }
-  }, [loadOrderRewardsError, handleResetGetOrderRewardsError]);
+  }, [loadOrderRewardsError]);
 
   return (
     <>

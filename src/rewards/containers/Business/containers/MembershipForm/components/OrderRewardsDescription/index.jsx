@@ -50,7 +50,7 @@ const OrderRewardsDescription = () => {
             </li>
           ))}
         </ul>
-        <p className={styles.OrderRewardsDescriptionGetRewardsDescription}>
+        <p className={styles.OrderRewardsDescriptionJoinMembershipDescription}>
           {t('JoinMembershipGetRewardsDescription')}
         </p>
         <DirectionArrow className={styles.OrderRewardsDescriptionGetRewardsDirectionArrow} />
