@@ -448,7 +448,7 @@ export const getClaimOrderRewardsPrompt = createSelector(
         [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARDS]: i18next.t('Rewards:Rewards').toLowerCase(),
         [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARD_TYPE]: i18next.t('Rewards:Reward').toLowerCase(),
       };
-      const titleI18nParams = null;
+      let titleI18nParams = null;
 
       if (key === CLAIMED_ORDER_REWARD_NAMES.CASHBACK) {
         rewardsParams[MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARDS] = i18next.t('Common:Cashback').toLowerCase();
@@ -460,7 +460,12 @@ export const getClaimOrderRewardsPrompt = createSelector(
 
       if (titleI18nParamsKeys) {
         titleI18nParamsKeys.forEach(paramKey => {
-          titleI18nParams[paramKey] = baseParams[paramKey] || rewardsParams[paramKey];
+          const param = baseParams[paramKey] || rewardsParams[paramKey];
+
+          if (param) {
+            titleI18nParams = titleI18nParams || {};
+            titleI18nParams[paramKey] = param;
+          }
         });
       }
 
