@@ -410,13 +410,22 @@ export const getIsPointsRewardListMoreButtonShown = createSelector(
 
 // Member Prompt
 export const getClaimOrderRewardsPrompt = createSelector(
+  getIsFromReceiptJoinMembershipUrlQRScan,
   getClaimOrderRewardsPointsStatus,
   getClaimOrderRewardsCashbackStatus,
   getClaimOrderRewardsTransactionStatus,
   getClaimOrderRewardsPointsValue,
   getClaimOrderRewardsCashbackPrice,
   getIsNewMember,
-  (pointsStatus, cashbackStatus, transactionStatus, pointsValue, cashbackPrice, isNewMember) => {
+  (
+    isFromReceiptJoinMembershipUrlQRScan,
+    pointsStatus,
+    cashbackStatus,
+    transactionStatus,
+    pointsValue,
+    cashbackPrice,
+    isNewMember
+  ) => {
     const baseParams = {
       [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_POINTS_VALUE]: pointsValue,
       [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_CASHBACK_VALUE]: cashbackPrice,
@@ -427,6 +436,10 @@ export const getClaimOrderRewardsPrompt = createSelector(
       transactionStatus,
       isNewMember,
     });
+
+    if (categories.length === 0 || !isFromReceiptJoinMembershipUrlQRScan) {
+      return null;
+    }
 
     return categories.map(category => {
       const { key, status } = category;
