@@ -160,7 +160,6 @@ const ReturningMember = () => {
   );
 
   useEffect(() => {
-    console.log(returnMemberClaimOrderRewardsPrompt);
     if (returnMemberClaimOrderRewardsPrompt) {
       returnMemberClaimOrderRewardsPrompt.forEach(prompt => {
         const { id, title, description, icons } = prompt;

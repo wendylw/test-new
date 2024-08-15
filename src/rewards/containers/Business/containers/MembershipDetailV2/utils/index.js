@@ -80,8 +80,6 @@ export const getReceiptOrderRewardsStatusCategories = ({
       status: isPointsEarned ? types.RECEIPT_EARNED_POINTS : pointsStatusCategories[pointsStatus],
     });
 
-    console.log(cashbackStatus, 'cashbackStatus');
-
     return categories;
   } catch (error) {
     return [];
