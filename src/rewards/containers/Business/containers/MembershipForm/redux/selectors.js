@@ -264,10 +264,10 @@ export const getLoadOrderRewardsError = createSelector(
     };
 
     if (code === GET_REWARDS_ESTIMATION_ERROR_CODES.EXPIRED) {
-      error.title = t('Rewards:ErrorGetRewardsExpiredTitle');
+      error.title = i18next.t('Rewards:ErrorGetRewardsExpiredTitle');
       error.description = null;
     } else if (code === GET_REWARDS_ESTIMATION_ERROR_CODES.ORDER_CANCELED_REFUND) {
-      error.title = t('Rewards:ErrorGetRewardsCanceledRefundTitle');
+      error.title = i18next.t('Rewards:ErrorGetRewardsCanceledRefundTitle');
       error.description = null;
     }
 

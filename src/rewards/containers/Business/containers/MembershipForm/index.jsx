@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMount } from 'react-use';
+import { WarningCircle } from 'phosphor-react';
 import { getClient } from '../../../../../common/utils';
 import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
@@ -8,6 +9,7 @@ import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import { getIsProfileFormVisible, getIsClaimedOrderRewardsEnabled, getLoadOrderRewardsError } from './redux/selectors';
 import { actions as membershipFormActions } from './redux';
 import { skipProfileButtonClicked, saveProfileButtonClicked } from './redux/thunks';
+import { alert } from '../../../../../common/utils/feedback';
 import MerchantInfo from './components/MerchantInfo';
 import RewardsDescription from './components/RewardsDescription';
 import OrderRewardsDescription from './components/OrderRewardsDescription';
@@ -16,7 +18,6 @@ import Footer from './components/Footer';
 import JoiningIndicator from './components/JoiningIndicator';
 import Profile from '../../../Profile';
 import styles from './MembershipForm.module.scss';
-import { alert } from '../../../../../common/utils/feedback';
 
 const MembershipForm = () => {
   const dispatch = useDispatch();
@@ -43,12 +44,19 @@ const MembershipForm = () => {
     if (loadOrderRewardsError) {
       const { title, description } = loadOrderRewardsError;
 
-      alert(description, {
-        title,
-        onClose: handleResetGetOrderRewardsError,
-      });
+      alert(
+        <div className={styles.MembershipFormErrorAlertContent}>
+          <WarningCircle className={styles.MembershipFormErrorAlertIcon} size={80} weight="fill" />
+          <h4 className={styles.MembershipFormErrorAlertTitle}>{title}</h4>
+          {description && <p>{description}</p>}
+        </div>,
+        {
+          customizeContent: true,
+          onClose: handleResetGetOrderRewardsError,
+        }
+      );
     }
-  }, [loadOrderRewardsError]);
+  }, [loadOrderRewardsError, handleResetGetOrderRewardsError]);
 
   return (
     <>
