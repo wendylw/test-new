@@ -247,7 +247,15 @@ export const getOrderRewards = createSelector(
 
 export const getIsLoadOrderRewardsNoTransaction = createSelector(
   getLoadOrderRewardsRequestError,
-  loadOrderRewardsRequestError => loadOrderRewardsRequestError === GET_REWARDS_ESTIMATION_ERROR_CODES.NO_TRANSACTION
+  loadOrderRewardsRequestError => {
+    if (!loadOrderRewardsRequestError) {
+      return null;
+    }
+
+    const { code } = loadOrderRewardsRequestError || {};
+
+    return code === GET_REWARDS_ESTIMATION_ERROR_CODES.NO_TRANSACTION;
+  }
 );
 
 export const getLoadOrderRewardsError = createSelector(

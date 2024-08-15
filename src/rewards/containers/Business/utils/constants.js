@@ -29,6 +29,7 @@ export const CLAIMED_TRANSACTION_STATUS = {
   FAILED_EXPIRED: 'Failed_Expired',
   FAILED_CANCELLED_OR_REFUND: 'Failed_CancelledOrRefund',
   FAILED_CUSTOMER_NOT_MATCH: 'Failed_CustomerNotMatch',
+  FAILED_BIND_CUSTOMER_FAILED: 'Failed_BindCustomerFailed',
 };
 
 export const CLAIMED_POINTS_REWARD_ERROR_CODES = {

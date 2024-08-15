@@ -41,6 +41,7 @@ export const NEW_MEMBER_TYPES = {
   RECEIPT_NOT_CLAIMED_REACH_LIMIT: 'receiptNotClaimedReachLimit',
   RECEIPT_CLAIMED_REPEAT: 'receiptClaimedRepeat',
   RECEIPT_NOT_CLAIMED_DEFAULT: 'receiptNotClaimedDefault',
+  RECEIPT_BIND_CUSTOMER_FAILED: 'receiptBindCustomerFailed',
 };
 
 export const NEW_MEMBER_CASHBACK_STATUS_TYPES = {
@@ -77,7 +78,8 @@ export const NEW_MEMBER_ICONS = {
   [NEW_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE]: RewardsFailedIcon,
   [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT]: RewardsFailedIcon,
   [NEW_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT]: RewardsFailedIcon,
-  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT]: RewardsFailedIcon,
+  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT]: RewardsWarningIcon,
+  [NEW_MEMBER_TYPES.RECEIPT_BIND_CUSTOMER_FAILED]: RewardsWarningIcon,
 };
 
 export const NEW_MEMBER_I18N_KEYS = {
@@ -128,17 +130,20 @@ export const NEW_MEMBER_I18N_KEYS = {
   [NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS]: {
     titleI18nKey: 'ReceiptEarnedOnlyPointsTitle',
     descriptionI18nKey: 'YouAreNowAMember',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.POINTS_VALUE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_POINTS_VALUE],
   },
   [NEW_MEMBER_TYPES.RECEIPT_EARNED_CASHBACK]: {
     titleI18nKey: 'ReceiptEarnedOnlyCashbackTitle',
     descriptionI18nKey: 'YouAreNowAMember',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_CASHBACK_VALUE],
   },
   [NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS_CASHBACK]: {
     titleI18nKey: 'ReceiptEarnedPointsAndCashbackTitle',
     descriptionI18nKey: 'YouAreNowAMember',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE, MEMBER_TYPE_I18N_PARAM_KEYS.POINTS_VALUE],
+    titleI18nParamsKeys: [
+      MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_CASHBACK_VALUE,
+      MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_POINTS_VALUE,
+    ],
   },
   [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION]: {
     titleI18nKey: 'ReceiptNotClaimedCancelledNoTransactionTitle',
@@ -151,20 +156,24 @@ export const NEW_MEMBER_I18N_KEYS = {
   [NEW_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE]: {
     titleI18nKey: 'ReceiptClaimedSomeElseTitle',
     descriptionI18nKey: 'YouAreNowAMember',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.REWARD_TYPE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARDS],
   },
   [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT]: {
     titleI18nKey: 'ReceiptNotClaimedReachLimitTitle',
     descriptionI18nKey: 'YouAreNowAMember',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.REWARD_TYPE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARD_TYPE],
   },
   [NEW_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT]: {
     titleI18nKey: 'ReceiptClaimedRepeatTitle',
     descriptionI18nKey: 'YouAreNowAMember',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.REWARD_TYPE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARDS],
   },
   [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT]: {
     titleI18nKey: 'ReceiptNotClaimedDefaultTitle',
+    descriptionI18nKey: 'ReceiptNotClaimedDefaultDescription',
+  },
+  [NEW_MEMBER_TYPES.RECEIPT_BIND_CUSTOMER_FAILED]: {
+    titleI18nKey: 'ReceiptBindCustomerFailedTitle',
     descriptionI18nKey: 'ReceiptNotClaimedDefaultDescription',
   },
 };
@@ -191,6 +200,7 @@ export const RETURNING_MEMBER_TYPES = {
   RECEIPT_NOT_CLAIMED_REACH_LIMIT: 'receiptNotClaimedReachLimit',
   RECEIPT_CLAIMED_REPEAT: 'receiptClaimedRepeat',
   RECEIPT_NOT_CLAIMED_DEFAULT: 'receiptNotClaimedDefault',
+  RECEIPT_BIND_CUSTOMER_FAILED: 'receiptBindCustomerFailed',
 };
 
 export const RETURNING_MEMBER_CASHBACK_STATUS_TYPES = {
@@ -226,7 +236,8 @@ export const RETURNING_MEMBER_ICONS = {
   [RETURNING_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE]: RewardsFailedIcon,
   [RETURNING_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT]: RewardsFailedIcon,
   [RETURNING_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT]: RewardsFailedIcon,
-  [RETURNING_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT]: RewardsFailedIcon,
+  [RETURNING_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT]: RewardsWarningIcon,
+  [RETURNING_MEMBER_TYPES.RECEIPT_BIND_CUSTOMER_FAILED]: RewardsWarningIcon,
 };
 
 export const RETURNING_MEMBER_I18N_KEYS = {
@@ -270,38 +281,45 @@ export const RETURNING_MEMBER_I18N_KEYS = {
   [RETURNING_MEMBER_TYPES.NOT_CLAIMED_DEFAULT]: {
     titleI18nKey: 'NotClaimDefaultReturningMemberTitle',
   },
-  [NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS]: {
+  [RETURNING_MEMBER_TYPES.RECEIPT_EARNED_POINTS]: {
     titleI18nKey: 'ReceiptEarnedOnlyPointsTitle',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.POINTS_VALUE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_POINTS_VALUE],
   },
-  [NEW_MEMBER_TYPES.RECEIPT_EARNED_CASHBACK]: {
+  [RETURNING_MEMBER_TYPES.RECEIPT_EARNED_CASHBACK]: {
     titleI18nKey: 'ReceiptEarnedOnlyCashbackTitle',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_CASHBACK_VALUE],
   },
-  [NEW_MEMBER_TYPES.RECEIPT_EARNED_POINTS_CASHBACK]: {
+  [RETURNING_MEMBER_TYPES.RECEIPT_EARNED_POINTS_CASHBACK]: {
     titleI18nKey: 'ReceiptEarnedPointsAndCashbackTitle',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.CASHBACK_VALUE, MEMBER_TYPE_I18N_PARAM_KEYS.POINTS_VALUE],
+    titleI18nParamsKeys: [
+      MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_CASHBACK_VALUE,
+      MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_POINTS_VALUE,
+    ],
   },
-  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION]: {
+  [RETURNING_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION]: {
     titleI18nKey: 'ReceiptNotClaimedCancelledNoTransactionTitle',
   },
-  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_EXPIRED]: {
+  [RETURNING_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_EXPIRED]: {
     titleI18nKey: 'ReceiptNotClaimedExpiredTitle',
   },
-  [NEW_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE]: {
+  [RETURNING_MEMBER_TYPES.RECEIPT_CLAIMED_SOME_ELSE]: {
     titleI18nKey: 'ReceiptClaimedSomeElseTitle',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.REWARD_TYPE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARDS],
   },
-  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT]: {
+  [RETURNING_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_REACH_LIMIT]: {
     titleI18nKey: 'ReceiptNotClaimedReachLimitTitle',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.REWARD_TYPE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARD_TYPE],
   },
-  [NEW_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT]: {
+  [RETURNING_MEMBER_TYPES.RECEIPT_CLAIMED_REPEAT]: {
     titleI18nKey: 'ReceiptClaimedRepeatTitle',
-    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.REWARD_TYPE],
+    titleI18nParamsKeys: [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARDS],
   },
-  [NEW_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT]: {
+  [RETURNING_MEMBER_TYPES.RECEIPT_NOT_CLAIMED_DEFAULT]: {
     titleI18nKey: 'ReceiptNotClaimedDefaultTitle',
+    descriptionI18nKey: 'ReceiptNotClaimedDefaultDescription',
+  },
+  [RETURNING_MEMBER_TYPES.RECEIPT_BIND_CUSTOMER_FAILED]: {
+    titleI18nKey: 'ReceiptBindCustomerFailedTitle',
     descriptionI18nKey: 'ReceiptNotClaimedDefaultDescription',
   },
 };

@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useLifecycles } from 'react-use';
+import { useMount } from 'react-use';
 import { WarningCircle } from 'phosphor-react';
 import { getClient } from '../../../../../common/utils';
 import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import { getIsProfileFormVisible, getIsClaimedOrderRewardsEnabled, getLoadOrderRewardsError } from './redux/selectors';
-import { actions as membershipFormActions } from './redux';
 import { skipProfileButtonClicked, saveProfileButtonClicked } from './redux/thunks';
 import { alert } from '../../../../../common/utils/feedback';
 import MerchantInfo from './components/MerchantInfo';
@@ -28,22 +27,13 @@ const MembershipForm = () => {
   const isClaimedOrderRewardsEnabled = useSelector(getIsClaimedOrderRewardsEnabled);
   const handleSkipProfileForm = useCallback(() => dispatch(skipProfileButtonClicked()), [dispatch]);
   const handleSaveProfileForm = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
-  const handleResetGetOrderRewardsError = useCallback(
-    () => dispatch(membershipFormActions.loadOrderRewardsErrorReset()),
-    [dispatch]
-  );
 
-  useLifecycles(
-    () => {
-      CleverTap.pushEvent('Join Membership Page - View Page', {
-        'account name': merchantBusiness,
-        source: getClient(),
-      });
-    },
-    () => {
-      handleResetGetOrderRewardsError();
-    }
-  );
+  useMount(() => {
+    CleverTap.pushEvent('Join Membership Page - View Page', {
+      'account name': merchantBusiness,
+      source: getClient(),
+    });
+  });
 
   useEffect(() => {
     if (loadOrderRewardsError) {

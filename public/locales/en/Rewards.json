@@ -51,6 +51,7 @@
   "ReceiptClaimedSomeElseTitle": "Oops! Someone else has already claimed {{receiptRewards}} for this order",
   "ReceiptNotClaimedExpiredTitle": "Oops! This QR code has already expired",
   "ReceiptNotClaimedCancelledNoTransactionTitle": "Transaction error. Could not claim rewards",
+  "ReceiptBindCustomerFailedTitle": "Something went wrong.",
   "ReceiptEarnedOnlyCashbackTitle": "You’ve claimed {{receiptCashbackValue}} cashback!",
   "ReceiptEarnedOnlyPointsTitle": "You’ve claimed {{receiptPointsValue}} points!",
   "ReceiptEarnedPointsAndCashbackTitle": "You’ve claimed {{receiptPointsValue}} points & {{receiptCashbackValue}} cashback!",
@@ -162,7 +163,7 @@
   "UnlockLevelPrompt": "You’ll unlock this tier",
   "UnlockHigherLevelPrompt": "Become a {{levelName}} Member and unlock",
   "ViewAll": "View all",
-  "ErrorReceiptGetRewardsNoTransaction": "Transaction not found. Please scan the QR again later",
+  "ErrorReceiptGetRewardsNoTransaction": "Transaction not found. <0></0>Please scan the QR again later",
   "ErrorGetRewardsExpiredTitle": "Oops! This QR code has already expired",
   "ErrorGetRewardsCanceledRefundTitle": "Transaction was cancelled. Could not claim rewards"
 }

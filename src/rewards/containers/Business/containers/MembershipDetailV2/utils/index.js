@@ -14,6 +14,7 @@ export const getReceiptOrderRewardsStatusCategories = ({
       [CLAIMED_TRANSACTION_STATUS.FAILED_ORDER_NOTFOUND]: types.RECEIPT_NOT_CLAIMED_CANCELLED_NO_TRANSACTION,
       [CLAIMED_TRANSACTION_STATUS.FAILED_EXPIRED]: types.RECEIPT_NOT_CLAIMED_EXPIRED,
       [CLAIMED_TRANSACTION_STATUS.FAILED_CUSTOMER_NOT_MATCH]: types.RECEIPT_CLAIMED_SOME_ELSE,
+      [CLAIMED_TRANSACTION_STATUS.FAILED_BIND_CUSTOMER_FAILED]: types.RECEIPT_BIND_CUSTOMER_FAILED,
     };
     const pointsStatusCategories = {
       [CLAIMED_POINTS_STATUS.CLAIMED_SOMEONE_ELSE]: types.RECEIPT_CLAIMED_SOME_ELSE,
@@ -35,7 +36,9 @@ export const getReceiptOrderRewardsStatusCategories = ({
     const categories = [];
 
     if (transactionStatus !== CLAIMED_TRANSACTION_STATUS.SUCCESS) {
-      return [{ status: transactionStatusCategories[transactionStatus] }];
+      return transactionStatus && transactionStatusCategories[transactionStatus]
+        ? [{ status: transactionStatusCategories[transactionStatus] }]
+        : [];
     }
 
     if (isCashbackEarned && isPointsEarned) {
@@ -69,18 +72,18 @@ export const getReceiptOrderRewardsStatusCategories = ({
 
     categories.push({
       key: CLAIMED_ORDER_REWARD_NAMES.CASHBACK,
-      status: isCashbackEarned ? types.RECEIPT_EARNED_CASHBACK : cashbackStatusCategories[pointsStatus],
+      status: isCashbackEarned ? types.RECEIPT_EARNED_CASHBACK : cashbackStatusCategories[cashbackStatus],
     });
 
     categories.push({
       key: CLAIMED_ORDER_REWARD_NAMES.POINTS,
-      status: isPointsEarned ? types.RECEIPT_EARNED_POINTS : pointsStatusCategories[cashbackStatus],
+      status: isPointsEarned ? types.RECEIPT_EARNED_POINTS : pointsStatusCategories[pointsStatus],
     });
+
+    console.log(cashbackStatus, 'cashbackStatus');
 
     return categories;
   } catch (error) {
-    console.log(error);
-
-    return null;
+    return [];
   }
 };

@@ -469,6 +469,8 @@ export const getClaimOrderRewardsPrompt = createSelector(
         });
       }
 
+      console.log(titleI18nParamsKeys);
+
       return {
         id: status,
         title: i18next.t(`Rewards:${titleI18nKey}`, titleI18nParams),

@@ -65,13 +65,15 @@ const NewMember = () => {
           getContent({
             title,
             description,
-            icons:
-              icons &&
-              icons.map(icon => (
-                <div key={`new-member-icon-${id}`} className={styles.NewMemberIcon}>
-                  <ObjectFitImage noCompression src={icon} alt="Store New Member Icon in StoreHub" />
-                </div>
-              )),
+            icons: icons && (
+              <div className={styles.NewMemberIconsContainer}>
+                {icons.map(icon => (
+                  <div key={`new-member-icon-${id}`} className={styles.NewMemberIcon}>
+                    <ObjectFitImage noCompression src={icon} alt="Store New Member Icon in StoreHub" />
+                  </div>
+                ))}
+              </div>
+            ),
           }),
           {
             id: `NewMember${id}`,
@@ -158,6 +160,7 @@ const ReturningMember = () => {
   );
 
   useEffect(() => {
+    console.log(returnMemberClaimOrderRewardsPrompt);
     if (returnMemberClaimOrderRewardsPrompt) {
       returnMemberClaimOrderRewardsPrompt.forEach(prompt => {
         const { id, title, description, icons } = prompt;
@@ -166,13 +169,15 @@ const ReturningMember = () => {
           getContent({
             title,
             description,
-            icons:
-              icons &&
-              icons.map(icon => (
-                <div key={`returning-member-icon-${id}`} className={styles.NewMemberIcon}>
-                  <ObjectFitImage noCompression src={icon} alt="Store Return Member Icon in StoreHub" />
-                </div>
-              )),
+            icons: icons && (
+              <div className={styles.ReturningMemberIconsContainer}>
+                {icons.map(icon => (
+                  <div key={`returning-member-icon-${id}`} className={styles.ReturningMemberIcon}>
+                    <ObjectFitImage noCompression src={icon} alt="Store Return Member Icon in StoreHub" />
+                  </div>
+                ))}
+              </div>
+            ),
           }),
           {
             id: `NewMember${id}`,
@@ -197,7 +202,7 @@ const ReturningMember = () => {
                   : t(titleI18nKey),
               description: descriptionI18nKey && t(descriptionI18nKey),
               icons: returningMemberIcon && (
-                <div className={styles.returningMemberIcon}>
+                <div className={styles.ReturningMemberIcon}>
                   <ObjectFitImage noCompression src={returningMemberIcon} alt="Store Return Member Icon in StoreHub" />
                 </div>
               ),

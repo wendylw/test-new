@@ -1,6 +1,6 @@
-import { useMount } from 'react-use';
+import { useMount, useUnmount } from 'react-use';
 import React, { useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 import RewardsFailedIcon from '../../../../../images/rewards-failed.svg';
@@ -16,6 +16,7 @@ import {
   getShouldShowBackButton,
   getIsLoadOrderRewardsNoTransaction,
 } from './redux/selectors';
+import { actions as membershipFormActions } from './redux';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
 import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
@@ -33,10 +34,18 @@ const MembershipFormProxy = () => {
   const shouldShowSkeletonLoader = useSelector(getShouldShowSkeletonLoader);
   const shouldShowUnsupportedError = useSelector(getShouldShowUnsupportedError);
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
-  const isGetOrderRewardsNoTransaction = useSelector(getIsLoadOrderRewardsNoTransaction);
+  const isLoadOrderRewardsNoTransaction = useSelector(getIsLoadOrderRewardsNoTransaction);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
   const hasJoinedMembership = useSelector(getHasUserJoinedMerchantMembership);
   const isWebview = useSelector(getIsWebview);
+  const handleResetGetOrderRewardsError = useCallback(
+    () => dispatch(membershipFormActions.loadOrderRewardsErrorReset()),
+    [dispatch]
+  );
+
+  useUnmount(() => {
+    handleResetGetOrderRewardsError();
+  });
 
   useEffect(() => {
     if (isLogin) {
@@ -67,10 +76,10 @@ const MembershipFormProxy = () => {
         <SkeletonLoader />
       ) : shouldShowUnsupportedError ? (
         <ErrorResult title={t('PageNotFound')} isCloseButtonVisible={false} />
-      ) : isGetOrderRewardsNoTransaction ? (
+      ) : isLoadOrderRewardsNoTransaction ? (
         <ErrorResult
           isCloseButtonVisible={false}
-          title={t('ErrorReceiptGetRewardsNoTransaction')}
+          title={<Trans t={t} i18nKey="ErrorReceiptGetRewardsNoTransaction" components={[<br />]} />}
           imageSrc={RewardsFailedIcon}
         />
       ) : shouldShowUnknownError ? (
