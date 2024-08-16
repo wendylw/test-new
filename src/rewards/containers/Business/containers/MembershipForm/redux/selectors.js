@@ -38,7 +38,7 @@ import {
   getLoadCustomerRequestError,
   getHasUserJoinedMerchantMembership,
 } from '../../../../../redux/modules/customer/selectors';
-import { getIsReceiptMerchantPointsCashbackEnabled } from '../../../redux/common/selectors';
+import { getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
 
 export const getLoadOrderRewardsRequestData = state => state.business.membershipForm.loadOrderRewardsRequest.data;
 
@@ -195,13 +195,6 @@ export const getJoinMembershipRewardList = createSelector(
 
     return rewards;
   }
-);
-
-export const getIsRequestOrderRewardsEnabled = createSelector(
-  getIsReceiptMerchantPointsCashbackEnabled,
-  getIsFromReceiptJoinMembershipUrlQRScan,
-  (isReceiptMerchantPointsCashbackEnabled, isFromReceiptJoinMembershipUrlQRScan) =>
-    isReceiptMerchantPointsCashbackEnabled && isFromReceiptJoinMembershipUrlQRScan
 );
 
 export const getIsClaimedOrderRewardsEnabled = createSelector(

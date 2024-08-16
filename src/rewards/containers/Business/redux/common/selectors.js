@@ -402,7 +402,7 @@ export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRe
   return errorI18nKeys;
 });
 
-export const getIsReceiptMerchantPointsCashbackEnabled = createSelector(
+export const getIsRequestOrderRewardsEnabled = createSelector(
   getReceiptNumber,
   getIsMerchantEnabledCashback,
   getIsMerchantMembershipPointsEnabled,
