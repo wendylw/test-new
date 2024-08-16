@@ -176,12 +176,15 @@ export const mounted = createAsyncThunk(
     dispatch(fetchMembershipsInfo(business));
     await dispatch(fetchMerchantInfo(business));
 
-    const country = getMerchantCountry(getState());
+    // isRequestOrderRewardsEnabled must after fetch merchant info
+    // Needs to determine whether the merchant has enabled points or cashback.
     const isRequestOrderRewardsEnabled = getIsRequestOrderRewardsEnabled(getState());
 
     if (isRequestOrderRewardsEnabled) {
       dispatch(loadOrderRewards());
     }
+
+    const country = getMerchantCountry(getState());
 
     Growthbook.patchAttributes({
       country,
