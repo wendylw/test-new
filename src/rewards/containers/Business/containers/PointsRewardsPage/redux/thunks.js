@@ -30,7 +30,7 @@ export const showProfileForm = createAsyncThunk(
     const isWebview = getIsWebview(getState());
 
     if (isWebview) {
-      await showCompleteProfilePageAsync();
+      await showCompleteProfilePageAsync({ hideSkipButton: true });
       return;
     }
 

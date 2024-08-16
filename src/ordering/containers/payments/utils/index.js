@@ -247,10 +247,19 @@ export const getCreditCardFormPathname = (paymentProvider, saveCard = false) => 
 };
 
 // Apple pay provide tracking method: https://developer.apple.com/documentation/apple_pay_on_the_web/apple_pay_js_api/checking_for_apple_pay_availability#overview
+// code can not only return in finally: Unsafe usage of ReturnStatement  no-unsafe-finally: https://eslint.org/docs/latest/rules/no-unsafe-finally
 export const getIsApplePaySupported = () => {
+  let result = false;
+
   try {
+    if (window.location.protocol === 'http') {
+      throw new Error('Apple Pay blocks insecure sessions. Please use an HTTPS connection.');
+    }
+
     if (window.ApplePaySession) {
-      return window.ApplePaySession.canMakePayments();
+      result = window.ApplePaySession.canMakePayments();
+
+      return result;
     }
 
     return false;
@@ -260,5 +269,7 @@ export const getIsApplePaySupported = () => {
     logger.error('Ordering_Payment_GetApplePaySupportFailed', error?.message || 'Unknown error');
 
     return false;
+  } finally {
+    logger.log('Ordering_Payment_ApplePaySessionResult', { result });
   }
 };
