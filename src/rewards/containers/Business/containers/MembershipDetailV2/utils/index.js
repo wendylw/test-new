@@ -33,7 +33,6 @@ export const getReceiptOrderRewardsStatusCategories = ({
       CLAIMED_CASHBACK_STATUS.CLAIMED_NOT_FIRST_TIME,
     ].includes(cashbackStatus);
     const isPointsEarned = pointsStatus === CLAIMED_POINTS_STATUS.SUCCESS;
-    const categories = [];
 
     if (transactionStatus !== CLAIMED_TRANSACTION_STATUS.SUCCESS) {
       return transactionStatus && transactionStatusCategories[transactionStatus]
@@ -69,6 +68,8 @@ export const getReceiptOrderRewardsStatusCategories = ({
     if (pointsStatus === CLAIMED_POINTS_STATUS.FAILED && cashbackStatus === CLAIMED_CASHBACK_STATUS.NOT_CLAIMED) {
       return [{ status: types.RECEIPT_NOT_CLAIMED_DEFAULT }];
     }
+
+    const categories = [];
 
     categories.push({
       key: CLAIMED_ORDER_REWARD_NAMES.CASHBACK,
