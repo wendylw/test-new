@@ -143,7 +143,7 @@ export const continueJoinMembership = createAsyncThunk(
     const hasUserJoinedMerchantMembership = getHasUserJoinedMerchantMembership(getState());
 
     // This request needs to be placed before the return of hasUserJoinedMerchantMembership;
-    // even if you have already joined the membership, you still need to complete the claim order rewards according to the current design.
+    // customer has already joined the membership, still complete claim order rewards according to the current design.
     isClaimedOrderRewardsEnabled && (await dispatch(claimOrderRewards()));
 
     if (hasUserJoinedMerchantMembership) {
