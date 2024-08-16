@@ -443,7 +443,8 @@ export const getClaimOrderRewardsPrompt = createSelector(
 
     return categories.map(category => {
       const { key, status } = category;
-      const { titleI18nKey, descriptionI18nKey, titleI18nParamsKeys } = NEW_MEMBER_I18N_KEYS[status] || {};
+      const { titleI18nKey, descriptionI18nKey, titleI18nParamsKeys } =
+        (isNewMember ? NEW_MEMBER_I18N_KEYS[status] : RETURNING_MEMBER_I18N_KEYS[status]) || {};
       const rewardsParams = {
         [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARDS]: i18next.t('Rewards:Rewards').toLowerCase(),
         [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_REWARD_TYPE]: i18next.t('Rewards:Reward').toLowerCase(),
