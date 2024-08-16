@@ -1,4 +1,4 @@
-import { useMount, useUnmount } from 'react-use';
+import { useMount } from 'react-use';
 import React, { useEffect, useCallback } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,7 +16,6 @@ import {
   getShouldShowBackButton,
   getIsLoadOrderRewardsNoTransaction,
 } from './redux/selectors';
-import { actions as membershipFormActions } from './redux';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
 import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
@@ -38,14 +37,6 @@ const MembershipFormProxy = () => {
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
   const hasJoinedMembership = useSelector(getHasUserJoinedMerchantMembership);
   const isWebview = useSelector(getIsWebview);
-  const handleResetGetOrderRewardsError = useCallback(
-    () => dispatch(membershipFormActions.loadOrderRewardsErrorReset()),
-    [dispatch]
-  );
-
-  useUnmount(() => {
-    handleResetGetOrderRewardsError();
-  });
 
   useEffect(() => {
     if (isLogin) {

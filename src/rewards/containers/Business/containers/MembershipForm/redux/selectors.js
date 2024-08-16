@@ -28,11 +28,7 @@ import {
   getMerchantLocale,
   getMerchantCurrency,
 } from '../../../../../../redux/modules/merchant/selectors';
-import {
-  getIsWebview,
-  getSource,
-  getIsFromReceiptJoinMembershipUrlQRScan,
-} from '../../../../../redux/modules/common/selectors';
+import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
@@ -197,11 +193,16 @@ export const getJoinMembershipRewardList = createSelector(
   }
 );
 
+export const getIsLoadOrderRewardsRequestFulfilled = createSelector(
+  getLoadOrderRewardsRequestStatus,
+  loadOrderRewardsRequestStatus => loadOrderRewardsRequestStatus === API_REQUEST_STATUS.FULFILLED
+);
+
 export const getIsClaimedOrderRewardsEnabled = createSelector(
   getIsRequestOrderRewardsEnabled,
-  getLoadOrderRewardsRequestError,
-  (isRequestOrderRewardsEnabled, loadOrderRewardsRequestError) =>
-    isRequestOrderRewardsEnabled && !loadOrderRewardsRequestError
+  getIsLoadOrderRewardsRequestFulfilled,
+  (isRequestOrderRewardsEnabled, isLoadOrderRewardsRequestFulfilled) =>
+    isRequestOrderRewardsEnabled && isLoadOrderRewardsRequestFulfilled
 );
 
 export const getOrderRewardsCashbackPrice = createSelector(
