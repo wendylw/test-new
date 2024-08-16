@@ -260,17 +260,21 @@ export const getLoadOrderRewardsError = createSelector(
     }
 
     const { code } = loadOrderRewardsRequestError || {};
-    const error = {
-      title: i18next.t('Common:SomethingWentWrongTitle'),
-      description: i18next.t('Common:SomethingWentWrongDescription'),
-    };
+    const error = {};
 
-    if (code === GET_REWARDS_ESTIMATION_ERROR_CODES.EXPIRED) {
-      error.title = i18next.t('Rewards:ErrorGetRewardsExpiredTitle');
-      error.description = null;
-    } else if (code === GET_REWARDS_ESTIMATION_ERROR_CODES.ORDER_CANCELED_REFUND) {
-      error.title = i18next.t('Rewards:ErrorGetRewardsCanceledRefundTitle');
-      error.description = null;
+    switch (code) {
+      case GET_REWARDS_ESTIMATION_ERROR_CODES.EXPIRED:
+        error.title = i18next.t('Rewards:ErrorGetRewardsExpiredTitle');
+        error.description = null;
+        break;
+      case GET_REWARDS_ESTIMATION_ERROR_CODES.ORDER_CANCELED_REFUND:
+        error.title = i18next.t('Rewards:ErrorGetRewardsCanceledRefundTitle');
+        error.description = null;
+        break;
+      default:
+        error.title = i18next.t('Common:SomethingWentWrongTitle');
+        error.description = i18next.t('Common:SomethingWentWrongDescription');
+        break;
     }
 
     return error;
