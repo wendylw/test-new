@@ -6,7 +6,13 @@ import { getClient } from '../../../../../common/utils';
 import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
-import { getIsProfileFormVisible, getIsClaimedOrderRewardsEnabled, getLoadOrderRewardsError } from './redux/selectors';
+import { claimOrderRewards } from '../../redux/common/thunks';
+import {
+  getIsProfileFormVisible,
+  getIsClaimedOrderRewardsEnabled,
+  getLoadOrderRewardsError,
+  getShouldClaimOrderRewards,
+} from './redux/selectors';
 import { actions as membershipFormActions } from './redux';
 import { skipProfileButtonClicked, saveProfileButtonClicked } from './redux/thunks';
 import { alert } from '../../../../../common/utils/feedback';
@@ -26,6 +32,7 @@ const MembershipForm = () => {
   const isProfileFormVisible = useSelector(getIsProfileFormVisible);
   const loadOrderRewardsError = useSelector(getLoadOrderRewardsError);
   const isClaimedOrderRewardsEnabled = useSelector(getIsClaimedOrderRewardsEnabled);
+  const shouldClaimOrderRewards = useSelector(getShouldClaimOrderRewards);
   const handleSkipProfileForm = useCallback(() => dispatch(skipProfileButtonClicked()), [dispatch]);
   const handleSaveProfileForm = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
   const handleResetGetOrderRewardsError = useCallback(
@@ -39,6 +46,12 @@ const MembershipForm = () => {
       source: getClient(),
     });
   });
+
+  useEffect(() => {
+    if (shouldClaimOrderRewards) {
+      dispatch(claimOrderRewards());
+    }
+  }, [dispatch, shouldClaimOrderRewards]);
 
   useEffect(() => {
     if (loadOrderRewardsError) {
