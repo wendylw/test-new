@@ -441,6 +441,8 @@ export const getClaimOrderRewardsPrompt = createSelector(
       return null;
     }
 
+    console.log(categories);
+
     return categories.map(category => {
       const { key, status } = category;
       const { titleI18nKey, descriptionI18nKey, titleI18nParamsKeys } =

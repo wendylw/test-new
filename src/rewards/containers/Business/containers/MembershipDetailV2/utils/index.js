@@ -83,7 +83,7 @@ export const getReceiptOrderRewardsStatusCategories = ({
       isEarned: isPointsEarned,
     });
 
-    return categories.sort((previous, next) => next.isEarned - previous.isEarned);
+    return categories.sort((previous, next) => previous.isEarned - next.isEarned);
   } catch (error) {
     return [];
   }
