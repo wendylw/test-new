@@ -62,7 +62,6 @@ const NewMember = () => {
 
       newMemberClaimOrderRewardsPrompt.forEach(prompt => {
         const { id, title, description, icons } = prompt;
-        console.log(id);
 
         alert(
           getContent({
