@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import Clevertap from '../../../../utils/clevertap';
 import { getUserConsumerId, getBusiness, getApiRequestShippingType } from '../app';
 import { getUniquePromosAvailableCount } from './api-request';
 
@@ -14,6 +15,8 @@ export const fetchUniquePromosAvailableCount = createAsyncThunk(
       business,
       shippingType,
     });
+
+    Clevertap.pushEvent('');
 
     return result;
   }
