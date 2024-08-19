@@ -403,33 +403,31 @@ export const getIsPointsRewardListMoreButtonShown = createSelector(
 );
 
 // Member Prompt
-export const getClaimOrderRewardsPrompt = createSelector(
-  getIsFromReceiptJoinMembershipUrlQRScan,
+export const getClaimOrderRewardsCategories = createSelector(
   getClaimOrderRewardsPointsStatus,
   getClaimOrderRewardsCashbackStatus,
   getClaimOrderRewardsTransactionStatus,
-  getClaimOrderRewardsPointsValue,
-  getClaimOrderRewardsCashbackPrice,
   getIsNewMember,
-  (
-    isFromReceiptJoinMembershipUrlQRScan,
-    pointsStatus,
-    cashbackStatus,
-    transactionStatus,
-    pointsValue,
-    cashbackPrice,
-    isNewMember
-  ) => {
-    const baseParams = {
-      [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_POINTS_VALUE]: pointsValue,
-      [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_CASHBACK_VALUE]: cashbackPrice,
-    };
-    const categories = getReceiptOrderRewardsStatusCategories({
+  (pointsStatus, cashbackStatus, transactionStatus, isNewMember) =>
+    getReceiptOrderRewardsStatusCategories({
       pointsStatus,
       cashbackStatus,
       transactionStatus,
       isNewMember,
-    });
+    })
+);
+
+export const getClaimOrderRewardsPrompt = createSelector(
+  getIsFromReceiptJoinMembershipUrlQRScan,
+  getClaimOrderRewardsCategories,
+  getClaimOrderRewardsPointsValue,
+  getClaimOrderRewardsCashbackPrice,
+  getIsNewMember,
+  (isFromReceiptJoinMembershipUrlQRScan, categories, pointsValue, cashbackPrice, isNewMember) => {
+    const baseParams = {
+      [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_POINTS_VALUE]: pointsValue,
+      [MEMBER_TYPE_I18N_PARAM_KEYS.RECEIPT_CASHBACK_VALUE]: cashbackPrice,
+    };
 
     if (categories.length === 0 || !isFromReceiptJoinMembershipUrlQRScan) {
       return null;
@@ -472,6 +470,10 @@ export const getClaimOrderRewardsPrompt = createSelector(
       };
     });
   }
+);
+
+export const getIsOrderRewardsEarned = createSelector(getClaimOrderRewardsCategories, claimOrderRewardsCategories =>
+  claimOrderRewardsCategories.some(category => category.isEarned)
 );
 
 export const getNewMemberPromptCategory = createSelector(

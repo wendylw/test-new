@@ -19,6 +19,7 @@ import {
   getReturningMemberPromptCategory,
   getReturningMemberTitleIn18nParams,
   getClaimOrderRewardsPrompt,
+  getIsOrderRewardsEarned,
 } from '../../redux/selectors';
 import { alert, toast } from '../../../../../../../common/utils/feedback';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
@@ -33,11 +34,12 @@ const NewMember = () => {
   const newMemberPromptCategory = useSelector(getNewMemberPromptCategory);
   const newMemberTitleIn18nParams = useSelector(getNewMemberTitleIn18nParams);
   const newMemberClaimOrderRewardsPrompt = useSelector(getClaimOrderRewardsPrompt);
+  const isOrderRewardsEarned = useSelector(getIsOrderRewardsEarned);
   const newMemberIcon = NEW_MEMBER_ICONS[newMemberPromptCategory];
   const newMemberContentI18nKeys = NEW_MEMBER_I18N_KEYS[newMemberPromptCategory];
   const { titleI18nKey, descriptionI18nKey } = newMemberContentI18nKeys || {};
   const [celebrationAnimateImage, setCelebrationAnimateImage] = useState(NewMemberCelebrationAnimateImage);
-  const isCelebrationAnimationDisplay = celebrationAnimateImage && newMemberPromptCategory;
+  const isCelebrationAnimationDisplay = celebrationAnimateImage && (newMemberPromptCategory || isOrderRewardsEarned);
   const handleCloseNewMemberPrompt = useCallback(() => {
     const pathname = `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`;
     const search = `?business=${merchantBusiness}`;
@@ -60,6 +62,7 @@ const NewMember = () => {
 
       newMemberClaimOrderRewardsPrompt.forEach(prompt => {
         const { id, title, description, icons } = prompt;
+        console.log(id);
 
         alert(
           getContent({
@@ -67,8 +70,9 @@ const NewMember = () => {
             description,
             icons: icons && (
               <div className={styles.NewMemberIconsContainer}>
-                {icons.map(icon => (
-                  <div key={`new-member-icon-${id}`} className={styles.NewMemberIcon}>
+                {icons.map((icon, index) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <div key={`new-member-icon-${id}-${index}`} className={styles.NewMemberIcon}>
                     <ObjectFitImage noCompression src={icon} alt="Store New Member Icon in StoreHub" />
                   </div>
                 ))}

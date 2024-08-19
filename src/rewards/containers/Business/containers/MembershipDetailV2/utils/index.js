@@ -41,7 +41,7 @@ export const getReceiptOrderRewardsStatusCategories = ({
     }
 
     if (isCashbackEarned && isPointsEarned) {
-      return [{ status: types.RECEIPT_EARNED_POINTS_CASHBACK }];
+      return [{ status: types.RECEIPT_EARNED_POINTS_CASHBACK, isEarned: true }];
     }
 
     if (

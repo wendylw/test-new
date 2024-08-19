@@ -34,7 +34,11 @@ import {
   getLoadCustomerRequestError,
   getHasUserJoinedMerchantMembership,
 } from '../../../../../redux/modules/customer/selectors';
-import { getIsRequestOrderRewardsEnabled, getIsClaimOrderRewardsCompleted } from '../../../redux/common/selectors';
+import {
+  getIsRequestOrderRewardsEnabled,
+  getIsClaimOrderRewardsCompleted,
+  getReceiptNumber,
+} from '../../../redux/common/selectors';
 
 export const getLoadOrderRewardsRequestData = state => state.business.membershipForm.loadOrderRewardsRequest.data;
 
@@ -198,6 +202,12 @@ export const getIsLoadOrderRewardsRequestFulfilled = createSelector(
   loadOrderRewardsRequestStatus => loadOrderRewardsRequestStatus === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsLoadOrderRewardsRequestCompleted = createSelector(
+  getLoadOrderRewardsRequestStatus,
+  loadOrderRewardsRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadOrderRewardsRequestStatus)
+);
+
 export const getIsClaimedOrderRewardsEnabled = createSelector(
   getIsRequestOrderRewardsEnabled,
   getIsLoadOrderRewardsRequestFulfilled,
@@ -292,11 +302,29 @@ export const getShouldClaimOrderRewards = createSelector(
 
 export const getShouldGoToMembershipDetail = createSelector(
   getHasUserJoinedMerchantMembership,
+  getReceiptNumber,
+  getIsLoadMerchantRequestCompleted,
+  getIsLoadOrderRewardsRequestCompleted,
   getIsClaimedOrderRewardsEnabled,
   getIsClaimOrderRewardsCompleted,
-  (hasUserJoinedMerchantMembership, isClaimedOrderRewardsEnabled, isClaimOrderRewardsCompleted) => {
+  (
+    hasUserJoinedMerchantMembership,
+    receiptNumber,
+    isLoadMerchantRequestCompleted,
+    isLoadOrderRewardsRequestCompleted,
+    isClaimedOrderRewardsEnabled,
+    isClaimOrderRewardsCompleted
+  ) => {
+    if (!receiptNumber) {
+      return hasUserJoinedMerchantMembership;
+    }
+
+    if (!isLoadMerchantRequestCompleted || !isLoadOrderRewardsRequestCompleted) {
+      return false;
+    }
+
     if (isClaimedOrderRewardsEnabled) {
-      return hasUserJoinedMerchantMembership && isClaimOrderRewardsCompleted;
+      return isClaimOrderRewardsCompleted;
     }
 
     return hasUserJoinedMerchantMembership;
