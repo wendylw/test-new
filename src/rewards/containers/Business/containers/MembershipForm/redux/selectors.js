@@ -28,17 +28,13 @@ import {
   getMerchantLocale,
   getMerchantCurrency,
 } from '../../../../../../redux/modules/merchant/selectors';
-import {
-  getIsWebview,
-  getSource,
-  getIsFromReceiptJoinMembershipUrlQRScan,
-} from '../../../../../redux/modules/common/selectors';
+import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
   getHasUserJoinedMerchantMembership,
 } from '../../../../../redux/modules/customer/selectors';
-import { getIsReceiptMerchantPointsCashbackEnabled } from '../../../redux/common/selectors';
+import { getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
 
 export const getLoadOrderRewardsRequestData = state => state.business.membershipForm.loadOrderRewardsRequest.data;
 
@@ -197,18 +193,16 @@ export const getJoinMembershipRewardList = createSelector(
   }
 );
 
-export const getIsRequestOrderRewardsEnabled = createSelector(
-  getIsReceiptMerchantPointsCashbackEnabled,
-  getIsFromReceiptJoinMembershipUrlQRScan,
-  (isReceiptMerchantPointsCashbackEnabled, isFromReceiptJoinMembershipUrlQRScan) =>
-    isReceiptMerchantPointsCashbackEnabled && isFromReceiptJoinMembershipUrlQRScan
+export const getIsLoadOrderRewardsRequestFulfilled = createSelector(
+  getLoadOrderRewardsRequestStatus,
+  loadOrderRewardsRequestStatus => loadOrderRewardsRequestStatus === API_REQUEST_STATUS.FULFILLED
 );
 
 export const getIsClaimedOrderRewardsEnabled = createSelector(
   getIsRequestOrderRewardsEnabled,
-  getLoadOrderRewardsRequestError,
-  (isRequestOrderRewardsEnabled, loadOrderRewardsRequestError) =>
-    isRequestOrderRewardsEnabled && !loadOrderRewardsRequestError
+  getIsLoadOrderRewardsRequestFulfilled,
+  (isRequestOrderRewardsEnabled, isLoadOrderRewardsRequestFulfilled) =>
+    isRequestOrderRewardsEnabled && isLoadOrderRewardsRequestFulfilled
 );
 
 export const getOrderRewardsCashbackPrice = createSelector(
@@ -266,17 +260,21 @@ export const getLoadOrderRewardsError = createSelector(
     }
 
     const { code } = loadOrderRewardsRequestError || {};
-    const error = {
-      title: i18next.t('Common:SomethingWentWrongTitle'),
-      description: i18next.t('Common:SomethingWentWrongDescription'),
-    };
+    const error = {};
 
-    if (code === GET_REWARDS_ESTIMATION_ERROR_CODES.EXPIRED) {
-      error.title = i18next.t('Rewards:ErrorGetRewardsExpiredTitle');
-      error.description = null;
-    } else if (code === GET_REWARDS_ESTIMATION_ERROR_CODES.ORDER_CANCELED_REFUND) {
-      error.title = i18next.t('Rewards:ErrorGetRewardsCanceledRefundTitle');
-      error.description = null;
+    switch (code) {
+      case GET_REWARDS_ESTIMATION_ERROR_CODES.EXPIRED:
+        error.title = i18next.t('Rewards:ErrorGetRewardsExpiredTitle');
+        error.description = null;
+        break;
+      case GET_REWARDS_ESTIMATION_ERROR_CODES.ORDER_CANCELED_REFUND:
+        error.title = i18next.t('Rewards:ErrorGetRewardsCanceledRefundTitle');
+        error.description = null;
+        break;
+      default:
+        error.title = i18next.t('Common:SomethingWentWrongTitle');
+        error.description = i18next.t('Common:SomethingWentWrongDescription');
+        break;
     }
 
     return error;

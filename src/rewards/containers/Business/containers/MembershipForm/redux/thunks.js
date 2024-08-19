@@ -22,15 +22,16 @@ import {
   getSource,
   getBusiness,
 } from '../../../../../redux/modules/common/selectors';
-import { getReceiptNumber, getChannel, getStoreId } from '../../../redux/common/selectors';
+import {
+  getReceiptNumber,
+  getChannel,
+  getStoreId,
+  getIsRequestOrderRewardsEnabled,
+} from '../../../redux/common/selectors';
 import { claimOrderRewards } from '../../../redux/common/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
-import {
-  getShouldShowProfileForm,
-  getIsRequestOrderRewardsEnabled,
-  getIsClaimedOrderRewardsEnabled,
-} from './selectors';
+import { getShouldShowProfileForm, getIsClaimedOrderRewardsEnabled } from './selectors';
 import { getOrderRewards } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
@@ -142,6 +143,8 @@ export const continueJoinMembership = createAsyncThunk(
     const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
     const hasUserJoinedMerchantMembership = getHasUserJoinedMerchantMembership(getState());
 
+    // This request needs to be placed before the return of hasUserJoinedMerchantMembership;
+    // customer has already joined the membership, still complete claim order rewards according to the current design.
     isClaimedOrderRewardsEnabled && (await dispatch(claimOrderRewards()));
 
     if (hasUserJoinedMerchantMembership) {
@@ -173,12 +176,15 @@ export const mounted = createAsyncThunk(
     dispatch(fetchMembershipsInfo(business));
     await dispatch(fetchMerchantInfo(business));
 
-    const country = getMerchantCountry(getState());
+    // isRequestOrderRewardsEnabled must after fetch merchant info
+    // Needs to determine whether the merchant has enabled points or cashback.
     const isRequestOrderRewardsEnabled = getIsRequestOrderRewardsEnabled(getState());
 
     if (isRequestOrderRewardsEnabled) {
       dispatch(loadOrderRewards());
     }
+
+    const country = getMerchantCountry(getState());
 
     Growthbook.patchAttributes({
       country,
