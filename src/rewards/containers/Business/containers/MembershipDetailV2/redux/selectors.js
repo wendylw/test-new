@@ -36,7 +36,6 @@ import {
 import { getMembershipTierList, getHighestMembershipTier } from '../../../../../../redux/modules/membership/selectors';
 import {
   getSource,
-  getIsWebview,
   getIsFromJoinMembershipUrlClick,
   getIsFromReceiptJoinMembershipUrlQRScan,
 } from '../../../../../redux/modules/common/selectors';
@@ -67,6 +66,8 @@ export const getIsProfileModalShow = state => state.business.membershipDetailV2.
 
 export const getFetchUniquePromoListBannersLimit = state => state.business.membershipDetailV2.isProfileModalShow;
 
+export const getShouldShowBackButton = state => state.business.membershipDetailV2.shouldShowBackButton;
+
 /**
  * Derived selectors
  */
@@ -83,13 +84,6 @@ export const getIsFromSeamlessLoyaltyQrScan = createSelector(
 export const getIsFromEarnedCashbackQrScan = createSelector(
   getSource,
   source => source === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
-);
-
-// Header
-export const getShouldShowBackButton = createSelector(
-  getIsWebview,
-  getIsUserFromOrdering,
-  (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
 );
 
 // Member Card

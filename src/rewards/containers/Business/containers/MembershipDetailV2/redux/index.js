@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { showWebProfileForm, hideWebProfileForm } from './thunks';
+import { showWebProfileForm, hideWebProfileForm, showBackButton } from './thunks';
 
 const initialState = {
   isProfileModalShow: false,
   fetchUniquePromoListBannersLimit: 2,
+  shouldShowBackButton: false,
 };
 
 export const { reducer, actions } = createSlice({
@@ -15,6 +16,9 @@ export const { reducer, actions } = createSlice({
     },
     [hideWebProfileForm.fulfilled.type]: state => {
       state.isProfileModalShow = false;
+    },
+    [showBackButton.fulfilled.type]: state => {
+      state.shouldShowBackButton = true;
     },
   },
 });

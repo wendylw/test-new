@@ -4,7 +4,11 @@ import Growthbook from '../../../../../../utils/growthbook';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import { getClient } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
-import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
+import {
+  goBack as nativeGoBack,
+  closeWebView,
+  showCompleteProfilePageAsync,
+} from '../../../../../../utils/native-methods';
 import {
   initUserInfo,
   loginUserByBeepApp,
@@ -27,7 +31,7 @@ import {
   fetchPointsRewardList,
   claimPointsReward,
 } from '../../../redux/common/thunks';
-import { getFetchUniquePromoListBannersLimit } from './selectors';
+import { getIsUserFromOrdering, getFetchUniquePromoListBannersLimit, getShouldShowBackButton } from './selectors';
 
 export const showWebProfileForm = createAsyncThunk('rewards/business/memberDetail/showWebProfileForm', async () => {});
 
@@ -46,6 +50,8 @@ export const showProfileForm = createAsyncThunk(
     await dispatch(showWebProfileForm());
   }
 );
+
+export const showBackButton = createAsyncThunk('rewards/business/memberDetail/showBackButton', async () => {});
 
 export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
   'rewards/business/memberDetail/claimPointsRewardAndRefreshRewardsList',
@@ -109,6 +115,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   const isWebview = getIsWebview(state);
   const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
   const search = getLocationSearch(state);
+  const isUserFromOrdering = getIsUserFromOrdering(state);
 
   Growthbook.patchAttributes({
     business,
@@ -118,6 +125,10 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     'account name': business,
     source: getClient(),
   });
+
+  if (isUserFromOrdering) {
+    dispatch(showBackButton());
+  }
 
   dispatch(fetchMerchantInfo(business));
   dispatch(fetchMembershipsInfo(business));
@@ -155,9 +166,10 @@ export const backButtonClicked = createAsyncThunk(
   'rewards/business/memberDetail/backButtonClicked',
   async (_, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
+    const shouldShowBackButton = getShouldShowBackButton(getState());
 
     if (isWebview) {
-      dispatch(nativeGoBack());
+      shouldShowBackButton ? dispatch(nativeGoBack()) : dispatch(closeWebView());
       return;
     }
 
