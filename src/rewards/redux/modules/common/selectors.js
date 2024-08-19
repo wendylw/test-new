@@ -8,7 +8,7 @@ import {
   isGCashMiniProgram,
   toCapitalize,
 } from '../../../../common/utils';
-import { BECOME_MERCHANT_MEMBER_METHODS, MEMBER_LEVELS } from '../../../../common/utils/constants';
+import { BECOME_MERCHANT_MEMBER_METHODS, MEMBER_LEVELS, PATH_NAME_MAPPING } from '../../../../common/utils/constants';
 import { isAlipayMiniProgram } from '../../../../common/utils/alipay-miniprogram-client';
 import { getFeatureFlagResult } from '../../../../redux/modules/growthbook/selectors';
 import { getIsLogin } from '../../../../redux/modules/user/selectors';
@@ -36,6 +36,8 @@ export const getIsNotLoginInWeb = createSelector(getIsLogin, getIsWeb, (isLogin,
 export const getRouter = state => state.router;
 
 export const getLocation = state => state.router.location;
+
+export const getLocationPathname = state => state.router.location.pathname;
 
 /**
  * Derived selectors
@@ -106,22 +108,26 @@ export const getIsMembershipBenefitsShown = createSelector(
 );
 
 export const getMerchantMembershipTiersBenefits = createSelector(
-  getIsFromJoinMembershipUrlClick,
+  getLocationPathname,
   getCustomerTierLevel,
   getNewTierBenefitRedesign,
   getMembershipTierList,
-  (isFromJoinMembershipUrlClick, customerTierLevel, newTierBenefitRedesign, membershipTierList) => {
+  (locationPathName, customerTierLevel, newTierBenefitRedesign, membershipTierList) => {
     if (newTierBenefitRedesign.length === 0) {
       return [];
     }
 
+    const isJoinMembershipPathname =
+      locationPathName ===
+      `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.SIGN_UP}`;
+
     return newTierBenefitRedesign.map(benefit => {
       const { level } = benefit;
-      const isLocked = benefit.level > (isFromJoinMembershipUrlClick ? MEMBER_LEVELS.MEMBER : customerTierLevel);
+      const isLocked = benefit.level > (isJoinMembershipPathname ? MEMBER_LEVELS.MEMBER : customerTierLevel);
       const currentTier = membershipTierList.find(tier => tier.level === level) || {};
       let prompt = null;
 
-      if (isFromJoinMembershipUrlClick) {
+      if (isJoinMembershipPathname) {
         if (membershipTierList.length > 1) {
           prompt =
             benefit.level === MEMBER_LEVELS.MEMBER

@@ -15,9 +15,9 @@ import {
   getShouldShowUnknownError,
   getShouldShowBackButton,
   getIsLoadOrderRewardsNoTransaction,
+  getShouldGoToMembershipDetail,
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
-import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
 import MembershipForm from '.';
 
@@ -35,7 +35,7 @@ const MembershipFormProxy = () => {
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
   const isLoadOrderRewardsNoTransaction = useSelector(getIsLoadOrderRewardsNoTransaction);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
-  const hasJoinedMembership = useSelector(getHasUserJoinedMerchantMembership);
+  const shouldGoToMembershipDetail = useSelector(getShouldGoToMembershipDetail);
   const isWebview = useSelector(getIsWebview);
 
   useEffect(() => {
@@ -45,10 +45,10 @@ const MembershipFormProxy = () => {
   }, [dispatch, isLogin]);
 
   useEffect(() => {
-    if (hasJoinedMembership) {
+    if (shouldGoToMembershipDetail) {
       dispatch(goToMembershipDetail());
     }
-  }, [dispatch, hasJoinedMembership]);
+  }, [dispatch, shouldGoToMembershipDetail]);
 
   const handleClickBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickRetryButton = useCallback(() => dispatch(retryButtonClicked()), [dispatch]);

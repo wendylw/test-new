@@ -28,10 +28,9 @@ import {
   getStoreId,
   getIsRequestOrderRewardsEnabled,
 } from '../../../redux/common/selectors';
-import { claimOrderRewards } from '../../../redux/common/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
-import { getShouldShowProfileForm, getIsClaimedOrderRewardsEnabled } from './selectors';
+import { getShouldShowProfileForm } from './selectors';
 import { getOrderRewards } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
@@ -140,12 +139,7 @@ export const continueJoinMembership = createAsyncThunk(
 
     await dispatch(fetchCustomerInfo(business));
 
-    const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
     const hasUserJoinedMerchantMembership = getHasUserJoinedMerchantMembership(getState());
-
-    // This request needs to be placed before the return of hasUserJoinedMerchantMembership;
-    // customer has already joined the membership, still complete claim order rewards according to the current design.
-    isClaimedOrderRewardsEnabled && (await dispatch(claimOrderRewards()));
 
     if (hasUserJoinedMerchantMembership) {
       // NOTE: this case has been handled in MembershipFormProxy useEffect. No need to do any manual redirect here.

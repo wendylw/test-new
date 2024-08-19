@@ -375,6 +375,12 @@ export const getIsClaimPointsRewardFulfilled = createSelector(
   claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsClaimOrderRewardsCompleted = createSelector(
+  getClaimOrderRewardsRequestStatus,
+  claimOrderRewardsRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(claimOrderRewardsRequestStatus)
+);
+
 export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRewardError, claimPointsRewardError => {
   if (!claimPointsRewardError) {
     return null;

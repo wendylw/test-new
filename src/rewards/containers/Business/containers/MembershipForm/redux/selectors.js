@@ -34,7 +34,7 @@ import {
   getLoadCustomerRequestError,
   getHasUserJoinedMerchantMembership,
 } from '../../../../../redux/modules/customer/selectors';
-import { getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
+import { getIsRequestOrderRewardsEnabled, getIsClaimOrderRewardsCompleted } from '../../../redux/common/selectors';
 
 export const getLoadOrderRewardsRequestData = state => state.business.membershipForm.loadOrderRewardsRequest.data;
 
@@ -278,5 +278,27 @@ export const getLoadOrderRewardsError = createSelector(
     }
 
     return error;
+  }
+);
+
+// This request needs to be placed before the return of hasUserJoinedMerchantMembership;
+// customer has already joined the membership, still complete claim order rewards according to the current design.
+export const getShouldClaimOrderRewards = createSelector(
+  getHasUserJoinedMerchantMembership,
+  getIsClaimedOrderRewardsEnabled,
+  (hasUserJoinedMerchantMembership, isClaimedOrderRewardsEnabled) =>
+    hasUserJoinedMerchantMembership && isClaimedOrderRewardsEnabled
+);
+
+export const getShouldGoToMembershipDetail = createSelector(
+  getHasUserJoinedMerchantMembership,
+  getIsClaimedOrderRewardsEnabled,
+  getIsClaimOrderRewardsCompleted,
+  (hasUserJoinedMerchantMembership, isClaimedOrderRewardsEnabled, isClaimOrderRewardsCompleted) => {
+    if (isClaimedOrderRewardsEnabled) {
+      return hasUserJoinedMerchantMembership && isClaimOrderRewardsCompleted;
+    }
+
+    return hasUserJoinedMerchantMembership;
   }
 );
