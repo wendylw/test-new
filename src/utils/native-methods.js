@@ -381,10 +381,12 @@ export const nativeLayout = (area, config) => {
   return dsBridgeCall(data);
 };
 
-export const showCompleteProfilePageAsync = () => {
+export const showCompleteProfilePageAsync = params => {
+  const { hideSkipButton = false } = params || {};
   const data = {
     method: 'routerModule-showCompleteProfilePage',
     mode: MODE.ASYNC,
+    params: { hideSkipButton },
   };
   return dsBridgeCall(data);
 };

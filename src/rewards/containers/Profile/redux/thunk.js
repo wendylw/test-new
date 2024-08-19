@@ -11,7 +11,6 @@ import { fetchUserProfileInfo, uploadUserProfileInfo } from '../../../../redux/m
 import Utils from '../../../../utils/utils';
 import { setCookieVariable } from '../../../../common/utils';
 import { isValidBirthdayDateString, isAfterTodayBirthdayDate, getRequestBirthdayData } from '../utils';
-import { showCompleteProfilePageAsync } from '../../../../utils/native-methods';
 import { PROFILE_SKIP_CYCLE, PROFILE_FIELD_ERROR_TYPES, PROFILE_BIRTHDAY_FORMAT } from '../utils/constants';
 import { getProfileBirthday, getProfileEmail, getProfileFirstName, getProfileLastName } from './selectors';
 
@@ -111,18 +110,3 @@ export const init = createAsyncThunk('rewards/profile/init', (_, { dispatch, get
   dispatch(emailUpdated(email));
   dispatch(birthdaySelected(birthday));
 });
-
-export const callNativeProfile = createAsyncThunk(
-  'rewards/profile/callNativeProfile',
-  async ({ saveCallback, skipCallback }, { dispatch }) => {
-    const { fulfilled } = await showCompleteProfilePageAsync();
-
-    if (!fulfilled) {
-      skipCallback();
-      return;
-    }
-
-    await dispatch(fetchUserProfileInfo());
-    saveCallback();
-  }
-);
