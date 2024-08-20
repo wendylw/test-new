@@ -63,10 +63,14 @@ export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
 export const pointsClaimRewardButtonClicked = createAsyncThunk(
   'rewards/business/memberDetail/pointsClaimRewardButtonClicked',
   async ({ id, status, type, costOfPoints }, { dispatch, getState }) => {
+    const business = getMerchantBusiness(getState());
+
     if (status) {
-      CleverTap.pushEvent('Points Reward Claimed - Click confirm', {
+      CleverTap.pushEvent('Membership Details Page - Spend Points Modal - Click Confirm', {
         type,
         costOfPoints,
+        'account name': business,
+        source: getClient(),
       });
 
       const state = getState();
@@ -79,9 +83,11 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
       }
       dispatch(claimPointsRewardAndRefreshRewardsList(id));
     } else {
-      CleverTap.pushEvent('Points Reward Claimed - Click cancel', {
+      CleverTap.pushEvent('Membership Details Page - Spend Points Modal - Click Cancel', {
         type,
         costOfPoints,
+        'account name': business,
+        source: getClient(),
       });
     }
   }
@@ -162,5 +168,17 @@ export const backButtonClicked = createAsyncThunk(
     }
 
     dispatch(historyGoBack());
+  }
+);
+
+export const membershipTierTabClickedForCleverTap = createAsyncThunk(
+  'rewards/business/memberDetail/membershipTierTabClickedForCleverTap',
+  async (tierName, { getState }) => {
+    const business = getMerchantBusiness(getState());
+
+    CleverTap.pushEvent(`Membership Details Page - Click ${tierName} Tab`, {
+      'account name': business,
+      source: getClient(),
+    });
   }
 );

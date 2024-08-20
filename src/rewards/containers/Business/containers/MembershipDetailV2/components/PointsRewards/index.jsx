@@ -9,6 +9,9 @@ import PointsRewardClaimedIcon from '../../../../../../../images/rewards-points-
 import { DESKTOP_PAGE_WIDTH, PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { POINTS_REWARD_WIDTHS } from '../../utils/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
+import { getClient } from '../../../../../../../common/utils';
+import CleverTap from '../../../../../../../utils/clevertap';
+import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getLocationSearch } from '../../../../../../redux/modules/common/selectors';
 import {
   getIsPointsRewardListShown,
@@ -59,6 +62,7 @@ const PointsRewards = () => {
   const { t } = useTranslation(['Rewards']);
   const { width } = useWindowSize();
   const history = useHistory();
+  const merchantBusiness = useSelector(getMerchantBusiness);
   const membershipDetailPointsRewardList = useSelector(getMembershipDetailPointsRewardList);
   const isPointsRewardListMoreButtonShown = useSelector(getIsPointsRewardListMoreButtonShown);
   const isPointsRewardListShown = useSelector(getIsPointsRewardListShown);
@@ -71,11 +75,16 @@ const PointsRewards = () => {
   const [selectedRewardId, setSelectedRewardId] = useState(null);
   const ticketWidth = useMemo(() => getTicketWidth(width), [width]);
   const goToPointsRewardsListPage = useCallback(() => {
+    CleverTap.pushEvent('Membership Details Page - Click View All (Get Rewards Section)', {
+      'account name': merchantBusiness,
+      source: getClient(),
+    });
+
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.POINTS_REWARDS}${PATH_NAME_MAPPING.LIST}`,
       search,
     });
-  }, [history, search]);
+  }, [history, search, merchantBusiness]);
   const handlePointsClaimRewardButtonClick = useCallback(
     (id, type, costOfPoints) => {
       confirm('', {
@@ -128,6 +137,11 @@ const PointsRewards = () => {
             className={styles.PointsRewardsTicketButton}
             contentClassName={styles.PointsRewardsTicketButtonContent}
             onClick={() => {
+              CleverTap.pushEvent('Membership Details Page - Click Points Reward', {
+                'account name': merchantBusiness,
+                source: getClient(),
+              });
+
               if (!isUnavailable) {
                 setSelectedRewardId(id);
                 handlePointsClaimRewardButtonClick(id, type, costOfPoints);
@@ -164,7 +178,7 @@ const PointsRewards = () => {
           </Button>
         );
       }),
-    [handlePointsClaimRewardButtonClick, membershipDetailPointsRewardList, t]
+    [handlePointsClaimRewardButtonClick, membershipDetailPointsRewardList, t, merchantBusiness]
   );
 
   useEffect(() => {

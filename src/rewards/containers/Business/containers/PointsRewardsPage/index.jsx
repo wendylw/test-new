@@ -5,6 +5,9 @@ import { useTranslation } from 'react-i18next';
 import RewardsPointsIcon from '../../../../../images/rewards-icon-points.svg';
 import PointsRewardClaimedIcon from '../../../../../images/rewards-points-claimed.svg';
 import { getClassName } from '../../../../../common/utils/ui';
+import { getClient } from '../../../../../common/utils';
+import CleverTap from '../../../../../utils/clevertap';
+import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import {
   getPointsRewardList,
@@ -36,6 +39,7 @@ import styles from './PointsRewardsPage.module.scss';
 const PointsRewardsPage = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
+  const merchantBusiness = useSelector(getMerchantBusiness);
   const isWebview = useSelector(getIsWebview);
   const pointsRewardList = useSelector(getPointsRewardList);
   const isClaimPointsRewardPending = useSelector(getIsClaimPointsRewardPending);
@@ -135,6 +139,11 @@ const PointsRewardsPage = () => {
                   className={styles.PointsRewardsTicketButton}
                   contentClassName={styles.PointsRewardsTicketButtonContent}
                   onClick={() => {
+                    CleverTap.pushEvent('Membership Details Page - Click Points Reward', {
+                      'account name': merchantBusiness,
+                      source: getClient(),
+                    });
+
                     if (!isUnavailable) {
                       setSelectedRewardId(id);
                       handlePointsClaimRewardButtonClick(id, type, costOfPoints);

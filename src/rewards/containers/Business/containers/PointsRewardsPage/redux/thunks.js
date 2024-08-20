@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, goBack as historyGoBack } from 'connected-react-router';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
+import { getClient } from '../../../../../../common/utils';
 import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
 import CleverTap from '../../../../../../utils/clevertap';
 import {
@@ -54,10 +55,14 @@ export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
 export const pointsClaimRewardButtonClicked = createAsyncThunk(
   'rewards/business/pointsRewards/pointsClaimRewardButtonClicked',
   async ({ id, status, type, costOfPoints }, { dispatch, getState }) => {
+    const business = getMerchantBusiness(getState());
+
     if (status) {
-      CleverTap.pushEvent('Points Reward Claimed - Click confirm', {
+      CleverTap.pushEvent('Get Rewards Page - Spend Points Modal - Click Confirm', {
         type,
         costOfPoints,
+        'account name': business,
+        source: getClient(),
       });
 
       const state = getState();
@@ -70,9 +75,11 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
       }
       dispatch(claimPointsRewardAndRefreshRewardsList(id));
     } else {
-      CleverTap.pushEvent('Points Reward Claimed - Click cancel', {
+      CleverTap.pushEvent('Get Rewards Page - Spend Points Modal - Click Cancel', {
         type,
         costOfPoints,
+        'account name': business,
+        source: getClient(),
       });
     }
   }
@@ -100,6 +107,11 @@ export const mounted = createAsyncThunk('rewards/business/pointsRewards/mounted'
   const isWebview = getIsWebview(state);
   const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
   const search = getLocationSearch(state);
+
+  CleverTap.pushEvent('Get Rewards Page - View Page', {
+    'account name': business,
+    source: getClient(),
+  });
 
   await dispatch(initUserInfo());
 
@@ -133,6 +145,12 @@ export const backButtonClicked = createAsyncThunk(
   'rewards/business/pointsRewards/backButtonClicked',
   async (_, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
+    const business = getMerchantBusiness(getState());
+
+    CleverTap.pushEvent('Get Rewards Page - Click Back', {
+      'account name': business,
+      source: getClient(),
+    });
 
     if (isWebview) {
       dispatch(nativeGoBack());
