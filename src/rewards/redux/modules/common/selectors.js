@@ -107,19 +107,22 @@ export const getIsMembershipBenefitsShown = createSelector(
   (newTierBenefitRedesign, membershipTierList) => newTierBenefitRedesign.length > 0 && membershipTierList.length > 0
 );
 
-export const getMerchantMembershipTiersBenefits = createSelector(
+export const getIsJoinMembershipPathname = createSelector(
   getLocationPathname,
+  locationPathName =>
+    locationPathName ===
+    `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.SIGN_UP}`
+);
+
+export const getMerchantMembershipTiersBenefits = createSelector(
+  getIsJoinMembershipPathname,
   getCustomerTierLevel,
   getNewTierBenefitRedesign,
   getMembershipTierList,
-  (locationPathName, customerTierLevel, newTierBenefitRedesign, membershipTierList) => {
+  (isJoinMembershipPathname, customerTierLevel, newTierBenefitRedesign, membershipTierList) => {
     if (newTierBenefitRedesign.length === 0) {
       return [];
     }
-
-    const isJoinMembershipPathname =
-      locationPathName ===
-      `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.SIGN_UP}`;
 
     return newTierBenefitRedesign.map(benefit => {
       const { level } = benefit;
