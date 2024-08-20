@@ -22,7 +22,11 @@ import {
   getIsAlipayMiniProgram,
   getIsDynamicUrlExpired,
 } from '../../../../redux/modules/app';
-import { getUniquePromosAvailableCount } from '../../../../redux/modules/rewards/selectors';
+import {
+  getUniquePromosAvailableCount,
+  getIsLoadUniquePromosAvailableCountFulfilled,
+  getLoadUniquePromosAvailableCountCleverTap,
+} from '../../../../redux/modules/rewards/selectors';
 import { fetchUniquePromosAvailableCount as fetchUniquePromosAvailableCountThunk } from '../../../../redux/modules/rewards/thunks';
 import logger from '../../../../../utils/monitoring/logger';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -138,8 +142,16 @@ export class TableSummary extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevStates) {
-    const { isLogin: prevIsLogin } = prevProps;
-    const { isLogin, fetchUniquePromosAvailableCount } = this.props;
+    const {
+      isLogin: prevIsLogin,
+      isLoadUniquePromosAvailableCountFulfilled: prevIsLoadUniquePromosAvailableCountFulfilled,
+    } = prevProps;
+    const {
+      isLogin,
+      fetchUniquePromosAvailableCount,
+      isLoadUniquePromosAvailableCountFulfilled,
+      loadUniquePromosAvailableCountCleverTap,
+    } = this.props;
 
     if (isLogin && !prevIsLogin) {
       fetchUniquePromosAvailableCount();
@@ -162,6 +174,11 @@ export class TableSummary extends React.Component {
     // Can record CT only after coreBusiness Loaded. I use one attribute country to trace that.
     if (prevCleverTapAttributes.country !== currCleverTapAttributes.country) {
       CleverTap.pushEvent('Table Summary - View Page', currCleverTapAttributes);
+    }
+
+    // Create Clever Tap after unique promo loaded
+    if (isLoadUniquePromosAvailableCountFulfilled && !prevIsLoadUniquePromosAvailableCountFulfilled) {
+      CleverTap.pushEvent('Table Summary - Promo Indicator', loadUniquePromosAvailableCountCleverTap);
     }
 
     if (!prevHasTableIdChanged && currHasTableIdChanged) {
@@ -929,6 +946,9 @@ TableSummary.propTypes = {
   orderTableId: PropTypes.string,
   isDynamicUrlExpired: PropTypes.bool,
   uniquePromosAvailableCount: PropTypes.number,
+  isLoadUniquePromosAvailableCountFulfilled: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  loadUniquePromosAvailableCountCleverTap: PropTypes.object,
   fetchUniquePromosAvailableCount: PropTypes.func,
 };
 
@@ -990,6 +1010,8 @@ TableSummary.defaultProps = {
   orderTableId: null,
   isDynamicUrlExpired: false,
   uniquePromosAvailableCount: 0,
+  isLoadUniquePromosAvailableCountFulfilled: false,
+  loadUniquePromosAvailableCountCleverTap: {},
   fetchUniquePromosAvailableCount: () => {},
 };
 
@@ -1041,6 +1063,8 @@ export default compose(
       orderTableId: getOrderTableId(state),
       isDynamicUrlExpired: getIsDynamicUrlExpired(state),
       uniquePromosAvailableCount: getUniquePromosAvailableCount(state),
+      isLoadUniquePromosAvailableCountFulfilled: getIsLoadUniquePromosAvailableCountFulfilled(state),
+      loadUniquePromosAvailableCountCleverTap: getLoadUniquePromosAvailableCountCleverTap(state),
     }),
 
     {
