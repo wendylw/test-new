@@ -31,7 +31,7 @@ import {
   fetchPointsRewardList,
   claimPointsReward,
 } from '../../../redux/common/thunks';
-import { getIsUserFromOrdering, getFetchUniquePromoListBannersLimit } from './selectors';
+import { getFetchUniquePromoListBannersLimit } from './selectors';
 
 export const showWebProfileForm = createAsyncThunk('rewards/business/memberDetail/showWebProfileForm', async () => {});
 
@@ -50,8 +50,6 @@ export const showProfileForm = createAsyncThunk(
     await dispatch(showWebProfileForm());
   }
 );
-
-export const showBackButton = createAsyncThunk('rewards/business/memberDetail/showBackButton', async () => {});
 
 export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
   'rewards/business/memberDetail/claimPointsRewardAndRefreshRewardsList',
@@ -115,7 +113,6 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   const isWebview = getIsWebview(state);
   const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
   const search = getLocationSearch(state);
-  const isUserFromOrdering = getIsUserFromOrdering(state);
 
   Growthbook.patchAttributes({
     business,
@@ -125,10 +122,6 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     'account name': business,
     source: getClient(),
   });
-
-  if (isUserFromOrdering) {
-    dispatch(showBackButton());
-  }
 
   dispatch(fetchMerchantInfo(business));
   dispatch(fetchMembershipsInfo(business));
