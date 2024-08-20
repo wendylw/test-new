@@ -26,11 +26,11 @@ export const getIsAlipayMiniProgram = () => isAlipayMiniProgram();
 
 export const getIsWeb = () => !isWebview() && !isAlipayMiniProgram();
 
-export const getSource = () => getQueryString('source');
-
 export const getBusiness = () => getQueryString('business');
 
 export const getIsNotLoginInWeb = createSelector(getIsLogin, getIsWeb, (isLogin, isWeb) => !isLogin && isWeb);
+
+export const getSource = state => state.common.source;
 
 /** Router */
 export const getRouter = state => state.router;
