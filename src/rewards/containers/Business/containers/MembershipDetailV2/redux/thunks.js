@@ -31,7 +31,7 @@ import {
   fetchPointsRewardList,
   claimPointsReward,
 } from '../../../redux/common/thunks';
-import { getIsUserFromOrdering, getFetchUniquePromoListBannersLimit, getShouldShowBackButton } from './selectors';
+import { getIsUserFromOrdering, getFetchUniquePromoListBannersLimit } from './selectors';
 
 export const showWebProfileForm = createAsyncThunk('rewards/business/memberDetail/showWebProfileForm', async () => {});
 
@@ -166,13 +166,17 @@ export const backButtonClicked = createAsyncThunk(
   'rewards/business/memberDetail/backButtonClicked',
   async (_, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
-    const shouldShowBackButton = getShouldShowBackButton(getState());
 
     if (isWebview) {
-      shouldShowBackButton ? dispatch(nativeGoBack()) : dispatch(closeWebView());
+      dispatch(nativeGoBack());
       return;
     }
 
     dispatch(historyGoBack());
   }
+);
+
+export const closeButtonClicked = createAsyncThunk(
+  'rewards/business/memberDetail/closeButtonClicked',
+  async (_, { dispatch }) => dispatch(closeWebView())
 );
