@@ -210,9 +210,10 @@ export const getIsLoadOrderRewardsRequestCompleted = createSelector(
 
 export const getIsClaimedOrderRewardsEnabled = createSelector(
   getIsRequestOrderRewardsEnabled,
-  getIsLoadOrderRewardsRequestFulfilled,
-  (isRequestOrderRewardsEnabled, isLoadOrderRewardsRequestFulfilled) =>
-    isRequestOrderRewardsEnabled && isLoadOrderRewardsRequestFulfilled
+  getOrderRewardsPoints,
+  getOrderRewardsCashback,
+  (isRequestOrderRewardsEnabled, orderRewardsPoints, orderRewardsCashback) =>
+    isRequestOrderRewardsEnabled && (orderRewardsPoints > 0 || orderRewardsCashback > 0)
 );
 
 export const getOrderRewardsCashbackPrice = createSelector(
