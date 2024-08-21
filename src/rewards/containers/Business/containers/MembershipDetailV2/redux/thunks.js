@@ -3,7 +3,11 @@ import { push, goBack as historyGoBack } from 'connected-react-router';
 import Growthbook from '../../../../../../utils/growthbook';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
-import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
+import {
+  goBack as nativeGoBack,
+  closeWebView,
+  showCompleteProfilePageAsync,
+} from '../../../../../../utils/native-methods';
 import {
   initUserInfo,
   loginUserByBeepApp,
@@ -163,6 +167,11 @@ export const backButtonClicked = createAsyncThunk(
 
     dispatch(historyGoBack());
   }
+);
+
+export const closeButtonClicked = createAsyncThunk(
+  'rewards/business/memberDetail/closeButtonClicked',
+  async (_, { dispatch }) => dispatch(closeWebView())
 );
 
 export const membershipTierTabClickedForCleverTap = createAsyncThunk(

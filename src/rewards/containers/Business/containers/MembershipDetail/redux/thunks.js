@@ -80,11 +80,12 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     return;
   }
 
+  // customer info doesn't depend on merchant requested info, so can request independently
   if (isLogin) {
     const consumerId = getConsumerId(getState());
 
-    dispatch(fetchMerchantInfo(business));
     dispatch(fetchMembershipsInfo(business));
+    dispatch(fetchMerchantInfo(business));
     dispatch(fetchCustomerInfo(business));
     dispatch(fetchUniquePromoList(consumerId));
     dispatch(fetchPointsRewardList());

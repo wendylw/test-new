@@ -34,7 +34,18 @@
 }
 
 .TicketStub {
-  @apply tw-flex-shrink-0 tw-flex tw-items-center tw-p-8 sm:tw-p-8px tw-border-0 tw-border-l tw-border-dashed tw-border-gray-400;
+  @apply tw-relative tw-flex-shrink-0 tw-flex tw-items-center tw-p-8 sm:tw-p-8px;
 
   min-width: 18px;
+
+  &::before {
+    @apply tw-block tw-absolute tw-top-0 tw-h-full tw-bg-repeat-y;
+
+    content: "";
+    left: -1px;
+    width: 1px;
+    background: linear-gradient(180deg, #dededf 0 60%, transparent 0 100%);
+    background-size: 4px 10px;
+    background-position: 0 0;
+  }
 }

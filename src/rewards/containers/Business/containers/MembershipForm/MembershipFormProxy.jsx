@@ -1,7 +1,9 @@
 import { useMount } from 'react-use';
 import React, { useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
+import BeepWarningImage from '../../../../../images/beep-warning.svg';
+import RewardsFailedIcon from '../../../../../images/rewards-failed.svg';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import ErrorResult from './components/ErrorResult';
@@ -12,12 +14,12 @@ import {
   getShouldShowUnsupportedError,
   getShouldShowUnknownError,
   getShouldShowBackButton,
+  getIsLoadOrderRewardsNoTransaction,
+  getShouldGoToMembershipDetail,
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
-import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
 import MembershipForm from '.';
-import BeepWarningImage from '../../../../../images/beep-warning.svg';
 
 const MembershipFormProxy = () => {
   const dispatch = useDispatch();
@@ -31,8 +33,9 @@ const MembershipFormProxy = () => {
   const shouldShowSkeletonLoader = useSelector(getShouldShowSkeletonLoader);
   const shouldShowUnsupportedError = useSelector(getShouldShowUnsupportedError);
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
+  const isLoadOrderRewardsNoTransaction = useSelector(getIsLoadOrderRewardsNoTransaction);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
-  const hasJoinedMembership = useSelector(getHasUserJoinedMerchantMembership);
+  const shouldGoToMembershipDetail = useSelector(getShouldGoToMembershipDetail);
   const isWebview = useSelector(getIsWebview);
 
   useEffect(() => {
@@ -42,10 +45,10 @@ const MembershipFormProxy = () => {
   }, [dispatch, isLogin]);
 
   useEffect(() => {
-    if (hasJoinedMembership) {
+    if (shouldGoToMembershipDetail) {
       dispatch(goToMembershipDetail());
     }
-  }, [dispatch, hasJoinedMembership]);
+  }, [dispatch, shouldGoToMembershipDetail]);
 
   const handleClickBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickRetryButton = useCallback(() => dispatch(retryButtonClicked()), [dispatch]);
@@ -64,6 +67,12 @@ const MembershipFormProxy = () => {
         <SkeletonLoader />
       ) : shouldShowUnsupportedError ? (
         <ErrorResult title={t('PageNotFound')} isCloseButtonVisible={false} />
+      ) : isLoadOrderRewardsNoTransaction ? (
+        <ErrorResult
+          isCloseButtonVisible={false}
+          title={<Trans t={t} i18nKey="ErrorReceiptGetRewardsNoTransaction" components={[<br />]} />}
+          imageSrc={RewardsFailedIcon}
+        />
       ) : shouldShowUnknownError ? (
         <ErrorResult
           title={t('SomethingWentWrongTitle')}

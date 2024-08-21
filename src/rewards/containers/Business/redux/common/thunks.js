@@ -5,8 +5,11 @@ import {
   getUniquePromoListBanners,
   getPointsRewardList,
   postClaimedPointsReward,
+  postClaimedOrderRewards,
 } from './api-request';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
+import { getBusiness, getSource } from '../../../../redux/modules/common/selectors';
+import { getReceiptNumber, getChannel, getStoreId } from './selectors';
 
 export const confirmToShareConsumerInfo = createAsyncThunk(
   'rewards/business/common/confirmToShareConsumerInfo',
@@ -58,6 +61,22 @@ export const claimPointsReward = createAsyncThunk(
     const state = getState();
     const business = getMerchantBusiness(state);
     const result = await postClaimedPointsReward({ consumerId, business, id });
+
+    return result;
+  }
+);
+
+export const claimOrderRewards = createAsyncThunk(
+  'rewards/business/membershipForm/claimOrderRewards',
+  async (_, { getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+    const receiptNumber = getReceiptNumber(state);
+    const channel = getChannel(state);
+    const source = getSource(state);
+    const storeId = getStoreId(state);
+
+    const result = await postClaimedOrderRewards({ receiptNumber, business, channel, source, storeId });
 
     return result;
   }

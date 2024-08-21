@@ -21,14 +21,23 @@ module.exports = {
     },
     // usage: tw-text-[xs|sm|base|lg|xl|2xl|3xl|4xl|5xl]
     fontSize: {
+      // 10px
       xs: '0.7142rem',
+      // 12px
       sm: '0.8571rem',
+      // 14px
       base: '1rem',
+      // 16px
       lg: '1.1428rem',
+      // 18px
       xl: '1.2857rem',
+      // 20px
       '2xl': '1.4285rem',
+      // 30px
       '3xl': '2.1428rem',
+      // 36px
       '4xl': '2.5714rem',
+      // 40px
       '5xl': '2.8571rem',
     },
     // usage: tw-font-[normal|bold|black]
