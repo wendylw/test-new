@@ -210,9 +210,10 @@ export const getIsLoadOrderRewardsRequestCompleted = createSelector(
 
 export const getIsClaimedOrderRewardsEnabled = createSelector(
   getIsRequestOrderRewardsEnabled,
-  getIsLoadOrderRewardsRequestFulfilled,
-  (isRequestOrderRewardsEnabled, isLoadOrderRewardsRequestFulfilled) =>
-    isRequestOrderRewardsEnabled && isLoadOrderRewardsRequestFulfilled
+  getOrderRewardsPoints,
+  getOrderRewardsCashback,
+  (isRequestOrderRewardsEnabled, orderRewardsPoints, orderRewardsCashback) =>
+    isRequestOrderRewardsEnabled && (orderRewardsPoints > 0 || orderRewardsCashback > 0)
 );
 
 export const getOrderRewardsCashbackPrice = createSelector(
@@ -319,6 +320,7 @@ export const getShouldGoToMembershipDetail = createSelector(
       return hasUserJoinedMerchantMembership;
     }
 
+    // TODO: move claim order rewards to membership detail and remove this code
     if (!isLoadMerchantRequestCompleted || !isLoadOrderRewardsRequestCompleted) {
       return false;
     }

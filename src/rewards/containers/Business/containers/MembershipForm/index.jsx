@@ -13,7 +13,6 @@ import {
   getLoadOrderRewardsError,
   getShouldClaimOrderRewards,
 } from './redux/selectors';
-import { actions as membershipFormActions } from './redux';
 import { skipProfileButtonClicked, saveProfileButtonClicked } from './redux/thunks';
 import { alert } from '../../../../../common/utils/feedback';
 import MerchantInfo from './components/MerchantInfo';
@@ -35,10 +34,6 @@ const MembershipForm = () => {
   const shouldClaimOrderRewards = useSelector(getShouldClaimOrderRewards);
   const handleSkipProfileForm = useCallback(() => dispatch(skipProfileButtonClicked()), [dispatch]);
   const handleSaveProfileForm = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
-  const handleResetGetOrderRewardsError = useCallback(
-    () => dispatch(membershipFormActions.loadOrderRewardsErrorReset()),
-    [dispatch]
-  );
 
   useMount(() => {
     CleverTap.pushEvent('Join Membership Page - View Page', {
@@ -63,13 +58,10 @@ const MembershipForm = () => {
           <h4 className={styles.MembershipFormErrorAlertTitle}>{title}</h4>
           {description && <p>{description}</p>}
         </div>,
-        {
-          customizeContent: true,
-          onClose: handleResetGetOrderRewardsError,
-        }
+        { customizeContent: true }
       );
     }
-  }, [loadOrderRewardsError, handleResetGetOrderRewardsError]);
+  }, [loadOrderRewardsError]);
 
   return (
     <>
