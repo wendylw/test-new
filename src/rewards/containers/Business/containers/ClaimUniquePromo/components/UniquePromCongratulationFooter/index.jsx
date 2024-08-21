@@ -22,14 +22,11 @@ const UniquePromCongratulationFooter = () => {
   const merchantMenuPageDomain = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace('%business%', merchantBusiness)}`;
   const downloadBeepAppDeepLink = `${process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}?utm_source=merchantpromo&utm_medium=banner&utm_campaign=claimpromo`;
   const handleClickOrderRedeemButton = useCallback(() => {
-    CleverTap.pushEvent('Claim Unique Promo Landing Page - Click Order & Redeem Now Button', {
-      country: userCountry,
-      'account name': merchantBusiness,
-    });
+    CleverTap.pushEvent('Claim Unique Promo Landing Page - Click Order & Redeem Now Button', { country: userCountry });
 
     setRedirecting(true);
     window.location.href = merchantMenuPageDomain;
-  }, [merchantMenuPageDomain, merchantBusiness, userCountry]);
+  }, [merchantMenuPageDomain, userCountry]);
 
   useUnmount(() => {
     setRedirecting(false);

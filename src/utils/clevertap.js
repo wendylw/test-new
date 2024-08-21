@@ -1,14 +1,26 @@
 /* eslint-disable no-console */
 import Utils from './utils';
-import { isTNGMiniProgram, isGCashMiniProgram } from '../common/utils';
+import { isSiteApp, getIsInRewards, isTNGMiniProgram, isGCashMiniProgram, getQueryString } from '../common/utils';
 import config from '../config';
 import debug from './debug';
 
-const businessName = Utils.isSiteApp() ? 'beepit.com' : config.business;
+const getBusinessName = () => {
+  if (isSiteApp()) {
+    return 'beepit.com';
+  }
+
+  if (getIsInRewards()) {
+    return getQueryString('business');
+  }
+
+  return config.business;
+};
 
 const pushEvent = (eventName, attributes) => {
   try {
     debug('[CleverTap]\nEvent: %s\nAttributes: %o', eventName, attributes);
+
+    const businessName = getBusinessName();
 
     if (Utils.isWebview()) {
       if (Utils.isIOSWebview()) {
@@ -29,9 +41,9 @@ const pushEvent = (eventName, attributes) => {
             action: 'recordEventWithProps',
             event: eventName,
             props: {
+              ...attributes,
               'account name': businessName,
               Source: 'Mobile',
-              ...attributes,
             },
           });
         }
@@ -53,9 +65,9 @@ const pushEvent = (eventName, attributes) => {
           window.CleverTap?.pushEvent(
             eventName,
             JSON.stringify({
+              ...attributes,
               'account name': businessName,
               Source: 'Mobile',
-              ...attributes,
             })
           );
         }
@@ -70,9 +82,9 @@ const pushEvent = (eventName, attributes) => {
       }
 
       window.clevertap?.event.push(eventName, {
+        ...attributes,
         'account name': businessName,
         Source: source,
-        ...attributes,
       });
     }
   } catch (error) {

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import CleverTap from '../../../../../../../utils/clevertap';
-import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import { getIsClaimUniquePromoRequestCompleted } from '../../redux/selectors';
 import { claimPromotionClicked } from '../../redux/thunks';
 import PageFooter from '../../../../../../../common/components/PageFooter';
@@ -13,16 +12,13 @@ const ClaimUniquePromoFooter = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
   const [processing, setProcessing] = useState(false);
-  const merchantBusiness = useSelector(getMerchantBusiness);
   const isClaimUniquePromoRequestCompleted = useSelector(getIsClaimUniquePromoRequestCompleted);
   const handleClickClaimUniquePromoButton = useCallback(() => {
     dispatch(claimPromotionClicked());
     setProcessing(true);
 
-    CleverTap.pushEvent('Claim Unique Promo Landing Page - Click Claim Promotion Button', {
-      'account name': merchantBusiness,
-    });
-  }, [dispatch, merchantBusiness]);
+    CleverTap.pushEvent('Claim Unique Promo Landing Page - Click Claim Promotion Button');
+  }, [dispatch]);
 
   useEffect(() => {
     if (isClaimUniquePromoRequestCompleted) {

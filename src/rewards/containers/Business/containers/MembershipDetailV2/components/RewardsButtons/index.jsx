@@ -13,7 +13,6 @@ import CleverTap from '../../../../../../../utils/clevertap';
 import {
   getIsMerchantMembershipPointsEnabled,
   getIsMerchantEnabledCashback,
-  getMerchantBusiness,
 } from '../../../../../../../redux/modules/merchant/selectors';
 import {
   getCustomerAvailablePointsBalance,
@@ -29,7 +28,6 @@ import styles from './RewardsButtons.module.scss';
 const RewardsButtons = () => {
   const { t } = useTranslation(['Rewards']);
   const history = useHistory();
-  const merchantBusiness = useSelector(getMerchantBusiness);
   const isMerchantMembershipPointsEnabled = useSelector(getIsMerchantMembershipPointsEnabled);
   const availablePointsBalance = useSelector(getCustomerAvailablePointsBalance);
   const customerRewardsTotal = useSelector(getCustomerRewardsTotal);
@@ -43,34 +41,33 @@ const RewardsButtons = () => {
     isRewardsCashbackCreditsButtonShow ? 'tw-flex-col' : null,
   ]);
   const handlePointsDetailButtonClick = useCallback(() => {
-    CleverTap.pushEvent('Membership Details Page - Click Points button', { 'account name': merchantBusiness });
+    CleverTap.pushEvent('Membership Details Page - Click Points button');
 
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.POINTS_HISTORY}`,
       search,
     });
-  }, [history, search, merchantBusiness]);
+  }, [history, search]);
   const handleCashbackCreditsHistoryButtonClick = useCallback(() => {
     CleverTap.pushEvent(
       isMerchantEnabledCashback
         ? 'Membership Details Page - Click Cashback button'
-        : 'Membership Details Page - Click Store Credit button',
-      { 'account name': merchantBusiness }
+        : 'Membership Details Page - Click Store Credit button'
     );
 
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.CASHBACK_CREDITS_HISTORY}`,
       search,
     });
-  }, [history, search, merchantBusiness, isMerchantEnabledCashback]);
+  }, [history, search, isMerchantEnabledCashback]);
   const handleMyRewardsButtonClick = useCallback(() => {
-    CleverTap.pushEvent('Membership Details Page - Click My Rewards button', { 'account name': merchantBusiness });
+    CleverTap.pushEvent('Membership Details Page - Click My Rewards button');
 
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,
       search,
     });
-  }, [history, search, merchantBusiness]);
+  }, [history, search]);
 
   if (!isMerchantMembershipPointsEnabled) {
     return null;

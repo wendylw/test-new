@@ -45,7 +45,7 @@ export const mounted = createAsyncThunk('rewards/business/pointsHistory/mounted'
     business,
   });
 
-  CleverTap.pushEvent('Points Details Page - View Page', { 'account name': business });
+  CleverTap.pushEvent('Points Details Page - View Page');
 
   await dispatch(initUserInfo());
 

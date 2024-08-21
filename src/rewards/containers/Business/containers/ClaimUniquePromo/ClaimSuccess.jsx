@@ -3,19 +3,14 @@ import { useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import CleverTap from '../../../../../utils/clevertap';
 import { getUserCountry } from '../../../../../redux/modules/user/selectors';
-import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import UniquePromoCongratulation from './components/UniquePromoCongratulation';
 import UniquePromCongratulationFooter from './components/UniquePromCongratulationFooter';
 
 const ClaimSuccess = () => {
   const userCountry = useSelector(getUserCountry);
-  const merchantBusiness = useSelector(getMerchantBusiness);
 
   useMount(() => {
-    CleverTap.pushEvent('Claim Unique Promo Landing Page - Claim Unique Promo Successful', {
-      country: userCountry,
-      'account name': merchantBusiness,
-    });
+    CleverTap.pushEvent('Claim Unique Promo Landing Page - Claim Unique Promo Successful', { country: userCountry });
   });
 
   return (

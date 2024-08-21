@@ -54,13 +54,10 @@ export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
 export const pointsClaimRewardButtonClicked = createAsyncThunk(
   'rewards/business/pointsRewards/pointsClaimRewardButtonClicked',
   async ({ id, status, type, costOfPoints }, { dispatch, getState }) => {
-    const business = getMerchantBusiness(getState());
-
     if (status) {
       CleverTap.pushEvent('Get Rewards Page - Spend Points Modal - Click Confirm', {
         type,
         costOfPoints,
-        'account name': business,
       });
 
       const state = getState();
@@ -76,7 +73,6 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
       CleverTap.pushEvent('Get Rewards Page - Spend Points Modal - Click Cancel', {
         type,
         costOfPoints,
-        'account name': business,
       });
     }
   }
@@ -105,7 +101,7 @@ export const mounted = createAsyncThunk('rewards/business/pointsRewards/mounted'
   const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
   const search = getLocationSearch(state);
 
-  CleverTap.pushEvent('Get Rewards Page - View Page', { 'account name': business });
+  CleverTap.pushEvent('Get Rewards Page - View Page');
 
   await dispatch(initUserInfo());
 
@@ -139,9 +135,8 @@ export const backButtonClicked = createAsyncThunk(
   'rewards/business/pointsRewards/backButtonClicked',
   async (_, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
-    const business = getMerchantBusiness(getState());
 
-    CleverTap.pushEvent('Get Rewards Page - Click Back', { 'account name': business });
+    CleverTap.pushEvent('Get Rewards Page - Click Back');
 
     if (isWebview) {
       dispatch(nativeGoBack());

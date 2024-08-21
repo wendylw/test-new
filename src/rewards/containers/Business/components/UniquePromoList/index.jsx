@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { PROMO_VOUCHER_STATUS } from '../../../../../common/utils/constants';
 import { getClassName } from '../../../../../common/utils/ui';
 import CleverTap from '../../../../../utils/clevertap';
-import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getUniquePromoList } from '../../redux/common/selectors';
 import Tag from '../../../../../common/components/Tag';
 import styles from './UniquePromoList.module.scss';
@@ -15,11 +14,10 @@ const UNIQUE_PROMO_STATUS_I18KEYS = {
 };
 const UniquePromoList = () => {
   const { t } = useTranslation(['Rewards']);
-  const merchantBusiness = useSelector(getMerchantBusiness);
   const uniquePromoList = useSelector(getUniquePromoList);
   const handleClickRewardItem = useCallback(() => {
-    CleverTap.pushEvent('My Rewards Page - Click Reward (My Rewards)', { 'account name': merchantBusiness });
-  }, [merchantBusiness]);
+    CleverTap.pushEvent('My Rewards Page - Click Reward (My Rewards)');
+  }, []);
 
   if (uniquePromoList.length === 0) {
     return null;

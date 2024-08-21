@@ -28,7 +28,7 @@ export const mounted = createAsyncThunk(
     const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
     const search = getLocationSearch(state);
 
-    CleverTap.pushEvent('My Rewards Page - View Page', { 'account name': business });
+    CleverTap.pushEvent('My Rewards Page - View Page');
 
     await dispatch(initUserInfo());
 
@@ -62,9 +62,8 @@ export const backButtonClicked = createAsyncThunk(
   'rewards/business/uniquePromoListPage/backButtonClicked',
   async (_, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
-    const business = getMerchantBusiness(getState());
 
-    CleverTap.pushEvent('My Rewards Page - Click Back', { 'account name': business });
+    CleverTap.pushEvent('My Rewards Page - Click Back');
 
     if (isWebview) {
       dispatch(nativeGoBack());
