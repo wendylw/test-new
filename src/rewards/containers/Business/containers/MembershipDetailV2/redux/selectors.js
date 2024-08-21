@@ -51,6 +51,15 @@ import {
   getOrderReceiptClaimedCashbackStatus,
 } from '../../../redux/common/selectors';
 
+export const getLoadMerchantBirthdayCampaignData = state =>
+  state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.data;
+
+export const getLoadMerchantBirthdayCampaignStatus = state =>
+  state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.status;
+
+export const getLoadMerchantBirthdayCampaignError = state =>
+  state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.error;
+
 export const getIsProfileModalShow = state => state.business.membershipDetailV2.isProfileModalShow;
 
 export const getFetchUniquePromoListBannersLimit = state => state.business.membershipDetailV2.isProfileModalShow;
