@@ -39,6 +39,8 @@ import {
   getIsWebview,
   getIsFromJoinMembershipUrlClick,
   getIsFromReceiptJoinMembershipUrlQRScan,
+  getIsFromEarnedCashbackQRScan,
+  getIsFromSeamlessLoyaltyQrScan,
 } from '../../../../../redux/modules/common/selectors';
 import {
   getCustomerTierLevel,
@@ -73,16 +75,6 @@ export const getFetchUniquePromoListBannersLimit = state => state.business.membe
 
 export const getIsUserFromOrdering = createSelector(getSource, source =>
   [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
-);
-
-export const getIsFromSeamlessLoyaltyQrScan = createSelector(
-  getSource,
-  source => source === BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN
-);
-
-export const getIsFromEarnedCashbackQrScan = createSelector(
-  getSource,
-  source => source === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
 );
 
 // Header
@@ -489,7 +481,7 @@ export const getNewMemberPromptCategory = createSelector(
   getIsFromSeamlessLoyaltyQrScan,
   getIsMerchantMembershipPointsEnabled,
   getIsMerchantEnabledCashback,
-  getIsFromEarnedCashbackQrScan,
+  getIsFromEarnedCashbackQRScan,
   getOrderReceiptClaimedCashbackStatus,
   getCustomerCashback,
   getIsFromReceiptJoinMembershipUrlQRScan,
@@ -502,7 +494,7 @@ export const getNewMemberPromptCategory = createSelector(
     isMerchantMembershipPointsEnabled,
     isMerchantEnabledCashback,
     // From claim cashback page
-    isFromEarnedCashbackQrScan,
+    isFromEarnedCashbackQRScan,
     claimedCashbackStatus,
     customerCashback,
     // From receipt join membership URL
@@ -532,7 +524,7 @@ export const getNewMemberPromptCategory = createSelector(
       return NEW_MEMBER_TYPES.DEFAULT;
     }
 
-    if (isFromEarnedCashbackQrScan) {
+    if (isFromEarnedCashbackQRScan) {
       const claimedCashbackType = NEW_MEMBER_CASHBACK_STATUS_TYPES[claimedCashbackStatus];
 
       return claimedCashbackType || NEW_MEMBER_TYPES.DEFAULT;
@@ -570,7 +562,7 @@ export const getNewMemberTitleIn18nParams = createSelector(
 export const getReturningMemberPromptCategory = createSelector(
   getIsFromJoinMembershipUrlClick,
   getIsFromSeamlessLoyaltyQrScan,
-  getIsFromEarnedCashbackQrScan,
+  getIsFromEarnedCashbackQRScan,
   getIsLoadMerchantRequestCompleted,
   getIsMerchantMembershipPointsEnabled,
   getIsLoadCustomerRequestCompleted,
@@ -580,7 +572,7 @@ export const getReturningMemberPromptCategory = createSelector(
   getIsFromReceiptJoinMembershipUrlQRScan,
   (
     isFromJoinMembershipUrlClick,
-    isFromSeamlessLoyaltyQrScan,
+    isFromSeamlessLoyaltyQRScan,
     isFromEarnedCashbackQrScan,
     isLoadMerchantRequestCompleted,
     isMerchantMembershipPointsEnabled,
@@ -595,7 +587,7 @@ export const getReturningMemberPromptCategory = createSelector(
       return RETURNING_MEMBER_TYPES.DEFAULT;
     }
 
-    if (isFromSeamlessLoyaltyQrScan) {
+    if (isFromSeamlessLoyaltyQRScan) {
       if (isLoadMerchantRequestCompleted && isMerchantMembershipPointsEnabled) {
         return RETURNING_MEMBER_TYPES.ENABLED_POINTS;
       }
