@@ -28,6 +28,19 @@ import {
   claimPointsReward,
 } from '../../../redux/common/thunks';
 import { getFetchUniquePromoListBannersLimit } from './selectors';
+import { getMerchantBirthdayCampaign } from './api-request';
+
+export const fetchMerchantBirthdayCampaign = createAsyncThunk(
+  'rewards/business/memberDetail/fetchMerchantBirthdayCampaign',
+  async (_, { getState }) => {
+    const state = getState();
+    const business = getMerchantBusiness(state);
+
+    const result = await getMerchantBirthdayCampaign(business);
+
+    return result;
+  }
+);
 
 export const showWebProfileForm = createAsyncThunk('rewards/business/memberDetail/showWebProfileForm', async () => {});
 
@@ -121,6 +134,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
 
   dispatch(fetchMerchantInfo(business));
   dispatch(fetchMembershipsInfo(business));
+  dispatch(fetchMerchantBirthdayCampaign());
   await dispatch(initUserInfo());
 
   if (isWebview) {
