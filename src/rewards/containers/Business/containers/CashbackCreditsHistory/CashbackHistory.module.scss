@@ -3,6 +3,10 @@
   @apply tw-font-bold;
 }
 
+.CashbackHistoryRemainingExpiredDaysTagExtraTextHide {
+  display: none;
+}
+
 .CashbackHistorySection {
   @apply tw-pt-24 sm:tw-pt-24px;
 }
