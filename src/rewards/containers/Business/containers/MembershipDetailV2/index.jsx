@@ -44,6 +44,7 @@ const MembershipDetail = () => {
       <MemberCard />
       <RewardsButtons />
       <PointsRewards />
+
       <MyRewards />
       <section className={styles.MembershipDetailBenefitsSection}>
         <h2 className={styles.MembershipDetailBenefitsTitle}>{t('MembershipBenefits')}</h2>
