@@ -320,6 +320,7 @@ export const getShouldGoToMembershipDetail = createSelector(
       return hasUserJoinedMerchantMembership;
     }
 
+    // TODO: move claim order rewards to membership detail and remove this code
     if (!isLoadMerchantRequestCompleted || !isLoadOrderRewardsRequestCompleted) {
       return false;
     }
