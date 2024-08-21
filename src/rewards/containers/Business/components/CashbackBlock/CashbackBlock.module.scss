@@ -47,6 +47,10 @@
 .CashbackBlockExpiredTag,
 .CashbackBlockRemainingExpiredDaysTag {
   @apply tw-font-bold;
+
+  span {
+    @apply tw-text-xs;
+  }
 }
 
 .CashbackBlockRemainingExpiredDaysTagExtraTextHide {
