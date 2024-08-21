@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMount } from 'react-use';
-import { getClient } from '../../../../../common/utils';
 import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
@@ -24,10 +23,7 @@ const MembershipForm = () => {
   const handleSaveProfileForm = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
 
   useMount(() => {
-    CleverTap.pushEvent('Join Membership Page - View Page', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Join Membership Page - View Page', { 'account name': merchantBusiness });
   });
 
   return (

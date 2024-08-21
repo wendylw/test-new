@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { PROMO_VOUCHER_STATUS } from '../../../../../common/utils/constants';
-import { getClient } from '../../../../../common/utils';
 import { getClassName } from '../../../../../common/utils/ui';
 import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
@@ -19,10 +18,7 @@ const UniquePromoList = () => {
   const merchantBusiness = useSelector(getMerchantBusiness);
   const uniquePromoList = useSelector(getUniquePromoList);
   const handleClickRewardItem = useCallback(() => {
-    CleverTap.pushEvent('My Rewards Page - Click Reward (My Rewards)', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('My Rewards Page - Click Reward (My Rewards)', { 'account name': merchantBusiness });
   }, [merchantBusiness]);
 
   if (uniquePromoList.length === 0) {

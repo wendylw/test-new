@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
-import { getClient } from '../../../../../common/utils';
 import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantCountry, getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getIsCashbackExpired, getDisplayCashbackExpiredDate } from '../../../../redux/modules/customer/selectors';
@@ -38,10 +37,7 @@ const CashbackHistory = () => {
   const cashbackHistoryList = useSelector(getCashbackHistoryList);
   const isCashbackHistoryListEmpty = useSelector(getIsCashbackHistoryListEmpty);
   const handleClickHeaderBackButton = useCallback(() => {
-    CleverTap.pushEvent('Cashback Details Page - Click Back', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Cashback Details Page - Click Back', { 'account name': merchantBusiness });
 
     dispatch(backButtonClicked());
   }, [dispatch, merchantBusiness]);
@@ -50,10 +46,7 @@ const CashbackHistory = () => {
   }, [dispatch]);
 
   useMount(() => {
-    CleverTap.pushEvent('Cashback Details Page - View Page', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Cashback Details Page - View Page', { 'account name': merchantBusiness });
   });
 
   return (

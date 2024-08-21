@@ -4,7 +4,6 @@ import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
-import { getClient } from '../../../../../common/utils';
 import { closeWebView } from '../../../../../utils/native-methods';
 import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantBusiness, getMerchantDisplayName } from '../../../../../redux/modules/merchant/selectors';
@@ -45,10 +44,7 @@ const ClaimUniquePromoProxy = () => {
   useMount(() => {
     dispatch(mounted());
 
-    CleverTap.pushEvent('Claim Unique Promo Landing Page - View Page', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Claim Unique Promo Landing Page - View Page', { 'account name': merchantBusiness });
   });
 
   useEffect(() => {

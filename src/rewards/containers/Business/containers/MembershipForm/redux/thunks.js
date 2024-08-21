@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, replace, goBack as historyGoBack } from 'connected-react-router';
 import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
-import { getCookieVariable, setCookieVariable, removeCookieVariable, getClient } from '../../../../../../common/utils';
+import { getCookieVariable, setCookieVariable, removeCookieVariable } from '../../../../../../common/utils';
 import { PATH_NAME_MAPPING, REFERRER_SOURCE_TYPES } from '../../../../../../common/utils/constants';
 import logger from '../../../../../../utils/monitoring/logger';
 import CleverTap from '../../../../../../utils/clevertap';
@@ -201,10 +201,7 @@ export const joinNowButtonClicked = createAsyncThunk(
     const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
     const search = getLocationSearch(state);
 
-    CleverTap.pushEvent('Join Membership Page - Click Join Now', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Join Membership Page - Click Join Now', { 'account name': merchantBusiness });
 
     if (isLogin) {
       await dispatch(continueJoinMembership());

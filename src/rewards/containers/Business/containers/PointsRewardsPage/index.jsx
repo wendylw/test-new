@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import RewardsPointsIcon from '../../../../../images/rewards-icon-points.svg';
 import PointsRewardClaimedIcon from '../../../../../images/rewards-points-claimed.svg';
 import { getClassName } from '../../../../../common/utils/ui';
-import { getClient } from '../../../../../common/utils';
 import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
@@ -141,7 +140,6 @@ const PointsRewardsPage = () => {
                   onClick={() => {
                     CleverTap.pushEvent('Membership Details Page - Click Points Reward', {
                       'account name': merchantBusiness,
-                      source: getClient(),
                     });
 
                     if (!isUnavailable) {

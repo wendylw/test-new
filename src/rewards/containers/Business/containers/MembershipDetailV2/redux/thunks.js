@@ -2,7 +2,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, goBack as historyGoBack } from 'connected-react-router';
 import Growthbook from '../../../../../../utils/growthbook';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
-import { getClient } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
 import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
 import {
@@ -70,7 +69,6 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
         type,
         costOfPoints,
         'account name': business,
-        source: getClient(),
       });
 
       const state = getState();
@@ -87,7 +85,6 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
         type,
         costOfPoints,
         'account name': business,
-        source: getClient(),
       });
     }
   }
@@ -120,10 +117,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     business,
   });
 
-  CleverTap.pushEvent('Membership Details Page - View Page', {
-    'account name': business,
-    source: getClient(),
-  });
+  CleverTap.pushEvent('Membership Details Page - View Page', { 'account name': business });
 
   dispatch(fetchMerchantInfo(business));
   dispatch(fetchMembershipsInfo(business));
@@ -176,9 +170,6 @@ export const membershipTierTabClickedForCleverTap = createAsyncThunk(
   async (tierName, { getState }) => {
     const business = getMerchantBusiness(getState());
 
-    CleverTap.pushEvent(`Membership Details Page - Click ${tierName} Tab`, {
-      'account name': business,
-      source: getClient(),
-    });
+    CleverTap.pushEvent(`Membership Details Page - Click ${tierName} Tab`, { 'account name': business });
   }
 );

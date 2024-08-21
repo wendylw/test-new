@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, goBack as historyGoBack } from 'connected-react-router';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
-import { getClient } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
 import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
 import {
@@ -29,10 +28,7 @@ export const mounted = createAsyncThunk(
     const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
     const search = getLocationSearch(state);
 
-    CleverTap.pushEvent('My Rewards Page - View Page', {
-      'account name': business,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('My Rewards Page - View Page', { 'account name': business });
 
     await dispatch(initUserInfo());
 
@@ -68,10 +64,7 @@ export const backButtonClicked = createAsyncThunk(
     const isWebview = getIsWebview(getState());
     const business = getMerchantBusiness(getState());
 
-    CleverTap.pushEvent('My Rewards Page - Click Back', {
-      'account name': business,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('My Rewards Page - Click Back', { 'account name': business });
 
     if (isWebview) {
       dispatch(nativeGoBack());

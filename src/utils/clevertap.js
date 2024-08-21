@@ -29,9 +29,9 @@ const pushEvent = (eventName, attributes) => {
             action: 'recordEventWithProps',
             event: eventName,
             props: {
-              ...attributes,
               'account name': businessName,
               Source: 'Mobile',
+              ...attributes,
             },
           });
         }
@@ -53,9 +53,9 @@ const pushEvent = (eventName, attributes) => {
           window.CleverTap?.pushEvent(
             eventName,
             JSON.stringify({
-              ...attributes,
               'account name': businessName,
               Source: 'Mobile',
+              ...attributes,
             })
           );
         }
@@ -70,9 +70,9 @@ const pushEvent = (eventName, attributes) => {
       }
 
       window.clevertap?.event.push(eventName, {
-        ...attributes,
         'account name': businessName,
         Source: source,
+        ...attributes,
       });
     }
   } catch (error) {

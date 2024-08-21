@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { PATH_NAME_MAPPING, PROMO_VOUCHER_STATUS } from '../../../../../../../common/utils/constants';
-import { getClient } from '../../../../../../../common/utils';
 import CleverTap from '../../../../../../../utils/clevertap';
 import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import { getUniquePromoListLength, getUniquePromoListBanners } from '../../../../redux/common/selectors';
@@ -28,10 +27,7 @@ const MyRewards = () => {
   const isMyRewardsSectionShow = useSelector(getIsMyRewardsSectionShow);
   const search = useSelector(getLocationSearch);
   const handleClickViewAllButton = useCallback(() => {
-    CleverTap.pushEvent('Membership Details Page - Click View All (My Rewards)', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Membership Details Page - Click View All (My Rewards)', { 'account name': merchantBusiness });
 
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,
@@ -39,10 +35,7 @@ const MyRewards = () => {
     });
   }, [history, search, merchantBusiness]);
   const handleClickRewardItem = useCallback(() => {
-    CleverTap.pushEvent('Membership Details Page - Click Reward (My Rewards)', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Membership Details Page - Click Reward (My Rewards)', { 'account name': merchantBusiness });
   }, [merchantBusiness]);
 
   if (!isMyRewardsSectionShow) {

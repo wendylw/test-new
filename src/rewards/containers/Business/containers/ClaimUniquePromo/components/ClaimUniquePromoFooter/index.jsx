@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import CleverTap from '../../../../../../../utils/clevertap';
-import { getClient } from '../../../../../../../common/utils';
 import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import { getIsClaimUniquePromoRequestCompleted } from '../../redux/selectors';
 import { claimPromotionClicked } from '../../redux/thunks';
@@ -22,7 +21,6 @@ const ClaimUniquePromoFooter = () => {
 
     CleverTap.pushEvent('Claim Unique Promo Landing Page - Click Claim Promotion Button', {
       'account name': merchantBusiness,
-      source: getClient(),
     });
   }, [dispatch, merchantBusiness]);
 

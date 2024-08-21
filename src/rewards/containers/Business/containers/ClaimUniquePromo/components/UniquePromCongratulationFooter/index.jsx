@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useUnmount } from 'react-use';
 import { useTranslation } from 'react-i18next';
-import { getClient } from '../../../../../../../common/utils';
 import CleverTap from '../../../../../../../utils/clevertap';
 import { getUserCountry } from '../../../../../../../redux/modules/user/selectors';
 import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
@@ -26,7 +25,6 @@ const UniquePromCongratulationFooter = () => {
     CleverTap.pushEvent('Claim Unique Promo Landing Page - Click Order & Redeem Now Button', {
       country: userCountry,
       'account name': merchantBusiness,
-      source: getClient(),
     });
 
     setRedirecting(true);

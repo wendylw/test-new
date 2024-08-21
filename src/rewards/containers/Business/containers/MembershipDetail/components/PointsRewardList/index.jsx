@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import CleverTap from '../../../../../../../utils/clevertap';
 import PointsRewardClaimedIcon from '../../../../../../../images/rewards-points-claimed.svg';
+import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../../../../../redux/modules/common/selectors';
 import {
   getPointsRewardList,
@@ -26,6 +27,7 @@ import styles from './PointsRewardList.module.scss';
 const PointsRewardList = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation(['Rewards']);
+  const merchantBusiness = useSelector(getMerchantBusiness);
   const isWebview = useSelector(getIsWebview);
   const pointsRewardList = useSelector(getPointsRewardList);
   const isPointsRewardListShown = useSelector(getIsPointsRewardListShown);
@@ -45,12 +47,14 @@ const PointsRewardList = () => {
           CleverTap.pushEvent('Points Reward Claimed - Click confirm', {
             type,
             costOfPoints,
+            'account name': merchantBusiness,
           });
           dispatch(pointsClaimRewardButtonClicked(id));
         } else {
           CleverTap.pushEvent('Points Reward Claimed - Click cancel', {
             type,
             costOfPoints,
+            'account name': merchantBusiness,
           });
         }
       },

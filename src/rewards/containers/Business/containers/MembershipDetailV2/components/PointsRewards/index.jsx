@@ -9,7 +9,6 @@ import PointsRewardClaimedIcon from '../../../../../../../images/rewards-points-
 import { DESKTOP_PAGE_WIDTH, PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { POINTS_REWARD_WIDTHS } from '../../utils/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
-import { getClient } from '../../../../../../../common/utils';
 import CleverTap from '../../../../../../../utils/clevertap';
 import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getLocationSearch } from '../../../../../../redux/modules/common/selectors';
@@ -77,7 +76,6 @@ const PointsRewards = () => {
   const goToPointsRewardsListPage = useCallback(() => {
     CleverTap.pushEvent('Membership Details Page - Click View All (Get Rewards Section)', {
       'account name': merchantBusiness,
-      source: getClient(),
     });
 
     history.push({
@@ -139,7 +137,6 @@ const PointsRewards = () => {
             onClick={() => {
               CleverTap.pushEvent('Membership Details Page - Click Points Reward', {
                 'account name': merchantBusiness,
-                source: getClient(),
               });
 
               if (!isUnavailable) {

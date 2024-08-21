@@ -8,7 +8,6 @@ import RewardsPointsIcon from '../../../../../../../images/rewards-icon-points.s
 import RewardsCashbackIcon from '../../../../../../../images/rewards-icon-cashback.svg';
 import RewardsStoreCreditsIcon from '../../../../../../../images/rewards-icon-store-credits.svg';
 import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
-import { getClient } from '../../../../../../../common/utils';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import CleverTap from '../../../../../../../utils/clevertap';
 import {
@@ -44,10 +43,7 @@ const RewardsButtons = () => {
     isRewardsCashbackCreditsButtonShow ? 'tw-flex-col' : null,
   ]);
   const handlePointsDetailButtonClick = useCallback(() => {
-    CleverTap.pushEvent('Membership Details Page - Click Points button', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Membership Details Page - Click Points button', { 'account name': merchantBusiness });
 
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.POINTS_HISTORY}`,
@@ -59,10 +55,7 @@ const RewardsButtons = () => {
       isMerchantEnabledCashback
         ? 'Membership Details Page - Click Cashback button'
         : 'Membership Details Page - Click Store Credit button',
-      {
-        'account name': merchantBusiness,
-        source: getClient(),
-      }
+      { 'account name': merchantBusiness }
     );
 
     history.push({
@@ -71,10 +64,7 @@ const RewardsButtons = () => {
     });
   }, [history, search, merchantBusiness, isMerchantEnabledCashback]);
   const handleMyRewardsButtonClick = useCallback(() => {
-    CleverTap.pushEvent('Membership Details Page - Click My Rewards button', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Membership Details Page - Click My Rewards button', { 'account name': merchantBusiness });
 
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,
