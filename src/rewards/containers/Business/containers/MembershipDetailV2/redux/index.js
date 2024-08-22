@@ -5,10 +5,15 @@ import { showWebProfileForm, hideWebProfileForm, fetchMerchantBirthdayCampaign }
 const initialState = {
   isProfileModalShow: false,
   fetchUniquePromoListBannersLimit: 2,
+  selectedRewardId: null,
   loadMerchantBirthdayCampaignRequest: {
     data: null,
     status: null,
     error: null,
+  },
+  profileModalRequest: {
+    show: false,
+    showSkipButton: false,
   },
 };
 
