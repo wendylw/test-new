@@ -13,7 +13,7 @@ import {
   getCustomerCurrentStatusPromptI18nInfo,
   getIsProfileModalShow,
 } from '../../redux/selectors';
-import { showWebProfileForm, hideWebProfileForm } from '../../redux/thunks';
+import { showProfileForm, hideWebProfileForm } from '../../redux/thunks';
 import MemberIcon from '../../../../components/MemberIcon';
 import Button from '../../../../../../../common/components/Button';
 import Profile from '../../../../../Profile';
@@ -35,7 +35,7 @@ const MemberCard = () => {
   const handleClickCurrentMemberTierPromptToolTip = useCallback(() => {
     setPromptToolTipShown(!promptToolTipShown);
   }, [promptToolTipShown, setPromptToolTipShown]);
-  const handleClickViewProfileButton = useCallback(() => dispatch(showWebProfileForm()), [dispatch]);
+  const handleClickViewProfileButton = useCallback(() => dispatch(showProfileForm()), [dispatch]);
   const handleClickSkipProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
   const handleClickSaveProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 

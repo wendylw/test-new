@@ -5,7 +5,7 @@ import { CaretRight } from 'phosphor-react';
 import BirthdayCakeImage from '../../../../../../../images/rewards-birthday-cake.svg';
 import { getIsWebview } from '../../../../../../redux/modules/common/selectors';
 import { getIsBirthdayCampaignEntryShow, getIsProfileModalShow } from '../../redux/selectors';
-import { showWebProfileForm, hideWebProfileForm } from '../../redux/thunks';
+import { showProfileForm, hideWebProfileForm } from '../../redux/thunks';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import Profile from '../../../../../Profile';
@@ -17,7 +17,7 @@ const BirthdayCampaign = () => {
   const isWebview = useSelector(getIsWebview);
   const isProfileModalShow = useSelector(getIsProfileModalShow);
   const isBirthdayCampaignEntryShow = useSelector(getIsBirthdayCampaignEntryShow);
-  const handleClickBirthdayCampaignButton = useCallback(() => dispatch(showWebProfileForm()), [dispatch]);
+  const handleClickBirthdayCampaignButton = useCallback(() => dispatch(showProfileForm()), [dispatch]);
   const handleClickSkipProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
   const handleClickSaveProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
