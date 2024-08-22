@@ -165,5 +165,7 @@
   "ViewAll": "View all",
   "ErrorReceiptGetRewardsNoTransaction": "Transaction not found. <0></0>Please scan the QR again later",
   "ErrorGetRewardsExpiredTitle": "Oops! This QR code has already expired",
-  "ErrorGetRewardsCanceledRefundTitle": "Transaction was cancelled. Could not claim rewards"
+  "ErrorGetRewardsCanceledRefundTitle": "Transaction was cancelled. Could not claim rewards",
+  "BirthdayCampaignTitle": "Get Goodies on Your Birthday!",
+  "BirthdayCampaignDescription": "Complete your profile to unlock"
 }
