@@ -1,3 +1,5 @@
+import _isArray from 'lodash/isArray';
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import {
   BECOME_MERCHANT_MEMBER_METHODS,
@@ -19,6 +21,7 @@ import {
 } from '../utils/constants';
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
+import { getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledLoyalty,
@@ -67,6 +70,17 @@ export const getFetchUniquePromoListBannersLimit = state => state.business.membe
 /**
  * Derived selectors
  */
+
+export const getIsBirthdayCampaignActivated = createSelector(
+  getLoadMerchantBirthdayCampaignData,
+  loadMerchantBirthdayCampaignData => _get(loadMerchantBirthdayCampaignData, 'isActivated', false)
+);
+
+export const getIsBirthdayCampaignEntryShow = createSelector(
+  getIsBirthdayCampaignActivated,
+  getIsUserProfileIncomplete,
+  (isBirthdayCampaignActivated, isUserProfileIncomplete) => isBirthdayCampaignActivated && isUserProfileIncomplete
+);
 
 export const getIsUserFromOrdering = createSelector(getSource, source =>
   [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)

@@ -147,5 +147,14 @@
   "UnlockOneTierLevelPrompt": "You’ll unlock",
   "UnlockLevelPrompt": "You’ll unlock this tier",
   "UnlockHigherLevelPrompt": "Become a {{levelName}} Member and unlock",
+<<<<<<< HEAD
   "ViewAll": "View all"
+=======
+  "ViewAll": "View all",
+  "ErrorReceiptGetRewardsNoTransaction": "Transaction not found. <0></0>Please scan the QR again later",
+  "ErrorGetRewardsExpiredTitle": "Oops! This QR code has already expired",
+  "ErrorGetRewardsCanceledRefundTitle": "Transaction was cancelled. Could not claim rewards",
+  "BirthdayCampaignTitle": "Get Goodies on Your Birthday!",
+  "BirthdayCampaignDescription": "Complete your profile to unlock"
+>>>>>>> 9f2a22a12 (WB-8826: Update birthday campaign button)
 }

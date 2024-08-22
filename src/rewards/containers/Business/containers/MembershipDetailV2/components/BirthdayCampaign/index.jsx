@@ -1,10 +1,43 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { CaretRight } from 'phosphor-react';
+import BirthdayCakeImage from '../../../../../../../images/rewards-birthday-cake.svg';
+import { getIsBirthdayCampaignEntryShow } from '../../redux/selectors';
 import Button from '../../../../../../../common/components/Button';
+import { ObjectFitImage } from '../../../../../../../common/components/Image';
+import styles from './BirthdayCampaign.module.scss';
 
 const BirthdayCampaign = () => {
-  return <Button></Button>;
+  const { t } = useTranslation(['Rewards']);
+  const isBirthdayCampaignEntryShow = useSelector(getIsBirthdayCampaignEntryShow);
+
+  if (!isBirthdayCampaignEntryShow) {
+    return null;
+  }
+
+  return (
+    <section className={styles.BirthdayCampaignSection}>
+      <Button
+        block
+        type="text"
+        theme="ghost"
+        className={styles.BirthdayCampaignButton}
+        contentClassName={styles.BirthdayCampaignButtonContent}
+      >
+        <div className={styles.BirthdayCampaignImageContainer}>
+          <ObjectFitImage noCompression className={styles.BirthdayCampaignImage} src={BirthdayCakeImage} />
+        </div>
+        <div className={styles.BirthdayCampaignTexts}>
+          <h4 className={styles.BirthdayCampaignTitle}>{t('BirthdayCampaignTitle')}</h4>
+          <p>{t('BirthdayCampaignDescription')}</p>
+        </div>
+        <CaretRight size={32} weight="thin" />
+      </Button>
+    </section>
+  );
 };
 
-BirthdayCampaign.display = 'BirthdayCampaign';
+BirthdayCampaign.displayName = 'BirthdayCampaign';
 
 export default BirthdayCampaign;
