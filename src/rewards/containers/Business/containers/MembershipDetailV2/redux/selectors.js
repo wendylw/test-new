@@ -38,7 +38,6 @@ import {
 import { getMembershipTierList, getHighestMembershipTier } from '../../../../../../redux/modules/membership/selectors';
 import {
   getSource,
-  getIsWebview,
   getIsFromJoinMembershipUrlClick,
   getIsFromReceiptJoinMembershipUrlQRScan,
   getIsFromEarnedCashbackQRScan,
@@ -95,16 +94,13 @@ export const getIsBirthdayCampaignEntryShow = createSelector(
   (isBirthdayCampaignActivated, isUserProfileIncomplete) => isBirthdayCampaignActivated && isUserProfileIncomplete
 );
 
-export const getIsUserFromOrdering = createSelector(getSource, source =>
-  [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
+export const getIsUserFromOrdering = createSelector(
+  getSource,
+  source => source === BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK
 );
 
 // Header
-export const getShouldShowBackButton = createSelector(
-  getIsWebview,
-  getIsUserFromOrdering,
-  (isInWebview, isUserFromOrdering) => isInWebview || isUserFromOrdering
-);
+export const getShouldShowBackButton = createSelector(getIsUserFromOrdering, isUserFromOrdering => isUserFromOrdering);
 
 // Member Card
 // If the level is not by design, use member style by default.
