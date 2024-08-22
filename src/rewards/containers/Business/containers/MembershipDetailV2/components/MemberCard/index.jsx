@@ -35,7 +35,9 @@ const MemberCard = () => {
   const handleClickCurrentMemberTierPromptToolTip = useCallback(() => {
     setPromptToolTipShown(!promptToolTipShown);
   }, [promptToolTipShown, setPromptToolTipShown]);
-  const handleClickViewProfileButton = useCallback(() => dispatch(showProfileForm()), [dispatch]);
+  const handleClickViewProfileButton = useCallback(() => dispatch(showProfileForm({ hideSkipButton: false })), [
+    dispatch,
+  ]);
   const handleClickSkipProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
   const handleClickSaveProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
@@ -111,6 +113,7 @@ const MemberCard = () => {
       {/* TODO: Migrate to membership detail component next phase */}
       {!isWebview && (
         <Profile
+          showSkipButton
           show={isProfileModalShow}
           onSave={handleClickSaveProfileButton}
           onSkip={handleClickSkipProfileButton}

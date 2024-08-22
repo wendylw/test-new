@@ -52,7 +52,7 @@ export const hideWebProfileForm = createAsyncThunk('rewards/business/memberDetai
 
 export const showProfileForm = createAsyncThunk(
   'rewards/business/memberDetail/showProfileForm',
-  async ({ hideSkipButton = false }, { dispatch, getState }) => {
+  async ({ hideSkipButton = true } = {}, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
 
     if (isWebview) {
@@ -90,7 +90,7 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
       const isUserProfileIncomplete = getIsUserProfileIncomplete(state);
 
       if (isUserProfileIncomplete) {
-        dispatch(showProfileForm({ hideSkipButton: true }));
+        dispatch(showProfileForm());
 
         return;
       }

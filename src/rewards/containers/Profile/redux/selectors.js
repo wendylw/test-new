@@ -86,6 +86,3 @@ export const getIsDisabledProfileSaveButton = createSelector(
     return false;
   }
 );
-
-// NOTE: This is a temporary decision to make it as prerequisite. But if feedback is customers push back, then in future we may make it skippable.
-export const getShouldShowSkipButton = () => false;

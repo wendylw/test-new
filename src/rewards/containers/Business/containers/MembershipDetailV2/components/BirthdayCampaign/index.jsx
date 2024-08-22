@@ -17,7 +17,9 @@ const BirthdayCampaign = () => {
   const isWebview = useSelector(getIsWebview);
   const isProfileModalShow = useSelector(getIsProfileModalShow);
   const isBirthdayCampaignEntryShow = useSelector(getIsBirthdayCampaignEntryShow);
-  const handleClickBirthdayCampaignButton = useCallback(() => dispatch(showProfileForm()), [dispatch]);
+  const handleClickBirthdayCampaignButton = useCallback(() => dispatch(showProfileForm({ hideSkipButton: false })), [
+    dispatch,
+  ]);
   const handleClickSkipProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
   const handleClickSaveProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
@@ -50,6 +52,7 @@ const BirthdayCampaign = () => {
       {/* TODO: Migrate to membership detail component next phase */}
       {!isWebview && (
         <Profile
+          showSkipButton
           show={isProfileModalShow}
           onSave={handleClickSaveProfileButton}
           onSkip={handleClickSkipProfileButton}
