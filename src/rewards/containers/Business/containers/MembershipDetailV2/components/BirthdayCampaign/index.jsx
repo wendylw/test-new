@@ -47,6 +47,7 @@ const BirthdayCampaign = () => {
           <CaretRight size={32} weight="thin" />
         </Button>
       </section>
+      {/* TODO: Migrate to membership detail component next phase */}
       {!isWebview && (
         <Profile
           show={isProfileModalShow}

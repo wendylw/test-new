@@ -262,6 +262,7 @@ const PointsRewards = () => {
       {isClaimPointsRewardPending && (
         <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
       )}
+      {/* TODO: Migrate to membership detail component next phase */}
       {!isWebview && (
         <Profile
           show={isProfileModalShow}
