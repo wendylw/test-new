@@ -28,6 +28,8 @@ export const getIsWeb = () => !isWebview() && !isAlipayMiniProgram();
 
 export const getBusiness = () => getQueryString('business');
 
+export const getQuerySource = () => getQueryString('source');
+
 export const getIsNotLoginInWeb = createSelector(getIsLogin, getIsWeb, (isLogin, isWeb) => !isLogin && isWeb);
 
 export const getSource = state => state.common.source;
@@ -43,19 +45,40 @@ export const getLocationPathname = state => state.router.location.pathname;
  * Derived selectors
  */
 
+// TODO: change name to query
 export const getIsFromJoinMembershipUrlClick = createSelector(
-  getSource,
-  source => source === BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK
 );
 
+// TODO: change name to query
 export const getIsFromReceiptJoinMembershipUrlQRScan = createSelector(
-  getSource,
-  source => source === BECOME_MERCHANT_MEMBER_METHODS.RECEIPT_JOIN_MEMBERSHIP_URL_QR_SCAN
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.RECEIPT_JOIN_MEMBERSHIP_URL_QR_SCAN
 );
 
+// TODO: change name to query
 export const getIsFromReceiptMembershipDetailQRScan = createSelector(
-  getSource,
-  source => source === BECOME_MERCHANT_MEMBER_METHODS.RECEIPT_MEMBERSHIP_DETAIL_QR_SCAN
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.RECEIPT_MEMBERSHIP_DETAIL_QR_SCAN
+);
+
+// TODO: change name to query
+export const getIsFromEarnedCashbackQRScan = createSelector(
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
+);
+
+// TODO: change name to query
+export const getIsFromSeamlessLoyaltyQrScan = createSelector(
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN
+);
+
+// TODO: change name to query
+export const getIsFromThankYouCashbackClick = createSelector(
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN
 );
 
 export const getLocationSearch = createSelector(getLocation, location => location.search);
