@@ -124,7 +124,7 @@ const PointsRewards = () => {
             key={id}
             type="text"
             theme="ghost"
-            data-test-id="rewards.membership-detail.points-rewards.reward"
+            data-test-id="rewards.business.membership-detail.points-rewards.reward"
             className={styles.PointsRewardsTicketButton}
             contentClassName={styles.PointsRewardsTicketButtonContent}
             onClick={() => {
@@ -218,7 +218,7 @@ const PointsRewards = () => {
             theme="info"
             className={styles.PointsRewardsSectionViewAllButton}
             contentClassName={styles.PointsRewardsSectionViewAllButtonContent}
-            data-test-id="rewards.membership-detail.get-rewards.view-all-button"
+            data-test-id="rewards.business.membership-detail.get-rewards.view-all-button"
             onClick={goToPointsRewardsListPage}
           >
             {t('ViewAll')}
@@ -240,7 +240,7 @@ const PointsRewards = () => {
                     type="text"
                     theme="ghost"
                     className={styles.PointsRewardsMoreButton}
-                    data-test-id="rewards.membership-detail.get-rewards.more-button"
+                    data-test-id="rewards.business.membership-detail.get-rewards.more-button"
                     onClick={goToPointsRewardsListPage}
                   >
                     <i className={styles.PointsRewardsMoreButtonIcon}>
