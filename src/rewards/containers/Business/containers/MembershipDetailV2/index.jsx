@@ -5,8 +5,14 @@ import { useMount } from 'react-use';
 import { getClassName } from '../../../../../common/utils/ui';
 import { getMerchantDisplayName } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
-import { mounted, backButtonClicked, closeButtonClicked } from './redux/thunks';
-import { getShouldShowBackButton } from './redux/selectors';
+import {
+  mounted,
+  backButtonClicked,
+  closeButtonClicked,
+  skipProfileButtonClicked,
+  saveProfileButtonClicked,
+} from './redux/thunks';
+import { getShouldShowBackButton, getIsProfileModalShow, getIsProfileModalSkipButtonShow } from './redux/selectors';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MembershipTiersTabs from '../../components/MembershipTiersTabs';
@@ -23,19 +29,14 @@ const MembershipDetail = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
   const isWebview = useSelector(getIsWebview);
+  const isProfileModalShow = useSelector(getIsProfileModalShow);
+  const isSkipButtonShow = useSelector(getIsProfileModalSkipButtonShow);
   const merchantDisplayName = useSelector(getMerchantDisplayName);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickHeaderCloseButton = useCallback(() => dispatch(closeButtonClicked()), [dispatch]);
-  const handleClickSkipProfileButton = useCallback(
-    skipProfile => {
-      skipProfile && skipProfile();
-    },
-    [dispatch, setSelectedRewardId]
-  );
-  const handleClickSaveProfileButton = useCallback(saveProfile => {
-    saveProfile && saveProfile();
-  }, []);
+  const handleClickSkipProfileButton = useCallback(() => dispatch(skipProfileButtonClicked()), [dispatch]);
+  const handleClickSaveProfileButton = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
 
   useMount(() => {
     dispatch(mounted());
