@@ -167,5 +167,6 @@
   "ErrorGetRewardsExpiredTitle": "Oops! This QR code has already expired",
   "ErrorGetRewardsCanceledRefundTitle": "Transaction was cancelled. Could not claim rewards",
   "BirthdayCampaignTitle": "Get Goodies on Your Birthday!",
-  "BirthdayCampaignDescription": "Complete your profile to unlock"
+  "BirthdayCampaignDescription": "Complete your profile to unlock",
+  "ViewProfile": "View profile"
 }

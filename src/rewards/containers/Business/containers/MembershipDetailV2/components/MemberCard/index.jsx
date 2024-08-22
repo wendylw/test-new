@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
-import { Info } from 'phosphor-react';
+import { Info, User } from 'phosphor-react';
 import { getClassName } from '../../../../../../../common/utils/ui';
+import { getIsLogin } from '../../../../../../../redux/modules/user/selectors';
 import { getCustomerTierLevelName } from '../../../../../../redux/modules/customer/selectors';
 import {
   getMemberCardStyles,
@@ -11,10 +12,12 @@ import {
   getCustomerCurrentStatusPromptI18nInfo,
 } from '../../redux/selectors';
 import MemberIcon from '../../../../components/MemberIcon';
+import Button from '../../../../../../../common/components/Button';
 import styles from './MemberCard.module.scss';
 
 const MemberCard = () => {
   const { t } = useTranslation(['Rewards']);
+  const isLogin = useSelector(getIsLogin);
   const customerTierLevelName = useSelector(getCustomerTierLevelName);
   const memberCardStyles = useSelector(getMemberCardStyles);
   const merchantMembershipTierList = useSelector(getMerchantMembershipTierList);
@@ -29,7 +32,20 @@ const MemberCard = () => {
   return (
     <section className={styles.MemberCardSection}>
       <div className={styles.MemberCard} style={memberCardStyles}>
-        <h2 className={styles.MemberCardCustomerTierName}>{customerTierLevelName}</h2>
+        <div className={styles.MemberCardTop}>
+          <h2 className={styles.MemberCardCustomerTierName}>{customerTierLevelName}</h2>
+          {isLogin && (
+            <Button
+              data-test-id="rewards.business.membership-detail.member-card.view-profile-button"
+              contentClassName={styles.MemberCardViewProfileButtonContent}
+              type="text"
+              theme="ghost"
+            >
+              <User size={14} />
+              <span className={styles.MemberCardViewProfileText}>{t('ViewProfile')}</span>
+            </Button>
+          )}
+        </div>
         <div className={styles.MemberCardTiersProgress}>
           {customerMemberTierProgressStyles && (
             <div role="progressbar" className={styles.MemberCardProgress}>
