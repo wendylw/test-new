@@ -30,7 +30,7 @@ import {
 } from '../../../redux/common/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
-import { getShouldShowProfileForm } from './selectors';
+import { getShouldShowProfileForm, getIsClaimedOrderRewardsEnabled } from './selectors';
 import { getOrderRewards } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
@@ -122,10 +122,13 @@ export const goToMembershipDetail = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     const state = getState();
     const search = getLocationSearch(state);
+    const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(state);
 
     dispatch(
       replace(
-        `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`
+        `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${
+          PATH_NAME_MAPPING.MEMBERSHIP_DETAIL
+        }${search ? `${search}&isClaimedOrderRewardsEnabled=${isClaimedOrderRewardsEnabled}` : search}`
       )
     );
   }

@@ -31,8 +31,14 @@ import {
   fetchUniquePromoListBanners,
   fetchPointsRewardList,
   claimPointsReward,
+  claimOrderRewards,
 } from '../../../redux/common/thunks';
-import { getFetchUniquePromoListBannersLimit, getShowProfileModalSource, getPointsRewardSelectedId } from './selectors';
+import {
+  getFetchUniquePromoListBannersLimit,
+  getShowProfileModalSource,
+  getPointsRewardSelectedId,
+  getIsClaimOrderRewardsEnabled,
+} from './selectors';
 import { getMerchantBirthdayCampaign } from './api-request';
 
 export const fetchMerchantBirthdayCampaign = createAsyncThunk(
@@ -215,11 +221,16 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   if (isLogin) {
     const consumerId = getConsumerId(getState());
     const fetchUniquePromoListBannersLimit = getFetchUniquePromoListBannersLimit(getState());
+    const isClaimOrderRewardsEnabled = getIsClaimOrderRewardsEnabled(getState());
 
     dispatch(fetchCustomerInfo(business));
     dispatch(fetchUniquePromoListBanners({ consumerId, limit: fetchUniquePromoListBannersLimit }));
     dispatch(fetchPointsRewardList(consumerId));
     dispatch(fetchUniquePromoList(consumerId));
+
+    if (isClaimOrderRewardsEnabled) {
+      dispatch(claimOrderRewards());
+    }
   }
 });
 
