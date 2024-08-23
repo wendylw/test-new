@@ -147,6 +147,8 @@ export const skipProfileButtonClicked = createAsyncThunk(
 
     dispatch(hideProfileForm());
 
+    // User wants to claim points to get rewards, Need to complete profile info first.
+    // Once the user completes the profile, Continue claiming process.
     if (showProfileModalSource === SHOW_PROFILE_FROM_POINTS_REWARDS) {
       const pointsRewardSelectedId = getPointsRewardSelectedId(getState());
 
@@ -162,6 +164,8 @@ export const saveProfileButtonClicked = createAsyncThunk(
 
     dispatch(hideProfileForm());
 
+    // User wants to claim points to get rewards, Need to complete profile info first.
+    // Once the user completes the profile, Continue claiming process.
     if (showProfileModalSource === SHOW_PROFILE_FROM_POINTS_REWARDS) {
       const pointsRewardSelectedId = getPointsRewardSelectedId(getState());
 

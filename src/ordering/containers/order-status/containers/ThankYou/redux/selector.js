@@ -386,6 +386,8 @@ export const getShouldShowEarnedCashback = createSelector(
     hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === (orderCustomerId || cashbackCustomerId)
 );
 
+// Expected the enabled membership merchant's customers see the member card information first on the page. So hide complete profile page
+// Merchants disabled membership still hope that users will complete their profile information as much as possible.
 export const getShouldProfileModalShow = createSelector(
   getOrderStatus,
   getIsLoadMerchantRequestCompleted,
