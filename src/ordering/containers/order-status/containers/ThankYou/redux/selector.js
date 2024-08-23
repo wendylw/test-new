@@ -382,3 +382,11 @@ export const getShouldShowEarnedCashback = createSelector(
   (hasCashback, hasOrderPaid, userCustomerId, orderCustomerId, cashbackCustomerId, hasCashbackClaimed) =>
     hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === (orderCustomerId || cashbackCustomerId)
 );
+
+export const getShouldProfileModalShow = createSelector(
+  getOrderStatus,
+  getIsLoadMerchantRequestCompleted,
+  getIsMerchantMembershipEnabled,
+  (orderStatus, isLoadMerchantRequestCompleted, isMerchantMembershipEnabled) =>
+    orderStatus && isLoadMerchantRequestCompleted && !isMerchantMembershipEnabled
+);
