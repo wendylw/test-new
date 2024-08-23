@@ -40,7 +40,10 @@ import {
   getUserCustomerId,
   getUserConsumerId,
 } from '../../../../../redux/modules/app';
-import { getIsMerchantMembershipEnabled } from '../../../../../../redux/modules/merchant/selectors';
+import {
+  getIsLoadMerchantRequestCompleted,
+  getIsMerchantMembershipEnabled,
+} from '../../../../../../redux/modules/merchant/selectors';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
