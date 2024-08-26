@@ -188,8 +188,8 @@ export const getMembershipTierListLength = createSelector(
  * 1. current spending total's level === highest tier level: 100%
  * 2. current spending total === current tier spendThreshold: 100 * ((level - 1) / (total tier length - 1))%
  * 3. current spending total > current tier spendThreshold && current spending total < next tier spendThreshold:
- * - exceed total rate = (exceed current total / tier spendThreshold gap) * each tier rate
- * - 100 * (No.2 result + exceed total rate)% + icon radius
+ * - left total rate = (left to reach next total / tier spendThreshold gap) * each tier rate
+ * - 100 * (next level rate + left total rate)% - icon radius
  */
 export const getCustomerMemberTierProgressStyles = createSelector(
   getMembershipTierListLength,
@@ -232,6 +232,7 @@ export const getCustomerMemberTierProgressStyles = createSelector(
 
     const eachTierRate = 1 / (membershipTierListLength - 1);
     const currentLevelTotalRate = eachTierRate * (currentLevel - 1);
+    const nextLevelTotalRate = eachTierRate * currentLevel;
 
     if (isMerchantMembershipPointsEnabled) {
       if (exceedCurrentLevelPoints === 0) {
@@ -243,8 +244,7 @@ export const getCustomerMemberTierProgressStyles = createSelector(
         (nextPointsThreshold - currentPointsThreshold);
 
       return {
-        width: `calc(${100 * (eachTierRate + currentLevelTotalRate)}% - ${100 *
-          leftPointsRate}% - ${iconCoveredWidth}px)`,
+        width: `calc(${100 * nextLevelTotalRate}% - ${100 * leftPointsRate}% - ${iconCoveredWidth}px)`,
       };
     }
 
@@ -258,8 +258,7 @@ export const getCustomerMemberTierProgressStyles = createSelector(
         (nextSpendingThreshold - currentSpendingThreshold));
 
     return {
-      width: `calc(${100 * (eachTierRate + currentLevelTotalRate)}% - ${100 *
-        leftSpendingRate}% - ${iconCoveredWidth}px)`,
+      width: `calc(${100 * nextLevelTotalRate}% - ${100 * leftSpendingRate}% - ${iconCoveredWidth}px)`,
     };
   }
 );
