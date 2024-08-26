@@ -81,6 +81,8 @@ export const backButtonClicked = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
 
+    CleverTap.pushEvent('Points Details Page - Click Back');
+
     if (isWebview) {
       dispatch(nativeGoBack());
       return;
