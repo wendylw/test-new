@@ -222,9 +222,9 @@ export const getCustomerMemberTierProgressStyles = createSelector(
       spendingThreshold: nextSpendingThreshold,
       pointsThreshold: nextPointsThreshold,
     } = customerSpendingTotalNextTier;
-    // eachTierRate point is at the center of the icon (except for Tier 1)
-    // Tier 1 adds the diameter, and Tier > 1 adds the radius.
-    const iconCoveredWidth = MEMBER_ICON_WIDTH / (currentLevel > 1 ? 2 : 1);
+    // eachTierRate point is at the center of the icon
+    // Some progress bar process will be covered, should minus half icon width
+    const iconCoveredWidth = MEMBER_ICON_WIDTH / 2;
 
     if (currentLevel === highestTierLevel) {
       return { width: '100%' };
@@ -238,11 +238,13 @@ export const getCustomerMemberTierProgressStyles = createSelector(
         return { width: `${100 * currentLevelTotalRate}%` };
       }
 
-      const exceedPointsRate =
-        (eachTierRate * exceedCurrentLevelPoints) / (nextPointsThreshold - currentPointsThreshold);
+      const leftPointsRate =
+        (eachTierRate * (nextPointsThreshold - currentPointsThreshold - exceedCurrentLevelPoints)) /
+        (nextPointsThreshold - currentPointsThreshold);
 
       return {
-        width: `calc(${100 * (exceedPointsRate + currentLevelTotalRate)}% + ${iconCoveredWidth}px)`,
+        width: `calc(${100 * (eachTierRate + currentLevelTotalRate)}% - ${100 *
+          leftPointsRate}% - ${iconCoveredWidth}px)`,
       };
     }
 
@@ -250,11 +252,14 @@ export const getCustomerMemberTierProgressStyles = createSelector(
       return { width: `${100 * currentLevelTotalRate}%` };
     }
 
-    const exceedSpendingRate =
-      (eachTierRate * exceedCurrentLevelSpending) / (nextSpendingThreshold - currentSpendingThreshold);
+    const leftSpendingRate =
+      eachTierRate *
+      ((nextSpendingThreshold - currentSpendingThreshold - exceedCurrentLevelSpending) /
+        (nextSpendingThreshold - currentSpendingThreshold));
 
     return {
-      width: `calc(${100 * (exceedSpendingRate + currentLevelTotalRate)}% + ${iconCoveredWidth}px)`,
+      width: `calc(${100 * (eachTierRate + currentLevelTotalRate)}% - ${100 *
+        leftSpendingRate}% - ${iconCoveredWidth}px)`,
     };
   }
 );
