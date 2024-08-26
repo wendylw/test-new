@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
 import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
@@ -63,9 +63,24 @@ const CashbackHistory = () => {
             {isCashbackExpired && <Tag className={styles.CashbackHistoryExpiredTag}>{t('Expired')}</Tag>}
             {isExpiringTagShown ? (
               <Tag color="red" className={styles.CashbackHistoryRemainingExpiredDaysTag}>
-                {isTodayExpired
-                  ? t('ExpiringToday')
-                  : t('ExpiringInDays', { remainingExpiredDays: remainingCashbackExpiredDays })}
+                {isTodayExpired ? (
+                  t('ExpiringToday')
+                ) : (
+                  <Trans
+                    t={t}
+                    i18nKey="ExpiringInDays"
+                    values={{ remainingExpiredDays: remainingCashbackExpiredDays }}
+                    components={[
+                      <span
+                        className={
+                          remainingCashbackExpiredDays <= 1
+                            ? styles.CashbackHistoryRemainingExpiredDaysTagExtraTextHide
+                            : ''
+                        }
+                      />,
+                    ]}
+                  />
+                )}
               </Tag>
             ) : null}
           </>

@@ -29,6 +29,8 @@ import {
   getSource,
   getIsWebview,
   getIsFromJoinMembershipUrlClick,
+  getIsFromEarnedCashbackQRScan,
+  getIsFromSeamlessLoyaltyQrScan,
 } from '../../../../../redux/modules/common/selectors';
 import {
   getOrderReceiptClaimedCashbackStatus,
@@ -80,23 +82,8 @@ export const getClaimPointsRewardError = state => state.business.membershipDetai
  * Derived selectors
  */
 
-export const getIsFromEarnedCashbackQRScan = createSelector(
-  getSource,
-  source => source === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
-);
-
-export const getIsFromSeamlessLoyaltyQrScan = createSelector(
-  getSource,
-  source => source === BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN
-);
-
 export const getIsUserFromOrdering = createSelector(getSource, source =>
   [BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK].includes(source)
-);
-
-export const getIsFromEarnedCashbackQrScan = createSelector(
-  getSource,
-  source => source === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
 );
 
 export const getIsOrderAndRedeemButtonDisplay = createSelector(
@@ -116,7 +103,7 @@ export const getNewMemberPromptCategory = createSelector(
   getOrderReceiptClaimedCashbackStatus,
   getIsFromSeamlessLoyaltyQrScan,
   getIsFromJoinMembershipUrlClick,
-  getIsFromEarnedCashbackQrScan,
+  getIsFromEarnedCashbackQRScan,
   (
     isLoadCustomerRequestCompleted,
     isLoadMerchantRequestCompleted,
@@ -126,7 +113,7 @@ export const getNewMemberPromptCategory = createSelector(
     claimedCashbackStatus,
     isFromSeamlessLoyaltyQrScan,
     isFromJoinMembershipUrlClick,
-    isFromEarnedCashbackQrScan
+    isFromEarnedCashbackQRScan
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return NEW_MEMBER_TYPES.DEFAULT;
@@ -152,7 +139,7 @@ export const getNewMemberPromptCategory = createSelector(
       return NEW_MEMBER_TYPES.DEFAULT;
     }
 
-    if (isFromEarnedCashbackQrScan) {
+    if (isFromEarnedCashbackQRScan) {
       const claimedCashbackType = NEW_MEMBER_CASHBACK_STATUS_TYPES[claimedCashbackStatus];
 
       return claimedCashbackType || NEW_MEMBER_TYPES.DEFAULT;
@@ -192,7 +179,7 @@ export const getReturningMemberPromptCategory = createSelector(
   getOrderReceiptClaimedCashbackStatus,
   getIsFromJoinMembershipUrlClick,
   getIsFromSeamlessLoyaltyQrScan,
-  getIsFromEarnedCashbackQrScan,
+  getIsFromEarnedCashbackQRScan,
   (
     isLoadCustomerRequestCompleted,
     isLoadMerchantRequestCompleted,
@@ -202,7 +189,7 @@ export const getReturningMemberPromptCategory = createSelector(
     claimedCashbackStatus,
     isFromJoinMembershipUrlClick,
     isFromSeamlessLoyaltyQrScan,
-    isFromEarnedCashbackQrScan
+    isFromEarnedCashbackQRScan
   ) => {
     if (isFromJoinMembershipUrlClick) {
       return RETURNING_MEMBER_TYPES.DEFAULT;
@@ -220,7 +207,7 @@ export const getReturningMemberPromptCategory = createSelector(
       }
     }
 
-    if (isFromEarnedCashbackQrScan) {
+    if (isFromEarnedCashbackQRScan) {
       const claimedCashbackType = RETURNING_MEMBER_CASHBACK_STATUS_TYPES[claimedCashbackStatus];
 
       return claimedCashbackType || RETURNING_MEMBER_TYPES.DEFAULT;
