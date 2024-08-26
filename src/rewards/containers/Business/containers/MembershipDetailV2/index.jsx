@@ -11,6 +11,7 @@ import {
   closeButtonClicked,
   skipProfileButtonClicked,
   saveProfileButtonClicked,
+  membershipTierTabClickedForCleverTap,
 } from './redux/thunks';
 import { getShouldShowBackButton, getIsProfileModalShow, getIsProfileModalSkipButtonShow } from './redux/selectors';
 import Frame from '../../../../../common/components/Frame';
@@ -37,6 +38,10 @@ const MembershipDetail = () => {
   const handleClickHeaderCloseButton = useCallback(() => dispatch(closeButtonClicked()), [dispatch]);
   const handleClickSkipProfileButton = useCallback(() => dispatch(skipProfileButtonClicked()), [dispatch]);
   const handleClickSaveProfileButton = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
+  const handleClickMembershipTierTab = useCallback(
+    tierName => dispatch(membershipTierTabClickedForCleverTap(tierName)),
+    [dispatch]
+  );
 
   useMount(() => {
     dispatch(mounted());
@@ -62,7 +67,7 @@ const MembershipDetail = () => {
       <MyRewards />
       <section className={styles.MembershipDetailBenefitsSection}>
         <h2 className={styles.MembershipDetailBenefitsTitle}>{t('MembershipBenefits')}</h2>
-        <MembershipTiersTabs />
+        <MembershipTiersTabs onClickMembershipTierTab={handleClickMembershipTierTab} />
       </section>
       <MemberPrompt />
       {!isWebview && (

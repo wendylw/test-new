@@ -1,5 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
+import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
+import { getStoreInfoForCleverTap, getUserName } from '../app';
 
 export const getLoadUniquePromosAvailableCountData = state => state.rewards.loadUniquePromosAvailableCountRequest.data;
 
@@ -12,4 +14,21 @@ export const getLoadUniquePromosAvailableCountError = state =>
 export const getUniquePromosAvailableCount = createSelector(
   getLoadUniquePromosAvailableCountData,
   loadUniquePromosAvailableCountData => _get(loadUniquePromosAvailableCountData, 'availableCount', 0)
+);
+
+export const getIsLoadUniquePromosAvailableCountFulfilled = createSelector(
+  getLoadUniquePromosAvailableCountStatus,
+  loadUniquePromosAvailableCountStatus => loadUniquePromosAvailableCountStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getLoadUniquePromosAvailableCountCleverTap = createSelector(
+  getUniquePromosAvailableCount,
+  getStoreInfoForCleverTap,
+  getUserName,
+  (uniquePromosAvailableCount, storeInfoForCleverTap, userName) => ({
+    ...storeInfoForCleverTap,
+    'account name': userName,
+    'promo indicator display': uniquePromosAvailableCount > 0,
+    'promo indicator number': uniquePromosAvailableCount,
+  })
 );
