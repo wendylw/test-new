@@ -10,7 +10,7 @@ import { DESKTOP_PAGE_WIDTH, PATH_NAME_MAPPING } from '../../../../../../../comm
 import { POINTS_REWARD_WIDTHS } from '../../utils/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import CleverTap from '../../../../../../../utils/clevertap';
-import { getIsWebview, getLocationSearch } from '../../../../../../redux/modules/common/selectors';
+import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
 import {
   getIsPointsRewardListShown,
   getIsClaimPointsRewardPending,
