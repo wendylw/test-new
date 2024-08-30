@@ -44,7 +44,11 @@ import {
   getIsFreeOrder,
   getIsGuestCheckout,
 } from '../../../../redux/modules/app';
-import { getUniquePromosAvailableCount } from '../../../../redux/modules/rewards/selectors';
+import {
+  getUniquePromosAvailableCount,
+  getIsLoadUniquePromosAvailableCountFulfilled,
+  getLoadUniquePromosAvailableCountCleverTap,
+} from '../../../../redux/modules/rewards/selectors';
 import { fetchUniquePromosAvailableCount as fetchUniquePromosAvailableCountThunk } from '../../../../redux/modules/rewards/thunks';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import {
@@ -113,14 +117,27 @@ class PayFirst extends Component {
   }
 
   componentDidUpdate(prevProps, prevStates) {
-    const { isLogin: prevIsLogin } = prevProps;
-    const { isLogin, fetchUniquePromosAvailableCount } = this.props;
+    const {
+      isLogin: prevIsLogin,
+      isLoadUniquePromosAvailableCountFulfilled: prevIsLoadUniquePromosAvailableCountFulfilled,
+    } = prevProps;
+    const {
+      isLogin,
+      fetchUniquePromosAvailableCount,
+      isLoadUniquePromosAvailableCountFulfilled,
+      loadUniquePromosAvailableCountCleverTap,
+    } = this.props;
 
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
 
     if (isLogin && !prevIsLogin) {
       fetchUniquePromosAvailableCount();
+    }
+
+    // Create Clever Tap after unique promo loaded
+    if (isLoadUniquePromosAvailableCountFulfilled && !prevIsLoadUniquePromosAvailableCountFulfilled) {
+      CleverTap.pushEvent('Cart Page - Promo Indicator', loadUniquePromosAvailableCountCleverTap);
     }
   }
 
@@ -966,6 +983,9 @@ PayFirst.propTypes = {
   shouldShowSwitchButton: PropTypes.bool,
   shouldShowProcessingLoader: PropTypes.bool,
   hasUpdateCashbackApplyStatusFailed: PropTypes.bool,
+  isLoadUniquePromosAvailableCountFulfilled: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  loadUniquePromosAvailableCountCleverTap: PropTypes.object,
   uniquePromosAvailableCount: PropTypes.number,
   fetchUniquePromosAvailableCount: PropTypes.func,
 };
@@ -1016,6 +1036,8 @@ PayFirst.defaultProps = {
   shouldShowSwitchButton: false,
   shouldShowProcessingLoader: false,
   hasUpdateCashbackApplyStatusFailed: false,
+  isLoadUniquePromosAvailableCountFulfilled: false,
+  loadUniquePromosAvailableCountCleverTap: {},
   uniquePromosAvailableCount: 0,
   fetchUniquePromosAvailableCount: () => {},
 };
@@ -1053,6 +1075,8 @@ export default compose(
       shouldShowProcessingLoader: getIsReloadBillingByCashbackRequestPending(state),
       hasUpdateCashbackApplyStatusFailed: getIsReloadBillingByCashbackRequestRejected(state),
       uniquePromosAvailableCount: getUniquePromosAvailableCount(state),
+      isLoadUniquePromosAvailableCountFulfilled: getIsLoadUniquePromosAvailableCountFulfilled(state),
+      loadUniquePromosAvailableCountCleverTap: getLoadUniquePromosAvailableCountCleverTap(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),

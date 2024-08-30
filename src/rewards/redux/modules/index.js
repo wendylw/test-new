@@ -7,6 +7,7 @@ import merchant from '../../../redux/modules/merchant';
 import membership from '../../../redux/modules/membership';
 import user from '../../../redux/modules/user';
 import customer from './customer';
+import common from './common';
 import app from './app';
 
 const rootReducer = history =>
@@ -16,6 +17,7 @@ const rootReducer = history =>
     profile,
     business,
     customer,
+    common,
     merchant,
     growthbook,
     app,

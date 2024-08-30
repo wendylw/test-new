@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import { useMount } from 'react-use';
+import { Trans, useTranslation } from 'react-i18next';
 import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
+import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
 import { getIsCashbackExpired, getDisplayCashbackExpiredDate } from '../../../../redux/modules/customer/selectors';
 import {
@@ -33,10 +35,18 @@ const CashbackHistory = () => {
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
   const cashbackHistoryList = useSelector(getCashbackHistoryList);
   const isCashbackHistoryListEmpty = useSelector(getIsCashbackHistoryListEmpty);
-  const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
+  const handleClickHeaderBackButton = useCallback(() => {
+    CleverTap.pushEvent('Cashback Details Page - Click Back');
+
+    dispatch(backButtonClicked());
+  }, [dispatch]);
   const handleClickHowToUseButton = useCallback(() => {
     dispatch(cashbackCreditsHistoryActions.useCashbackPromptDrawerShown());
   }, [dispatch]);
+
+  useMount(() => {
+    CleverTap.pushEvent('Cashback Details Page - View Page');
+  });
 
   return (
     <Frame>
@@ -53,9 +63,24 @@ const CashbackHistory = () => {
             {isCashbackExpired && <Tag className={styles.CashbackHistoryExpiredTag}>{t('Expired')}</Tag>}
             {isExpiringTagShown ? (
               <Tag color="red" className={styles.CashbackHistoryRemainingExpiredDaysTag}>
-                {isTodayExpired
-                  ? t('ExpiringToday')
-                  : t('ExpiringInDays', { remainingExpiredDays: remainingCashbackExpiredDays })}
+                {isTodayExpired ? (
+                  t('ExpiringToday')
+                ) : (
+                  <Trans
+                    t={t}
+                    i18nKey="ExpiringInDays"
+                    values={{ remainingExpiredDays: remainingCashbackExpiredDays }}
+                    components={[
+                      <span
+                        className={
+                          remainingCashbackExpiredDays <= 1
+                            ? styles.CashbackHistoryRemainingExpiredDaysTagExtraTextHide
+                            : ''
+                        }
+                      />,
+                    ]}
+                  />
+                )}
               </Tag>
             ) : null}
           </>

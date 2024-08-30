@@ -15,6 +15,23 @@ export const CLAIMED_CASHBACK_STATUS = {
   NOT_CLAIMED: 'NotClaimed',
 };
 
+export const CLAIMED_POINTS_STATUS = {
+  SUCCESS: 'Success',
+  CLAIMED_SOMEONE_ELSE: 'Failed_SomeoneElse',
+  NOT_CLAIMED_REACH_LIMIT: 'Failed_ReachDailyLimit',
+  CLAIMED_REPEAT: 'Failed_DuplicateClaim',
+  FAILED: 'Failed',
+};
+
+export const CLAIMED_TRANSACTION_STATUS = {
+  SUCCESS: 'Success',
+  FAILED_ORDER_NOTFOUND: 'Failed_OrderNotFound',
+  FAILED_EXPIRED: 'Failed_Expired',
+  FAILED_CANCELLED_OR_REFUND: 'Failed_CancelledOrRefund',
+  FAILED_CUSTOMER_NOT_MATCH: 'Failed_CustomerNotMatch',
+  FAILED_BIND_CUSTOMER_FAILED: 'Failed_BindCustomerFailed',
+};
+
 export const CLAIMED_POINTS_REWARD_ERROR_CODES = {
   PROMO_IS_NOT_REDEEMABLE: '395279',
   INVALID_POINT_SOURCE: '395280',

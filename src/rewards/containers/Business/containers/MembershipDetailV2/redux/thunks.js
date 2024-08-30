@@ -2,9 +2,12 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, goBack as historyGoBack } from 'connected-react-router';
 import Growthbook from '../../../../../../utils/growthbook';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
-import { getClient } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
-import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
+import {
+  goBack as nativeGoBack,
+  closeWebView,
+  showCompleteProfilePageAsync,
+} from '../../../../../../utils/native-methods';
 import {
   initUserInfo,
   loginUserByBeepApp,
@@ -64,7 +67,7 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
   'rewards/business/memberDetail/pointsClaimRewardButtonClicked',
   async ({ id, status, type, costOfPoints }, { dispatch, getState }) => {
     if (status) {
-      CleverTap.pushEvent('Points Reward Claimed - Click confirm', {
+      CleverTap.pushEvent('Membership Details Page - Spend Points Modal - Click Confirm', {
         type,
         costOfPoints,
       });
@@ -79,7 +82,7 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
       }
       dispatch(claimPointsRewardAndRefreshRewardsList(id));
     } else {
-      CleverTap.pushEvent('Points Reward Claimed - Click cancel', {
+      CleverTap.pushEvent('Membership Details Page - Spend Points Modal - Click Cancel', {
         type,
         costOfPoints,
       });
@@ -114,10 +117,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     business,
   });
 
-  CleverTap.pushEvent('Membership Details Page - View Page', {
-    'account name': business,
-    source: getClient(),
-  });
+  CleverTap.pushEvent('Membership Details Page - View Page');
 
   dispatch(fetchMerchantInfo(business));
   dispatch(fetchMembershipsInfo(business));
@@ -162,5 +162,17 @@ export const backButtonClicked = createAsyncThunk(
     }
 
     dispatch(historyGoBack());
+  }
+);
+
+export const closeButtonClicked = createAsyncThunk(
+  'rewards/business/memberDetail/closeButtonClicked',
+  async (_, { dispatch }) => dispatch(closeWebView())
+);
+
+export const membershipTierTabClickedForCleverTap = createAsyncThunk(
+  'rewards/business/memberDetail/membershipTierTabClickedForCleverTap',
+  async tierName => {
+    CleverTap.pushEvent(`Membership Details Page - Click ${tierName} Tab`);
   }
 );

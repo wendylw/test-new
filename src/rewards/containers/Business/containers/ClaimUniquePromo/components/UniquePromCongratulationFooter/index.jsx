@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useUnmount } from 'react-use';
 import { useTranslation } from 'react-i18next';
-import { getClient } from '../../../../../../../common/utils';
 import CleverTap from '../../../../../../../utils/clevertap';
 import { getUserCountry } from '../../../../../../../redux/modules/user/selectors';
 import { getMerchantBusiness } from '../../../../../../../redux/modules/merchant/selectors';
@@ -23,15 +22,11 @@ const UniquePromCongratulationFooter = () => {
   const merchantMenuPageDomain = `${process.env.REACT_APP_MERCHANT_STORE_URL.replace('%business%', merchantBusiness)}`;
   const downloadBeepAppDeepLink = `${process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}?utm_source=merchantpromo&utm_medium=banner&utm_campaign=claimpromo`;
   const handleClickOrderRedeemButton = useCallback(() => {
-    CleverTap.pushEvent('Claim Unique Promo Landing Page - Click Order & Redeem Now Button', {
-      country: userCountry,
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Claim Unique Promo Landing Page - Click Order & Redeem Now Button', { country: userCountry });
 
     setRedirecting(true);
     window.location.href = merchantMenuPageDomain;
-  }, [merchantMenuPageDomain, merchantBusiness, userCountry]);
+  }, [merchantMenuPageDomain, userCountry]);
 
   useUnmount(() => {
     setRedirecting(false);

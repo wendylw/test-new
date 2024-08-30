@@ -1,5 +1,6 @@
 import _get from 'lodash/get';
 import _isInteger from 'lodash/isInteger';
+import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import {
   API_REQUEST_STATUS,
@@ -15,6 +16,7 @@ import {
   getMerchantLocale,
   getMerchantCurrency,
   getMerchantCountry,
+  getIsMerchantEnabledCashback,
   getIsMerchantMembershipPointsEnabled,
 } from '../../../../../redux/modules/merchant/selectors';
 import {
@@ -23,6 +25,21 @@ import {
   getIsCashbackExpired,
   getCustomerAvailablePointsBalance,
 } from '../../../../redux/modules/customer/selectors';
+
+export const getStoreId = () => getQueryString('storeId');
+
+// BE prevent users from manually changing the URL to obtain point and cashback, using base64 encryption
+export const getReceiptNumber = () => {
+  const receiptNumber = getQueryString('receiptNumber');
+
+  if (_isEmpty(receiptNumber)) {
+    return null;
+  }
+
+  return window.atob(receiptNumber);
+};
+
+export const getChannel = () => getQueryString('channel');
 
 export const getOrderReceiptClaimedCashbackStatus = () => getQueryString(CLAIM_CASHBACK_QUERY_NAMES.STATUS);
 
@@ -73,6 +90,42 @@ export const getClaimPointsRewardStatus = state => state.business.common.claimPo
 
 export const getClaimPointsRewardError = state => state.business.common.claimPointsRewardRequest.error;
 
+export const getClaimOrderRewardsRequestData = state => state.business.common.claimOrderRewardsRequest.data;
+
+export const getClaimOrderRewardsRequestStatus = state => state.business.common.claimOrderRewardsRequest.status;
+
+export const getClaimOrderRewardsRequestError = state => state.business.common.claimOrderRewardsRequest.error;
+
+export const getClaimOrderRewardsPointsValue = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'points.amount', null)
+);
+
+export const getClaimOrderRewardsPointsStatus = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'points.status', null)
+);
+
+export const getClaimOrderRewardsCashbackValue = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'cashback.amount', null)
+);
+
+export const getClaimOrderRewardsCashbackStatus = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'cashback.status', null)
+);
+
+export const getClaimOrderRewardsTransactionStatus = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'transactionValidation.status', null)
+);
+
+export const getIsClaimOrderRewardsIsNewMember = createSelector(
+  getClaimOrderRewardsRequestData,
+  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'joinMembershipResult.isNewMember', false)
+);
+
 /**
  * Derived selectors
  */
@@ -80,8 +133,17 @@ export const getIsNewMember = createSelector(
   getIsJoinMembershipNewMember,
   getIsConfirmSharingNewMember,
   getIsClaimedOrderCashbackNewMember,
-  (isJoinMembershipNewMember, isConfirmSharingNewMember, isClaimedOrderCashbackNewMember) =>
-    isJoinMembershipNewMember || isConfirmSharingNewMember || isClaimedOrderCashbackNewMember
+  getIsClaimOrderRewardsIsNewMember,
+  (
+    isJoinMembershipNewMember,
+    isConfirmSharingNewMember,
+    isClaimedOrderCashbackNewMember,
+    isClaimOrderRewardsIsNewMember
+  ) =>
+    isJoinMembershipNewMember ||
+    isConfirmSharingNewMember ||
+    isClaimedOrderCashbackNewMember ||
+    isClaimOrderRewardsIsNewMember
 );
 
 export const getCustomerCashbackPrice = createSelector(
@@ -313,6 +375,12 @@ export const getIsClaimPointsRewardFulfilled = createSelector(
   claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsClaimOrderRewardsCompleted = createSelector(
+  getClaimOrderRewardsRequestStatus,
+  claimOrderRewardsRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(claimOrderRewardsRequestStatus)
+);
+
 export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRewardError, claimPointsRewardError => {
   if (!claimPointsRewardError) {
     return null;
@@ -339,3 +407,20 @@ export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRe
 
   return errorI18nKeys;
 });
+
+export const getIsRequestOrderRewardsEnabled = createSelector(
+  getReceiptNumber,
+  getIsMerchantEnabledCashback,
+  getIsMerchantMembershipPointsEnabled,
+  (receiptNumber, isMerchantEnabledCashback, isMerchantMembershipPointsEnabled) =>
+    receiptNumber && (isMerchantEnabledCashback || isMerchantMembershipPointsEnabled)
+);
+
+export const getClaimOrderRewardsCashbackPrice = createSelector(
+  getClaimOrderRewardsCashbackValue,
+  getMerchantLocale,
+  getMerchantCurrency,
+  getMerchantCountry,
+  (claimOrderRewardsCashbackValue, locale, currency, country) =>
+    getPrice(claimOrderRewardsCashbackValue, { locale, currency, country })
+);

@@ -1,3 +1,15 @@
 .MembershipFormDescription {
   @apply tw-bg-blue-darkest;
 }
+
+.MembershipFormErrorAlertContent {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-8 sm:tw-gap-8px tw-mb-16 sm:tw-mb-16px;
+}
+
+.MembershipFormErrorAlertIcon {
+  @apply tw-text-red;
+}
+
+.MembershipFormErrorAlertTitle {
+  @apply tw-text-center tw-text-xl tw-font-bold;
+}

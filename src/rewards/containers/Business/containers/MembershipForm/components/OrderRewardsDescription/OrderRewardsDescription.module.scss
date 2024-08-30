@@ -1,0 +1,71 @@
+.OrderRewardsDescription {
+  @apply tw-flex tw-flex-col tw-items-center tw-px-12 sm:tw-px-12px tw-pb-24 sm:tw-pb-24px;
+}
+
+.OrderRewardsDescriptionGetRewardsContainer {
+  @apply tw-text-center tw-space-y-16 sm:tw-space-y-16px;
+}
+
+.OrderRewardsDescriptionGetRewardsTitle {
+  @apply tw-text-center tw-text-2xl tw-leading-normal tw-text-gray-50 tw-font-bold;
+}
+
+.OrderRewardsDescriptionTicketList {
+  @apply tw-flex tw-items-center tw-flex-wrap tw-gap-12 sm:tw-gap-12px;
+}
+
+.OrderRewardsDescriptionTicketItem {
+  @apply tw-flex-shrink-0;
+}
+
+.OrderRewardsDescriptionTicketContainer {
+  @apply tw-shadow-none;
+}
+
+.OrderRewardsDescriptionTicket {
+  min-height: 66px;
+}
+
+.OrderRewardsDescriptionTicketStub {
+  @apply tw-flex-col tw-pl-8 sm:tw-pl-8px tw-pr-12 sm:tw-pr-12px;
+
+  &::before {
+    background: linear-gradient(180deg, #000000 0 60%, transparent 0 100%);
+    background-size: 4px 10px;
+    background-position: 0 0;
+  }
+}
+
+.OrderRewardsDescriptionTicketValue {
+  @apply tw-text-2xl tw-leading-normal tw-font-bold;
+}
+
+.OrderRewardsDescriptionTicketText {
+  @apply tw-leading-normal;
+}
+
+.OrderRewardsDescriptionPointsTicket {
+  @apply tw-border-blue-dark tw-text-gray-50 tw-bg-blue-dark;
+
+  &::before,
+  &::after {
+    @apply tw-border-blue-darkest tw-bg-blue-darkest;
+  }
+}
+
+.OrderRewardsDescriptionCashbackTicket {
+  @apply tw-border-yellow-dark tw-text-gray-900 tw-bg-yellow-dark;
+
+  &::before,
+  &::after {
+    @apply tw-border-blue-darkest tw-bg-blue-darkest;
+  }
+}
+
+.OrderRewardsDescriptionJoinMembershipDescription {
+  @apply tw-text-center tw-text-2xl tw-leading-normal tw-text-gray-50;
+}
+
+.OrderRewardsDescriptionGetRewardsDirectionArrow {
+  @apply tw-inline-flex;
+}
