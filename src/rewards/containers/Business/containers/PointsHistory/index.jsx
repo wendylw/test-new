@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import RewardsPointsHistoryBannerImage from '../../../../../images/rewards-points-history-banner.svg';
+import CleverTap from '../../../../../utils/clevertap';
 import { getCustomerAvailablePointsBalance } from '../../../../redux/modules/customer/selectors';
 import { getPointsHistoryList, getIsPointsHistoryListEmpty } from './redux/selectors';
 import { actions as PointsHistoryActions } from './redux';
@@ -20,9 +21,11 @@ const PointsHistory = () => {
   const pointsHistoryList = useSelector(getPointsHistoryList);
   const isPointsHistoryListEmpty = useSelector(getIsPointsHistoryListEmpty);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
-  const handleClickHowToUseButton = useCallback(() => dispatch(PointsHistoryActions.earnedPointsPromptDrawerShown()), [
-    dispatch,
-  ]);
+  const handleClickHowToUseButton = useCallback(() => {
+    CleverTap.pushEvent('Points Details Page - Click How to use points');
+
+    dispatch(PointsHistoryActions.earnedPointsPromptDrawerShown());
+  }, [dispatch]);
 
   useMount(() => {
     dispatch(mounted());

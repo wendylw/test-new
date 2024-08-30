@@ -70,17 +70,21 @@ export const getReceiptOrderRewardsStatusCategories = ({
 
   const categories = [];
 
-  categories.push({
-    key: CLAIMED_ORDER_REWARD_NAMES.CASHBACK,
-    status: isCashbackEarned ? types.RECEIPT_EARNED_CASHBACK : cashbackStatusCategories[cashbackStatus],
-    isEarned: isCashbackEarned,
-  });
+  if (cashbackStatus) {
+    categories.push({
+      key: CLAIMED_ORDER_REWARD_NAMES.CASHBACK,
+      status: isCashbackEarned ? types.RECEIPT_EARNED_CASHBACK : cashbackStatusCategories[cashbackStatus],
+      isEarned: isCashbackEarned,
+    });
+  }
 
-  categories.push({
-    key: CLAIMED_ORDER_REWARD_NAMES.POINTS,
-    status: isPointsEarned ? types.RECEIPT_EARNED_POINTS : pointsStatusCategories[pointsStatus],
-    isEarned: isPointsEarned,
-  });
+  if (pointsStatus) {
+    categories.push({
+      key: CLAIMED_ORDER_REWARD_NAMES.POINTS,
+      status: isPointsEarned ? types.RECEIPT_EARNED_POINTS : pointsStatusCategories[pointsStatus],
+      isEarned: isPointsEarned,
+    });
+  }
 
   return categories.sort((previous, next) => previous.isEarned - next.isEarned);
 };

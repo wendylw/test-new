@@ -9,7 +9,8 @@ import PointsRewardClaimedIcon from '../../../../../../../images/rewards-points-
 import { DESKTOP_PAGE_WIDTH, PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { POINTS_REWARD_WIDTHS } from '../../utils/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
-import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
+import CleverTap from '../../../../../../../utils/clevertap';
+import { getIsWebview, getLocationSearch } from '../../../../../../redux/modules/common/selectors';
 import {
   getIsPointsRewardListShown,
   getIsClaimPointsRewardPending,
@@ -63,6 +64,8 @@ const PointsRewards = () => {
   const search = useSelector(getLocationSearch);
   const ticketWidth = useMemo(() => getTicketWidth(width), [width]);
   const goToPointsRewardsListPage = useCallback(() => {
+    CleverTap.pushEvent('Membership Details Page - Click View All (Get Rewards Section)');
+
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.POINTS_REWARDS}${PATH_NAME_MAPPING.LIST}`,
       search,
@@ -106,6 +109,8 @@ const PointsRewards = () => {
             className={styles.PointsRewardsTicketButton}
             contentClassName={styles.PointsRewardsTicketButtonContent}
             onClick={() => {
+              CleverTap.pushEvent('Membership Details Page - Click Points Reward');
+
               if (!isUnavailable) {
                 handlePointsClaimRewardButtonClick(id, type, costOfPoints);
               }

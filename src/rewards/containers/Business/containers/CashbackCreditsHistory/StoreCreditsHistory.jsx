@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import RewardsStoreCreditsHistoryBannerImage from '../../../../../images/rewards-store-credits-history-banner.svg';
+import CleverTap from '../../../../../utils/clevertap';
 import { getCustomerCashbackPrice } from '../../redux/common/selectors';
 import { getStoreCreditsHistoryList, getIsStoreCreditsHistoryListEmpty } from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
@@ -19,11 +21,19 @@ const StoreCreditsHistory = () => {
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const storeCreditsHistoryList = useSelector(getStoreCreditsHistoryList);
   const isStoreCreditsHistoryListEmpty = useSelector(getIsStoreCreditsHistoryListEmpty);
-  const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
+  const handleClickHeaderBackButton = useCallback(() => {
+    CleverTap.pushEvent('Store Credit Details Page - Click Back');
+
+    dispatch(backButtonClicked());
+  }, [dispatch]);
   const handleClickHowToUseButton = useCallback(
     () => dispatch(cashbackCreditsHistoryActions.useStoreCreditsPromptDrawerShown()),
     [dispatch]
   );
+
+  useMount(() => {
+    CleverTap.pushEvent('Store Credit Details Page - View Page');
+  });
 
   return (
     <Frame>

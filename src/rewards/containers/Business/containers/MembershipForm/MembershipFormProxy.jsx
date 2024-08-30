@@ -9,13 +9,13 @@ import PageHeader from '../../../../../common/components/PageHeader';
 import ErrorResult from './components/ErrorResult';
 import SkeletonLoader from './components/SkeletonLoader';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
+import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
 import {
   getShouldShowSkeletonLoader,
   getShouldShowUnsupportedError,
   getShouldShowUnknownError,
   getShouldShowBackButton,
   getIsLoadOrderRewardsNoTransaction,
-  getShouldGoToMembershipDetail,
 } from './redux/selectors';
 import { getIsLogin } from '../../../../../redux/modules/user/selectors';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
@@ -35,7 +35,7 @@ const MembershipFormProxy = () => {
   const shouldShowUnknownError = useSelector(getShouldShowUnknownError);
   const isLoadOrderRewardsNoTransaction = useSelector(getIsLoadOrderRewardsNoTransaction);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
-  const shouldGoToMembershipDetail = useSelector(getShouldGoToMembershipDetail);
+  const hasUserJoinedMerchantMembership = useSelector(getHasUserJoinedMerchantMembership);
   const isWebview = useSelector(getIsWebview);
 
   useEffect(() => {
@@ -45,10 +45,10 @@ const MembershipFormProxy = () => {
   }, [dispatch, isLogin]);
 
   useEffect(() => {
-    if (shouldGoToMembershipDetail) {
+    if (hasUserJoinedMerchantMembership) {
       dispatch(goToMembershipDetail());
     }
-  }, [dispatch, shouldGoToMembershipDetail]);
+  }, [dispatch, hasUserJoinedMerchantMembership]);
 
   const handleClickBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickRetryButton = useCallback(() => dispatch(retryButtonClicked()), [dispatch]);

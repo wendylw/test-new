@@ -22,7 +22,7 @@ import {
   RETURNING_MEMBER_CASHBACK_STATUS_TYPES,
   CLAIMED_ORDER_REWARD_NAMES,
 } from '../utils/constants';
-import { getPrice, toCapitalize } from '../../../../../../common/utils';
+import { getPrice, getQueryString, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import { getReceiptOrderRewardsStatusCategories } from '../utils';
 import { getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
@@ -65,6 +65,12 @@ import {
   getClaimOrderRewardsCashbackPrice,
   getIsNewMember,
 } from '../../../redux/common/selectors';
+
+export const getIsClaimOrderRewardsEnabled = () => {
+  const isClaimedOrderRewardsEnabled = getQueryString('isClaimedOrderRewardsEnabled');
+
+  return isClaimedOrderRewardsEnabled === 'true';
+};
 
 export const getLoadMerchantBirthdayCampaignData = state =>
   state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.data;

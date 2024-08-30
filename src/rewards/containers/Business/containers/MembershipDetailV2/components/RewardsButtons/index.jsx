@@ -9,6 +9,7 @@ import RewardsCashbackIcon from '../../../../../../../images/rewards-icon-cashba
 import RewardsStoreCreditsIcon from '../../../../../../../images/rewards-icon-store-credits.svg';
 import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
+import CleverTap from '../../../../../../../utils/clevertap';
 import {
   getIsMerchantMembershipPointsEnabled,
   getIsMerchantEnabledCashback,
@@ -40,18 +41,28 @@ const RewardsButtons = () => {
     isRewardsCashbackCreditsButtonShow ? 'tw-flex-col' : null,
   ]);
   const handlePointsDetailButtonClick = useCallback(() => {
+    CleverTap.pushEvent('Membership Details Page - Click Points button');
+
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.POINTS_HISTORY}`,
       search,
     });
   }, [history, search]);
   const handleCashbackCreditsHistoryButtonClick = useCallback(() => {
+    CleverTap.pushEvent(
+      isMerchantEnabledCashback
+        ? 'Membership Details Page - Click Cashback button'
+        : 'Membership Details Page - Click Store Credit button'
+    );
+
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.CASHBACK_CREDITS_HISTORY}`,
       search,
     });
-  }, [history, search]);
+  }, [history, search, isMerchantEnabledCashback]);
   const handleMyRewardsButtonClick = useCallback(() => {
+    CleverTap.pushEvent('Membership Details Page - Click My Rewards button');
+
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,
       search,

@@ -2,17 +2,9 @@ import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMount } from 'react-use';
 import { WarningCircle } from 'phosphor-react';
-import { getClient } from '../../../../../common/utils';
 import CleverTap from '../../../../../utils/clevertap';
-import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
-import { claimOrderRewards } from '../../redux/common/thunks';
-import {
-  getIsProfileFormVisible,
-  getIsClaimedOrderRewardsEnabled,
-  getLoadOrderRewardsError,
-  getShouldClaimOrderRewards,
-} from './redux/selectors';
+import { getIsProfileFormVisible, getIsClaimedOrderRewardsEnabled, getLoadOrderRewardsError } from './redux/selectors';
 import { skipProfileButtonClicked, saveProfileButtonClicked } from './redux/thunks';
 import { alert } from '../../../../../common/utils/feedback';
 import MerchantInfo from './components/MerchantInfo';
@@ -26,27 +18,16 @@ import styles from './MembershipForm.module.scss';
 
 const MembershipForm = () => {
   const dispatch = useDispatch();
-  const merchantBusiness = useSelector(getMerchantBusiness);
   const isWebview = useSelector(getIsWebview);
   const isProfileFormVisible = useSelector(getIsProfileFormVisible);
   const loadOrderRewardsError = useSelector(getLoadOrderRewardsError);
   const isClaimedOrderRewardsEnabled = useSelector(getIsClaimedOrderRewardsEnabled);
-  const shouldClaimOrderRewards = useSelector(getShouldClaimOrderRewards);
   const handleSkipProfileForm = useCallback(() => dispatch(skipProfileButtonClicked()), [dispatch]);
   const handleSaveProfileForm = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
 
   useMount(() => {
-    CleverTap.pushEvent('Join Membership Page - View Page', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Join Membership Page - View Page');
   });
-
-  useEffect(() => {
-    if (shouldClaimOrderRewards) {
-      dispatch(claimOrderRewards());
-    }
-  }, [dispatch, shouldClaimOrderRewards]);
 
   useEffect(() => {
     if (loadOrderRewardsError) {

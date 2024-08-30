@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { PROMO_VOUCHER_STATUS } from '../../../../../common/utils/constants';
 import { getClassName } from '../../../../../common/utils/ui';
+import CleverTap from '../../../../../utils/clevertap';
 import { getUniquePromoList } from '../../redux/common/selectors';
 import Tag from '../../../../../common/components/Tag';
 import styles from './UniquePromoList.module.scss';
@@ -14,6 +15,9 @@ const UNIQUE_PROMO_STATUS_I18KEYS = {
 const UniquePromoList = () => {
   const { t } = useTranslation(['Rewards']);
   const uniquePromoList = useSelector(getUniquePromoList);
+  const handleClickRewardItem = useCallback(() => {
+    CleverTap.pushEvent('My Rewards Page - Click Reward (My Rewards)');
+  }, []);
 
   if (uniquePromoList.length === 0) {
     return null;
@@ -34,7 +38,15 @@ const UniquePromoList = () => {
         }
 
         return (
-          <li className={styles.UniquePromoCard} key={id}>
+          <li
+            // WB-7760 will change inside DOM as a button for go to reward detail page
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
+            role="button"
+            data-test-id="rewards.business.unique-promo-list.item"
+            className={styles.UniquePromoCard}
+            key={id}
+            onClick={handleClickRewardItem}
+          >
             <div className={getClassName(uniquePromoInfoTopClassList)}>
               <data className={styles.UniquePromoDiscount} value={value}>
                 {t('DiscountValueText', { discount: value })}

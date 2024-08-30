@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import RewardsPointsIcon from '../../../../../images/rewards-icon-points.svg';
 import PointsRewardClaimedIcon from '../../../../../images/rewards-points-claimed.svg';
 import { getClassName } from '../../../../../common/utils/ui';
+import CleverTap from '../../../../../utils/clevertap';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import {
   getPointsRewardList,
@@ -135,6 +136,8 @@ const PointsRewardsPage = () => {
                   className={styles.PointsRewardsTicketButton}
                   contentClassName={styles.PointsRewardsTicketButtonContent}
                   onClick={() => {
+                    CleverTap.pushEvent('Membership Details Page - Click Points Reward');
+
                     if (!isUnavailable) {
                       setSelectedRewardId(id);
                       handlePointsClaimRewardButtonClick(id, type, costOfPoints);
