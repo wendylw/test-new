@@ -111,9 +111,7 @@ export const goToMembershipDetail = createAsyncThunk(
 
     dispatch(
       replace(
-        `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${
-          PATH_NAME_MAPPING.MEMBERSHIP_DETAIL
-        }${search ? `${search}&isClaimedOrderRewardsEnabled=${isClaimedOrderRewardsEnabled}` : search}`
+        `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`
       )
     );
   }
