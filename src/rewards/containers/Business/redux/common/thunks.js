@@ -5,6 +5,7 @@ import {
   getUniquePromoListBanners,
   getPointsRewardList,
   postClaimedPointsReward,
+  getOrderRewards,
   postClaimedOrderRewards,
 } from './api-request';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
