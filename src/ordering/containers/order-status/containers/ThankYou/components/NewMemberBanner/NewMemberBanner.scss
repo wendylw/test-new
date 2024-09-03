@@ -7,12 +7,10 @@ $new-member-banner-color-dark: rgba(151, 196, 250, 0.15);
 .new-member-banner {
   &__card-wrapper {
     background-color: transparent;
-    position: relative;
   }
 
   &__card-container {
     width: 100%;
-    cursor: pointer;
     background: linear-gradient(
       105.4deg,
       $new-member-banner-color-light 0%,
