@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useMount } from 'react-use';
 import { getClassName } from '../../../../../common/utils/ui';
 import { getMerchantDisplayName } from '../../../../../redux/modules/merchant/selectors';
+import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import {
   mounted,
   backButtonClicked,
