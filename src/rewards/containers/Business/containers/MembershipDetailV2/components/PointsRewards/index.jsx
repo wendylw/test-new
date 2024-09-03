@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useWindowSize } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
@@ -10,7 +10,7 @@ import { DESKTOP_PAGE_WIDTH, PATH_NAME_MAPPING } from '../../../../../../../comm
 import { POINTS_REWARD_WIDTHS } from '../../utils/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import CleverTap from '../../../../../../../utils/clevertap';
-import { getIsWebview, getLocationSearch } from '../../../../../../redux/modules/common/selectors';
+import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
 import {
   getIsPointsRewardListShown,
   getIsClaimPointsRewardPending,
@@ -18,12 +18,8 @@ import {
   getClaimPointsRewardErrorI18nKeys,
 } from '../../../../redux/common/selectors';
 import { actions as businessCommonActions } from '../../../../redux/common';
-import {
-  getMembershipDetailPointsRewardList,
-  getIsPointsRewardListMoreButtonShown,
-  getIsProfileModalShow,
-} from '../../redux/selectors';
-import { pointsClaimRewardButtonClicked, skipProfileButtonClicked, saveProfileButtonClicked } from '../../redux/thunks';
+import { getMembershipDetailPointsRewardList, getIsPointsRewardListMoreButtonShown } from '../../redux/selectors';
+import { pointsClaimRewardButtonClicked } from '../../redux/thunks';
 import Button from '../../../../../../../common/components/Button';
 import Slider from '../../../../../../../common/components/Slider';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
@@ -32,7 +28,6 @@ import Loader from '../../../../../../../common/components/Loader';
 import Tag from '../../../../../../../common/components/Tag';
 import { alert, confirm } from '../../../../../../../common/utils/feedback';
 import Ticket from '../../../../components/Ticket';
-import Profile from '../../../../../Profile';
 import styles from './PointsRewards.module.scss';
 
 const MORE_BUTTON_WIDTH = '57px';
@@ -66,10 +61,7 @@ const PointsRewards = () => {
   const isClaimPointsRewardPending = useSelector(getIsClaimPointsRewardPending);
   const isClaimPointsRewardFulfilled = useSelector(getIsClaimPointsRewardFulfilled);
   const claimPointsRewardErrorI18nKeys = useSelector(getClaimPointsRewardErrorI18nKeys);
-  const isWebview = useSelector(getIsWebview);
   const search = useSelector(getLocationSearch);
-  const isProfileModalShow = useSelector(getIsProfileModalShow);
-  const [selectedRewardId, setSelectedRewardId] = useState(null);
   const ticketWidth = useMemo(() => getTicketWidth(width), [width]);
   const goToPointsRewardsListPage = useCallback(() => {
     CleverTap.pushEvent('Membership Details Page - Click View All (Get Rewards Section)');
@@ -92,20 +84,6 @@ const PointsRewards = () => {
       });
     },
     [dispatch, t]
-  );
-  const handleClickSkipProfileButton = useCallback(
-    id => {
-      dispatch(skipProfileButtonClicked(id));
-      setSelectedRewardId(null);
-    },
-    [dispatch, setSelectedRewardId]
-  );
-  const handleClickSaveProfileButton = useCallback(
-    id => {
-      dispatch(saveProfileButtonClicked(id));
-      setSelectedRewardId(null);
-    },
-    [dispatch, setSelectedRewardId]
   );
   const slideProps = {
     mode: 'free-snap',
@@ -134,7 +112,6 @@ const PointsRewards = () => {
               CleverTap.pushEvent('Membership Details Page - Click Points Reward');
 
               if (!isUnavailable) {
-                setSelectedRewardId(id);
                 handlePointsClaimRewardButtonClick(id, type, costOfPoints);
               }
             }}
@@ -266,18 +243,6 @@ const PointsRewards = () => {
       </section>
       {isClaimPointsRewardPending && (
         <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
-      )}
-      {/* TODO: Migrate to membership detail component next phase */}
-      {!isWebview && (
-        <Profile
-          show={isProfileModalShow}
-          onSave={() => {
-            handleClickSaveProfileButton(selectedRewardId);
-          }}
-          onSkip={() => {
-            handleClickSkipProfileButton(selectedRewardId);
-          }}
-        />
       )}
     </>
   );
