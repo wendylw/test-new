@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { PATH_NAME_MAPPING, PROMO_VOUCHER_STATUS } from '../../../../../../../common/utils/constants';
+import CleverTap from '../../../../../../../utils/clevertap';
 import { getUniquePromoListLength, getUniquePromoListBanners } from '../../../../redux/common/selectors';
 import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
 import { getIsMyRewardsSectionShow } from '../../redux/selectors';
@@ -24,11 +25,16 @@ const MyRewards = () => {
   const isMyRewardsSectionShow = useSelector(getIsMyRewardsSectionShow);
   const search = useSelector(getLocationSearch);
   const handleClickViewAllButton = useCallback(() => {
+    CleverTap.pushEvent('Membership Details Page - Click View All (My Rewards)');
+
     history.push({
       pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,
       search,
     });
   }, [history, search]);
+  const handleClickRewardItem = useCallback(() => {
+    CleverTap.pushEvent('Membership Details Page - Click Reward (My Rewards)');
+  }, []);
 
   if (!isMyRewardsSectionShow) {
     return null;
@@ -57,7 +63,13 @@ const MyRewards = () => {
           const { minSpend, expiringDays } = conditions;
 
           return (
-            <li key={id}>
+            <li // WB-7760 will change inside DOM as a button for go to reward detail page
+              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
+              role="button"
+              data-test-id="rewards.business.membership-detail.unique-promo-list.item"
+              key={id}
+              onClick={handleClickRewardItem}
+            >
               <Ticket
                 className={isUnavailable ? styles.MyRewardsTicketUnavailable : null}
                 stubClassName={styles.MyRewardsTicketStub}

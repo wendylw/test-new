@@ -2,9 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMount } from 'react-use';
 import { WarningCircle } from 'phosphor-react';
-import { getClient } from '../../../../../common/utils';
 import CleverTap from '../../../../../utils/clevertap';
-import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import { claimOrderRewards } from '../../redux/common/thunks';
 import {
@@ -26,7 +24,6 @@ import styles from './MembershipForm.module.scss';
 
 const MembershipForm = () => {
   const dispatch = useDispatch();
-  const merchantBusiness = useSelector(getMerchantBusiness);
   const isWebview = useSelector(getIsWebview);
   const isProfileFormVisible = useSelector(getIsProfileFormVisible);
   const loadOrderRewardsError = useSelector(getLoadOrderRewardsError);
@@ -36,10 +33,7 @@ const MembershipForm = () => {
   const handleSaveProfileForm = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
 
   useMount(() => {
-    CleverTap.pushEvent('Join Membership Page - View Page', {
-      'account name': merchantBusiness,
-      source: getClient(),
-    });
+    CleverTap.pushEvent('Join Membership Page - View Page');
   });
 
   useEffect(() => {

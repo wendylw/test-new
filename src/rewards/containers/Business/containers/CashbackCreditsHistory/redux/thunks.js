@@ -2,8 +2,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, goBack as historyGoBack } from 'connected-react-router';
 import Growthbook from '../../../../../../utils/growthbook';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
-import { getClient } from '../../../../../../common/utils';
-import CleverTap from '../../../../../../utils/clevertap';
 import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
 import {
   initUserInfo,
@@ -60,11 +58,6 @@ export const mounted = createAsyncThunk(
 
     Growthbook.patchAttributes({
       business,
-    });
-
-    CleverTap.pushEvent('Cashback Credits Details Page - View Page', {
-      'account name': business,
-      source: getClient(),
     });
 
     await dispatch(initUserInfo());
