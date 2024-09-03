@@ -1,4 +1,3 @@
-import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import i18next from 'i18next';
 import RewardsPointsWhiteIcon from '../../../../../../images/rewards-points-icon-white.svg';
@@ -30,25 +29,15 @@ import {
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import {
+  getLoadOrderRewardsRequestError,
+  getOrderRewardsPoints,
+  getOrderRewardsCashback,
+} from '../../../redux/common/selectors';
+import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,
   getHasUserJoinedMerchantMembership,
 } from '../../../../../redux/modules/customer/selectors';
-import { getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
-
-export const getLoadOrderRewardsRequestData = state => state.business.membershipForm.loadOrderRewardsRequest.data;
-
-export const getLoadOrderRewardsRequestStatus = state => state.business.membershipForm.loadOrderRewardsRequest.status;
-
-export const getLoadOrderRewardsRequestError = state => state.business.membershipForm.loadOrderRewardsRequest.error;
-
-export const getOrderRewardsPoints = createSelector(getLoadOrderRewardsRequestData, loadOrderRewardsRequestData =>
-  _get(loadOrderRewardsRequestData, 'points.amount', 0)
-);
-
-export const getOrderRewardsCashback = createSelector(getLoadOrderRewardsRequestData, loadOrderRewardsRequestData =>
-  _get(loadOrderRewardsRequestData, 'cashback.amount', 0)
-);
 
 /**
  * Derived selectors
@@ -191,25 +180,6 @@ export const getJoinMembershipRewardList = createSelector(
 
     return rewards;
   }
-);
-
-export const getIsLoadOrderRewardsRequestFulfilled = createSelector(
-  getLoadOrderRewardsRequestStatus,
-  loadOrderRewardsRequestStatus => loadOrderRewardsRequestStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadOrderRewardsRequestCompleted = createSelector(
-  getLoadOrderRewardsRequestStatus,
-  loadOrderRewardsRequestStatus =>
-    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadOrderRewardsRequestStatus)
-);
-
-export const getIsClaimedOrderRewardsEnabled = createSelector(
-  getIsRequestOrderRewardsEnabled,
-  getOrderRewardsPoints,
-  getOrderRewardsCashback,
-  (isRequestOrderRewardsEnabled, orderRewardsPoints, orderRewardsCashback) =>
-    isRequestOrderRewardsEnabled && (orderRewardsPoints > 0 || orderRewardsCashback > 0)
 );
 
 export const getOrderRewardsCashbackPrice = createSelector(
