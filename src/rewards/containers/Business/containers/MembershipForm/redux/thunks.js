@@ -22,11 +22,7 @@ import {
   getSource,
   getBusiness,
 } from '../../../../../redux/modules/common/selectors';
-import {
-  getStoreId,
-  getIsRequestOrderRewardsEnabled,
-  getIsClaimedOrderRewardsEnabled,
-} from '../../../redux/common/selectors';
+import { getStoreId, getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
 import { loadOrderRewards } from '../../../redux/common/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
