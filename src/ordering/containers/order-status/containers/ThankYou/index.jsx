@@ -16,6 +16,7 @@ import StoreReviewInfo from './components/StoreReviewInfo';
 import CashbackBanner from './components/CashbackBanner';
 import OrderSummary from './components/OrderSummary';
 import MemberBanner from './components/MemberBanner';
+import NewMemberBanner from './components/NewMemberBanner';
 import MemberCard from './components/MemberCard';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
 import config from '../../../../../config';
@@ -39,6 +40,7 @@ import * as NativeMethods from '../../../../../utils/native-methods';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
+import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
   actions as appActionCreators,
   getBusiness,
@@ -1040,7 +1042,13 @@ export class ThankYou extends PureComponent {
   }
 
   renderRewardInfo() {
-    const { shouldShowMemberBanner, shouldShowMemberCard, shouldShowCashbackCard, isRewardInfoReady } = this.props;
+    const {
+      isJoinMembershipNewMember,
+      shouldShowMemberBanner,
+      shouldShowMemberCard,
+      shouldShowCashbackCard,
+      isRewardInfoReady,
+    } = this.props;
 
     if (!isRewardInfoReady) {
       return null;
@@ -1048,6 +1056,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <>
+        {isJoinMembershipNewMember && <NewMemberBanner />}
         {shouldShowMemberBanner && <MemberBanner onJoinMembershipClick={this.handleJoinMembership} />}
         {shouldShowMemberCard ? (
           <MemberCard onViewMembershipDetailClick={this.handleViewMembershipDetail} />
@@ -1230,6 +1239,7 @@ ThankYou.propTypes = {
   shouldShowCashbackBanner: PropTypes.bool,
   isInitProfilePageEnabled: PropTypes.bool,
   shouldShowStoreReviewCard: PropTypes.bool,
+  isJoinMembershipNewMember: PropTypes.bool,
   isFromBeepSiteOrderHistory: PropTypes.bool,
   loadStoreIdTableIdHashCode: PropTypes.func,
   isCoreBusinessAPICompleted: PropTypes.bool,
@@ -1292,6 +1302,7 @@ ThankYou.defaultProps = {
   shouldShowCashbackCard: false,
   isInitProfilePageEnabled: false,
   shouldShowCashbackBanner: false,
+  isJoinMembershipNewMember: false,
   loadFoodCourtIdHashCode: () => {},
   shouldShowStoreReviewCard: false,
   isFromBeepSiteOrderHistory: false,
@@ -1358,6 +1369,7 @@ export default compose(
       shouldShowMemberCard: getShouldShowMemberCard(state),
       isCashbackClaimable: getIsCashbackClaimable(state),
       shouldJoinBusinessMembership: getShouldJoinBusinessMembership(state),
+      isJoinMembershipNewMember: getIsJoinMembershipNewMember(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(

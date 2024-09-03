@@ -1,0 +1,38 @@
+@import "../../../../../../../Variables.scss";
+
+$new-member-banner-color: rgba(200, 225, 255, 0.15);
+$new-member-banner-color-light: rgba(42, 186, 162, 0.15);
+$new-member-banner-color-dark: rgba(151, 196, 250, 0.15);
+
+.new-member-banner {
+  &__card-wrapper {
+    background-color: transparent;
+    position: relative;
+  }
+
+  &__card-container {
+    width: 100%;
+    cursor: pointer;
+    background: linear-gradient(
+      105.4deg,
+      $new-member-banner-color-light 0%,
+      $new-member-banner-color 50%,
+      $new-member-banner-color-dark 100%
+    );
+  }
+
+  &__card-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+
+    > figure {
+      background-color: transparent;
+    }
+  }
+
+  &__card-title {
+    flex-grow: 1;
+    font-weight: 700;
+  }
+}
