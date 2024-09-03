@@ -5,6 +5,7 @@ import {
   fetchUniquePromoListBanners,
   fetchPointsRewardList,
   claimPointsReward,
+  loadOrderRewards,
   claimOrderRewards,
 } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
@@ -31,6 +32,11 @@ const initialState = {
     error: null,
   },
   claimPointsRewardRequest: {
+    status: null,
+    error: null,
+  },
+  loadOrderRewardsRequest: {
+    data: null,
     status: null,
     error: null,
   },
@@ -113,6 +119,19 @@ export const { actions, reducer } = createSlice({
     [claimPointsReward.rejected.type]: (state, { error }) => {
       state.claimPointsRewardRequest.status = API_REQUEST_STATUS.REJECTED;
       state.claimPointsRewardRequest.error = error;
+    },
+    [loadOrderRewards.pending.type]: state => {
+      state.loadOrderRewardsRequest.status = API_REQUEST_STATUS.PENDING;
+      state.loadOrderRewardsRequest.error = null;
+    },
+    [loadOrderRewards.fulfilled.type]: (state, { payload }) => {
+      state.loadOrderRewardsRequest.data = payload;
+      state.loadOrderRewardsRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.loadOrderRewardsRequest.error = null;
+    },
+    [loadOrderRewards.rejected.type]: (state, { error }) => {
+      state.loadOrderRewardsRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.loadOrderRewardsRequest.error = error;
     },
     [claimOrderRewards.pending.type]: state => {
       state.claimOrderRewardsRequest.status = API_REQUEST_STATUS.PENDING;

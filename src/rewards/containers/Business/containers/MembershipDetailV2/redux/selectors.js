@@ -66,12 +66,6 @@ import {
   getIsNewMember,
 } from '../../../redux/common/selectors';
 
-export const getIsClaimOrderRewardsEnabled = () => {
-  const isClaimedOrderRewardsEnabled = getQueryString('isClaimedOrderRewardsEnabled');
-
-  return isClaimedOrderRewardsEnabled === 'true';
-};
-
 export const getLoadMerchantBirthdayCampaignData = state =>
   state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.data;
 
