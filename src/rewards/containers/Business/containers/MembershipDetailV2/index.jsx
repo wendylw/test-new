@@ -8,6 +8,7 @@ import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import {
   mounted,
   backButtonClicked,
+  membershipTierTabClickedForCleverTap,
   closeButtonClicked,
   skipProfileButtonClicked,
   saveProfileButtonClicked,
