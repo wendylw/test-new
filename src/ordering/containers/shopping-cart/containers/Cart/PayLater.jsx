@@ -106,8 +106,8 @@ class PayLater extends Component {
           />,
           {
             className: 'ordering-cart__alert',
-            title: t('ApiError:UnableToPlaceOrder'),
-            closeButtonContent: t('ApiError:ViewOrder'),
+            title: t('UnableToPlaceOrder'),
+            closeButtonContent: t('ViewOrder'),
             onClose: async () => {
               if (!receiptNumber) {
                 await loadCartStatus();
@@ -543,7 +543,7 @@ PayLater.defaultProps = {
 };
 
 export default compose(
-  withTranslation(['OrderingCart']),
+  withTranslation(['OrderingCart', 'ApiError']),
   connect(
     state => ({
       userIsLogin: getUserIsLogin(state),
