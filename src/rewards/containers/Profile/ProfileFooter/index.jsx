@@ -8,7 +8,7 @@ import { alert, toast } from '../../../../common/utils/feedback';
 import CleverTap from '../../../../utils/clevertap';
 
 const ProfileFooter = ({ onSave }) => {
-  const { t } = useTranslation(['Profile']);
+  const { t } = useTranslation(['Profile', 'ApiError']);
   const dispatch = useDispatch();
   const isDisabledProfileSaveButton = useSelector(getIsDisabledProfileSaveButton);
   const isProfileDataUpdating = useSelector(getIsProfileDataUpdating);
@@ -36,7 +36,7 @@ const ProfileFooter = ({ onSave }) => {
       }
 
       // 40002 is common error for verification failed. BE set this code as profile common error
-      alert(t('ApiError:40002Description'), { title: t('ApiError:40002Title', { error_code: '40002' }) });
+      alert(t('40002Description'), { title: t('40002Title', { error_code: '40002' }) });
     }
   }, [dispatch, onConfirmDuplicatedEmailNextStep, onSave, t]);
 
