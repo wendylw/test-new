@@ -107,7 +107,6 @@ export const goToMembershipDetail = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     const state = getState();
     const search = getLocationSearch(state);
-    const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(state);
 
     dispatch(
       replace(
