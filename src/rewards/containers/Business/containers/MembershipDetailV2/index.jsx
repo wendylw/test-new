@@ -12,7 +12,6 @@ import {
   closeButtonClicked,
   skipProfileButtonClicked,
   saveProfileButtonClicked,
-  membershipTierTabClickedForCleverTap,
 } from './redux/thunks';
 import { getShouldShowBackButton, getIsProfileModalShow, getIsProfileModalSkipButtonShow } from './redux/selectors';
 import Frame from '../../../../../common/components/Frame';
@@ -37,12 +36,12 @@ const MembershipDetail = () => {
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickHeaderCloseButton = useCallback(() => dispatch(closeButtonClicked()), [dispatch]);
-  const handleClickSkipProfileButton = useCallback(() => dispatch(skipProfileButtonClicked()), [dispatch]);
-  const handleClickSaveProfileButton = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
   const handleClickMembershipTierTab = useCallback(
     tierName => dispatch(membershipTierTabClickedForCleverTap(tierName)),
     [dispatch]
   );
+  const handleClickSkipProfileButton = useCallback(() => dispatch(skipProfileButtonClicked()), [dispatch]);
+  const handleClickSaveProfileButton = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
 
   useMount(() => {
     dispatch(mounted());
