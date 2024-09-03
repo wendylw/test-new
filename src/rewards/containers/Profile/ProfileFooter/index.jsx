@@ -8,7 +8,7 @@ import { alert, toast } from '../../../../common/utils/feedback';
 import CleverTap from '../../../../utils/clevertap';
 
 const ProfileFooter = ({ onSave }) => {
-  const { t } = useTranslation(['Profile']);
+  const { t } = useTranslation(['Profile', 'ApiError']);
   const dispatch = useDispatch();
   const isDisabledProfileSaveButton = useSelector(getIsDisabledProfileSaveButton);
   const isProfileDataUpdating = useSelector(getIsProfileDataUpdating);
