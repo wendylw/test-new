@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { CaretRight } from 'phosphor-react';
 import RewardsIcon from '../../../../../../../images/rewards-icon-rewards.svg';
@@ -9,31 +10,33 @@ import { ObjectFitImage } from '../../../../../../../common/components/Image';
 // import RewardsStoreCreditsIcon from '../../../../../../../images/rewards-icon-store-credits.svg';
 import './Rewards.scss';
 
-const Rewards = () => {
+const Rewards = ({ isNewMember }) => {
   const { t } = useTranslation('OrderingThankYou');
 
   return (
     <>
-      <section className="card rewards-banner__card-wrapper margin-small">
-        <Button
-          type="text"
-          theme="ghost"
-          data-test-id="ordering.thank-you.rewards.rewards-banner-button"
-          className="rewards-banner__card-container"
-          contentClassName="rewards-banner__card-content flex flex-middle flex-space-between padding-smaller"
-        >
-          <div className="rewards-banner__card-icon">
-            <ObjectFitImage noCompression src={RewardsIcon} alt="StoreHub Rewards Icon" />
-          </div>
-          <p className="rewards-banner__card-title text-left padding-left-right-small">{t('RewardBannerTitle')}</p>
+      {!isNewMember && (
+        <section className="card rewards-banner__card-wrapper margin-small">
+          <Button
+            type="text"
+            theme="ghost"
+            data-test-id="ordering.thank-you.rewards.rewards-banner-button"
+            className="rewards-banner__card-container"
+            contentClassName="rewards-banner__card-content flex flex-middle flex-space-between padding-smaller"
+          >
+            <div className="rewards-banner__card-icon">
+              <ObjectFitImage noCompression src={RewardsIcon} alt="StoreHub Rewards Icon" />
+            </div>
+            <p className="rewards-banner__card-title text-left padding-left-right-small">{t('RewardBannerTitle')}</p>
 
-          <CaretRight size={32} weight="light" />
-        </Button>
-      </section>
+            <CaretRight size={32} weight="light" />
+          </Button>
+        </section>
+      )}
 
       <section>
         <div>
-          <h3>Claim Rewards</h3>
+          <h3>{isNewMember ? t('RewardsCardNewMemberTitle') : t('RewardsCardReturningMemberTitle')}</h3>
           <a href="https://beepit.com">Check Balance</a>
         </div>
         <ul>
@@ -56,5 +59,13 @@ const Rewards = () => {
 };
 
 Rewards.displayName = 'RewardsCard';
+
+Rewards.propTypes = {
+  isNewMember: PropTypes.bool,
+};
+
+Rewards.defaultProps = {
+  isNewMember: false,
+};
 
 export default Rewards;

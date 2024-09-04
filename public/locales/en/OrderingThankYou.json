@@ -148,5 +148,7 @@
   "View": "View",
   "ViewRewards": "View Rewards",
   "NewMemberBannerTitle": "Membership Activated!",
-  "RewardBannerTitle": "You have 3 Rewards!"
+  "RewardBannerTitle": "You have 3 Rewards!",
+  "RewardsCardNewMemberTitle": "Claim Rewards",
+  "RewardsCardReturningMemberTitle": "You’ve Earned"
 }
