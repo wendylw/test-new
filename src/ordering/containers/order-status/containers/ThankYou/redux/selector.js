@@ -11,6 +11,7 @@ import {
   RAINY_IMAGES_MAPPING,
   DELIVERY_STATUS_IMAGES_MAPPING,
   NOT_DELIVERY_STATUS_IMAGES_MAPPING,
+  ORDER_SELF_DELIVERY_COURIER,
 } from '../constants';
 import {
   getOrder,
@@ -153,6 +154,17 @@ export const getOrderDeliveryInfo = createSelector(getOrder, order => {
     expectDeliveryDateRange: [expectDeliveryDateFrom, expectDeliveryDateTo],
     ...responseDeliveryInformation,
   };
+});
+
+export const getIsOrderSelfDelivery = createSelector(getOrder, order => {
+  if (!order) {
+    return false;
+  }
+
+  const { deliveryInformation } = order;
+  const { courier } = deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
+
+  return courier === ORDER_SELF_DELIVERY_COURIER;
 });
 
 export const getIsPayLater = createSelector(getOrder, order => _get(order, 'isPayLater', false));
