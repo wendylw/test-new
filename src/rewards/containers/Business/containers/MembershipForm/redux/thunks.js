@@ -22,11 +22,7 @@ import {
   getSource,
   getBusiness,
 } from '../../../../../redux/modules/common/selectors';
-import {
-  getStoreId,
-  getIsRequestOrderRewardsEnabled,
-  getIsClaimedOrderRewardsEnabled,
-} from '../../../redux/common/selectors';
+import { getStoreId, getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
 import { loadOrderRewards } from '../../../redux/common/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
@@ -107,13 +103,10 @@ export const goToMembershipDetail = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     const state = getState();
     const search = getLocationSearch(state);
-    const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(state);
 
     dispatch(
       replace(
-        `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${
-          PATH_NAME_MAPPING.MEMBERSHIP_DETAIL
-        }${search ? `${search}&isClaimedOrderRewardsEnabled=${isClaimedOrderRewardsEnabled}` : search}`
+        `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`
       )
     );
   }
