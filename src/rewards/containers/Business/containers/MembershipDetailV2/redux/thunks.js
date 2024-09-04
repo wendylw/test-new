@@ -133,7 +133,7 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
 
         if (isWebview) {
           // native complete profile, claim order points reward immediately
-          await dispatch(showCompleteProfilePageAsync());
+          await showCompleteProfilePageAsync({ hideSkipButton: true });
           alert(id);
           dispatch(claimPointsRewardAndRefreshRewardsList(id));
         } else {
