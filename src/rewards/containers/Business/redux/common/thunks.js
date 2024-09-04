@@ -63,10 +63,6 @@ export const claimPointsReward = createAsyncThunk(
     const business = getMerchantBusiness(state);
     const result = await postClaimedPointsReward({ consumerId, business, id });
 
-    alert(`${consumerId} claimPointsReward consumerId`);
-    alert(`${business} claimPointsReward business`);
-    alert(`${id} claimPointsReward id`);
-
     return result;
   }
 );

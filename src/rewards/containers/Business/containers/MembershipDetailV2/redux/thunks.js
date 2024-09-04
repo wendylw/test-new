@@ -105,9 +105,6 @@ export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
     const consumerId = getConsumerId(state);
     const business = getMerchantBusiness(state);
 
-    alert(`${consumerId} consumerId`);
-    alert(`${id} id`);
-
     await dispatch(claimPointsReward({ consumerId, id }));
     dispatch(fetchPointsRewardList(consumerId));
     dispatch(fetchCustomerInfo(business));
@@ -134,7 +131,6 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
         if (isWebview) {
           // native complete profile, claim order points reward immediately
           await showCompleteProfilePageAsync({ hideSkipButton: true });
-          alert(id);
           dispatch(claimPointsRewardAndRefreshRewardsList(id));
         } else {
           dispatch(showProfileForm({ source: SHOW_PROFILE_FROM_POINTS_REWARDS }));
