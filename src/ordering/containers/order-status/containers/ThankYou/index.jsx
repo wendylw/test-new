@@ -17,6 +17,7 @@ import CashbackBanner from './components/CashbackBanner';
 import OrderSummary from './components/OrderSummary';
 import MemberBanner from './components/MemberBanner';
 import NewMemberBanner from './components/NewMemberBanner';
+import Rewards from './components/Rewards';
 import MemberCard from './components/MemberCard';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
 import config from '../../../../../config';
@@ -1058,6 +1059,7 @@ export class ThankYou extends PureComponent {
       <>
         {shouldShowMemberBanner && <MemberBanner onJoinMembershipClick={this.handleJoinMembership} />}
         {isJoinMembershipNewMember && <NewMemberBanner />}
+        <Rewards />
         {shouldShowMemberCard ? (
           <MemberCard onViewMembershipDetailClick={this.handleViewMembershipDetail} />
         ) : shouldShowCashbackCard ? (

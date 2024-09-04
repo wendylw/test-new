@@ -1,0 +1,35 @@
+@import "../../../../../../../Variables.scss";
+
+$rewards-banner-color-dark: rgba(253, 180, 219, 0.15);
+$rewards-banner-color-light: rgba(255, 234, 246, 0.15);
+
+.rewards-banner {
+  &__card-wrapper {
+    background-color: transparent;
+  }
+
+  &__card-container.type-text-ghost {
+    border: 0;
+    width: 100%;
+    background: linear-gradient(90deg, $rewards-banner-color-dark 0%, $rewards-banner-color-light 100%);
+  }
+
+  &__card-content {
+    width: 100%;
+  }
+
+  &__card-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+
+    > figure {
+      background-color: transparent;
+    }
+  }
+
+  &__card-title {
+    flex-grow: 1;
+    font-weight: 700;
+  }
+}

@@ -11,7 +11,7 @@ const NewMemberBanner = () => {
     <section className="card new-member-banner__card-wrapper margin-small">
       <div className="new-member-banner__card-container flex flex-middle flex-space-between padding-top-bottom-small padding-left-right-normal">
         <div className="new-member-banner__card-icon">
-          <ObjectFitImage noCompression src={MembershipNewMemberIcon} alt="StoreHub Non-member Icon" />
+          <ObjectFitImage noCompression src={MembershipNewMemberIcon} alt="StoreHub New Member Icon" />
         </div>
         <p className="new-member-banner__card-title text-left padding-left-right-small">{t('NewMemberBannerTitle')}</p>
       </div>
