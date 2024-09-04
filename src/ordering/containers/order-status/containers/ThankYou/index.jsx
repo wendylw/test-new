@@ -1056,8 +1056,8 @@ export class ThankYou extends PureComponent {
 
     return (
       <>
-        {isJoinMembershipNewMember && <NewMemberBanner />}
         {shouldShowMemberBanner && <MemberBanner onJoinMembershipClick={this.handleJoinMembership} />}
+        {isJoinMembershipNewMember && <NewMemberBanner />}
         {shouldShowMemberCard ? (
           <MemberCard onViewMembershipDetailClick={this.handleViewMembershipDetail} />
         ) : shouldShowCashbackCard ? (
