@@ -90,11 +90,11 @@ export const getClaimPointsRewardStatus = state => state.business.common.claimPo
 
 export const getClaimPointsRewardError = state => state.business.common.claimPointsRewardRequest.error;
 
-export const getLoadOrderRewardsRequestData = state => state.business.membershipForm.loadOrderRewardsRequest.data;
+export const getLoadOrderRewardsRequestData = state => state.business.common.loadOrderRewardsRequest.data;
 
-export const getLoadOrderRewardsRequestStatus = state => state.business.membershipForm.loadOrderRewardsRequest.status;
+export const getLoadOrderRewardsRequestStatus = state => state.business.common.loadOrderRewardsRequest.status;
 
-export const getLoadOrderRewardsRequestError = state => state.business.membershipForm.loadOrderRewardsRequest.error;
+export const getLoadOrderRewardsRequestError = state => state.business.common.loadOrderRewardsRequest.error;
 
 export const getOrderRewardsPoints = createSelector(getLoadOrderRewardsRequestData, loadOrderRewardsRequestData =>
   _get(loadOrderRewardsRequestData, 'points.amount', 0)
