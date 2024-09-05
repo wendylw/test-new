@@ -150,5 +150,6 @@
   "NewMemberBannerTitle": "Membership Activated!",
   "RewardBannerTitle": "You have 3 Rewards!",
   "RewardsCardNewMemberTitle": "Claim Rewards",
-  "RewardsCardReturningMemberTitle": "You’ve Earned"
+  "RewardsCardReturningMemberTitle": "You’ve Earned",
+  "RewardsCardReturningMemberCheckBalanceText": "Check Balance"
 }

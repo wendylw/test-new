@@ -3,15 +3,16 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { CaretRight } from 'phosphor-react';
 import RewardsIcon from '../../../../../../../images/rewards-icon-rewards.svg';
+import RewardsPointsIcon from '../../../../../../../images/rewards-icon-points.svg';
+import RewardsCashbackIcon from '../../../../../../../images/rewards-icon-cashback.svg';
+import RewardsStoreCreditsIcon from '../../../../../../../images/rewards-icon-store-credits.svg';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
-// import RewardsPointsIcon from '../../../../../../../images/rewards-icon-points.svg';
-// import RewardsCashbackIcon from '../../../../../../../images/rewards-icon-cashback.svg';
-// import RewardsStoreCreditsIcon from '../../../../../../../images/rewards-icon-store-credits.svg';
 import './Rewards.scss';
 
-const Rewards = ({ isNewMember }) => {
+const Rewards = ({ isNewMember, enabledCashback, enabledLoyalty }) => {
   const { t } = useTranslation('OrderingThankYou');
+  const enabledCashbackOrStoreCredits = enabledCashback || enabledLoyalty;
 
   return (
     <>
@@ -35,24 +36,45 @@ const Rewards = ({ isNewMember }) => {
       )}
 
       <section>
-        <div>
-          <h3>{isNewMember ? t('RewardsCardNewMemberTitle') : t('RewardsCardReturningMemberTitle')}</h3>
-          <a href="https://beepit.com">Check Balance</a>
+        <div className="flex flex-middle flex-space-between">
+          <h3 className="rewards-card__title">
+            {isNewMember ? t('RewardsCardNewMemberTitle') : t('RewardsCardReturningMemberTitle')}
+          </h3>
+          {!isNewMember && (
+            <Button
+              type="text"
+              theme="info"
+              className="rewards-card__check-balance-button"
+              contentClassName="rewards-card__check-balance-button-content"
+            >
+              {t('RewardsCardReturningMemberCheckBalanceText')}
+            </Button>
+          )}
         </div>
         <ul>
-          <li>
-            <img src="" alt="" />
-            <span>3 Rewards</span>
+          <li className="flex flex-middle">
+            <div className="rewards-card__item-icon flex__shrink-fixed">
+              <ObjectFitImage noCompression src={RewardsIcon} alt="StoreHub Rewards Icon" />
+            </div>
+            <span className="flex__fluid-content">3 Rewards</span>
           </li>
-          <li>
-            <img src="" alt="" />
-            <span>200 Points</span>
+          <li className="flex flex-middle">
+            <div className="rewards-card__item-icon flex__shrink-fixed">
+              <ObjectFitImage noCompression src={RewardsPointsIcon} alt="StoreHub Rewards Icon" />
+            </div>
+            <span className="flex__fluid-content">200 Points</span>
           </li>
-          <li>
-            <img src="" alt="" />
-            <span>RM 1.23 Cashback</span>
-          </li>
+          {enabledCashbackOrStoreCredits && (
+            <li className="flex flex-middle">
+              <div className="rewards-card__item-icon flex__shrink-fixed">
+                <ObjectFitImage noCompression src={RewardsCashbackIcon} alt="StoreHub Rewards Icon" />
+                <ObjectFitImage noCompression src={RewardsStoreCreditsIcon} alt="StoreHub Rewards Icon" />
+              </div>
+              <span className="flex__fluid-content">RM 1.23 Cashback</span>
+            </li>
+          )}
         </ul>
+        <CaretRight size={32} weight="light" />
       </section>
     </>
   );
@@ -62,10 +84,14 @@ Rewards.displayName = 'RewardsCard';
 
 Rewards.propTypes = {
   isNewMember: PropTypes.bool,
+  enabledCashback: PropTypes.bool,
+  enabledLoyalty: PropTypes.bool,
 };
 
 Rewards.defaultProps = {
   isNewMember: false,
+  enabledCashback: false,
+  enabledLoyalty: false,
 };
 
 export default Rewards;

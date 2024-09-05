@@ -33,3 +33,18 @@ $rewards-banner-color-light: rgba(255, 234, 246, 0.15);
     font-weight: 700;
   }
 }
+
+.rewards-card {
+  &__title {
+    font-weight: 700;
+  }
+
+  &__check-balance-button.type-text-info &__check-balance-button-content {
+    font-weight: 400;
+  }
+
+  &__item-icon {
+    width: 24px;
+    height: 24px;
+  }
+}
