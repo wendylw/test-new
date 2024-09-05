@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
+import { useUnmount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { init } from './redux/thunk';
 import ProfileRewardsImage from '../../../images/profile-rewards.svg';
@@ -25,6 +26,10 @@ const Profile = ({ show, onSave, onSkip }) => {
     onSave();
     dispatch(profileActions.resetProfilePageData());
   }, [onSave, dispatch]);
+
+  useUnmount(() => {
+    dispatch(profileActions.resetProfilePageData());
+  });
 
   useEffect(() => {
     if (show) {
