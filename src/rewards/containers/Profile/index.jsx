@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { useUnmount } from 'react-use';
 import { useDispatch } from 'react-redux';
 import { init } from './redux/thunk';
 import ProfileRewardsImage from '../../../images/profile-rewards.svg';
