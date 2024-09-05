@@ -37,6 +37,7 @@ export const API_REQUEST_URL_PATTERNS = {
   '/api/v3/share-info-requests/*': /^\/api\/v3\/share-info-requests\/\w+$/,
   '/api/v3/share-info-requests/*/confirmation': /^\/api\/v3\/share-info-requests\/\w+\/confirmation$/,
   '/api/v3/consumers/*/unique-promos': /^\/api\/v3\/consumers\/\w+\/unique-promos$/,
+  '/api/v3/consumers/*/unique-promos/banners': /^\/api\/v3\/consumers\/\w+\/unique-promos\/banners$/,
 };
 
 export const API_URL_WARNING_BYPASS_LIST = ['/api/gql/AddOrUpdateShoppingCartItem'];

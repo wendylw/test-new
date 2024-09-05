@@ -29,7 +29,7 @@ const UniquePromoList = () => {
         const uniquePromoInfoTopClassList = [styles.UniquePromoInfoTop];
         const uniquePromoInfoBottomClassList = [styles.UniquePromoInfoBottom];
         const uniquePromoLimitationListClassList = [styles.UniquePromoLimitationList];
-        const { id, value, name, limitations, status, isUnavailable } = uniquePromo;
+        const { key: uniquePromoKey, value, name, limitations, status, isUnavailable } = uniquePromo;
 
         if (isUnavailable) {
           uniquePromoInfoTopClassList.push(styles.UniquePromoInfoTop__Unavailable);
@@ -44,7 +44,7 @@ const UniquePromoList = () => {
             role="button"
             data-test-id="rewards.business.unique-promo-list.item"
             className={styles.UniquePromoCard}
-            key={id}
+            key={uniquePromoKey}
             onClick={handleClickRewardItem}
           >
             <div className={getClassName(uniquePromoInfoTopClassList)}>

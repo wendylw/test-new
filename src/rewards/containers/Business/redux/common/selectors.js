@@ -206,13 +206,14 @@ export const getUniquePromoList = createSelector(
         return promo;
       }
 
-      const { id, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+      const { id, uniquePromotionId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
       const diffDays = getDifferenceTodayInDays(new Date(validTo));
       const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
       const isTodayExpired = remainingExpiredDays === 0;
 
       return {
         id,
+        key: `${id}-${uniquePromotionId}-${discountType}`,
         value:
           discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
             ? `${discountValue}%`
@@ -285,13 +286,14 @@ export const getUniquePromoListBanners = createSelector(
         return promo;
       }
 
-      const { id, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+      const { id, uniquePromotionId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
       const diffDays = getDifferenceTodayInDays(new Date(validTo));
       const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
       const isTodayExpired = remainingExpiredDays === 0;
 
       return {
         id,
+        key: `${id}-${uniquePromotionId}-${discountType}`,
         value:
           discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
             ? `${discountValue}%`
