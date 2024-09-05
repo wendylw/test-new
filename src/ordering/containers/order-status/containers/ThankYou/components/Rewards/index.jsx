@@ -131,6 +131,9 @@ Rewards.propTypes = {
   enabledLoyalty: PropTypes.bool,
   enabledMembershipPoints: PropTypes.bool,
   rewardsAvailableCount: PropTypes.number,
+  points: PropTypes.number,
+  cashbackPrice: PropTypes.string,
+  storeCreditsPrice: PropTypes.string,
 };
 
 Rewards.defaultProps = {
@@ -139,6 +142,9 @@ Rewards.defaultProps = {
   enabledLoyalty: false,
   enabledMembershipPoints: false,
   rewardsAvailableCount: 0,
+  points: 0,
+  cashbackPrice: null,
+  storeCreditsPrice: null,
 };
 
 export default Rewards;
