@@ -1,31 +1,71 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { CaretRight } from 'phosphor-react';
 import RewardsIcon from '../../../../../../../images/rewards-icon-rewards.svg';
 import RewardsPointsIcon from '../../../../../../../images/rewards-icon-points.svg';
 import RewardsCashbackIcon from '../../../../../../../images/rewards-icon-cashback.svg';
 import RewardsStoreCreditsIcon from '../../../../../../../images/rewards-icon-store-credits.svg';
+import {
+  getIsMerchantEnabledCashback,
+  getIsMerchantEnabledStoreCredits,
+  getIsMerchantMembershipPointsEnabled,
+} from '../../../../../../../redux/modules/merchant/selectors';
+import { getIsJoinMembershipNewMember } from '../../../../../../../redux/modules/membership/selectors';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import './Rewards.scss';
 
+const MemberRewardsContainer = ({ isJoinMembershipNewMember, children }) =>
+  isJoinMembershipNewMember ? (
+    <Button
+      type="text"
+      theme="ghost"
+      data-test-id="ordering.thank-you.rewards.rewards-card.new-member-container-button"
+      contentClassName="flex flex-middle"
+    >
+      <div>{children}</div>
+      {isJoinMembershipNewMember && (
+        <CaretRight
+          className="rewards-card__caret-right-icon flex__shrink-fixed margin-left-right-small"
+          size={32}
+          weight="light"
+        />
+      )}
+    </Button>
+  ) : (
+    <>{children}</>
+  );
+
+MemberRewardsContainer.displayName = 'MemberRewardsContainer';
+
+MemberRewardsContainer.propTypes = {
+  isJoinMembershipNewMember: PropTypes.bool,
+  children: PropTypes.node,
+};
+
+MemberRewardsContainer.defaultProps = {
+  isJoinMembershipNewMember: false,
+  children: null,
+};
+
 const Rewards = ({
-  isNewMember,
-  enabledCashback,
-  enabledLoyalty,
-  enabledMembershipPoints,
+  isJoinMembershipNewMember,
+  isMerchantEnabledCashback,
+  isMerchantEnabledStoreCredits,
+  isMerchantMembershipPointsEnabled,
   rewardsAvailableCount,
   points,
   cashbackPrice,
   storeCreditsPrice,
 }) => {
   const { t } = useTranslation('OrderingThankYou');
-  const enabledCashbackOrStoreCredits = enabledCashback || enabledLoyalty;
+  const enabledCashbackOrStoreCredits = isMerchantEnabledCashback || isMerchantEnabledStoreCredits;
   const isRewardsCountAvailable = rewardsAvailableCount > 0;
-  const shouldShowRewardsBanner = isRewardsCountAvailable > 0 && !isNewMember;
-  const shouldShowRewardsItem = isRewardsCountAvailable && isNewMember;
-  const shouldShowPointsItem = enabledMembershipPoints && points > 0;
+  const shouldShowRewardsBanner = isRewardsCountAvailable > 0 && !isJoinMembershipNewMember;
+  const shouldShowRewardsItem = isRewardsCountAvailable && isJoinMembershipNewMember;
+  const shouldShowPointsItem = isMerchantMembershipPointsEnabled && points > 0;
 
   return (
     <>
@@ -53,22 +93,22 @@ const Rewards = ({
       )}
 
       <section className="card margin-small padding-smaller">
-        <div className="flex flex-middle flex-space-between">
-          <h3 className="rewards-card__title padding-small">
-            {isNewMember ? t('RewardsCardNewMemberTitle') : t('RewardsCardReturningMemberTitle')}
-          </h3>
-          {!isNewMember && (
-            <Button
-              type="text"
-              theme="info"
-              className="rewards-card__check-balance-button"
-              contentClassName="rewards-card__check-balance-button-content"
-            >
-              {t('RewardsCardReturningMemberCheckBalanceText')}
-            </Button>
-          )}
-        </div>
-        <div className="flex flex-middle">
+        <MemberRewardsContainer isJoinMembershipNewMember={isJoinMembershipNewMember}>
+          <div className="flex flex-middle flex-space-between">
+            <h3 className="rewards-card__title padding-small">
+              {isJoinMembershipNewMember ? t('RewardsCardNewMemberTitle') : t('RewardsCardReturningMemberTitle')}
+            </h3>
+            {!isJoinMembershipNewMember && (
+              <Button
+                type="text"
+                theme="info"
+                className="rewards-card__check-balance-button"
+                contentClassName="rewards-card__check-balance-button-content"
+              >
+                {t('RewardsCardReturningMemberCheckBalanceText')}
+              </Button>
+            )}
+          </div>
           <ul className="flex__fluid-content">
             {shouldShowRewardsItem && (
               <li className="flex flex-middle padding-left-right-small margin-top-bottom-small">
@@ -97,39 +137,31 @@ const Rewards = ({
                 <div className="rewards-card__item-icon flex__shrink-fixed">
                   <ObjectFitImage
                     noCompression
-                    src={enabledCashback ? RewardsCashbackIcon : RewardsStoreCreditsIcon}
+                    src={isMerchantEnabledCashback ? RewardsCashbackIcon : RewardsStoreCreditsIcon}
                     alt="StoreHub Rewards Cashback Icon"
                   />
                 </div>
                 <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
                   {t('RewardsCardCashbackItemText', {
-                    cashbackPrice: enabledCashback ? cashbackPrice : storeCreditsPrice,
+                    cashbackPrice: isMerchantEnabledCashback ? cashbackPrice : storeCreditsPrice,
                   })}
                 </span>
               </li>
             )}
           </ul>
-
-          {isNewMember && (
-            <CaretRight
-              className="rewards-card__caret-right-icon flex__shrink-fixed margin-left-right-small"
-              size={32}
-              weight="light"
-            />
-          )}
-        </div>
+        </MemberRewardsContainer>
       </section>
     </>
   );
 };
 
-Rewards.displayName = 'RewardsCard';
+Rewards.displayName = 'Rewards';
 
 Rewards.propTypes = {
-  isNewMember: PropTypes.bool,
-  enabledCashback: PropTypes.bool,
-  enabledLoyalty: PropTypes.bool,
-  enabledMembershipPoints: PropTypes.bool,
+  isJoinMembershipNewMember: PropTypes.bool,
+  isMerchantEnabledCashback: PropTypes.bool,
+  isMerchantEnabledStoreCredits: PropTypes.bool,
+  isMerchantMembershipPointsEnabled: PropTypes.bool,
   rewardsAvailableCount: PropTypes.number,
   points: PropTypes.number,
   cashbackPrice: PropTypes.string,
@@ -137,14 +169,19 @@ Rewards.propTypes = {
 };
 
 Rewards.defaultProps = {
-  isNewMember: false,
-  enabledCashback: false,
-  enabledLoyalty: false,
-  enabledMembershipPoints: false,
+  isJoinMembershipNewMember: false,
+  isMerchantEnabledCashback: false,
+  isMerchantEnabledStoreCredits: false,
+  isMerchantMembershipPointsEnabled: false,
   rewardsAvailableCount: 0,
   points: 0,
   cashbackPrice: null,
   storeCreditsPrice: null,
 };
 
-export default Rewards;
+export default connect(state => ({
+  isJoinMembershipNewMember: getIsJoinMembershipNewMember(state),
+  isMerchantEnabledCashback: getIsMerchantEnabledCashback(state),
+  isMerchantEnabledStoreCredits: getIsMerchantEnabledStoreCredits(state),
+  isMerchantMembershipPointsEnabled: getIsMerchantMembershipPointsEnabled(state),
+}))(Rewards);
