@@ -7,12 +7,17 @@ import RewardsIcon from '../../../../../../../images/rewards-icon-rewards.svg';
 import RewardsPointsIcon from '../../../../../../../images/rewards-icon-points.svg';
 import RewardsCashbackIcon from '../../../../../../../images/rewards-icon-cashback.svg';
 import RewardsStoreCreditsIcon from '../../../../../../../images/rewards-icon-store-credits.svg';
+import { getPrice } from '../../../../../../../common/utils';
 import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledStoreCredits,
   getIsMerchantMembershipPointsEnabled,
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
 } from '../../../../../../../redux/modules/merchant/selectors';
 import { getIsJoinMembershipNewMember } from '../../../../../../../redux/modules/membership/selectors';
+import { getCustomerCashback, getCustomerAvailablePointsBalance } from '../../../../../../redux/modules/app';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import './Rewards.scss';
@@ -56,16 +61,20 @@ const Rewards = ({
   isMerchantEnabledStoreCredits,
   isMerchantMembershipPointsEnabled,
   rewardsAvailableCount,
-  points,
-  cashbackPrice,
-  storeCreditsPrice,
+  customerAvailablePointsBalance,
+  cashback,
+  merchantCountry,
+  merchantCurrency,
+  merchantLocale,
 }) => {
   const { t } = useTranslation('OrderingThankYou');
   const enabledCashbackOrStoreCredits = isMerchantEnabledCashback || isMerchantEnabledStoreCredits;
   const isRewardsCountAvailable = rewardsAvailableCount > 0;
   const shouldShowRewardsBanner = isRewardsCountAvailable > 0 && !isJoinMembershipNewMember;
   const shouldShowRewardsItem = isRewardsCountAvailable && isJoinMembershipNewMember;
-  const shouldShowPointsItem = isMerchantMembershipPointsEnabled && points > 0;
+  const shouldShowPointsItem = isMerchantMembershipPointsEnabled && customerAvailablePointsBalance > 0;
+  const priceOptions = { country: merchantCountry, currency: merchantCurrency, locale: merchantLocale };
+  const cashbackPrice = getPrice(cashback, priceOptions);
 
   return (
     <>
@@ -127,7 +136,7 @@ const Rewards = ({
                   <ObjectFitImage noCompression src={RewardsPointsIcon} alt="StoreHub Points Icon" />
                 </div>
                 <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
-                  {t('RewardsCardPointsItemText', { points })}
+                  {t('RewardsCardPointsItemText', { points: customerAvailablePointsBalance })}
                 </span>
               </li>
             )}
@@ -142,9 +151,7 @@ const Rewards = ({
                   />
                 </div>
                 <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
-                  {t('RewardsCardCashbackItemText', {
-                    cashbackPrice: isMerchantEnabledCashback ? cashbackPrice : storeCreditsPrice,
-                  })}
+                  {t('RewardsCardCashbackItemText', { cashbackPrice })}
                 </span>
               </li>
             )}
@@ -163,9 +170,11 @@ Rewards.propTypes = {
   isMerchantEnabledStoreCredits: PropTypes.bool,
   isMerchantMembershipPointsEnabled: PropTypes.bool,
   rewardsAvailableCount: PropTypes.number,
-  points: PropTypes.number,
-  cashbackPrice: PropTypes.string,
-  storeCreditsPrice: PropTypes.string,
+  customerAvailablePointsBalance: PropTypes.number,
+  cashback: PropTypes.number,
+  merchantCountry: PropTypes.string,
+  merchantCurrency: PropTypes.string,
+  merchantLocale: PropTypes.string,
 };
 
 Rewards.defaultProps = {
@@ -174,9 +183,11 @@ Rewards.defaultProps = {
   isMerchantEnabledStoreCredits: false,
   isMerchantMembershipPointsEnabled: false,
   rewardsAvailableCount: 0,
-  points: 0,
-  cashbackPrice: null,
-  storeCreditsPrice: null,
+  customerAvailablePointsBalance: 0,
+  cashback: null,
+  merchantCountry: null,
+  merchantCurrency: null,
+  merchantLocale: null,
 };
 
 export default connect(state => ({
@@ -184,4 +195,9 @@ export default connect(state => ({
   isMerchantEnabledCashback: getIsMerchantEnabledCashback(state),
   isMerchantEnabledStoreCredits: getIsMerchantEnabledStoreCredits(state),
   isMerchantMembershipPointsEnabled: getIsMerchantMembershipPointsEnabled(state),
+  customerAvailablePointsBalance: getCustomerAvailablePointsBalance(state),
+  cashback: getCustomerCashback(state),
+  merchantCountry: getMerchantCountry(state),
+  merchantCurrency: getMerchantCurrency(state),
+  merchantLocale: getMerchantLocale(state),
 }))(Rewards);

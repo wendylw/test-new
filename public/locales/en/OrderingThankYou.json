@@ -154,5 +154,5 @@
   "RewardsCardReturningMemberCheckBalanceText": "Check Balance",
   "RewardsCardRewardsItemText": "{{availableCount}} Rewards",
   "RewardsCardPointsItemText": "{{points}} Points",
-  "RewardsCardCashbackItemText": "{{cashbackPrice}} Points"
+  "RewardsCardCashbackItemText": "{{cashbackPrice}} Cashback"
 }
