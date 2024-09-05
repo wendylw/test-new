@@ -25,13 +25,11 @@ const Profile = ({ show, showSkipButton, onSave, onSkip }) => {
     dispatch(profileActions.resetProfilePageData());
   }, [onSave, dispatch]);
 
-  useUnmount(() => {
-    dispatch(profileActions.resetProfilePageData());
-  });
-
   useEffect(() => {
     if (show) {
       dispatch(init());
+    } else {
+      dispatch(profileActions.resetProfilePageData());
     }
   }, [dispatch, show]);
 
