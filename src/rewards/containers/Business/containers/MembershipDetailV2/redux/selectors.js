@@ -24,8 +24,8 @@ import {
 } from '../utils/constants';
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
-import { getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import { getReceiptOrderRewardsStatusCategories } from '../utils';
+import { getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledLoyalty,
@@ -75,9 +75,14 @@ export const getLoadMerchantBirthdayCampaignStatus = state =>
 export const getLoadMerchantBirthdayCampaignError = state =>
   state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.error;
 
-export const getIsProfileModalShow = state => state.business.membershipDetailV2.isProfileModalShow;
+export const getIsProfileModalShow = state => state.business.membershipDetailV2.profileModalRequest.show;
 
-export const getFetchUniquePromoListBannersLimit = state => state.business.membershipDetailV2.isProfileModalShow;
+export const getIsProfileModalSkipButtonShow = state =>
+  state.business.membershipDetailV2.profileModalRequest.showSkipButton;
+
+export const getShowProfileModalSource = state => state.business.membershipDetailV2.profileModalRequest.source;
+
+export const getPointsRewardSelectedId = state => state.business.membershipDetailV2.pointsRewardSelectedId;
 
 /**
  * Derived selectors
@@ -92,6 +97,11 @@ export const getIsBirthdayCampaignEntryShow = createSelector(
   getIsBirthdayCampaignActivated,
   getIsUserProfileIncomplete,
   (isBirthdayCampaignActivated, isUserProfileIncomplete) => isBirthdayCampaignActivated && isUserProfileIncomplete
+);
+
+export const getFetchUniquePromoListBannersLimit = createSelector(
+  getIsProfileModalShow,
+  isProfileModalShow => isProfileModalShow
 );
 
 export const getIsUserFromOrdering = createSelector(
