@@ -47,4 +47,13 @@ $rewards-banner-color-light: rgba(255, 234, 246, 0.15);
     width: 24px;
     height: 24px;
   }
+
+  &__item-text {
+    line-height: $line-height-base;
+  }
+
+  &__caret-right-icon {
+    width: 32px;
+    height: 32px;
+  }
 }

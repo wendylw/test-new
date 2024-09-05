@@ -148,8 +148,11 @@
   "View": "View",
   "ViewRewards": "View Rewards",
   "NewMemberBannerTitle": "Membership Activated!",
-  "RewardBannerTitle": "You have 3 Rewards!",
+  "RewardBannerTitle": "You have {{availableCount}} Rewards!",
   "RewardsCardNewMemberTitle": "Claim Rewards",
   "RewardsCardReturningMemberTitle": "You’ve Earned",
-  "RewardsCardReturningMemberCheckBalanceText": "Check Balance"
+  "RewardsCardReturningMemberCheckBalanceText": "Check Balance",
+  "RewardsCardRewardsItemText": "{{availableCount}} Rewards",
+  "RewardsCardPointsItemText": "{{points}} Points",
+  "RewardsCardCashbackItemText": "{{cashbackPrice}} Points"
 }
