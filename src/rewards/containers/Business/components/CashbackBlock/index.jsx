@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import CashbackHistoryButtonIcon from '../../../../../images/membership-history.svg';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
@@ -78,9 +78,24 @@ const CashbackBlock = () => {
           {isCashbackExpired && <Tag className={styles.CashbackBlockExpiredTag}>{t('Expired')}</Tag>}
           {isExpiringTagShown ? (
             <Tag color="red" className={styles.CashbackBlockRemainingExpiredDaysTag}>
-              {isTodayExpired
-                ? t('ExpiringToday')
-                : t('ExpiringInDays', { remainingExpiredDays: remainingCashbackExpiredDays })}
+              {isTodayExpired ? (
+                t('ExpiringToday')
+              ) : (
+                <Trans
+                  t={t}
+                  i18nKey="ExpiringInDays"
+                  values={{ remainingExpiredDays: remainingCashbackExpiredDays }}
+                  components={[
+                    <span
+                      className={
+                        remainingCashbackExpiredDays <= 1
+                          ? styles.CashbackBlockRemainingExpiredDaysTagExtraTextHide
+                          : ''
+                      }
+                    />,
+                  ]}
+                />
+              )}
             </Tag>
           ) : null}
         </div>

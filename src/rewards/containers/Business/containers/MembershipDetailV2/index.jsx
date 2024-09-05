@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useMount } from 'react-use';
 import { getClassName } from '../../../../../common/utils/ui';
 import { getMerchantDisplayName } from '../../../../../redux/modules/merchant/selectors';
-import { mounted, backButtonClicked } from './redux/thunks';
+import { mounted, backButtonClicked, membershipTierTabClickedForCleverTap, closeButtonClicked } from './redux/thunks';
 import { getShouldShowBackButton } from './redux/selectors';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
@@ -23,6 +23,11 @@ const MembershipDetail = () => {
   const merchantDisplayName = useSelector(getMerchantDisplayName);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
+  const handleClickHeaderCloseButton = useCallback(() => dispatch(closeButtonClicked()), [dispatch]);
+  const handleClickMembershipTierTab = useCallback(
+    tierName => dispatch(membershipTierTabClickedForCleverTap(tierName)),
+    [dispatch]
+  );
 
   useMount(() => {
     dispatch(mounted());
@@ -39,7 +44,7 @@ const MembershipDetail = () => {
         ])}
         isShowBackButton={shouldShowBackButton}
         title={merchantDisplayName}
-        onBackArrowClick={handleClickHeaderBackButton}
+        onBackArrowClick={shouldShowBackButton ? handleClickHeaderBackButton : handleClickHeaderCloseButton}
       />
       <MemberCard />
       <RewardsButtons />
@@ -48,7 +53,7 @@ const MembershipDetail = () => {
       <MyRewards />
       <section className={styles.MembershipDetailBenefitsSection}>
         <h2 className={styles.MembershipDetailBenefitsTitle}>{t('MembershipBenefits')}</h2>
-        <MembershipTiersTabs />
+        <MembershipTiersTabs onClickMembershipTierTab={handleClickMembershipTierTab} />
       </section>
       <MemberPrompt />
     </Frame>

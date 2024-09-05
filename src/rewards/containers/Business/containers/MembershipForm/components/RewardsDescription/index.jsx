@@ -2,8 +2,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import RewardsJoinMembershipImage from '../../../../../../../images/rewards-join-membership.svg';
-import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import { getJoinMembershipRewardList } from '../../redux/selectors';
+import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './RewardsDescription.module.scss';
 
 const RewardsDescription = () => {

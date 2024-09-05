@@ -8,7 +8,7 @@ import {
   isGCashMiniProgram,
   toCapitalize,
 } from '../../../../common/utils';
-import { BECOME_MERCHANT_MEMBER_METHODS, MEMBER_LEVELS } from '../../../../common/utils/constants';
+import { BECOME_MERCHANT_MEMBER_METHODS, MEMBER_LEVELS, PATH_NAME_MAPPING } from '../../../../common/utils/constants';
 import { isAlipayMiniProgram } from '../../../../common/utils/alipay-miniprogram-client';
 import { getFeatureFlagResult } from '../../../../redux/modules/growthbook/selectors';
 import { getIsLogin } from '../../../../redux/modules/user/selectors';
@@ -26,24 +26,59 @@ export const getIsAlipayMiniProgram = () => isAlipayMiniProgram();
 
 export const getIsWeb = () => !isWebview() && !isAlipayMiniProgram();
 
-export const getSource = () => getQueryString('source');
-
 export const getBusiness = () => getQueryString('business');
 
+export const getQuerySource = () => getQueryString('source');
+
 export const getIsNotLoginInWeb = createSelector(getIsLogin, getIsWeb, (isLogin, isWeb) => !isLogin && isWeb);
+
+export const getSource = state => state.common.source;
 
 /** Router */
 export const getRouter = state => state.router;
 
 export const getLocation = state => state.router.location;
 
+export const getLocationPathname = state => state.router.location.pathname;
+
 /**
  * Derived selectors
  */
 
+// TODO: change name to query
 export const getIsFromJoinMembershipUrlClick = createSelector(
-  getSource,
-  source => source === BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.JOIN_MEMBERSHIP_URL_CLICK
+);
+
+// TODO: change name to query
+export const getIsFromReceiptJoinMembershipUrlQRScan = createSelector(
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.RECEIPT_JOIN_MEMBERSHIP_URL_QR_SCAN
+);
+
+// TODO: change name to query
+export const getIsFromReceiptMembershipDetailQRScan = createSelector(
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.RECEIPT_MEMBERSHIP_DETAIL_QR_SCAN
+);
+
+// TODO: change name to query
+export const getIsFromEarnedCashbackQRScan = createSelector(
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.EARNED_CASHBACK_QR_SCAN
+);
+
+// TODO: change name to query
+export const getIsFromSeamlessLoyaltyQrScan = createSelector(
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN
+);
+
+// TODO: change name to query
+export const getIsFromThankYouCashbackClick = createSelector(
+  getQuerySource,
+  querySource => querySource === BECOME_MERCHANT_MEMBER_METHODS.SEAMLESS_LOYALTY_QR_SCAN
 );
 
 export const getLocationSearch = createSelector(getLocation, location => location.search);
@@ -95,23 +130,30 @@ export const getIsMembershipBenefitsShown = createSelector(
   (newTierBenefitRedesign, membershipTierList) => newTierBenefitRedesign.length > 0 && membershipTierList.length > 0
 );
 
+export const getIsJoinMembershipPathname = createSelector(
+  getLocationPathname,
+  locationPathName =>
+    locationPathName ===
+    `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.SIGN_UP}`
+);
+
 export const getMerchantMembershipTiersBenefits = createSelector(
-  getIsFromJoinMembershipUrlClick,
+  getIsJoinMembershipPathname,
   getCustomerTierLevel,
   getNewTierBenefitRedesign,
   getMembershipTierList,
-  (isFromJoinMembershipUrlClick, customerTierLevel, newTierBenefitRedesign, membershipTierList) => {
+  (isJoinMembershipPathname, customerTierLevel, newTierBenefitRedesign, membershipTierList) => {
     if (newTierBenefitRedesign.length === 0) {
       return [];
     }
 
     return newTierBenefitRedesign.map(benefit => {
       const { level } = benefit;
-      const isLocked = benefit.level > (isFromJoinMembershipUrlClick ? MEMBER_LEVELS.MEMBER : customerTierLevel);
+      const isLocked = benefit.level > (isJoinMembershipPathname ? MEMBER_LEVELS.MEMBER : customerTierLevel);
       const currentTier = membershipTierList.find(tier => tier.level === level) || {};
       let prompt = null;
 
-      if (isFromJoinMembershipUrlClick) {
+      if (isJoinMembershipPathname) {
         if (membershipTierList.length > 1) {
           prompt =
             benefit.level === MEMBER_LEVELS.MEMBER

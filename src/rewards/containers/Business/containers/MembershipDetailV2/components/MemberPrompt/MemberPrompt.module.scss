@@ -3,6 +3,11 @@
   @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-leading-loose;
 }
 
+.NewMemberIconsContainer,
+.ReturningMemberIconsContainer {
+  @apply tw-flex tw-items-center tw-justify-center;
+}
+
 .NewMemberIcon,
 .ReturningMemberIcon {
   @apply tw-mb-8 sm:tw-mb-8px tw-rounded-full tw-overflow-hidden;

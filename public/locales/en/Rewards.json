@@ -44,6 +44,18 @@
   "NotClaimReachLimitReturningMemberTitle": "Oops, you've exceeded your cashback limit for today.",
   "NotClaimReachMerchantLimitReturningMemberTitle": "The cashback is processed, you will receive a confirmation SMS.",
   "NotClaimDefaultReturningMemberTitle": "Something went wrong. Please scan the QR again, or ask the staff for help.",
+  "ReceiptClaimedRepeatTitle": "Oops! You have already claimed {{receiptRewards}} for this order",
+  "ReceiptNotClaimedReachLimitTitle": "You’ve reached the daily {{receiptRewardType}} claim limit",
+  "ReceiptNotClaimedDefaultTitle": "Something went wrong with claiming {{receiptRewards}}",
+  "ReceiptNotClaimedDefaultDescription": "Please scan the QR again, or ask the staff for help.",
+  "ReceiptClaimedSomeElseTitle": "Oops! Someone else has already claimed {{receiptRewards}} for this order",
+  "ReceiptNotClaimedExpiredTitle": "Oops! This QR code has already expired",
+  "ReceiptNotClaimedCancelledNoTransactionTitle": "Transaction error. Could not claim rewards",
+  "ReceiptBindCustomerFailedTitle": "Something went wrong.",
+  "ReceiptEarnedOnlyCashbackTitle": "You’ve claimed {{receiptCashbackValue}} cashback!",
+  "ReceiptEarnedOnlyPointsTitle": "You’ve claimed {{receiptPointsValue}} points!",
+  "ReceiptEarnedPointsAndCashbackTitle": "You’ve claimed {{receiptPointsValue}} points & {{receiptCashbackValue}} cashback!",
+  "YouAreNowAMember": "You are now a Member",
   "DiscountValueText": "{{discount}} off",
   "History": "History",
   "Expired": "Expired",
@@ -90,6 +102,7 @@
   "Points": "Points",
   "MyRewards": "My Rewards",
   "Rewards": "Rewards",
+  "Reward": "Reward",
   "UniquePromoListEmptyTitle": "You don’t have any rewards yet",
   "EarnedPointsPromptDrawerTitle": "How to use points",
   "EarnedPointsPromptDrawerDescription": "Earn points with every purchase at your favourite store. ",
@@ -142,19 +155,17 @@
   "PointsHistoryExpired": "Expiry",
   "StoreCredits": "Store Credits",
   "JoinMembershipRewardsPrompt": "Join as a Member and Get these Perks!",
+  "JoinMembershipGetRewardsTitle": "You'll get",
+  "JoinMembershipGetRewardsDescription": "Claim now and enjoy these perks!",
   "Discounts": "Discounts",
   "Vouchers": "Vouchers",
   "UnlockOneTierLevelPrompt": "You’ll unlock",
   "UnlockLevelPrompt": "You’ll unlock this tier",
   "UnlockHigherLevelPrompt": "Become a {{levelName}} Member and unlock",
-<<<<<<< HEAD
-  "ViewAll": "View all"
-=======
   "ViewAll": "View all",
   "ErrorReceiptGetRewardsNoTransaction": "Transaction not found. <0></0>Please scan the QR again later",
   "ErrorGetRewardsExpiredTitle": "Oops! This QR code has already expired",
   "ErrorGetRewardsCanceledRefundTitle": "Transaction was cancelled. Could not claim rewards",
   "BirthdayCampaignTitle": "Get Goodies on Your Birthday!",
   "BirthdayCampaignDescription": "Complete your profile to unlock"
->>>>>>> 9f2a22a12 (WB-8826: Update birthday campaign button)
 }

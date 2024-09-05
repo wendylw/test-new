@@ -341,6 +341,9 @@ export const isSiteApp = (domain = window.location.hostname) => {
   return domainList.some(d => domain.toLowerCase() === d.toLowerCase());
 };
 
+export const getIsInRewards = (pathname = window.location.pathname) =>
+  pathname.startsWith(PATH_NAME_MAPPING.REWARDS_BASE);
+
 export const getStoreId = () => getCookieVariable('__s');
 
 export const getStoreHashCode = () => getCookieVariable('__h');

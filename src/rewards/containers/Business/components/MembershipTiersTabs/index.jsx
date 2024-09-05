@@ -1,4 +1,5 @@
 import React, { useEffect, useState, createRef } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Lock, CheckCircle } from 'phosphor-react';
 import { getClassName } from '../../../../../common/utils/ui';
@@ -23,7 +24,7 @@ const getCurrentActiveBlockInfo = activeIndex => {
   return null;
 };
 
-const MembershipTiersTabs = () => {
+const MembershipTiersTabs = ({ onClickMembershipTierTab }) => {
   const isMembershipBenefitTabsShown = useSelector(getIsMembershipBenefitTabsShown);
   const merchantMembershipTiersBenefits = useSelector(getMerchantMembershipTiersBenefits);
   const isMembershipBenefitsShown = useSelector(getIsMembershipBenefitsShown);
@@ -31,9 +32,10 @@ const MembershipTiersTabs = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeBlockInfo, setActiveBlockInfo] = useState(null);
   const [elRefs, setElRefs] = useState([]);
-  const handleClickMembershipTierButton = index => {
+  const handleClickMembershipTierButton = (index, tierName) => {
     setActiveIndex(index);
     setActiveBlockInfo(getCurrentActiveBlockInfo(index));
+    onClickMembershipTierTab(tierName);
   };
 
   useEffect(() => {
@@ -74,7 +76,7 @@ const MembershipTiersTabs = () => {
                       className={membershipTiersBenefitButtonClassName}
                       data-test-id="rewards.business.membership-tiers-info-tabs.tier-tab"
                       onClick={() => {
-                        handleClickMembershipTierButton(index);
+                        handleClickMembershipTierButton(index, tier.name);
                       }}
                     >
                       {tier.isLocked && <Lock size={16} />}
@@ -150,6 +152,13 @@ const MembershipTiersTabs = () => {
       </div>
     </section>
   );
+};
+
+MembershipTiersTabs.propTypes = {
+  onClickMembershipTierTab: PropTypes.func,
+};
+MembershipTiersTabs.defaultProps = {
+  onClickMembershipTierTab: () => {},
 };
 
 MembershipTiersTabs.displayName = 'MembershipTiersTabs';
