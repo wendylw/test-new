@@ -79,6 +79,12 @@ const Rewards = ({
   onViewMembershipDetailClick,
 }) => {
   const { t } = useTranslation('OrderingThankYou');
+  const handleRewardsBannerClick = useCallback(() => {
+    onViewMembershipDetailClick('Rewards Banner');
+  }, [onViewMembershipDetailClick]);
+  const handleCheckBalanceButtonClick = useCallback(() => {
+    onViewMembershipDetailClick('Check Balance Button');
+  }, [onViewMembershipDetailClick]);
 
   return (
     <>
@@ -90,7 +96,7 @@ const Rewards = ({
             data-test-id="ordering.thank-you.rewards.rewards-banner-button"
             className="rewards-banner__card-container"
             contentClassName="rewards-banner__card-content flex flex-middle flex-space-between padding-smaller"
-            onClick={onViewMembershipDetailClick}
+            onClick={handleRewardsBannerClick}
           >
             <div className="rewards-banner__card-icon">
               <ObjectFitImage noCompression src={RewardsIcon} alt="StoreHub Rewards Icon" />
@@ -122,7 +128,7 @@ const Rewards = ({
                 className="rewards-card__check-balance-button"
                 contentClassName="rewards-card__check-balance-button-content"
                 data-test-id="ordering.thank-you.rewards.rewards-card.check-balance-button"
-                onClick={onViewMembershipDetailClick}
+                onClick={handleCheckBalanceButtonClick}
               >
                 {t('RewardsCardReturningMemberCheckBalanceText')}
               </Button>
