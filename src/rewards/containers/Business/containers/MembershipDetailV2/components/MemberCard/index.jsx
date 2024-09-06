@@ -42,6 +42,7 @@ const MemberCard = () => {
           {isLogin && (
             <Button
               data-test-id="rewards.business.membership-detail.member-card.view-profile-button"
+              className={styles.MemberCardViewProfileButton}
               contentClassName={styles.MemberCardViewProfileButtonContent}
               type="text"
               theme="ghost"
