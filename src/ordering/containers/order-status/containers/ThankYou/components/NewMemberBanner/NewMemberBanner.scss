@@ -3,6 +3,7 @@
 $new-member-banner-color: rgba(200, 225, 255, 0.15);
 $new-member-banner-color-light: rgba(42, 186, 162, 0.15);
 $new-member-banner-color-dark: rgba(151, 196, 250, 0.15);
+$icon-border-color: #5cadfc;
 
 .new-member-banner {
   &__card-wrapper {
@@ -22,6 +23,7 @@ $new-member-banner-color-dark: rgba(151, 196, 250, 0.15);
   &__card-icon {
     width: 24px;
     height: 24px;
+    border: 2px solid $icon-border-color;
     border-radius: 50%;
 
     > figure {

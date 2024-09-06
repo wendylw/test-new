@@ -17,7 +17,7 @@ import CashbackBanner from './components/CashbackBanner';
 import OrderSummary from './components/OrderSummary';
 import MemberBanner from './components/MemberBanner';
 import NewMemberBanner from './components/NewMemberBanner';
-import Rewards from './components/Rewards';
+import MemberRewards from './components/MemberRewards';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
 import config from '../../../../../config';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -1059,7 +1059,7 @@ export class ThankYou extends PureComponent {
         {shouldShowMemberBanner && <MemberBanner onJoinMembershipClick={this.handleJoinMembership} />}
         {isJoinMembershipNewMember && <NewMemberBanner />}
         {shouldShowRewards ? (
-          <Rewards onViewMembershipDetailClick={this.handleViewMembershipDetail} />
+          <MemberRewards onViewMembershipDetailClick={this.handleViewMembershipDetail} />
         ) : shouldShowCashbackCard ? (
           <CashbackInfo />
         ) : null}

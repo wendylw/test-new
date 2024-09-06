@@ -20,7 +20,7 @@ import {
 } from '../../redux/selector';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
-import './Rewards.scss';
+import './MemberRewards.scss';
 
 const MemberRewardsContainer = ({ isJoinMembershipNewMember, children, onClickContainer }) => {
   const handleContainerClick = useCallback(
@@ -67,7 +67,7 @@ MemberRewardsContainer.defaultProps = {
   onClickContainer: () => {},
 };
 
-const Rewards = ({
+const MemberRewards = ({
   shouldShowRewardsBanner,
   isJoinMembershipNewMember,
   isMerchantEnabledCashback,
@@ -178,9 +178,9 @@ const Rewards = ({
   );
 };
 
-Rewards.displayName = 'Rewards';
+MemberRewards.displayName = 'Rewards';
 
-Rewards.propTypes = {
+MemberRewards.propTypes = {
   shouldShowRewardsBanner: PropTypes.bool,
   isJoinMembershipNewMember: PropTypes.bool,
   isMerchantEnabledCashback: PropTypes.bool,
@@ -192,7 +192,7 @@ Rewards.propTypes = {
   onViewMembershipDetailClick: PropTypes.func,
 };
 
-Rewards.defaultProps = {
+MemberRewards.defaultProps = {
   shouldShowRewardsBanner: false,
   isJoinMembershipNewMember: false,
   isMerchantEnabledCashback: false,
@@ -213,4 +213,4 @@ export default connect(state => ({
   customerAvailablePointsBalance: getCustomerAvailablePointsBalance(state),
   rewardsAvailableCount: getCustomerRewardsTotal(state),
   customerCashbackPrice: getCustomerCashbackPrice(state),
-}))(Rewards);
+}))(MemberRewards);
