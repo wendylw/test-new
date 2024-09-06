@@ -12,6 +12,7 @@ import {
   DELIVERY_STATUS_IMAGES_MAPPING,
   NOT_DELIVERY_STATUS_IMAGES_MAPPING,
 } from '../constants';
+import { getPrice } from '../../../../../../common/utils';
 import {
   getOrder,
   getOrderStatus,
@@ -39,8 +40,18 @@ import {
   getIsLoadCustomerRequestCompleted,
   getUserCustomerId,
   getUserConsumerId,
+  getCustomerRewardsTotal,
+  getCustomerCashback,
 } from '../../../../../redux/modules/app';
-import { getIsMerchantMembershipEnabled } from '../../../../../../redux/modules/merchant/selectors';
+import {
+  getIsMerchantMembershipEnabled,
+  getIsMerchantEnabledCashback,
+  getIsMerchantEnabledStoreCredits,
+  getMerchantCountry as getMembershipMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+} from '../../../../../../redux/modules/merchant/selectors';
+import { getIsJoinMembershipNewMember } from '../../../../../../redux/modules/membership/selectors';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
@@ -363,12 +374,38 @@ export const getShouldShowMemberBanner = createSelector(
     isLogin && isMerchantMembershipEnabled && !hasUserJoinedBusinessMembership
 );
 
-export const getShouldShowMemberCard = createSelector(
+export const getShouldShowRewards = createSelector(
   getUserIsLogin,
   getIsMerchantMembershipEnabled,
   getHasUserJoinedBusinessMembership,
   (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership) =>
     isLogin && isMerchantMembershipEnabled && hasUserJoinedBusinessMembership
+);
+
+export const getShouldShowRewardsBanner = createSelector(
+  getIsJoinMembershipNewMember,
+  getCustomerRewardsTotal,
+  (isJoinMembershipNewMember, customerRewardsTotal) => customerRewardsTotal > 0 && !isJoinMembershipNewMember
+);
+
+export const getIsMerchantCashbackOrStoreCreditsEnabled = createSelector(
+  getIsMerchantEnabledCashback,
+  getIsMerchantEnabledStoreCredits,
+  (isMerchantEnabledCashback, isMerchantEnabledStoreCredits) =>
+    isMerchantEnabledCashback || isMerchantEnabledStoreCredits
+);
+
+export const getCustomerCashbackPrice = createSelector(
+  getCustomerCashback,
+  getMembershipMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+  (customerCashback, membershipMerchantCountry, merchantCurrency, merchantLocale) =>
+    getPrice(customerCashback, {
+      country: membershipMerchantCountry,
+      currency: merchantCurrency,
+      locale: merchantLocale,
+    })
 );
 
 // WB-7383: we need to consider the consumerId from cashbackInfo to make user able to see cashback card immediately

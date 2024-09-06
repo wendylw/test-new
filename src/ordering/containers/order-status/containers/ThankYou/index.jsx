@@ -18,7 +18,6 @@ import OrderSummary from './components/OrderSummary';
 import MemberBanner from './components/MemberBanner';
 import NewMemberBanner from './components/NewMemberBanner';
 import Rewards from './components/Rewards';
-import MemberCard from './components/MemberCard';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
 import config from '../../../../../config';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -112,7 +111,7 @@ import {
   getShouldJoinBusinessMembership,
   getIsRewardInfoReady,
   getShouldShowMemberBanner,
-  getShouldShowMemberCard,
+  getShouldShowRewards,
   getIsCashbackClaimable,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
@@ -682,10 +681,10 @@ export class ThankYou extends PureComponent {
     goToJoinMembershipPage();
   };
 
-  handleViewMembershipDetail = () => {
+  handleViewMembershipDetail = trackName => {
     const { goToMembershipDetailPage } = this.props;
 
-    CleverTap.pushEvent('Thank You Page - Click Membership Card');
+    CleverTap.pushEvent(`Thank You Page - Click ${trackName}`);
 
     goToMembershipDetailPage();
   };
@@ -1046,7 +1045,7 @@ export class ThankYou extends PureComponent {
     const {
       isJoinMembershipNewMember,
       shouldShowMemberBanner,
-      shouldShowMemberCard,
+      shouldShowRewards,
       shouldShowCashbackCard,
       isRewardInfoReady,
     } = this.props;
@@ -1059,9 +1058,8 @@ export class ThankYou extends PureComponent {
       <>
         {shouldShowMemberBanner && <MemberBanner onJoinMembershipClick={this.handleJoinMembership} />}
         {isJoinMembershipNewMember && <NewMemberBanner />}
-        <Rewards />
-        {shouldShowMemberCard ? (
-          <MemberCard onViewMembershipDetailClick={this.handleViewMembershipDetail} />
+        {shouldShowRewards ? (
+          <Rewards onViewMembershipDetailClick={this.handleViewMembershipDetail} />
         ) : shouldShowCashbackCard ? (
           <CashbackInfo />
         ) : null}
@@ -1235,7 +1233,7 @@ ThankYou.propTypes = {
   isCashbackClaimable: PropTypes.bool,
   isUseStorehubLogistics: PropTypes.bool,
   profileModalVisibility: PropTypes.bool,
-  shouldShowMemberCard: PropTypes.bool,
+  shouldShowRewards: PropTypes.bool,
   shouldShowMemberBanner: PropTypes.bool,
   shouldShowCashbackCard: PropTypes.bool,
   shouldShowCashbackBanner: PropTypes.bool,
@@ -1297,7 +1295,7 @@ ThankYou.defaultProps = {
   isOrderCancellable: false,
   isCashbackClaimable: false,
   isCashbackAvailable: false,
-  shouldShowMemberCard: false,
+  shouldShowRewards: false,
   shouldShowMemberBanner: false,
   isUseStorehubLogistics: false,
   profileModalVisibility: false,
@@ -1368,7 +1366,7 @@ export default compose(
       redirectFrom: getRedirectFrom(state),
       isRewardInfoReady: getIsRewardInfoReady(state),
       shouldShowMemberBanner: getShouldShowMemberBanner(state),
-      shouldShowMemberCard: getShouldShowMemberCard(state),
+      shouldShowRewards: getShouldShowRewards(state),
       isCashbackClaimable: getIsCashbackClaimable(state),
       shouldJoinBusinessMembership: getShouldJoinBusinessMembership(state),
       isJoinMembershipNewMember: getIsJoinMembershipNewMember(state),

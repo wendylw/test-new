@@ -942,7 +942,7 @@ export const actions = {
     try {
       dispatch({ type: types.LOAD_CONSUMER_INFO_PENDING });
 
-      const result = await getCustomerInfo({ consumerId, business });
+      const result = await getCustomerInfo({ consumerId, business, rewardsTotal: true });
 
       dispatch({
         type: types.LOAD_CONSUMER_INFO_FULFILLED,
@@ -2247,6 +2247,10 @@ export const getCustomerTierLevelName = createSelector(getCustomerData, customer
 
 export const getCustomerAvailablePointsBalance = createSelector(getCustomerData, customerData =>
   getDecimalNumber(_get(customerData, 'availablePointsBalance', 0))
+);
+
+export const getCustomerRewardsTotal = createSelector(getCustomerData, customerData =>
+  getDecimalNumber(_get(customerData, 'rewardsTotal', 0))
 );
 
 export const getHasUserJoinedBusinessMembership = createSelector(
