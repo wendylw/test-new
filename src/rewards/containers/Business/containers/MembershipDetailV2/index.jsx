@@ -18,7 +18,6 @@ import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MembershipTiersTabs from '../../components/MembershipTiersTabs';
 import MemberCard from './components/MemberCard';
-import CashbackStoreCreditsCard from './components/CashbackStoreCreditsCard';
 import RewardsButtons from './components/RewardsButtons';
 import PointsRewards from './components/PointsRewards';
 import BirthdayCampaign from './components/BirthdayCampaign';
@@ -62,7 +61,6 @@ const MembershipDetail = () => {
         onBackArrowClick={shouldShowBackButton ? handleClickHeaderBackButton : handleClickHeaderCloseButton}
       />
       <MemberCard />
-      <CashbackStoreCreditsCard />
       <RewardsButtons />
       <PointsRewards />
       <BirthdayCampaign />
