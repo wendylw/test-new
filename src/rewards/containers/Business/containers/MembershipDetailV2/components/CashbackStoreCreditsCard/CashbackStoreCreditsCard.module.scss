@@ -1,0 +1,22 @@
+.CashbackStoreCreditsCardSection {
+  @apply tw-p-12 sm:tw-p-12px;
+}
+
+.CashbackStoreCreditsCard {
+  @apply tw-rounded tw-w-full tw-overflow-hidden;
+
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+}
+
+.CashbackStoreCreditsCardExpiredTag,
+.CashbackStoreCreditsCardRemainingExpiredDaysTag {
+  @apply tw-font-bold;
+
+  span {
+    @apply tw-text-xs;
+  }
+}
+
+.CashbackStoreCreditsCardRemainingExpiredDaysTagExtraTextHide {
+  display: none;
+}
