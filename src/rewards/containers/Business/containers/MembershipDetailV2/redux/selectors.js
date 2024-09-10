@@ -377,7 +377,7 @@ export const getCustomerCurrentStatusPromptI18nInfo = createSelector(
       ),
       [MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE]: getPrice(maintainTierSpendingThreshold, priceOptional),
       [MEMBERSHIP_TIER_I18N_PARAM_KEYS.POINTS_TOTAL_EARNED]: customerTierPointsTotalEarned,
-      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_POINTS_THRESHOLD]: nextTierPointsThreshold,
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_POINTS_THRESHOLD]: nextTierPointsThreshold || 0,
       [MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_TOTAL_POINTS]: maintainPointsThreshold,
       [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_REVIEW_DATE]: formatTimeToDateString(
         merchantCountry,

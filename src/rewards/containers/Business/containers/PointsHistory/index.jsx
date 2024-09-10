@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMount } from 'react-use';
+import { useLifecycles } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import RewardsPointsHistoryBannerImage from '../../../../../images/rewards-points-history-banner.svg';
 import CleverTap from '../../../../../utils/clevertap';
@@ -27,9 +27,12 @@ const PointsHistory = () => {
     dispatch(PointsHistoryActions.earnedPointsPromptDrawerShown());
   }, [dispatch]);
 
-  useMount(() => {
-    dispatch(mounted());
-  });
+  useLifecycles(
+    () => {
+      dispatch(mounted());
+    },
+    () => dispatch(PointsHistoryActions.pointsHistoryReset())
+  );
 
   return (
     <Frame>
