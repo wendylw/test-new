@@ -67,6 +67,11 @@ export const getUserLastName = createSelector(
   loadProfileRequestData => loadProfileRequestData.lastName
 );
 
+export const getUserBirthdayChangeAllowed = createSelector(
+  getUserProfileData,
+  loadProfileRequestData => loadProfileRequestData.birthdayChangeAllowed
+);
+
 export const getGuestLoginRequest = state => state.user.guestLoginRequest;
 
 export const getGuestLoginRequestData = createSelector(

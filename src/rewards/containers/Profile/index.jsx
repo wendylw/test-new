@@ -18,7 +18,8 @@ const Profile = ({ show, showSkipButton, onSave, onSkip }) => {
   const onSkipButtonClick = useCallback(() => {
     CleverTap.pushEvent('Complete profile page - Click skip for now');
     onSkip();
-  }, [onSkip]);
+    dispatch(profileActions.resetProfilePageData());
+  }, [onSkip, dispatch]);
   const onSaveButtonClick = useCallback(() => {
     onSave();
     dispatch(profileActions.resetProfilePageData());
