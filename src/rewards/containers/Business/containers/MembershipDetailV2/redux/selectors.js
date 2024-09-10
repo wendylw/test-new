@@ -66,6 +66,12 @@ import {
   getIsNewMember,
 } from '../../../redux/common/selectors';
 
+export const getIsUseCashbackPromptDrawerShow = state =>
+  state.business.membershipDetailV2.isUseCashbackPromptDrawerShow;
+
+export const getIsUseStoreCreditsPromptDrawerShow = state =>
+  state.business.membershipDetailV2.isUseStoreCreditsPromptDrawerShow;
+
 export const getLoadMerchantBirthdayCampaignData = state =>
   state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.data;
 

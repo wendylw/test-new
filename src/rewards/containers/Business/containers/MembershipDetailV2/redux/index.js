@@ -13,6 +13,8 @@ import {
 } from './thunks';
 
 const initialState = {
+  isUseCashbackPromptDrawerShow: false,
+  isUseStoreCreditsPromptDrawerShow: false,
   fetchUniquePromoListBannersLimit: 2,
   loadMerchantBirthdayCampaignRequest: {
     data: null,
@@ -30,6 +32,20 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'rewards/business/membershipDetail',
   initialState,
+  reducers: {
+    useCashbackPromptDrawerShown: state => {
+      state.isUseCashbackPromptDrawerShow = true;
+    },
+    useCashbackPromptDrawerHidden: state => {
+      state.isUseCashbackPromptDrawerShow = false;
+    },
+    useStoreCreditsPromptDrawerShown: state => {
+      state.isUseStoreCreditsPromptDrawerShow = true;
+    },
+    useStoreCreditsPromptDrawerHidden: state => {
+      state.isUseStoreCreditsPromptDrawerShow = false;
+    },
+  },
   extraReducers: {
     [showWebProfileForm.fulfilled.type]: state => {
       state.profileModalRequest.show = true;
