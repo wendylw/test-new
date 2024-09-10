@@ -1,4 +1,5 @@
 import _isArray from 'lodash/isArray';
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import i18next from 'i18next';
 import {
@@ -24,6 +25,7 @@ import {
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import { getReceiptOrderRewardsStatusCategories } from '../utils';
+import { getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledLoyalty,
@@ -64,13 +66,43 @@ import {
   getIsNewMember,
 } from '../../../redux/common/selectors';
 
-export const getIsProfileModalShow = state => state.business.membershipDetailV2.isProfileModalShow;
+export const getLoadMerchantBirthdayCampaignData = state =>
+  state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.data;
 
-export const getFetchUniquePromoListBannersLimit = state => state.business.membershipDetailV2.isProfileModalShow;
+export const getLoadMerchantBirthdayCampaignStatus = state =>
+  state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.status;
+
+export const getLoadMerchantBirthdayCampaignError = state =>
+  state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.error;
+
+export const getIsProfileModalShow = state => state.business.membershipDetailV2.profileModalRequest.show;
+
+export const getIsProfileModalSkipButtonShow = state =>
+  state.business.membershipDetailV2.profileModalRequest.showSkipButton;
+
+export const getShowProfileModalSource = state => state.business.membershipDetailV2.profileModalRequest.source;
+
+export const getPointsRewardSelectedId = state => state.business.membershipDetailV2.pointsRewardSelectedId;
 
 /**
  * Derived selectors
  */
+
+export const getIsBirthdayCampaignActivated = createSelector(
+  getLoadMerchantBirthdayCampaignData,
+  loadMerchantBirthdayCampaignData => _get(loadMerchantBirthdayCampaignData, 'isActivated', false)
+);
+
+export const getIsBirthdayCampaignEntryShow = createSelector(
+  getIsBirthdayCampaignActivated,
+  getIsUserProfileIncomplete,
+  (isBirthdayCampaignActivated, isUserProfileIncomplete) => isBirthdayCampaignActivated && isUserProfileIncomplete
+);
+
+export const getFetchUniquePromoListBannersLimit = createSelector(
+  getIsProfileModalShow,
+  isProfileModalShow => isProfileModalShow
+);
 
 export const getIsUserFromOrdering = createSelector(
   getSource,

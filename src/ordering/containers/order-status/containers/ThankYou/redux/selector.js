@@ -41,7 +41,10 @@ import {
   getUserCustomerId,
   getUserConsumerId,
 } from '../../../../../redux/modules/app';
-import { getIsMerchantMembershipEnabled } from '../../../../../../redux/modules/merchant/selectors';
+import {
+  getIsLoadMerchantRequestCompleted,
+  getIsMerchantMembershipEnabled,
+} from '../../../../../../redux/modules/merchant/selectors';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
@@ -393,4 +396,14 @@ export const getShouldShowEarnedCashback = createSelector(
   getHasCashbackClaimed,
   (hasCashback, hasOrderPaid, userCustomerId, orderCustomerId, cashbackCustomerId, hasCashbackClaimed) =>
     hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === (orderCustomerId || cashbackCustomerId)
+);
+
+// Expected the enabled membership merchant's customers see the member card information first on the page. So hide complete profile page
+// Merchants disabled membership still hope that users will complete their profile information as much as possible.
+export const getShouldProfileModalShow = createSelector(
+  getOrderStatus,
+  getIsLoadMerchantRequestCompleted,
+  getIsMerchantMembershipEnabled,
+  (orderStatus, isLoadMerchantRequestCompleted, isMerchantMembershipEnabled) =>
+    orderStatus && isLoadMerchantRequestCompleted && !isMerchantMembershipEnabled
 );

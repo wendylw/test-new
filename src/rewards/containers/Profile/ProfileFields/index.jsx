@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { getUserBirthdayChangeAllowed } from '../../../../redux/modules/user/selectors';
 import {
   getIsFirstNameInputErrorDisplay,
   getEmailErrorType,
@@ -28,6 +29,7 @@ const ProfileFields = () => {
   const dispatch = useDispatch();
   const emailInputRef = useRef(null);
   const birthdayInputRef = useRef(null);
+  const userBirthdayChangeAllowed = useSelector(getUserBirthdayChangeAllowed);
   const profileFirstName = useSelector(getProfileFirstName);
   const profileLastName = useSelector(getProfileLastName);
   const profileEmail = useSelector(getProfileEmail);
@@ -174,6 +176,7 @@ const ProfileFields = () => {
                     min={BIRTHDAY_DATE.MIN}
                     max={BIRTHDAY_DATE.MAX}
                     data-test-id="ordering.profile.birthday-input"
+                    disabled={!userBirthdayChangeAllowed}
                     onChange={handleSelectBirthDay}
                   />
                   {/* Reference input text is for most can */}
@@ -184,6 +187,7 @@ const ProfileFields = () => {
                     placeholder={PROFILE_BIRTHDAY_FORMAT}
                     type="text"
                     data-test-id="ordering.profile.birthday-picker"
+                    disabled={!userBirthdayChangeAllowed}
                     onClick={e => {
                       try {
                         e.stopPropagation();
@@ -207,6 +211,7 @@ const ProfileFields = () => {
                   placeholder={PROFILE_BIRTHDAY_FORMAT}
                   type="text"
                   data-test-id="ordering.profile.birthday-input"
+                  disabled={!userBirthdayChangeAllowed}
                   onChange={handleChangeBirthDay}
                   onFocus={handleFocusBirthdayInput}
                   onBlur={handleBlurBirthdayInput}

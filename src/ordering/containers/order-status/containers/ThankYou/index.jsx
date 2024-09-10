@@ -111,6 +111,7 @@ import {
   getShouldShowMemberBanner,
   getShouldShowMemberCard,
   getIsCashbackClaimable,
+  getShouldProfileModalShow,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -1064,7 +1065,6 @@ export class ThankYou extends PureComponent {
       history,
       match,
       order,
-      orderStatus,
       storeRating,
       businessUTCOffset,
       onlineStoreInfo,
@@ -1074,6 +1074,7 @@ export class ThankYou extends PureComponent {
       profileModalVisibility,
       hideProfileModal,
       orderCancellationReasonAsideVisible,
+      shouldProfileModalShow,
     } = this.props;
     const date = new Date();
     const { total } = order || {};
@@ -1085,7 +1086,7 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-test-id="ordering.thank-you.container"
       >
-        {orderStatus && <Profile onClose={hideProfileModal} show={profileModalVisibility} />}
+        {shouldProfileModalShow && <Profile onClose={hideProfileModal} show={profileModalVisibility} />}
         <>
           <HybridHeader
             headerRef={ref => {
@@ -1240,6 +1241,7 @@ ThankYou.propTypes = {
   orderCancellationReasonAsideVisible: PropTypes.bool,
   updateShippingTypRequestErrorMessage: PropTypes.string,
   updateShippingTypeRequestErrorCategory: PropTypes.string,
+  shouldProfileModalShow: PropTypes.bool,
   updateCancellationReasonVisibleState: PropTypes.func,
 };
 
@@ -1304,6 +1306,7 @@ ThankYou.defaultProps = {
   updateShippingTypRequestErrorMessage: '',
   orderCancellationReasonAsideVisible: false,
   updateShippingTypeRequestErrorCategory: '',
+  shouldProfileModalShow: false,
   updateCancellationReasonVisibleState: () => {},
   appActions: {
     loginByBeepApp: () => {},
@@ -1358,6 +1361,7 @@ export default compose(
       shouldShowMemberCard: getShouldShowMemberCard(state),
       isCashbackClaimable: getIsCashbackClaimable(state),
       shouldJoinBusinessMembership: getShouldJoinBusinessMembership(state),
+      shouldProfileModalShow: getShouldProfileModalShow(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(

@@ -50,7 +50,7 @@ const MyRewards = () => {
           theme="info"
           className={styles.MyRewardsSectionViewAllButton}
           contentClassName={styles.MyRewardsSectionViewAllButtonContent}
-          data-test-id="rewards.membership-detail.my-rewards.view-all-button"
+          data-test-id="rewards.business.membership-detail.my-rewards.view-all-button"
           onClick={handleClickViewAllButton}
         >
           {t('ViewAll')} ({uniquePromoListLength})
