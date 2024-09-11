@@ -68,19 +68,6 @@ export const { reducer, actions } = createSlice({
       state.loadMerchantBirthdayCampaignRequest.status = API_REQUEST_STATUS.REJECTED;
       state.loadMerchantBirthdayCampaignRequest.error = error;
     },
-    [fetchMerchantBirthdayCampaign.pending.type]: state => {
-      state.loadMerchantBirthdayCampaignRequest.status = API_REQUEST_STATUS.PENDING;
-      state.loadMerchantBirthdayCampaignRequest.error = null;
-    },
-    [fetchMerchantBirthdayCampaign.fulfilled.type]: (state, { payload }) => {
-      state.loadMerchantBirthdayCampaignRequest.data = payload;
-      state.loadMerchantBirthdayCampaignRequest.status = API_REQUEST_STATUS.FULFILLED;
-      state.loadMerchantBirthdayCampaignRequest.error = null;
-    },
-    [fetchMerchantBirthdayCampaign.rejected.type]: (state, { error }) => {
-      state.loadMerchantBirthdayCampaignRequest.status = API_REQUEST_STATUS.REJECTED;
-      state.loadMerchantBirthdayCampaignRequest.error = error;
-    },
   },
 });
 

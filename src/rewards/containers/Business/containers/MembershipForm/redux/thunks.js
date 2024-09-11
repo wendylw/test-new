@@ -22,16 +22,11 @@ import {
   getSource,
   getBusiness,
 } from '../../../../../redux/modules/common/selectors';
-import {
-  getReceiptNumber,
-  getChannel,
-  getStoreId,
-  getIsRequestOrderRewardsEnabled,
-} from '../../../redux/common/selectors';
+import { getStoreId, getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
+import { loadOrderRewards } from '../../../redux/common/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
 import { getShouldShowProfileForm } from './selectors';
-import { getOrderRewards } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
   'rewards/business/membershipForm/showWebProfileForm',
@@ -48,20 +43,6 @@ export const loadCustomerInfo = createAsyncThunk(
   async (_, { dispatch, getState }) => {
     const business = getBusiness(getState());
     await dispatch(fetchCustomerInfo(business));
-  }
-);
-
-export const loadOrderRewards = createAsyncThunk(
-  'rewards/business/membershipForm/loadOrderRewards',
-  async (_, { getState }) => {
-    const state = getState();
-    const business = getBusiness(state);
-    const receiptNumber = getReceiptNumber(state);
-    const channel = getChannel(state);
-
-    const result = await getOrderRewards({ receiptNumber, business, channel });
-
-    return result;
   }
 );
 

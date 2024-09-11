@@ -90,6 +90,20 @@ export const getClaimPointsRewardStatus = state => state.business.common.claimPo
 
 export const getClaimPointsRewardError = state => state.business.common.claimPointsRewardRequest.error;
 
+export const getLoadOrderRewardsRequestData = state => state.business.common.loadOrderRewardsRequest.data;
+
+export const getLoadOrderRewardsRequestStatus = state => state.business.common.loadOrderRewardsRequest.status;
+
+export const getLoadOrderRewardsRequestError = state => state.business.common.loadOrderRewardsRequest.error;
+
+export const getOrderRewardsPoints = createSelector(getLoadOrderRewardsRequestData, loadOrderRewardsRequestData =>
+  _get(loadOrderRewardsRequestData, 'points.amount', 0)
+);
+
+export const getOrderRewardsCashback = createSelector(getLoadOrderRewardsRequestData, loadOrderRewardsRequestData =>
+  _get(loadOrderRewardsRequestData, 'cashback.amount', 0)
+);
+
 export const getClaimOrderRewardsRequestData = state => state.business.common.claimOrderRewardsRequest.data;
 
 export const getClaimOrderRewardsRequestStatus = state => state.business.common.claimOrderRewardsRequest.status;
@@ -377,12 +391,6 @@ export const getIsClaimPointsRewardFulfilled = createSelector(
   claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
 );
 
-export const getIsClaimOrderRewardsCompleted = createSelector(
-  getClaimOrderRewardsRequestStatus,
-  claimOrderRewardsRequestStatus =>
-    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(claimOrderRewardsRequestStatus)
-);
-
 export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRewardError, claimPointsRewardError => {
   if (!claimPointsRewardError) {
     return null;
@@ -410,12 +418,31 @@ export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRe
   return errorI18nKeys;
 });
 
+export const getIsLoadOrderRewardsRequestFulfilled = createSelector(
+  getLoadOrderRewardsRequestStatus,
+  loadOrderRewardsRequestStatus => loadOrderRewardsRequestStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsLoadOrderRewardsRequestCompleted = createSelector(
+  getLoadOrderRewardsRequestStatus,
+  loadOrderRewardsRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadOrderRewardsRequestStatus)
+);
+
 export const getIsRequestOrderRewardsEnabled = createSelector(
   getReceiptNumber,
   getIsMerchantEnabledCashback,
   getIsMerchantMembershipPointsEnabled,
   (receiptNumber, isMerchantEnabledCashback, isMerchantMembershipPointsEnabled) =>
     receiptNumber && (isMerchantEnabledCashback || isMerchantMembershipPointsEnabled)
+);
+
+export const getIsClaimedOrderRewardsEnabled = createSelector(
+  getIsRequestOrderRewardsEnabled,
+  getOrderRewardsPoints,
+  getOrderRewardsCashback,
+  (isRequestOrderRewardsEnabled, orderRewardsPoints, orderRewardsCashback) =>
+    isRequestOrderRewardsEnabled && (orderRewardsPoints > 0 || orderRewardsCashback > 0)
 );
 
 export const getClaimOrderRewardsCashbackPrice = createSelector(
