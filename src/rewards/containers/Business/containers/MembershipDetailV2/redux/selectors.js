@@ -53,7 +53,6 @@ import {
   getCustomerCashback,
 } from '../../../../../redux/modules/customer/selectors';
 import {
-  getIsUniquePromoListBannersEmpty,
   getOrderReceiptClaimedCashback,
   getPointsRewardList,
   getRemainingCashbackExpiredDays,
@@ -417,9 +416,7 @@ export const getIsExpiringIconShown = createSelector(
 // My Rewards
 export const getIsMyRewardsSectionShow = createSelector(
   getIsMerchantMembershipPointsEnabled,
-  getIsUniquePromoListBannersEmpty,
-  (isMerchantMembershipPointsEnabled, isUniquePromoListBannersEmpty) =>
-    !isMerchantMembershipPointsEnabled && !isUniquePromoListBannersEmpty
+  isMerchantMembershipPointsEnabled => !isMerchantMembershipPointsEnabled
 );
 
 // Points Rewards
