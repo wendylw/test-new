@@ -63,7 +63,7 @@ export const { actions, reducer } = createSlice({
       state.firstName = payload;
     },
     [lastNameUpdated.fulfilled.type]: (state, { payload }) => {
-      state.lastName = payload;
+      state.lastName = payload || '';
     },
     [emailUpdated.fulfilled.type]: (state, { payload }) => {
       state.email = payload.email;

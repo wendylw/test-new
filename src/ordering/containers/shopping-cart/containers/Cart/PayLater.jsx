@@ -543,7 +543,7 @@ PayLater.defaultProps = {
 };
 
 export default compose(
-  withTranslation(['OrderingCart']),
+  withTranslation(['OrderingCart', 'ApiError']),
   connect(
     state => ({
       userIsLogin: getUserIsLogin(state),
