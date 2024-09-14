@@ -123,13 +123,22 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
 
       const state = getState();
       const isUserProfileIncomplete = getIsUserProfileIncomplete(state);
+      const isWebview = getIsWebview(state);
 
       if (isUserProfileIncomplete) {
         dispatch(setPointRewardSelectedId(id));
-        dispatch(showProfileForm({ source: SHOW_PROFILE_FROM_POINTS_REWARDS }));
+
+        if (isWebview) {
+          // native complete profile, claim order points reward immediately
+          await showCompleteProfilePageAsync({ hideSkipButton: true });
+          dispatch(claimPointsRewardAndRefreshRewardsList(id));
+        } else {
+          dispatch(showProfileForm({ source: SHOW_PROFILE_FROM_POINTS_REWARDS }));
+        }
 
         return;
       }
+
       dispatch(claimPointsRewardAndRefreshRewardsList(id));
     } else {
       CleverTap.pushEvent('Membership Details Page - Spend Points Modal - Click Cancel', {
