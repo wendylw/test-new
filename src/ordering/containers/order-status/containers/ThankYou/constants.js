@@ -12,6 +12,8 @@ import orderSuccessImage from '../../../../../images/order-success.png';
 
 const { ORDER_STATUS } = Constants;
 
+export const ORDER_SELF_DELIVERY_COURIER = 'selfDelivery';
+
 export const ORDER_CANCELLATION_REASONS = {
   TAKING_TOO_LONG_TO_FIND_RIDER: 'takingTooLongToFindRider',
   MERCHANT_CALLED_TO_CANCEL: 'merchantCalledToCancel',

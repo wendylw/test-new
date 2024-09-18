@@ -33,6 +33,7 @@ export const { reducer, actions } = createSlice({
     useStoreCreditsPromptDrawerHidden: state => {
       state.isUseStoreCreditsPromptDrawerShow = false;
     },
+    cashbackCreditsHistoryReset: () => initialState,
   },
   extraReducers: {
     [fetchCashbackHistoryList.pending.type]: state => {

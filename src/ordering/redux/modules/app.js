@@ -2189,6 +2189,7 @@ export const getIsStaticPage = () =>
     PATH_NAME_MAPPING.ORDER_DETAILS,
     PATH_NAME_MAPPING.ORDERING_LOGIN,
     PATH_NAME_MAPPING.ORDERING_PROMOTION,
+    PATH_NAME_MAPPING.SORRY,
   ].some(path => window.location.pathname.includes(path));
 
 export const getQrCodeInfoUrlType = createSelector(getQrCodeInfo, qrCodeInfoDetail =>
