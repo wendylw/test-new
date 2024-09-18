@@ -21,6 +21,7 @@ export const { reducer, actions } = createSlice({
     earnedPointsPromptDrawerHidden: state => {
       state.isEarnedPointsPromptDrawerShow = false;
     },
+    pointsHistoryReset: () => initialState,
   },
   extraReducers: {
     [fetchPointsHistoryList.pending.type]: state => {
