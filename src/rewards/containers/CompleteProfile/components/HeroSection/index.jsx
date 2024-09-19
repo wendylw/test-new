@@ -1,15 +1,33 @@
 import React from 'react';
-import CompleteProfileImage from '../../../../../images/complete-profile.svg';
+import PropTypes from 'prop-types';
 import { ObjectFitImage } from '../../../../../common/components/Image';
+import styles from './HeroSection.module.scss';
 
-const HeroSection = () => {
-  return (
-    <section>
-      <h2>Complete your Profile</h2>
-      <ObjectFitImage noCompression src={CompleteProfileImage} alt="StoreHub Complete Profile" />
-      <div>
-        <p>Unlock more rewards and special offers by completing your profile.</p>
+const HeroSection = ({ title, image, description }) => (
+  <section className={styles.HeroSection}>
+    <h2 className={styles.HeroSectionTitle}>{title}</h2>
+    {image && (
+      <div className={styles.HeroSectionImage}>
+        <ObjectFitImage noCompression src={image} alt="StoreHub Complete Profile" />
       </div>
-    </section>
-  );
+    )}
+
+    {description && <div>{description}</div>}
+  </section>
+);
+
+HeroSection.propTypes = {
+  title: PropTypes.string,
+  image: PropTypes.string,
+  description: PropTypes.node,
 };
+
+HeroSection.defaultProps = {
+  title: '',
+  image: null,
+  description: null,
+};
+
+HeroSection.displayName = 'HeroSection';
+
+export default HeroSection;

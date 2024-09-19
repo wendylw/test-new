@@ -331,5 +331,7 @@
   "UniquePromosCountText": "{{uniquePromosAvailableCount}} rewards!",
   "ErrorInputRequired": "Please fill {{fieldName}}, it is required!",
   "ErrorEmailPattern": "Please enter a valid email",
-  "ErrorInputPattern": "Please enter a valid {{fieldName}}"
+  "ErrorInputPattern": "Please enter a valid {{fieldName}}",
+  "CompleteProfileTile": "Complete your Profile",
+  "CompleteProfileDescription": "Unlock more rewards and special offers by completing your profile."
 }
