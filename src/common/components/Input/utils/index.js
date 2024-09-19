@@ -5,12 +5,12 @@ export const formRules = {
   // Required field validation
   required: {
     validator: value => !_isEmpty(value),
-    message: (fieldName, customMessage) => customMessage || i18next.t('EInvoice:ErrorInputRequired', { fieldName }),
+    message: (fieldName, customMessage) => customMessage || i18next.t('Common:ErrorInputRequired', { fieldName }),
   },
   // Email pattern validation
   email: {
     validator: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
-    message: (_, customMessage) => customMessage || i18next.t('EInvoice:ErrorEmailPattern'),
+    message: (_, customMessage) => customMessage || i18next.t('Common:ErrorEmailPattern'),
   },
   // Pattern validation
   pattern: {
@@ -22,11 +22,11 @@ export const formRules = {
 
       return true;
     },
-    message: (fieldName, customMessage) => customMessage || i18next.t('EInvoice:ErrorInputPattern', { fieldName }),
+    message: (fieldName, customMessage) => customMessage || i18next.t('Common:ErrorInputPattern', { fieldName }),
   },
   // Phone Input validation
   phone: {
-    message: (fieldName, customMessage) => customMessage || i18next.t('EInvoice:ErrorInputPattern', { fieldName }),
+    message: (fieldName, customMessage) => customMessage || i18next.t('Common:ErrorInputPattern', { fieldName }),
   },
 };
 

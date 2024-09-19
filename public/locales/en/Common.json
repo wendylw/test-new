@@ -328,5 +328,8 @@
   "LoginSessionExpiredDescription": "Please close this page and start again",
   "UnexpectedErrorOccurred": "Oops! An unexpected error has occurred",
   "More": "More",
-  "UniquePromosCountText": "{{uniquePromosAvailableCount}} rewards!"
+  "UniquePromosCountText": "{{uniquePromosAvailableCount}} rewards!",
+  "ErrorInputRequired": "Please fill {{fieldName}}, it is required!",
+  "ErrorEmailPattern": "Please enter a valid email",
+  "ErrorInputPattern": "Please enter a valid {{fieldName}}"
 }
