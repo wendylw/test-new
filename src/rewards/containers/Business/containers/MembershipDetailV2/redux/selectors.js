@@ -1,4 +1,5 @@
 import _isArray from 'lodash/isArray';
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import i18next from 'i18next';
 import {
@@ -24,6 +25,7 @@ import {
 import { getPrice, toCapitalize } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import { getReceiptOrderRewardsStatusCategories } from '../utils';
+import { getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import {
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledLoyalty,
@@ -64,13 +66,43 @@ import {
   getIsNewMember,
 } from '../../../redux/common/selectors';
 
-export const getIsProfileModalShow = state => state.business.membershipDetailV2.isProfileModalShow;
+export const getLoadMerchantBirthdayCampaignData = state =>
+  state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.data;
 
-export const getFetchUniquePromoListBannersLimit = state => state.business.membershipDetailV2.isProfileModalShow;
+export const getLoadMerchantBirthdayCampaignStatus = state =>
+  state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.status;
+
+export const getLoadMerchantBirthdayCampaignError = state =>
+  state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.error;
+
+export const getIsProfileModalShow = state => state.business.membershipDetailV2.profileModalRequest.show;
+
+export const getIsProfileModalSkipButtonShow = state =>
+  state.business.membershipDetailV2.profileModalRequest.showSkipButton;
+
+export const getShowProfileModalSource = state => state.business.membershipDetailV2.profileModalRequest.source;
+
+export const getPointsRewardSelectedId = state => state.business.membershipDetailV2.pointsRewardSelectedId;
 
 /**
  * Derived selectors
  */
+
+export const getIsBirthdayCampaignActivated = createSelector(
+  getLoadMerchantBirthdayCampaignData,
+  loadMerchantBirthdayCampaignData => _get(loadMerchantBirthdayCampaignData, 'isActivated', false)
+);
+
+export const getIsBirthdayCampaignEntryShow = createSelector(
+  getIsBirthdayCampaignActivated,
+  getIsUserProfileIncomplete,
+  (isBirthdayCampaignActivated, isUserProfileIncomplete) => isBirthdayCampaignActivated && isUserProfileIncomplete
+);
+
+export const getFetchUniquePromoListBannersLimit = createSelector(
+  getIsProfileModalShow,
+  isProfileModalShow => isProfileModalShow
+);
 
 export const getIsUserFromOrdering = createSelector(
   getSource,
@@ -156,8 +188,8 @@ export const getMembershipTierListLength = createSelector(
  * 1. current spending total's level === highest tier level: 100%
  * 2. current spending total === current tier spendThreshold: 100 * ((level - 1) / (total tier length - 1))%
  * 3. current spending total > current tier spendThreshold && current spending total < next tier spendThreshold:
- * - exceed total rate = (exceed current total / tier spendThreshold gap) * each tier rate
- * - 100 * (No.2 result + exceed total rate)% + icon radius
+ * - left total rate = (left to reach next total / tier spendThreshold gap) * each tier rate
+ * - 100 * (next level rate + left total rate)% - icon radius
  */
 export const getCustomerMemberTierProgressStyles = createSelector(
   getMembershipTierListLength,
@@ -190,9 +222,9 @@ export const getCustomerMemberTierProgressStyles = createSelector(
       spendingThreshold: nextSpendingThreshold,
       pointsThreshold: nextPointsThreshold,
     } = customerSpendingTotalNextTier;
-    // eachTierRate point is at the center of the icon (except for Tier 1)
-    // Tier 1 adds the diameter, and Tier > 1 adds the radius.
-    const iconCoveredWidth = MEMBER_ICON_WIDTH / (currentLevel > 1 ? 2 : 1);
+    // eachTierRate point is at the center of the icon
+    // Some progress bar process will be covered, should minus half icon width
+    const iconCoveredWidth = MEMBER_ICON_WIDTH / 2;
 
     if (currentLevel === highestTierLevel) {
       return { width: '100%' };
@@ -200,17 +232,19 @@ export const getCustomerMemberTierProgressStyles = createSelector(
 
     const eachTierRate = 1 / (membershipTierListLength - 1);
     const currentLevelTotalRate = eachTierRate * (currentLevel - 1);
+    const nextLevelTotalRate = eachTierRate * currentLevel;
 
     if (isMerchantMembershipPointsEnabled) {
       if (exceedCurrentLevelPoints === 0) {
         return { width: `${100 * currentLevelTotalRate}%` };
       }
 
-      const exceedPointsRate =
-        (eachTierRate * exceedCurrentLevelPoints) / (nextPointsThreshold - currentPointsThreshold);
+      const leftPointsRate =
+        (eachTierRate * (nextPointsThreshold - currentPointsThreshold - exceedCurrentLevelPoints)) /
+        (nextPointsThreshold - currentPointsThreshold);
 
       return {
-        width: `calc(${100 * (exceedPointsRate + currentLevelTotalRate)}% + ${iconCoveredWidth}px)`,
+        width: `calc(${100 * nextLevelTotalRate}% - ${100 * leftPointsRate}% - ${iconCoveredWidth}px)`,
       };
     }
 
@@ -218,11 +252,13 @@ export const getCustomerMemberTierProgressStyles = createSelector(
       return { width: `${100 * currentLevelTotalRate}%` };
     }
 
-    const exceedSpendingRate =
-      (eachTierRate * exceedCurrentLevelSpending) / (nextSpendingThreshold - currentSpendingThreshold);
+    const leftSpendingRate =
+      eachTierRate *
+      ((nextSpendingThreshold - currentSpendingThreshold - exceedCurrentLevelSpending) /
+        (nextSpendingThreshold - currentSpendingThreshold));
 
     return {
-      width: `calc(${100 * (exceedSpendingRate + currentLevelTotalRate)}% + ${iconCoveredWidth}px)`,
+      width: `calc(${100 * nextLevelTotalRate}% - ${100 * leftSpendingRate}% - ${iconCoveredWidth}px)`,
     };
   }
 );
@@ -341,7 +377,7 @@ export const getCustomerCurrentStatusPromptI18nInfo = createSelector(
       ),
       [MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_SPEND_PRICE]: getPrice(maintainTierSpendingThreshold, priceOptional),
       [MEMBERSHIP_TIER_I18N_PARAM_KEYS.POINTS_TOTAL_EARNED]: customerTierPointsTotalEarned,
-      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_POINTS_THRESHOLD]: nextTierPointsThreshold,
+      [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_TIER_POINTS_THRESHOLD]: nextTierPointsThreshold || 0,
       [MEMBERSHIP_TIER_I18N_PARAM_KEYS.MAINTAIN_TOTAL_POINTS]: maintainPointsThreshold,
       [MEMBERSHIP_TIER_I18N_PARAM_KEYS.NEXT_REVIEW_DATE]: formatTimeToDateString(
         merchantCountry,

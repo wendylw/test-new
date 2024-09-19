@@ -7,7 +7,7 @@ import Constants from '../../../../../../utils/constants';
 import { isValidUrl, copyDataToClipboard } from '../../../../../../utils/utils';
 import logger from '../../../../../../utils/monitoring/logger';
 import { formatCompletePhoneNumber } from '../utils';
-import { getOrderStoreName, getOrderDeliveryInfo } from '../redux/selector';
+import { getOrderStoreName, getOrderDeliveryInfo, getIsOrderSelfDelivery } from '../redux/selector';
 import { getIsAlipayMiniProgram } from '../../../../../redux/modules/app';
 import { getOrderStatus, getIsUseStorehubLogistics, getOrder, getOrderStoreInfo } from '../../../redux/selector';
 import Image from '../../../../../../components/Image';
@@ -116,6 +116,7 @@ function RiderInfo({
   inApp,
   visitReportPage,
   isAlipayMiniProgram,
+  isOrderSelfDelivery,
 }) {
   const { t } = useTranslation('OrderingThankYou');
   const { trackingUrl, courier, driverPhone, bestLastMileETA, worstLastMileETA } = orderDeliveryInfo || {};
@@ -271,7 +272,7 @@ function RiderInfo({
           {startedDeliveryStates ? (
             <>
               {callStoreDisplayState ? callStoreButtonEl : trackingOrderButtonEl}
-              {callRiderButtonEl}
+              {isOrderSelfDelivery ? null : callRiderButtonEl}
             </>
           ) : null}
         </div>
@@ -319,6 +320,7 @@ RiderInfo.propTypes = {
   }),
   inApp: PropTypes.bool,
   isAlipayMiniProgram: PropTypes.bool,
+  isOrderSelfDelivery: PropTypes.bool,
   visitReportPage: PropTypes.func,
 };
 
@@ -340,6 +342,7 @@ RiderInfo.defaultProps = {
     trackingUrl: null,
   },
   isUseStorehubLogistics: true,
+  isOrderSelfDelivery: false,
   visitReportPage: () => {},
 };
 
@@ -351,4 +354,5 @@ export default connect(state => ({
   isUseStorehubLogistics: getIsUseStorehubLogistics(state),
   orderDeliveryInfo: getOrderDeliveryInfo(state),
   isAlipayMiniProgram: getIsAlipayMiniProgram(state),
+  isOrderSelfDelivery: getIsOrderSelfDelivery(state),
 }))(RiderInfo);

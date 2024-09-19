@@ -134,3 +134,10 @@ export const getIsStoreCreditsHistoryListEmpty = createSelector(
   (loadStoreCreditsHistoryList, isLoadStoreCreditsHistoryListCompleted) =>
     loadStoreCreditsHistoryList.length === 0 && isLoadStoreCreditsHistoryListCompleted
 );
+
+export const getIsCashbackStoreCreditsHistoryPageShow = createSelector(
+  getIsLoadCashbackHistoryListCompleted,
+  getIsLoadStoreCreditsHistoryListCompleted,
+  (isLoadCashbackHistoryListCompleted, isLoadStoreCreditsHistoryListCompleted) =>
+    isLoadCashbackHistoryListCompleted || isLoadStoreCreditsHistoryListCompleted
+);

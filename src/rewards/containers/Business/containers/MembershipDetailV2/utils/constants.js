@@ -5,6 +5,8 @@ import RewardsWarningIcon from '../../../../../../images/rewards-warning.svg';
 import RewardsFailedIcon from '../../../../../../images/rewards-failed.svg';
 import { CLAIMED_CASHBACK_STATUS } from '../../../utils/constants';
 
+export const SHOW_PROFILE_FROM_POINTS_REWARDS = 'PointsRewards';
+
 export const GET_REWARDS_MAX_LENGTH = 5;
 
 export const CLAIMED_ORDER_REWARD_NAMES = {

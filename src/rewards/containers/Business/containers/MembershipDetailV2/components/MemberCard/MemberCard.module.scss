@@ -16,8 +16,26 @@
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
 }
 
+.MemberCardTop {
+  @apply tw-flex tw-items-center tw-justify-between;
+}
+
 .MemberCardCustomerTierName {
   @apply tw-text-xl tw-font-bold tw-capitalize;
+}
+
+.MemberCardViewProfileButton {
+  &:global(.type-text-ghost) {
+    color: inherit;
+  }
+}
+
+.MemberCardViewProfileButtonContent {
+  @apply tw-flex tw-items-center tw-gap-4 sm:tw-gap-4px;
+}
+
+.MemberCardViewProfileText {
+  @apply tw-text-sm tw-capitalize;
 }
 
 .MemberCardTiersProgress {
@@ -25,7 +43,7 @@
 }
 
 .MemberCardProgress {
-  @apply tw-absolute tw-top-1/2 tw-left-3px tw-right-3px tw-h-8px tw-rounded-lg tw-bg-gray-50 tw-overflow-hidden;
+  @apply tw-absolute tw-top-1/2 tw-left-16px tw-right-16px tw-h-8px tw-rounded-lg tw-bg-gray-50 tw-overflow-hidden;
 
   transform: translateY(-50%);
 }

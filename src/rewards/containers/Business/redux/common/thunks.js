@@ -5,6 +5,7 @@ import {
   getUniquePromoListBanners,
   getPointsRewardList,
   postClaimedPointsReward,
+  getOrderRewards,
   postClaimedOrderRewards,
 } from './api-request';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
@@ -45,7 +46,7 @@ export const fetchUniquePromoListBanners = createAsyncThunk(
 );
 
 export const fetchPointsRewardList = createAsyncThunk(
-  'rewards/business/memberDetail/fetchPointsRewardList',
+  'rewards/business/common/fetchPointsRewardList',
   async (consumerId, { getState }) => {
     const state = getState();
     const business = getMerchantBusiness(state);
@@ -56,7 +57,7 @@ export const fetchPointsRewardList = createAsyncThunk(
 );
 
 export const claimPointsReward = createAsyncThunk(
-  'rewards/business/memberDetail/claimPointsReward',
+  'rewards/business/common/claimPointsReward',
   async ({ consumerId, id }, { getState }) => {
     const state = getState();
     const business = getMerchantBusiness(state);
@@ -66,8 +67,22 @@ export const claimPointsReward = createAsyncThunk(
   }
 );
 
+export const loadOrderRewards = createAsyncThunk(
+  'rewards/business/common/loadOrderRewards',
+  async (_, { getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+    const receiptNumber = getReceiptNumber(state);
+    const channel = getChannel(state);
+
+    const result = await getOrderRewards({ receiptNumber, business, channel });
+
+    return result;
+  }
+);
+
 export const claimOrderRewards = createAsyncThunk(
-  'rewards/business/membershipForm/claimOrderRewards',
+  'rewards/business/common/claimOrderRewards',
   async (_, { getState }) => {
     const state = getState();
     const business = getBusiness(state);

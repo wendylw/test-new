@@ -1,0 +1,27 @@
+.BirthdayCampaignSection {
+  @apply tw-px-16 sm:tw-px-16px;
+}
+
+.BirthdayCampaignButton {
+  @apply tw-shadow;
+}
+
+.BirthdayCampaignButtonContent {
+  @apply tw-flex tw-items-center tw-gap-4 sm:tw-gap-4px tw-w-full;
+}
+
+.BirthdayCampaignImageContainer {
+  width: 13.5%;
+}
+
+.BirthdayCampaignImage {
+  @apply tw-bg-transparent;
+}
+
+.BirthdayCampaignTexts {
+  @apply tw-flex-1 tw-text-left;
+}
+
+.BirthdayCampaignTitle {
+  @apply tw-text-lg tw-font-bold;
+}

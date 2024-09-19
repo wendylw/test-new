@@ -4,13 +4,8 @@ import { useMount } from 'react-use';
 import { WarningCircle } from 'phosphor-react';
 import CleverTap from '../../../../../utils/clevertap';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
-import { claimOrderRewards } from '../../redux/common/thunks';
-import {
-  getIsProfileFormVisible,
-  getIsClaimedOrderRewardsEnabled,
-  getLoadOrderRewardsError,
-  getShouldClaimOrderRewards,
-} from './redux/selectors';
+import { getIsClaimedOrderRewardsEnabled } from '../../redux/common/selectors';
+import { getIsProfileFormVisible, getLoadOrderRewardsError } from './redux/selectors';
 import { skipProfileButtonClicked, saveProfileButtonClicked } from './redux/thunks';
 import { alert } from '../../../../../common/utils/feedback';
 import MerchantInfo from './components/MerchantInfo';
@@ -28,19 +23,12 @@ const MembershipForm = () => {
   const isProfileFormVisible = useSelector(getIsProfileFormVisible);
   const loadOrderRewardsError = useSelector(getLoadOrderRewardsError);
   const isClaimedOrderRewardsEnabled = useSelector(getIsClaimedOrderRewardsEnabled);
-  const shouldClaimOrderRewards = useSelector(getShouldClaimOrderRewards);
   const handleSkipProfileForm = useCallback(() => dispatch(skipProfileButtonClicked()), [dispatch]);
   const handleSaveProfileForm = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
 
   useMount(() => {
     CleverTap.pushEvent('Join Membership Page - View Page');
   });
-
-  useEffect(() => {
-    if (shouldClaimOrderRewards) {
-      dispatch(claimOrderRewards());
-    }
-  }, [dispatch, shouldClaimOrderRewards]);
 
   useEffect(() => {
     if (loadOrderRewardsError) {

@@ -1,24 +1,26 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMount } from 'react-use';
-import {
-  getIsLoadMerchantRequestCompleted,
-  getIsMerchantEnabledStoreCredits,
-} from '../../../../../redux/modules/merchant/selectors';
+import { useLifecycles } from 'react-use';
+import { getIsMerchantEnabledStoreCredits } from '../../../../../redux/modules/merchant/selectors';
+import { getIsCashbackStoreCreditsHistoryPageShow } from './redux/selectors';
+import { actions as CashbackCreditsHistoryActions } from './redux';
 import { mounted } from './redux/thunks';
 import CashbackHistory from './CashbackHistory';
 import StoreCreditsHistory from './StoreCreditsHistory';
 
 const CashbackCreditsHistory = () => {
   const dispatch = useDispatch();
-  const isLoadMerchantRequestCompleted = useSelector(getIsLoadMerchantRequestCompleted);
+  const isCashbackStoreCreditsHistoryPageShow = useSelector(getIsCashbackStoreCreditsHistoryPageShow);
   const isMerchantEnabledStoreCredits = useSelector(getIsMerchantEnabledStoreCredits);
 
-  useMount(async () => {
-    await dispatch(mounted());
-  });
+  useLifecycles(
+    async () => {
+      await dispatch(mounted());
+    },
+    () => dispatch(CashbackCreditsHistoryActions.cashbackCreditsHistoryReset())
+  );
 
-  if (!isLoadMerchantRequestCompleted) {
+  if (!isCashbackStoreCreditsHistoryPageShow) {
     return null;
   }
 

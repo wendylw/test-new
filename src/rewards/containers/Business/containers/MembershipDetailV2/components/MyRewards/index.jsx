@@ -50,7 +50,7 @@ const MyRewards = () => {
           theme="info"
           className={styles.MyRewardsSectionViewAllButton}
           contentClassName={styles.MyRewardsSectionViewAllButtonContent}
-          data-test-id="rewards.membership-detail.my-rewards.view-all-button"
+          data-test-id="rewards.business.membership-detail.my-rewards.view-all-button"
           onClick={handleClickViewAllButton}
         >
           {t('ViewAll')} ({uniquePromoListLength})
@@ -59,7 +59,7 @@ const MyRewards = () => {
 
       <ul className={styles.MyRewardsList}>
         {uniquePromoListBanners.map(promo => {
-          const { id, name, value, status, conditions, isUnavailable } = promo;
+          const { key, name, value, status, conditions, isUnavailable } = promo;
           const { minSpend, expiringDays } = conditions;
 
           return (
@@ -67,7 +67,7 @@ const MyRewards = () => {
               // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
               role="button"
               data-test-id="rewards.business.membership-detail.unique-promo-list.item"
-              key={id}
+              key={key}
               onClick={handleClickRewardItem}
             >
               <Ticket

@@ -11,6 +11,7 @@ import {
   RAINY_IMAGES_MAPPING,
   DELIVERY_STATUS_IMAGES_MAPPING,
   NOT_DELIVERY_STATUS_IMAGES_MAPPING,
+  ORDER_SELF_DELIVERY_COURIER,
 } from '../constants';
 import { getPrice } from '../../../../../../common/utils';
 import {
@@ -44,6 +45,7 @@ import {
   getCustomerCashback,
 } from '../../../../../redux/modules/app';
 import {
+  getIsLoadMerchantRequestCompleted,
   getIsMerchantMembershipEnabled,
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledStoreCredits,
@@ -164,6 +166,17 @@ export const getOrderDeliveryInfo = createSelector(getOrder, order => {
     expectDeliveryDateRange: [expectDeliveryDateFrom, expectDeliveryDateTo],
     ...responseDeliveryInformation,
   };
+});
+
+export const getIsOrderSelfDelivery = createSelector(getOrder, order => {
+  if (!order) {
+    return false;
+  }
+
+  const { deliveryInformation } = order;
+  const { courier } = deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
+
+  return courier === ORDER_SELF_DELIVERY_COURIER;
 });
 
 export const getIsPayLater = createSelector(getOrder, order => _get(order, 'isPayLater', false));
@@ -418,4 +431,14 @@ export const getShouldShowEarnedCashback = createSelector(
   getHasCashbackClaimed,
   (hasCashback, hasOrderPaid, userCustomerId, orderCustomerId, cashbackCustomerId, hasCashbackClaimed) =>
     hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === (orderCustomerId || cashbackCustomerId)
+);
+
+// Expected the enabled membership merchant's customers see the member card information first on the page. So hide complete profile page
+// Merchants disabled membership still hope that users will complete their profile information as much as possible.
+export const getShouldProfileModalShow = createSelector(
+  getOrderStatus,
+  getIsLoadMerchantRequestCompleted,
+  getIsMerchantMembershipEnabled,
+  (orderStatus, isLoadMerchantRequestCompleted, isMerchantMembershipEnabled) =>
+    orderStatus && isLoadMerchantRequestCompleted && !isMerchantMembershipEnabled
 );
