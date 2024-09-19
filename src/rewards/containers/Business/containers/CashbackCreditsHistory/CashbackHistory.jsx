@@ -12,7 +12,11 @@ import {
   getRemainingCashbackExpiredDays,
   getCustomerCashbackPrice,
 } from '../../redux/common/selectors';
-import { getCashbackHistoryList, getIsCashbackHistoryListEmpty } from './redux/selectors';
+import {
+  getCashbackHistoryList,
+  getIsCashbackHistoryListEmpty,
+  getIsUseCashbackPromptDrawerShow,
+} from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
 import { backButtonClicked } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
@@ -20,7 +24,7 @@ import PageHeader from '../../../../../common/components/PageHeader';
 import Tag from '../../../../../common/components/Tag';
 import HistoryBanner from '../../components/Histories/HistoryBanner';
 import HistoryList from '../../components/Histories/HistoryList';
-import EarnedCashbackPromptDrawer from './components/EarnedCashbackPromptDrawer';
+import EarnedCashbackPromptDrawer from '../../components/EarnedCashbackPromptDrawer';
 import styles from './CashbackHistory.module.scss';
 
 const CashbackHistory = () => {
@@ -35,6 +39,7 @@ const CashbackHistory = () => {
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
   const cashbackHistoryList = useSelector(getCashbackHistoryList);
   const isCashbackHistoryListEmpty = useSelector(getIsCashbackHistoryListEmpty);
+  const isUseCashbackPromptDrawerShow = useSelector(getIsUseCashbackPromptDrawerShow);
   const handleClickHeaderBackButton = useCallback(() => {
     CleverTap.pushEvent('Cashback Details Page - Click Back');
 
@@ -42,6 +47,9 @@ const CashbackHistory = () => {
   }, [dispatch]);
   const handleClickHowToUseButton = useCallback(() => {
     dispatch(cashbackCreditsHistoryActions.useCashbackPromptDrawerShown());
+  }, [dispatch]);
+  const handleCloseEarnedCashbackPromptDrawer = useCallback(() => {
+    dispatch(cashbackCreditsHistoryActions.useCashbackPromptDrawerHidden());
   }, [dispatch]);
 
   useMount(() => {
@@ -98,7 +106,10 @@ const CashbackHistory = () => {
           historyList={cashbackHistoryList}
         />
       </section>
-      <EarnedCashbackPromptDrawer />
+      <EarnedCashbackPromptDrawer
+        show={isUseCashbackPromptDrawerShow}
+        onCloseDrawer={handleCloseEarnedCashbackPromptDrawer}
+      />
     </Frame>
   );
 };
