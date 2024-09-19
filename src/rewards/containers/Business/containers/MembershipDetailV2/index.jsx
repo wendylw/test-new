@@ -3,7 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useMount } from 'react-use';
 import { getClassName } from '../../../../../common/utils/ui';
-import { getMerchantDisplayName } from '../../../../../redux/modules/merchant/selectors';
+import {
+  getMerchantDisplayName,
+  getIsLoadMerchantRequestCompleted,
+  getIsMerchantEnabledStoreCredits,
+} from '../../../../../redux/modules/merchant/selectors';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import {
   mounted,
@@ -13,11 +17,18 @@ import {
   skipProfileButtonClicked,
   saveProfileButtonClicked,
 } from './redux/thunks';
-import { getShouldShowBackButton, getIsProfileModalShow, getIsProfileModalSkipButtonShow } from './redux/selectors';
+import {
+  getShouldShowBackButton,
+  getIsProfileModalShow,
+  getIsProfileModalSkipButtonShow,
+  getIsMemberCardShow,
+} from './redux/selectors';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import MembershipTiersTabs from '../../components/MembershipTiersTabs';
 import MemberCard from './components/MemberCard';
+import CashbackCard from './components/CashbackCard';
+import StoreCreditsCard from './components/StoreCreditsCard';
 import RewardsButtons from './components/RewardsButtons';
 import PointsRewards from './components/PointsRewards';
 import BirthdayCampaign from './components/BirthdayCampaign';
@@ -32,8 +43,11 @@ const MembershipDetail = () => {
   const isWebview = useSelector(getIsWebview);
   const isProfileModalShow = useSelector(getIsProfileModalShow);
   const isSkipButtonShow = useSelector(getIsProfileModalSkipButtonShow);
+  const isLoadMerchantRequestCompleted = useSelector(getIsLoadMerchantRequestCompleted);
+  const isMerchantEnabledStoreCredits = useSelector(getIsMerchantEnabledStoreCredits);
   const merchantDisplayName = useSelector(getMerchantDisplayName);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
+  const isMemberCardShow = useSelector(getIsMemberCardShow);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickHeaderCloseButton = useCallback(() => dispatch(closeButtonClicked()), [dispatch]);
   const handleClickMembershipTierTab = useCallback(
@@ -60,7 +74,15 @@ const MembershipDetail = () => {
         title={merchantDisplayName}
         onBackArrowClick={shouldShowBackButton ? handleClickHeaderBackButton : handleClickHeaderCloseButton}
       />
-      <MemberCard />
+      {isLoadMerchantRequestCompleted ? (
+        isMemberCardShow ? (
+          <MemberCard />
+        ) : isMerchantEnabledStoreCredits ? (
+          <StoreCreditsCard />
+        ) : (
+          <CashbackCard />
+        )
+      ) : null}
       <RewardsButtons />
       <PointsRewards />
       <BirthdayCampaign />
