@@ -15,7 +15,7 @@ import {
 import {
   getCashbackHistoryList,
   getIsCashbackHistoryListEmpty,
-  getIsUseCashbackPromptDrawerShow,
+  getIsCashbackPromptDrawerShow,
 } from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
 import { backButtonClicked } from './redux/thunks';
@@ -39,17 +39,17 @@ const CashbackHistory = () => {
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
   const cashbackHistoryList = useSelector(getCashbackHistoryList);
   const isCashbackHistoryListEmpty = useSelector(getIsCashbackHistoryListEmpty);
-  const isUseCashbackPromptDrawerShow = useSelector(getIsUseCashbackPromptDrawerShow);
+  const isCashbackPromptDrawerShow = useSelector(getIsCashbackPromptDrawerShow);
   const handleClickHeaderBackButton = useCallback(() => {
     CleverTap.pushEvent('Cashback Details Page - Click Back');
 
     dispatch(backButtonClicked());
   }, [dispatch]);
   const handleClickHowToUseButton = useCallback(() => {
-    dispatch(cashbackCreditsHistoryActions.useCashbackPromptDrawerShown());
+    dispatch(cashbackCreditsHistoryActions.cashbackPromptDrawerShown());
   }, [dispatch]);
-  const handleCloseEarnedCashbackPromptDrawer = useCallback(() => {
-    dispatch(cashbackCreditsHistoryActions.useCashbackPromptDrawerHidden());
+  const handleCloseHowToUseDrawer = useCallback(() => {
+    dispatch(cashbackCreditsHistoryActions.cashbackPromptDrawerHidden());
   }, [dispatch]);
 
   useMount(() => {
@@ -106,10 +106,7 @@ const CashbackHistory = () => {
           historyList={cashbackHistoryList}
         />
       </section>
-      <EarnedCashbackPromptDrawer
-        show={isUseCashbackPromptDrawerShow}
-        onCloseDrawer={handleCloseEarnedCashbackPromptDrawer}
-      />
+      <EarnedCashbackPromptDrawer show={isCashbackPromptDrawerShow} onCloseDrawer={handleCloseHowToUseDrawer} />
     </Frame>
   );
 };

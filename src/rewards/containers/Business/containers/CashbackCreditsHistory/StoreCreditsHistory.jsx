@@ -8,7 +8,7 @@ import { getCustomerCashbackPrice } from '../../redux/common/selectors';
 import {
   getStoreCreditsHistoryList,
   getIsStoreCreditsHistoryListEmpty,
-  getIsUseCashbackPromptDrawerShow,
+  getIsStoreCreditsPromptDrawerShow,
 } from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
 import { backButtonClicked } from './redux/thunks';
@@ -25,18 +25,18 @@ const StoreCreditsHistory = () => {
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const storeCreditsHistoryList = useSelector(getStoreCreditsHistoryList);
   const isStoreCreditsHistoryListEmpty = useSelector(getIsStoreCreditsHistoryListEmpty);
-  const isUseCashbackPromptDrawerShow = useSelector(getIsUseCashbackPromptDrawerShow);
+  const isStoreCreditsPromptDrawerShow = useSelector(getIsStoreCreditsPromptDrawerShow);
   const handleClickHeaderBackButton = useCallback(() => {
     CleverTap.pushEvent('Store Credit Details Page - Click Back');
 
     dispatch(backButtonClicked());
   }, [dispatch]);
   const handleClickHowToUseButton = useCallback(
-    () => dispatch(cashbackCreditsHistoryActions.useStoreCreditsPromptDrawerShown()),
+    () => dispatch(cashbackCreditsHistoryActions.storeCreditsPromptDrawerShown()),
     [dispatch]
   );
-  const handleCloseEarnedCashbackPromptDrawer = useCallback(() => {
-    dispatch(cashbackCreditsHistoryActions.useStoreCreditsPromptDrawerHidden());
+  const handleCloseHowToUseDrawer = useCallback(() => {
+    dispatch(cashbackCreditsHistoryActions.storeCreditsPromptDrawerHidden());
   }, [dispatch]);
 
   useMount(() => {
@@ -65,10 +65,7 @@ const StoreCreditsHistory = () => {
           historyList={storeCreditsHistoryList}
         />
       </section>
-      <EarnedStoreCreditsPromptDrawer
-        show={isUseCashbackPromptDrawerShow}
-        onCloseDrawer={handleCloseEarnedCashbackPromptDrawer}
-      />
+      <EarnedStoreCreditsPromptDrawer show={isStoreCreditsPromptDrawerShow} onCloseDrawer={handleCloseHowToUseDrawer} />
     </Frame>
   );
 };
