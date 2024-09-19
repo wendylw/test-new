@@ -47,7 +47,9 @@ const ProfileFooter = ({ onCloseProfile }) => {
       }
 
       // 40002 is common error for verification failed. BE set this code as profile common error
-      alert(t('40002Description'), { title: t('40002Title', { error_code: '40002' }) });
+      alert(t('40002Description', { ns: 'ApiError' }), {
+        title: t('40002Title', { error_code: '40002', ns: 'ApiError' }),
+      });
     }
   };
 

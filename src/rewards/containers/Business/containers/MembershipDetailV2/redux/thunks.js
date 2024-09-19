@@ -123,13 +123,22 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
 
       const state = getState();
       const isUserProfileIncomplete = getIsUserProfileIncomplete(state);
+      const isWebview = getIsWebview(state);
 
       if (isUserProfileIncomplete) {
         dispatch(setPointRewardSelectedId(id));
-        dispatch(showProfileForm({ source: SHOW_PROFILE_FROM_POINTS_REWARDS }));
+
+        if (isWebview) {
+          // native complete profile, claim order points reward immediately
+          await showCompleteProfilePageAsync({ hideSkipButton: true });
+          dispatch(claimPointsRewardAndRefreshRewardsList(id));
+        } else {
+          dispatch(showProfileForm({ source: SHOW_PROFILE_FROM_POINTS_REWARDS }));
+        }
 
         return;
       }
+
       dispatch(claimPointsRewardAndRefreshRewardsList(id));
     } else {
       CleverTap.pushEvent('Membership Details Page - Spend Points Modal - Click Cancel', {
@@ -215,14 +224,16 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     const fetchUniquePromoListBannersLimit = getFetchUniquePromoListBannersLimit(getState());
     const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
 
-    dispatch(fetchCustomerInfo(business));
     dispatch(fetchUniquePromoListBanners({ consumerId, limit: fetchUniquePromoListBannersLimit }));
     dispatch(fetchPointsRewardList(consumerId));
     dispatch(fetchUniquePromoList(consumerId));
 
     if (isClaimedOrderRewardsEnabled) {
-      dispatch(claimOrderRewards());
+      await dispatch(claimOrderRewards());
     }
+
+    // customer info must after claim order rewards, maybe customer data will be changed
+    dispatch(fetchCustomerInfo(business));
   }
 });
 
