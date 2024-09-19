@@ -18,9 +18,9 @@ import {
 } from '../../redux/submission/malaysian/selector';
 import { actions as eInvoiceConsumerSubmissionActions } from '../../redux/submission/malaysian';
 import PageFooter from '../../../../../common/components/PageFooter';
-import InputText from '../../../../components/Input/Text';
-import { PhoneNumberLabelInside } from '../../../../components/Input/PhoneNumber';
-import InputEmail from '../../../../components/Input/Email';
+import InputText from '../../../../../common/components/Input/Text';
+import { PhoneNumberLabelInside } from '../../../../../common/components/Input/PhoneNumber';
+import InputEmail from '../../../../../common/components/Input/Email';
 import BillingAddress from '../../../../components/BillingAddress';
 import TransactionDetails from '../../../../components/TransactionDetails';
 import styles from './ConsumerForm.module.scss';
