@@ -106,8 +106,8 @@ class PayLater extends Component {
           />,
           {
             className: 'ordering-cart__alert',
-            title: t('UnableToPlaceOrder'),
-            closeButtonContent: t('ViewOrder'),
+            title: t('ApiError:UnableToPlaceOrder'),
+            closeButtonContent: t('ApiError:ViewOrder'),
             onClose: async () => {
               if (!receiptNumber) {
                 await loadCartStatus();
