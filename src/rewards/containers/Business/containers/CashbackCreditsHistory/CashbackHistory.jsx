@@ -11,6 +11,7 @@ import {
   getIsTodayExpired,
   getRemainingCashbackExpiredDays,
   getCustomerCashbackPrice,
+  getCustomizeRewardsSettingsCashbackRate,
 } from '../../redux/common/selectors';
 import { getCashbackHistoryList, getIsCashbackHistoryListEmpty } from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
@@ -32,6 +33,7 @@ const CashbackHistory = () => {
   const isTodayExpired = useSelector(getIsTodayExpired);
   const remainingCashbackExpiredDays = useSelector(getRemainingCashbackExpiredDays);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
+  const cashbackRate = useSelector(getCustomizeRewardsSettingsCashbackRate);
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
   const cashbackHistoryList = useSelector(getCashbackHistoryList);
   const isCashbackHistoryListEmpty = useSelector(getIsCashbackHistoryListEmpty);
@@ -94,7 +96,7 @@ const CashbackHistory = () => {
         <HistoryList
           isEmpty={isCashbackHistoryListEmpty}
           emptyTitle={t('NoCashbackCollectedTitle')}
-          emptyDescription={t('NoCashbackCollectedDescription')}
+          emptyDescription={t('NoCashbackCollectedDescription', { cashbackRate })}
           historyList={cashbackHistoryList}
         />
       </section>

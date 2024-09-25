@@ -5,7 +5,12 @@ import { useTranslation } from 'react-i18next';
 import RewardsPointsHistoryBannerImage from '../../../../../images/rewards-points-history-banner.svg';
 import CleverTap from '../../../../../utils/clevertap';
 import { getCustomerAvailablePointsBalance } from '../../../../redux/modules/customer/selectors';
-import { getPointsHistoryList, getIsPointsHistoryListEmpty } from './redux/selectors';
+import {
+  getPointsHistoryList,
+  getIsPointsHistoryListEmpty,
+  getEmptyPromptEarnPointsNumber,
+  getEmptyPromptBaseSpent,
+} from './redux/selectors';
 import { actions as PointsHistoryActions } from './redux';
 import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
@@ -20,6 +25,8 @@ const PointsHistory = () => {
   const customerAvailablePointsBalance = useSelector(getCustomerAvailablePointsBalance);
   const pointsHistoryList = useSelector(getPointsHistoryList);
   const isPointsHistoryListEmpty = useSelector(getIsPointsHistoryListEmpty);
+  const emptyPromptEarnPointsNumber = useSelector(getEmptyPromptEarnPointsNumber);
+  const emptyPromptBaseSpent = useSelector(getEmptyPromptBaseSpent);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickHowToUseButton = useCallback(() => {
     CleverTap.pushEvent('Points Details Page - Click How to use points');
@@ -52,7 +59,10 @@ const PointsHistory = () => {
         <HistoryList
           isEmpty={isPointsHistoryListEmpty}
           emptyTitle={t('NoPointsCollectedTitle')}
-          emptyDescription={t('NoPointsCollectedDescription')}
+          emptyDescription={t('NoPointsCollectedDescription', {
+            emptyPromptEarnPointsNumber,
+            emptyPromptBaseSpent,
+          })}
           historyList={pointsHistoryList}
         />
       </section>

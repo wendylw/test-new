@@ -5,7 +5,12 @@ import { useTranslation } from 'react-i18next';
 import RewardsStoreCreditsHistoryBannerImage from '../../../../../images/rewards-store-credits-history-banner.svg';
 import CleverTap from '../../../../../utils/clevertap';
 import { getCustomerCashbackPrice } from '../../redux/common/selectors';
-import { getStoreCreditsHistoryList, getIsStoreCreditsHistoryListEmpty } from './redux/selectors';
+import {
+  getStoreCreditsHistoryList,
+  getIsStoreCreditsHistoryListEmpty,
+  getEmptyPromptEarnStoreCreditsNumber,
+  getEmptyPromptBaseSpent,
+} from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
 import { backButtonClicked } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
@@ -21,6 +26,8 @@ const StoreCreditsHistory = () => {
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const storeCreditsHistoryList = useSelector(getStoreCreditsHistoryList);
   const isStoreCreditsHistoryListEmpty = useSelector(getIsStoreCreditsHistoryListEmpty);
+  const emptyPromptEarnStoreCreditsNumber = useSelector(getEmptyPromptEarnStoreCreditsNumber);
+  const emptyPromptBaseSpent = useSelector(getEmptyPromptBaseSpent);
   const handleClickHeaderBackButton = useCallback(() => {
     CleverTap.pushEvent('Store Credit Details Page - Click Back');
 
@@ -53,7 +60,10 @@ const StoreCreditsHistory = () => {
         <HistoryList
           isEmpty={isStoreCreditsHistoryListEmpty}
           emptyTitle={t('NoStoreCreditsCollectedTitle')}
-          emptyDescription={t('NoStoreCreditsCollectedDescription')}
+          emptyDescription={t('NoStoreCreditsCollectedDescription', {
+            emptyPromptEarnStoreCreditsNumber,
+            emptyPromptBaseSpent,
+          })}
           historyList={storeCreditsHistoryList}
         />
       </section>

@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
+import { CUSTOMIZE_REWARDS_SETTING_DECIMALS_RATE } from '../../../utils/constants';
 import {
   CASHBACK_CREDITS_HISTORY_TYPES,
   CASHBACK_CREDITS_HISTORY_REDUCE_TYPES,
@@ -13,6 +14,7 @@ import {
   getMerchantCurrency,
   getMerchantLocale,
 } from '../../../../../../redux/modules/merchant/selectors';
+import { getCustomizeRewardsSettingsLoyaltyRate } from '../../../redux/common/selectors';
 
 export const getIsUseCashbackPromptDrawerShow = state =>
   state.business.cashbackCreditsHistory.isUseCashbackPromptDrawerShow;
@@ -140,4 +142,18 @@ export const getIsCashbackStoreCreditsHistoryPageShow = createSelector(
   getIsLoadStoreCreditsHistoryListCompleted,
   (isLoadCashbackHistoryListCompleted, isLoadStoreCreditsHistoryListCompleted) =>
     isLoadCashbackHistoryListCompleted || isLoadStoreCreditsHistoryListCompleted
+);
+
+export const getEmptyPromptEarnStoreCreditsNumber = createSelector(
+  getCustomizeRewardsSettingsLoyaltyRate,
+  customizeRewardsSettingsLoyaltyRate =>
+    Math.floor((customizeRewardsSettingsLoyaltyRate * 10) / CUSTOMIZE_REWARDS_SETTING_DECIMALS_RATE)
+);
+
+export const getEmptyPromptBaseSpent = createSelector(
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+  (merchantCountry, merchantCurrency, merchantLocale) =>
+    getPrice(10, { country: merchantCountry, currency: merchantCurrency, locale: merchantLocale }).replace(/\.\d+/, '')
 );

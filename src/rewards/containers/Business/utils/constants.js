@@ -1,3 +1,5 @@
+export const CUSTOMIZE_REWARDS_SETTING_DECIMALS_RATE = 100;
+
 export const CLAIMED_CASHBACK_STATUS = {
   // can claim status
   CLAIMED_FIRST_TIME: 'Claimed_FirstTime',

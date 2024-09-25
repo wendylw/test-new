@@ -7,6 +7,7 @@ import {
   claimPointsReward,
   loadOrderRewards,
   claimOrderRewards,
+  loadCustomizeRewardsSettings,
 } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
@@ -41,6 +42,11 @@ const initialState = {
     error: null,
   },
   claimOrderRewardsRequest: {
+    data: null,
+    status: null,
+    error: null,
+  },
+  loadCustomizeRewardsSettingsRequest: {
     data: null,
     status: null,
     error: null,
@@ -145,6 +151,19 @@ export const { actions, reducer } = createSlice({
     [claimOrderRewards.rejected.type]: (state, { error }) => {
       state.claimOrderRewardsRequest.status = API_REQUEST_STATUS.REJECTED;
       state.claimOrderRewardsRequest.error = error;
+    },
+    [loadCustomizeRewardsSettings.pending.type]: state => {
+      state.loadCustomizeRewardsSettingsRequest.status = API_REQUEST_STATUS.PENDING;
+      state.loadCustomizeRewardsSettingsRequest.error = null;
+    },
+    [loadCustomizeRewardsSettings.fulfilled.type]: (state, { payload }) => {
+      state.loadCustomizeRewardsSettingsRequest.data = payload;
+      state.loadCustomizeRewardsSettingsRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.loadCustomizeRewardsSettingsRequest.error = null;
+    },
+    [loadCustomizeRewardsSettings.rejected.type]: (state, { error }) => {
+      state.loadCustomizeRewardsSettingsRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.loadCustomizeRewardsSettingsRequest.error = error;
     },
   },
 });
