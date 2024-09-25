@@ -6,7 +6,16 @@ import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/co
 import logger from '../../../utils/monitoring/logger';
 import CleverTap from '../../../utils/clevertap';
 import { getUserLoginStatus, postUserLogin, getUserProfile, putProfileInfo, postLoginGuest } from './api-request';
-import { getConsumerId, getIsLogin, getIsLoginExpired, getUserCountry } from './selectors';
+import {
+  getConsumerId,
+  getIsLogin,
+  getIsLoginExpired,
+  getUserCountry,
+  getIsUploadProfileFulfilled,
+  getUserFirstName,
+  getUserLastName,
+  getUserEmail,
+} from './selectors';
 import Utils from '../../../utils/utils';
 import { isAlipayMiniProgram, getAccessToken } from '../../../common/utils/alipay-miniprogram-client';
 import { getTokenAsync, tokenExpiredAsync } from '../../../utils/native-methods';
@@ -256,3 +265,34 @@ export const loginUserByBeepApp = createAsyncThunk('app/user/loginByBeepApp', as
     logger.error('Common_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
   }
 });
+
+export const updateUserProfileInfo = createAsyncThunk(
+  'app/user/updateUserProfileInfo',
+  async ({ firstName, lastName, email, birthday }, { dispatch, getState }) => {
+    await dispatch(uploadUserProfileInfo({ firstName, lastName, email, birthday }));
+
+    const isUploadProfileFulfilled = getIsUploadProfileFulfilled(getState());
+
+    if (isUploadProfileFulfilled) {
+      dispatch(fetchUserProfileInfo());
+    }
+  }
+);
+
+export const updateUserBirthdayInfo = createAsyncThunk(
+  'app/user/updateUserProfileInfo',
+  async (birthday, { dispatch, getState }) => {
+    const state = getState();
+    const firstName = getUserFirstName(state);
+    const lastName = getUserLastName(state);
+    const email = getUserEmail(state);
+
+    await dispatch(uploadUserProfileInfo({ firstName, lastName, email, birthday }));
+
+    const isUploadProfileFulfilled = getIsUploadProfileFulfilled(getState());
+
+    if (isUploadProfileFulfilled) {
+      dispatch(fetchUserProfileInfo());
+    }
+  }
+);

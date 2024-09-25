@@ -1,5 +1,7 @@
-.CompleteProfileDescription {
-  @apply tw-text-2xl tw-leading-normal tw-text-gray-50;
+.CompleteProfileDrawer {
+  @apply tw-p-0;
+}
 
-  max-width: 300px;
+.CompleteProfileDrawerContent {
+  @apply tw-flex tw-flex-col;
 }
