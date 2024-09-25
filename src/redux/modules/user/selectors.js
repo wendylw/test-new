@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 import { getCountry } from '../../../common/utils';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 import { AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
-import { LOGIN_EXPIRED_ERROR_TYPES } from './constants';
+import { LOGIN_EXPIRED_ERROR_TYPES, UPLOAD_PROFILE_ERROR_CODES } from './constants';
 
 export const getUserLoginStatus = state => state.user.checkLoginRequest;
 
@@ -72,6 +72,10 @@ export const getUserBirthdayChangeAllowed = createSelector(
   loadProfileRequestData => loadProfileRequestData.birthdayChangeAllowed
 );
 
+export const getUploadProfileStatus = state => state.user.uploadProfileRequest.status;
+
+export const getUploadProfileError = state => state.user.uploadProfileRequest.error;
+
 export const getGuestLoginRequest = state => state.user.guestLoginRequest;
 
 export const getGuestLoginRequestData = createSelector(
@@ -135,9 +139,30 @@ export const getIsUserOrGuestLoggedIn = createSelector(
   (isLogin, isLoginAsGuest) => isLogin || isLoginAsGuest
 );
 
+export const getIsLoadUserProfileFulfilled = createSelector(
+  getUserProfileRequestStatus,
+  userProfileRequestStatus => userProfileRequestStatus === API_REQUEST_STATUS.FULFILLED
+);
+
 export const getIsUserProfileIncomplete = createSelector(
   getUserEmail,
   getUserBirthday,
   getUserFirstName,
   (email, birthday, firstName) => !email || !birthday || !firstName
 );
+
+export const getIsUploadProfilePending = createSelector(
+  getUploadProfileStatus,
+  uploadProfileStatus => uploadProfileStatus === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsUploadProfileFulfilled = createSelector(
+  getUploadProfileStatus,
+  uploadProfileStatus => uploadProfileStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsUploadProfileEmailDuplicateError = createSelector(getUploadProfileError, uploadProfileError => {
+  const { code } = uploadProfileError || {};
+
+  return code === UPLOAD_PROFILE_ERROR_CODES.EMAIL_DUPLICATE;
+});

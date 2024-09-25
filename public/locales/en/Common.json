@@ -108,6 +108,9 @@
   "Name": "Name",
   "FirstName": "First Name",
   "LastName": "Last Name",
+  "Email": "Email",
+  "DateOfBirth": "Date of Birth",
+  "BirthdayInputPlaceholder": "DD/MM/YYYY",
   "MobileNumber": "Mobile Number",
   "AddDeliveryTimePlaceholder": "Add in your delivery time",
   "PickUpAtPlaceholder": "Add in your pick up time",
@@ -332,6 +335,11 @@
   "ErrorInputRequired": "Please fill {{fieldName}}, it is required!",
   "ErrorEmailPattern": "Please enter a valid email",
   "ErrorInputPattern": "Please enter a valid {{fieldName}}",
+  "ErrorNotValidBirthday": "Please select a valid date of birth (DD/MM/YYYY)",
+  "ErrorBirthdayLaterThanToday": "Date cannot be later than today",
+  "ErrorBirthdayTooOld": "Date cannot be earlier than {{oldestYears}}",
   "CompleteProfileTile": "Complete your Profile",
-  "CompleteProfileDescription": "Unlock more rewards and special offers by completing your profile."
+  "CompleteProfileDescription": "Unlock more rewards and special offers by completing your profile.",
+  "CompleteBirthdayTitle": "Get Birthday Goodies",
+  "CompleteBirthdayDescription": "Provide your birth date to receive a special gift on your big day!"
 }

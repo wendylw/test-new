@@ -9,6 +9,7 @@
   "NotValidEmail": "Please enter a valid email address",
   "NotValidBirthday": "Please select a valid date of birth (DD/MM/YYYY)",
   "BirthdayCanNotLaterThanToday": "Date cannot be later than today",
+  "BirthdayCanNotTooOld": "Date cannot be earlier than {{oldestYears}}",
   "DuplicatedEmail": "Please enter another valid email",
   "SkipForNow": "Skip for now",
   "DuplicatedEmailAlertTitle": "Oops! this is awkward…",

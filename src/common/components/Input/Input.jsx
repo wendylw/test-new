@@ -12,7 +12,9 @@ const Input = ({
   pattern,
   maxlength,
   minlength,
+  readOnly,
   isInvalid,
+  placeholder,
   className,
   style,
   type,
@@ -58,6 +60,7 @@ const Input = ({
       <input
         className={getClassName([styles.Input, isInvalid ? styles.InputError : null, className])}
         style={style}
+        placeholder={placeholder}
         type={type}
         required={required}
         pattern={pattern}
@@ -66,9 +69,10 @@ const Input = ({
         disabled={disabled}
         onChange={handleChange}
         onBlur={handleBlur}
-        data-test-id="eInvoice.common.input.text"
+        data-test-id="common.input.text"
         minLength={minlength}
         maxLength={maxlength}
+        readOnly={readOnly}
       />
     </div>
   );
@@ -85,7 +89,9 @@ Input.propTypes = {
   pattern: PropTypes.string,
   maxlength: PropTypes.number,
   minlength: PropTypes.number,
+  readOnly: PropTypes.bool,
   isInvalid: PropTypes.bool,
+  placeholder: PropTypes.string,
   className: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.object,
@@ -105,7 +111,9 @@ Input.defaultProps = {
   pattern: null,
   maxlength: undefined,
   minlength: 0,
+  readOnly: false,
   isInvalid: false,
+  placeholder: '',
   className: null,
   style: null,
   type: 'text',
