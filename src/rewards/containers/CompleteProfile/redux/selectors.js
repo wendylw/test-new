@@ -3,7 +3,7 @@ import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { getReduceOneSecondForDate } from '../../../../utils/datetime-lib';
 import { getUserBirthday, getIsUserProfileIncomplete } from '../../../../redux/modules/user/selectors';
 
-export const getProfileRequestData = state => state.completeProfile.data || {};
+export const getProfileRequestData = state => state.completeProfile.formData || {};
 
 export const getProfileFirstName = createSelector(
   getProfileRequestData,
