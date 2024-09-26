@@ -14,6 +14,7 @@ import { actions as cashbackCreditsHistoryActions } from './redux';
 import { backButtonClicked } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
+import { ObjectFitImage } from '../../../../../common/components/Image';
 import HistoryBanner from '../../components/Histories/HistoryBanner';
 import HistoryList from '../../components/Histories/HistoryList';
 import EarnedStoreCreditsPromptDrawer from '../../components/EarnedStoreCreditsPromptDrawer';
@@ -52,7 +53,14 @@ const StoreCreditsHistory = () => {
         valueText={customerCashbackPrice}
         prompt=""
         infoButtonText={t('HowToUseStoreCredits')}
-        historyBannerImage={RewardsStoreCreditsHistoryBannerImage}
+        historyBannerRightClassName={styles.StoreCreditsHistoryBannerRight}
+        historyBannerImage={
+          <ObjectFitImage
+            noCompression
+            src={RewardsStoreCreditsHistoryBannerImage}
+            alt="Beep Cashback History Banner"
+          />
+        }
         onClickInfoButton={handleClickHowToUseButton}
         infoButtonTestId="rewards.business.store-credits-history.how-to-use-button"
       />

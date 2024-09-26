@@ -404,6 +404,13 @@ export const getCustomerCurrentStatusPromptI18nInfo = createSelector(
   }
 );
 
+export const getIsMemberCardShow = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getMembershipTierListLength,
+  (isMerchantMembershipPointsEnabled, membershipTierListLength) =>
+    isMerchantMembershipPointsEnabled || membershipTierListLength > 1
+);
+
 // Rewards Buttons
 export const getIsRewardsButtonsShow = createSelector(
   getIsMerchantMembershipPointsEnabled,
