@@ -48,7 +48,7 @@ export const saveBirthdayInfo = createAsyncThunk('profile/saveBirthdayInfo', asy
     const state = getState();
     const birthday = getRequestBirthday(state);
 
-    await dispatch(updateUserBirthdayInfo(birthday));
+    await dispatch(updateUserBirthdayInfo(birthday)).unwrap();
 
     dispatch(hideUpdateBirthdayForm());
   } catch (error) {
@@ -67,7 +67,7 @@ export const saveUserProfileInfo = createAsyncThunk(
       const email = getProfileEmail(state);
       const birthday = getRequestBirthday(state);
 
-      await dispatch(updateUserProfileInfo({ firstName, lastName, email, birthday }));
+      await dispatch(updateUserProfileInfo({ firstName, lastName, email, birthday })).unwrap();
     } catch (error) {
       throw error;
     }

@@ -22,8 +22,6 @@ export const getProfileBirthday = createSelector(
   profileRequestData => profileRequestData.birthday
 );
 
-export const getIsUpdateBirthdayRequestShow = state => state.completeProfile.updateBirthdayRequest.show;
-
 export const getUpdateBirthdayRequestStatus = state => state.completeProfile.updateBirthdayRequest.status;
 
 export const getUpdateBirthdayRequestError = state => state.completeProfile.updateBirthdayRequest.error;
@@ -31,6 +29,8 @@ export const getUpdateBirthdayRequestError = state => state.completeProfile.upda
 export const getMountProfileRequestStatus = state => state.completeProfile.mountRequest.status;
 
 export const getUpdateProfileRequestStatus = state => state.completeProfile.updateProfileRequest.status;
+
+export const getIsUpdateBirthdayRequestShow = state => state.completeProfile.showBirthdayForm;
 
 /**
  * Derived selectors

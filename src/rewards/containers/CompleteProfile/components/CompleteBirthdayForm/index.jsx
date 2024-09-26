@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getProfileBirthday, getIsUpdateBirthdayRequestPending } from '../../redux/selectors';
 import { actions as profileActions } from '../../redux';
-import { skipUserBirthdayInfo, saveBirthdayInfo } from '../../redux/thunks';
+import { hideUpdateBirthdayForm, saveBirthdayInfo } from '../../redux/thunks';
 import InputBirthday from '../../../../../common/components/Input/Birthday';
 import PageFooter from '../../../../../common/components/PageFooter';
 import Button from '../../../../../common/components/Button';
@@ -24,7 +24,7 @@ const CompleteBirthdayForm = ({ onClickSkipButton, onClickSaveButton }) => {
     [dispatch]
   );
   const handleSkipForm = useCallback(() => {
-    dispatch(skipUserBirthdayInfo());
+    dispatch(hideUpdateBirthdayForm());
     onClickSkipButton && onClickSkipButton();
   }, [dispatch, onClickSkipButton]);
   const handleSaveForm = useCallback(

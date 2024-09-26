@@ -4,12 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { isWebview } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
-import { getUploadProfileError, getIsUploadProfileEmailDuplicateError } from '../../../redux/modules/user/selectors';
+import {
+  getUploadProfileError,
+  getIsUploadProfileEmailDuplicateError,
+  getUserBirthdayChangeAllowed,
+} from '../../../redux/modules/user/selectors';
 import {
   getIsUpdateBirthdayRequestShow,
   getIsProfileRequestMountStatusPending,
   getIsUpdateProfileRequestStatusPending,
-  getIsUpdateBirthdayRequestCompleted,
+  getIsBirthdayEmpty,
 } from './redux/selectors';
 import { actions as completeProfileActions } from './redux';
 import { mount } from './redux/thunks';
@@ -28,10 +32,11 @@ const CompleteProfile = ({ show, isCompleteBirthdayFirst, onSkip, onSave, onClos
   const uploadProfileError = useSelector(getUploadProfileError);
   const isUploadProfileEmailDuplicateError = useSelector(getIsUploadProfileEmailDuplicateError);
   const isUpdateBirthdayRequestShow = useSelector(getIsUpdateBirthdayRequestShow);
-  const isProfileRequestStatusPending = useSelector(getIsProfileRequestMountStatusPending);
+  const isProfileRequestMountStatusPending = useSelector(getIsProfileRequestMountStatusPending);
   const isUpdateProfileRequestStatusPending = useSelector(getIsUpdateProfileRequestStatusPending);
-  const isUpdateBirthdayRequestCompleted = useSelector(getIsUpdateBirthdayRequestCompleted);
-  const isBirthdayPickerShow = !(isCompleteBirthdayFirst && isUpdateBirthdayRequestCompleted);
+  const isBirthdayEmpty = useSelector(getIsBirthdayEmpty);
+  const userBirthdayChangeAllowed = useSelector(getUserBirthdayChangeAllowed);
+  const isBirthdayPickerDisabled = (isCompleteBirthdayFirst && !isBirthdayEmpty) || !userBirthdayChangeAllowed;
 
   useEffect(() => {
     if (show) {
@@ -70,13 +75,13 @@ const CompleteProfile = ({ show, isCompleteBirthdayFirst, onSkip, onSave, onClos
       show={show}
       onClose={onClose}
     >
-      {isProfileRequestStatusPending ? (
+      {isProfileRequestMountStatusPending ? (
         <SkeletonLoader />
       ) : isUpdateBirthdayRequestShow ? (
         <CompleteBirthday onSkip={onSkip} onSave={onSave} />
       ) : (
         <CompleteUserProfile
-          showBirthdayPicker={isBirthdayPickerShow}
+          disableBirthdayPicker={isBirthdayPickerDisabled}
           onSkip={onSkip}
           onSave={onSave}
           onClose={onClose}

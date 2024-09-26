@@ -79,9 +79,11 @@ const CompleteProfileForm = ({ disableBirthdayPicker, onClickSkipButton, onClick
       }
 
       await dispatch(saveUserProfileInfo());
-      onClickSaveButton();
+
+      onClickSaveButton && onClickSaveButton();
+      onClose();
     },
-    [dispatch, onClickSaveButton, invalidFields]
+    [dispatch, onClickSaveButton, onClose, invalidFields]
   );
 
   useEffect(() => {
