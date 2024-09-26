@@ -16,7 +16,7 @@ import { getCustomerAvailablePointsBalance, getCustomerRewardsTotal } from '../.
 import {
   getIsMerchantCashbackOrStoreCreditsEnabled,
   getShouldShowRewardsBanner,
-  getCustomerCashbackPrice,
+  getCashbackPrice,
 } from '../../redux/selector';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
@@ -75,7 +75,7 @@ const MemberRewards = ({
   isMerchantMembershipPointsEnabled,
   rewardsAvailableCount,
   customerAvailablePointsBalance,
-  customerCashbackPrice,
+  cashbackPrice,
   onViewMembershipDetailClick,
 }) => {
   const { t } = useTranslation('OrderingThankYou');
@@ -167,7 +167,7 @@ const MemberRewards = ({
                   />
                 </div>
                 <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
-                  {t('RewardsCardCashbackItemText', { cashbackPrice: customerCashbackPrice })}
+                  {t('RewardsCardCashbackItemText', { cashbackPrice })}
                 </span>
               </li>
             )}
@@ -188,7 +188,7 @@ MemberRewards.propTypes = {
   isMerchantMembershipPointsEnabled: PropTypes.bool,
   rewardsAvailableCount: PropTypes.number,
   customerAvailablePointsBalance: PropTypes.number,
-  customerCashbackPrice: PropTypes.string,
+  cashbackPrice: PropTypes.string,
   onViewMembershipDetailClick: PropTypes.func,
 };
 
@@ -200,7 +200,7 @@ MemberRewards.defaultProps = {
   isMerchantCashbackOrStoreCreditsEnabled: false,
   rewardsAvailableCount: 0,
   customerAvailablePointsBalance: 0,
-  customerCashbackPrice: null,
+  cashbackPrice: null,
   onViewMembershipDetailClick: () => {},
 };
 
@@ -212,5 +212,5 @@ export default connect(state => ({
   isMerchantMembershipPointsEnabled: getIsMerchantMembershipPointsEnabled(state),
   customerAvailablePointsBalance: getCustomerAvailablePointsBalance(state),
   rewardsAvailableCount: getCustomerRewardsTotal(state),
-  customerCashbackPrice: getCustomerCashbackPrice(state),
+  cashbackPrice: getCashbackPrice(state),
 }))(MemberRewards);

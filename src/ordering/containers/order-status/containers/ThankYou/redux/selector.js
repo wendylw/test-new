@@ -42,7 +42,6 @@ import {
   getUserCustomerId,
   getUserConsumerId,
   getCustomerRewardsTotal,
-  getCustomerCashback,
 } from '../../../../../redux/modules/app';
 import {
   getIsLoadMerchantRequestCompleted,
@@ -190,6 +189,14 @@ export const getCashback = createSelector(getLoadCashbackRequestData, loadCashba
 
   return Number(cashback) ? Number(cashback) : 0;
 });
+
+export const getCashbackPrice = createSelector(
+  getCashback,
+  getMembershipMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+  (cashback, country, currency, locale) => getPrice(cashback, { country, currency, locale })
+);
 
 export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInfo, (cashback, onlineStoreInfo) => {
   const { currency } = onlineStoreInfo || {};
@@ -406,19 +413,6 @@ export const getIsMerchantCashbackOrStoreCreditsEnabled = createSelector(
   getIsMerchantEnabledStoreCredits,
   (isMerchantEnabledCashback, isMerchantEnabledStoreCredits) =>
     isMerchantEnabledCashback || isMerchantEnabledStoreCredits
-);
-
-export const getCustomerCashbackPrice = createSelector(
-  getCustomerCashback,
-  getMembershipMerchantCountry,
-  getMerchantCurrency,
-  getMerchantLocale,
-  (customerCashback, membershipMerchantCountry, merchantCurrency, merchantLocale) =>
-    getPrice(customerCashback, {
-      country: membershipMerchantCountry,
-      currency: merchantCurrency,
-      locale: merchantLocale,
-    })
 );
 
 // WB-7383: we need to consider the consumerId from cashbackInfo to make user able to see cashback card immediately
