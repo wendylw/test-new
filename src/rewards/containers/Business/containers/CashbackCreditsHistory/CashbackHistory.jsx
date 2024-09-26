@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { Trans, useTranslation } from 'react-i18next';
+import CashbackHistoryBannerImage from '../../../../../images/rewards-cashback-history-banner.svg';
 import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
 import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
@@ -13,15 +14,20 @@ import {
   getCustomerCashbackPrice,
   getCustomizeRewardsSettingsCashbackRate,
 } from '../../redux/common/selectors';
-import { getCashbackHistoryList, getIsCashbackHistoryListEmpty } from './redux/selectors';
+import {
+  getCashbackHistoryList,
+  getIsCashbackHistoryListEmpty,
+  getIsCashbackPromptDrawerShow,
+} from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
 import { backButtonClicked } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import Tag from '../../../../../common/components/Tag';
+import { ObjectFitImage } from '../../../../../common/components/Image';
 import HistoryBanner from '../../components/Histories/HistoryBanner';
 import HistoryList from '../../components/Histories/HistoryList';
-import EarnedCashbackPromptDrawer from './components/EarnedCashbackPromptDrawer';
+import EarnedCashbackPromptDrawer from '../../components/EarnedCashbackPromptDrawer';
 import styles from './CashbackHistory.module.scss';
 
 const CashbackHistory = () => {
@@ -37,13 +43,17 @@ const CashbackHistory = () => {
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
   const cashbackHistoryList = useSelector(getCashbackHistoryList);
   const isCashbackHistoryListEmpty = useSelector(getIsCashbackHistoryListEmpty);
+  const isCashbackPromptDrawerShow = useSelector(getIsCashbackPromptDrawerShow);
   const handleClickHeaderBackButton = useCallback(() => {
     CleverTap.pushEvent('Cashback Details Page - Click Back');
 
     dispatch(backButtonClicked());
   }, [dispatch]);
   const handleClickHowToUseButton = useCallback(() => {
-    dispatch(cashbackCreditsHistoryActions.useCashbackPromptDrawerShown());
+    dispatch(cashbackCreditsHistoryActions.cashbackPromptDrawerShown());
+  }, [dispatch]);
+  const handleCloseHowToUseDrawer = useCallback(() => {
+    dispatch(cashbackCreditsHistoryActions.cashbackPromptDrawerHidden());
   }, [dispatch]);
 
   useMount(() => {
@@ -89,6 +99,10 @@ const CashbackHistory = () => {
         }
         infoButtonText={t('HowToUseCashback')}
         onClickInfoButton={handleClickHowToUseButton}
+        historyBannerRightClassName={styles.CashbackHistoryBannerRight}
+        historyBannerImage={
+          <ObjectFitImage noCompression src={CashbackHistoryBannerImage} alt="Beep Cashback History Banner" />
+        }
         infoButtonTestId="rewards.business.cashback-history.how-to-use-button"
       />
       <section className={styles.CashbackHistorySection}>
@@ -100,7 +114,7 @@ const CashbackHistory = () => {
           historyList={cashbackHistoryList}
         />
       </section>
-      <EarnedCashbackPromptDrawer />
+      <EarnedCashbackPromptDrawer show={isCashbackPromptDrawerShow} onCloseDrawer={handleCloseHowToUseDrawer} />
     </Frame>
   );
 };

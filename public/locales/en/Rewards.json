@@ -168,5 +168,6 @@
   "ErrorGetRewardsCanceledRefundTitle": "Transaction was cancelled. Could not claim rewards",
   "BirthdayCampaignTitle": "Get Goodies on Your Birthday!",
   "BirthdayCampaignDescription": "Complete your profile to unlock",
-  "ViewProfile": "View profile"
+  "ViewProfile": "View profile",
+  "HowToUse": "How to use"
 }

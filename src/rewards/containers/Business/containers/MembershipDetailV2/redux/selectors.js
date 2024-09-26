@@ -65,6 +65,11 @@ import {
   getIsNewMember,
 } from '../../../redux/common/selectors';
 
+export const getIsCashbackPromptDrawerShow = state => state.business.membershipDetailV2.isCashbackPromptDrawerShow;
+
+export const getIsStoreCreditsPromptDrawerShow = state =>
+  state.business.membershipDetailV2.isStoreCreditsPromptDrawerShow;
+
 export const getLoadMerchantBirthdayCampaignData = state =>
   state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.data;
 
@@ -399,7 +404,21 @@ export const getCustomerCurrentStatusPromptI18nInfo = createSelector(
   }
 );
 
+export const getIsMemberCardShow = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getMembershipTierListLength,
+  (isMerchantMembershipPointsEnabled, membershipTierListLength) =>
+    isMerchantMembershipPointsEnabled || membershipTierListLength > 1
+);
+
 // Rewards Buttons
+export const getIsRewardsButtonsShow = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getMembershipTierListLength,
+  (isMerchantMembershipPointsEnabled, membershipTierListLength) =>
+    isMerchantMembershipPointsEnabled || membershipTierListLength > 1
+);
+
 export const getIsRewardsCashbackCreditsButtonShow = createSelector(
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledLoyalty,

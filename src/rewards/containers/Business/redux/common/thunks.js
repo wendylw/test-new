@@ -98,8 +98,8 @@ export const claimOrderRewards = createAsyncThunk(
   }
 );
 
-export const loadCustomizeRewardsSettings = createAsyncThunk(
-  'rewards/business/common/loadCustomizeRewardsSettings',
+export const fetchCustomizeRewardsSettings = createAsyncThunk(
+  'rewards/business/common/fetchCustomizeRewardsSettings',
   async (_, { getState }) => {
     const state = getState();
     const business = getBusiness(state);

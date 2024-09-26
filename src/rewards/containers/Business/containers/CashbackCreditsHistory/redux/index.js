@@ -3,8 +3,8 @@ import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { fetchCashbackHistoryList, fetchStoreCreditsHistoryList } from './thunks';
 
 const initialState = {
-  isUseCashbackPromptDrawerShow: false,
-  isUseStoreCreditsPromptDrawerShow: false,
+  isCashbackPromptDrawerShow: false,
+  isStoreCreditsPromptDrawerShow: false,
   loadCashbackHistoryListRequest: {
     data: [],
     status: null,
@@ -21,17 +21,17 @@ export const { reducer, actions } = createSlice({
   name: 'rewards/business/cashbackCreditsHistory',
   initialState,
   reducers: {
-    useCashbackPromptDrawerShown: state => {
-      state.isUseCashbackPromptDrawerShow = true;
+    cashbackPromptDrawerShown: state => {
+      state.isCashbackPromptDrawerShow = true;
     },
-    useCashbackPromptDrawerHidden: state => {
-      state.isUseCashbackPromptDrawerShow = false;
+    cashbackPromptDrawerHidden: state => {
+      state.isCashbackPromptDrawerShow = false;
     },
-    useStoreCreditsPromptDrawerShown: state => {
-      state.isUseStoreCreditsPromptDrawerShow = true;
+    storeCreditsPromptDrawerShown: state => {
+      state.isStoreCreditsPromptDrawerShow = true;
     },
-    useStoreCreditsPromptDrawerHidden: state => {
-      state.isUseStoreCreditsPromptDrawerShow = false;
+    storeCreditsPromptDrawerHidden: state => {
+      state.isStoreCreditsPromptDrawerShow = false;
     },
     cashbackCreditsHistoryReset: () => initialState,
   },

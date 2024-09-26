@@ -1,22 +1,24 @@
 import React from 'react';
 import { Info } from 'phosphor-react';
 import PropTypes from 'prop-types';
-import RewardsHistoryBannerImage from '../../../../../../images/rewards-history-banner.svg';
+import { getClassName } from '../../../../../../common/utils/ui';
 import Button from '../../../../../../common/components/Button';
-import { ObjectFitImage } from '../../../../../../common/components/Image';
 import styles from './HistoryBanner.module.scss';
 
 const HistoryBanner = ({
+  className,
   title,
   value,
   valueText,
   prompt,
   infoButtonText,
+  historyBannerRightClassName,
+  historyButton,
   historyBannerImage,
   onClickInfoButton,
   infoButtonTestId,
 }) => (
-  <section className={styles.HistoryBanner}>
+  <section className={getClassName([styles.HistoryBanner, className])}>
     <div className={styles.HistoryBannerCustomerInfo}>
       <h4 className={styles.HistoryBannerTitle}>{title}:</h4>
       <data className={styles.HistoryBannerPoints} value={value}>
@@ -38,8 +40,9 @@ const HistoryBanner = ({
         </Button>
       </div>
     </div>
-    <div className={styles.HistoryBannerImage}>
-      <ObjectFitImage noCompression src={historyBannerImage || RewardsHistoryBannerImage} alt="Beep Rewards Banner" />
+    <div className={getClassName([styles.HistoryBannerRight, historyBannerRightClassName])}>
+      {historyButton}
+      {historyBannerImage}
     </div>
   </section>
 );
@@ -47,22 +50,28 @@ const HistoryBanner = ({
 HistoryBanner.displayName = 'HistoryBanner';
 
 HistoryBanner.propTypes = {
+  className: PropTypes.string,
   title: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   valueText: PropTypes.string,
   prompt: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   infoButtonText: PropTypes.string,
-  historyBannerImage: PropTypes.string,
+  historyBannerRightClassName: PropTypes.string,
+  historyButton: PropTypes.node,
+  historyBannerImage: PropTypes.node,
   onClickInfoButton: PropTypes.func,
   infoButtonTestId: PropTypes.string,
 };
 
 HistoryBanner.defaultProps = {
+  className: null,
   title: '',
   value: '',
   valueText: '',
   prompt: '',
   infoButtonText: '',
+  historyBannerRightClassName: null,
+  historyButton: null,
   historyBannerImage: null,
   onClickInfoButton: () => {},
   infoButtonTestId: '',

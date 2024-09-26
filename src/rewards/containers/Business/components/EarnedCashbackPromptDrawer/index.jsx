@@ -1,20 +1,13 @@
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { X } from 'phosphor-react';
-import Drawer from '../../../../../../../common/components/Drawer';
-import DrawerHeader from '../../../../../../../common/components/Drawer/DrawerHeader';
-import { getIsUseCashbackPromptDrawerShow } from '../../redux/selectors';
-import { actions as cashbackCreditsActions } from '../../redux';
+import Drawer from '../../../../../common/components/Drawer';
+import DrawerHeader from '../../../../../common/components/Drawer/DrawerHeader';
 import styles from './EarnedCashbackPromptDrawer.module.scss';
 
-const EarnedCashbackPromptDrawer = () => {
+const EarnedCashbackPromptDrawer = ({ show, onCloseDrawer }) => {
   const { t } = useTranslation(['Rewards']);
-  const dispatch = useDispatch();
-  const isUseCashbackPromptDrawerShow = useSelector(getIsUseCashbackPromptDrawerShow);
-  const closeDrawer = useCallback(() => {
-    dispatch(cashbackCreditsActions.useCashbackPromptDrawerHidden());
-  }, [dispatch]);
 
   return (
     <Drawer
@@ -26,15 +19,15 @@ const EarnedCashbackPromptDrawer = () => {
               weight="light"
               className={styles.EarnedCashbackPromptDrawerHeaderCloseButton}
               data-test-id="rewards.business.membershipDetail.earnedCashbackPromptDrawer.closeButton"
-              onClick={closeDrawer}
+              onClick={onCloseDrawer}
             />
           }
         >
           <span className={styles.EarnedCashbackPromptDrawerTitle}>{t('EarnedCashbackPromptDrawerTitle')}</span>
         </DrawerHeader>
       }
-      show={isUseCashbackPromptDrawerShow}
-      onClose={closeDrawer}
+      show={show}
+      onClose={onCloseDrawer}
     >
       <ol className={styles.EarnedCashbackPromptList}>
         <li className={styles.EarnedCashbackPromptItem}>
@@ -55,5 +48,15 @@ const EarnedCashbackPromptDrawer = () => {
 };
 
 EarnedCashbackPromptDrawer.displayName = 'EarnedCashbackPromptDrawer';
+
+EarnedCashbackPromptDrawer.propTypes = {
+  show: PropTypes.bool,
+  onCloseDrawer: PropTypes.func,
+};
+
+EarnedCashbackPromptDrawer.defaultProps = {
+  show: false,
+  onCloseDrawer: () => {},
+};
 
 export default EarnedCashbackPromptDrawer;

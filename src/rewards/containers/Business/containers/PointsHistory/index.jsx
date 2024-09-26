@@ -14,6 +14,7 @@ import {
 import { actions as PointsHistoryActions } from './redux';
 import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
+import { ObjectFitImage } from '../../../../../common/components/Image';
 import PageHeader from '../../../../../common/components/PageHeader';
 import { HistoryBanner, HistoryList } from '../../components/Histories';
 import EarnedPointsPromptDrawer from './components/EarnedPointsPromptDrawer';
@@ -50,7 +51,10 @@ const PointsHistory = () => {
         valueText={t('CustomerPoints', { customerAvailablePointsBalance })}
         prompt={t('PointsExpiringTimePrompt')}
         infoButtonText={t('HowToUsePoints')}
-        historyBannerImage={RewardsPointsHistoryBannerImage}
+        historyBannerRightClassName={styles.PointsHistoryBannerRight}
+        historyBannerImage={
+          <ObjectFitImage noCompression src={RewardsPointsHistoryBannerImage} alt="Beep Cashback History Banner" />
+        }
         onClickInfoButton={handleClickHowToUseButton}
         infoButtonTestId="rewards.business.points-history.how-to-use-button"
       />
