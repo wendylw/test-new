@@ -224,14 +224,16 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     const fetchUniquePromoListBannersLimit = getFetchUniquePromoListBannersLimit(getState());
     const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
 
-    dispatch(fetchCustomerInfo(business));
     dispatch(fetchUniquePromoListBanners({ consumerId, limit: fetchUniquePromoListBannersLimit }));
     dispatch(fetchPointsRewardList(consumerId));
     dispatch(fetchUniquePromoList(consumerId));
 
     if (isClaimedOrderRewardsEnabled) {
-      dispatch(claimOrderRewards());
+      await dispatch(claimOrderRewards());
     }
+
+    // customer info must after claim order rewards, maybe customer data will be changed
+    dispatch(fetchCustomerInfo(business));
   }
 });
 
