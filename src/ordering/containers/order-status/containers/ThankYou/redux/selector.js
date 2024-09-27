@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants, { API_REQUEST_STATUS, REFERRER_SOURCE_TYPES } from '../../../../../../utils/constants';
+import { ORDER_PAYMENT_METHODS } from '../../../constants';
 import {
   CASHBACK_CAN_CLAIM_STATUS_LIST,
   AFTER_PAID_STATUS_LIST,
@@ -394,12 +395,21 @@ export const getShouldShowMemberBanner = createSelector(
     isLogin && isMerchantMembershipEnabled && !hasUserJoinedBusinessMembership
 );
 
+export const getIsPayAtCounterPendingPayment = createSelector(
+  getOrderPaymentMethod,
+  getOrderStatus,
+  (paymentMethod, orderStatus) =>
+    paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE &&
+    (orderStatus === ORDER_STATUS.PENDING_PAYMENT || orderStatus === ORDER_STATUS.CREATED)
+);
+
 export const getShouldShowRewards = createSelector(
   getUserIsLogin,
   getIsMerchantMembershipEnabled,
   getHasUserJoinedBusinessMembership,
-  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership) =>
-    isLogin && isMerchantMembershipEnabled && hasUserJoinedBusinessMembership
+  getIsPayAtCounterPendingPayment,
+  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership, isPayAtCounterPendingPayment) =>
+    isLogin && isMerchantMembershipEnabled && hasUserJoinedBusinessMembership && !isPayAtCounterPendingPayment
 );
 
 export const getShouldShowRewardsBanner = createSelector(
