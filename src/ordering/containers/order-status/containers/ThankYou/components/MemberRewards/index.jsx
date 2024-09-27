@@ -14,6 +14,7 @@ import {
 import { getIsJoinMembershipNewMember } from '../../../../../../../redux/modules/membership/selectors';
 import { getCustomerAvailablePointsBalance, getCustomerRewardsTotal } from '../../../../../../redux/modules/app';
 import {
+  getShouldShowEarnedPointsOrCreditsBanner,
   getIsMerchantCashbackOrStoreCreditsEnabled,
   getShouldShowRewardsBanner,
   getCashbackPrice,
@@ -72,6 +73,7 @@ const MemberRewards = ({
   isJoinMembershipNewMember,
   isMerchantEnabledCashback,
   isMerchantCashbackOrStoreCreditsEnabled,
+  shouldShowEarnedPointsOrCreditsBanner,
   isMerchantMembershipPointsEnabled,
   rewardsAvailableCount,
   customerAvailablePointsBalance,
@@ -112,68 +114,70 @@ const MemberRewards = ({
         </section>
       )}
 
-      <section className="card margin-small padding-smaller">
-        <MemberRewardsContainer
-          isJoinMembershipNewMember={isJoinMembershipNewMember}
-          onClickContainer={onViewMembershipDetailClick}
-        >
-          <div className="flex flex-middle flex-space-between">
-            <h3 className="rewards-card__title padding-small">
-              {isJoinMembershipNewMember ? t('RewardsCardNewMemberTitle') : t('RewardsCardReturningMemberTitle')}
-            </h3>
-            {!isJoinMembershipNewMember && (
-              <Button
-                type="text"
-                theme="info"
-                className="rewards-card__check-balance-button"
-                contentClassName="rewards-card__check-balance-button-content"
-                data-test-id="ordering.thank-you.rewards.rewards-card.check-balance-button"
-                onClick={handleCheckBalanceButtonClick}
-              >
-                {t('RewardsCardReturningMemberCheckBalanceText')}
-              </Button>
-            )}
-          </div>
-          <ul className="flex__fluid-content">
-            {isJoinMembershipNewMember && (
-              <li className="flex flex-middle padding-left-right-small margin-top-bottom-small">
-                <div className="rewards-card__item-icon flex__shrink-fixed">
-                  <ObjectFitImage noCompression src={RewardsIcon} alt="StoreHub Rewards Icon" />
-                </div>
-                <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
-                  {t('RewardsCardRewardsItemText', { availableCount: rewardsAvailableCount })}
-                </span>
-              </li>
-            )}
+      {shouldShowEarnedPointsOrCreditsBanner && (
+        <section className="card margin-small padding-smaller">
+          <MemberRewardsContainer
+            isJoinMembershipNewMember={isJoinMembershipNewMember}
+            onClickContainer={onViewMembershipDetailClick}
+          >
+            <div className="flex flex-middle flex-space-between">
+              <h3 className="rewards-card__title padding-small">
+                {isJoinMembershipNewMember ? t('RewardsCardNewMemberTitle') : t('RewardsCardReturningMemberTitle')}
+              </h3>
+              {!isJoinMembershipNewMember && (
+                <Button
+                  type="text"
+                  theme="info"
+                  className="rewards-card__check-balance-button"
+                  contentClassName="rewards-card__check-balance-button-content"
+                  data-test-id="ordering.thank-you.rewards.rewards-card.check-balance-button"
+                  onClick={handleCheckBalanceButtonClick}
+                >
+                  {t('RewardsCardReturningMemberCheckBalanceText')}
+                </Button>
+              )}
+            </div>
+            <ul className="flex__fluid-content">
+              {isJoinMembershipNewMember && (
+                <li className="flex flex-middle padding-left-right-small margin-top-bottom-small">
+                  <div className="rewards-card__item-icon flex__shrink-fixed">
+                    <ObjectFitImage noCompression src={RewardsIcon} alt="StoreHub Rewards Icon" />
+                  </div>
+                  <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
+                    {t('RewardsCardRewardsItemText', { availableCount: rewardsAvailableCount })}
+                  </span>
+                </li>
+              )}
 
-            {isMerchantMembershipPointsEnabled && (
-              <li className="flex flex-middle padding-left-right-small margin-top-bottom-small">
-                <div className="rewards-card__item-icon flex__shrink-fixed">
-                  <ObjectFitImage noCompression src={RewardsPointsIcon} alt="StoreHub Points Icon" />
-                </div>
-                <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
-                  {t('RewardsCardPointsItemText', { points: customerAvailablePointsBalance })}
-                </span>
-              </li>
-            )}
+              {isMerchantMembershipPointsEnabled && (
+                <li className="flex flex-middle padding-left-right-small margin-top-bottom-small">
+                  <div className="rewards-card__item-icon flex__shrink-fixed">
+                    <ObjectFitImage noCompression src={RewardsPointsIcon} alt="StoreHub Points Icon" />
+                  </div>
+                  <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
+                    {t('RewardsCardPointsItemText', { points: customerAvailablePointsBalance })}
+                  </span>
+                </li>
+              )}
 
-            {isMerchantCashbackOrStoreCreditsEnabled && (
-              <li className="flex flex-middle padding-left-right-small margin-top-bottom-small">
-                <div className="rewards-card__item-icon flex__shrink-fixed">
-                  <ObjectFitImage
-                    noCompression
-                    src={isMerchantEnabledCashback ? RewardsCashbackIcon : RewardsStoreCreditsIcon}
-                    alt="StoreHub Rewards Cashback Icon"
-                  />
-                </div>
-                <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
-                  {t('RewardsCardCashbackItemText', { cashbackPrice })}
-                </span>
-              </li>
-            )}
-          </ul>
-        </MemberRewardsContainer>
-      </section>
+              {isMerchantCashbackOrStoreCreditsEnabled && (
+                <li className="flex flex-middle padding-left-right-small margin-top-bottom-small">
+                  <div className="rewards-card__item-icon flex__shrink-fixed">
+                    <ObjectFitImage
+                      noCompression
+                      src={isMerchantEnabledCashback ? RewardsCashbackIcon : RewardsStoreCreditsIcon}
+                      alt="StoreHub Rewards Cashback Icon"
+                    />
+                  </div>
+                  <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
+                    {t('RewardsCardCashbackItemText', { cashbackPrice })}
+                  </span>
+                </li>
+              )}
+            </ul>
+          </MemberRewardsContainer>
+        </section>
+      )}
     </>
   );
 };
@@ -185,6 +189,7 @@ MemberRewards.propTypes = {
   isJoinMembershipNewMember: PropTypes.bool,
   isMerchantEnabledCashback: PropTypes.bool,
   isMerchantCashbackOrStoreCreditsEnabled: PropTypes.bool,
+  shouldShowEarnedPointsOrCreditsBanner: PropTypes.bool,
   isMerchantMembershipPointsEnabled: PropTypes.bool,
   rewardsAvailableCount: PropTypes.number,
   customerAvailablePointsBalance: PropTypes.number,
@@ -197,6 +202,7 @@ MemberRewards.defaultProps = {
   isJoinMembershipNewMember: false,
   isMerchantEnabledCashback: false,
   isMerchantMembershipPointsEnabled: false,
+  shouldShowEarnedPointsOrCreditsBanner: false,
   isMerchantCashbackOrStoreCreditsEnabled: false,
   rewardsAvailableCount: 0,
   customerAvailablePointsBalance: 0,
@@ -208,6 +214,7 @@ export default connect(state => ({
   shouldShowRewardsBanner: getShouldShowRewardsBanner(state),
   isJoinMembershipNewMember: getIsJoinMembershipNewMember(state),
   isMerchantEnabledCashback: getIsMerchantEnabledCashback(state),
+  shouldShowEarnedPointsOrCreditsBanner: getShouldShowEarnedPointsOrCreditsBanner(state),
   isMerchantCashbackOrStoreCreditsEnabled: getIsMerchantCashbackOrStoreCreditsEnabled(state),
   isMerchantMembershipPointsEnabled: getIsMerchantMembershipPointsEnabled(state),
   customerAvailablePointsBalance: getCustomerAvailablePointsBalance(state),

@@ -52,6 +52,7 @@ import {
   getMerchantCountry as getMembershipMerchantCountry,
   getMerchantCurrency,
   getMerchantLocale,
+  getIsMerchantMembershipPointsEnabled,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getIsJoinMembershipNewMember } from '../../../../../../redux/modules/membership/selectors';
 
@@ -425,16 +426,11 @@ export const getIsMerchantCashbackOrStoreCreditsEnabled = createSelector(
     isMerchantEnabledCashback || isMerchantEnabledStoreCredits
 );
 
-// WB-7383: we need to consider the consumerId from cashbackInfo to make user able to see cashback card immediately
-export const getShouldShowEarnedCashback = createSelector(
-  getHasCashback,
-  getHasOrderPaid,
-  getUserCustomerId,
-  getOrderCustomerId,
-  getCashbackCustomerId,
-  getHasCashbackClaimed,
-  (hasCashback, hasOrderPaid, userCustomerId, orderCustomerId, cashbackCustomerId, hasCashbackClaimed) =>
-    hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === (orderCustomerId || cashbackCustomerId)
+export const getShouldShowEarnedPointsOrCreditsBanner = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getIsMerchantCashbackOrStoreCreditsEnabled,
+  (isMerchantMembershipPointsEnabled, isMerchantCashbackOrStoreCreditsEnabled) =>
+    isMerchantMembershipPointsEnabled || isMerchantCashbackOrStoreCreditsEnabled
 );
 
 // Expected the enabled membership merchant's customers see the member card information first on the page. So hide complete profile page
