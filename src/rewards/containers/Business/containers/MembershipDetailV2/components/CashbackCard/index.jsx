@@ -17,7 +17,7 @@ import {
   getRemainingCashbackExpiredDays,
   getCustomerCashbackPrice,
 } from '../../../../redux/common/selectors';
-import { getIsUseCashbackPromptDrawerShow } from '../../redux/selectors';
+import { getIsCashbackPromptDrawerShow } from '../../redux/selectors';
 import { actions as membershipDetailActions } from '../../redux';
 import Tag from '../../../../../../../common/components/Tag';
 import Button from '../../../../../../../common/components/Button';
@@ -38,7 +38,7 @@ const CashbackCard = () => {
   const remainingCashbackExpiredDays = useSelector(getRemainingCashbackExpiredDays);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
-  const isUseCashbackPromptDrawerShow = useSelector(getIsUseCashbackPromptDrawerShow);
+  const isCashbackPromptDrawerShow = useSelector(getIsCashbackPromptDrawerShow);
   const handleClickHowToUseButton = useCallback(() => {
     dispatch(membershipDetailActions.cashbackPromptDrawerShown());
   }, [dispatch]);
@@ -117,7 +117,7 @@ const CashbackCard = () => {
           />
         </div>
       </section>
-      <EarnedCashbackPromptDrawer show={isUseCashbackPromptDrawerShow} onCloseDrawer={handleCloseHowToUserDrawer} />
+      <EarnedCashbackPromptDrawer show={isCashbackPromptDrawerShow} onCloseDrawer={handleCloseHowToUserDrawer} />
     </>
   );
 };
