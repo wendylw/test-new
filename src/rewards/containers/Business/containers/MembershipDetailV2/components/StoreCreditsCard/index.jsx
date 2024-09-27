@@ -6,7 +6,7 @@ import CashbackHistoryButtonIcon from '../../../../../../../images/membership-hi
 import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
 import { getCustomerCashbackPrice } from '../../../../redux/common/selectors';
-import { getIsUseStoreCreditsPromptDrawerShow } from '../../redux/selectors';
+import { getIsStoreCreditsPromptDrawerShow } from '../../redux/selectors';
 import { actions as membershipDetailActions } from '../../redux';
 import Button from '../../../../../../../common/components/Button';
 import { CashbackStoreCredits } from '../../../../../../../common/components/Icons';
@@ -20,7 +20,7 @@ const StoreCreditsCard = () => {
   const dispatch = useDispatch();
   const search = useSelector(getLocationSearch);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
-  const isUseStoreCreditsPromptDrawerShow = useSelector(getIsUseStoreCreditsPromptDrawerShow);
+  const isStoreCreditsPromptDrawerShow = useSelector(getIsStoreCreditsPromptDrawerShow);
   const handleClickHowToUseButton = useCallback(() => {
     dispatch(membershipDetailActions.storeCreditsPromptDrawerShown());
   }, [dispatch]);
@@ -72,7 +72,7 @@ const StoreCreditsCard = () => {
         </div>
       </section>
       <EarnedStoreCreditsPromptDrawer
-        show={isUseStoreCreditsPromptDrawerShow}
+        show={isStoreCreditsPromptDrawerShow}
         onCloseDrawer={handleCloseHowToUserDrawer}
       />
     </>
