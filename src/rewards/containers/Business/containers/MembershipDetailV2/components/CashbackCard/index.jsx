@@ -10,6 +10,7 @@ import { getLocationSearch } from '../../../../../../redux/modules/common/select
 import {
   getIsCashbackExpired,
   getDisplayCashbackExpiredDate,
+  getCustomerCashback,
 } from '../../../../../../redux/modules/customer/selectors';
 import {
   getIsExpiringTagShown,
@@ -38,6 +39,7 @@ const CashbackCard = () => {
   const remainingCashbackExpiredDays = useSelector(getRemainingCashbackExpiredDays);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
+  const customerCashback = useSelector(getCustomerCashback);
   const isCashbackPromptDrawerShow = useSelector(getIsCashbackPromptDrawerShow);
   const handleClickHowToUseButton = useCallback(() => {
     dispatch(membershipDetailActions.cashbackPromptDrawerShown());
@@ -61,34 +63,36 @@ const CashbackCard = () => {
             value={customerCashbackPrice}
             valueText={customerCashbackPrice}
             prompt={
-              <>
-                {t('ValidUntil', {
-                  date: formatTimeToDateString(merchantCountry, displayCashbackExpiredDate),
-                })}
-                {isCashbackExpired && <Tag className={styles.CashbackCardExpiredTag}>{t('Expired')}</Tag>}
-                {isExpiringTagShown ? (
-                  <Tag color="red" className={styles.CashbackCardRemainingExpiredDaysTag}>
-                    {isTodayExpired ? (
-                      t('ExpiringToday')
-                    ) : (
-                      <Trans
-                        t={t}
-                        i18nKey="ExpiringInDays"
-                        values={{ remainingExpiredDays: remainingCashbackExpiredDays }}
-                        components={[
-                          <span
-                            className={
-                              remainingCashbackExpiredDays <= 1
-                                ? styles.CashbackCardRemainingExpiredDaysTagExtraTextHide
-                                : ''
-                            }
-                          />,
-                        ]}
-                      />
-                    )}
-                  </Tag>
-                ) : null}
-              </>
+              customerCashback > 0 && (
+                <>
+                  {t('ValidUntil', {
+                    date: formatTimeToDateString(merchantCountry, displayCashbackExpiredDate),
+                  })}
+                  {isCashbackExpired && <Tag className={styles.CashbackCardExpiredTag}>{t('Expired')}</Tag>}
+                  {isExpiringTagShown ? (
+                    <Tag color="red" className={styles.CashbackCardRemainingExpiredDaysTag}>
+                      {isTodayExpired ? (
+                        t('ExpiringToday')
+                      ) : (
+                        <Trans
+                          t={t}
+                          i18nKey="ExpiringInDays"
+                          values={{ remainingExpiredDays: remainingCashbackExpiredDays }}
+                          components={[
+                            <span
+                              className={
+                                remainingCashbackExpiredDays <= 1
+                                  ? styles.CashbackCardRemainingExpiredDaysTagExtraTextHide
+                                  : ''
+                              }
+                            />,
+                          ]}
+                        />
+                      )}
+                    </Tag>
+                  ) : null}
+                </>
+              )
             }
             infoButtonText={t('HowToUse')}
             historyBannerRightClassName={styles.CashbackCardRight}
