@@ -435,7 +435,9 @@ export const getIsExpiringIconShown = createSelector(
 // My Rewards
 export const getIsMyRewardsSectionShow = createSelector(
   getIsMerchantMembershipPointsEnabled,
-  isMerchantMembershipPointsEnabled => !isMerchantMembershipPointsEnabled
+  getMembershipTierListLength,
+  (isMerchantMembershipPointsEnabled, membershipTierListLength) =>
+    !isMerchantMembershipPointsEnabled && membershipTierListLength === 1
 );
 
 // Points Rewards
