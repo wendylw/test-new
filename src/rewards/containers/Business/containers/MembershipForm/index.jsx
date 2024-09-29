@@ -23,7 +23,7 @@ const MembershipForm = () => {
   const isClaimedOrderRewardsEnabled = useSelector(getIsClaimedOrderRewardsEnabled);
   const handleSkipProfileForm = useCallback(() => dispatch(joinBusinessMembership()), [dispatch]);
   const handleSaveProfileForm = useCallback(() => dispatch(joinBusinessMembership()), [dispatch]);
-  const handleCloseProfileForm = useCallback(() => dispatch(hideWebProfileForm), [dispatch]);
+  const handleCloseProfileForm = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
   useMount(() => {
     CleverTap.pushEvent('Join Membership Page - View Page');

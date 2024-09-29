@@ -65,3 +65,10 @@ export const getIsBirthdayEmpty = createSelector(
   getIsUserProfileIncomplete,
   (userBirthday, isUserProfileIncomplete) => isUserProfileIncomplete && !userBirthday
 );
+
+export const getIsProcessingShow = createSelector(
+  getIsUpdateBirthdayRequestPending,
+  getIsUpdateProfileRequestStatusPending,
+  (isUpdateBirthdayRequestPending, isUpdateProfileRequestStatusPending) =>
+    isUpdateBirthdayRequestPending || isUpdateProfileRequestStatusPending
+);

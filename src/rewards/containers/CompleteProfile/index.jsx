@@ -12,7 +12,7 @@ import {
 import {
   getIsUpdateBirthdayRequestShow,
   getIsProfileRequestMountStatusPending,
-  getIsUpdateProfileRequestStatusPending,
+  getIsProcessingShow,
   getIsBirthdayEmpty,
 } from './redux/selectors';
 import { actions as completeProfileActions } from './redux';
@@ -33,7 +33,7 @@ const CompleteProfile = ({ show, isCompleteBirthdayFirst, onSkip, onSave, onClos
   const isUploadProfileEmailDuplicateError = useSelector(getIsUploadProfileEmailDuplicateError);
   const isUpdateBirthdayRequestShow = useSelector(getIsUpdateBirthdayRequestShow);
   const isProfileRequestMountStatusPending = useSelector(getIsProfileRequestMountStatusPending);
-  const isUpdateProfileRequestStatusPending = useSelector(getIsUpdateProfileRequestStatusPending);
+  const isProcessingShow = useSelector(getIsProcessingShow);
   const isBirthdayEmpty = useSelector(getIsBirthdayEmpty);
   const userBirthdayChangeAllowed = useSelector(getUserBirthdayChangeAllowed);
   const isBirthdayPickerDisabled = (isCompleteBirthdayFirst && !isBirthdayEmpty) || !userBirthdayChangeAllowed;
@@ -87,7 +87,7 @@ const CompleteProfile = ({ show, isCompleteBirthdayFirst, onSkip, onSave, onClos
           onClose={onClose}
         />
       )}
-      {isUpdateProfileRequestStatusPending && (
+      {isProcessingShow && (
         <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
       )}
     </Drawer>
