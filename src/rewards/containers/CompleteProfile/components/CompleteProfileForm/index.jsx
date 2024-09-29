@@ -135,7 +135,7 @@ const CompleteProfileForm = ({ disableBirthdayPicker, onClickSkipButton, onClick
         />
       </section>
 
-      <PageFooter>
+      <PageFooter className={styles.CompleteProfileFormPageFooter}>
         <div className={styles.CompleteProfileFormFooter}>
           <Button
             type="secondary"
