@@ -3,10 +3,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useMount } from 'react-use';
 import { WarningCircle } from 'phosphor-react';
 import CleverTap from '../../../../../utils/clevertap';
-import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import { getIsClaimedOrderRewardsEnabled } from '../../redux/common/selectors';
 import { getIsProfileFormVisible, getLoadOrderRewardsError } from './redux/selectors';
-import { skipProfileButtonClicked, saveProfileButtonClicked } from './redux/thunks';
+import { joinBusinessMembership, hideWebProfileForm } from './redux/thunks';
 import { alert } from '../../../../../common/utils/feedback';
 import MerchantInfo from './components/MerchantInfo';
 import RewardsDescription from './components/RewardsDescription';
@@ -14,17 +13,17 @@ import OrderRewardsDescription from './components/OrderRewardsDescription';
 import MembershipTiersTabs from '../../components/MembershipTiersTabs';
 import Footer from './components/Footer';
 import JoiningIndicator from './components/JoiningIndicator';
-import Profile from '../../../Profile';
+import CompleteProfile from '../../../CompleteProfile';
 import styles from './MembershipForm.module.scss';
 
 const MembershipForm = () => {
   const dispatch = useDispatch();
-  const isWebview = useSelector(getIsWebview);
   const isProfileFormVisible = useSelector(getIsProfileFormVisible);
   const loadOrderRewardsError = useSelector(getLoadOrderRewardsError);
   const isClaimedOrderRewardsEnabled = useSelector(getIsClaimedOrderRewardsEnabled);
-  const handleSkipProfileForm = useCallback(() => dispatch(skipProfileButtonClicked()), [dispatch]);
-  const handleSaveProfileForm = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
+  const handleSkipProfileForm = useCallback(() => dispatch(joinBusinessMembership()), [dispatch]);
+  const handleSaveProfileForm = useCallback(() => dispatch(joinBusinessMembership()), [dispatch]);
+  const handleCloseProfileForm = useCallback(() => dispatch(hideWebProfileForm), [dispatch]);
 
   useMount(() => {
     CleverTap.pushEvent('Join Membership Page - View Page');
@@ -54,9 +53,13 @@ const MembershipForm = () => {
       <MembershipTiersTabs />
       <Footer />
       <JoiningIndicator />
-      {!isWebview && (
-        <Profile show={isProfileFormVisible} onSave={handleSaveProfileForm} onSkip={handleSkipProfileForm} />
-      )}
+      <CompleteProfile
+        isCompleteBirthdayFirst
+        show={isProfileFormVisible}
+        onSave={handleSaveProfileForm}
+        onSkip={handleSkipProfileForm}
+        onClose={handleCloseProfileForm}
+      />
     </>
   );
 };
