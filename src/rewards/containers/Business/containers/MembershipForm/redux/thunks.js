@@ -104,19 +104,19 @@ export const continueJoinMembership = createAsyncThunk(
 
     await dispatch(fetchCustomerInfo(business));
 
-    const hasUserJoinedMerchantMembership = getHasUserJoinedMerchantMembership(getState());
-
-    if (hasUserJoinedMerchantMembership) {
-      // NOTE: this case has been handled in MembershipFormProxy useEffect. No need to do any manual redirect here.
-      return;
-    }
-
-    const shouldShowProfileForm = getShouldShowProfileForm(getState());
-
     try {
+      const shouldShowProfileForm = getShouldShowProfileForm(getState());
+
       if (shouldShowProfileForm) {
         await dispatch(showProfileForm());
         throw new Error('Incomplete user profile');
+      }
+
+      const hasUserJoinedMerchantMembership = getHasUserJoinedMerchantMembership(getState());
+
+      if (hasUserJoinedMerchantMembership) {
+        // NOTE: this case has been handled in MembershipFormProxy useEffect. No need to do any manual redirect here.
+        return;
       }
 
       await dispatch(joinBusinessMembership());
