@@ -25,7 +25,8 @@ const HistoryBanner = ({
         {valueText}
       </data>
       <div className={styles.HistoryBannerPrompts}>
-        <p className={styles.HistoryBannerExpiringTimePrompt}>{prompt}</p>
+        {prompt ? <p className={styles.HistoryBannerExpiringTimePrompt}>{prompt}</p> : null}
+
         <Button
           className={styles.HistoryBannerHowToUseButton}
           contentClassName={styles.HistoryBannerHowToUseButtonContent}
