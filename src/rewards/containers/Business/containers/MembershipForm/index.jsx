@@ -37,7 +37,7 @@ const MembershipForm = () => {
         <div className={styles.MembershipFormErrorAlertContent}>
           <WarningCircle className={styles.MembershipFormErrorAlertIcon} size={80} weight="fill" />
           <h4 className={styles.MembershipFormErrorAlertTitle}>{title}</h4>
-          {description && <p>{description}</p>}
+          {description && <p className={styles.MembershipFormErrorAlertDescription}>{description}</p>}
         </div>,
         { customizeContent: true }
       );
