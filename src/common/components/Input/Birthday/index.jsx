@@ -102,6 +102,7 @@ const InputBirthday = ({
     },
     [isSupportedShowPicker]
   );
+  // If initialization birthday picker is empty, this method can catch required error
   const handleInvalidBirthdayPicker = event => {
     event.preventDefault();
 
