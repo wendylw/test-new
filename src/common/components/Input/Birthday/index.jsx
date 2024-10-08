@@ -102,6 +102,14 @@ const InputBirthday = ({
     },
     [isSupportedShowPicker]
   );
+  const handleInvalidBirthdayPicker = event => {
+    event.preventDefault();
+
+    const currentErrorMessage = getErrorMessage(label, event.target.value, { required, pattern }, messages);
+
+    setErrorMessage(currentErrorMessage);
+    onValidation && onValidation({ name, errorMessage: currentErrorMessage });
+  };
 
   return (
     <div
@@ -123,9 +131,11 @@ const InputBirthday = ({
           min={BIRTHDAY_DATE.MIN}
           max={BIRTHDAY_DATE.MAX}
           data-test-id="common.profile.birthday-date-picker"
+          required={required}
           disabled={disabled}
           value={value}
           onChange={handleChangeBirthday}
+          onInvalid={handleInvalidBirthdayPicker}
         />
       )}
       <Input
