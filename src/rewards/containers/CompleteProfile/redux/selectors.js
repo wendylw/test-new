@@ -57,7 +57,7 @@ export const getIsUpdateProfileRequestStatusFulfilled = createSelector(
 );
 
 export const getRequestBirthday = createSelector(getProfileBirthday, profileBirthday =>
-  getReduceOneSecondForDate(profileBirthday)
+  getReduceOneSecondForDate(new Date(profileBirthday))
 );
 
 export const getIsBirthdayEmpty = createSelector(

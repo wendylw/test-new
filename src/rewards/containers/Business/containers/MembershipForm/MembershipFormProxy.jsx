@@ -17,7 +17,6 @@ import {
   getShouldShowUnknownError,
   getShouldShowBackButton,
   getIsLoadOrderRewardsNoTransaction,
-  getIsProfileFormVisible,
 } from './redux/selectors';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
 import MembershipForm from '.';
@@ -37,7 +36,6 @@ const MembershipFormProxy = () => {
   const isLoadOrderRewardsNoTransaction = useSelector(getIsLoadOrderRewardsNoTransaction);
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
   const hasUserJoinedMerchantMembership = useSelector(getHasUserJoinedMerchantMembership);
-  const isProfileFormVisible = useSelector(getIsProfileFormVisible);
   const isWebview = useSelector(getIsWebview);
 
   useEffect(() => {
@@ -47,11 +45,10 @@ const MembershipFormProxy = () => {
   }, [dispatch, isLogin]);
 
   useEffect(() => {
-    // WB-8135: We will change the logic for go to membership detail flow
-    if (hasUserJoinedMerchantMembership && !isProfileFormVisible) {
+    if (hasUserJoinedMerchantMembership) {
       dispatch(goToMembershipDetail());
     }
-  }, [dispatch, hasUserJoinedMerchantMembership, isProfileFormVisible]);
+  }, [dispatch, hasUserJoinedMerchantMembership]);
 
   const handleClickBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickRetryButton = useCallback(() => dispatch(retryButtonClicked()), [dispatch]);

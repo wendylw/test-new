@@ -26,7 +26,15 @@ import CompleteUserProfile from './CompleteUserProfile';
 import CompleteBirthday from './CompleteBirthday';
 import styles from './CompleteProfile.module.scss';
 
-const CompleteProfile = ({ show, isCompleteBirthdayFirst, onSkip, onSave, onClose }) => {
+const CompleteProfile = ({
+  show,
+  isCompleteBirthdayFirst,
+  onSkipBirthday,
+  onSaveBirthday,
+  onSkip,
+  onSave,
+  onClose,
+}) => {
   const { t } = useTranslation(['Profile']);
   const dispatch = useDispatch();
   const uploadProfileError = useSelector(getUploadProfileError);
@@ -78,7 +86,7 @@ const CompleteProfile = ({ show, isCompleteBirthdayFirst, onSkip, onSave, onClos
       {isProfileRequestMountStatusPending ? (
         <SkeletonLoader />
       ) : isUpdateBirthdayRequestShow ? (
-        <CompleteBirthday onSkip={onSkip} onSave={onSave} />
+        <CompleteBirthday onSkip={onSkipBirthday} onSave={onSaveBirthday} />
       ) : (
         <CompleteUserProfile
           disableBirthdayPicker={isBirthdayPickerDisabled}
@@ -99,6 +107,8 @@ CompleteProfile.displayName = 'CompleteProfile';
 CompleteProfile.propTypes = {
   show: PropTypes.bool,
   isCompleteBirthdayFirst: PropTypes.bool,
+  onSkipBirthday: PropTypes.func,
+  onSaveBirthday: PropTypes.func,
   onSkip: PropTypes.func,
   onSave: PropTypes.func,
   onClose: PropTypes.func,
@@ -107,6 +117,8 @@ CompleteProfile.propTypes = {
 CompleteProfile.defaultProps = {
   show: false,
   isCompleteBirthdayFirst: false,
+  onSkipBirthday: () => {},
+  onSaveBirthday: () => {},
   onSkip: () => {},
   onSave: () => {},
   onClose: () => {},
