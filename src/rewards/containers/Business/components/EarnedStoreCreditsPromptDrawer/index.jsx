@@ -1,20 +1,13 @@
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { X } from 'phosphor-react';
-import Drawer from '../../../../../../../common/components/Drawer';
-import DrawerHeader from '../../../../../../../common/components/Drawer/DrawerHeader';
-import { getIsUseStoreCreditsPromptDrawerShow } from '../../redux/selectors';
-import { actions as cashbackCreditsActions } from '../../redux';
+import Drawer from '../../../../../common/components/Drawer';
+import DrawerHeader from '../../../../../common/components/Drawer/DrawerHeader';
 import styles from './EarnedStoreCreditsPromptDrawer.module.scss';
 
-const EarnedStoreCreditsPromptDrawer = () => {
+const EarnedStoreCreditsPromptDrawer = ({ show, onCloseDrawer }) => {
   const { t } = useTranslation(['Rewards']);
-  const dispatch = useDispatch();
-  const isUseStoreCreditsPromptDrawerShow = useSelector(getIsUseStoreCreditsPromptDrawerShow);
-  const closeDrawer = useCallback(() => {
-    dispatch(cashbackCreditsActions.useStoreCreditsPromptDrawerHidden());
-  }, [dispatch]);
 
   return (
     <Drawer
@@ -26,15 +19,15 @@ const EarnedStoreCreditsPromptDrawer = () => {
               weight="light"
               className={styles.EarnedStoreCreditsPromptDrawerHeaderCloseButton}
               data-test-id="rewards.business.membershipDetail.earnedStoreCreditsPromptDrawer.closeButton"
-              onClick={closeDrawer}
+              onClick={onCloseDrawer}
             />
           }
         >
           <span className={styles.EarnedStoreCreditsPromptDrawerTitle}>{t('EarnedStoreCreditsPromptDrawerTitle')}</span>
         </DrawerHeader>
       }
-      show={isUseStoreCreditsPromptDrawerShow}
-      onClose={closeDrawer}
+      show={show}
+      onClose={onCloseDrawer}
     >
       <ol className={styles.EarnedStoreCreditsPromptList}>
         <li className={styles.EarnedStoreCreditsPromptItem}>
@@ -51,5 +44,15 @@ const EarnedStoreCreditsPromptDrawer = () => {
 };
 
 EarnedStoreCreditsPromptDrawer.displayName = 'EarnedStoreCreditsPromptDrawer';
+
+EarnedStoreCreditsPromptDrawer.propTypes = {
+  show: PropTypes.bool,
+  onCloseDrawer: PropTypes.func,
+};
+
+EarnedStoreCreditsPromptDrawer.defaultProps = {
+  show: false,
+  onCloseDrawer: () => {},
+};
 
 export default EarnedStoreCreditsPromptDrawer;

@@ -11,6 +11,12 @@
   display: none;
 }
 
+.CashbackHistoryBannerRight {
+  figure > div {
+    padding-top: 132.653061% !important;
+  }
+}
+
 .CashbackHistorySection {
   @apply tw-pt-24 sm:tw-pt-24px;
 }

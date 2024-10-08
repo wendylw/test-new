@@ -1,0 +1,57 @@
+.StoreCreditsCardSection {
+  @apply tw-relative tw-p-12 sm:tw-p-12px;
+
+  &::before {
+    @apply tw-absolute tw-left-0 tw-top-0 tw-w-full tw-bg-blue-darkest;
+
+    content: "";
+    height: 64.8%;
+  }
+}
+
+.StoreCreditsCard {
+  @apply tw-relative tw-rounded tw-w-full tw-bg-orange-lighter tw-overflow-hidden;
+
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+}
+
+.StoreCreditsCardExpiredTag,
+.StoreCreditsCardRemainingExpiredDaysTag {
+  @apply tw-font-bold;
+
+  span {
+    @apply tw-text-xs;
+  }
+}
+
+.StoreCreditsCardRemainingExpiredDaysTagExtraTextHide {
+  display: none;
+}
+
+.StoreCreditsCardRight {
+  @apply tw-pl-16 sm:tw-pl-16px;
+
+  > figure {
+    @apply tw-my-12 sm:tw-my-12px;
+  }
+}
+
+.StoreCreditsCardHistoryLink {
+  @apply tw-inline-flex tw-p-12 sm:tw-p-12px tw--m-12 sm:tw--m-12px tw-no-underline;
+}
+
+.StoreCreditsCardHistoryLinkImage {
+  width: 80px;
+}
+
+.StoreCreditsCardHistoryBannerIcon {
+  @apply tw-inline-flex;
+
+  width: 80px;
+  height: 80px;
+
+  > svg {
+    width: 100%;
+    height: 100%;
+  }
+}

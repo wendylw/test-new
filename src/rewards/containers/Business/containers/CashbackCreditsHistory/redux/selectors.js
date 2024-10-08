@@ -14,11 +14,10 @@ import {
   getMerchantLocale,
 } from '../../../../../../redux/modules/merchant/selectors';
 
-export const getIsUseCashbackPromptDrawerShow = state =>
-  state.business.cashbackCreditsHistory.isUseCashbackPromptDrawerShow;
+export const getIsCashbackPromptDrawerShow = state => state.business.cashbackCreditsHistory.isCashbackPromptDrawerShow;
 
-export const getIsUseStoreCreditsPromptDrawerShow = state =>
-  state.business.cashbackCreditsHistory.isUseStoreCreditsPromptDrawerShow;
+export const getIsStoreCreditsPromptDrawerShow = state =>
+  state.business.cashbackCreditsHistory.isStoreCreditsPromptDrawerShow;
 
 export const getLoadCashbackHistoryListData = state =>
   state.business.cashbackCreditsHistory.loadCashbackHistoryListRequest.data || [];
