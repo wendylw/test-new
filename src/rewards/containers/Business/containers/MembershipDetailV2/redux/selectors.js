@@ -34,6 +34,8 @@ import {
   getMerchantCurrency,
   getMerchantLocale,
   getIsLoadMerchantRequestCompleted,
+  getIsMerchantMembershipEnabled,
+  getIsMerchantEnabledStoreCredits,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getMembershipTierList, getHighestMembershipTier } from '../../../../../../redux/modules/membership/selectors';
 import {
@@ -405,10 +407,16 @@ export const getCustomerCurrentStatusPromptI18nInfo = createSelector(
 );
 
 export const getIsMemberCardShow = createSelector(
-  getIsMerchantMembershipPointsEnabled,
+  getIsMerchantMembershipEnabled,
+  getIsMerchantEnabledCashback,
+  getIsMerchantEnabledStoreCredits,
   getMembershipTierListLength,
-  (isMerchantMembershipPointsEnabled, membershipTierListLength) =>
-    isMerchantMembershipPointsEnabled || membershipTierListLength > 1
+  (isMerchantMembershipEnabled, isMerchantEnabledCashback, isMerchantEnabledStoreCredits, membershipTierListLength) =>
+    !(
+      isMerchantMembershipEnabled &&
+      (isMerchantEnabledCashback || isMerchantEnabledStoreCredits) &&
+      membershipTierListLength === 1
+    )
 );
 
 // Rewards Buttons
@@ -435,7 +443,9 @@ export const getIsExpiringIconShown = createSelector(
 // My Rewards
 export const getIsMyRewardsSectionShow = createSelector(
   getIsMerchantMembershipPointsEnabled,
-  isMerchantMembershipPointsEnabled => !isMerchantMembershipPointsEnabled
+  getMembershipTierListLength,
+  (isMerchantMembershipPointsEnabled, membershipTierListLength) =>
+    !isMerchantMembershipPointsEnabled && membershipTierListLength === 1
 );
 
 // Points Rewards
