@@ -283,9 +283,9 @@ export const updateUserBirthdayInfo = createAsyncThunk(
   'app/user/updateUserProfileInfo',
   async (birthday, { dispatch, getState }) => {
     const state = getState();
-    const firstName = getUserFirstName(state);
-    const lastName = getUserLastName(state);
-    const email = getUserEmail(state);
+    const firstName = getUserFirstName(state) || '';
+    const lastName = getUserLastName(state) || '';
+    const email = getUserEmail(state) || '';
 
     await dispatch(uploadUserProfileInfo({ firstName, lastName, email, birthday }));
 
