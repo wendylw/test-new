@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
-import { getCartItems, getIsBillingTotalInvalid } from '../../../../redux/modules/app';
+import { getCartItems, getUserIsLogin, getIsBillingTotalInvalid } from '../../../../redux/modules/app';
+import { getIsLoadUniquePromosAvailableCountCompleted } from '../../../../redux/modules/rewards/selectors';
 import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
 
 export const getCheckingInventoryPendingState = ({ shoppingCart }) =>
@@ -9,9 +10,16 @@ export const getShouldDisablePayButton = createSelector(
   getCartItems,
   getIsBillingTotalInvalid,
   getCheckingInventoryPendingState,
-  (cartItems, isBillingTotalInvalid, pendingCheckingInventory) => {
+  getUserIsLogin,
+  getIsLoadUniquePromosAvailableCountCompleted,
+  (cartItems, isBillingTotalInvalid, pendingCheckingInventory, isLogin, isLoadUniquePromosAvailableCountCompleted) => {
     const hasNoCartItem = !cartItems || !cartItems.length;
-    return hasNoCartItem || isBillingTotalInvalid || pendingCheckingInventory;
+    return (
+      hasNoCartItem ||
+      isBillingTotalInvalid ||
+      pendingCheckingInventory ||
+      (isLogin && !isLoadUniquePromosAvailableCountCompleted)
+    );
   }
 );
 
