@@ -69,7 +69,7 @@ export const getUserLastName = createSelector(
 
 export const getUserBirthdayChangeAllowed = createSelector(
   getUserProfileData,
-  loadProfileRequestData => loadProfileRequestData.birthdayChangeAllowed || true
+  loadProfileRequestData => loadProfileRequestData.birthdayChangeAllowed
 );
 
 export const getUploadProfileStatus = state => state.user.uploadProfileRequest.status;
@@ -173,3 +173,8 @@ export const getIsUploadProfileEmailDuplicateError = createSelector(getUploadPro
 
   return code === UPLOAD_PROFILE_ERROR_CODES.EMAIL_DUPLICATE;
 });
+
+export const getIsUserBirthdayChangeAllowed = createSelector(
+  getUserBirthdayChangeAllowed,
+  userBirthdayChangeAllowed => userBirthdayChangeAllowed !== false
+);

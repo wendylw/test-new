@@ -7,7 +7,7 @@ import CleverTap from '../../../utils/clevertap';
 import {
   getUploadProfileError,
   getIsUploadProfileEmailDuplicateError,
-  getUserBirthdayChangeAllowed,
+  getIsUserBirthdayChangeAllowed,
 } from '../../../redux/modules/user/selectors';
 import {
   getIsUpdateBirthdayRequestShow,
@@ -43,8 +43,8 @@ const CompleteProfile = ({
   const isProfileRequestMountStatusPending = useSelector(getIsProfileRequestMountStatusPending);
   const isProcessingShow = useSelector(getIsProcessingShow);
   const isBirthdayEmpty = useSelector(getIsBirthdayEmpty);
-  const userBirthdayChangeAllowed = useSelector(getUserBirthdayChangeAllowed);
-  const isBirthdayPickerDisabled = (isCompleteBirthdayFirst && !isBirthdayEmpty) || !userBirthdayChangeAllowed;
+  const isUserBirthdayChangeAllowed = useSelector(getIsUserBirthdayChangeAllowed);
+  const isBirthdayPickerDisabled = (isCompleteBirthdayFirst && !isBirthdayEmpty) || !isUserBirthdayChangeAllowed;
 
   useEffect(() => {
     if (show) {
