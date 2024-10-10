@@ -11,6 +11,7 @@ import {
   getStoreInfoForCleverTap,
   getPaymentInfoForCleverTap,
   getTableId,
+  getIsBeepQRDemo,
   getUserConsumerId,
   getUserIsLogin,
   getMerchantCountry,
@@ -545,13 +546,14 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
   // - CleverTap push event, `Menu Page - View page`
 
   const state = getState();
+  const isBeepQRDemo = getIsBeepQRDemo(state);
   const isBeepQR = getIsQrOrderingShippingType(state);
   const isBeepDelivery = getIsBeepDeliveryShippingType(state);
 
   try {
     ensureShippingType();
 
-    if (isBeepQR) {
+    if (isBeepQR || isBeepQRDemo) {
       if (isDineInType()) {
         ensureTableId(state);
       }

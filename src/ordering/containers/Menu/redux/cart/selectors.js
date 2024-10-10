@@ -3,6 +3,7 @@ import _isNil from 'lodash/isNil';
 import { SHIPPING_TYPES, PRODUCT_STOCK_STATUS } from '../../../../../common/utils/constants';
 import {
   getTableId,
+  getIsBeepQRDemo,
   getFormatCurrencyFunction,
   getShippingType,
   getEnablePayLater as getIsEnablePayLater,
@@ -80,13 +81,13 @@ export const getIsCartFooterVisible = createSelector(
   getIsStoreInfoReady,
   getShippingType,
   getCartQuantity,
-  getTableId,
-  (isStoreInfoReady, shippingType, cartQuantity, tableId) => {
+  getIsBeepQRDemo,
+  (isStoreInfoReady, shippingType, cartQuantity, isBeepQRDemo) => {
     const availableQuantity = cartQuantity > 0;
 
     return (
       isStoreInfoReady &&
-      (shippingType === SHIPPING_TYPES.DINE_IN ? availableQuantity && tableId !== 'DEMO' : availableQuantity)
+      (shippingType === SHIPPING_TYPES.DINE_IN ? availableQuantity && !isBeepQRDemo : availableQuantity)
     );
   }
 );
