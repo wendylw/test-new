@@ -20,7 +20,11 @@ import {
 } from '../../../../../../redux/modules/customer/selectors';
 import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
 import { getCustomerCashbackPriceWithoutCurrency } from '../../../../redux/common/selectors';
-import { getIsRewardsCashbackCreditsButtonShow, getIsExpiringIconShown } from '../../redux/selectors';
+import {
+  getIsRewardsButtonsShow,
+  getIsRewardsCashbackCreditsButtonShow,
+  getIsExpiringIconShown,
+} from '../../redux/selectors';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import styles from './RewardsButtons.module.scss';
@@ -32,13 +36,14 @@ const RewardsButtons = () => {
   const availablePointsBalance = useSelector(getCustomerAvailablePointsBalance);
   const customerRewardsTotal = useSelector(getCustomerRewardsTotal);
   const isMerchantEnabledCashback = useSelector(getIsMerchantEnabledCashback);
+  const isRewardsButtonsShow = useSelector(getIsRewardsButtonsShow);
   const isRewardsCashbackCreditsButtonShow = useSelector(getIsRewardsCashbackCreditsButtonShow);
   const customerCashbackPriceWithoutCurrency = useSelector(getCustomerCashbackPriceWithoutCurrency);
   const isExpiringIconShown = useSelector(getIsExpiringIconShown);
   const search = useSelector(getLocationSearch);
   const buttonContentClassName = getClassName([
     styles.RewardsButtonContent,
-    isRewardsCashbackCreditsButtonShow ? 'tw-flex-col' : null,
+    isMerchantMembershipPointsEnabled ? 'tw-flex-col' : null,
   ]);
   const handlePointsDetailButtonClick = useCallback(() => {
     CleverTap.pushEvent('Membership Details Page - Click Points button');
@@ -69,30 +74,32 @@ const RewardsButtons = () => {
     });
   }, [history, search]);
 
-  if (!isMerchantMembershipPointsEnabled) {
+  if (!isRewardsButtonsShow) {
     return null;
   }
 
   return (
     <section className={styles.RewardsButtons}>
-      <Button
-        data-test-id="rewards.business.membershipDetail.rewards-buttons.pints-button"
-        theme="ghost"
-        type="text"
-        className={styles.RewardsButton}
-        contentClassName={buttonContentClassName}
-        onClick={handlePointsDetailButtonClick}
-      >
-        <div className={styles.RewardsButtonPointsIconContainer}>
-          <ObjectFitImage noCompression src={RewardsPointsIcon} />
-        </div>
-        <div className={styles.RewardsButtonText}>
-          <data className={styles.RewardsButtonPoints} value={availablePointsBalance}>
-            {availablePointsBalance}
-          </data>
-          <span className={styles.RewardsButtonPointsText}>{t('Points')}</span>
-        </div>
-      </Button>
+      {isMerchantMembershipPointsEnabled ? (
+        <Button
+          data-test-id="rewards.business.membershipDetail.rewards-buttons.pints-button"
+          theme="ghost"
+          type="text"
+          className={styles.RewardsButton}
+          contentClassName={buttonContentClassName}
+          onClick={handlePointsDetailButtonClick}
+        >
+          <div className={styles.RewardsButtonPointsIconContainer}>
+            <ObjectFitImage noCompression src={RewardsPointsIcon} />
+          </div>
+          <div className={styles.RewardsButtonText}>
+            <data className={styles.RewardsButtonPoints} value={availablePointsBalance}>
+              {availablePointsBalance}
+            </data>
+            <span className={styles.RewardsButtonPointsText}>{t('Points')}</span>
+          </div>
+        </Button>
+      ) : null}
 
       {isRewardsCashbackCreditsButtonShow ? (
         <Button
