@@ -13,8 +13,6 @@ const MenuViewOrderBar = () => {
   // has on going order (only available on pay later)
   const orderingOngoingBannerVisibility = useSelector(getOrderingOngoingBannerVisibility);
 
-  console.log(orderingOngoingBannerVisibility);
-
   if (!orderingOngoingBannerVisibility) {
     return null;
   }
