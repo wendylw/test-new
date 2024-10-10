@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { getIsUserProfileEmpty } from '../../../../../redux/modules/user/selectors';
 import {
   getProfileBirthday,
   getProfileEmail,
@@ -23,6 +24,7 @@ import styles from './CompleteProfileForm.module.scss';
 const CompleteProfileForm = ({ disableBirthdayPicker, onClickSkipButton, onClickSaveButton, onClose }) => {
   const { t } = useTranslation(['Profile']);
   const dispatch = useDispatch();
+  const isUserProfileEmpty = useSelector(getIsUserProfileEmpty);
   const firstName = useSelector(getProfileFirstName);
   const lastName = useSelector(getProfileLastName);
   const email = useSelector(getProfileEmail);
@@ -74,14 +76,18 @@ const CompleteProfileForm = ({ disableBirthdayPicker, onClickSkipButton, onClick
     async event => {
       event.preventDefault();
 
-      if (invalidFields.length > 0) {
-        return;
+      try {
+        if (invalidFields.length > 0) {
+          return;
+        }
+
+        await dispatch(saveUserProfileInfo()).unwrap();
+
+        onClickSaveButton && onClickSaveButton();
+        onClose();
+      } catch (error) {
+        console.error('handleSaveForm', error);
       }
-
-      await dispatch(saveUserProfileInfo());
-
-      onClickSaveButton && onClickSaveButton();
-      onClose();
     },
     [dispatch, onClickSaveButton, onClose, invalidFields]
   );
@@ -151,7 +157,7 @@ const CompleteProfileForm = ({ disableBirthdayPicker, onClickSkipButton, onClick
             className={styles.CompleteProfileFormFooterButton}
             loading={isUpdateProfileRequestStatusPending}
           >
-            {t('Save')}
+            {isUserProfileEmpty ? t('Complete') : t('Save')}
           </Button>
         </div>
       </PageFooter>

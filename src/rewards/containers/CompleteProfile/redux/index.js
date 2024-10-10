@@ -59,12 +59,15 @@ const { reducer, actions } = createSlice({
     },
     [saveUserProfileInfo.pending.type]: state => {
       state.updateProfileRequest.status = API_REQUEST_STATUS.PENDING;
+      state.updateBirthdayRequest.error = null;
     },
     [saveUserProfileInfo.fulfilled.type]: state => {
       state.updateProfileRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.updateBirthdayRequest.error = null;
     },
-    [saveUserProfileInfo.rejected.type]: state => {
+    [saveUserProfileInfo.rejected.type]: (state, { error }) => {
       state.updateProfileRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.updateBirthdayRequest.error = error;
     },
     [saveBirthdayInfo.pending.type]: state => {
       state.updateBirthdayRequest.status = API_REQUEST_STATUS.PENDING;

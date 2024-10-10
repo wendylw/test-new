@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { getReduceOneSecondForDate } from '../../../../utils/datetime-lib';
 import { getUserBirthday, getIsUserProfileIncomplete } from '../../../../redux/modules/user/selectors';
+import { getRequestBirthdayData } from '../utils';
 
 export const getProfileRequestData = state => state.completeProfile.formData || {};
 
@@ -57,7 +57,7 @@ export const getIsUpdateProfileRequestStatusFulfilled = createSelector(
 );
 
 export const getRequestBirthday = createSelector(getProfileBirthday, profileBirthday =>
-  getReduceOneSecondForDate(new Date(profileBirthday))
+  getRequestBirthdayData(profileBirthday)
 );
 
 export const getIsBirthdayEmpty = createSelector(

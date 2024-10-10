@@ -151,6 +151,13 @@ export const getIsUserProfileIncomplete = createSelector(
   (email, birthday, firstName) => !email || !birthday || !firstName
 );
 
+export const getIsUserProfileEmpty = createSelector(
+  getUserEmail,
+  getUserBirthday,
+  getUserFirstName,
+  (email, birthday, firstName) => !email && !birthday && !firstName
+);
+
 export const getIsUploadProfilePending = createSelector(
   getUploadProfileStatus,
   uploadProfileStatus => uploadProfileStatus === API_REQUEST_STATUS.PENDING

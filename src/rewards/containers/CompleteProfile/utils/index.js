@@ -5,5 +5,5 @@ export const getRequestBirthdayData = birthday => {
     return birthday;
   }
 
-  return getFormatLocaleDateTime(birthday, 'YYYY/MM/DD');
+  return getFormatLocaleDateTime({ dateTime: birthday, formatter: 'YYYY/MM/DD' });
 };
