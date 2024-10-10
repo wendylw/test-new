@@ -253,5 +253,6 @@ export const getHiddenMiniOrderStatus = createSelector(
 export const getOrderingOngoingBannerVisibility = createSelector(
   getCartReceiptNumber,
   getIsEnablePayLater,
-  (receiptNumber, enablePayLater) => receiptNumber && enablePayLater
+  getIsBeepQRDemo,
+  (receiptNumber, enablePayLater, isBeepQRDemo) => receiptNumber && enablePayLater && !isBeepQRDemo
 );
