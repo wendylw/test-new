@@ -21,6 +21,12 @@ export const getIsLoadUniquePromosAvailableCountFulfilled = createSelector(
   loadUniquePromosAvailableCountStatus => loadUniquePromosAvailableCountStatus === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsLoadUniquePromosAvailableCountCompleted = createSelector(
+  getLoadUniquePromosAvailableCountStatus,
+  loadUniquePromosAvailableCountStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadUniquePromosAvailableCountStatus)
+);
+
 export const getLoadUniquePromosAvailableCountCleverTap = createSelector(
   getUniquePromosAvailableCount,
   getStoreInfoForCleverTap,
