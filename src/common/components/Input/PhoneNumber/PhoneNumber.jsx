@@ -2,8 +2,8 @@ import _isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import { getClassName } from '../../../../common/utils/ui';
-import { SYSTEM_DEFAULT_COUNTRY } from '../../../../common/utils/phone-number-constants';
+import { getClassName } from '../../../utils/ui';
+import { SYSTEM_DEFAULT_COUNTRY } from '../../../utils/phone-number-constants';
 import 'react-phone-number-input/style.css';
 import styles from './InputPhoneNumber.module.scss';
 
