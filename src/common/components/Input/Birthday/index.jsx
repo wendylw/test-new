@@ -8,6 +8,7 @@ import { BIRTHDAY_DATE } from './utils/constants';
 import { formRules, validateField } from '../utils';
 import {
   getFormatBirthdayData,
+  getFormatBirthPickerData,
   getSwitchFormatBirthdayDate,
   getBirthdayDateISODate,
   getIsSupportedShowPicker,
@@ -52,10 +53,10 @@ const InputBirthday = ({
   const birthdayInputRef = useRef(null);
   const [isSupportedShowPicker, setIsSupportedShowPicker] = useState(getIsSupportedShowPicker());
   const [errorMessage, setErrorMessage] = useState();
-  const { required, pattern } = rules;
+  const { required } = rules;
   const handleChangeInputBirthday = useCallback(
     currentValue => {
-      const currentErrorMessage = getErrorMessage(label, currentValue, { required, pattern }, messages);
+      const currentErrorMessage = getErrorMessage(label, currentValue, { required }, messages);
 
       if (!currentErrorMessage) {
         setErrorMessage(currentErrorMessage);
@@ -64,17 +65,17 @@ const InputBirthday = ({
 
       onChange && onChange(getBirthdayDateISODate(currentValue));
     },
-    [onChange, onValidation, name, label, messages, pattern, required]
+    [onChange, onValidation, name, label, messages, required]
   );
   const handleBlurInputBirthday = useCallback(
     currentValue => {
-      const currentErrorMessage = getErrorMessage(label, currentValue, { required, pattern }, messages);
+      const currentErrorMessage = getErrorMessage(label, currentValue, { required }, messages);
 
       setErrorMessage(currentErrorMessage);
       onValidation && onValidation({ name, errorMessage: currentErrorMessage });
       onBlur && onBlur(getBirthdayDateISODate(currentValue));
     },
-    [onBlur, onValidation, name, label, messages, pattern, required]
+    [onBlur, onValidation, name, label, messages, required]
   );
   const handleChangeBirthday = useCallback(
     event => {
@@ -103,14 +104,17 @@ const InputBirthday = ({
     [isSupportedShowPicker]
   );
   // If initialization birthday picker is empty, this method can catch required error
-  const handleInvalidBirthdayPicker = event => {
-    event.preventDefault();
+  const handleInvalidBirthdayPicker = useCallback(
+    event => {
+      event.preventDefault();
 
-    const currentErrorMessage = getErrorMessage(label, event.target.value, { required, pattern }, messages);
+      const currentErrorMessage = getErrorMessage(label, getFormatBirthPickerData(value), { required }, messages);
 
-    setErrorMessage(currentErrorMessage);
-    onValidation && onValidation({ name, errorMessage: currentErrorMessage });
-  };
+      setErrorMessage(currentErrorMessage);
+      onValidation && onValidation({ name, errorMessage: currentErrorMessage });
+    },
+    [label, value, messages, name, onValidation, required]
+  );
 
   return (
     <div
@@ -134,7 +138,7 @@ const InputBirthday = ({
           data-test-id="common.profile.birthday-date-picker"
           required={required}
           disabled={disabled}
-          value={value}
+          value={getFormatBirthPickerData(value)}
           onChange={handleChangeBirthday}
           onInvalid={handleInvalidBirthdayPicker}
         />
@@ -184,11 +188,9 @@ InputBirthday.propTypes = {
   value: PropTypes.string,
   messages: PropTypes.shape({
     required: PropTypes.string,
-    pattern: PropTypes.string,
   }),
   rules: PropTypes.shape({
     required: PropTypes.bool,
-    pattern: PropTypes.instanceOf(RegExp),
   }),
   onChange: PropTypes.func,
   onBlur: PropTypes.func,
@@ -206,11 +208,9 @@ InputBirthday.defaultProps = {
   value: '',
   messages: {
     required: null,
-    pattern: null,
   },
   rules: {
     required: false,
-    pattern: null,
   },
   onChange: () => {},
   onBlur: () => {},

@@ -52,6 +52,14 @@ export const getFormatBirthdayData = birthday => {
   return getFormatLocaleDateTime({ dateTime: birthday, formatter: BIRTHDAY_FORMAT });
 };
 
+export const getFormatBirthPickerData = birthday => {
+  if (!isValidDate(new Date(birthday))) {
+    return birthday;
+  }
+
+  return getFormatLocaleDateTime({ dateTime: birthday, formatter: DATE_PICKER_BIRTHDAY_FORMAT });
+};
+
 export const getSwitchFormatBirthdayDate = birthday => {
   if (!isValidDate(new Date(birthday))) {
     return birthday;
