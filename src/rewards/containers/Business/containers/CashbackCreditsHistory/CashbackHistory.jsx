@@ -12,12 +12,12 @@ import {
   getIsTodayExpired,
   getRemainingCashbackExpiredDays,
   getCustomerCashbackPrice,
-  getCustomizeRewardsSettingsCashbackRate,
 } from '../../redux/common/selectors';
 import {
   getCashbackHistoryList,
   getIsCashbackHistoryListEmpty,
   getIsCashbackPromptDrawerShow,
+  getEmptyPromptEarnCashbackPercentage,
 } from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
 import { backButtonClicked } from './redux/thunks';
@@ -39,7 +39,7 @@ const CashbackHistory = () => {
   const isTodayExpired = useSelector(getIsTodayExpired);
   const remainingCashbackExpiredDays = useSelector(getRemainingCashbackExpiredDays);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
-  const cashbackRate = useSelector(getCustomizeRewardsSettingsCashbackRate);
+  const cashbackPercentage = useSelector(getEmptyPromptEarnCashbackPercentage);
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
   const cashbackHistoryList = useSelector(getCashbackHistoryList);
   const isCashbackHistoryListEmpty = useSelector(getIsCashbackHistoryListEmpty);
@@ -110,7 +110,9 @@ const CashbackHistory = () => {
         <HistoryList
           isEmpty={isCashbackHistoryListEmpty}
           emptyTitle={t('NoCashbackCollectedTitle')}
-          emptyDescription={t('NoCashbackCollectedDescription', { cashbackRate })}
+          emptyDescription={t('NoCashbackCollectedDescription', {
+            cashbackPercentage,
+          })}
           historyList={cashbackHistoryList}
         />
       </section>

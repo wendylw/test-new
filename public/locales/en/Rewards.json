@@ -128,7 +128,7 @@
   "HowToUseCashback": "How to use cashback",
   "CashbackHistory": "Cashback History",
   "NoCashbackCollectedTitle": "No cashback earned yet",
-  "NoCashbackCollectedDescription": "Earn {{cashbackRate}}% cashback with every purchase",
+  "NoCashbackCollectedDescription": "Earn {{cashbackPercentage}}% cashback with every purchase",
   "EarnedCashbackPromptDrawerTitle": "How to use cashback",
   "EarnedCashbackPromptRedeemOnlineTitle": "Redeem online",
   "EarnedCashbackPromptRedeemOnlineDescription": "Use your cashback balance at the Store checkout page for instant discounts. ",

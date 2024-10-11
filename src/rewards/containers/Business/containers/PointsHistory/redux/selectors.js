@@ -3,8 +3,8 @@ import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
-import { CUSTOMIZE_REWARDS_SETTING_DECIMALS_RATE } from '../../../utils/constants';
 import { POINTS_HISTORY_LOG_I18N_KEYS, POINTS_HISTORY_REDUCE_TYPES, DATE_OPTIONS } from '../utils/constants';
+import { getEarnRewardsNumber } from '../../../utils';
 import {
   getMerchantCountry,
   getMerchantCurrency,
@@ -59,8 +59,7 @@ export const getIsPointsHistoryListEmpty = createSelector(
 
 export const getEmptyPromptEarnPointsNumber = createSelector(
   getCustomizeRewardsSettingsPointsRate,
-  customizeRewardsSettingsPointsRate =>
-    Math.floor((customizeRewardsSettingsPointsRate * 10) / CUSTOMIZE_REWARDS_SETTING_DECIMALS_RATE)
+  customizeRewardsSettingsPointsRate => getEarnRewardsNumber(customizeRewardsSettingsPointsRate, 10)
 );
 
 export const getEmptyPromptBaseSpent = createSelector(

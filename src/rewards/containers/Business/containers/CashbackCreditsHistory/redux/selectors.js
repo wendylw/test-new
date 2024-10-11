@@ -2,19 +2,22 @@ import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
-import { CUSTOMIZE_REWARDS_SETTING_DECIMALS_RATE } from '../../../utils/constants';
 import {
   CASHBACK_CREDITS_HISTORY_TYPES,
   CASHBACK_CREDITS_HISTORY_REDUCE_TYPES,
   CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS,
   DATE_OPTIONS,
 } from '../utils/constants';
+import { getEarnRewardsNumber, getEarnCashbackPercentage } from '../../../utils';
 import {
   getMerchantCountry,
   getMerchantCurrency,
   getMerchantLocale,
 } from '../../../../../../redux/modules/merchant/selectors';
-import { getCustomizeRewardsSettingsLoyaltyRate } from '../../../redux/common/selectors';
+import {
+  getCustomizeRewardsSettingsCashbackRate,
+  getCustomizeRewardsSettingsLoyaltyRate,
+} from '../../../redux/common/selectors';
 
 export const getIsCashbackPromptDrawerShow = state => state.business.cashbackCreditsHistory.isCashbackPromptDrawerShow;
 
@@ -143,10 +146,14 @@ export const getIsCashbackStoreCreditsHistoryPageShow = createSelector(
     isLoadCashbackHistoryListCompleted || isLoadStoreCreditsHistoryListCompleted
 );
 
+export const getEmptyPromptEarnCashbackPercentage = createSelector(
+  getCustomizeRewardsSettingsCashbackRate,
+  customizeRewardsSettingsCashbackRate => getEarnCashbackPercentage(customizeRewardsSettingsCashbackRate)
+);
+
 export const getEmptyPromptEarnStoreCreditsNumber = createSelector(
   getCustomizeRewardsSettingsLoyaltyRate,
-  customizeRewardsSettingsLoyaltyRate =>
-    Math.floor((customizeRewardsSettingsLoyaltyRate * 10) / CUSTOMIZE_REWARDS_SETTING_DECIMALS_RATE)
+  customizeRewardsSettingsLoyaltyRate => getEarnRewardsNumber(customizeRewardsSettingsLoyaltyRate, 10)
 );
 
 export const getEmptyPromptBaseSpent = createSelector(
