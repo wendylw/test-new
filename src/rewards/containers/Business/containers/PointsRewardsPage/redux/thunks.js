@@ -78,22 +78,6 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
   }
 );
 
-export const skipProfileButtonClicked = createAsyncThunk(
-  'rewards/business/pointsRewards/skipProfileButtonClicked',
-  async (id, { dispatch }) => {
-    dispatch(hideWebProfileForm());
-    dispatch(claimPointsRewardAndRefreshRewardsList(id));
-  }
-);
-
-export const saveProfileButtonClicked = createAsyncThunk(
-  'rewards/business/pointsRewards/saveProfileButtonClicked',
-  async (id, { dispatch }) => {
-    dispatch(hideWebProfileForm());
-    dispatch(claimPointsRewardAndRefreshRewardsList(id));
-  }
-);
-
 export const mounted = createAsyncThunk('rewards/business/pointsRewards/mounted', async (_, { dispatch, getState }) => {
   const state = getState();
   const business = getMerchantBusiness(state);
