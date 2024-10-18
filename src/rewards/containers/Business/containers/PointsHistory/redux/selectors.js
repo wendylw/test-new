@@ -3,7 +3,12 @@ import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
-import { POINTS_HISTORY_LOG_I18N_KEYS, POINTS_HISTORY_REDUCE_TYPES, DATE_OPTIONS } from '../utils/constants';
+import {
+  EARNED_POINTS_BASE_SPEND,
+  POINTS_HISTORY_LOG_I18N_KEYS,
+  POINTS_HISTORY_REDUCE_TYPES,
+  DATE_OPTIONS,
+} from '../utils/constants';
 import { getEarnRewardsNumber } from '../../../utils';
 import {
   getMerchantCountry,
@@ -59,7 +64,8 @@ export const getIsPointsHistoryListEmpty = createSelector(
 
 export const getEmptyPromptEarnPointsNumber = createSelector(
   getCustomizeRewardsSettingsPointsRate,
-  customizeRewardsSettingsPointsRate => getEarnRewardsNumber(customizeRewardsSettingsPointsRate, 10)
+  customizeRewardsSettingsPointsRate =>
+    getEarnRewardsNumber(customizeRewardsSettingsPointsRate, EARNED_POINTS_BASE_SPEND)
 );
 
 export const getEmptyPromptBaseSpent = createSelector(
@@ -67,5 +73,9 @@ export const getEmptyPromptBaseSpent = createSelector(
   getMerchantCurrency,
   getMerchantLocale,
   (merchantCountry, merchantCurrency, merchantLocale) =>
-    getPrice(10, { country: merchantCountry, currency: merchantCurrency, locale: merchantLocale }).replace(/\.\d+/, '')
+    getPrice(EARNED_POINTS_BASE_SPEND, {
+      country: merchantCountry,
+      currency: merchantCurrency,
+      locale: merchantLocale,
+    }).replace(/\.\d+/, '')
 );

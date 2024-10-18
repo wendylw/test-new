@@ -3,6 +3,7 @@ import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
 import {
+  EARNED_REWARDS_BASE_SPEND,
   CASHBACK_CREDITS_HISTORY_TYPES,
   CASHBACK_CREDITS_HISTORY_REDUCE_TYPES,
   CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS,
@@ -153,7 +154,8 @@ export const getEmptyPromptEarnCashbackPercentage = createSelector(
 
 export const getEmptyPromptEarnStoreCreditsNumber = createSelector(
   getCustomizeRewardsSettingsLoyaltyRate,
-  customizeRewardsSettingsLoyaltyRate => getEarnRewardsNumber(customizeRewardsSettingsLoyaltyRate, 10)
+  customizeRewardsSettingsLoyaltyRate =>
+    getEarnRewardsNumber(customizeRewardsSettingsLoyaltyRate, EARNED_REWARDS_BASE_SPEND)
 );
 
 export const getEmptyPromptBaseSpent = createSelector(
@@ -161,5 +163,9 @@ export const getEmptyPromptBaseSpent = createSelector(
   getMerchantCurrency,
   getMerchantLocale,
   (merchantCountry, merchantCurrency, merchantLocale) =>
-    getPrice(10, { country: merchantCountry, currency: merchantCurrency, locale: merchantLocale }).replace(/\.\d+/, '')
+    getPrice(EARNED_REWARDS_BASE_SPEND, {
+      country: merchantCountry,
+      currency: merchantCurrency,
+      locale: merchantLocale,
+    }).replace(/\.\d+/, '')
 );
