@@ -19,7 +19,10 @@
 }
 
 .InputLabelRequiredIcon {
-  @apply tw-text-red;
+  @apply tw-static tw-top-0 tw-text-red;
+
+  font-size: unset;
+  line-height: normal;
 }
 
 .Input {
@@ -33,6 +36,12 @@
 
   &:invalid {
     @apply tw-text-red;
+  }
+
+  &::placeholder,
+  &::-webkit-input-placeholder,
+  &::-moz-placeholder {
+    @apply tw-text-gray-500;
   }
 }
 
