@@ -2,13 +2,18 @@
   @apply tw-flex tw-flex-col tw-gap-y-12 sm:tw-gap-y-12px;
 }
 
-.UniquePromoCard {
-  @apply tw-p-12 sm:tw-p-12px tw-rounded-lg tw-divide-y tw-divide-gray-200 tw-divide-solid tw-bg-gray-50 tw-shadow;
+.UniquePromoCardTicketContainer {
+  @apply tw-shadow-none;
+}
+
+.UniquePromoCardTicket {
+  &::before,
+  &::after {
+    @apply tw-bg-gray-50;
+  }
 }
 
 .UniquePromoInfoTop {
-  @apply tw-pb-8 sm:tw-pb-8px;
-
   &__Unavailable {
     @apply tw-opacity-40;
   }
@@ -23,7 +28,7 @@
 }
 
 .UniquePromoInfoBottom {
-  @apply tw-flex tw-items-end tw-justify-between tw-pt-8 sm:tw-pt-8px tw-border-l-0 tw-border-r-0;
+  @apply tw-flex tw-items-end tw-justify-between tw-border-l-0 tw-border-r-0;
 
   &__Unavailable {
     @apply tw-border-opacity-40;
@@ -31,7 +36,7 @@
 }
 
 .UniquePromoLimitationList {
-  @apply tw-pl-12 sm:tw-pl-12px tw-list-inside tw-list-disc;
+  @apply tw-pl-8 sm:tw-pl-8px tw-list-disc;
 
   &__Unavailable {
     @apply tw-opacity-40;
