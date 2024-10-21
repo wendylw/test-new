@@ -34,6 +34,8 @@ import {
   getMerchantCurrency,
   getMerchantLocale,
   getIsLoadMerchantRequestCompleted,
+  getIsMerchantMembershipEnabled,
+  getIsMerchantEnabledStoreCredits,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getMembershipTierList, getHighestMembershipTier } from '../../../../../../redux/modules/membership/selectors';
 import {
@@ -64,6 +66,11 @@ import {
   getClaimOrderRewardsCashbackPrice,
   getIsNewMember,
 } from '../../../redux/common/selectors';
+
+export const getIsCashbackPromptDrawerShow = state => state.business.membershipDetailV2.isCashbackPromptDrawerShow;
+
+export const getIsStoreCreditsPromptDrawerShow = state =>
+  state.business.membershipDetailV2.isStoreCreditsPromptDrawerShow;
 
 export const getLoadMerchantBirthdayCampaignData = state =>
   state.business.membershipDetailV2.loadMerchantBirthdayCampaignRequest.data;
@@ -399,7 +406,27 @@ export const getCustomerCurrentStatusPromptI18nInfo = createSelector(
   }
 );
 
+export const getIsMemberCardShow = createSelector(
+  getIsMerchantMembershipEnabled,
+  getIsMerchantEnabledCashback,
+  getIsMerchantEnabledStoreCredits,
+  getMembershipTierListLength,
+  (isMerchantMembershipEnabled, isMerchantEnabledCashback, isMerchantEnabledStoreCredits, membershipTierListLength) =>
+    !(
+      isMerchantMembershipEnabled &&
+      (isMerchantEnabledCashback || isMerchantEnabledStoreCredits) &&
+      membershipTierListLength === 1
+    )
+);
+
 // Rewards Buttons
+export const getIsRewardsButtonsShow = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getMembershipTierListLength,
+  (isMerchantMembershipPointsEnabled, membershipTierListLength) =>
+    isMerchantMembershipPointsEnabled || membershipTierListLength > 1
+);
+
 export const getIsRewardsCashbackCreditsButtonShow = createSelector(
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledLoyalty,
@@ -416,7 +443,9 @@ export const getIsExpiringIconShown = createSelector(
 // My Rewards
 export const getIsMyRewardsSectionShow = createSelector(
   getIsMerchantMembershipPointsEnabled,
-  isMerchantMembershipPointsEnabled => !isMerchantMembershipPointsEnabled
+  getMembershipTierListLength,
+  (isMerchantMembershipPointsEnabled, membershipTierListLength) =>
+    !isMerchantMembershipPointsEnabled && membershipTierListLength === 1
 );
 
 // Points Rewards

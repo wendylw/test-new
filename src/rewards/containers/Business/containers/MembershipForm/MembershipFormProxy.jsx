@@ -8,6 +8,7 @@ import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import ErrorResult from './components/ErrorResult';
 import SkeletonLoader from './components/SkeletonLoader';
+import { getIsLogin } from '../../../../../redux/modules/user/selectors';
 import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import { getHasUserJoinedMerchantMembership } from '../../../../redux/modules/customer/selectors';
 import {
@@ -17,7 +18,6 @@ import {
   getShouldShowBackButton,
   getIsLoadOrderRewardsNoTransaction,
 } from './redux/selectors';
-import { getIsLogin } from '../../../../../redux/modules/user/selectors';
 import { mounted, backButtonClicked, retryButtonClicked, goToMembershipDetail, loadCustomerInfo } from './redux/thunks';
 import MembershipForm from '.';
 

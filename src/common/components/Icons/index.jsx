@@ -1,4 +1,5 @@
 export { ActivePointIcon } from './ActivePointIcon';
+export { CashbackStoreCredits } from './CashbackStoreCredits';
 export { MapPinIcon } from './MapPinIcon';
 export { ShieldDollarIcon } from './ShieldDollarIcon';
 export { TimeSlotIcon } from './TimeSlotIcon';

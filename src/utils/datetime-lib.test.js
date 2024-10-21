@@ -4,6 +4,8 @@ import {
   toDayDateMonth,
   getDifferenceInMilliseconds,
   getFormatLocaleDateTime,
+  getSwitchFormatDate,
+  getDateISOString,
 } from './datetime-lib';
 
 describe('utils/datetime-lib', () => {
@@ -50,5 +52,25 @@ describe('utils/datetime-lib', () => {
       { dateTime: '2024-06-19T06:23:23.437Z', utcOffset: 0, formatter: 'YYYY.MM.DD HH:mm:ss' },
       '2024.06.19 06:23:23'
     );
+  });
+
+  it('getSwitchFormatDate', () => {
+    const check = ({ date, originalFormatter, formatter }, value) => {
+      expect(getSwitchFormatDate(date, originalFormatter, formatter)).toBe(value);
+    };
+
+    check({ date: '2024-06-19', formatter: 'YYYY/MM/DD' }, '2024/06/19');
+    check({ date: '19/06/2024', originalFormatter: 'DD/MM/YYYY', formatter: 'YYYY.MM.DD' }, '2024.06.19');
+    check({ date: '2024/06/19' }, '2024-06-19');
+  });
+
+  it('getDateISOString', () => {
+    const check = ({ date }, value) => {
+      expect(getDateISOString(date)).toBe(value);
+    };
+
+    check({ date: '2024-06-19' }, '2024-06-18T16:00:00.000Z');
+    check({ date: '2024/06/19' }, '2024-06-18T16:00:00.000Z');
+    check({ date: '06/19/2024' }, '2024-06-18T16:00:00.000Z');
   });
 });
