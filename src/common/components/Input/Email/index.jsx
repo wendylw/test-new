@@ -2,6 +2,7 @@
 import _isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
+import i18next from 'i18next';
 import { formRules, validateField } from '../utils';
 import Input from '../Input';
 import styles from '../InputValidation.module.scss';
@@ -107,7 +108,7 @@ InputEmail.propTypes = {
 
 InputEmail.defaultProps = {
   containerClassName: null,
-  label: 'Email',
+  label: i18next.t('Common:Email'),
   ready: true,
   disabled: false,
   className: null,

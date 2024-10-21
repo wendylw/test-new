@@ -1,0 +1,19 @@
+.CompleteProfileForm {
+  @apply tw-flex-1 tw-flex tw-flex-col;
+}
+
+.CompleteProfileFieldsSection {
+  @apply tw-flex-1 tw-px-12 sm:tw-px-12px tw-py-24 sm:tw-py-24px;
+}
+
+.CompleteProfileFormPageFooter {
+  @apply tw-sticky tw-bottom-0;
+}
+
+.CompleteProfileFormFooter {
+  @apply tw-flex-shrink-0 tw-flex tw-items-center tw-justify-between tw-gap-16 sm:tw-gap-16px tw-px-12 sm:tw-px-12px tw-py-8 sm:tw-py-8px;
+}
+
+.CompleteProfileFormFooterButton {
+  @apply tw-flex-1 tw-uppercase;
+}

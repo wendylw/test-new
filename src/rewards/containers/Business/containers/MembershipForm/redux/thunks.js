@@ -82,22 +82,6 @@ export const showProfileForm = createAsyncThunk(
   }
 );
 
-export const skipProfileButtonClicked = createAsyncThunk(
-  'rewards/business/membershipForm/skipProfileButtonClicked',
-  async (_, { dispatch }) => {
-    await dispatch(hideWebProfileForm());
-    await dispatch(joinBusinessMembership());
-  }
-);
-
-export const saveProfileButtonClicked = createAsyncThunk(
-  'rewards/business/membershipForm/saveProfileButtonClicked',
-  async (_, { dispatch }) => {
-    await dispatch(hideWebProfileForm());
-    await dispatch(joinBusinessMembership());
-  }
-);
-
 export const goToMembershipDetail = createAsyncThunk(
   'rewards/business/membershipForm/goToMembershipDetail',
   async (_, { dispatch, getState }) => {

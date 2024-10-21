@@ -6,11 +6,11 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { X, CaretDown } from 'phosphor-react';
 import { getClassName } from '../../../common/utils/ui';
-import { formRules } from '../Input/utils';
+import { formRules } from '../../../common/components/Input/utils';
 import { COUNTRIES, MALAYSIA_STATES, SEARCH_RADIO_LIST_INPUT_DEFAULT_FOCUS_DELAY } from '../../utils/constants';
 import Drawer from '../../../common/components/Drawer';
 import DrawerHeader from '../../../common/components/Drawer/DrawerHeader';
-import InputText from '../Input/Text';
+import InputText from '../../../common/components/Input/Text';
 import SearchRadioList from '../SearchRadioList';
 import styles from './BillingAddress.module.scss';
 
