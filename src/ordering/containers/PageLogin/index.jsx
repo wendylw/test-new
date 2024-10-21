@@ -362,7 +362,14 @@ class PageLogin extends React.Component {
       return;
     }
 
-    this.goBack();
+    if (window.history.length > 1) {
+      this.goBack();
+    } else {
+      history.replace({
+        pathname: ROUTER_PATHS.ORDERING_HOME,
+        search: window.location.search,
+      });
+    }
   };
 
   goBack = () => {
