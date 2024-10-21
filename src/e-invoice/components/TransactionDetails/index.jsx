@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { X, CaretDown } from 'phosphor-react';
 import { getClassName } from '../../../common/utils/ui';
 import { SEARCH_RADIO_LIST_INPUT_DEFAULT_FOCUS_DELAY } from '../../utils/constants';
-import { formRules } from '../Input/utils';
+import { formRules } from '../../../common/components/Input/utils';
 import Drawer from '../../../common/components/Drawer';
 import DrawerHeader from '../../../common/components/Drawer/DrawerHeader';
 import SearchRadioList from '../SearchRadioList';

@@ -2,12 +2,14 @@
 import i18next from 'i18next';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import invariant from 'invariant';
 import CONSTANTS from './constants';
 import * as timeLib from './time-lib';
 import logger from './monitoring/logger';
 
 dayjs.extend(utc);
+dayjs.extend(customParseFormat);
 
 export const standardizeLocale = (countryCode = 'MY') => {
   const standardizedLocaleMap = {
@@ -318,3 +320,12 @@ export const getFormatLocaleDateTime = ({
 
   return dateTimeDayjs.format(formatter);
 };
+
+export const getSwitchFormatDate = (date, originalFormatter = 'YYYY-MM-DD', formatter = 'YYYY-MM-DD') =>
+  dayjs(date, originalFormatter).format(formatter);
+
+/**
+ * @param {string} date (e.g. `2021-11-30`)
+ * @returns {string} (e.g. `2021-11-30T14:58:30+08:00`)
+ */
+export const getDateISOString = date => dayjs(date).toISOString();

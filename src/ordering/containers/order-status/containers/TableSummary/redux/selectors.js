@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import Constants, { API_REQUEST_STATUS } from '../../../../../../utils/constants';
 import {
+  getUserIsLogin,
   getBusinessInfo,
   getCashbackRate,
   getEnableCashback,
@@ -9,6 +10,7 @@ import {
   getShippingType,
   getIsAlipayMiniProgram,
 } from '../../../../../redux/modules/app';
+import { getIsLoadUniquePromosAvailableCountCompleted } from '../../../../../redux/modules/rewards/selectors';
 import {
   getPayLaterOrderInfoData as getOrder,
   getPayLaterSubmitOrderRequest as getSubmitOrderRequest,
@@ -193,10 +195,12 @@ export const getShouldRemoveFooter = createSelector(
 export const getShouldDisablePayButton = createSelector(
   getIsPayByCouponsRequestPending,
   getIsPayByCouponsRequestFulfilled,
-  (isRequestPending, isRequestFulfilled) =>
+  getUserIsLogin,
+  getIsLoadUniquePromosAvailableCountCompleted,
+  (isRequestPending, isRequestFulfilled, isLogin, isLoadUniquePromosAvailableCountCompleted) =>
     // WB-4761: window location redirection will take some time, if we only consider pending status then the button will be activated accidentally.
     // Therefore, we should also need to take fulfilled status into consideration.
-    isRequestPending || isRequestFulfilled
+    isRequestPending || isRequestFulfilled || (isLogin && !isLoadUniquePromosAvailableCountCompleted)
 );
 
 export const getCartItemsQuantityCleverTap = createSelector(getOrderItems, orderItems => {

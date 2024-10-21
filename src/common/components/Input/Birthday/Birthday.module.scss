@@ -1,0 +1,21 @@
+.BirthdayInputContainer {
+  @apply tw-relative;
+}
+
+.BirthdayInputDatePicker {
+  @apply tw-absolute tw-w-full tw-opacity-0;
+
+  height: calc(100% - 24px);
+}
+
+.BirthdayInputDatePickerUpperLayer {
+  @apply tw-z-60;
+}
+
+.BirthdayInput {
+  @apply tw-relative tw-cursor-pointer;
+}
+
+.BirthdayInputDatePickerUpperLayer + .BirthdayInput {
+  @apply tw-static;
+}
