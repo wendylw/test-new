@@ -12,6 +12,7 @@ const Button = props => {
     type = 'primary',
     size = 'normal',
     theme = 'default',
+    buttonType = 'submit',
     block = false,
     icon = null,
     loading = false,
@@ -35,6 +36,7 @@ const Button = props => {
       } ${className}`}
       style={style}
       data-test-id="common.button.btn"
+      type={buttonType}
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...rest}
     >
@@ -64,6 +66,7 @@ Button.propTypes = {
   type: propTypes.oneOf(['primary', 'secondary', 'text']),
   size: propTypes.oneOf(['small', 'normal']),
   theme: propTypes.oneOf(['default', 'danger', 'info', 'ghost']),
+  buttonType: propTypes.oneOf(['submit', 'button', 'reset']),
   // The size and placement of buttons can change as parent containers, such as cards, adapt for larger screens.
   block: propTypes.bool,
   onClick: propTypes.func,
@@ -79,6 +82,7 @@ Button.defaultProps = {
   type: 'primary',
   size: 'normal',
   theme: 'default',
+  buttonType: 'submit',
   block: false,
   onClick: () => {},
 };

@@ -1,0 +1,16 @@
+.HeroSection {
+  @apply tw-flex tw-flex-col tw-flex-shrink-0 tw-items-center tw-justify-between tw-px-12 sm:tw-px-12px tw-py-24 sm:tw-py-24px tw-gap-12 sm:tw-gap-12px tw-bg-blue-darkest;
+}
+
+.HeroSectionTitle {
+  @apply tw-text-3xl tw-leading-normal tw-text-gray-50 tw-font-bold;
+}
+
+.HeroSectionImage {
+  width: 43%;
+  max-width: 150px;
+
+  figure {
+    @apply tw-bg-transparent;
+  }
+}

@@ -1,0 +1,13 @@
+.CompleteBirthdayDescriptionContainer {
+  @apply tw-text-center tw-space-y-12 sm:tw-space-y-12px;
+}
+
+.CompleteBirthdayDescription {
+  @apply tw-text-2xl tw-leading-normal tw-text-gray-50;
+
+  max-width: 300px;
+}
+
+.CompleteBirthdayDirectionArrow {
+  @apply tw-inline-flex;
+}
