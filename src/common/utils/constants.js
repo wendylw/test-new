@@ -139,6 +139,7 @@ export const PATH_NAME_MAPPING = {
   CASHBACK_CREDITS_HISTORY: '/cashback-credits-history',
   SEAMLESS_LOYALTY: '/seamless-loyalty',
   UNIQUE_PROMO: '/promo',
+  MY_REWARD_DETAIL: '/reward-detail',
   POINTS_REWARDS: '/points-rewards',
   LIST: '/list',
   CLAIM: '/claim',
