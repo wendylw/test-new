@@ -6,7 +6,6 @@ import RewardsPointsIcon from '../../../../../images/rewards-icon-points.svg';
 import PointsRewardClaimedIcon from '../../../../../images/rewards-points-claimed.svg';
 import { getClassName } from '../../../../../common/utils/ui';
 import CleverTap from '../../../../../utils/clevertap';
-import { getIsWebview } from '../../../../redux/modules/common/selectors';
 import {
   getPointsRewardList,
   getIsClaimPointsRewardPending,
@@ -19,8 +18,8 @@ import {
   backButtonClicked,
   mounted,
   pointsClaimRewardButtonClicked,
-  skipProfileButtonClicked,
-  saveProfileButtonClicked,
+  claimPointsRewardAndRefreshRewardsList,
+  hideWebProfileForm,
 } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
@@ -31,13 +30,12 @@ import Loader from '../../../../../common/components/Loader';
 import Tag from '../../../../../common/components/Tag';
 import { alert, confirm } from '../../../../../common/utils/feedback';
 import Ticket from '../../components/Ticket';
-import Profile from '../../../Profile';
+import CompleteProfile from '../../../CompleteProfile';
 import styles from './PointsRewardsPage.module.scss';
 
 const PointsRewardsPage = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
-  const isWebview = useSelector(getIsWebview);
   const pointsRewardList = useSelector(getPointsRewardList);
   const isClaimPointsRewardPending = useSelector(getIsClaimPointsRewardPending);
   const isClaimPointsRewardFulfilled = useSelector(getIsClaimPointsRewardFulfilled);
@@ -61,18 +59,19 @@ const PointsRewardsPage = () => {
   );
   const handleClickSkipProfileButton = useCallback(
     id => {
-      dispatch(skipProfileButtonClicked(id));
+      dispatch(claimPointsRewardAndRefreshRewardsList(id));
       setSelectedRewardId(null);
     },
     [dispatch, setSelectedRewardId]
   );
   const handleClickSaveProfileButton = useCallback(
     id => {
-      dispatch(saveProfileButtonClicked(id));
+      dispatch(claimPointsRewardAndRefreshRewardsList(id));
       setSelectedRewardId(null);
     },
     [dispatch, setSelectedRewardId]
   );
+  const handleCloseCompleteProfile = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
   useMount(() => {
     dispatch(mounted());
@@ -181,17 +180,16 @@ const PointsRewardsPage = () => {
       {isClaimPointsRewardPending && (
         <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
       )}
-      {!isWebview && (
-        <Profile
-          show={isProfileModalShow}
-          onSave={() => {
-            handleClickSaveProfileButton(selectedRewardId);
-          }}
-          onSkip={() => {
-            handleClickSkipProfileButton(selectedRewardId);
-          }}
-        />
-      )}
+      <CompleteProfile
+        show={isProfileModalShow}
+        onSave={() => {
+          handleClickSaveProfileButton(selectedRewardId);
+        }}
+        onSkip={() => {
+          handleClickSkipProfileButton(selectedRewardId);
+        }}
+        onClose={handleCloseCompleteProfile}
+      />
     </Frame>
   );
 };
