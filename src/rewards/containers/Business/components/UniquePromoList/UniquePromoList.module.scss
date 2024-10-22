@@ -2,11 +2,19 @@
   @apply tw-flex tw-flex-col tw-gap-y-12 sm:tw-gap-y-12px;
 }
 
-.UniquePromoCardTicketContainer {
+.UniquePromoButton:global(.type-text-ghost) {
+  @apply tw-p-0;
+}
+
+.UniquePromoButtonContent {
+  @apply tw-flex-1;
+}
+
+.UniquePromoTicketContainer {
   @apply tw-shadow-none;
 }
 
-.UniquePromoCardTicket {
+.UniquePromoTicket {
   &::before,
   &::after {
     @apply tw-bg-gray-50;
@@ -14,9 +22,15 @@
 }
 
 .UniquePromoInfoTop {
+  @apply tw-flex-1 tw-flex tw-items-end tw-justify-between;
+
   &__Unavailable {
     @apply tw-opacity-40;
   }
+}
+
+.UniquePromoDescription {
+  @apply tw-text-left;
 }
 
 .UniquePromoDiscount {
@@ -27,26 +41,27 @@
   @apply tw-text-sm tw-leading-loose;
 }
 
+.UniquePromoStatusTag,
+.UniqueExpiringTag {
+  @apply tw-font-bold;
+}
+
 .UniquePromoInfoBottom {
-  @apply tw-flex tw-items-end tw-justify-between tw-border-l-0 tw-border-r-0;
+  @apply tw-flex-1 tw-flex tw-items-end tw-justify-between tw-border-l-0 tw-border-r-0;
 
   &__Unavailable {
     @apply tw-border-opacity-40;
   }
 }
 
-.UniquePromoLimitationList {
-  @apply tw-pl-8 sm:tw-pl-8px tw-list-disc;
+.UniquePromoDiscountLimitation {
+  @apply tw-text-sm tw-leading-loose tw-text-gray-700;
 
   &__Unavailable {
     @apply tw-opacity-40;
   }
 }
 
-.UniquePromoDiscountLimitation {
-  @apply tw-text-sm tw-leading-loose tw-text-gray-700;
-}
-
-.UniquePromoStatusTag {
-  @apply tw-font-bold;
+.UniquePromoViewDetail {
+  @apply tw-text-xs tw-text-orange;
 }

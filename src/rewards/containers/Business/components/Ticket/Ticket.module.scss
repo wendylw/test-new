@@ -55,7 +55,7 @@
 }
 
 .TicketVertical .TicketStub {
-  @apply tw-mx-8 sm:tw-mx-8px;
+  @apply tw-px-0 tw-mx-8 sm:tw-mx-8px;
 
   &::before {
     @apply tw-block tw-w-full tw-bg-repeat-x;
