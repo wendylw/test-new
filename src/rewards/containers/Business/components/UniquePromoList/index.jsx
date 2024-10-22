@@ -1,9 +1,11 @@
 import React, { useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { PROMO_VOUCHER_STATUS } from '../../../../../common/utils/constants';
+import { PROMO_VOUCHER_STATUS, PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { getClassName } from '../../../../../common/utils/ui';
 import CleverTap from '../../../../../utils/clevertap';
+import { getLocationSearch } from '../../../../redux/modules/common/selectors';
 import { getUniquePromoList } from '../../redux/common/selectors';
 import Tag from '../../../../../common/components/Tag';
 import Button from '../../../../../common/components/Button';
@@ -16,10 +18,22 @@ const UNIQUE_PROMO_STATUS_I18KEYS = {
 };
 const UniquePromoList = () => {
   const { t } = useTranslation(['Rewards']);
+  const history = useHistory();
+  const search = useSelector(getLocationSearch);
   const uniquePromoList = useSelector(getUniquePromoList);
-  const handleClickRewardItem = useCallback(() => {
-    CleverTap.pushEvent('My Rewards Page - Click Reward (My Rewards)');
-  }, []);
+  const handleClickRewardItem = useCallback(
+    (id, uniquePromotionId) => {
+      const myRewardDetail = {
+        pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.DETAIL}`,
+        search: `${search || '?'}&id=${id}&uniquePromotionId=${uniquePromotionId}`,
+      };
+
+      CleverTap.pushEvent('My Rewards Page - Click Reward (My Rewards)');
+
+      history.push(myRewardDetail);
+    },
+    [history, search]
+  );
 
   if (uniquePromoList.length === 0) {
     return null;
@@ -31,7 +45,17 @@ const UniquePromoList = () => {
         const uniquePromoInfoTopClassList = [styles.UniquePromoInfoTop];
         const uniquePromoInfoBottomClassList = [styles.UniquePromoInfoBottom];
         const uniquePromoDiscountLimitationClassList = [styles.UniquePromoDiscountLimitation];
-        const { key: uniquePromoKey, value, name, expiringDate, minSpend, status, isUnavailable } = uniquePromo;
+        const {
+          key: uniquePromoKey,
+          id,
+          uniquePromotionId,
+          value,
+          name,
+          expiringDate,
+          minSpend,
+          status,
+          isUnavailable,
+        } = uniquePromo;
 
         if (isUnavailable) {
           uniquePromoInfoTopClassList.push(styles.UniquePromoInfoTop__Unavailable);
@@ -48,7 +72,9 @@ const UniquePromoList = () => {
               data-test-id="rewards.my-rewards-page.reward"
               className={styles.UniquePromoButton}
               contentClassName={styles.UniquePromoButtonContent}
-              onClick={handleClickRewardItem}
+              onClick={() => {
+                handleClickRewardItem(id, uniquePromotionId);
+              }}
             >
               <Ticket
                 className={styles.UniquePromoTicketContainer}

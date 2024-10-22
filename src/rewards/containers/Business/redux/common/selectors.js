@@ -227,6 +227,7 @@ export const getUniquePromoList = createSelector(
 
       return {
         id,
+        uniquePromotionId,
         key: `${id}-${uniquePromotionId}-${discountType}`,
         value:
           discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE

@@ -90,7 +90,7 @@ const Routes = () => (
         />
         <Route
           exact
-          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.MY_REWARD_DETAIL}`}
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.DETAIL}`}
           component={MyRewardDetail}
         />
         <Route
