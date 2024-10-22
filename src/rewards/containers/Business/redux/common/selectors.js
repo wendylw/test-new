@@ -10,6 +10,7 @@ import {
 } from '../../../../../common/utils/constants';
 import { getPrice, getQueryString } from '../../../../../common/utils';
 import { getDifferenceTodayInDays, formatTimeToDateString } from '../../../../../utils/datetime-lib';
+import { getDiscountValue } from '../../utils/rewards';
 import { CLAIMED_POINTS_REWARD_ERROR_CODES } from '../../utils/constants';
 import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
@@ -229,10 +230,11 @@ export const getUniquePromoList = createSelector(
         id,
         uniquePromotionId,
         key: `${id}-${uniquePromotionId}-${discountType}`,
-        value:
-          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
-            ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        value: getDiscountValue(discountType, discountValue, {
+          locale: merchantLocale,
+          currency: merchantCurrency,
+          country: merchantCountry,
+        }),
         name,
         status,
         minSpend: minSpendAmount && {
@@ -305,10 +307,11 @@ export const getUniquePromoListBanners = createSelector(
       return {
         id,
         key: `${id}-${uniquePromotionId}-${discountType}`,
-        value:
-          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
-            ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        value: getDiscountValue(discountType, discountValue, {
+          locale: merchantLocale,
+          currency: merchantCurrency,
+          country: merchantCountry,
+        }),
         name,
         status,
         conditions: {
