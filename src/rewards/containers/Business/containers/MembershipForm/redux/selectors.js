@@ -133,9 +133,7 @@ export const getIsProfileFormVisible = state => state.business.membershipForm.is
 
 export const getShouldShowProfileForm = createSelector(
   getIsUserProfileIncomplete,
-  getHasUserJoinedMerchantMembership,
-  (isUserProfileIncomplete, hasUserJoinedMerchantMembership) =>
-    isUserProfileIncomplete && !hasUserJoinedMerchantMembership
+  isUserProfileIncomplete => isUserProfileIncomplete
 );
 
 export const getJoinMembershipRewardList = createSelector(

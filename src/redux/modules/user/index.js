@@ -1,7 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import config from '../../../config';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
-import { fetchUserLoginStatus, fetchUserProfileInfo, loginUser, loginUserAsGuest } from './thunks';
+import {
+  fetchUserLoginStatus,
+  fetchUserProfileInfo,
+  uploadUserProfileInfo,
+  loginUser,
+  loginUserAsGuest,
+} from './thunks';
 
 const initialState = {
   checkLoginRequest: {
@@ -39,6 +45,10 @@ const initialState = {
       gender: null,
       notificationSettings: null,
     },
+    status: null,
+    error: null,
+  },
+  uploadProfileRequest: {
     status: null,
     error: null,
   },
@@ -115,6 +125,18 @@ const { reducer, actions } = createSlice({
     [fetchUserProfileInfo.rejected.type]: (state, { error }) => {
       state.loadProfileRequest.status = API_REQUEST_STATUS.REJECTED;
       state.loadProfileRequest.error = error;
+    },
+    [uploadUserProfileInfo.pending.type]: state => {
+      state.uploadProfileRequest.status = API_REQUEST_STATUS.PENDING;
+      state.uploadProfileRequest.error = null;
+    },
+    [uploadUserProfileInfo.fulfilled.type]: state => {
+      state.uploadProfileRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.uploadProfileRequest.error = null;
+    },
+    [uploadUserProfileInfo.rejected.type]: (state, { error }) => {
+      state.uploadProfileRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.uploadProfileRequest.error = error;
     },
     [loginUserAsGuest.pending.type]: state => {
       state.guestLoginRequest.status = API_REQUEST_STATUS.PENDING;
