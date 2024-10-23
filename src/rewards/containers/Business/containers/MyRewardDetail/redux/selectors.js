@@ -129,7 +129,7 @@ export const getMyRewardRedeemOnlineList = createSelector(
     myRewardLimitsAppliedSources.filter(source => source !== UNIQUE_PROMO_APPLIED_SOURCES.POS)
 );
 
-export const getIsMyRewardRedeemedInStore = createSelector(
+export const getIsMyRewardRedeemInStore = createSelector(
   getMyRewardLimitsAppliedSources,
   myRewardLimitsAppliedSources => myRewardLimitsAppliedSources.includes(UNIQUE_PROMO_APPLIED_SOURCES.POS)
 );
