@@ -5,12 +5,11 @@ import { createSelector } from 'reselect';
 import {
   API_REQUEST_STATUS,
   CLAIM_CASHBACK_QUERY_NAMES,
-  PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
 } from '../../../../../common/utils/constants';
 import { getPrice, getQueryString } from '../../../../../common/utils';
 import { getDifferenceTodayInDays, formatTimeToDateString } from '../../../../../utils/datetime-lib';
-import { getDiscountValue } from '../../utils/rewards';
+import { getFormatDiscountValue, getRemainingRewardExpiredDaysInfo } from '../../utils/rewards';
 import { CLAIMED_POINTS_REWARD_ERROR_CODES } from '../../utils/constants';
 import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
@@ -222,15 +221,13 @@ export const getUniquePromoList = createSelector(
       }
 
       const { id, uniquePromotionId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
-      const diffDays = getDifferenceTodayInDays(new Date(validTo));
-      const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
-      const isTodayExpired = remainingExpiredDays === 0;
+      const { remainingExpiredDays, isTodayExpired } = getRemainingRewardExpiredDaysInfo(validTo);
 
       return {
         id,
         uniquePromotionId,
         key: `${id}-${uniquePromotionId}-${discountType}`,
-        value: getDiscountValue(discountType, discountValue, {
+        value: getFormatDiscountValue(discountType, discountValue, {
           locale: merchantLocale,
           currency: merchantCurrency,
           country: merchantCountry,
@@ -307,7 +304,7 @@ export const getUniquePromoListBanners = createSelector(
       return {
         id,
         key: `${id}-${uniquePromotionId}-${discountType}`,
-        value: getDiscountValue(discountType, discountValue, {
+        value: getFormatDiscountValue(discountType, discountValue, {
           locale: merchantLocale,
           currency: merchantCurrency,
           country: merchantCountry,

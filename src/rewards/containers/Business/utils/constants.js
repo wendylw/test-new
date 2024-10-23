@@ -1,3 +1,5 @@
+import { PROMO_VOUCHER_STATUS } from '../../../../common/utils/constants';
+
 export const CLAIMED_CASHBACK_STATUS = {
   // can claim status
   CLAIMED_FIRST_TIME: 'Claimed_FirstTime',
@@ -37,3 +39,12 @@ export const CLAIMED_POINTS_REWARD_ERROR_CODES = {
   INVALID_POINT_SOURCE: '395280',
   POINT_LOG_NOT_FOUND: '395281',
 };
+
+/**
+ * i18n keys
+ */
+export const UNIQUE_PROMO_STATUS_I18KEYS = {
+  [PROMO_VOUCHER_STATUS.EXPIRED]: 'Expired',
+  [PROMO_VOUCHER_STATUS.REDEEMED]: 'Redeemed',
+};
+/* end of i18n keys */
