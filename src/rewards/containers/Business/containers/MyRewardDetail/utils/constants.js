@@ -1,3 +1,5 @@
+export const UNIQUE_PROMO_APPLIED_ALL_STORES = 'All';
+
 export const UNIQUE_PROMO_APPLIED_SOURCES = {
   POS: 1,
   E_Commerce: 2,

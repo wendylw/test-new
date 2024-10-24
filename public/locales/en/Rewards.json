@@ -180,8 +180,12 @@
   "BeepDineIn": "QR Order and Pay - Dine-in",
   "MyRewardApplicableProductsTitle": "Applicable products",
   "MyRewardAllProductsText": "All products",
+  "MyRewardSelectedProductsText": "Selected products",
   "MyRewardApplicableStoresTitle": "Applicable stores",
   "MyRewardAllStoresText": "All stores",
+  "MyRewardSelectedStoresText": "Selected stores",
+  "MyRewardRedeemOnlineTitle": "Redeem online",
+  "MyRewardRedeemOnlineDescription": "Apply this promotion during checkout on any of the order methods below:",
   "MyRewardRedeemInStoreTitle": "Redeem in store",
   "MyRewardRedeemInStoreDescription": "Show this promotion to the cashier for redemption"
 }

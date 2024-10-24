@@ -1,21 +1,33 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { goBack as historyGoBack } from 'connected-react-router';
+import { push, goBack as historyGoBack } from 'connected-react-router';
+import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
 import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
-import { getIsWebview } from '../../../../../redux/modules/common/selectors';
-import { getMyRewardId, getMyRewardUniquePromotionId } from './selectors';
+import {
+  initUserInfo,
+  loginUserByBeepApp,
+  loginUserByAlipayMiniProgram,
+} from '../../../../../../redux/modules/user/thunks';
+import { getConsumerId, getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import {
+  getIsWebview,
+  getIsAlipayMiniProgram,
+  getLocationSearch,
+  getIsNotLoginInWeb,
+} from '../../../../../redux/modules/common/selectors';
+import { getMyRewardUniquePromotionId } from './selectors';
 import { getUniquePromotionDetail } from './api-request';
 
 export const fetchMyRewardDetail = createAsyncThunk(
   'rewards/business/myRewardDetail/fetchMyRewardDetail',
   async (_, { getState }) => {
     const state = getState();
-    const id = getMyRewardId(state);
+    const consumerId = getConsumerId(state);
     const uniquePromotionId = getMyRewardUniquePromotionId(state);
 
-    const result = await getUniquePromotionDetail({ id, uniquePromotionId });
+    const result = await getUniquePromotionDetail({ consumerId, uniquePromotionId });
 
     return result;
   }
@@ -26,9 +38,36 @@ export const mounted = createAsyncThunk(
   async (_, { getState, dispatch }) => {
     const state = getState();
     const merchantBusiness = getMerchantBusiness(state);
+    const isWebview = getIsWebview(state);
+    const isAlipayMiniProgram = getIsAlipayMiniProgram(state);
+    const search = getLocationSearch(state);
+
+    CleverTap.pushEvent('My Rewards Page - View Page');
+
+    await dispatch(initUserInfo());
+
+    if (isWebview) {
+      await dispatch(loginUserByBeepApp());
+    }
+
+    if (isAlipayMiniProgram) {
+      await dispatch(loginUserByAlipayMiniProgram());
+    }
+
+    const isLogin = getIsLogin(getState());
+    const isNotLoginInWeb = getIsNotLoginInWeb(getState());
+
+    if (isNotLoginInWeb) {
+      dispatch(push(`${PATH_NAME_MAPPING.REWARDS_LOGIN}${search}`, { shouldGoBack: true }));
+
+      return;
+    }
 
     dispatch(fetchMerchantInfo(merchantBusiness));
-    dispatch(fetchMyRewardDetail());
+
+    if (isLogin) {
+      dispatch(fetchMyRewardDetail());
+    }
   }
 );
 

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { PROMO_VOUCHER_STATUS, PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { getClassName } from '../../../../../common/utils/ui';
 import CleverTap from '../../../../../utils/clevertap';
@@ -55,7 +55,9 @@ const UniquePromoList = () => {
           minSpend,
           status,
           isUnavailable,
+          conditions,
         } = uniquePromo;
+        const { expiringDays } = conditions;
 
         if (isUnavailable) {
           uniquePromoInfoTopClassList.push(styles.UniquePromoInfoTop__Unavailable);
@@ -90,6 +92,23 @@ const UniquePromoList = () => {
                     </div>
                     {isUnavailable ? (
                       <Tag className={styles.UniquePromoStatusTag}>{t(UNIQUE_PROMO_STATUS_I18KEYS[status])}</Tag>
+                    ) : expiringDays ? (
+                      <Tag color="red" className={styles.UniquePromStubRemainingExpiredDaysTag}>
+                        <Trans
+                          t={t}
+                          i18nKey={expiringDays.i18nKey}
+                          values={expiringDays.params}
+                          components={[
+                            <span
+                              className={
+                                expiringDays.value === 1
+                                  ? styles.UniquePromStubRemainingExpiredDaysTagLetterHidden
+                                  : styles.UniquePromStubRemainingExpiredDaysTagLetter
+                              }
+                            />,
+                          ]}
+                        />
+                      </Tag>
                     ) : (
                       <Tag className={styles.UniqueExpiringTag}>{t(expiringDate.i18nKey, expiringDate.params)}</Tag>
                     )}
