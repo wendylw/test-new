@@ -1,5 +1,4 @@
 import _get from 'lodash/get';
-import _isInteger from 'lodash/isInteger';
 import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import {
@@ -9,7 +8,7 @@ import {
 } from '../../../../../common/utils/constants';
 import { getPrice, getQueryString } from '../../../../../common/utils';
 import { getDifferenceTodayInDays, formatTimeToDateString } from '../../../../../utils/datetime-lib';
-import { getFormatDiscountValue, getRemainingRewardExpiredDaysInfo } from '../../utils/rewards';
+import { getFormatDiscountValue, getRemainingRewardExpiredDays, getExpiringDaysI18n } from '../../utils/rewards';
 import { CLAIMED_POINTS_REWARD_ERROR_CODES } from '../../utils/constants';
 import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
@@ -221,7 +220,7 @@ export const getUniquePromoList = createSelector(
       }
 
       const { id, uniquePromotionId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
-      const { remainingExpiredDays, isTodayExpired } = getRemainingRewardExpiredDaysInfo(validTo);
+      const remainingExpiredDays = getRemainingRewardExpiredDays(validTo);
 
       return {
         id,
@@ -260,11 +259,7 @@ export const getUniquePromoList = createSelector(
               }),
             },
           },
-          expiringDays: _isInteger(remainingExpiredDays) && {
-            value: remainingExpiredDays,
-            i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
-            params: !isTodayExpired && { remainingExpiredDays },
-          },
+          expiringDays: getExpiringDaysI18n(remainingExpiredDays),
         },
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };
@@ -299,7 +294,6 @@ export const getUniquePromoListBanners = createSelector(
       const { id, uniquePromotionId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
       const diffDays = getDifferenceTodayInDays(new Date(validTo));
       const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
-      const isTodayExpired = remainingExpiredDays === 0;
 
       return {
         id,
@@ -323,11 +317,7 @@ export const getUniquePromoListBanners = createSelector(
               }),
             },
           },
-          expiringDays: _isInteger(remainingExpiredDays) && {
-            value: remainingExpiredDays,
-            i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
-            params: !isTodayExpired && { remainingExpiredDays },
-          },
+          expiringDays: getExpiringDaysI18n(remainingExpiredDays),
         },
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };

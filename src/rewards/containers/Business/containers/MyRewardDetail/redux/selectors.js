@@ -1,12 +1,11 @@
 import _get from 'lodash/get';
-import _isInteger from 'lodash/isInteger';
 import i18next from 'i18next';
 import { createSelector } from 'reselect';
 import { PROMO_VOUCHER_STATUS } from '../../../../../../common/utils/constants';
 import { UNIQUE_PROMO_APPLIED_ALL_STORES, UNIQUE_PROMO_APPLIED_SOURCES } from '../utils/constants';
 import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
-import { getFormatDiscountValue, getRemainingRewardExpiredDaysInfo } from '../../../utils/rewards';
+import { getFormatDiscountValue, getRemainingRewardExpiredDays, getExpiringDaysI18n } from '../../../utils/rewards';
 import {
   getMerchantCountry,
   getMerchantCurrency,
@@ -128,16 +127,9 @@ export const getIsMyRewardUnAvailable = createSelector(getMyRewardStatus, myRewa
 );
 
 export const getMyRewardExpiringDaysI18n = createSelector(getMyRewardValidTo, myRewardValidTo => {
-  const remainingRewardExpiredDaysInfo = getRemainingRewardExpiredDaysInfo(myRewardValidTo);
-  const { remainingExpiredDays, isTodayExpired } = remainingRewardExpiredDaysInfo;
+  const remainingRewardExpiredDays = getRemainingRewardExpiredDays(myRewardValidTo);
 
-  return _isInteger(remainingExpiredDays)
-    ? {
-        value: remainingExpiredDays,
-        i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
-        params: !isTodayExpired && { remainingExpiredDays },
-      }
-    : null;
+  return getExpiringDaysI18n(remainingRewardExpiredDays);
 });
 
 export const getMyRewardFormatAppliedProductsText = createSelector(getMyRewardProductLimits, myRewardProductLimits => {
