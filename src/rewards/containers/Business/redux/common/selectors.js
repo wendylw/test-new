@@ -258,24 +258,20 @@ export const getUniquePromoList = createSelector(
             : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
         name,
         status,
-        limitations: [
-          minSpendAmount && {
-            key: `unique-promo-${id}-limitation-0`,
-            i18nKey: 'MinConsumption',
-            params: {
-              amount: getPrice(minSpendAmount, {
-                locale: merchantLocale,
-                currency: merchantCurrency,
-                country: merchantCountry,
-              }),
-            },
+        minSpend: minSpendAmount && {
+          i18nKey: 'MinConsumption',
+          params: {
+            amount: getPrice(minSpendAmount, {
+              locale: merchantLocale,
+              currency: merchantCurrency,
+              country: merchantCountry,
+            }),
           },
-          validTo && {
-            key: `unique-promo-${id}-limitation-1`,
-            i18nKey: 'ValidUntil',
-            params: { date: formatTimeToDateString(merchantCountry, validTo) },
-          },
-        ].filter(limitation => Boolean(limitation)),
+        },
+        expiringDate: validTo && {
+          i18nKey: 'ValidUntil',
+          params: { date: formatTimeToDateString(merchantCountry, validTo) },
+        },
         conditions: {
           minSpend: minSpendAmount && {
             value: minSpendAmount,
