@@ -55,6 +55,7 @@ import {
   getIsMerchantMembershipPointsEnabled,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getIsJoinMembershipNewMember } from '../../../../../../redux/modules/membership/selectors';
+import { getClaimOrderRewardsCashbackValue } from '../../../../../../redux/modules/transaction/selectors';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
@@ -192,12 +193,13 @@ export const getCashback = createSelector(getLoadCashbackRequestData, loadCashba
   return Number(cashback) ? Number(cashback) : 0;
 });
 
-export const getCashbackPrice = createSelector(
-  getCashback,
-  getMembershipMerchantCountry,
-  getMerchantCurrency,
+export const getClaimOrderRewardsCashbackPrice = createSelector(
+  getClaimOrderRewardsCashbackValue,
   getMerchantLocale,
-  (cashback, country, currency, locale) => getPrice(cashback, { country, currency, locale })
+  getMerchantCurrency,
+  getMembershipMerchantCountry,
+  (claimOrderRewardsCashbackValue, locale, currency, country) =>
+    getPrice(claimOrderRewardsCashbackValue, { locale, currency, country })
 );
 
 export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInfo, (cashback, onlineStoreInfo) => {

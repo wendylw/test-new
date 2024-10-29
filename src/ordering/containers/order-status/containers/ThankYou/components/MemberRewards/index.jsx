@@ -18,7 +18,7 @@ import {
   getShouldShowEarnedPointsOrCreditsBanner,
   getIsMerchantCashbackOrStoreCreditsEnabled,
   getShouldShowRewardsBanner,
-  getCashbackPrice,
+  getClaimOrderRewardsCashbackPrice,
 } from '../../redux/selector';
 import Button from '../../../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
@@ -78,7 +78,7 @@ const MemberRewards = ({
   isMerchantMembershipPointsEnabled,
   rewardsAvailableCount,
   claimOrderRewardsPointsValue,
-  cashbackPrice,
+  claimOrderRewardsCashbackPrice,
   onViewMembershipDetailClick,
 }) => {
   const { t } = useTranslation('OrderingThankYou');
@@ -171,7 +171,7 @@ const MemberRewards = ({
                     />
                   </div>
                   <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
-                    {t('RewardsCardCashbackItemText', { cashbackPrice })}
+                    {t('RewardsCardCashbackItemText', { claimOrderRewardsCashbackPrice })}
                   </span>
                 </li>
               )}
@@ -194,7 +194,7 @@ MemberRewards.propTypes = {
   isMerchantMembershipPointsEnabled: PropTypes.bool,
   rewardsAvailableCount: PropTypes.number,
   claimOrderRewardsPointsValue: PropTypes.number,
-  cashbackPrice: PropTypes.string,
+  claimOrderRewardsCashbackPrice: PropTypes.string,
   onViewMembershipDetailClick: PropTypes.func,
 };
 
@@ -207,7 +207,7 @@ MemberRewards.defaultProps = {
   isMerchantCashbackOrStoreCreditsEnabled: false,
   rewardsAvailableCount: 0,
   claimOrderRewardsPointsValue: 0,
-  cashbackPrice: null,
+  claimOrderRewardsCashbackPrice: null,
   onViewMembershipDetailClick: () => {},
 };
 
@@ -220,5 +220,5 @@ export default connect(state => ({
   isMerchantMembershipPointsEnabled: getIsMerchantMembershipPointsEnabled(state),
   claimOrderRewardsPointsValue: getClaimOrderRewardsPointsValue(state),
   rewardsAvailableCount: getCustomerRewardsTotal(state),
-  cashbackPrice: getCashbackPrice(state),
+  claimOrderRewardsCashbackPrice: getClaimOrderRewardsCashbackPrice(state),
 }))(MemberRewards);
