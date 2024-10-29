@@ -58,6 +58,7 @@ import {
   isProductSoldOut,
   isGCashMiniProgram,
   isTNGMiniProgram,
+  getDecimalNumber,
 } from '../../../common/utils';
 import { toast } from '../../../common/utils/feedback';
 import { AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
@@ -941,7 +942,7 @@ export const actions = {
     try {
       dispatch({ type: types.LOAD_CONSUMER_INFO_PENDING });
 
-      const result = await getCustomerInfo({ consumerId, business });
+      const result = await getCustomerInfo({ consumerId, business, rewardsTotal: true });
 
       dispatch({
         type: types.LOAD_CONSUMER_INFO_FULFILLED,
@@ -2245,6 +2246,14 @@ export const getCustomerTierLevel = createSelector(getCustomerData, customerData
 
 export const getCustomerTierLevelName = createSelector(getCustomerData, customerData =>
   _get(customerData, 'customerTier.name', null)
+);
+
+export const getCustomerAvailablePointsBalance = createSelector(getCustomerData, customerData =>
+  getDecimalNumber(_get(customerData, 'availablePointsBalance', 0))
+);
+
+export const getCustomerRewardsTotal = createSelector(getCustomerData, customerData =>
+  getDecimalNumber(_get(customerData, 'rewardsTotal', 0))
 );
 
 export const getHasUserJoinedBusinessMembership = createSelector(

@@ -146,5 +146,13 @@
   "GotCashBackAndBeMemberDescription": "Login or sign up below to claim your cashback & be our member now!",
   "NewMemberInvitation": "Be our member & unlock your rewards!",
   "View": "View",
-  "ViewRewards": "View Rewards"
+  "ViewRewards": "View Rewards",
+  "NewMemberBannerTitle": "Membership Activated!",
+  "RewardBannerTitle": "You have {{availableCount}} Rewards!",
+  "RewardsCardNewMemberTitle": "Claim Rewards",
+  "RewardsCardReturningMemberTitle": "You’ve Earned",
+  "RewardsCardReturningMemberCheckBalanceText": "Check Balance",
+  "RewardsCardRewardsItemText": "{{availableCount}} Rewards",
+  "RewardsCardPointsItemText": "{{points}} Points",
+  "RewardsCardCashbackItemText": "{{cashbackPrice}} Cashback"
 }

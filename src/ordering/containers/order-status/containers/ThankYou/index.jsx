@@ -16,7 +16,8 @@ import StoreReviewInfo from './components/StoreReviewInfo';
 import CashbackBanner from './components/CashbackBanner';
 import OrderSummary from './components/OrderSummary';
 import MemberBanner from './components/MemberBanner';
-import MemberCard from './components/MemberCard';
+import NewMemberBanner from './components/NewMemberBanner';
+import MemberRewards from './components/MemberRewards';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
 import config from '../../../../../config';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -39,6 +40,7 @@ import * as NativeMethods from '../../../../../utils/native-methods';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
+import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
   actions as appActionCreators,
   getBusiness,
@@ -109,7 +111,7 @@ import {
   getShouldJoinBusinessMembership,
   getIsRewardInfoReady,
   getShouldShowMemberBanner,
-  getShouldShowMemberCard,
+  getShouldShowRewards,
   getIsCashbackClaimable,
   getShouldProfileModalShow,
 } from './redux/selector';
@@ -680,10 +682,10 @@ export class ThankYou extends PureComponent {
     goToJoinMembershipPage();
   };
 
-  handleViewMembershipDetail = () => {
+  handleViewMembershipDetail = trackName => {
     const { goToMembershipDetailPage } = this.props;
 
-    CleverTap.pushEvent('Thank You Page - Click Membership Card');
+    CleverTap.pushEvent(`Thank You Page - Click ${trackName}`);
 
     goToMembershipDetailPage();
   };
@@ -1041,7 +1043,13 @@ export class ThankYou extends PureComponent {
   }
 
   renderRewardInfo() {
-    const { shouldShowMemberBanner, shouldShowMemberCard, shouldShowCashbackCard, isRewardInfoReady } = this.props;
+    const {
+      isJoinMembershipNewMember,
+      shouldShowMemberBanner,
+      shouldShowRewards,
+      shouldShowCashbackCard,
+      isRewardInfoReady,
+    } = this.props;
 
     if (!isRewardInfoReady) {
       return null;
@@ -1050,8 +1058,9 @@ export class ThankYou extends PureComponent {
     return (
       <>
         {shouldShowMemberBanner && <MemberBanner onJoinMembershipClick={this.handleJoinMembership} />}
-        {shouldShowMemberCard ? (
-          <MemberCard onViewMembershipDetailClick={this.handleViewMembershipDetail} />
+        {isJoinMembershipNewMember && <NewMemberBanner />}
+        {shouldShowRewards ? (
+          <MemberRewards onViewMembershipDetailClick={this.handleViewMembershipDetail} />
         ) : shouldShowCashbackCard ? (
           <CashbackInfo />
         ) : null}
@@ -1225,12 +1234,13 @@ ThankYou.propTypes = {
   isCashbackClaimable: PropTypes.bool,
   isUseStorehubLogistics: PropTypes.bool,
   profileModalVisibility: PropTypes.bool,
-  shouldShowMemberCard: PropTypes.bool,
+  shouldShowRewards: PropTypes.bool,
   shouldShowMemberBanner: PropTypes.bool,
   shouldShowCashbackCard: PropTypes.bool,
   shouldShowCashbackBanner: PropTypes.bool,
   isInitProfilePageEnabled: PropTypes.bool,
   shouldShowStoreReviewCard: PropTypes.bool,
+  isJoinMembershipNewMember: PropTypes.bool,
   isFromBeepSiteOrderHistory: PropTypes.bool,
   loadStoreIdTableIdHashCode: PropTypes.func,
   isCoreBusinessAPICompleted: PropTypes.bool,
@@ -1287,13 +1297,14 @@ ThankYou.defaultProps = {
   isOrderCancellable: false,
   isCashbackClaimable: false,
   isCashbackAvailable: false,
-  shouldShowMemberCard: false,
+  shouldShowRewards: false,
   shouldShowMemberBanner: false,
   isUseStorehubLogistics: false,
   profileModalVisibility: false,
   shouldShowCashbackCard: false,
   isInitProfilePageEnabled: false,
   shouldShowCashbackBanner: false,
+  isJoinMembershipNewMember: false,
   loadFoodCourtIdHashCode: () => {},
   shouldShowStoreReviewCard: false,
   isFromBeepSiteOrderHistory: false,
@@ -1358,9 +1369,10 @@ export default compose(
       redirectFrom: getRedirectFrom(state),
       isRewardInfoReady: getIsRewardInfoReady(state),
       shouldShowMemberBanner: getShouldShowMemberBanner(state),
-      shouldShowMemberCard: getShouldShowMemberCard(state),
+      shouldShowRewards: getShouldShowRewards(state),
       isCashbackClaimable: getIsCashbackClaimable(state),
       shouldJoinBusinessMembership: getShouldJoinBusinessMembership(state),
+      isJoinMembershipNewMember: getIsJoinMembershipNewMember(state),
       shouldProfileModalShow: getShouldProfileModalShow(state),
     }),
     dispatch => ({
