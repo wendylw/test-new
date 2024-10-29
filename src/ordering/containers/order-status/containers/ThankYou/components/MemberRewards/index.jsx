@@ -115,7 +115,7 @@ const MemberRewards = ({
         </section>
       )}
 
-      {shouldShowEarnedPointsOrCreditsBanner && (
+      {shouldShowEarnedPointsOrCreditsBanner ? (
         <section className="card margin-small padding-smaller">
           <MemberRewardsContainer
             isJoinMembershipNewMember={isJoinMembershipNewMember}
@@ -161,7 +161,7 @@ const MemberRewards = ({
                 </li>
               ) : null}
 
-              {isMerchantCashbackOrStoreCreditsEnabled && (
+              {isMerchantCashbackOrStoreCreditsEnabled && claimOrderRewardsCashbackPrice ? (
                 <li className="flex flex-middle padding-left-right-small margin-top-bottom-small">
                   <div className="rewards-card__item-icon flex__shrink-fixed">
                     <ObjectFitImage
@@ -174,11 +174,11 @@ const MemberRewards = ({
                     {t('RewardsCardCashbackItemText', { claimOrderRewardsCashbackPrice })}
                   </span>
                 </li>
-              )}
+              ) : null}
             </ul>
           </MemberRewardsContainer>
         </section>
-      )}
+      ) : null}
     </>
   );
 };

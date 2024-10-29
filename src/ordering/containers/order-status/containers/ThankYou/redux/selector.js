@@ -55,7 +55,10 @@ import {
   getIsMerchantMembershipPointsEnabled,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getIsJoinMembershipNewMember } from '../../../../../../redux/modules/membership/selectors';
-import { getClaimOrderRewardsCashbackValue } from '../../../../../../redux/modules/transaction/selectors';
+import {
+  getClaimOrderRewardsPointsValue,
+  getClaimOrderRewardsCashbackValue,
+} from '../../../../../../redux/modules/transaction/selectors';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
@@ -437,8 +440,16 @@ export const getIsMerchantCashbackOrStoreCreditsEnabled = createSelector(
 export const getShouldShowEarnedPointsOrCreditsBanner = createSelector(
   getIsMerchantMembershipPointsEnabled,
   getIsMerchantCashbackOrStoreCreditsEnabled,
-  (isMerchantMembershipPointsEnabled, isMerchantCashbackOrStoreCreditsEnabled) =>
-    isMerchantMembershipPointsEnabled || isMerchantCashbackOrStoreCreditsEnabled
+  getClaimOrderRewardsPointsValue,
+  getClaimOrderRewardsCashbackValue,
+  (
+    isMerchantMembershipPointsEnabled,
+    isMerchantCashbackOrStoreCreditsEnabled,
+    claimOrderRewardsPointsValue,
+    claimOrderRewardsCashbackValue
+  ) =>
+    (isMerchantMembershipPointsEnabled && claimOrderRewardsPointsValue) ||
+    (isMerchantCashbackOrStoreCreditsEnabled && claimOrderRewardsCashbackValue)
 );
 
 // Expected the enabled membership merchant's customers see the member card information first on the page. So hide complete profile page
