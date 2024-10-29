@@ -2265,6 +2265,10 @@ export const getUserCustomerId = createSelector(getCustomerData, customerData =>
   _get(customerData, 'customerId', null)
 );
 
+export const getCustomerIsNewMember = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'isNewMember', null)
+);
+
 // If the level is not by design, use member style by default.
 export const getMemberColorPalettes = createSelector(
   getCustomerTierLevel,

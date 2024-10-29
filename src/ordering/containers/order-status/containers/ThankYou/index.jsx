@@ -40,7 +40,6 @@ import * as NativeMethods from '../../../../../utils/native-methods';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
-import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
   actions as appActionCreators,
   getBusiness,
@@ -70,6 +69,7 @@ import {
   getIsUseStorehubLogistics,
   getIsPayLater,
   getStoreRating,
+  getIsPlaceOrderNewMember,
 } from '../../redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
@@ -1064,7 +1064,7 @@ export class ThankYou extends PureComponent {
 
   renderRewardInfo() {
     const {
-      isJoinMembershipNewMember,
+      isPlaceOrderNewMember,
       shouldShowMemberBanner,
       shouldShowRewards,
       shouldShowCashbackCard,
@@ -1078,7 +1078,7 @@ export class ThankYou extends PureComponent {
     return (
       <>
         {shouldShowMemberBanner && <MemberBanner onJoinMembershipClick={this.handleJoinMembership} />}
-        {isJoinMembershipNewMember && <NewMemberBanner />}
+        {isPlaceOrderNewMember && <NewMemberBanner />}
         {shouldShowRewards ? (
           <MemberRewards onViewMembershipDetailClick={this.handleViewMembershipDetail} />
         ) : shouldShowCashbackCard ? (
@@ -1261,7 +1261,7 @@ ThankYou.propTypes = {
   shouldShowCashbackBanner: PropTypes.bool,
   isInitProfilePageEnabled: PropTypes.bool,
   shouldShowStoreReviewCard: PropTypes.bool,
-  isJoinMembershipNewMember: PropTypes.bool,
+  isPlaceOrderNewMember: PropTypes.bool,
   isFromBeepSiteOrderHistory: PropTypes.bool,
   loadStoreIdTableIdHashCode: PropTypes.func,
   isCoreBusinessAPICompleted: PropTypes.bool,
@@ -1327,7 +1327,7 @@ ThankYou.defaultProps = {
   shouldShowCashbackCard: false,
   isInitProfilePageEnabled: false,
   shouldShowCashbackBanner: false,
-  isJoinMembershipNewMember: false,
+  isPlaceOrderNewMember: false,
   loadFoodCourtIdHashCode: () => {},
   shouldShowStoreReviewCard: false,
   isFromBeepSiteOrderHistory: false,
@@ -1397,7 +1397,7 @@ export default compose(
       isCashbackClaimable: getIsCashbackClaimable(state),
       shouldJoinBusinessMembership: getShouldJoinBusinessMembership(state),
       shouldOrderCashbackAndPoints: getShouldOrderCashbackAndPoints(state),
-      isJoinMembershipNewMember: getIsJoinMembershipNewMember(state),
+      isPlaceOrderNewMember: getIsPlaceOrderNewMember(state),
       shouldProfileModalShow: getShouldProfileModalShow(state),
     }),
     dispatch => ({

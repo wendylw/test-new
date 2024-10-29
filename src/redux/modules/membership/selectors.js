@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import _last from 'lodash/last';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
+import { getCustomerIsNewMember } from '../../../ordering/redux/modules/app';
 
 export const getJoinMembershipRequest = state => state.membership.joinMembershipRequest;
 
