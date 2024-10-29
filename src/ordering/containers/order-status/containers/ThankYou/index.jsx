@@ -171,7 +171,7 @@ export class ThankYou extends PureComponent {
     const { isInitProfilePageEnabled, shouldJoinBusinessMembership, joinBusinessMembership } = this.props;
 
     if (shouldJoinBusinessMembership) {
-      joinBusinessMembership();
+      await joinBusinessMembership();
     }
 
     if (isInitProfilePageEnabled) {

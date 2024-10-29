@@ -27,12 +27,12 @@ import {
   getMerchantLocale,
   getMerchantCurrency,
 } from '../../../../../../redux/modules/merchant/selectors';
-import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import {
   getLoadOrderRewardsRequestError,
   getOrderRewardsPoints,
   getOrderRewardsCashback,
-} from '../../../redux/common/selectors';
+} from '../../../../../../redux/modules/transaction/selectors';
+import { getIsWebview, getSource } from '../../../../../redux/modules/common/selectors';
 import {
   getLoadCustomerRequestStatus,
   getLoadCustomerRequestError,

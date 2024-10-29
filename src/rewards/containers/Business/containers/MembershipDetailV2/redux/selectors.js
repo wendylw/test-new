@@ -39,6 +39,12 @@ import {
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getMembershipTierList, getHighestMembershipTier } from '../../../../../../redux/modules/membership/selectors';
 import {
+  getClaimOrderRewardsPointsStatus,
+  getClaimOrderRewardsCashbackStatus,
+  getClaimOrderRewardsTransactionStatus,
+  getClaimOrderRewardsPointsValue,
+} from '../../../../../../redux/modules/transaction/selectors';
+import {
   getSource,
   getIsFromJoinMembershipUrlClick,
   getIsFromReceiptJoinMembershipUrlQRScan,
@@ -59,10 +65,6 @@ import {
   getPointsRewardList,
   getRemainingCashbackExpiredDays,
   getOrderReceiptClaimedCashbackStatus,
-  getClaimOrderRewardsPointsStatus,
-  getClaimOrderRewardsCashbackStatus,
-  getClaimOrderRewardsTransactionStatus,
-  getClaimOrderRewardsPointsValue,
   getClaimOrderRewardsCashbackPrice,
   getIsNewMember,
 } from '../../../redux/common/selectors';
