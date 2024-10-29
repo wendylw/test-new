@@ -170,5 +170,22 @@
   "BirthdayCampaignDescription": "Complete your profile to unlock",
   "ViewProfile": "View profile",
   "HowToUse": "How to use",
-  "ViewDetails": "View Details"
+  "MyRewardDetails": "My Reward Details",
+  "ViewDetails": "View details",
+  "POS": "POS",
+  "Ecommerce": "Webstore",
+  "BeepPickup": "Beep Pickup",
+  "BeepDelivery": "Beep Delivery",
+  "BeepTakeaway": "QR Order and Pay - Takeaway",
+  "BeepDineIn": "QR Order and Pay - Dine-in",
+  "MyRewardApplicableProductsTitle": "Applicable products",
+  "MyRewardAllProductsText": "All products",
+  "MyRewardSelectedProductsText": "Selected products",
+  "MyRewardApplicableStoresTitle": "Applicable stores",
+  "MyRewardAllStoresText": "All stores",
+  "MyRewardSelectedStoresText": "Selected stores",
+  "MyRewardRedeemOnlineTitle": "Redeem online",
+  "MyRewardRedeemOnlineDescription": "Apply this promotion during checkout on any of the order methods below:",
+  "MyRewardRedeemInStoreTitle": "Redeem in store",
+  "MyRewardRedeemInStoreDescription": "Show this promotion to the cashier for redemption"
 }

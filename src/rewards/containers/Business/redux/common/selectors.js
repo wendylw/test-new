@@ -1,15 +1,14 @@
 import _get from 'lodash/get';
-import _isInteger from 'lodash/isInteger';
 import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import {
   API_REQUEST_STATUS,
   CLAIM_CASHBACK_QUERY_NAMES,
-  PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
 } from '../../../../../common/utils/constants';
 import { getPrice, getQueryString } from '../../../../../common/utils';
 import { getDifferenceTodayInDays, formatTimeToDateString } from '../../../../../utils/datetime-lib';
+import { getFormatDiscountValue, getRemainingRewardExpiredDays, getExpiringDaysI18n } from '../../utils/rewards';
 import { CLAIMED_POINTS_REWARD_ERROR_CODES } from '../../utils/constants';
 import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
@@ -245,17 +244,17 @@ export const getUniquePromoList = createSelector(
       }
 
       const { id, uniquePromotionId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
-      const diffDays = getDifferenceTodayInDays(new Date(validTo));
-      const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
-      const isTodayExpired = remainingExpiredDays === 0;
+      const remainingExpiredDays = getRemainingRewardExpiredDays(validTo);
 
       return {
         id,
+        uniquePromotionId,
         key: `${id}-${uniquePromotionId}-${discountType}`,
-        value:
-          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
-            ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        value: getFormatDiscountValue(discountType, discountValue, {
+          locale: merchantLocale,
+          currency: merchantCurrency,
+          country: merchantCountry,
+        }),
         name,
         status,
         minSpend: minSpendAmount && {
@@ -284,11 +283,7 @@ export const getUniquePromoList = createSelector(
               }),
             },
           },
-          expiringDays: _isInteger(remainingExpiredDays) && {
-            value: remainingExpiredDays,
-            i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
-            params: !isTodayExpired && { remainingExpiredDays },
-          },
+          expiringDays: getExpiringDaysI18n(remainingExpiredDays),
         },
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };
@@ -323,15 +318,15 @@ export const getUniquePromoListBanners = createSelector(
       const { id, uniquePromotionId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
       const diffDays = getDifferenceTodayInDays(new Date(validTo));
       const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
-      const isTodayExpired = remainingExpiredDays === 0;
 
       return {
         id,
         key: `${id}-${uniquePromotionId}-${discountType}`,
-        value:
-          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
-            ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        value: getFormatDiscountValue(discountType, discountValue, {
+          locale: merchantLocale,
+          currency: merchantCurrency,
+          country: merchantCountry,
+        }),
         name,
         status,
         conditions: {
@@ -346,11 +341,7 @@ export const getUniquePromoListBanners = createSelector(
               }),
             },
           },
-          expiringDays: _isInteger(remainingExpiredDays) && {
-            value: remainingExpiredDays,
-            i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
-            params: !isTodayExpired && { remainingExpiredDays },
-          },
+          expiringDays: getExpiringDaysI18n(remainingExpiredDays),
         },
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };

@@ -46,6 +46,23 @@
   @apply tw-font-bold;
 }
 
+.UniquePromoStubRemainingExpiredDaysTag {
+  @apply tw-font-bold;
+
+  > span {
+    @apply tw-flex tw-items-center;
+  }
+}
+
+.UniquePromoStubRemainingExpiredDaysTagLetter {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.UniquePromoStubRemainingExpiredDaysTagLetterHidden {
+  display: none;
+}
+
 .UniquePromoInfoBottom {
   @apply tw-flex-1 tw-flex tw-items-end tw-justify-between tw-border-l-0 tw-border-r-0;
 
@@ -63,5 +80,5 @@
 }
 
 .UniquePromoViewDetail {
-  @apply tw-text-xs tw-text-orange;
+  @apply tw-text-xs tw-leading-normal tw-text-orange;
 }
