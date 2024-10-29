@@ -357,6 +357,12 @@ export const getShouldJoinBusinessMembership = createSelector(
     isUserLoginRequestCompleted && isLogin && isMerchantMembershipEnabled
 );
 
+export const getShouldOrderCashbackAndPoints = createSelector(
+  getUserIsLogin,
+  getIsMerchantMembershipEnabled,
+  (isLogin, isMerchantMembershipEnabled) => isLogin && isMerchantMembershipEnabled
+);
+
 export const getIsRewardInfoReady = createSelector(
   getUserIsLogin,
   getIsFetchLoginStatusComplete,

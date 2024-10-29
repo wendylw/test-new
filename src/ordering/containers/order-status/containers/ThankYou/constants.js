@@ -12,6 +12,8 @@ import orderSuccessImage from '../../../../../images/order-success.png';
 
 const { ORDER_STATUS } = Constants;
 
+export const ORDER_CLAIM_POINTS_CASHBACK_CHANNEL = 4;
+
 export const ORDER_SELF_DELIVERY_COURIER = 'selfDelivery';
 
 export const ORDER_CANCELLATION_REASONS = {

@@ -12,7 +12,8 @@ import {
   getIsMerchantMembershipPointsEnabled,
 } from '../../../../../../../redux/modules/merchant/selectors';
 import { getIsJoinMembershipNewMember } from '../../../../../../../redux/modules/membership/selectors';
-import { getCustomerAvailablePointsBalance, getCustomerRewardsTotal } from '../../../../../../redux/modules/app';
+import { getClaimOrderRewardsPointsValue } from '../../../../../../../redux/modules/transaction/selectors';
+import { getCustomerRewardsTotal } from '../../../../../../redux/modules/app';
 import {
   getShouldShowEarnedPointsOrCreditsBanner,
   getIsMerchantCashbackOrStoreCreditsEnabled,
@@ -76,7 +77,7 @@ const MemberRewards = ({
   shouldShowEarnedPointsOrCreditsBanner,
   isMerchantMembershipPointsEnabled,
   rewardsAvailableCount,
-  customerAvailablePointsBalance,
+  claimOrderRewardsPointsValue,
   cashbackPrice,
   onViewMembershipDetailClick,
 }) => {
@@ -149,16 +150,16 @@ const MemberRewards = ({
                 </li>
               )}
 
-              {isMerchantMembershipPointsEnabled && (
+              {isMerchantMembershipPointsEnabled && claimOrderRewardsPointsValue ? (
                 <li className="flex flex-middle padding-left-right-small margin-top-bottom-small">
                   <div className="rewards-card__item-icon flex__shrink-fixed">
                     <ObjectFitImage noCompression src={RewardsPointsIcon} alt="StoreHub Points Icon" />
                   </div>
                   <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
-                    {t('RewardsCardPointsItemText', { points: customerAvailablePointsBalance })}
+                    {t('RewardsCardPointsItemText', { points: claimOrderRewardsPointsValue })}
                   </span>
                 </li>
-              )}
+              ) : null}
 
               {isMerchantCashbackOrStoreCreditsEnabled && (
                 <li className="flex flex-middle padding-left-right-small margin-top-bottom-small">
@@ -192,7 +193,7 @@ MemberRewards.propTypes = {
   shouldShowEarnedPointsOrCreditsBanner: PropTypes.bool,
   isMerchantMembershipPointsEnabled: PropTypes.bool,
   rewardsAvailableCount: PropTypes.number,
-  customerAvailablePointsBalance: PropTypes.number,
+  claimOrderRewardsPointsValue: PropTypes.number,
   cashbackPrice: PropTypes.string,
   onViewMembershipDetailClick: PropTypes.func,
 };
@@ -205,7 +206,7 @@ MemberRewards.defaultProps = {
   shouldShowEarnedPointsOrCreditsBanner: false,
   isMerchantCashbackOrStoreCreditsEnabled: false,
   rewardsAvailableCount: 0,
-  customerAvailablePointsBalance: 0,
+  claimOrderRewardsPointsValue: 0,
   cashbackPrice: null,
   onViewMembershipDetailClick: () => {},
 };
@@ -217,7 +218,7 @@ export default connect(state => ({
   shouldShowEarnedPointsOrCreditsBanner: getShouldShowEarnedPointsOrCreditsBanner(state),
   isMerchantCashbackOrStoreCreditsEnabled: getIsMerchantCashbackOrStoreCreditsEnabled(state),
   isMerchantMembershipPointsEnabled: getIsMerchantMembershipPointsEnabled(state),
-  customerAvailablePointsBalance: getCustomerAvailablePointsBalance(state),
+  claimOrderRewardsPointsValue: getClaimOrderRewardsPointsValue(state),
   rewardsAvailableCount: getCustomerRewardsTotal(state),
   cashbackPrice: getCashbackPrice(state),
 }))(MemberRewards);

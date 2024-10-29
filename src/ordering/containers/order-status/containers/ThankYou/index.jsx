@@ -83,6 +83,7 @@ import {
   hideProfileModal as hideProfileModalThunk,
   updateRedirectFrom as updateRedirectFromThunk,
   joinBusinessMembership as joinBusinessMembershipThunk,
+  claimOrderCashbackAndPoints as claimOrderCashbackAndPointsThunk,
   loadBusinessMembershipInfo as loadBusinessMembershipInfoThunk,
   goToJoinMembershipPage as goToJoinMembershipPageThunk,
   goToMembershipDetailPage as goToMembershipDetailPageThunk,
@@ -109,6 +110,7 @@ import {
   getFoodCourtHashCode,
   getFoodCourtMerchantName,
   getShouldJoinBusinessMembership,
+  getShouldOrderCashbackAndPoints,
   getIsRewardInfoReady,
   getShouldShowMemberBanner,
   getShouldShowRewards,
@@ -170,10 +172,20 @@ export class ThankYou extends PureComponent {
 
     await updateRedirectFrom();
 
-    const { isInitProfilePageEnabled, shouldJoinBusinessMembership, joinBusinessMembership } = this.props;
+    const {
+      isInitProfilePageEnabled,
+      shouldJoinBusinessMembership,
+      joinBusinessMembership,
+      shouldOrderCashbackAndPoints,
+      claimOrderCashbackAndPoints,
+    } = this.props;
 
     if (shouldJoinBusinessMembership) {
       await joinBusinessMembership();
+    }
+
+    if (shouldOrderCashbackAndPoints) {
+      claimOrderCashbackAndPoints(receiptNumber);
     }
 
     if (isInitProfilePageEnabled) {
@@ -230,6 +242,7 @@ export class ThankYou extends PureComponent {
       isCashbackClaimable: prevIsCashbackClaimable,
       isInitProfilePageEnabled: prevIsInitProfilePageEnabled,
       shouldJoinBusinessMembership: prevShouldJoinBusinessMembership,
+      shouldOrderCashbackAndPoints: prevShouldOrderCashbackAndPoints,
     } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const {
@@ -243,13 +256,16 @@ export class ThankYou extends PureComponent {
       claimCashback,
       loadOrderStoreReview,
       joinBusinessMembership,
+      claimOrderCashbackAndPoints,
       hasOrderPaid: currHasOrderPaid,
       initProfilePage,
       isCashbackClaimable: currIsCashbackClaimable,
       isInitProfilePageEnabled: currIsInitProfilePageEnabled,
       shouldJoinBusinessMembership: currShouldJoinBusinessMembership,
+      shouldOrderCashbackAndPoints: currShouldOrderCashbackAndPoints,
     } = this.props;
     const { storeId } = order || {};
+    const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
     // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
     if (!prevIsInitProfilePageEnabled && currIsInitProfilePageEnabled) {
@@ -288,7 +304,11 @@ export class ThankYou extends PureComponent {
     }
 
     if (!prevShouldJoinBusinessMembership && currShouldJoinBusinessMembership) {
-      joinBusinessMembership();
+      await joinBusinessMembership();
+    }
+
+    if (!prevShouldOrderCashbackAndPoints && currShouldOrderCashbackAndPoints) {
+      claimOrderCashbackAndPoints(receiptNumber);
     }
 
     this.setContainerHeight();
@@ -1214,6 +1234,7 @@ ThankYou.propTypes = {
   loadOrder: PropTypes.func,
   cancelOrder: PropTypes.func,
   joinBusinessMembership: PropTypes.func,
+  claimOrderCashbackAndPoints: PropTypes.func,
   loadBusinessMembershipInfo: PropTypes.func,
   goToJoinMembershipPage: PropTypes.func,
   goToMembershipDetailPage: PropTypes.func,
@@ -1246,6 +1267,7 @@ ThankYou.propTypes = {
   isCoreBusinessAPICompleted: PropTypes.bool,
   isCancelOrderRequestFailed: PropTypes.bool,
   shouldJoinBusinessMembership: PropTypes.bool,
+  shouldOrderCashbackAndPoints: PropTypes.bool,
   cancelOrderRequestErrorMessage: PropTypes.string,
   isUpdateShippingTypeRequestFailed: PropTypes.bool,
   orderCancellationReasonAsideVisible: PropTypes.bool,
@@ -1281,6 +1303,7 @@ ThankYou.defaultProps = {
   loadOrder: () => {},
   cancelOrder: () => {},
   joinBusinessMembership: () => {},
+  claimOrderCashbackAndPoints: () => {},
   loadBusinessMembershipInfo: () => {},
   goToJoinMembershipPage: () => {},
   goToMembershipDetailPage: () => {},
@@ -1311,6 +1334,7 @@ ThankYou.defaultProps = {
   isCoreBusinessAPICompleted: false,
   isCancelOrderRequestFailed: false,
   shouldJoinBusinessMembership: false,
+  shouldOrderCashbackAndPoints: false,
   cancelOrderRequestErrorMessage: '',
   loadStoreIdTableIdHashCode: () => {},
   isUpdateShippingTypeRequestFailed: false,
@@ -1372,6 +1396,7 @@ export default compose(
       shouldShowRewards: getShouldShowRewards(state),
       isCashbackClaimable: getIsCashbackClaimable(state),
       shouldJoinBusinessMembership: getShouldJoinBusinessMembership(state),
+      shouldOrderCashbackAndPoints: getShouldOrderCashbackAndPoints(state),
       isJoinMembershipNewMember: getIsJoinMembershipNewMember(state),
       shouldProfileModalShow: getShouldProfileModalShow(state),
     }),
@@ -1392,6 +1417,7 @@ export default compose(
       hideProfileModal: bindActionCreators(hideProfileModalThunk, dispatch),
       updateRedirectFrom: bindActionCreators(updateRedirectFromThunk, dispatch),
       joinBusinessMembership: bindActionCreators(joinBusinessMembershipThunk, dispatch),
+      claimOrderCashbackAndPoints: bindActionCreators(claimOrderCashbackAndPointsThunk, dispatch),
       loadBusinessMembershipInfo: bindActionCreators(loadBusinessMembershipInfoThunk, dispatch),
       goToJoinMembershipPage: bindActionCreators(goToJoinMembershipPageThunk, dispatch),
       goToMembershipDetailPage: bindActionCreators(goToMembershipDetailPageThunk, dispatch),
