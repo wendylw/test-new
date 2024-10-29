@@ -1,9 +1,21 @@
 import i18next from 'i18next';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
+import { getPrice } from '../../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
-import { POINTS_HISTORY_LOG_I18N_KEYS, POINTS_HISTORY_REDUCE_TYPES, DATE_OPTIONS } from '../utils/constants';
-import { getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
+import {
+  EARNED_POINTS_BASE_SPEND,
+  POINTS_HISTORY_LOG_I18N_KEYS,
+  POINTS_HISTORY_REDUCE_TYPES,
+  DATE_OPTIONS,
+} from '../utils/constants';
+import { getEarnRewardsNumber } from '../../../utils';
+import {
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+} from '../../../../../../redux/modules/merchant/selectors';
+import { getCustomizeRewardsSettingsPointsRate } from '../../../redux/common/selectors';
 
 export const getIsEarnedPointsPromptDrawerShow = state => state.business.pointsHistory.isEarnedPointsPromptDrawerShow;
 
@@ -48,4 +60,22 @@ export const getIsPointsHistoryListEmpty = createSelector(
   getIsLoadPointsHistoryListCompleted,
   (loadPointsHistoryListData, isLoadPointsHistoryListCompleted) =>
     loadPointsHistoryListData.length === 0 && isLoadPointsHistoryListCompleted
+);
+
+export const getEmptyPromptEarnPointsNumber = createSelector(
+  getCustomizeRewardsSettingsPointsRate,
+  customizeRewardsSettingsPointsRate =>
+    getEarnRewardsNumber(customizeRewardsSettingsPointsRate, EARNED_POINTS_BASE_SPEND)
+);
+
+export const getEmptyPromptBaseSpent = createSelector(
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+  (merchantCountry, merchantCurrency, merchantLocale) =>
+    getPrice(EARNED_POINTS_BASE_SPEND, {
+      country: merchantCountry,
+      currency: merchantCurrency,
+      locale: merchantLocale,
+    }).replace(/\.\d+/, '')
 );

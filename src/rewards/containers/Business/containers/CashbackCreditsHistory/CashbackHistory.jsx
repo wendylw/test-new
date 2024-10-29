@@ -6,7 +6,11 @@ import CashbackHistoryBannerImage from '../../../../../images/rewards-cashback-h
 import { formatTimeToDateString } from '../../../../../utils/datetime-lib';
 import CleverTap from '../../../../../utils/clevertap';
 import { getMerchantCountry } from '../../../../../redux/modules/merchant/selectors';
-import { getIsCashbackExpired, getDisplayCashbackExpiredDate } from '../../../../redux/modules/customer/selectors';
+import {
+  getIsCashbackExpired,
+  getDisplayCashbackExpiredDate,
+  getCustomerCashback,
+} from '../../../../redux/modules/customer/selectors';
 import {
   getIsExpiringTagShown,
   getIsTodayExpired,
@@ -17,6 +21,7 @@ import {
   getCashbackHistoryList,
   getIsCashbackHistoryListEmpty,
   getIsCashbackPromptDrawerShow,
+  getEmptyPromptEarnCashbackPercentage,
 } from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
 import { backButtonClicked } from './redux/thunks';
@@ -38,7 +43,9 @@ const CashbackHistory = () => {
   const isTodayExpired = useSelector(getIsTodayExpired);
   const remainingCashbackExpiredDays = useSelector(getRemainingCashbackExpiredDays);
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
+  const cashbackPercentage = useSelector(getEmptyPromptEarnCashbackPercentage);
   const displayCashbackExpiredDate = useSelector(getDisplayCashbackExpiredDate);
+  const customerCashback = useSelector(getCustomerCashback);
   const cashbackHistoryList = useSelector(getCashbackHistoryList);
   const isCashbackHistoryListEmpty = useSelector(getIsCashbackHistoryListEmpty);
   const isCashbackPromptDrawerShow = useSelector(getIsCashbackPromptDrawerShow);
@@ -66,34 +73,36 @@ const CashbackHistory = () => {
         value={customerCashbackPrice}
         valueText={customerCashbackPrice}
         prompt={
-          <>
-            {t('ValidUntil', {
-              date: formatTimeToDateString(merchantCountry, displayCashbackExpiredDate),
-            })}
-            {isCashbackExpired && <Tag className={styles.CashbackHistoryExpiredTag}>{t('Expired')}</Tag>}
-            {isExpiringTagShown ? (
-              <Tag color="red" className={styles.CashbackHistoryRemainingExpiredDaysTag}>
-                {isTodayExpired ? (
-                  t('ExpiringToday')
-                ) : (
-                  <Trans
-                    t={t}
-                    i18nKey="ExpiringInDays"
-                    values={{ remainingExpiredDays: remainingCashbackExpiredDays }}
-                    components={[
-                      <span
-                        className={
-                          remainingCashbackExpiredDays <= 1
-                            ? styles.CashbackHistoryRemainingExpiredDaysTagExtraTextHide
-                            : ''
-                        }
-                      />,
-                    ]}
-                  />
-                )}
-              </Tag>
-            ) : null}
-          </>
+          customerCashback > 0 && (
+            <>
+              {t('ValidUntil', {
+                date: formatTimeToDateString(merchantCountry, displayCashbackExpiredDate),
+              })}
+              {isCashbackExpired && <Tag className={styles.CashbackHistoryExpiredTag}>{t('Expired')}</Tag>}
+              {isExpiringTagShown ? (
+                <Tag color="red" className={styles.CashbackHistoryRemainingExpiredDaysTag}>
+                  {isTodayExpired ? (
+                    t('ExpiringToday')
+                  ) : (
+                    <Trans
+                      t={t}
+                      i18nKey="ExpiringInDays"
+                      values={{ remainingExpiredDays: remainingCashbackExpiredDays }}
+                      components={[
+                        <span
+                          className={
+                            remainingCashbackExpiredDays <= 1
+                              ? styles.CashbackHistoryRemainingExpiredDaysTagExtraTextHide
+                              : ''
+                          }
+                        />,
+                      ]}
+                    />
+                  )}
+                </Tag>
+              ) : null}
+            </>
+          )
         }
         infoButtonText={t('HowToUseCashback')}
         onClickInfoButton={handleClickHowToUseButton}
@@ -108,7 +117,9 @@ const CashbackHistory = () => {
         <HistoryList
           isEmpty={isCashbackHistoryListEmpty}
           emptyTitle={t('NoCashbackCollectedTitle')}
-          emptyDescription={t('NoCashbackCollectedDescription')}
+          emptyDescription={t('NoCashbackCollectedDescription', {
+            cashbackPercentage,
+          })}
           historyList={cashbackHistoryList}
         />
       </section>

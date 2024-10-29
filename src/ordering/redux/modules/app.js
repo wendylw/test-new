@@ -1681,6 +1681,8 @@ export const getStoreId = createSelector(getRequestInfo, info => _get(info, 'sto
 export const getShippingType = createSelector(getRequestInfo, info => _get(info, 'shippingType', null));
 export const getTableId = createSelector(getRequestInfo, info => _get(info, 'tableId', null));
 
+export const getIsBeepQRDemo = createSelector(getTableId, tableId => tableId === 'DEMO');
+
 export const getStore = state => {
   const storeId = getStoreId(state);
 
