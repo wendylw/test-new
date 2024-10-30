@@ -8,7 +8,7 @@ import {
   closeWebView,
   showCompleteProfilePageAsync,
 } from '../../../../../../utils/native-methods';
-import { SHOW_PROFILE_FROM_POINTS_REWARDS } from '../utils/constants';
+import { SHOW_PROFILE_FROM_POINTS_REWARDS, UNIQUE_PROMO_BANNER_LIST_LIMITS } from '../utils/constants';
 import {
   initUserInfo,
   loginUserByBeepApp,
@@ -33,7 +33,7 @@ import {
   claimPointsReward,
   claimOrderRewards,
 } from '../../../redux/common/thunks';
-import { getFetchUniquePromoListBannersLimit, getShowProfileModalSource, getPointsRewardSelectedId } from './selectors';
+import { getShowProfileModalSource, getPointsRewardSelectedId } from './selectors';
 import { getMerchantBirthdayCampaign } from './api-request';
 
 export const fetchMerchantBirthdayCampaign = createAsyncThunk(
@@ -217,10 +217,9 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
 
   if (isLogin) {
     const consumerId = getConsumerId(getState());
-    const fetchUniquePromoListBannersLimit = getFetchUniquePromoListBannersLimit(getState());
     const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
 
-    dispatch(fetchUniquePromoListBanners({ consumerId, limit: fetchUniquePromoListBannersLimit }));
+    dispatch(fetchUniquePromoListBanners({ consumerId, limit: UNIQUE_PROMO_BANNER_LIST_LIMITS }));
     dispatch(fetchPointsRewardList(consumerId));
     dispatch(fetchUniquePromoList(consumerId));
 

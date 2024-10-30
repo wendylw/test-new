@@ -105,11 +105,6 @@ export const getIsBirthdayCampaignEntryShow = createSelector(
   (isBirthdayCampaignActivated, isUserProfileIncomplete) => isBirthdayCampaignActivated && isUserProfileIncomplete
 );
 
-export const getFetchUniquePromoListBannersLimit = createSelector(
-  getIsProfileModalShow,
-  isProfileModalShow => isProfileModalShow
-);
-
 export const getIsUserFromOrdering = createSelector(
   getSource,
   source => source === BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK
