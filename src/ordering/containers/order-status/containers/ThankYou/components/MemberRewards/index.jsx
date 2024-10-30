@@ -171,7 +171,7 @@ const MemberRewards = ({
                     />
                   </div>
                   <span className="rewards-card__item-text flex__fluid-content padding-left-right-small">
-                    {t('RewardsCardCashbackItemText', { claimOrderRewardsCashbackPrice })}
+                    {t('RewardsCardCashbackItemText', { cashbackPrice: claimOrderRewardsCashbackPrice })}
                   </span>
                 </li>
               ) : null}

@@ -448,8 +448,8 @@ export const getShouldShowEarnedPointsOrCreditsBanner = createSelector(
     claimOrderRewardsPointsValue,
     claimOrderRewardsCashbackValue
   ) =>
-    (isMerchantMembershipPointsEnabled && claimOrderRewardsPointsValue) ||
-    (isMerchantCashbackOrStoreCreditsEnabled && claimOrderRewardsCashbackValue)
+    (isMerchantMembershipPointsEnabled && claimOrderRewardsPointsValue > 0) ||
+    (isMerchantCashbackOrStoreCreditsEnabled && claimOrderRewardsCashbackValue > 0)
 );
 
 // Expected the enabled membership merchant's customers see the member card information first on the page. So hide complete profile page
