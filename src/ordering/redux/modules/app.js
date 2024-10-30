@@ -2248,6 +2248,10 @@ export const getCustomerTierLevelName = createSelector(getCustomerData, customer
   _get(customerData, 'customerTier.name', null)
 );
 
+export const getCustomerIsNewMember = createSelector(getCustomerData, customerData =>
+  _get(customerData, 'customerTier.isNewMember', null)
+);
+
 export const getCustomerAvailablePointsBalance = createSelector(getCustomerData, customerData =>
   getDecimalNumber(_get(customerData, 'availablePointsBalance', 0))
 );
@@ -2263,10 +2267,6 @@ export const getHasUserJoinedBusinessMembership = createSelector(
 
 export const getUserCustomerId = createSelector(getCustomerData, customerData =>
   _get(customerData, 'customerId', null)
-);
-
-export const getCustomerIsNewMember = createSelector(getCustomerData, customerData =>
-  _get(customerData, 'isNewMember', null)
 );
 
 // If the level is not by design, use member style by default.
