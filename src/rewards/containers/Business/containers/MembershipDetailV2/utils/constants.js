@@ -9,7 +9,7 @@ export const SHOW_PROFILE_FROM_POINTS_REWARDS = 'PointsRewards';
 
 export const GET_REWARDS_MAX_LENGTH = 5;
 
-export const UNIQUE_PROMO_BANNER_LIST_LIMITS = 2;
+export const UNIQUE_PROMO_BANNER_LIST_LIMIT = 2;
 
 export const CLAIMED_ORDER_REWARD_NAMES = {
   CASHBACK: 'cashback',

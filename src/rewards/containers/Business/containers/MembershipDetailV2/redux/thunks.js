@@ -8,7 +8,7 @@ import {
   closeWebView,
   showCompleteProfilePageAsync,
 } from '../../../../../../utils/native-methods';
-import { SHOW_PROFILE_FROM_POINTS_REWARDS, UNIQUE_PROMO_BANNER_LIST_LIMITS } from '../utils/constants';
+import { SHOW_PROFILE_FROM_POINTS_REWARDS, UNIQUE_PROMO_BANNER_LIST_LIMIT } from '../utils/constants';
 import {
   initUserInfo,
   loginUserByBeepApp,
@@ -219,7 +219,7 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
     const consumerId = getConsumerId(getState());
     const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
 
-    dispatch(fetchUniquePromoListBanners({ consumerId, limit: UNIQUE_PROMO_BANNER_LIST_LIMITS }));
+    dispatch(fetchUniquePromoListBanners({ consumerId, limit: UNIQUE_PROMO_BANNER_LIST_LIMIT }));
     dispatch(fetchPointsRewardList(consumerId));
     dispatch(fetchUniquePromoList(consumerId));
 
