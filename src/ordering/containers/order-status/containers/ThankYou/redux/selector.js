@@ -43,6 +43,7 @@ import {
   getUserCustomerId,
   getUserConsumerId,
   getCustomerRewardsTotal,
+  getCustomerIsNewMember,
 } from '../../../../../redux/modules/app';
 import {
   getIsLoadMerchantRequestCompleted,
@@ -424,10 +425,16 @@ export const getShouldShowRewards = createSelector(
     isLogin && isMerchantMembershipEnabled && hasUserJoinedBusinessMembership && !isPayAtCounterPendingPayment
 );
 
-export const getShouldShowRewardsBanner = createSelector(
+export const getIsPlaceOrderNewMember = createSelector(
+  getCustomerIsNewMember,
   getIsJoinMembershipNewMember,
+  (customerIsNewMember, isJoinMembershipNewMember) => customerIsNewMember || isJoinMembershipNewMember
+);
+
+export const getShouldShowRewardsBanner = createSelector(
+  getIsPlaceOrderNewMember,
   getCustomerRewardsTotal,
-  (isJoinMembershipNewMember, customerRewardsTotal) => customerRewardsTotal > 0 && !isJoinMembershipNewMember
+  (isPlaceOrderNewMember, customerRewardsTotal) => customerRewardsTotal > 0 && !isPlaceOrderNewMember
 );
 
 export const getIsMerchantCashbackOrStoreCreditsEnabled = createSelector(

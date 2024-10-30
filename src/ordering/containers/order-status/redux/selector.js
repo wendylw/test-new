@@ -2,8 +2,7 @@ import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
 import { createSelector } from 'reselect';
-import { getIsJoinMembershipNewMember } from '../../../../redux/modules/membership/selectors';
-import { getUserProfile, getTableId, getCustomerIsNewMember } from '../../../redux/modules/app';
+import { getUserProfile, getTableId } from '../../../redux/modules/app';
 import Constants from '../../../../utils/constants';
 
 const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS } = Constants;
@@ -235,9 +234,3 @@ export const getIsStoreReviewSupportable = createSelector(getStoreReviewInfoData
 );
 
 export const getOffline = state => state.orderStatus.storeReview.offline;
-
-export const getIsPlaceOrderNewMember = createSelector(
-  getCustomerIsNewMember,
-  getIsJoinMembershipNewMember,
-  (customerIsNewMember, isJoinMembershipNewMember) => customerIsNewMember || isJoinMembershipNewMember
-);

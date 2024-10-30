@@ -69,7 +69,6 @@ import {
   getIsUseStorehubLogistics,
   getIsPayLater,
   getStoreRating,
-  getIsPlaceOrderNewMember,
 } from '../../redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
@@ -116,6 +115,7 @@ import {
   getShouldShowRewards,
   getIsCashbackClaimable,
   getShouldProfileModalShow,
+  getIsPlaceOrderNewMember,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
