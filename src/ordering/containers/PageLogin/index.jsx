@@ -59,7 +59,7 @@ class PageLogin extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { appActions, location, isAlipayMiniProgram, user } = this.props;
+    const { appActions, location, isAlipayMiniProgram } = this.props;
     const { referrerSource } = location.state || {};
 
     if (isAlipayMiniProgram) {
