@@ -56,3 +56,6 @@ export const postClaimedOrderRewards = async ({ receiptNumber, business: merchan
     storeId,
     source,
   });
+
+export const getCustomizeRewardsSettings = async business =>
+  get(`/api/v3/merchants/${business}/rewards-settings/customize`);

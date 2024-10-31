@@ -3,16 +3,22 @@ import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { toLocaleDateString } from '../../../../../../utils/datetime-lib';
 import {
+  EARNED_REWARDS_BASE_SPEND,
   CASHBACK_CREDITS_HISTORY_TYPES,
   CASHBACK_CREDITS_HISTORY_REDUCE_TYPES,
   CASHBACK_CREDITS_HISTORY_LOG_I18N_KEYS,
   DATE_OPTIONS,
 } from '../utils/constants';
+import { getEarnRewardsNumber, getEarnCashbackPercentage } from '../../../utils';
 import {
   getMerchantCountry,
   getMerchantCurrency,
   getMerchantLocale,
 } from '../../../../../../redux/modules/merchant/selectors';
+import {
+  getCustomizeRewardsSettingsCashbackRate,
+  getCustomizeRewardsSettingsLoyaltyRate,
+} from '../../../redux/common/selectors';
 
 export const getIsCashbackPromptDrawerShow = state => state.business.cashbackCreditsHistory.isCashbackPromptDrawerShow;
 
@@ -139,4 +145,27 @@ export const getIsCashbackStoreCreditsHistoryPageShow = createSelector(
   getIsLoadStoreCreditsHistoryListCompleted,
   (isLoadCashbackHistoryListCompleted, isLoadStoreCreditsHistoryListCompleted) =>
     isLoadCashbackHistoryListCompleted || isLoadStoreCreditsHistoryListCompleted
+);
+
+export const getEmptyPromptEarnCashbackPercentage = createSelector(
+  getCustomizeRewardsSettingsCashbackRate,
+  customizeRewardsSettingsCashbackRate => getEarnCashbackPercentage(customizeRewardsSettingsCashbackRate)
+);
+
+export const getEmptyPromptEarnStoreCreditsNumber = createSelector(
+  getCustomizeRewardsSettingsLoyaltyRate,
+  customizeRewardsSettingsLoyaltyRate =>
+    getEarnRewardsNumber(customizeRewardsSettingsLoyaltyRate, EARNED_REWARDS_BASE_SPEND)
+);
+
+export const getEmptyPromptBaseSpent = createSelector(
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+  (merchantCountry, merchantCurrency, merchantLocale) =>
+    getPrice(EARNED_REWARDS_BASE_SPEND, {
+      country: merchantCountry,
+      currency: merchantCurrency,
+      locale: merchantLocale,
+    }).replace(/\.\d+/, '')
 );

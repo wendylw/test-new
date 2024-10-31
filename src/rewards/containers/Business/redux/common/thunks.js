@@ -6,6 +6,7 @@ import {
   getPointsRewardList,
   postClaimedPointsReward,
   getOrderRewards,
+  getCustomizeRewardsSettings,
   postClaimedOrderRewards,
 } from './api-request';
 import { getMerchantBusiness } from '../../../../../redux/modules/merchant/selectors';
@@ -92,6 +93,18 @@ export const claimOrderRewards = createAsyncThunk(
     const storeId = getStoreId(state);
 
     const result = await postClaimedOrderRewards({ receiptNumber, business, channel, source, storeId });
+
+    return result;
+  }
+);
+
+export const fetchCustomizeRewardsSettings = createAsyncThunk(
+  'rewards/business/common/fetchCustomizeRewardsSettings',
+  async (_, { getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+
+    const result = await getCustomizeRewardsSettings(business);
 
     return result;
   }

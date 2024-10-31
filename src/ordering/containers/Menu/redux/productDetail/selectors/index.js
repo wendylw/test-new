@@ -14,6 +14,7 @@ import {
   getIsTakeawayType,
   getEnableTakeaway,
   getTakeawayCharge,
+  getIsBeepQRDemo,
 } from '../../../../../redux/modules/app';
 import {
   getIsProductListReady,
@@ -472,8 +473,11 @@ export const getIsAbleAddToCart = createSelector(
   getIsUnavailableProduct,
   getIsExceededQuantityOnHand,
   getIsProductVariationFulfilled,
-  (isOutOfStockProduct, isUnavailableProduct, isExceededQuantityOnHand, isProductVariationFulfilled) =>
-    isProductVariationFulfilled && !(isOutOfStockProduct || isUnavailableProduct || isExceededQuantityOnHand)
+  getIsBeepQRDemo,
+  (isOutOfStockProduct, isUnavailableProduct, isExceededQuantityOnHand, isProductVariationFulfilled, isBeepQRDemo) =>
+    isProductVariationFulfilled &&
+    !(isOutOfStockProduct || isUnavailableProduct || isExceededQuantityOnHand) &&
+    !isBeepQRDemo
 );
 
 export const getUnableAddToCartReason = createSelector(
