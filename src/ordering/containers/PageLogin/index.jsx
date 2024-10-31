@@ -59,7 +59,8 @@ class PageLogin extends React.Component {
   }
 
   componentDidMount = async () => {
-    const { appActions, location, isAlipayMiniProgram } = this.props;
+    const { appActions, location, isAlipayMiniProgram, user } = this.props;
+    const { isLogin } = user || {};
     const { referrerSource } = location.state || {};
 
     if (isAlipayMiniProgram) {
@@ -74,6 +75,10 @@ class PageLogin extends React.Component {
       this.setState({ imageStyle: { height: `${getWebQRImageHeight()}px` } });
     }
 
+    if (isLogin) {
+      this.visitNextPage();
+    }
+
     prefetch(['ORD_MNU'], ['OrderingDelivery']);
   };
 
@@ -82,10 +87,9 @@ class PageLogin extends React.Component {
     const { imageStyle: currImageStyle } = this.state;
     const { user: prevUser } = prevProps;
     const { user: currUser, shouldShowGuestOption } = this.props;
-    const { sendOtp } = this.state;
     const imageHeight = getWebQRImageHeight();
 
-    if (sendOtp && currUser.isLogin && prevUser.isLogin !== currUser.isLogin) {
+    if (currUser.isLogin && prevUser.isLogin !== currUser.isLogin) {
       this.visitNextPage();
     }
 
