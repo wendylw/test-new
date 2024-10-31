@@ -60,7 +60,6 @@ class PageLogin extends React.Component {
 
   componentDidMount = async () => {
     const { appActions, location, isAlipayMiniProgram, user } = this.props;
-    const { isLogin } = user || {};
     const { referrerSource } = location.state || {};
 
     if (isAlipayMiniProgram) {
@@ -73,10 +72,6 @@ class PageLogin extends React.Component {
 
     if (shouldShowGuestOption) {
       this.setState({ imageStyle: { height: `${getWebQRImageHeight()}px` } });
-    }
-
-    if (isLogin) {
-      this.visitNextPage();
     }
 
     prefetch(['ORD_MNU'], ['OrderingDelivery']);
