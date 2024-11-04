@@ -1,3 +1,5 @@
+export const EARNED_POINTS_BASE_SPEND = 10;
+
 export const POINTS_HISTORY_TYPES = {
   EARN: 'earn',
   RETURN: 'return',

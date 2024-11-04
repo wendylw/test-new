@@ -22,6 +22,7 @@ import {
   getLocationSearch,
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
+import { fetchCustomizeRewardsSettings } from '../../../redux/common/thunks';
 
 import { getCashbackHistoryList, getStoreCreditsHistoryList } from './api-request';
 
@@ -80,6 +81,7 @@ export const mounted = createAsyncThunk(
     }
 
     if (isLogin) {
+      dispatch(fetchCustomizeRewardsSettings());
       await dispatch(fetchMerchantInfo(business));
       await dispatch(fetchCustomerInfo(business));
 

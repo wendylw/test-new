@@ -8,6 +8,8 @@ import { getCustomerCashbackPrice } from '../../redux/common/selectors';
 import {
   getStoreCreditsHistoryList,
   getIsStoreCreditsHistoryListEmpty,
+  getEmptyPromptEarnStoreCreditsNumber,
+  getEmptyPromptBaseSpent,
   getIsStoreCreditsPromptDrawerShow,
 } from './redux/selectors';
 import { actions as cashbackCreditsHistoryActions } from './redux';
@@ -26,6 +28,8 @@ const StoreCreditsHistory = () => {
   const customerCashbackPrice = useSelector(getCustomerCashbackPrice);
   const storeCreditsHistoryList = useSelector(getStoreCreditsHistoryList);
   const isStoreCreditsHistoryListEmpty = useSelector(getIsStoreCreditsHistoryListEmpty);
+  const emptyPromptEarnStoreCreditsNumber = useSelector(getEmptyPromptEarnStoreCreditsNumber);
+  const emptyPromptBaseSpent = useSelector(getEmptyPromptBaseSpent);
   const isStoreCreditsPromptDrawerShow = useSelector(getIsStoreCreditsPromptDrawerShow);
   const handleClickHeaderBackButton = useCallback(() => {
     CleverTap.pushEvent('Store Credit Details Page - Click Back');
@@ -69,7 +73,10 @@ const StoreCreditsHistory = () => {
         <HistoryList
           isEmpty={isStoreCreditsHistoryListEmpty}
           emptyTitle={t('NoStoreCreditsCollectedTitle')}
-          emptyDescription={t('NoStoreCreditsCollectedDescription')}
+          emptyDescription={t('NoStoreCreditsCollectedDescription', {
+            emptyPromptEarnStoreCreditsNumber,
+            emptyPromptBaseSpent,
+          })}
           historyList={storeCreditsHistoryList}
         />
       </section>
