@@ -1,4 +1,4 @@
-.MyRewardDetailTicket {
+.UniquePromoDetailTicket {
   @apply tw-relative tw-p-12 sm:tw-p-12px tw-m-16 sm:tw-m-16px tw-bg-gray-50 tw-shadow-lg tw-rounded-xl;
 
   &::before,
@@ -24,7 +24,7 @@
   }
 }
 
-.MyRewardDetailTicketMain {
+.UniquePromoDetailTicketMain {
   @apply tw-relative tw-flex tw-flex-col tw-items-center tw-justify-center tw-pb-16 sm:tw-pb-16px;
 
   &::after {
@@ -36,31 +36,31 @@
   }
 }
 
-.MyRewardDetailDiscountValue {
+.UniquePromoDetailDiscountValue {
   @apply tw-text-3xl tw-font-bold;
 }
 
-.MyRewardDetailName {
+.UniquePromoDetailName {
   @apply tw-text-xl tw-leading-loose;
 }
 
-.MyRewardDetailTicketStub {
+.UniquePromoDetailTicketStub {
   @apply tw-flex tw-items-end tw-justify-between tw-pt-16 sm:tw-pt-16px tw-px-20 sm:tw-px-20px;
 }
 
-.MyRewardDetailLimitations {
+.UniquePromoDetailLimitations {
   @apply tw-list-disc tw-text-gray-700;
 }
 
-.MyRewardDetailLimitation {
+.UniquePromoDetailLimitation {
   @apply tw-leading-normal;
 }
 
-.MyRewardDetailTicketStatusTag {
+.UniquePromoDetailTicketStatusTag {
   @apply tw-my-2 sm:tw-my-2px;
 }
 
-.MyRewardStubRemainingExpiredDaysTag {
+.UniquePromoStubRemainingExpiredDaysTag {
   @apply tw-my-2 sm:tw-my-2px tw-font-bold;
 
   > span {
@@ -68,48 +68,48 @@
   }
 }
 
-.MyRewardStubRemainingExpiredDaysTagLetter {
+.UniquePromoStubRemainingExpiredDaysTagLetter {
   font-size: inherit;
   font-weight: inherit;
 }
 
-.MyRewardStubRemainingExpiredDaysTagLetterHidden {
+.UniquePromoStubRemainingExpiredDaysTagLetterHidden {
   display: none;
 }
 
-.MyRewardDetailConditionTitle,
-.MyRewardDetailHowToUseTitle {
+.UniquePromoDetailConditionTitle,
+.UniquePromoDetailHowToUseTitle {
   @apply tw-text-lg tw-leading-relaxed tw-font-bold;
 }
 
-.MyRewardDetailConditionContent {
+.UniquePromoDetailConditionContent {
   @apply tw-leading-loose;
 }
 
-.MyRewardDetailApplicableProducts {
+.UniquePromoDetailApplicableProducts {
   @apply tw-m-16 sm:tw-m-16px tw-space-y-4 sm:tw-space-y-4px;
 }
 
-.MyRewardDetailApplicableStores {
+.UniquePromoDetailApplicableStores {
   @apply tw-m-16 sm:tw-m-16px tw-space-y-4 sm:tw-space-y-4px;
 }
 
-.MyRewardDetailHowToUse {
+.UniquePromoDetailHowToUse {
   @apply tw-m-16 sm:tw-m-16px tw-space-y-16 sm:tw-space-y-16px;
 }
 
-.MyRewardDetailHowToUseSubtitle {
+.UniquePromoDetailHowToUseSubtitle {
   @apply tw-leading-loose tw-font-bold;
 }
 
-.MyRewardDetailHowToUseContentDescription {
+.UniquePromoDetailHowToUseContentDescription {
   @apply tw-leading-loose;
 }
 
-.MyRewardDetailHowToUseRedeemOnlineList {
+.UniquePromoDetailHowToUseRedeemOnlineList {
   @apply tw-mx-8 sm:tw-mx-8px tw-list-disc tw-list-inside;
 }
 
-.MyRewardDetailHowToUseRedeemOnlineItem {
+.UniquePromoDetailHowToUseRedeemOnlineItem {
   @apply tw-leading-loose;
 }
