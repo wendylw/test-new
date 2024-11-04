@@ -59,6 +59,7 @@ const PointsHistory = () => {
         title={t('PointsBalanceTitle')}
         value={customerAvailablePointsBalance}
         valueText={t('CustomerPoints', { customerAvailablePointsBalance })}
+        promptClassName={styles.PointsHistoryBannerExpirationDuration}
         prompt={
           isPointsExpirationDurationPromptShow ? (
             <Trans
