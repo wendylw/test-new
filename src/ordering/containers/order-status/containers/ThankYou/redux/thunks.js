@@ -270,7 +270,7 @@ export const claimOrderCashbackAndPoints = createAsyncThunk(
     const business = getBusiness(state);
     const consumerId = getUserConsumerId(state);
     const storeId = getOrderStoreId(state);
-    const source = BECOME_MERCHANT_MEMBER_METHODS.RECEIPT_JOIN_MEMBERSHIP_URL_QR_SCAN;
+    const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
 
     await dispatch(
       claimOrderRewards({ business, receiptNumber, channel: ORDER_CLAIM_POINTS_CASHBACK_CHANNEL, source, storeId })
