@@ -10,6 +10,7 @@ const HistoryBanner = ({
   title,
   value,
   valueText,
+  promptClassName,
   prompt,
   infoButtonText,
   historyBannerRightClassName,
@@ -25,7 +26,9 @@ const HistoryBanner = ({
         {valueText}
       </data>
       <div className={styles.HistoryBannerPrompts}>
-        {prompt ? <p className={styles.HistoryBannerExpiringTimePrompt}>{prompt}</p> : null}
+        {prompt ? (
+          <div className={getClassName([styles.HistoryBannerExpiringTimePrompt, promptClassName])}>{prompt}</div>
+        ) : null}
 
         <Button
           className={styles.HistoryBannerHowToUseButton}
@@ -55,6 +58,7 @@ HistoryBanner.propTypes = {
   title: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   valueText: PropTypes.string,
+  promptClassName: PropTypes.string,
   prompt: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   infoButtonText: PropTypes.string,
   historyBannerRightClassName: PropTypes.string,
@@ -69,6 +73,7 @@ HistoryBanner.defaultProps = {
   title: '',
   value: '',
   valueText: '',
+  promptClassName: null,
   prompt: '',
   infoButtonText: '',
   historyBannerRightClassName: null,

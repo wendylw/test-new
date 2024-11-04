@@ -31,3 +31,9 @@ export const DATE_OPTIONS = {
   month: 'short',
   day: 'numeric',
 };
+
+export const POINTS_EXPIRATION_DURATION_UNIT_I18N_KEYS = {
+  days: 'Days',
+  weeks: 'Weeks',
+  months: 'Months',
+};
