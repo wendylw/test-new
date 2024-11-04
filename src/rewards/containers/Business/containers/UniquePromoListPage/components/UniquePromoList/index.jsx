@@ -2,14 +2,14 @@ import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Trans, useTranslation } from 'react-i18next';
-import { PROMO_VOUCHER_STATUS, PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
-import { getClassName } from '../../../../../common/utils/ui';
-import CleverTap from '../../../../../utils/clevertap';
-import { getLocationSearch } from '../../../../redux/modules/common/selectors';
-import { getUniquePromoList } from '../../redux/common/selectors';
-import Tag from '../../../../../common/components/Tag';
-import Button from '../../../../../common/components/Button';
-import Ticket from '../Ticket';
+import { PROMO_VOUCHER_STATUS, PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
+import { getClassName } from '../../../../../../../common/utils/ui';
+import CleverTap from '../../../../../../../utils/clevertap';
+import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
+import { getUniquePromoList } from '../../../../redux/common/selectors';
+import Tag from '../../../../../../../common/components/Tag';
+import Button from '../../../../../../../common/components/Button';
+import Ticket from '../../../../components/Ticket';
 import styles from './UniquePromoList.module.scss';
 
 const UNIQUE_PROMO_STATUS_I18KEYS = {
