@@ -33,7 +33,7 @@ export const DATE_OPTIONS = {
 };
 
 export const POINTS_EXPIRATION_DURATION_UNIT_I18N_KEYS = {
-  days: 'Days',
-  weeks: 'Weeks',
-  months: 'Months',
+  days: 'ExpirationDurationDays',
+  weeks: 'ExpirationDurationWeeks',
+  months: 'ExpirationDurationMonths',
 };

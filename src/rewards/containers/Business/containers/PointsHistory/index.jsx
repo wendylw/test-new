@@ -5,7 +5,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import RewardsPointsHistoryBannerImage from '../../../../../images/rewards-points-history-banner.svg';
 import { POINTS_EXPIRATION_DURATION_UNIT_I18N_KEYS } from './utils/constants';
 import CleverTap from '../../../../../utils/clevertap';
-import { getClassName } from '../../../../../common/utils/ui';
 import {
   getPointsExpirationDurationNumber,
   getPointsExpirationDurationUnit,
@@ -65,23 +64,11 @@ const PointsHistory = () => {
             <Trans
               t={t}
               i18nKey="PointsExpiringTimePrompt"
-              values={{ expirationDurationNumber: pointsExpirationDurationNumber }}
-              components={[
-                <Trans
-                  t={t}
-                  i18nKey={POINTS_EXPIRATION_DURATION_UNIT_I18N_KEYS[pointsExpirationDurationUnit]}
-                  components={[
-                    <span
-                      className={getClassName([
-                        styles.PointsHistoryBannerExpirationDurationUnitText,
-                        pointsExpirationDurationNumber === 1
-                          ? styles.PointsHistoryBannerExpirationDurationUnitTextHide
-                          : '',
-                      ])}
-                    />,
-                  ]}
-                />,
-              ]}
+              values={{
+                expirationDuration: t(POINTS_EXPIRATION_DURATION_UNIT_I18N_KEYS[pointsExpirationDurationUnit], {
+                  count: pointsExpirationDurationNumber,
+                }),
+              }}
             />
           ) : null
         }
