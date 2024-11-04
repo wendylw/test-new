@@ -21,6 +21,7 @@ import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import Tag from '../../../../../common/components/Tag';
+import RewardDetailTicket from '../../components/RewardDetailTicket';
 import styles from './UniquePromoDetail.module.scss';
 
 const UniquePromoDetail = () => {
@@ -46,47 +47,46 @@ const UniquePromoDetail = () => {
   return (
     <Frame>
       <PageHeader title={t('UniquePromoDetails')} onBackArrowClick={handleClickHeaderBackButton} />
-      <section className={styles.UniquePromoDetailTicket}>
-        <div className={styles.UniquePromoDetailTicketMain}>
-          <data className={styles.UniquePromoDetailDiscountValue} value={formatDiscountValue}>
-            {t('DiscountValueText', { discount: formatDiscountValue })}
-          </data>
-          <h2 className={styles.UniquePromoDetailName}>{name}</h2>
-        </div>
 
-        <div className={styles.UniquePromoDetailTicketStub}>
-          <ul className={styles.UniquePromoDetailLimitations}>
-            {limitations.map(limitation => (
-              <li className={styles.UniquePromoDetailLimitation} key={limitation.key}>
-                {t(limitation.i18nKey, limitation.params)}
-              </li>
-            ))}
-          </ul>
+      <RewardDetailTicket
+        discount={formatDiscountValue}
+        discountText={t('DiscountValueText', { discount: formatDiscountValue })}
+        name={name}
+        stub={
+          <>
+            <ul className={styles.UniquePromoDetailLimitations}>
+              {limitations.map(limitation => (
+                <li className={styles.UniquePromoDetailLimitation} key={limitation.key}>
+                  {t(limitation.i18nKey, limitation.params)}
+                </li>
+              ))}
+            </ul>
 
-          {isUniquePromoUnAvailable ? (
-            <Tag className={styles.UniquePromoDetailTicketStatusTag}>{t(UNIQUE_PROMO_STATUS_I18KEYS[status])}</Tag>
-          ) : (
-            expiringDaysI18n && (
-              <Tag color="red" className={styles.UniquePromoStubRemainingExpiredDaysTag}>
-                <Trans
-                  t={t}
-                  i18nKey={expiringDaysI18n.i18nKey}
-                  values={expiringDaysI18n.params}
-                  components={[
-                    <span
-                      className={
-                        expiringDaysI18n.value === 1
-                          ? styles.UniquePromoStubRemainingExpiredDaysTagLetterHidden
-                          : styles.UniquePromoStubRemainingExpiredDaysTagLetter
-                      }
-                    />,
-                  ]}
-                />
-              </Tag>
-            )
-          )}
-        </div>
-      </section>
+            {isUniquePromoUnAvailable ? (
+              <Tag className={styles.UniquePromoDetailTicketStatusTag}>{t(UNIQUE_PROMO_STATUS_I18KEYS[status])}</Tag>
+            ) : (
+              expiringDaysI18n && (
+                <Tag color="red" className={styles.UniquePromoStubRemainingExpiredDaysTag}>
+                  <Trans
+                    t={t}
+                    i18nKey={expiringDaysI18n.i18nKey}
+                    values={expiringDaysI18n.params}
+                    components={[
+                      <span
+                        className={
+                          expiringDaysI18n.value === 1
+                            ? styles.UniquePromoStubRemainingExpiredDaysTagLetterHidden
+                            : styles.UniquePromoStubRemainingExpiredDaysTagLetter
+                        }
+                      />,
+                    ]}
+                  />
+                </Tag>
+              )
+            )}
+          </>
+        }
+      />
 
       <section className={styles.UniquePromoDetailApplicableProducts}>
         <h3 className={styles.UniquePromoDetailConditionTitle}>{t('UniquePromoApplicableProductsTitle')}</h3>
