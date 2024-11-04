@@ -17,15 +17,15 @@ import {
   getLocationSearch,
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
-import { getMyRewardUniquePromotionId } from './selectors';
+import { getUniquePromoUniquePromotionId } from './selectors';
 import { getUniquePromotionDetail } from './api-request';
 
-export const fetchMyRewardDetail = createAsyncThunk(
-  'rewards/business/myRewardDetail/fetchMyRewardDetail',
+export const fetchUniquePromoDetail = createAsyncThunk(
+  'rewards/business/uniquePromoDetail/fetchUniquePromoDetail',
   async (_, { getState }) => {
     const state = getState();
     const consumerId = getConsumerId(state);
-    const uniquePromotionId = getMyRewardUniquePromotionId(state);
+    const uniquePromotionId = getUniquePromoUniquePromotionId(state);
 
     const result = await getUniquePromotionDetail({ consumerId, uniquePromotionId });
 
@@ -34,7 +34,7 @@ export const fetchMyRewardDetail = createAsyncThunk(
 );
 
 export const mounted = createAsyncThunk(
-  'rewards/business/myRewardDetail/mounted',
+  'rewards/business/uniquePromoDetail/mounted',
   async (_, { getState, dispatch }) => {
     const state = getState();
     const merchantBusiness = getMerchantBusiness(state);
@@ -66,13 +66,13 @@ export const mounted = createAsyncThunk(
     dispatch(fetchMerchantInfo(merchantBusiness));
 
     if (isLogin) {
-      dispatch(fetchMyRewardDetail());
+      dispatch(fetchUniquePromoDetail());
     }
   }
 );
 
 export const backButtonClicked = createAsyncThunk(
-  'rewards/business/myRewardDetail/backButtonClicked',
+  'rewards/business/uniquePromoDetail/backButtonClicked',
   async (_, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
 

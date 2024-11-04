@@ -29,7 +29,7 @@ const UniquePromoListPage = lazy(() =>
 );
 
 const UniquePromoDetail = lazy(() =>
-  Utils.attemptLoad(() => import(/* webpackChunkName: "MY_RWD" */ './Business/containers/MyRewardDetail'))
+  Utils.attemptLoad(() => import(/* webpackChunkName: "MY_RWD" */ './Business/containers/UniquePromoDetail'))
 );
 
 const PointsRewardsPage = lazy(() =>
