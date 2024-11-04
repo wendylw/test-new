@@ -16,7 +16,7 @@ import {
   getIsPointsHistoryListEmpty,
   getEmptyPromptEarnPointsNumber,
   getEmptyPromptBaseSpent,
-  // getIsPointsExpirationDurationPromptShow,
+  getIsPointsExpirationDurationPromptShow,
 } from './redux/selectors';
 import { actions as PointsHistoryActions } from './redux';
 import { backButtonClicked, mounted } from './redux/thunks';
@@ -35,7 +35,7 @@ const PointsHistory = () => {
   const isPointsHistoryListEmpty = useSelector(getIsPointsHistoryListEmpty);
   const emptyPromptEarnPointsNumber = useSelector(getEmptyPromptEarnPointsNumber);
   const emptyPromptBaseSpent = useSelector(getEmptyPromptBaseSpent);
-  // const isPointsExpirationDurationPromptShow = useSelector(getIsPointsExpirationDurationPromptShow);
+  const isPointsExpirationDurationPromptShow = useSelector(getIsPointsExpirationDurationPromptShow);
   const pointsExpirationDurationNumber = useSelector(getPointsExpirationDurationNumber);
   const pointsExpirationDurationUnit = useSelector(getPointsExpirationDurationUnit);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
@@ -60,29 +60,29 @@ const PointsHistory = () => {
         value={customerAvailablePointsBalance}
         valueText={t('CustomerPoints', { customerAvailablePointsBalance })}
         prompt={
-          // isPointsExpirationDurationPromptShow ? (
-          <Trans
-            t={t}
-            i18nKey="PointsExpiringTimePrompt"
-            values={{ expirationDurationNumber: pointsExpirationDurationNumber }}
-            components={[
-              <Trans
-                t={t}
-                i18nKey={POINTS_EXPIRATION_DURATION_UNIT_I18N_KEYS[pointsExpirationDurationUnit]}
-                components={[
-                  <span
-                    className={getClassName([
-                      styles.PointsHistoryBannerExpirationDurationUnitText,
-                      pointsExpirationDurationNumber === 1
-                        ? styles.PointsHistoryBannerExpirationDurationUnitTextHide
-                        : '',
-                    ])}
-                  />,
-                ]}
-              />,
-            ]}
-          />
-          // ) : null
+          isPointsExpirationDurationPromptShow ? (
+            <Trans
+              t={t}
+              i18nKey="PointsExpiringTimePrompt"
+              values={{ expirationDurationNumber: pointsExpirationDurationNumber }}
+              components={[
+                <Trans
+                  t={t}
+                  i18nKey={POINTS_EXPIRATION_DURATION_UNIT_I18N_KEYS[pointsExpirationDurationUnit]}
+                  components={[
+                    <span
+                      className={getClassName([
+                        styles.PointsHistoryBannerExpirationDurationUnitText,
+                        pointsExpirationDurationNumber === 1
+                          ? styles.PointsHistoryBannerExpirationDurationUnitTextHide
+                          : '',
+                      ])}
+                    />,
+                  ]}
+                />,
+              ]}
+            />
+          ) : null
         }
         infoButtonText={t('HowToUsePoints')}
         historyBannerRightClassName={styles.PointsHistoryBannerRight}

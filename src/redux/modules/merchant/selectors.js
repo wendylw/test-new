@@ -62,11 +62,11 @@ export const getPointsExpirationDuration = createSelector(getMerchantData, merch
 );
 
 export const getPointsExpirationDurationNumber = createSelector(getMerchantData, merchantData =>
-  _get(merchantData, 'pointsExpirationDuration.durationNumber', 6)
+  _get(merchantData, 'pointsExpirationDuration.durationNumber', 0)
 );
 
 export const getPointsExpirationDurationUnit = createSelector(getMerchantData, merchantData =>
-  _get(merchantData, 'pointsExpirationDuration.durationUnit', 'days')
+  _get(merchantData, 'pointsExpirationDuration.durationUnit', '')
 );
 
 /**
