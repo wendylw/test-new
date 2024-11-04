@@ -1,0 +1,49 @@
+.RewardDetailTicketTicket {
+  @apply tw-relative tw-p-12 sm:tw-p-12px tw-m-16 sm:tw-m-16px tw-bg-gray-50 tw-shadow-lg tw-rounded-xl;
+
+  &::before,
+  &::after {
+    @apply tw-absolute tw-inline-flex tw-rounded-full tw-bg-gray-50;
+
+    content: "";
+    top: 55%;
+    width: 28px;
+    height: 28px;
+    box-shadow: inset 0px 3px 16px 0px rgba(0, 0, 0, 0.08);
+    clip-path: ellipse(50% 100% at 0% 50%);
+  }
+
+  &::before {
+    left: -2px;
+    transform: translate(-50%, -50%) rotate(180deg);
+  }
+
+  &::after {
+    right: -2px;
+    transform: translate(50%, -50%);
+  }
+}
+
+.RewardDetailTicketTicketMain {
+  @apply tw-relative tw-flex tw-flex-col tw-items-center tw-justify-center tw-pb-16 sm:tw-pb-16px;
+
+  &::after {
+    @apply tw-absolute tw-block tw-left-12 sm:tw-left-12px tw-right-12 sm:tw-right-12px tw-bg-gray-400;
+
+    content: "";
+    bottom: -2px;
+    height: 4px;
+  }
+}
+
+.RewardDetailTicketDiscountValue {
+  @apply tw-text-3xl tw-font-bold;
+}
+
+.RewardDetailTicketName {
+  @apply tw-text-xl tw-leading-loose;
+}
+
+.RewardDetailTicketTicketStub {
+  @apply tw-flex tw-items-end tw-justify-between tw-pt-16 sm:tw-pt-16px tw-px-20 sm:tw-px-20px;
+}

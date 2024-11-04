@@ -21,6 +21,7 @@ import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import Tag from '../../../../../common/components/Tag';
+import RewardDetailTicket from '../../components/RewardDetailTicket';
 import styles from './MyRewardDetail.module.scss';
 
 const MyRewardDetail = () => {
@@ -46,47 +47,45 @@ const MyRewardDetail = () => {
   return (
     <Frame>
       <PageHeader title={t('MyRewardDetails')} onBackArrowClick={handleClickHeaderBackButton} />
-      <section className={styles.MyRewardDetailTicket}>
-        <div className={styles.MyRewardDetailTicketMain}>
-          <data className={styles.MyRewardDetailDiscountValue} value={formatDiscountValue}>
-            {t('DiscountValueText', { discount: formatDiscountValue })}
-          </data>
-          <h2 className={styles.MyRewardDetailName}>{name}</h2>
-        </div>
+      <RewardDetailTicket
+        discount={formatDiscountValue}
+        discountText={t('DiscountValueText', { discount: formatDiscountValue })}
+        name={name}
+        stub={
+          <>
+            <ul className={styles.MyRewardDetailLimitations}>
+              {limitations.map(limitation => (
+                <li className={styles.MyRewardDetailLimitation} key={limitation.key}>
+                  {t(limitation.i18nKey, limitation.params)}
+                </li>
+              ))}
+            </ul>
 
-        <div className={styles.MyRewardDetailTicketStub}>
-          <ul className={styles.MyRewardDetailLimitations}>
-            {limitations.map(limitation => (
-              <li className={styles.MyRewardDetailLimitation} key={limitation.key}>
-                {t(limitation.i18nKey, limitation.params)}
-              </li>
-            ))}
-          </ul>
-
-          {isMyRewardUnAvailable ? (
-            <Tag className={styles.MyRewardDetailTicketStatusTag}>{t(UNIQUE_PROMO_STATUS_I18KEYS[status])}</Tag>
-          ) : (
-            expiringDaysI18n && (
-              <Tag color="red" className={styles.MyRewardStubRemainingExpiredDaysTag}>
-                <Trans
-                  t={t}
-                  i18nKey={expiringDaysI18n.i18nKey}
-                  values={expiringDaysI18n.params}
-                  components={[
-                    <span
-                      className={
-                        expiringDaysI18n.value === 1
-                          ? styles.MyRewardStubRemainingExpiredDaysTagLetterHidden
-                          : styles.MyRewardStubRemainingExpiredDaysTagLetter
-                      }
-                    />,
-                  ]}
-                />
-              </Tag>
-            )
-          )}
-        </div>
-      </section>
+            {isMyRewardUnAvailable ? (
+              <Tag className={styles.MyRewardDetailTicketStatusTag}>{t(UNIQUE_PROMO_STATUS_I18KEYS[status])}</Tag>
+            ) : (
+              expiringDaysI18n && (
+                <Tag color="red" className={styles.MyRewardStubRemainingExpiredDaysTag}>
+                  <Trans
+                    t={t}
+                    i18nKey={expiringDaysI18n.i18nKey}
+                    values={expiringDaysI18n.params}
+                    components={[
+                      <span
+                        className={
+                          expiringDaysI18n.value === 1
+                            ? styles.MyRewardStubRemainingExpiredDaysTagLetterHidden
+                            : styles.MyRewardStubRemainingExpiredDaysTagLetter
+                        }
+                      />,
+                    ]}
+                  />
+                </Tag>
+              )
+            )}
+          </>
+        }
+      />
 
       <section className={styles.MyRewardDetailApplicableProducts}>
         <h3 className={styles.MyRewardDetailConditionTitle}>{t('MyRewardApplicableProductsTitle')}</h3>
