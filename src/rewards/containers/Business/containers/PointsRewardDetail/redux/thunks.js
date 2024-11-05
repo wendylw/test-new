@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, goBack as historyGoBack } from 'connected-react-router';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
-import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
+import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import {
@@ -39,6 +39,20 @@ export const fetchPointsRewardDetail = createAsyncThunk(
     const result = await getPointsRewardDetail(rewardSettingId);
 
     return result;
+  }
+);
+
+export const showProfileForm = createAsyncThunk(
+  'rewards/business/pointsRewards/showProfileForm',
+  async (_, { dispatch, getState }) => {
+    const isWebview = getIsWebview(getState());
+
+    if (isWebview) {
+      await showCompleteProfilePageAsync({ hideSkipButton: true });
+      return;
+    }
+
+    await dispatch(showWebProfileForm());
   }
 );
 
