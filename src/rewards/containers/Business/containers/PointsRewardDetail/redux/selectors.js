@@ -12,6 +12,8 @@ import {
 
 export const getPointsRewardUniqueRewardSettingId = () => getQueryString('rewardSettingId');
 
+export const getIsProfileModalShow = state => state.business.pointsRewardDetail.isProfileModalShow;
+
 export const getLoadPointsRewardDetailData = state =>
   state.business.pointsRewardDetail.loadPointsRewardDetailRequest.data;
 

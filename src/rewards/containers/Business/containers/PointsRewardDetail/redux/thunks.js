@@ -20,6 +20,16 @@ import {
 import { getPointsRewardUniqueRewardSettingId } from './selectors';
 import { getPointsRewardDetail } from './api-request';
 
+export const showWebProfileForm = createAsyncThunk(
+  'rewards/business/pointsRewardDetail/showWebProfileForm',
+  async () => {}
+);
+
+export const hideWebProfileForm = createAsyncThunk(
+  'rewards/business/pointsRewardDetail/hideWebProfileForm',
+  async () => {}
+);
+
 export const fetchPointsRewardDetail = createAsyncThunk(
   'rewards/business/pointsRewardDetail/fetchPointsRewardDetail',
   async (_, { getState }) => {
