@@ -367,7 +367,7 @@ export const getPointsRewardList = createSelector(
   getCustomerAvailablePointsBalance,
   (pointsRewardList, customerAvailablePointsBalance) =>
     pointsRewardList.map(reward => {
-      const { id, type, name, redeemedStatus, costOfPoints } = reward;
+      const { id, type, name, redeemedStatus, costOfPoints, rewardSettingId } = reward;
       const isUnavailableStatus = [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(
         redeemedStatus
       );
@@ -378,6 +378,7 @@ export const getPointsRewardList = createSelector(
         type,
         name,
         costOfPoints,
+        rewardSettingId,
         isSoldOut: redeemedStatus === PROMO_VOUCHER_STATUS.REDEEMED,
         isExpired: redeemedStatus === PROMO_VOUCHER_STATUS.EXPIRED,
         isUnavailable: isUnavailableStatus || isInsufficientPoints,

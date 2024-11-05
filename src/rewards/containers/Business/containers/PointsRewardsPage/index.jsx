@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import RewardsPointsIcon from '../../../../../images/rewards-icon-points.svg';
 import PointsRewardClaimedIcon from '../../../../../images/rewards-points-claimed.svg';
+import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { getClassName } from '../../../../../common/utils/ui';
 import CleverTap from '../../../../../utils/clevertap';
+import { getLocationSearch } from '../../../../redux/modules/common/selectors';
 import {
   getPointsRewardList,
   getIsClaimPointsRewardPending,
@@ -13,14 +16,7 @@ import {
   getClaimPointsRewardErrorI18nKeys,
 } from '../../redux/common/selectors';
 import { actions as businessCommonActions } from '../../redux/common';
-import { getIsProfileModalShow } from './redux/selectors';
-import {
-  backButtonClicked,
-  mounted,
-  pointsClaimRewardButtonClicked,
-  claimPointsRewardAndRefreshRewardsList,
-  hideWebProfileForm,
-} from './redux/thunks';
+import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import Button from '../../../../../common/components/Button';
@@ -28,50 +24,33 @@ import { ObjectFitImage } from '../../../../../common/components/Image';
 import PageToast from '../../../../../common/components/PageToast';
 import Loader from '../../../../../common/components/Loader';
 import Tag from '../../../../../common/components/Tag';
-import { alert, confirm } from '../../../../../common/utils/feedback';
+import { alert } from '../../../../../common/utils/feedback';
 import Ticket from '../../components/Ticket';
-import CompleteProfile from '../../../CompleteProfile';
 import styles from './PointsRewardsPage.module.scss';
 
 const PointsRewardsPage = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
+  const history = useHistory();
+  const search = useSelector(getLocationSearch);
   const pointsRewardList = useSelector(getPointsRewardList);
   const isClaimPointsRewardPending = useSelector(getIsClaimPointsRewardPending);
   const isClaimPointsRewardFulfilled = useSelector(getIsClaimPointsRewardFulfilled);
-  const isProfileModalShow = useSelector(getIsProfileModalShow);
   const claimPointsRewardErrorI18nKeys = useSelector(getClaimPointsRewardErrorI18nKeys);
-  const [selectedRewardId, setSelectedRewardId] = useState(null);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
-  const handlePointsClaimRewardButtonClick = useCallback(
-    (id, type, costOfPoints) => {
-      confirm('', {
-        className: styles.PointsRewardConfirm,
-        title: t('RewardsCostOfPointsConfirmMessage', { costOfPoints }),
-        cancelButtonContent: t('Cancel'),
-        confirmButtonContent: t('Confirm'),
-        onSelection: async status => {
-          dispatch(pointsClaimRewardButtonClicked({ id, status, type, costOfPoints }));
-        },
-      });
+  const handleClickRewardItem = useCallback(
+    rewardSettingId => {
+      const pointsRewardDetail = {
+        pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.POINTS_REWARDS}${PATH_NAME_MAPPING.DETAIL}`,
+        search: `${search || '?'}&rewardSettingId=${rewardSettingId}`,
+      };
+
+      CleverTap.pushEvent('Points Rewards List Page - Click Points Reward');
+
+      history.push(pointsRewardDetail);
     },
-    [dispatch, t]
+    [history, search]
   );
-  const handleClickSkipProfileButton = useCallback(
-    id => {
-      dispatch(claimPointsRewardAndRefreshRewardsList(id));
-      setSelectedRewardId(null);
-    },
-    [dispatch, setSelectedRewardId]
-  );
-  const handleClickSaveProfileButton = useCallback(
-    id => {
-      dispatch(claimPointsRewardAndRefreshRewardsList(id));
-      setSelectedRewardId(null);
-    },
-    [dispatch, setSelectedRewardId]
-  );
-  const handleCloseCompleteProfile = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
   useMount(() => {
     dispatch(mounted());
@@ -123,7 +102,7 @@ const PointsRewardsPage = () => {
       <section className={styles.PointsRewardsSection}>
         <ul className={styles.PointsRewards}>
           {pointsRewardList.map(pointsReward => {
-            const { id, type, name, isSoldOut, isExpired, costOfPoints, isUnavailable } = pointsReward;
+            const { id, name, rewardSettingId, isSoldOut, isExpired, costOfPoints, isUnavailable } = pointsReward;
 
             return (
               <li>
@@ -135,12 +114,7 @@ const PointsRewardsPage = () => {
                   className={styles.PointsRewardsTicketButton}
                   contentClassName={styles.PointsRewardsTicketButtonContent}
                   onClick={() => {
-                    CleverTap.pushEvent('Membership Details Page - Click Points Reward');
-
-                    if (!isUnavailable) {
-                      setSelectedRewardId(id);
-                      handlePointsClaimRewardButtonClick(id, type, costOfPoints);
-                    }
+                    handleClickRewardItem(rewardSettingId);
                   }}
                 >
                   <Ticket
@@ -180,16 +154,6 @@ const PointsRewardsPage = () => {
       {isClaimPointsRewardPending && (
         <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
       )}
-      <CompleteProfile
-        show={isProfileModalShow}
-        onSave={() => {
-          handleClickSaveProfileButton(selectedRewardId);
-        }}
-        onSkip={() => {
-          handleClickSkipProfileButton(selectedRewardId);
-        }}
-        onClose={handleCloseCompleteProfile}
-      />
     </Frame>
   );
 };

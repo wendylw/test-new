@@ -19,14 +19,13 @@ import {
 } from '../../../../redux/common/selectors';
 import { actions as businessCommonActions } from '../../../../redux/common';
 import { getMembershipDetailPointsRewardList, getIsPointsRewardListMoreButtonShown } from '../../redux/selectors';
-import { pointsClaimRewardButtonClicked } from '../../redux/thunks';
 import Button from '../../../../../../../common/components/Button';
 import Slider from '../../../../../../../common/components/Slider';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import PageToast from '../../../../../../../common/components/PageToast';
 import Loader from '../../../../../../../common/components/Loader';
 import Tag from '../../../../../../../common/components/Tag';
-import { alert, confirm } from '../../../../../../../common/utils/feedback';
+import { alert } from '../../../../../../../common/utils/feedback';
 import Ticket from '../../../../components/Ticket';
 import styles from './PointsRewards.module.scss';
 
@@ -71,19 +70,18 @@ const PointsRewards = () => {
       search,
     });
   }, [history, search]);
-  const handlePointsClaimRewardButtonClick = useCallback(
-    (id, type, costOfPoints) => {
-      confirm('', {
-        className: styles.PointsRewardConfirm,
-        title: t('RewardsCostOfPointsConfirmMessage', { costOfPoints }),
-        cancelButtonContent: t('Cancel'),
-        confirmButtonContent: t('Confirm'),
-        onSelection: async status => {
-          dispatch(pointsClaimRewardButtonClicked({ id, status, type, costOfPoints }));
-        },
-      });
+  const handleClickRewardItem = useCallback(
+    rewardSettingId => {
+      const pointsRewardDetail = {
+        pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.POINTS_REWARDS}${PATH_NAME_MAPPING.DETAIL}`,
+        search: `${search || '?'}&rewardSettingId=${rewardSettingId}`,
+      };
+
+      CleverTap.pushEvent('Membership Details Page - Click Points Reward');
+
+      history.push(pointsRewardDetail);
     },
-    [dispatch, t]
+    [history, search]
   );
   const slideProps = {
     mode: 'free-snap',
@@ -98,7 +96,7 @@ const PointsRewards = () => {
   const pointsRewardListElements = useMemo(
     () =>
       membershipDetailPointsRewardList.map(pointsReward => {
-        const { id, type, isSoldOut, isExpired, name, costOfPoints, isUnavailable } = pointsReward;
+        const { id, isSoldOut, isExpired, name, costOfPoints, rewardSettingId, isUnavailable } = pointsReward;
 
         return (
           <Button
@@ -109,11 +107,7 @@ const PointsRewards = () => {
             className={styles.PointsRewardsTicketButton}
             contentClassName={styles.PointsRewardsTicketButtonContent}
             onClick={() => {
-              CleverTap.pushEvent('Membership Details Page - Click Points Reward');
-
-              if (!isUnavailable) {
-                handlePointsClaimRewardButtonClick(id, type, costOfPoints);
-              }
+              handleClickRewardItem(rewardSettingId);
             }}
           >
             <Ticket
@@ -146,7 +140,7 @@ const PointsRewards = () => {
           </Button>
         );
       }),
-    [handlePointsClaimRewardButtonClick, membershipDetailPointsRewardList, t]
+    [handleClickRewardItem, membershipDetailPointsRewardList, t]
   );
 
   useEffect(() => {

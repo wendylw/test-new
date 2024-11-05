@@ -2,8 +2,7 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { Trans, useTranslation } from 'react-i18next';
-import { UNIQUE_PROMO_STATUS_I18KEYS } from '../../utils/constants';
-import { UNIQUE_PROMO_APPLIED_SOURCE_I18KEYS } from './utils/constants';
+import { UNIQUE_PROMO_STATUS_I18KEYS, REWARDS_APPLIED_SOURCE_I18KEYS } from '../../utils/constants';
 import {
   getUniquePromoFormatDiscountValue,
   getUniquePromoPromotionName,
@@ -117,7 +116,7 @@ const UniquePromoDetail = () => {
                   key={`myRewardDetail-redeemOnlineChannel-${redeemOnlineChannel}`}
                   className={styles.UniquePromoDetailHowToUseRedeemOnlineItem}
                 >
-                  {t(UNIQUE_PROMO_APPLIED_SOURCE_I18KEYS[redeemOnlineChannel])}
+                  {t(REWARDS_APPLIED_SOURCE_I18KEYS[redeemOnlineChannel])}
                 </li>
               ))}
             </ul>

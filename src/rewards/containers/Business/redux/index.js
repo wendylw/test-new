@@ -6,7 +6,6 @@ import pointsHistory from '../containers/PointsHistory/redux';
 import cashbackCreditsHistory from '../containers/CashbackCreditsHistory/redux';
 import claimUniquePromo from '../containers/ClaimUniquePromo/redux';
 import seamlessLoyalty from '../containers/SeamlessLoyalty/redux';
-import pointsRewards from '../containers/PointsRewardsPage/redux';
 import uniquePromoDetail from '../containers/UniquePromoDetail/redux';
 
 export default combineReducers({
@@ -17,6 +16,5 @@ export default combineReducers({
   cashbackCreditsHistory,
   claimUniquePromo,
   seamlessLoyalty,
-  pointsRewards,
   uniquePromoDetail,
 });
