@@ -71,3 +71,11 @@
 .PointsRewardDetailHowToUseRedeemOnlineItem {
   @apply tw-leading-loose;
 }
+
+.PointsRewardDetailFooterContent {
+  @apply tw-px-16 sm:tw-px-16px tw-py-8 sm:tw-py-8px;
+}
+
+.PointsRewardDetailFooterButton {
+  @apply tw-uppercase;
+}

@@ -18,7 +18,9 @@ import {
 import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
+import PageFooter from '../../../../../common/components/PageFooter';
 import RewardDetailTicket from '../../components/RewardDetailTicket';
+import Button from '../../../../../common/components/Button';
 import styles from './PointsRewardDetail.module.scss';
 
 const PointsRewardDetail = () => {
@@ -35,6 +37,7 @@ const PointsRewardDetail = () => {
   const isPointsRewardRedeemOnlineShow = useSelector(getIsPointsRewardRedeemOnlineShow);
   const isPointsRewardRedeemInStoreShow = useSelector(getIsPointsRewardRedeemInStoreShow);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
+  const handleClickGetRewardButton = useCallback(() => {}, []);
 
   useMount(() => {
     dispatch(mounted());
@@ -119,6 +122,20 @@ const PointsRewardDetail = () => {
           </div>
         )}
       </section>
+
+      <PageFooter zIndex={50}>
+        <div className={styles.PointsRewardDetailFooterContent}>
+          <Button
+            className={styles.PointsRewardDetailFooterButton}
+            block
+            disabled={false}
+            data-test-id="rewards.business.points-reward-detail.get-reward-button"
+            onClick={handleClickGetRewardButton}
+          >
+            {t('GetReward')}
+          </Button>
+        </div>
+      </PageFooter>
     </Frame>
   );
 };

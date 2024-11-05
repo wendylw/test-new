@@ -197,5 +197,6 @@
   "PointsRewardSelectedProductsText": "Selected products",
   "PointsRewardApplicableStoresTitle": "Applicable stores",
   "PointsRewardAllStoresText": "All stores",
-  "PointsRewardSelectedStoresText": "Selected stores"
+  "PointsRewardSelectedStoresText": "Selected stores",
+  "GetReward": "Get reward"
 }
