@@ -1,0 +1,73 @@
+.PointsRewardDetailTicketCostPointsContainer {
+  @apply tw-items-center tw-justify-center;
+}
+
+.PointsRewardDetailTicketCostPoints {
+  @apply tw-font-bold tw-bg-gray-200 tw-px-12 sm:tw-px-12px tw-py-4 sm:tw-py-4px tw-leading-loose tw-rounded-sm;
+}
+
+.PointsRewardDetailLimitations {
+  @apply tw-list-disc tw-text-gray-700;
+}
+
+.PointsRewardDetailLimitation {
+  @apply tw-leading-normal;
+}
+
+.PointsRewardDetailTicketStatusTag {
+  @apply tw-my-2 sm:tw-my-2px;
+}
+
+.PointsRewardStubRemainingExpiredDaysTag {
+  @apply tw-my-2 sm:tw-my-2px tw-font-bold;
+
+  > span {
+    @apply tw-flex tw-items-center;
+  }
+}
+
+.PointsRewardStubRemainingExpiredDaysTagLetter {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.PointsRewardStubRemainingExpiredDaysTagLetterHidden {
+  display: none;
+}
+
+.PointsRewardDetailConditionTitle,
+.PointsRewardDetailHowToUseTitle {
+  @apply tw-text-lg tw-leading-relaxed tw-font-bold;
+}
+
+.PointsRewardDetailConditionContent {
+  @apply tw-leading-loose;
+}
+
+.PointsRewardDetailApplicableProducts {
+  @apply tw-m-16 sm:tw-m-16px tw-space-y-4 sm:tw-space-y-4px;
+}
+
+.PointsRewardDetailApplicableStores {
+  @apply tw-m-16 sm:tw-m-16px tw-space-y-4 sm:tw-space-y-4px;
+}
+
+.PointsRewardDetailHowToUse {
+  @apply tw-m-16 sm:tw-m-16px tw-space-y-16 sm:tw-space-y-16px;
+}
+
+.PointsRewardDetailHowToUseSubtitle {
+  @apply tw-leading-loose tw-font-bold;
+}
+
+.PointsRewardDetailHowToUseContentDescription {
+  @apply tw-leading-loose;
+}
+
+.PointsRewardDetailHowToUseRedeemOnlineList {
+  @apply tw-mx-8 sm:tw-mx-8px tw-list-disc tw-list-inside;
+}
+
+.PointsRewardDetailHowToUseRedeemOnlineItem {
+  @apply tw-leading-loose;
+}

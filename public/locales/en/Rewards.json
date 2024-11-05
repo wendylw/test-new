@@ -188,8 +188,14 @@
   "UniquePromoRedeemOnlineDescription": "Apply this promotion during checkout on any of the order methods below:",
   "UniquePromoRedeemInStoreTitle": "Redeem in store",
   "UniquePromoRedeemInStoreDescription": "Show this promotion to the cashier for redemption",
+  "PointsRewardValidityTitle": "Validity",
+  "PointsRewardValidityText": "{{count}} day",
+  "PointsRewardValidityText_plural": "{{count}} days",
+  "PointsRewardMinSpendTitle": "Min. Spend",
+  "PointsRewardApplicableProductsTitle": "Applicable products",
   "PointsRewardAllProductsText": "All products",
   "PointsRewardSelectedProductsText": "Selected products",
+  "PointsRewardApplicableStoresTitle": "Applicable stores",
   "PointsRewardAllStoresText": "All stores",
   "PointsRewardSelectedStoresText": "Selected stores"
 }

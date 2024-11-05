@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { getClassName } from '../../../../../common/utils/ui';
 import styles from './RewardDetailTicket.module.scss';
 
-const RewardDetailTicket = ({ discount, discountText, name, stub }) => (
+const RewardDetailTicket = ({ discount, discountText, name, stub, stubClassName }) => (
   <div className={styles.RewardDetailTicketTicket}>
     <div className={styles.RewardDetailTicketTicketMain}>
       <data className={styles.RewardDetailTicketDiscountValue} value={discount}>
@@ -11,7 +12,7 @@ const RewardDetailTicket = ({ discount, discountText, name, stub }) => (
       <h2 className={styles.RewardDetailTicketName}>{name}</h2>
     </div>
 
-    <div className={styles.RewardDetailTicketTicketStub}>{stub}</div>
+    <div className={getClassName([styles.RewardDetailTicketTicketStub, stubClassName])}>{stub}</div>
   </div>
 );
 
@@ -22,6 +23,7 @@ RewardDetailTicket.propTypes = {
   discountText: PropTypes.string,
   name: PropTypes.string,
   stub: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
+  stubClassName: PropTypes.string,
 };
 
 RewardDetailTicket.defaultProps = {
@@ -29,6 +31,7 @@ RewardDetailTicket.defaultProps = {
   discountText: null,
   name: null,
   stub: '',
+  stubClassName: null,
 };
 
 export default RewardDetailTicket;

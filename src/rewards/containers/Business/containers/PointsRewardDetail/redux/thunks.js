@@ -17,14 +17,14 @@ import {
   getLocationSearch,
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
-import { getPointsRewardRewardSettingId } from './selectors';
+import { getPointsRewardUniqueRewardSettingId } from './selectors';
 import { getPointsRewardDetail } from './api-request';
 
 export const fetchPointsRewardDetail = createAsyncThunk(
   'rewards/business/pointsRewardDetail/fetchPointsRewardDetail',
   async (_, { getState }) => {
     const state = getState();
-    const rewardSettingId = getPointsRewardRewardSettingId(state);
+    const rewardSettingId = getPointsRewardUniqueRewardSettingId(state);
 
     const result = await getPointsRewardDetail(rewardSettingId);
 

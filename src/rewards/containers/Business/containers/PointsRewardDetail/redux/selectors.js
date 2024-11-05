@@ -1,7 +1,7 @@
 import _get from 'lodash/get';
 import i18next from 'i18next';
 import { createSelector } from 'reselect';
-import { getQueryString } from '../../../../../../common/utils';
+import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { REWARDS_APPLIED_ALL_STORES, REWARDS_APPLIED_SOURCES } from '../../../utils/constants';
 import { getFormatDiscountValue } from '../../../utils/rewards';
 import {
@@ -20,6 +20,23 @@ export const getLoadPointsRewardDetailStatus = state =>
 
 export const getLoadPointsRewardDetailError = state =>
   state.business.pointsRewardDetail.loadPointsRewardDetailRequest.error;
+
+export const getPointsRewardValidPeriod = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
+  _get(loadPointsRewardDetailData, 'validPeriod', 0)
+);
+
+export const getPointsRewardValidPeriodUnit = createSelector(
+  getLoadPointsRewardDetailData,
+  loadPointsRewardDetailData => _get(loadPointsRewardDetailData, 'validPeriodUnit', '')
+);
+
+export const getPointsRewardCostOfPoints = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
+  _get(loadPointsRewardDetailData, 'costOfPoints', 0)
+);
+
+export const getPointsRewardMinSpendAmount = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
+  _get(loadPointsRewardDetailData, 'minSpendAmount', 0)
+);
 
 export const getPointsRewardPromotionName = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
   _get(loadPointsRewardDetailData, 'promotion.name', null)
@@ -70,6 +87,19 @@ export const getPointsRewardFormatDiscountValue = createSelector(
   getMerchantLocale,
   (pointsRewardDiscountValue, pointsRewardDiscountType, merchantCountry, merchantCurrency, merchantLocale) =>
     getFormatDiscountValue(pointsRewardDiscountType, pointsRewardDiscountValue, {
+      country: merchantCountry,
+      currency: merchantCurrency,
+      locale: merchantLocale,
+    })
+);
+
+export const getPointsRewardMinSpendPrice = createSelector(
+  getPointsRewardMinSpendAmount,
+  getMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+  (pointsRewardMinSpendAmount, merchantCountry, merchantCurrency, merchantLocale) =>
+    getPrice(pointsRewardMinSpendAmount, {
       country: merchantCountry,
       currency: merchantCurrency,
       locale: merchantLocale,
