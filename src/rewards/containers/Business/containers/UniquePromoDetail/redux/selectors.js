@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import i18next from 'i18next';
 import { createSelector } from 'reselect';
 import { PROMO_VOUCHER_STATUS } from '../../../../../../common/utils/constants';
-import { UNIQUE_PROMO_APPLIED_ALL_STORES, UNIQUE_PROMO_APPLIED_SOURCES } from '../utils/constants';
+import { REWARDS_APPLIED_ALL_STORES, REWARDS_APPLIED_SOURCES } from '../../../utils/constants';
 import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import { getFormatDiscountValue, getRemainingRewardExpiredDays, getExpiringDaysI18n } from '../../../utils/rewards';
@@ -157,7 +157,7 @@ export const getUniquePromoFormatAppliedStoresText = createSelector(
       return null;
     }
 
-    const isAllStoresApplied = uniquePromoLimitsAppliedStores.includes(UNIQUE_PROMO_APPLIED_ALL_STORES);
+    const isAllStoresApplied = uniquePromoLimitsAppliedStores.includes(REWARDS_APPLIED_ALL_STORES);
 
     if (isAllStoresApplied) {
       return i18next.t('Rewards:UniquePromoAllStoresText');
@@ -170,7 +170,7 @@ export const getUniquePromoFormatAppliedStoresText = createSelector(
 export const getUniquePromoRedeemOnlineList = createSelector(
   getUniquePromoLimitsAppliedSources,
   uniquePromoLimitsAppliedSources =>
-    uniquePromoLimitsAppliedSources.filter(source => source !== UNIQUE_PROMO_APPLIED_SOURCES.POS)
+    uniquePromoLimitsAppliedSources.filter(source => source !== REWARDS_APPLIED_SOURCES.POS)
 );
 
 export const getIsUniquePromoRedeemOnlineShow = createSelector(
@@ -180,5 +180,5 @@ export const getIsUniquePromoRedeemOnlineShow = createSelector(
 
 export const getIsUniquePromoRedeemInStoreShow = createSelector(
   getUniquePromoLimitsAppliedSources,
-  uniquePromoLimitsAppliedSources => uniquePromoLimitsAppliedSources.includes(UNIQUE_PROMO_APPLIED_SOURCES.POS)
+  uniquePromoLimitsAppliedSources => uniquePromoLimitsAppliedSources.includes(REWARDS_APPLIED_SOURCES.POS)
 );

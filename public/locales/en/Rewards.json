@@ -187,5 +187,9 @@
   "UniquePromoRedeemOnlineTitle": "Redeem online",
   "UniquePromoRedeemOnlineDescription": "Apply this promotion during checkout on any of the order methods below:",
   "UniquePromoRedeemInStoreTitle": "Redeem in store",
-  "UniquePromoRedeemInStoreDescription": "Show this promotion to the cashier for redemption"
+  "UniquePromoRedeemInStoreDescription": "Show this promotion to the cashier for redemption",
+  "PointsRewardAllProductsText": "All products",
+  "PointsRewardSelectedProductsText": "Selected products",
+  "PointsRewardAllStoresText": "All stores",
+  "PointsRewardSelectedStoresText": "Selected stores"
 }
