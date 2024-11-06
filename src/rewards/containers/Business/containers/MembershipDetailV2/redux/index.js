@@ -6,8 +6,6 @@ import {
   showWebSkipButton,
   hideWebSkipButton,
   fetchMerchantBirthdayCampaign,
-  setPointRewardSelectedId,
-  clearPointRewardSelectedId,
   setProfileSource,
   clearProfileSource,
 } from './thunks';
@@ -26,7 +24,6 @@ const initialState = {
     showSkipButton: false,
     source: null,
   },
-  pointsRewardSelectedId: null,
 };
 
 export const { reducer, actions } = createSlice({
@@ -64,12 +61,6 @@ export const { reducer, actions } = createSlice({
     },
     [clearProfileSource.fulfilled.type]: state => {
       state.profileModalRequest.source = null;
-    },
-    [setPointRewardSelectedId.fulfilled.type]: (state, { payload }) => {
-      state.pointsRewardSelectedId = payload;
-    },
-    [clearPointRewardSelectedId.fulfilled.type]: state => {
-      state.pointsRewardSelectedId = null;
     },
     [fetchMerchantBirthdayCampaign.pending.type]: state => {
       state.loadMerchantBirthdayCampaignRequest.status = API_REQUEST_STATUS.PENDING;

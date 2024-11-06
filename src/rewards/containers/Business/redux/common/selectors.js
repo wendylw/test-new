@@ -9,7 +9,6 @@ import {
 import { getPrice, getQueryString } from '../../../../../common/utils';
 import { getDifferenceTodayInDays, formatTimeToDateString } from '../../../../../utils/datetime-lib';
 import { getFormatDiscountValue, getRemainingRewardExpiredDays, getExpiringDaysI18n } from '../../utils/rewards';
-import { CLAIMED_POINTS_REWARD_ERROR_CODES } from '../../utils/constants';
 import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
   getMerchantLocale,
@@ -84,10 +83,6 @@ export const getLoadPointsRewardListData = state => state.business.common.loadPo
 export const getLoadPointsRewardListStatus = state => state.business.common.loadPointsRewardListRequest.status;
 
 export const getLoadPointsRewardListError = state => state.business.common.loadPointsRewardListRequest.error;
-
-export const getClaimPointsRewardStatus = state => state.business.common.claimPointsRewardRequest.status;
-
-export const getClaimPointsRewardError = state => state.business.common.claimPointsRewardRequest.error;
 
 export const getLoadOrderRewardsRequestData = state => state.business.common.loadOrderRewardsRequest.data;
 
@@ -392,43 +387,6 @@ export const getIsPointsRewardListShown = createSelector(
   (isMerchantMembershipPointsEnabled, pointsRewardList) =>
     isMerchantMembershipPointsEnabled && pointsRewardList.length > 0
 );
-
-export const getIsClaimPointsRewardPending = createSelector(
-  getClaimPointsRewardStatus,
-  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.PENDING
-);
-
-export const getIsClaimPointsRewardFulfilled = createSelector(
-  getClaimPointsRewardStatus,
-  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRewardError, claimPointsRewardError => {
-  if (!claimPointsRewardError) {
-    return null;
-  }
-
-  const { code } = claimPointsRewardError;
-  const errorI18nKeys = {};
-
-  switch (code) {
-    case CLAIMED_POINTS_REWARD_ERROR_CODES.PROMO_IS_NOT_REDEEMABLE:
-      errorI18nKeys.titleI18nKey = 'PromotionIsNotRedeemableTitle';
-      errorI18nKeys.descriptionI18nKey = 'PromotionIsNotRedeemableDescription';
-      break;
-    case CLAIMED_POINTS_REWARD_ERROR_CODES.INVALID_POINT_SOURCE:
-    case CLAIMED_POINTS_REWARD_ERROR_CODES.POINT_LOG_NOT_FOUND:
-      errorI18nKeys.titleI18nKey = 'InsufficientPointsTitle';
-      errorI18nKeys.descriptionI18nKey = 'InsufficientPointsDescription';
-      break;
-    default:
-      errorI18nKeys.titleI18nKey = 'SomethingWentWrongTitle';
-      errorI18nKeys.descriptionI18nKey = 'SomethingWentWrongDescription';
-      break;
-  }
-
-  return errorI18nKeys;
-});
 
 export const getIsLoadOrderRewardsRequestFulfilled = createSelector(
   getLoadOrderRewardsRequestStatus,

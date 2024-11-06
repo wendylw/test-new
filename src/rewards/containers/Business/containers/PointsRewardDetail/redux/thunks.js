@@ -10,15 +10,15 @@ import {
   loginUserByBeepApp,
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getIsLogin } from '../../../../../../redux/modules/user/selectors';
+import { getConsumerId, getIsLogin, getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
 import {
   getIsWebview,
   getIsAlipayMiniProgram,
   getLocationSearch,
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
-import { getPointsRewardUniqueRewardSettingId } from './selectors';
-import { getPointsRewardDetail } from './api-request';
+import { getPointsRewardUniqueRewardSettingId, getPointsRewardPromotionId } from './selectors';
+import { getPointsRewardDetail, postClaimedPointsReward } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
   'rewards/business/pointsRewardDetail/showWebProfileForm',
@@ -37,6 +37,19 @@ export const fetchPointsRewardDetail = createAsyncThunk(
     const rewardSettingId = getPointsRewardUniqueRewardSettingId(state);
 
     const result = await getPointsRewardDetail(rewardSettingId);
+
+    return result;
+  }
+);
+
+export const claimPointsReward = createAsyncThunk(
+  'rewards/business/pointsRewardDetail/claimPointsReward',
+  async (_, { getState }) => {
+    const state = getState();
+    const business = getMerchantBusiness(state);
+    const id = getPointsRewardPromotionId(state);
+    const consumerId = getConsumerId(state);
+    const result = await postClaimedPointsReward({ consumerId, business, id });
 
     return result;
   }
@@ -107,5 +120,33 @@ export const backButtonClicked = createAsyncThunk(
     }
 
     dispatch(historyGoBack());
+  }
+);
+
+export const pointsClaimRewardButtonClicked = createAsyncThunk(
+  'rewards/business/pointsRewardDetail/pointsClaimRewardButtonClicked',
+  async ({ status, type, costOfPoints }, { dispatch, getState }) => {
+    if (status) {
+      CleverTap.pushEvent('Points Rewards Detail Page - Spend Points Modal - Click Confirm', {
+        type,
+        costOfPoints,
+      });
+
+      const state = getState();
+      const isUserProfileIncomplete = getIsUserProfileIncomplete(state);
+
+      if (isUserProfileIncomplete) {
+        dispatch(showProfileForm());
+
+        return;
+      }
+
+      dispatch(claimPointsReward());
+    } else {
+      CleverTap.pushEvent('Points Rewards Detail Page - Spend Points Modal - Click Cancel', {
+        type,
+        costOfPoints,
+      });
+    }
   }
 );

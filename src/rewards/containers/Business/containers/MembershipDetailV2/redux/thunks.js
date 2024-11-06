@@ -8,7 +8,6 @@ import {
   closeWebView,
   showCompleteProfilePageAsync,
 } from '../../../../../../utils/native-methods';
-import { SHOW_PROFILE_FROM_POINTS_REWARDS } from '../utils/constants';
 import {
   initUserInfo,
   loginUserByBeepApp,
@@ -30,10 +29,9 @@ import {
   fetchUniquePromoList,
   fetchUniquePromoListBanners,
   fetchPointsRewardList,
-  claimPointsReward,
   claimOrderRewards,
 } from '../../../redux/common/thunks';
-import { getFetchUniquePromoListBannersLimit, getShowProfileModalSource, getPointsRewardSelectedId } from './selectors';
+import { getFetchUniquePromoListBannersLimit } from './selectors';
 import { getMerchantBirthdayCampaign } from './api-request';
 
 export const fetchMerchantBirthdayCampaign = createAsyncThunk(
@@ -63,16 +61,6 @@ export const setProfileSource = createAsyncThunk(
 
 export const clearProfileSource = createAsyncThunk('rewards/business/memberDetail/clearProfileSource', async () => {});
 
-export const setPointRewardSelectedId = createAsyncThunk(
-  'rewards/business/memberDetail/setPointRewardSelectedId',
-  async id => id
-);
-
-export const clearPointRewardSelectedId = createAsyncThunk(
-  'rewards/business/memberDetail/clearPointRewardSelectedId',
-  async () => {}
-);
-
 export const showProfileForm = createAsyncThunk(
   'rewards/business/memberDetail/showProfileForm',
   async ({ hideSkipButton = true, source } = {}, { dispatch, getState }) => {
@@ -98,49 +86,14 @@ export const hideProfileForm = createAsyncThunk(
   }
 );
 
-export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
-  'rewards/business/memberDetail/claimPointsRewardAndRefreshRewardsList',
-  async (id, { dispatch, getState }) => {
-    const state = getState();
-    const consumerId = getConsumerId(state);
-    const business = getMerchantBusiness(state);
-
-    await dispatch(claimPointsReward({ consumerId, id }));
-    dispatch(fetchPointsRewardList(consumerId));
-    dispatch(fetchCustomerInfo(business));
-    dispatch(clearPointRewardSelectedId());
-  }
-);
-
 export const skipProfileButtonClicked = createAsyncThunk(
   'rewards/business/memberDetail/skipProfileButtonClicked',
-  async (_, { dispatch, getState }) => {
-    const state = getState();
-    const showProfileModalSource = getShowProfileModalSource(state);
-
-    // User wants to claim points to get rewards, Need to complete profile info first.
-    // Once the user completes the profile, Continue claiming process.
-    if (showProfileModalSource === SHOW_PROFILE_FROM_POINTS_REWARDS) {
-      const pointsRewardSelectedId = getPointsRewardSelectedId(getState());
-
-      dispatch(claimPointsRewardAndRefreshRewardsList(pointsRewardSelectedId));
-    }
-  }
+  async () => {}
 );
 
 export const saveProfileButtonClicked = createAsyncThunk(
   'rewards/business/memberDetail/saveProfileButtonClicked',
-  async (_, { dispatch, getState }) => {
-    const showProfileModalSource = getShowProfileModalSource(getState());
-
-    // User wants to claim points to get rewards, Need to complete profile info first.
-    // Once the user completes the profile, Continue claiming process.
-    if (showProfileModalSource === SHOW_PROFILE_FROM_POINTS_REWARDS) {
-      const pointsRewardSelectedId = getPointsRewardSelectedId(getState());
-
-      dispatch(claimPointsRewardAndRefreshRewardsList(pointsRewardSelectedId));
-    }
-  }
+  async () => {}
 );
 
 export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted', async (_, { dispatch, getState }) => {
