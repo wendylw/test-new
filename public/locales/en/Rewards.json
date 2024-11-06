@@ -198,5 +198,9 @@
   "PointsRewardApplicableStoresTitle": "Applicable stores",
   "PointsRewardAllStoresText": "All stores",
   "PointsRewardSelectedStoresText": "Selected stores",
+  "PointsRewardRedeemOnlineTitle": "Redeem online",
+  "PointsRewardRedeemOnlineDescription": "Apply this promotion during checkout on any of the order methods below:",
+  "PointsRewardRedeemInStoreTitle": "Redeem in store",
+  "PointsRewardRedeemInStoreDescription": "Show this promotion to the cashier for redemption",
   "GetReward": "Get reward"
 }
