@@ -50,41 +50,18 @@ export const showWebProfileForm = createAsyncThunk('rewards/business/memberDetai
 
 export const hideWebProfileForm = createAsyncThunk('rewards/business/memberDetail/hideWebProfileForm', async () => {});
 
-export const showWebSkipButton = createAsyncThunk('rewards/business/memberDetail/showWebSkipButton', async () => {});
-
-export const hideWebSkipButton = createAsyncThunk('rewards/business/memberDetail/hideWebSkipButton', async () => {});
-
 export const showProfileForm = createAsyncThunk(
   'rewards/business/memberDetail/showProfileForm',
-  async ({ hideSkipButton = true } = {}, { dispatch, getState }) => {
+  async (_, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
 
     if (isWebview) {
-      await showCompleteProfilePageAsync({ hideSkipButton });
+      await showCompleteProfilePageAsync();
       return;
     }
 
     await dispatch(showWebProfileForm());
-    !hideSkipButton && (await dispatch(showWebSkipButton()));
   }
-);
-
-export const hideProfileForm = createAsyncThunk(
-  'rewards/business/memberDetail/hideProfileForm',
-  async (_, { dispatch }) => {
-    await dispatch(hideWebProfileForm());
-    await dispatch(hideWebSkipButton());
-  }
-);
-
-export const skipProfileButtonClicked = createAsyncThunk(
-  'rewards/business/memberDetail/skipProfileButtonClicked',
-  async () => {}
-);
-
-export const saveProfileButtonClicked = createAsyncThunk(
-  'rewards/business/memberDetail/saveProfileButtonClicked',
-  async () => {}
 );
 
 export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted', async (_, { dispatch, getState }) => {

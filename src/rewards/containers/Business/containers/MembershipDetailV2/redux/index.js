@@ -1,12 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import {
-  showWebProfileForm,
-  hideWebProfileForm,
-  showWebSkipButton,
-  hideWebSkipButton,
-  fetchMerchantBirthdayCampaign,
-} from './thunks';
+import { showWebProfileForm, hideWebProfileForm, fetchMerchantBirthdayCampaign } from './thunks';
 
 const initialState = {
   isCashbackPromptDrawerShow: false,
@@ -46,12 +40,6 @@ export const { reducer, actions } = createSlice({
     },
     [hideWebProfileForm.fulfilled.type]: state => {
       state.profileModalRequest.show = false;
-    },
-    [showWebSkipButton.fulfilled.type]: state => {
-      state.profileModalRequest.showSkipButton = true;
-    },
-    [hideWebSkipButton.fulfilled.type]: state => {
-      state.profileModalRequest.showSkipButton = false;
     },
     [fetchMerchantBirthdayCampaign.pending.type]: state => {
       state.loadMerchantBirthdayCampaignRequest.status = API_REQUEST_STATUS.PENDING;
