@@ -90,16 +90,16 @@ const PointsRewardDetail = () => {
   useEffect(() => {
     if (isClaimPointsRewardFulfilled) {
       alert(
-        <div className={styles.PointsRewardsClaimedAlertContent}>
-          <div className={styles.PointsRewardsClaimedAlertIcon}>
+        <div className={styles.PointsRewardDetailClaimedAlertContent}>
+          <div className={styles.PointsRewardDetailClaimedAlertIcon}>
             <ObjectFitImage
               noCompression
               src={PointsRewardClaimedIcon}
               alt="Points Reward Claimed Successful Icon in StoreHub"
             />
           </div>
-          <h4 className={styles.PointsRewardsClaimedAlertTitle}>{t('PointsRewardClaimedTitle')}</h4>
-          <p className={styles.PointsRewardsClaimedAlertDescription}>{t('PointsRewardClaimedDescription')}</p>
+          <h4 className={styles.PointsRewardDetailClaimedAlertTitle}>{t('PointsRewardClaimedTitle')}</h4>
+          <p className={styles.PointsRewardDetailClaimedAlertDescription}>{t('PointsRewardClaimedDescription')}</p>
         </div>,
         {
           onClose: () => {
