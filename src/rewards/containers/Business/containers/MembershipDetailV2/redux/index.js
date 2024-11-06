@@ -6,8 +6,6 @@ import {
   showWebSkipButton,
   hideWebSkipButton,
   fetchMerchantBirthdayCampaign,
-  setProfileSource,
-  clearProfileSource,
 } from './thunks';
 
 const initialState = {
@@ -22,7 +20,6 @@ const initialState = {
   profileModalRequest: {
     show: false,
     showSkipButton: false,
-    source: null,
   },
 };
 
@@ -55,12 +52,6 @@ export const { reducer, actions } = createSlice({
     },
     [hideWebSkipButton.fulfilled.type]: state => {
       state.profileModalRequest.showSkipButton = false;
-    },
-    [setProfileSource.fulfilled.type]: (state, { payload }) => {
-      state.profileModalRequest.source = payload;
-    },
-    [clearProfileSource.fulfilled.type]: state => {
-      state.profileModalRequest.source = null;
     },
     [fetchMerchantBirthdayCampaign.pending.type]: state => {
       state.loadMerchantBirthdayCampaignRequest.status = API_REQUEST_STATUS.PENDING;

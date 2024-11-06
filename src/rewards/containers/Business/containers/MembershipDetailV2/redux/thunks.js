@@ -54,16 +54,9 @@ export const showWebSkipButton = createAsyncThunk('rewards/business/memberDetail
 
 export const hideWebSkipButton = createAsyncThunk('rewards/business/memberDetail/hideWebSkipButton', async () => {});
 
-export const setProfileSource = createAsyncThunk(
-  'rewards/business/memberDetail/setProfileSource',
-  async source => source
-);
-
-export const clearProfileSource = createAsyncThunk('rewards/business/memberDetail/clearProfileSource', async () => {});
-
 export const showProfileForm = createAsyncThunk(
   'rewards/business/memberDetail/showProfileForm',
-  async ({ hideSkipButton = true, source } = {}, { dispatch, getState }) => {
+  async ({ hideSkipButton = true } = {}, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
 
     if (isWebview) {
@@ -73,7 +66,6 @@ export const showProfileForm = createAsyncThunk(
 
     await dispatch(showWebProfileForm());
     !hideSkipButton && (await dispatch(showWebSkipButton()));
-    source && (await dispatch(setProfileSource(source)));
   }
 );
 
@@ -82,7 +74,6 @@ export const hideProfileForm = createAsyncThunk(
   async (_, { dispatch }) => {
     await dispatch(hideWebProfileForm());
     await dispatch(hideWebSkipButton());
-    await dispatch(clearProfileSource());
   }
 );
 
