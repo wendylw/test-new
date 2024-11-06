@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import { fetchPointsRewardDetail, showWebProfileForm, hideWebProfileForm } from './thunks';
+import { fetchPointsRewardDetail, claimPointsReward, showWebProfileForm, hideWebProfileForm } from './thunks';
 
 const initialState = {
   isProfileModalShow: false,
@@ -9,12 +9,20 @@ const initialState = {
     status: null,
     error: null,
   },
+  claimPointsRewardRequest: {
+    status: null,
+    error: null,
+  },
 };
 
 export const { reducer, actions } = createSlice({
   name: 'rewards/business/pointsRewardDetail',
   initialState,
-  reducers: {},
+  reducers: {
+    claimPointsRewardRequestReset: state => {
+      state.claimPointsRewardRequest = initialState.claimPointsRewardRequest;
+    },
+  },
   extraReducers: {
     [showWebProfileForm.fulfilled.type]: state => {
       state.isProfileModalShow = true;
@@ -34,6 +42,18 @@ export const { reducer, actions } = createSlice({
     [fetchPointsRewardDetail.rejected.type]: (state, { error }) => {
       state.loadPointsRewardDetailRequest.status = API_REQUEST_STATUS.REJECTED;
       state.loadPointsRewardDetailRequest.error = error;
+    },
+    [claimPointsReward.pending.type]: state => {
+      state.claimPointsRewardRequest.status = API_REQUEST_STATUS.PENDING;
+      state.claimPointsRewardRequest.error = null;
+    },
+    [claimPointsReward.fulfilled.type]: state => {
+      state.claimPointsRewardRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.claimPointsRewardRequest.error = null;
+    },
+    [claimPointsReward.rejected.type]: (state, { error }) => {
+      state.claimPointsRewardRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.claimPointsRewardRequest.error = error;
     },
   },
 });
