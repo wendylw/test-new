@@ -41,7 +41,10 @@
 }
 
 .RewardDetailTicketName {
-  @apply tw-text-xl tw-leading-loose;
+  @apply tw-text-center tw-text-lg tw-leading-loose;
+
+  width: 95%;
+  max-width: 310px;
 }
 
 .RewardDetailTicketTicketStub {
