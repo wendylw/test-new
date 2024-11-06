@@ -188,6 +188,7 @@
   "UniquePromoRedeemOnlineDescription": "Apply this promotion during checkout on any of the order methods below:",
   "UniquePromoRedeemInStoreTitle": "Redeem in store",
   "UniquePromoRedeemInStoreDescription": "Show this promotion to the cashier for redemption",
+  "PointsRewardDetails": "Voucher & Promo Details",
   "PointsRewardValidityTitle": "Validity",
   "PointsRewardValidityText": "{{count}} day",
   "PointsRewardValidityText_plural": "{{count}} days",

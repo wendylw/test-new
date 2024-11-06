@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMount } from 'react-use';
+import { useLifecycles } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import PointsRewardClaimedIcon from '../../../../../images/rewards-points-claimed.svg';
 import { REWARDS_APPLIED_SOURCE_I18KEYS } from '../../utils/constants';
@@ -78,9 +78,14 @@ const PointsRewardDetail = () => {
   const handleClickSaveProfileButton = useCallback(() => dispatch(claimPointsReward()), [dispatch]);
   const handleCloseCompleteProfile = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
-  useMount(() => {
-    dispatch(mounted());
-  });
+  useLifecycles(
+    () => {
+      dispatch(mounted());
+    },
+    () => {
+      dispatch(pointsRewardActions.loadPointsRewardDetailRequestReset());
+    }
+  );
 
   useEffect(() => {
     if (isClaimPointsRewardFulfilled) {
