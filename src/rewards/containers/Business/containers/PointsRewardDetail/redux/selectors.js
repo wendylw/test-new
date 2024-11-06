@@ -12,7 +12,7 @@ import {
   getMerchantLocale,
 } from '../../../../../../redux/modules/merchant/selectors';
 
-export const getPointsRewardUniqueRewardSettingId = () => getQueryString('rewardSettingId');
+export const getPointsRewardRewardSettingId = () => getQueryString('rewardSettingId');
 
 export const getIsProfileModalShow = state => state.business.pointsRewardDetail.isProfileModalShow;
 

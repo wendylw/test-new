@@ -17,7 +17,7 @@ import {
   getLocationSearch,
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
-import { getPointsRewardUniqueRewardSettingId, getPointsRewardPromotionId } from './selectors';
+import { getPointsRewardRewardSettingId, getPointsRewardPromotionId } from './selectors';
 import { getPointsRewardDetail, postClaimedPointsReward } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
@@ -34,7 +34,7 @@ export const fetchPointsRewardDetail = createAsyncThunk(
   'rewards/business/pointsRewardDetail/fetchPointsRewardDetail',
   async (_, { getState }) => {
     const state = getState();
-    const rewardSettingId = getPointsRewardUniqueRewardSettingId(state);
+    const rewardSettingId = getPointsRewardRewardSettingId(state);
 
     const result = await getPointsRewardDetail(rewardSettingId);
 
