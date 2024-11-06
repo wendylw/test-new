@@ -22,6 +22,9 @@ export const { reducer, actions } = createSlice({
     claimPointsRewardRequestReset: state => {
       state.claimPointsRewardRequest = initialState.claimPointsRewardRequest;
     },
+    loadPointsRewardDetailRequestReset: state => {
+      state.loadPointsRewardDetailRequest = initialState.loadPointsRewardDetailRequest;
+    },
   },
   extraReducers: {
     [showWebProfileForm.fulfilled.type]: state => {

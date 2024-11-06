@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMount } from 'react-use';
+import { useLifecycles } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import PointsRewardClaimedIcon from '../../../../../images/rewards-points-claimed.svg';
 import { REWARDS_APPLIED_SOURCE_I18KEYS } from '../../utils/constants';
@@ -78,23 +78,28 @@ const PointsRewardDetail = () => {
   const handleClickSaveProfileButton = useCallback(() => dispatch(claimPointsReward()), [dispatch]);
   const handleCloseCompleteProfile = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
-  useMount(() => {
-    dispatch(mounted());
-  });
+  useLifecycles(
+    () => {
+      dispatch(mounted());
+    },
+    () => {
+      dispatch(pointsRewardActions.loadPointsRewardDetailRequestReset());
+    }
+  );
 
   useEffect(() => {
     if (isClaimPointsRewardFulfilled) {
       alert(
-        <div className={styles.PointsRewardsClaimedAlertContent}>
-          <div className={styles.PointsRewardsClaimedAlertIcon}>
+        <div className={styles.PointsRewardDetailClaimedAlertContent}>
+          <div className={styles.PointsRewardDetailClaimedAlertIcon}>
             <ObjectFitImage
               noCompression
               src={PointsRewardClaimedIcon}
               alt="Points Reward Claimed Successful Icon in StoreHub"
             />
           </div>
-          <h4 className={styles.PointsRewardsClaimedAlertTitle}>{t('PointsRewardClaimedTitle')}</h4>
-          <p className={styles.PointsRewardsClaimedAlertDescription}>{t('PointsRewardClaimedDescription')}</p>
+          <h4 className={styles.PointsRewardDetailClaimedAlertTitle}>{t('PointsRewardClaimedTitle')}</h4>
+          <p className={styles.PointsRewardDetailClaimedAlertDescription}>{t('PointsRewardClaimedDescription')}</p>
         </div>,
         {
           onClose: () => {
