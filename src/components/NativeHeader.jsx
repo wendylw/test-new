@@ -83,8 +83,6 @@ class NativeHeader extends Component {
   componentDidMount() {
     const nativeHeaderParams = getNativeHeaderParams(this.props);
 
-    alert(`nativeHeaderParams: ${JSON.stringify(nativeHeaderParams)}`);
-
     NativeMethods.updateNativeHeader(nativeHeaderParams);
 
     this.prevNativeHeaderParams = nativeHeaderParams;
@@ -96,15 +94,11 @@ class NativeHeader extends Component {
   shouldComponentUpdate(nextProps) {
     this.nextNativeHeaderParams = getNativeHeaderParams(nextProps);
 
-    alert(`this.nextNativeHeaderParams: ${JSON.stringify(this.nextNativeHeaderParams)}`);
-
     return !_isEqual(this.prevNativeHeaderParams, this.nextNativeHeaderParams);
   }
 
   componentDidUpdate() {
     NativeMethods.updateNativeHeader(this.nextNativeHeaderParams);
-
-    alert(`this.nextNativeHeaderParams: ${JSON.stringify(this.nextNativeHeaderParams)}`);
 
     this.prevNativeHeaderParams = this.nextNativeHeaderParams;
     this.nextNativeHeaderParams = null;
