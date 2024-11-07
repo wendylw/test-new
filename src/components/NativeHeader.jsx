@@ -72,6 +72,8 @@ function getNativeHeaderParams(props) {
     }));
   }
 
+  alert(JSON.stringify(headerParams));
+
   return headerParams;
 }
 
