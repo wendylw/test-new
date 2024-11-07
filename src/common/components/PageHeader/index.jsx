@@ -17,12 +17,21 @@ const PageHeader = props => {
     isShowBackButton,
     onBackArrowClick,
     rightContent,
+    isDarkMode,
+    nativeStyles,
   } = props;
 
   return (
     <>
       {isInWebview ? (
-        <NativeHeader isPage rightContent={rightContent} title={title} navFunc={onBackArrowClick} />
+        <NativeHeader
+          isPage
+          isDarkMode={isDarkMode}
+          styles={nativeStyles}
+          rightContent={rightContent}
+          title={title}
+          navFunc={onBackArrowClick}
+        />
       ) : (
         <header className={`${styles.PageHeaderContainer} ${className}`}>
           <div className={getClassName([styles.PageHeaderLeftContainer, leftContentClassName])}>
@@ -62,6 +71,10 @@ PageHeader.propTypes = {
   isShowBackButton: PropTypes.bool,
   onBackArrowClick: PropTypes.func,
   rightContent: PropTypes.node,
+  isDarkMode: PropTypes.bool,
+  nativeStyles: PropTypes.shape({
+    backgroundColor: PropTypes.string,
+  }),
 };
 
 PageHeader.defaultProps = {
@@ -72,6 +85,8 @@ PageHeader.defaultProps = {
   isShowBackButton: true,
   onBackArrowClick: () => {},
   rightContent: null,
+  isDarkMode: false,
+  nativeStyles: null,
 };
 
 export default PageHeader;

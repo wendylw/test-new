@@ -58,6 +58,8 @@ const MembershipDetail = () => {
   return (
     <Frame>
       <PageHeader
+        isDarkMode
+        nativeStyles={{ backgroundColor: '#231651' }}
         className={styles.MembershipDetailPageHeader}
         leftContentClassName={styles.MembershipDetailPageHeaderLeftContent}
         titleClassName={getClassName([

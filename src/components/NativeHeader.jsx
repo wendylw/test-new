@@ -15,14 +15,30 @@ export const ICON_RES = {
   SUPPORT_AGENT: 'support_agent',
 };
 
+export const TEXT_COLOR = '#303030';
+
+export const DARK_MODE = {
+  TEXT_COLOR: '#FFFFFF',
+  ICON_RES: {
+    BACK: 'whiteBack',
+    CLOSE: 'whiteClose',
+  },
+};
+
 function getNativeHeaderParams(props) {
-  const { title, rightContent, titleAlignment, isPage } = props;
-  const { BACK, CLOSE } = ICON_RES;
+  const { title, rightContent, titleAlignment, isPage, isDarkMode, styles } = props;
+  const { backgroundColor } = styles || {};
+  const { BACK, CLOSE } = isDarkMode ? DARK_MODE.ICON_RES : ICON_RES;
+  const textColor = isDarkMode ? isDarkMode.TEXT_COLOR : TEXT_COLOR;
   const headerParams = {
     left: null,
     center: null,
     right: null,
   };
+
+  if (backgroundColor) {
+    headerParams.headerBackgroundColor = backgroundColor;
+  }
 
   headerParams.left = {
     type: 'button',
@@ -30,13 +46,14 @@ function getNativeHeaderParams(props) {
     // If isPage is true that header display back button otherwise close button on left
     iconRes: isPage ? BACK : CLOSE,
     events: ['onClick'],
+    textColor,
   };
 
   headerParams.center = {
     type: 'text',
     id: 'headerTitle',
     text: title,
-    textColor: '#303030',
+    textColor,
     alignment: titleAlignment,
   };
 
@@ -132,12 +149,18 @@ class NativeHeader extends Component {
 }
 
 NativeHeader.propTypes = {
+  isDarkMode: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   rightContent: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  styles: PropTypes.shape({
+    backgroundColor: PropTypes.string,
+  }),
 };
 
 NativeHeader.defaultProps = {
+  isDarkMode: false,
   rightContent: null,
+  styles: null,
 };
 
 NativeHeader.displayName = 'NativeHeader';
