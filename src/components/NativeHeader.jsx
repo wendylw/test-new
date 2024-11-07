@@ -104,7 +104,7 @@ class NativeHeader extends Component {
   componentDidUpdate() {
     NativeMethods.updateNativeHeader(this.nextNativeHeaderParams);
 
-    alert(`this.nextNativeHeaderParams: ${JSON.stringify(nextNativeHeaderParams)}`);
+    alert(`this.nextNativeHeaderParams: ${JSON.stringify(this.nextNativeHeaderParams)}`);
 
     this.prevNativeHeaderParams = this.nextNativeHeaderParams;
     this.nextNativeHeaderParams = null;
