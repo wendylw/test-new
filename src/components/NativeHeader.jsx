@@ -34,6 +34,7 @@ function getNativeHeaderParams(props) {
     left: null,
     center: null,
     right: null,
+    headerBackgroundColor: null,
   };
 
   if (backgroundColor) {
