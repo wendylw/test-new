@@ -29,7 +29,7 @@ function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage, isDarkMode, styles } = props;
   const { backgroundColor } = styles || {};
   const { BACK, CLOSE } = isDarkMode ? DARK_MODE.ICON_RES : ICON_RES;
-  const textColor = isDarkMode ? isDarkMode.TEXT_COLOR : TEXT_COLOR;
+  const textColor = isDarkMode ? DARK_MODE.TEXT_COLOR : TEXT_COLOR;
   const headerParams = {
     left: null,
     center: null,
