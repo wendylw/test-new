@@ -149,7 +149,6 @@ class NativeHeader extends Component {
 }
 
 NativeHeader.propTypes = {
-  isDarkMode: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   rightContent: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   styles: PropTypes.shape({
@@ -158,7 +157,6 @@ NativeHeader.propTypes = {
 };
 
 NativeHeader.defaultProps = {
-  isDarkMode: false,
   rightContent: null,
   styles: null,
 };
