@@ -91,12 +91,6 @@ export const getIsMembershipBenefitTabsShown = createSelector(
 export const getMembershipTiersBenefit = state =>
   getFeatureFlagResult(state, FEATURE_KEYS.SHOW_TIERED_MEMBERSHIP_BENEFIT);
 
-export const getIsMembershipBenefitInfoShown = createSelector(
-  getMembershipTiersBenefit,
-  getMembershipTierList,
-  (membershipTiersBenefit, membershipTierList) => membershipTiersBenefit.length > 0 && membershipTierList.length > 0
-);
-
 export const getMerchantMembershipTiersBenefit = createSelector(
   getMembershipTiersBenefit,
   getMembershipTierList,
@@ -122,12 +116,9 @@ export const getMerchantMembershipTiersBenefitLength = createSelector(
   membershipTiersBenefit => membershipTiersBenefit.length
 );
 
-export const getNewTierBenefitRedesign = state => getFeatureFlagResult(state, FEATURE_KEYS.NEW_TIER_BENEFIT_REDESIGN);
-
 export const getIsMembershipBenefitsShown = createSelector(
-  getNewTierBenefitRedesign,
   getMembershipTierList,
-  (newTierBenefitRedesign, membershipTierList) => newTierBenefitRedesign.length > 0 && membershipTierList.length > 0
+  membershipTierList => membershipTierList.length > 0
 );
 
 export const getIsJoinMembershipPathname = createSelector(
@@ -140,36 +131,34 @@ export const getIsJoinMembershipPathname = createSelector(
 export const getMerchantMembershipTiersBenefits = createSelector(
   getIsJoinMembershipPathname,
   getCustomerTierLevel,
-  getNewTierBenefitRedesign,
   getMembershipTierList,
-  (isJoinMembershipPathname, customerTierLevel, newTierBenefitRedesign, membershipTierList) => {
-    if (newTierBenefitRedesign.length === 0) {
+  (isJoinMembershipPathname, customerTierLevel, membershipTierList) => {
+    if (membershipTierList.length === 0) {
       return [];
     }
 
-    return newTierBenefitRedesign.map(benefit => {
-      const { level } = benefit;
-      const isLocked = benefit.level > (isJoinMembershipPathname ? MEMBER_LEVELS.MEMBER : customerTierLevel);
-      const currentTier = membershipTierList.find(tier => tier.level === level) || {};
+    return membershipTierList.map(({ id, level, name, benefits = [] }) => {
+      const isLocked = level > (isJoinMembershipPathname ? MEMBER_LEVELS.MEMBER : customerTierLevel);
       let prompt = null;
 
       if (isJoinMembershipPathname) {
         if (membershipTierList.length > 1) {
           prompt =
-            benefit.level === MEMBER_LEVELS.MEMBER
+            level === MEMBER_LEVELS.MEMBER
               ? i18next.t('Rewards:UnlockLevelPrompt')
-              : i18next.t('Rewards:UnlockHigherLevelPrompt', { levelName: toCapitalize(currentTier.name) });
+              : i18next.t('Rewards:UnlockHigherLevelPrompt', { levelName: toCapitalize(name) });
         } else {
           prompt = i18next.t('Rewards:UnlockOneTierLevelPrompt');
         }
       }
 
       return {
-        ...benefit,
-        ...currentTier,
-        key: `membership-tier-benefit-${level}`,
+        key: `membership-tier-benefit-${id}`,
         isLocked,
         prompt,
+        name,
+        level,
+        conditions: benefits,
       };
     });
   }
