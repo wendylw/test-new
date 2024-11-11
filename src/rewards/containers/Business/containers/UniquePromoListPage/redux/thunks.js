@@ -62,18 +62,11 @@ export const backButtonClicked = createAsyncThunk(
   'rewards/business/uniquePromoListPage/backButtonClicked',
   async (_, { dispatch, getState }) => {
     const { redirectLocation } = window.location.state || {};
-    const state = getState();
 
     if (redirectLocation) {
-      const search = getLocationSearch(state);
-      const merchantBusiness = getMerchantBusiness(state);
+      const search = getLocationSearch(getState());
 
-      dispatch(
-        replace({
-          pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}${search}`,
-          search: `?business=${merchantBusiness}`,
-        })
-      );
+      dispatch(replace(`${redirectLocation}${search}`));
     }
 
     const isWebview = getIsWebview(getState());
