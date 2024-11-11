@@ -46,6 +46,11 @@ export const getPointsRewardPromotionId = createSelector(getLoadPointsRewardDeta
   _get(loadPointsRewardDetailData, 'promotion.id', null)
 );
 
+export const getPointsRewardPromotionUniquePromoId = createSelector(
+  getLoadPointsRewardDetailData,
+  loadPointsRewardDetailData => _get(loadPointsRewardDetailData, 'promotion.uniquePromotionId', null)
+);
+
 export const getPointsRewardPromotionName = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
   _get(loadPointsRewardDetailData, 'promotion.name', null)
 );

@@ -29,6 +29,7 @@ import {
   claimPointsReward,
   pointsClaimRewardButtonClicked,
   hideWebProfileForm,
+  viewRewardButtonClicked,
 } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
@@ -74,6 +75,12 @@ const PointsRewardDetail = () => {
       },
     });
   }, [dispatch, t, type, costOfPoints]);
+  const handleClickViewRewardButton = useCallback(
+    status => {
+      dispatch(viewRewardButtonClicked(status));
+    },
+    [dispatch]
+  );
   const handleClickSkipProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
   const handleClickSaveProfileButton = useCallback(() => dispatch(claimPointsReward()), [dispatch]);
   const handleCloseCompleteProfile = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
@@ -89,7 +96,7 @@ const PointsRewardDetail = () => {
 
   useEffect(() => {
     if (isClaimPointsRewardFulfilled) {
-      alert(
+      confirm(
         <div className={styles.PointsRewardDetailClaimedAlertContent}>
           <div className={styles.PointsRewardDetailClaimedAlertIcon}>
             <ObjectFitImage
@@ -102,13 +109,14 @@ const PointsRewardDetail = () => {
           <p className={styles.PointsRewardDetailClaimedAlertDescription}>{t('PointsRewardClaimedDescription')}</p>
         </div>,
         {
-          onClose: () => {
-            dispatch(pointsRewardActions.claimPointsRewardRequestReset());
-          },
+          customizeContent: true,
+          cancelButtonContent: t('Back'),
+          confirmButtonContent: t('ViewReward'),
+          onSelection: handleClickViewRewardButton,
         }
       );
     }
-  }, [t, isClaimPointsRewardFulfilled, dispatch]);
+  }, [t, isClaimPointsRewardFulfilled, handleClickViewRewardButton, dispatch]);
 
   useEffect(() => {
     if (claimPointsRewardErrorI18nKeys) {
