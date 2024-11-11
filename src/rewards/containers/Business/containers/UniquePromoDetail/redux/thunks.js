@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { push, goBack as historyGoBack } from 'connected-react-router';
+import { push, replace, goBack as historyGoBack } from 'connected-react-router';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
 import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
@@ -74,6 +74,18 @@ export const mounted = createAsyncThunk(
 export const backButtonClicked = createAsyncThunk(
   'rewards/business/uniquePromoDetail/backButtonClicked',
   async (_, { dispatch, getState }) => {
+    const { redirectLocation } = window.location.state || {};
+
+    if (redirectLocation) {
+      const merchantBusiness = getMerchantBusiness(getState());
+
+      dispatch(
+        replace(`${redirectLocation}?business=${merchantBusiness}`, {
+          redirectLocation: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.REWARDS_MEMBERSHIP}${PATH_NAME_MAPPING.MEMBERSHIP_DETAIL}`,
+        })
+      );
+    }
+
     const isWebview = getIsWebview(getState());
 
     CleverTap.pushEvent('My Rewards Detail Page - Click Back');
