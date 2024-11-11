@@ -17,6 +17,8 @@ import {
   getLocationSearch,
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
+import { getCustomerCustomerId } from '../../../../../redux/modules/customer/selectors';
+import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import {
   getPointsRewardRewardSettingId,
   getPointsRewardPromotionId,
@@ -36,11 +38,11 @@ export const hideWebProfileForm = createAsyncThunk(
 
 export const fetchPointsRewardDetail = createAsyncThunk(
   'rewards/business/pointsRewardDetail/fetchPointsRewardDetail',
-  async (_, { getState }) => {
+  async (customerId, { getState }) => {
     const state = getState();
     const rewardSettingId = getPointsRewardRewardSettingId(state);
 
-    const result = await getPointsRewardDetail(rewardSettingId);
+    const result = await getPointsRewardDetail(rewardSettingId, { customerId });
 
     return result;
   }
@@ -106,7 +108,11 @@ export const mounted = createAsyncThunk(
     dispatch(fetchMerchantInfo(merchantBusiness));
 
     if (isLogin) {
-      dispatch(fetchPointsRewardDetail());
+      await dispatch(fetchCustomerInfo(merchantBusiness));
+
+      const customerId = getCustomerCustomerId(getState());
+
+      dispatch(fetchPointsRewardDetail(customerId));
     }
   }
 );
