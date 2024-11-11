@@ -22,7 +22,7 @@ import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks'
 import {
   getPointsRewardRewardSettingId,
   getPointsRewardPromotionId,
-  getPointsRewardPromotionUniquePromoCodeId,
+  getPointsRewardPromotionUniquePromoId,
 } from './selectors';
 import { getPointsRewardDetail, postClaimedPointsReward } from './api-request';
 
@@ -167,10 +167,10 @@ export const viewRewardButtonClicked = createAsyncThunk(
     if (status) {
       const merchantBusiness = getMerchantBusiness(getState());
       const id = getPointsRewardPromotionId(getState());
-      const uniquePromotionCodeId = getPointsRewardPromotionUniquePromoCodeId(getState());
+      const uniquePromotionId = getPointsRewardPromotionUniquePromoId(getState());
 
       const pathname = `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.DETAIL}`;
-      const search = `?business=${merchantBusiness}&id=${id}&uniquePromotionId=${uniquePromotionCodeId}`;
+      const search = `?business=${merchantBusiness}&id=${id}&uniquePromotionId=${uniquePromotionId}`;
       const state = {
         redirectLocation: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,
       };
