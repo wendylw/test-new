@@ -428,7 +428,9 @@ export const getShouldShowRewards = createSelector(
 export const getIsPlaceOrderNewMember = createSelector(
   getCustomerIsNewMember,
   getIsJoinMembershipNewMember,
-  (customerIsNewMember, isJoinMembershipNewMember) => customerIsNewMember || isJoinMembershipNewMember
+  getIsPayAtCounterPendingPayment,
+  (customerIsNewMember, isJoinMembershipNewMember, isPayAtCounterPendingPayment) =>
+    (customerIsNewMember || isJoinMembershipNewMember) && !isPayAtCounterPendingPayment
 );
 
 export const getShouldShowRewardsBanner = createSelector(
