@@ -17,10 +17,12 @@ import {
   getLocationSearch,
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
+import { getCustomerCustomerId } from '../../../../../redux/modules/customer/selectors';
+import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import {
   getPointsRewardRewardSettingId,
   getPointsRewardPromotionId,
-  getPointsRewardPromotionUniquePromoId,
+  getPointsRewardPromotionUniquePromoCodeId,
 } from './selectors';
 import { getPointsRewardDetail, postClaimedPointsReward } from './api-request';
 
@@ -36,11 +38,11 @@ export const hideWebProfileForm = createAsyncThunk(
 
 export const fetchPointsRewardDetail = createAsyncThunk(
   'rewards/business/pointsRewardDetail/fetchPointsRewardDetail',
-  async (_, { getState }) => {
+  async (customerId, { getState }) => {
     const state = getState();
     const rewardSettingId = getPointsRewardRewardSettingId(state);
 
-    const result = await getPointsRewardDetail(rewardSettingId);
+    const result = await getPointsRewardDetail(rewardSettingId, { customerId });
 
     return result;
   }
@@ -106,7 +108,11 @@ export const mounted = createAsyncThunk(
     dispatch(fetchMerchantInfo(merchantBusiness));
 
     if (isLogin) {
-      dispatch(fetchPointsRewardDetail());
+      await dispatch(fetchCustomerInfo(merchantBusiness));
+
+      const customerId = getCustomerCustomerId(getState());
+
+      dispatch(fetchPointsRewardDetail(customerId));
     }
   }
 );
@@ -161,10 +167,10 @@ export const viewRewardButtonClicked = createAsyncThunk(
     if (status) {
       const merchantBusiness = getMerchantBusiness(getState());
       const id = getPointsRewardPromotionId(getState());
-      const uniquePromotionId = getPointsRewardPromotionUniquePromoId(getState());
+      const uniquePromotionCodeId = getPointsRewardPromotionUniquePromoCodeId(getState());
 
       const pathname = `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.DETAIL}`;
-      const search = `?business=${merchantBusiness}&id=${id}&uniquePromotionId=${uniquePromotionId}`;
+      const search = `?business=${merchantBusiness}&id=${id}&uniquePromotionId=${uniquePromotionCodeId}`;
       const state = {
         redirectLocation: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,
       };
