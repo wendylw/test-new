@@ -203,5 +203,6 @@
   "PointsRewardRedeemOnlineDescription": "Apply this promotion during checkout on any of the order methods below:",
   "PointsRewardRedeemInStoreTitle": "Redeem in store",
   "PointsRewardRedeemInStoreDescription": "Show this promotion to the cashier for redemption",
-  "GetReward": "Get reward"
+  "GetReward": "Get reward",
+  "ViewReward": "View reward"
 }

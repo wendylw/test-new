@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { push, goBack as historyGoBack } from 'connected-react-router';
+import { push, replace, goBack as historyGoBack } from 'connected-react-router';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
 import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
@@ -17,7 +17,11 @@ import {
   getLocationSearch,
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
-import { getPointsRewardRewardSettingId, getPointsRewardPromotionId } from './selectors';
+import {
+  getPointsRewardRewardSettingId,
+  getPointsRewardPromotionId,
+  getPointsRewardPromotionUniquePromoId,
+} from './selectors';
 import { getPointsRewardDetail, postClaimedPointsReward } from './api-request';
 
 export const showWebProfileForm = createAsyncThunk(
@@ -147,6 +151,27 @@ export const pointsClaimRewardButtonClicked = createAsyncThunk(
         type,
         costOfPoints,
       });
+    }
+  }
+);
+
+export const viewRewardButtonClicked = createAsyncThunk(
+  'rewards/business/pointsRewardDetail/viewRewardButtonClicked',
+  async (status, { dispatch, getState }) => {
+    if (status) {
+      const merchantBusiness = getMerchantBusiness(getState());
+      const id = getPointsRewardPromotionId(getState());
+      const uniquePromotionId = getPointsRewardPromotionUniquePromoId(getState());
+
+      const pathname = `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.DETAIL}`;
+      const search = `?business=${merchantBusiness}&id=${id}&uniquePromotionId=${uniquePromotionId}`;
+      const state = {
+        redirectLocation: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,
+      };
+
+      dispatch(replace(`${pathname}${search}`, state));
+    } else {
+      dispatch(backButtonClicked());
     }
   }
 );
