@@ -18,20 +18,26 @@ import { getIsLogin, getConsumerId, getIsUserProfileIncomplete } from '../../../
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
+import { claimOrderRewards } from '../../../../../../redux/modules/transaction/thunks';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import {
   getIsWebview,
   getIsAlipayMiniProgram,
   getLocationSearch,
   getIsNotLoginInWeb,
+  getSource,
 } from '../../../../../redux/modules/common/selectors';
-import { getIsClaimedOrderRewardsEnabled } from '../../../redux/common/selectors';
+import {
+  getReceiptNumber,
+  getChannel,
+  getIsClaimedOrderRewardsEnabled,
+  getStoreId,
+} from '../../../redux/common/selectors';
 import {
   fetchUniquePromoList,
   fetchUniquePromoListBanners,
   fetchPointsRewardList,
   claimPointsReward,
-  claimOrderRewards,
 } from '../../../redux/common/thunks';
 import { getShowProfileModalSource, getPointsRewardSelectedId } from './selectors';
 import { getMerchantBirthdayCampaign } from './api-request';
@@ -218,13 +224,17 @@ export const mounted = createAsyncThunk('rewards/business/memberDetail/mounted',
   if (isLogin) {
     const consumerId = getConsumerId(getState());
     const isClaimedOrderRewardsEnabled = getIsClaimedOrderRewardsEnabled(getState());
+    const receiptNumber = getReceiptNumber(state);
+    const channel = getChannel(state);
+    const source = getSource(state);
+    const storeId = getStoreId(state);
 
     dispatch(fetchUniquePromoListBanners({ consumerId, limit: UNIQUE_PROMO_BANNER_LIST_LIMIT }));
     dispatch(fetchPointsRewardList(consumerId));
     dispatch(fetchUniquePromoList(consumerId));
 
     if (isClaimedOrderRewardsEnabled) {
-      await dispatch(claimOrderRewards());
+      await dispatch(claimOrderRewards({ business, receiptNumber, channel, source, storeId }));
     }
 
     // customer info must after claim order rewards, maybe customer data will be changed
