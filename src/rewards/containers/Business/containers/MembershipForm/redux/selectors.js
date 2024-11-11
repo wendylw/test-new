@@ -6,10 +6,8 @@ import RewardsStoreCreditsWhiteIcon from '../../../../../../images/rewards-store
 import RewardsDiscountWhiteIcon from '../../../../../../images/rewards-discount-icon-white.svg';
 import RewardsVouchersWhiteIcon from '../../../../../../images/rewards-vouchers-icon-white.svg';
 import { API_REQUEST_STATUS, BECOME_MERCHANT_MEMBER_METHODS } from '../../../../../../common/utils/constants';
-import { FEATURE_KEYS } from '../../../../../../redux/modules/growthbook/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { CUSTOMER_NOT_FOUND_ERROR_CODE, REWARDS_NAMES, GET_REWARDS_ESTIMATION_ERROR_CODES } from '../constants';
-import { getFeatureFlagResult } from '../../../../../../redux/modules/growthbook/selectors';
 import {
   getIsLogin,
   getIsCheckLoginRequestCompleted,
@@ -57,9 +55,6 @@ export const getIsCustomerNotFoundError = createSelector(
   getLoadCustomerRequestError,
   loadCustomerRequestError => loadCustomerRequestError?.code === CUSTOMER_NOT_FOUND_ERROR_CODE
 );
-
-export const getIsJoinMembershipNewDesign = state =>
-  getFeatureFlagResult(state, FEATURE_KEYS.JOIN_MEMBERSHIP_NEW_DESIGN);
 
 export const getShouldShowSkeletonLoader = createSelector(
   getIsLoadMerchantRequestCompleted,
