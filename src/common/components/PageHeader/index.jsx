@@ -26,7 +26,7 @@ const PageHeader = props => {
       {isInWebview ? (
         <NativeHeader
           isPage
-          nativeLeftIcon={nativeLeftIcon}
+          leftIcon={nativeLeftIcon}
           styles={nativeStyles}
           rightContent={rightContent}
           title={title}
