@@ -404,8 +404,9 @@ export const getShouldShowMemberBanner = createSelector(
   getUserIsLogin,
   getIsMerchantMembershipEnabled,
   getHasUserJoinedBusinessMembership,
-  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership) =>
-    isLogin && isMerchantMembershipEnabled && !hasUserJoinedBusinessMembership
+  getIsPayAtCounterPendingPayment,
+  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership, isPayAtCounterPendingPayment) =>
+    isLogin && isMerchantMembershipEnabled && !hasUserJoinedBusinessMembership && !isPayAtCounterPendingPayment
 );
 
 export const getIsPayAtCounterPendingPayment = createSelector(
