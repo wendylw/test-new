@@ -427,11 +427,12 @@ export const getShouldShowRewards = createSelector(
 );
 
 export const getIsPlaceOrderNewMember = createSelector(
+  getIsMerchantMembershipEnabled,
   getCustomerIsNewMember,
   getIsJoinMembershipNewMember,
   getIsPayAtCounterPendingPayment,
-  (customerIsNewMember, isJoinMembershipNewMember, isPayAtCounterPendingPayment) =>
-    (customerIsNewMember || isJoinMembershipNewMember) && !isPayAtCounterPendingPayment
+  (isMerchantMembershipEnabled, customerIsNewMember, isJoinMembershipNewMember, isPayAtCounterPendingPayment) =>
+    isMerchantMembershipEnabled && (customerIsNewMember || isJoinMembershipNewMember) && !isPayAtCounterPendingPayment
 );
 
 export const getShouldShowRewardsBanner = createSelector(
