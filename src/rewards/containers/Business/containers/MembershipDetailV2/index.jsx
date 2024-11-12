@@ -59,6 +59,7 @@ const MembershipDetail = () => {
   return (
     <Frame>
       <PageHeader
+        nativeLeftIcon="whiteBack"
         nativeStyles={{ color: NATIVE_DARK_MODE.TEXT_COLOR, backgroundColor: NATIVE_DARK_MODE.HEADER_BACKGROUND_COLOR }}
         className={styles.MembershipDetailPageHeader}
         leftContentClassName={styles.MembershipDetailPageHeaderLeftContent}

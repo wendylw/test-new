@@ -58,8 +58,11 @@ const MembershipFormProxy = () => {
     <Frame>
       {isWebview && (
         <PageHeader
-          isDarkMode
-          nativeStyles={{ backgroundColor: NATIVE_DARK_MODE.HEADER_BACKGROUND_COLOR }}
+          nativeLeftIcon="whiteBack"
+          nativeStyles={{
+            color: NATIVE_DARK_MODE.TEXT_COLOR,
+            backgroundColor: NATIVE_DARK_MODE.HEADER_BACKGROUND_COLOR,
+          }}
           title={t('JoinOurMembership')}
           onBackArrowClick={handleClickBackButton}
           isShowBackButton={shouldShowBackButton}
