@@ -144,7 +144,6 @@ class NativeHeader extends Component {
 NativeHeader.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   rightContent: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  leftIcon: PropTypes.oneOf(Object.values(ICON_RES)),
   styles: PropTypes.shape({
     color: PropTypes.string,
     backgroundColor: PropTypes.string,
@@ -153,7 +152,6 @@ NativeHeader.propTypes = {
 
 NativeHeader.defaultProps = {
   rightContent: null,
-  leftIcon: ICON_RES.BACK,
   styles: null,
 };
 

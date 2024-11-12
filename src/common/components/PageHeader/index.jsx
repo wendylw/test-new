@@ -4,7 +4,7 @@ import { CaretLeft } from 'phosphor-react';
 import styles from './PageHeader.module.scss';
 import { isWebview } from '../../utils';
 import { getClassName } from '../../utils/ui';
-import NativeHeader from '../../../components/NativeHeader';
+import NativeHeader, { ICON_RES } from '../../../components/NativeHeader';
 
 const isInWebview = isWebview();
 
