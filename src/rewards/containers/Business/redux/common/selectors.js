@@ -139,6 +139,30 @@ export const getIsClaimOrderRewardsIsNewMember = createSelector(
   claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'joinMembershipResult.isNewMember', false)
 );
 
+export const getLoadCustomizeRewardsSettingsRequestData = state =>
+  state.business.common.loadCustomizeRewardsSettingsRequest.data;
+
+export const getLoadCustomizeRewardsSettingsRequestStatus = state =>
+  state.business.common.loadCustomizeRewardsSettingsRequest.status;
+
+export const getLoadCustomizeRewardsSettingsRequestError = state =>
+  state.business.common.loadCustomizeRewardsSettingsRequest.error;
+
+export const getCustomizeRewardsSettingsCashbackRate = createSelector(
+  getLoadCustomizeRewardsSettingsRequestData,
+  loadCustomizeRewardsSettingsRequestData => _get(loadCustomizeRewardsSettingsRequestData, 'cashbackRate', 0)
+);
+
+export const getCustomizeRewardsSettingsLoyaltyRate = createSelector(
+  getLoadCustomizeRewardsSettingsRequestData,
+  loadCustomizeRewardsSettingsRequestData => _get(loadCustomizeRewardsSettingsRequestData, 'loyaltyRate', 0)
+);
+
+export const getCustomizeRewardsSettingsPointsRate = createSelector(
+  getLoadCustomizeRewardsSettingsRequestData,
+  loadCustomizeRewardsSettingsRequestData => _get(loadCustomizeRewardsSettingsRequestData, 'pointRate', 0)
+);
+
 /**
  * Derived selectors
  */

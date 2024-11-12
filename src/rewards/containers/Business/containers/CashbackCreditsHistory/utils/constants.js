@@ -1,3 +1,5 @@
+export const EARNED_REWARDS_BASE_SPEND = 10;
+
 export const CASHBACK_CREDITS_HISTORY_TYPES = {
   EARNED: 'earned',
   EXPENSE: 'expense',
