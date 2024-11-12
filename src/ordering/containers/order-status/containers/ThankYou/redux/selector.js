@@ -400,6 +400,14 @@ export const getIsRewardInfoReady = createSelector(
   }
 );
 
+export const getIsPayAtCounterPendingPayment = createSelector(
+  getOrderPaymentMethod,
+  getOrderStatus,
+  (paymentMethod, orderStatus) =>
+    paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE &&
+    (orderStatus === ORDER_STATUS.PENDING_PAYMENT || orderStatus === ORDER_STATUS.CREATED)
+);
+
 export const getShouldShowMemberBanner = createSelector(
   getUserIsLogin,
   getIsMerchantMembershipEnabled,
@@ -407,14 +415,6 @@ export const getShouldShowMemberBanner = createSelector(
   getIsPayAtCounterPendingPayment,
   (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership, isPayAtCounterPendingPayment) =>
     isLogin && isMerchantMembershipEnabled && !hasUserJoinedBusinessMembership && !isPayAtCounterPendingPayment
-);
-
-export const getIsPayAtCounterPendingPayment = createSelector(
-  getOrderPaymentMethod,
-  getOrderStatus,
-  (paymentMethod, orderStatus) =>
-    paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE &&
-    (orderStatus === ORDER_STATUS.PENDING_PAYMENT || orderStatus === ORDER_STATUS.CREATED)
 );
 
 export const getShouldShowRewards = createSelector(
