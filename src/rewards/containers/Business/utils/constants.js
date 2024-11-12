@@ -42,6 +42,7 @@ export const CLAIMED_POINTS_REWARD_ERROR_CODES = {
  * UI
  */
 export const NATIVE_DARK_MODE = {
+  TEXT_COLOR: '#ffffff',
   HEADER_BACKGROUND_COLOR: '#231651',
 };
 // end of UI

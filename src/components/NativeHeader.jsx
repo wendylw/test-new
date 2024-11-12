@@ -6,7 +6,13 @@ import _isEqual from 'lodash/isEqual';
 import _isArray from 'lodash/isArray';
 import * as NativeMethods from '../utils/native-methods';
 
+export const STYLES = {
+  TEXT_COLOR: '#303030',
+  BACKGROUND_COLOR: '#FFFFFF',
+};
+
 export const ICON_RES = {
+  WHITE_BACK: 'whiteBack',
   BACK: 'back',
   CLOSE: 'close',
   SHARE: 'share',
@@ -15,37 +21,23 @@ export const ICON_RES = {
   SUPPORT_AGENT: 'support_agent',
 };
 
-export const TEXT_COLOR = '#303030';
-
-export const DARK_MODE = {
-  TEXT_COLOR: '#FFFFFF',
-  ICON_RES: {
-    BACK: 'whiteBack',
-    CLOSE: 'whiteClose',
-  },
-};
-
 function getNativeHeaderParams(props) {
-  const { title, rightContent, titleAlignment, isPage, isDarkMode, styles } = props;
-  const { backgroundColor } = styles || {};
-  const { BACK, CLOSE } = isDarkMode ? DARK_MODE.ICON_RES : ICON_RES;
-  const textColor = isDarkMode ? DARK_MODE.TEXT_COLOR : TEXT_COLOR;
+  const { title, rightContent, titleAlignment, isPage, leftIcon, styles } = props;
+  const { color, backgroundColor } = styles || {};
+  const textColor = color || STYLES.TEXT_COLOR;
+  const leftIconRes = leftIcon || (isPage ? ICON_RES.BACK : ICON_RES.CLOSE);
   const headerParams = {
     left: null,
     center: null,
     right: null,
-    headerBackgroundColor: null,
+    headerBackgroundColor: backgroundColor || STYLES.BACKGROUND_COLOR,
   };
-
-  if (backgroundColor) {
-    headerParams.headerBackgroundColor = backgroundColor;
-  }
 
   headerParams.left = {
     type: 'button',
     id: 'headerBackButton',
     // If isPage is true that header display back button otherwise close button on left
-    iconRes: isPage ? BACK : CLOSE,
+    iconRes: leftIconRes,
     events: ['onClick'],
     textColor,
   };
@@ -67,7 +59,7 @@ function getNativeHeaderParams(props) {
       iconUrl: content.icon,
       iconRes: content.iconRes,
       text: content.text,
-      textColor: _get(content.style, 'color', '#303030'),
+      textColor: _get(content.style, 'color', textColor),
       events: ['onClick'],
     }));
   }
@@ -152,13 +144,16 @@ class NativeHeader extends Component {
 NativeHeader.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   rightContent: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  leftIcon: PropTypes.oneOf(Object.values(ICON_RES)),
   styles: PropTypes.shape({
+    color: PropTypes.string,
     backgroundColor: PropTypes.string,
   }),
 };
 
 NativeHeader.defaultProps = {
   rightContent: null,
+  leftIcon: ICON_RES.BACK,
   styles: null,
 };
 
