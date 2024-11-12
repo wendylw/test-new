@@ -4,7 +4,6 @@ import {
   fetchUniquePromoList,
   fetchUniquePromoListBanners,
   fetchPointsRewardList,
-  claimPointsReward,
   loadOrderRewards,
   claimOrderRewards,
   fetchCustomizeRewardsSettings,
@@ -32,10 +31,6 @@ const initialState = {
     status: null,
     error: null,
   },
-  claimPointsRewardRequest: {
-    status: null,
-    error: null,
-  },
   loadOrderRewardsRequest: {
     data: null,
     status: null,
@@ -56,11 +51,7 @@ const initialState = {
 export const { actions, reducer } = createSlice({
   name: 'rewards/business/common',
   initialState,
-  reducers: {
-    claimPointsRewardRequestReset: state => {
-      state.claimPointsRewardRequest = initialState.claimPointsRewardRequest;
-    },
-  },
+  reducers: {},
   extraReducers: {
     [confirmToShareConsumerInfo.pending.type]: state => {
       state.confirmSharingConsumerInfoRequest.status = API_REQUEST_STATUS.PENDING;
@@ -113,18 +104,6 @@ export const { actions, reducer } = createSlice({
     [fetchPointsRewardList.rejected.type]: (state, { error }) => {
       state.loadPointsRewardListRequest.status = API_REQUEST_STATUS.REJECTED;
       state.loadPointsRewardListRequest.error = error;
-    },
-    [claimPointsReward.pending.type]: state => {
-      state.claimPointsRewardRequest.status = API_REQUEST_STATUS.PENDING;
-      state.claimPointsRewardRequest.error = null;
-    },
-    [claimPointsReward.fulfilled.type]: state => {
-      state.claimPointsRewardRequest.status = API_REQUEST_STATUS.FULFILLED;
-      state.claimPointsRewardRequest.error = null;
-    },
-    [claimPointsReward.rejected.type]: (state, { error }) => {
-      state.claimPointsRewardRequest.status = API_REQUEST_STATUS.REJECTED;
-      state.claimPointsRewardRequest.error = error;
     },
     [loadOrderRewards.pending.type]: state => {
       state.loadOrderRewardsRequest.status = API_REQUEST_STATUS.PENDING;

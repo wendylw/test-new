@@ -1,31 +1,21 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useWindowSize } from 'react-use';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { CaretRight } from 'phosphor-react';
 import RewardsPointsIcon from '../../../../../../../images/rewards-icon-points.svg';
-import PointsRewardClaimedIcon from '../../../../../../../images/rewards-points-claimed.svg';
 import { DESKTOP_PAGE_WIDTH, PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { POINTS_REWARD_WIDTHS } from '../../utils/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import CleverTap from '../../../../../../../utils/clevertap';
 import { getLocationSearch } from '../../../../../../redux/modules/common/selectors';
-import {
-  getIsPointsRewardListShown,
-  getIsClaimPointsRewardPending,
-  getIsClaimPointsRewardFulfilled,
-  getClaimPointsRewardErrorI18nKeys,
-} from '../../../../redux/common/selectors';
-import { actions as businessCommonActions } from '../../../../redux/common';
+import { getIsPointsRewardListShown } from '../../../../redux/common/selectors';
 import { getMembershipDetailPointsRewardList, getIsPointsRewardListMoreButtonShown } from '../../redux/selectors';
 import Button from '../../../../../../../common/components/Button';
 import Slider from '../../../../../../../common/components/Slider';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
-import PageToast from '../../../../../../../common/components/PageToast';
-import Loader from '../../../../../../../common/components/Loader';
 import Tag from '../../../../../../../common/components/Tag';
-import { alert } from '../../../../../../../common/utils/feedback';
 import Ticket from '../../../../components/Ticket';
 import styles from './PointsRewards.module.scss';
 
@@ -50,16 +40,12 @@ const getTicketWidth = windowWidth => {
 };
 
 const PointsRewards = () => {
-  const dispatch = useDispatch();
   const { t } = useTranslation(['Rewards']);
   const { width } = useWindowSize();
   const history = useHistory();
   const membershipDetailPointsRewardList = useSelector(getMembershipDetailPointsRewardList);
   const isPointsRewardListMoreButtonShown = useSelector(getIsPointsRewardListMoreButtonShown);
   const isPointsRewardListShown = useSelector(getIsPointsRewardListShown);
-  const isClaimPointsRewardPending = useSelector(getIsClaimPointsRewardPending);
-  const isClaimPointsRewardFulfilled = useSelector(getIsClaimPointsRewardFulfilled);
-  const claimPointsRewardErrorI18nKeys = useSelector(getClaimPointsRewardErrorI18nKeys);
   const search = useSelector(getLocationSearch);
   const ticketWidth = useMemo(() => getTicketWidth(width), [width]);
   const goToPointsRewardsListPage = useCallback(() => {
@@ -143,102 +129,61 @@ const PointsRewards = () => {
     [handleClickRewardItem, membershipDetailPointsRewardList, t]
   );
 
-  useEffect(() => {
-    if (isClaimPointsRewardFulfilled) {
-      alert(
-        <div className={styles.PointsRewardsClaimedAlertContent}>
-          <div className={styles.PointsRewardsClaimedAlertIcon}>
-            <ObjectFitImage
-              noCompression
-              src={PointsRewardClaimedIcon}
-              alt="Points Reward Claimed Successful Icon in StoreHub"
-            />
-          </div>
-          <h4 className={styles.PointsRewardsClaimedAlertTitle}>{t('PointsRewardClaimedTitle')}</h4>
-          <p className={styles.PointsRewardsClaimedAlertDescription}>{t('PointsRewardClaimedDescription')}</p>
-        </div>,
-        {
-          onClose: () => {
-            dispatch(businessCommonActions.claimPointsRewardRequestReset());
-          },
-        }
-      );
-    }
-  }, [t, isClaimPointsRewardFulfilled, dispatch]);
-
-  useEffect(() => {
-    if (claimPointsRewardErrorI18nKeys) {
-      const { titleI18nKey, descriptionI18nKey } = claimPointsRewardErrorI18nKeys || {};
-
-      alert(t(descriptionI18nKey), {
-        title: t(titleI18nKey),
-        onClose: () => {
-          dispatch(businessCommonActions.claimPointsRewardRequestReset());
-        },
-      });
-    }
-  }, [claimPointsRewardErrorI18nKeys, t, dispatch]);
-
   if (!isPointsRewardListShown) {
     return null;
   }
 
   return (
-    <>
-      <section className={styles.PointsRewardsSection}>
-        <div className={styles.PointsRewardsSectionTopContainer}>
-          <h2 className={styles.PointsRewardsSectionTitle}>{t('GetRewards')}</h2>
-          <Button
-            type="text"
-            size="small"
-            theme="info"
-            className={styles.PointsRewardsSectionViewAllButton}
-            contentClassName={styles.PointsRewardsSectionViewAllButtonContent}
-            data-test-id="rewards.business.membership-detail.get-rewards.view-all-button"
-            onClick={goToPointsRewardsListPage}
-          >
-            {t('ViewAll')}
-          </Button>
-        </div>
-        <div className={styles.PointsRewardsContentContainer}>
-          {/*
+    <section className={styles.PointsRewardsSection}>
+      <div className={styles.PointsRewardsSectionTopContainer}>
+        <h2 className={styles.PointsRewardsSectionTitle}>{t('GetRewards')}</h2>
+        <Button
+          type="text"
+          size="small"
+          theme="info"
+          className={styles.PointsRewardsSectionViewAllButton}
+          contentClassName={styles.PointsRewardsSectionViewAllButtonContent}
+          data-test-id="rewards.business.membership-detail.get-rewards.view-all-button"
+          onClick={goToPointsRewardsListPage}
+        >
+          {t('ViewAll')}
+        </Button>
+      </div>
+      <div className={styles.PointsRewardsContentContainer}>
+        {/*
             Two sliders separate for no rendering a extra empty slide,
             if isPointsRewardListMoreButtonShown inside Slider will happen this issue
           */}
-          {isPointsRewardListMoreButtonShown ? (
-            <Slider
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              {...slideProps}
-              afterAddonSlide={{
-                style: MORE_BUTTON_SLIDE_STYLE,
-                content: (
-                  <Button
-                    type="text"
-                    theme="ghost"
-                    className={styles.PointsRewardsMoreButton}
-                    data-test-id="rewards.business.membership-detail.get-rewards.more-button"
-                    onClick={goToPointsRewardsListPage}
-                  >
-                    <i className={styles.PointsRewardsMoreButtonIcon}>
-                      <CaretRight size={24} />
-                    </i>
-                    <span className={styles.PointsRewardsMoreButtonText}>{t('More')}</span>
-                  </Button>
-                ),
-              }}
-            >
-              {pointsRewardListElements}
-            </Slider>
-          ) : (
+        {isPointsRewardListMoreButtonShown ? (
+          <Slider
             // eslint-disable-next-line react/jsx-props-no-spreading
-            <Slider {...slideProps}>{pointsRewardListElements}</Slider>
-          )}
-        </div>
-      </section>
-      {isClaimPointsRewardPending && (
-        <PageToast icon={<Loader className="tw-m-8 sm:tw-m-8px" size={30} />}>{`${t('Processing')}...`}</PageToast>
-      )}
-    </>
+            {...slideProps}
+            afterAddonSlide={{
+              style: MORE_BUTTON_SLIDE_STYLE,
+              content: (
+                <Button
+                  type="text"
+                  theme="ghost"
+                  className={styles.PointsRewardsMoreButton}
+                  data-test-id="rewards.business.membership-detail.get-rewards.more-button"
+                  onClick={goToPointsRewardsListPage}
+                >
+                  <i className={styles.PointsRewardsMoreButtonIcon}>
+                    <CaretRight size={24} />
+                  </i>
+                  <span className={styles.PointsRewardsMoreButtonText}>{t('More')}</span>
+                </Button>
+              ),
+            }}
+          >
+            {pointsRewardListElements}
+          </Slider>
+        ) : (
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          <Slider {...slideProps}>{pointsRewardListElements}</Slider>
+        )}
+      </div>
+    </section>
   );
 };
 

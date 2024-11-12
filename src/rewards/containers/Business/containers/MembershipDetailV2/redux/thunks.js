@@ -8,7 +8,6 @@ import {
   closeWebView,
   showCompleteProfilePageAsync,
 } from '../../../../../../utils/native-methods';
-import { SHOW_PROFILE_FROM_POINTS_REWARDS } from '../utils/constants';
 import {
   initUserInfo,
   loginUserByBeepApp,
@@ -30,10 +29,9 @@ import {
   fetchUniquePromoList,
   fetchUniquePromoListBanners,
   fetchPointsRewardList,
-  claimPointsReward,
   claimOrderRewards,
 } from '../../../redux/common/thunks';
-import { getFetchUniquePromoListBannersLimit, getShowProfileModalSource, getPointsRewardSelectedId } from './selectors';
+import { getFetchUniquePromoListBannersLimit } from './selectors';
 import { getMerchantBirthdayCampaign } from './api-request';
 
 export const fetchMerchantBirthdayCampaign = createAsyncThunk(
@@ -52,94 +50,17 @@ export const showWebProfileForm = createAsyncThunk('rewards/business/memberDetai
 
 export const hideWebProfileForm = createAsyncThunk('rewards/business/memberDetail/hideWebProfileForm', async () => {});
 
-export const showWebSkipButton = createAsyncThunk('rewards/business/memberDetail/showWebSkipButton', async () => {});
-
-export const hideWebSkipButton = createAsyncThunk('rewards/business/memberDetail/hideWebSkipButton', async () => {});
-
-export const setProfileSource = createAsyncThunk(
-  'rewards/business/memberDetail/setProfileSource',
-  async source => source
-);
-
-export const clearProfileSource = createAsyncThunk('rewards/business/memberDetail/clearProfileSource', async () => {});
-
-export const setPointRewardSelectedId = createAsyncThunk(
-  'rewards/business/memberDetail/setPointRewardSelectedId',
-  async id => id
-);
-
-export const clearPointRewardSelectedId = createAsyncThunk(
-  'rewards/business/memberDetail/clearPointRewardSelectedId',
-  async () => {}
-);
-
 export const showProfileForm = createAsyncThunk(
   'rewards/business/memberDetail/showProfileForm',
-  async ({ hideSkipButton = true, source } = {}, { dispatch, getState }) => {
+  async (_, { dispatch, getState }) => {
     const isWebview = getIsWebview(getState());
 
     if (isWebview) {
-      await showCompleteProfilePageAsync({ hideSkipButton });
+      await showCompleteProfilePageAsync();
       return;
     }
 
     await dispatch(showWebProfileForm());
-    !hideSkipButton && (await dispatch(showWebSkipButton()));
-    source && (await dispatch(setProfileSource(source)));
-  }
-);
-
-export const hideProfileForm = createAsyncThunk(
-  'rewards/business/memberDetail/hideProfileForm',
-  async (_, { dispatch }) => {
-    await dispatch(hideWebProfileForm());
-    await dispatch(hideWebSkipButton());
-    await dispatch(clearProfileSource());
-  }
-);
-
-export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
-  'rewards/business/memberDetail/claimPointsRewardAndRefreshRewardsList',
-  async (id, { dispatch, getState }) => {
-    const state = getState();
-    const consumerId = getConsumerId(state);
-    const business = getMerchantBusiness(state);
-
-    await dispatch(claimPointsReward({ consumerId, id }));
-    dispatch(fetchPointsRewardList(consumerId));
-    dispatch(fetchCustomerInfo(business));
-    dispatch(clearPointRewardSelectedId());
-  }
-);
-
-export const skipProfileButtonClicked = createAsyncThunk(
-  'rewards/business/memberDetail/skipProfileButtonClicked',
-  async (_, { dispatch, getState }) => {
-    const state = getState();
-    const showProfileModalSource = getShowProfileModalSource(state);
-
-    // User wants to claim points to get rewards, Need to complete profile info first.
-    // Once the user completes the profile, Continue claiming process.
-    if (showProfileModalSource === SHOW_PROFILE_FROM_POINTS_REWARDS) {
-      const pointsRewardSelectedId = getPointsRewardSelectedId(getState());
-
-      dispatch(claimPointsRewardAndRefreshRewardsList(pointsRewardSelectedId));
-    }
-  }
-);
-
-export const saveProfileButtonClicked = createAsyncThunk(
-  'rewards/business/memberDetail/saveProfileButtonClicked',
-  async (_, { dispatch, getState }) => {
-    const showProfileModalSource = getShowProfileModalSource(getState());
-
-    // User wants to claim points to get rewards, Need to complete profile info first.
-    // Once the user completes the profile, Continue claiming process.
-    if (showProfileModalSource === SHOW_PROFILE_FROM_POINTS_REWARDS) {
-      const pointsRewardSelectedId = getPointsRewardSelectedId(getState());
-
-      dispatch(claimPointsRewardAndRefreshRewardsList(pointsRewardSelectedId));
-    }
   }
 );
 

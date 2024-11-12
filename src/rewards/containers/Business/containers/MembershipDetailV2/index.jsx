@@ -13,9 +13,7 @@ import {
   backButtonClicked,
   membershipTierTabClickedForCleverTap,
   closeButtonClicked,
-  hideProfileForm,
-  skipProfileButtonClicked,
-  saveProfileButtonClicked,
+  hideWebProfileForm,
 } from './redux/thunks';
 import { getShouldShowBackButton, getIsProfileModalShow, getIsMemberCardShow } from './redux/selectors';
 import Frame from '../../../../../common/components/Frame';
@@ -47,9 +45,7 @@ const MembershipDetail = () => {
     tierName => dispatch(membershipTierTabClickedForCleverTap(tierName)),
     [dispatch]
   );
-  const handleClickSkipProfileButton = useCallback(() => dispatch(skipProfileButtonClicked()), [dispatch]);
-  const handleClickSaveProfileButton = useCallback(() => dispatch(saveProfileButtonClicked()), [dispatch]);
-  const handleCloseCompleteProfile = useCallback(() => dispatch(hideProfileForm()), [dispatch]);
+  const handleCloseCompleteProfile = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
   useMount(() => {
     dispatch(mounted());
@@ -86,12 +82,7 @@ const MembershipDetail = () => {
         <MembershipTiersTabs onClickMembershipTierTab={handleClickMembershipTierTab} />
       </section>
       <MemberPrompt />
-      <CompleteProfile
-        show={isProfileModalShow}
-        onSave={handleClickSaveProfileButton}
-        onSkip={handleClickSkipProfileButton}
-        onClose={handleCloseCompleteProfile}
-      />
+      <CompleteProfile show={isProfileModalShow} onClose={handleCloseCompleteProfile} />
     </Frame>
   );
 };
