@@ -7,6 +7,8 @@ import { CLAIMED_CASHBACK_STATUS } from '../../../utils/constants';
 
 export const GET_REWARDS_MAX_LENGTH = 5;
 
+export const UNIQUE_PROMO_BANNER_LIST_LIMIT = 2;
+
 export const CLAIMED_ORDER_REWARD_NAMES = {
   CASHBACK: 'cashback',
   POINTS: 'points',

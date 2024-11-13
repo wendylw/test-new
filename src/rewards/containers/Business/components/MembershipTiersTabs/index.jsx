@@ -96,7 +96,7 @@ const MembershipTiersTabs = ({ onClickMembershipTierTab }) => {
               }}
             />
             {merchantMembershipTiersBenefits.map((benefit, index) => {
-              const { prompt, description, isLocked, key } = benefit;
+              const { prompt, conditions, isLocked, key } = benefit;
               const benefitDescriptionClassName = getClassName([
                 styles.MembershipTiersTabContent,
                 styles.MembershipTiersTabContent__tab,
@@ -111,7 +111,7 @@ const MembershipTiersTabs = ({ onClickMembershipTierTab }) => {
                 <div key={key} className={benefitDescriptionClassName}>
                   {prompt && <p className={styles.MembershipTiersTabContentPrompt}>{prompt}</p>}
                   <ul className={styles.MembershipTiersTabContentDescription}>
-                    {description.map((item, descriptionItemIndex) => (
+                    {conditions.map((item, descriptionItemIndex) => (
                       <li
                         // eslint-disable-next-line react/no-array-index-key
                         key={`${key}-item-${descriptionItemIndex}`}

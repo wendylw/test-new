@@ -26,21 +26,5 @@ export const getPointsRewardList = async ({ consumerId, business: merchantName }
     },
   });
 
-export const getOrderRewards = async ({ receiptNumber, business: merchantName, channel }) =>
-  get(`/api/v3/transactions/${receiptNumber}/rewards-estimation`, {
-    queryParams: {
-      merchantName,
-      channel,
-    },
-  });
-
-export const postClaimedOrderRewards = async ({ receiptNumber, business: merchantName, channel, storeId, source }) =>
-  post(`/api/v3/transactions/${receiptNumber}/rewards`, {
-    merchantName,
-    channel,
-    storeId,
-    source,
-  });
-
 export const getCustomizeRewardsSettings = async business =>
   get(`/api/v3/merchants/${business}/rewards-settings/customize`);

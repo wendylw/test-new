@@ -4,8 +4,6 @@ import {
   fetchUniquePromoList,
   fetchUniquePromoListBanners,
   fetchPointsRewardList,
-  loadOrderRewards,
-  claimOrderRewards,
   fetchCustomizeRewardsSettings,
 } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
@@ -28,16 +26,6 @@ const initialState = {
   },
   loadPointsRewardListRequest: {
     data: [],
-    status: null,
-    error: null,
-  },
-  loadOrderRewardsRequest: {
-    data: null,
-    status: null,
-    error: null,
-  },
-  claimOrderRewardsRequest: {
-    data: null,
     status: null,
     error: null,
   },
@@ -104,32 +92,6 @@ export const { actions, reducer } = createSlice({
     [fetchPointsRewardList.rejected.type]: (state, { error }) => {
       state.loadPointsRewardListRequest.status = API_REQUEST_STATUS.REJECTED;
       state.loadPointsRewardListRequest.error = error;
-    },
-    [loadOrderRewards.pending.type]: state => {
-      state.loadOrderRewardsRequest.status = API_REQUEST_STATUS.PENDING;
-      state.loadOrderRewardsRequest.error = null;
-    },
-    [loadOrderRewards.fulfilled.type]: (state, { payload }) => {
-      state.loadOrderRewardsRequest.data = payload;
-      state.loadOrderRewardsRequest.status = API_REQUEST_STATUS.FULFILLED;
-      state.loadOrderRewardsRequest.error = null;
-    },
-    [loadOrderRewards.rejected.type]: (state, { error }) => {
-      state.loadOrderRewardsRequest.status = API_REQUEST_STATUS.REJECTED;
-      state.loadOrderRewardsRequest.error = error;
-    },
-    [claimOrderRewards.pending.type]: state => {
-      state.claimOrderRewardsRequest.status = API_REQUEST_STATUS.PENDING;
-      state.claimOrderRewardsRequest.error = null;
-    },
-    [claimOrderRewards.fulfilled.type]: (state, { payload }) => {
-      state.claimOrderRewardsRequest.data = payload;
-      state.claimOrderRewardsRequest.status = API_REQUEST_STATUS.FULFILLED;
-      state.claimOrderRewardsRequest.error = null;
-    },
-    [claimOrderRewards.rejected.type]: (state, { error }) => {
-      state.claimOrderRewardsRequest.status = API_REQUEST_STATUS.REJECTED;
-      state.claimOrderRewardsRequest.error = error;
     },
     [fetchCustomizeRewardsSettings.pending.type]: state => {
       state.loadCustomizeRewardsSettingsRequest.status = API_REQUEST_STATUS.PENDING;
