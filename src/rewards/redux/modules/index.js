@@ -6,6 +6,7 @@ import completeProfile from '../../containers/CompleteProfile/redux';
 import growthbook from '../../../redux/modules/growthbook';
 import merchant from '../../../redux/modules/merchant';
 import membership from '../../../redux/modules/membership';
+import transaction from '../../../redux/modules/transaction';
 import user from '../../../redux/modules/user';
 import customer from './customer';
 import common from './common';
@@ -24,6 +25,7 @@ const rootReducer = history =>
     growthbook,
     app,
     membership,
+    transaction,
   });
 
 export default rootReducer;

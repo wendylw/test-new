@@ -19,6 +19,7 @@ import promoPayLater from '../../containers/Promotion/redux';
 import foodCourt from '../../containers/food-court/redux';
 import growthbook from '../../../redux/modules/growthbook';
 import membership from '../../../redux/modules/membership';
+import transaction from '../../../redux/modules/transaction';
 import merchant from '../../../redux/modules/merchant';
 
 const rootReducer = history =>
@@ -43,6 +44,7 @@ const rootReducer = history =>
     foodCourt,
     growthbook,
     membership,
+    transaction,
     merchant,
   });
 

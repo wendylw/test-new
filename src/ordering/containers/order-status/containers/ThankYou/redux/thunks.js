@@ -9,7 +9,7 @@ import Constants from '../../../../../../utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
 import * as NativeMethods from '../../../../../../utils/native-methods';
 import { getPaidToCurrentEventDurationMinutes, getIsProfileMissingSkippedExpired } from '../utils';
-import { PROFILE_DISPLAY_DELAY_DURATION } from '../constants';
+import { PROFILE_DISPLAY_DELAY_DURATION, ORDER_CLAIM_POINTS_CASHBACK_CHANNEL } from '../constants';
 import { BECOME_MERCHANT_MEMBER_METHODS, PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import {
   actions as appActions,
@@ -26,6 +26,7 @@ import { getOrder, getReceiptNumber, getOrderStoreId } from '../../../redux/sele
 import { loadOrder } from '../../../redux/thunks';
 import { joinMembership } from '../../../../../../redux/modules/membership/thunks';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
+import { claimOrderRewards } from '../../../../../../redux/modules/transaction/thunks';
 import logger from '../../../../../../utils/monitoring/logger';
 import { getRedirectFrom } from './selector';
 import config from '../../../../../../config';
@@ -258,6 +259,22 @@ export const joinBusinessMembership = createAsyncThunk(
     const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
 
     await dispatch(joinMembership({ business, source, consumerId, storeId }));
+    await dispatch(appActions.loadCustomerInfo(consumerId));
+  }
+);
+
+export const claimOrderCashbackAndPoints = createAsyncThunk(
+  'ordering/orderStatus/thankYou/claimOrderCashbackAndPoints',
+  async (receiptNumber, { dispatch, getState }) => {
+    const state = getState();
+    const business = getBusiness(state);
+    const consumerId = getUserConsumerId(state);
+    const storeId = getOrderStoreId(state);
+    const source = BECOME_MERCHANT_MEMBER_METHODS.THANK_YOU_CASHBACK_CLICK;
+
+    await dispatch(
+      claimOrderRewards({ business, receiptNumber, channel: ORDER_CLAIM_POINTS_CASHBACK_CHANNEL, source, storeId })
+    );
     await dispatch(appActions.loadCustomerInfo(consumerId));
   }
 );
