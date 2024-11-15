@@ -38,6 +38,14 @@ export const getPointsRewardCostOfPoints = createSelector(getLoadPointsRewardDet
   _get(loadPointsRewardDetailData, 'costOfPoints', 0)
 );
 
+export const getPointsRewardIsEnabled = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
+  _get(loadPointsRewardDetailData, 'isEnabled', false)
+);
+
+export const getPointsRewardIsDeleted = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
+  _get(loadPointsRewardDetailData, 'isDeleted', false)
+);
+
 export const getPointsRewardMinSpendAmount = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
   _get(loadPointsRewardDetailData, 'minSpendAmount', 0)
 );
@@ -172,6 +180,12 @@ export const getIsPointsRewardRedeemOnlineShow = createSelector(
 export const getIsPointsRewardRedeemInStoreShow = createSelector(
   getPointsRewardLimitsAppliedSources,
   pointsRewardLimitsAppliedSources => pointsRewardLimitsAppliedSources.includes(REWARDS_APPLIED_SOURCES.POS)
+);
+
+export const getIsPointsRewardGetRewardButtonDisabled = createSelector(
+  getPointsRewardIsEnabled,
+  getPointsRewardIsDeleted,
+  (pointsRewardIsEnabled, pointsRewardIsDeleted) => !pointsRewardIsEnabled || pointsRewardIsDeleted
 );
 
 export const getIsClaimPointsRewardPending = createSelector(
