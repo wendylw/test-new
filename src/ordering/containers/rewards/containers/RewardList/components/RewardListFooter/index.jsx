@@ -17,7 +17,7 @@ const RewardListFooter = () => {
           disabled={false}
           onClick={() => {}}
         >
-          {t('ApplyNow')}
+          {t('Apply')}
         </Button>
       </div>
     </PageFooter>
