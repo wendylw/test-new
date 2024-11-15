@@ -9,7 +9,7 @@ import { getLocationSearch } from '../../../../../../redux/modules/common/select
 import { getUniquePromoList } from '../../../../redux/common/selectors';
 import Tag from '../../../../../../../common/components/Tag';
 import Button from '../../../../../../../common/components/Button';
-import Ticket from '../../../../components/Ticket';
+import Ticket from '../../../../../../../common/components/Ticket';
 import styles from './UniquePromoList.module.scss';
 
 const UNIQUE_PROMO_STATUS_I18KEYS = {

@@ -16,7 +16,7 @@ import { getIsMyRewardsSectionShow } from '../../redux/selectors';
 import Button from '../../../../../../../common/components/Button';
 import Tag from '../../../../../../../common/components/Tag';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
-import Ticket from '../../../../components/Ticket';
+import Ticket from '../../../../../../../common/components/Ticket';
 import styles from './MyRewards.module.scss';
 
 const UNIQUE_PROMO_STATUS_I18KEYS = {

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { REWARDS_NAMES } from '../../constants';
 import { getOrderRewards } from '../../redux/selectors';
 import { RewardsPoint, RewardsCashback, DirectionArrow } from '../../../../../../../common/components/Icons';
-import Ticket from '../../../../components/Ticket';
+import Ticket from '../../../../../../../common/components/Ticket';
 import styles from './OrderRewardsDescription.module.scss';
 
 const REWARDS_UI_SETTINGS = {

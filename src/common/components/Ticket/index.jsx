@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getClassName } from '../../../../../common/utils/ui';
+import { getClassName } from '../../utils/ui';
 import styles from './Ticket.module.scss';
 
 const ORIENTATION = {
