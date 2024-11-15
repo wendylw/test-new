@@ -1,0 +1,11 @@
+.TicketListContainer {
+  @apply tw-p-12 sm:tw-p-12px;
+}
+
+.TicketListTitle {
+  @apply tw-pb-12 sm:tw-pb-12px tw-text-lg tw-font-bold;
+}
+
+.TicketList {
+  @apply tw-space-y-12 sm:tw-space-y-12px;
+}

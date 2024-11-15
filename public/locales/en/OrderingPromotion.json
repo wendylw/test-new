@@ -1,7 +1,7 @@
 {
   "MyVouchersAndPromos": "My Vouchers & Promos",
-  "Apply": "Apply",
   "DiscountValueText": "{{discount}} OFF",
+  "YourVouchers": "Your voucher(s)",
   "Success": "Apply Success",
   "EnterPromoCodeHere": "Enter Promo Code Here",
   "41003UniversalPromotionError": "Promo code is applicable for delivery orders only",
@@ -47,7 +47,6 @@
   "Voucher": "Voucher",
   "PromoValidUntil": "Valid until {{date}}",
   "PromoValidFrom": "Valid from {{date}}",
-  "YourVouchers": "Your voucher(s)",
   "InapplicableVouchers": "Inapplicable voucher(s)",
   "PromoInvalid": "Sorry, the promo/voucher code is invalid",
   "NoVouchersYet": "You don't have any vouchers yet"
