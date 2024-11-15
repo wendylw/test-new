@@ -42,9 +42,9 @@ export const getPointsRewardMinSpendAmount = createSelector(getLoadPointsRewardD
   _get(loadPointsRewardDetailData, 'minSpendAmount', 0)
 );
 
-export const getPointsRewardPromotionUniquePromoId = createSelector(
+export const getPointsRewardPromotionUniquePromoCodeId = createSelector(
   getLoadPointsRewardDetailData,
-  loadPointsRewardDetailData => _get(loadPointsRewardDetailData, 'uniquePromotionId', null)
+  loadPointsRewardDetailData => _get(loadPointsRewardDetailData, 'uniquePromotionCodeId', null)
 );
 
 export const getPointsRewardPromotionId = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>

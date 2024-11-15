@@ -17,7 +17,7 @@ import {
   getLocationSearch,
   getIsNotLoginInWeb,
 } from '../../../../../redux/modules/common/selectors';
-import { getUniquePromoUniquePromotionId } from './selectors';
+import { getUniquePromoUniquePromotionCodeId } from './selectors';
 import { getUniquePromotionDetail } from './api-request';
 
 export const fetchUniquePromoDetail = createAsyncThunk(
@@ -25,9 +25,9 @@ export const fetchUniquePromoDetail = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState();
     const consumerId = getConsumerId(state);
-    const uniquePromotionId = getUniquePromoUniquePromotionId(state);
+    const uniquePromotionCodeId = getUniquePromoUniquePromotionCodeId(state);
 
-    const result = await getUniquePromotionDetail({ consumerId, uniquePromotionId });
+    const result = await getUniquePromotionDetail({ consumerId, uniquePromotionCodeId });
 
     return result;
   }

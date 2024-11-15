@@ -22,10 +22,10 @@ const UniquePromoList = () => {
   const search = useSelector(getLocationSearch);
   const uniquePromoList = useSelector(getUniquePromoList);
   const handleClickRewardItem = useCallback(
-    (id, uniquePromotionId) => {
+    (id, uniquePromotionCodeId) => {
       const myRewardDetail = {
         pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.DETAIL}`,
-        search: `${search || '?'}&id=${id}&uniquePromotionId=${uniquePromotionId}`,
+        search: `${search || '?'}&id=${id}&uniquePromotionCodeId=${uniquePromotionCodeId}`,
       };
 
       CleverTap.pushEvent('My Rewards Page - Click Reward (My Rewards)');
@@ -48,7 +48,7 @@ const UniquePromoList = () => {
         const {
           key: uniquePromoKey,
           id,
-          uniquePromotionId,
+          uniquePromotionCodeId,
           value,
           name,
           expiringDate,
@@ -75,7 +75,7 @@ const UniquePromoList = () => {
               className={styles.UniquePromoButton}
               contentClassName={styles.UniquePromoButtonContent}
               onClick={() => {
-                handleClickRewardItem(id, uniquePromotionId);
+                handleClickRewardItem(id, uniquePromotionCodeId);
               }}
             >
               <Ticket

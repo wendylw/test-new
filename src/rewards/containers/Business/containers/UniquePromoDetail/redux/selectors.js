@@ -14,7 +14,7 @@ import {
 
 export const getUniquePromoId = () => getQueryString('id');
 
-export const getUniquePromoUniquePromotionId = () => getQueryString('uniquePromotionId');
+export const getUniquePromoUniquePromotionCodeId = () => getQueryString('uniquePromotionCodeId');
 
 export const getLoadUniquePromoDetailData = state => state.business.uniquePromoDetail.loadUniquePromoDetailRequest.data;
 

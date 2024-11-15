@@ -195,13 +195,13 @@ export const getUniquePromoList = createSelector(
         return promo;
       }
 
-      const { id, uniquePromotionId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+      const { id, uniquePromotionCodeId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
       const remainingExpiredDays = getRemainingRewardExpiredDays(validTo);
 
       return {
         id,
-        uniquePromotionId,
-        key: `${id}-${uniquePromotionId}-${discountType}`,
+        uniquePromotionCodeId,
+        key: `${id}-${uniquePromotionCodeId}-${discountType}`,
         value: getFormatDiscountValue(discountType, discountValue, {
           locale: merchantLocale,
           currency: merchantCurrency,
@@ -267,13 +267,13 @@ export const getUniquePromoListBanners = createSelector(
         return promo;
       }
 
-      const { id, uniquePromotionId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+      const { id, uniquePromotionCodeId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
       const diffDays = getDifferenceTodayInDays(new Date(validTo));
       const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
 
       return {
         id,
-        key: `${id}-${uniquePromotionId}-${discountType}`,
+        key: `${id}-${uniquePromotionCodeId}-${discountType}`,
         value: getFormatDiscountValue(discountType, discountValue, {
           locale: merchantLocale,
           currency: merchantCurrency,
