@@ -48,8 +48,8 @@ import {
   getUniquePromosAvailableCount,
   getIsLoadUniquePromosAvailableCountFulfilled,
   getLoadUniquePromosAvailableCountCleverTap,
-} from '../../../../redux/modules/rewards/selectors';
-import { fetchUniquePromosAvailableCount as fetchUniquePromosAvailableCountThunk } from '../../../../redux/modules/rewards/thunks';
+} from '../../../../redux/modules/common/selectors';
+import { fetchUniquePromosAvailableCount as fetchUniquePromosAvailableCountThunk } from '../../../../redux/modules/common/thunks';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import {
   loadStockStatus as loadStockStatusThunk,

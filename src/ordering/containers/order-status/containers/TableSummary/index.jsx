@@ -26,8 +26,8 @@ import {
   getUniquePromosAvailableCount,
   getIsLoadUniquePromosAvailableCountFulfilled,
   getLoadUniquePromosAvailableCountCleverTap,
-} from '../../../../redux/modules/rewards/selectors';
-import { fetchUniquePromosAvailableCount as fetchUniquePromosAvailableCountThunk } from '../../../../redux/modules/rewards/thunks';
+} from '../../../../redux/modules/common/selectors';
+import { fetchUniquePromosAvailableCount as fetchUniquePromosAvailableCountThunk } from '../../../../redux/modules/common/thunks';
 import logger from '../../../../../utils/monitoring/logger';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import { actions as cartSubmissionActions } from '../../../../redux/modules/cart';
