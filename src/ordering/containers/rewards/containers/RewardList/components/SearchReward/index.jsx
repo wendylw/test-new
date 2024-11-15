@@ -5,7 +5,7 @@ import styles from './SearchReward.module.scss';
 
 const SearchReward = () => {
   const searchInputRef = useRef(null);
-  const { t } = useTranslation();
+  const { t } = useTranslation(['OrderingPromotion']);
 
   return (
     <section className={styles.SearchReward}>

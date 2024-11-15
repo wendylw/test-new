@@ -10,7 +10,7 @@ import RewardListFooter from './components/RewardListFooter';
 import styles from './RewardList.module.scss';
 
 const RewardList = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['OrderingPromotion']);
   const dispatch = useDispatch();
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
 

@@ -1,6 +1,7 @@
 {
   "MyVouchersAndPromos": "My Vouchers & Promos",
   "Apply": "Apply",
+  "DiscountValueText": "{{discount}} OFF",
   "Success": "Apply Success",
   "EnterPromoCodeHere": "Enter Promo Code Here",
   "41003UniversalPromotionError": "Promo code is applicable for delivery orders only",

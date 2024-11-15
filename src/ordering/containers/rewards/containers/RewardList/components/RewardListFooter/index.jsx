@@ -5,7 +5,7 @@ import Button from '../../../../../../../common/components/Button';
 import styles from './RewardListFooter.module.scss';
 
 const RewardListFooter = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['OrderingPromotion']);
 
   return (
     <PageFooter zIndex={50}>
