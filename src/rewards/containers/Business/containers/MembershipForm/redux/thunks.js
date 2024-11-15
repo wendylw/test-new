@@ -15,6 +15,7 @@ import {
 import { getMerchantCountry } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { joinMembership, fetchMembershipsInfo } from '../../../../../../redux/modules/membership/thunks';
+import { loadOrderRewards } from '../../../../../../redux/modules/transaction/thunks';
 import {
   getIsAlipayMiniProgram,
   getIsWebview,
@@ -22,8 +23,12 @@ import {
   getSource,
   getBusiness,
 } from '../../../../../redux/modules/common/selectors';
-import { getStoreId, getIsRequestOrderRewardsEnabled } from '../../../redux/common/selectors';
-import { loadOrderRewards } from '../../../redux/common/thunks';
+import {
+  getReceiptNumber,
+  getChannel,
+  getStoreId,
+  getIsRequestOrderRewardsEnabled,
+} from '../../../redux/common/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
 import { getHasUserJoinedMerchantMembership } from '../../../../../redux/modules/customer/selectors';
 import { getShouldShowProfileForm } from './selectors';
@@ -130,7 +135,10 @@ export const continueJoinMembership = createAsyncThunk(
 export const mounted = createAsyncThunk(
   'rewards/business/membershipForm/mounted',
   async (_, { dispatch, getState }) => {
-    const business = getBusiness(getState());
+    const state = getState();
+    const business = getBusiness(state);
+    const receiptNumber = getReceiptNumber(state);
+    const channel = getChannel(state);
 
     dispatch(fetchMembershipsInfo(business));
     await dispatch(fetchMerchantInfo(business));
@@ -140,7 +148,7 @@ export const mounted = createAsyncThunk(
     const isRequestOrderRewardsEnabled = getIsRequestOrderRewardsEnabled(getState());
 
     if (isRequestOrderRewardsEnabled) {
-      dispatch(loadOrderRewards());
+      dispatch(loadOrderRewards({ business, receiptNumber, channel }));
     }
 
     const country = getMerchantCountry(getState());

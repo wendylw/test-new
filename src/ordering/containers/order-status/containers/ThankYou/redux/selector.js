@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants, { API_REQUEST_STATUS, REFERRER_SOURCE_TYPES } from '../../../../../../utils/constants';
+import { ORDER_PAYMENT_METHODS } from '../../../constants';
 import {
   CASHBACK_CAN_CLAIM_STATUS_LIST,
   AFTER_PAID_STATUS_LIST,
@@ -13,6 +14,7 @@ import {
   NOT_DELIVERY_STATUS_IMAGES_MAPPING,
   ORDER_SELF_DELIVERY_COURIER,
 } from '../constants';
+import { getPrice } from '../../../../../../common/utils';
 import {
   getOrder,
   getOrderStatus,
@@ -40,11 +42,24 @@ import {
   getIsLoadCustomerRequestCompleted,
   getUserCustomerId,
   getUserConsumerId,
+  getCustomerRewardsTotal,
+  getCustomerIsNewMember,
 } from '../../../../../redux/modules/app';
 import {
   getIsLoadMerchantRequestCompleted,
   getIsMerchantMembershipEnabled,
+  getIsMerchantEnabledCashback,
+  getIsMerchantEnabledStoreCredits,
+  getMerchantCountry as getMembershipMerchantCountry,
+  getMerchantCurrency,
+  getMerchantLocale,
+  getIsMerchantMembershipPointsEnabled,
 } from '../../../../../../redux/modules/merchant/selectors';
+import { getIsJoinMembershipNewMember } from '../../../../../../redux/modules/membership/selectors';
+import {
+  getClaimOrderRewardsPointsValue,
+  getClaimOrderRewardsCashbackValue,
+} from '../../../../../../redux/modules/transaction/selectors';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
@@ -181,6 +196,15 @@ export const getCashback = createSelector(getLoadCashbackRequestData, loadCashba
 
   return Number(cashback) ? Number(cashback) : 0;
 });
+
+export const getClaimOrderRewardsCashbackPrice = createSelector(
+  getClaimOrderRewardsCashbackValue,
+  getMerchantLocale,
+  getMerchantCurrency,
+  getMembershipMerchantCountry,
+  (claimOrderRewardsCashbackValue, locale, currency, country) =>
+    getPrice(claimOrderRewardsCashbackValue, { locale, currency, country })
+);
 
 export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInfo, (cashback, onlineStoreInfo) => {
   const { currency } = onlineStoreInfo || {};
@@ -339,6 +363,12 @@ export const getShouldJoinBusinessMembership = createSelector(
     isUserLoginRequestCompleted && isLogin && isMerchantMembershipEnabled
 );
 
+export const getShouldOrderCashbackAndPoints = createSelector(
+  getUserIsLogin,
+  getIsMerchantMembershipEnabled,
+  (isLogin, isMerchantMembershipEnabled) => isLogin && isMerchantMembershipEnabled
+);
+
 export const getIsRewardInfoReady = createSelector(
   getUserIsLogin,
   getIsFetchLoginStatusComplete,
@@ -370,32 +400,67 @@ export const getIsRewardInfoReady = createSelector(
   }
 );
 
+export const getIsPayAtCounterPendingPayment = createSelector(
+  getOrderPaymentMethod,
+  getOrderStatus,
+  (paymentMethod, orderStatus) =>
+    paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE &&
+    (orderStatus === ORDER_STATUS.PENDING_PAYMENT || orderStatus === ORDER_STATUS.CREATED)
+);
+
 export const getShouldShowMemberBanner = createSelector(
   getUserIsLogin,
   getIsMerchantMembershipEnabled,
   getHasUserJoinedBusinessMembership,
-  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership) =>
-    isLogin && isMerchantMembershipEnabled && !hasUserJoinedBusinessMembership
+  getIsPayAtCounterPendingPayment,
+  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership, isPayAtCounterPendingPayment) =>
+    isLogin && isMerchantMembershipEnabled && !hasUserJoinedBusinessMembership && !isPayAtCounterPendingPayment
 );
 
-export const getShouldShowMemberCard = createSelector(
+export const getShouldShowRewards = createSelector(
   getUserIsLogin,
   getIsMerchantMembershipEnabled,
   getHasUserJoinedBusinessMembership,
-  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership) =>
-    isLogin && isMerchantMembershipEnabled && hasUserJoinedBusinessMembership
+  getIsPayAtCounterPendingPayment,
+  (isLogin, isMerchantMembershipEnabled, hasUserJoinedBusinessMembership, isPayAtCounterPendingPayment) =>
+    isLogin && isMerchantMembershipEnabled && hasUserJoinedBusinessMembership && !isPayAtCounterPendingPayment
 );
 
-// WB-7383: we need to consider the consumerId from cashbackInfo to make user able to see cashback card immediately
-export const getShouldShowEarnedCashback = createSelector(
-  getHasCashback,
-  getHasOrderPaid,
-  getUserCustomerId,
-  getOrderCustomerId,
-  getCashbackCustomerId,
-  getHasCashbackClaimed,
-  (hasCashback, hasOrderPaid, userCustomerId, orderCustomerId, cashbackCustomerId, hasCashbackClaimed) =>
-    hasCashback && hasOrderPaid && hasCashbackClaimed && userCustomerId === (orderCustomerId || cashbackCustomerId)
+export const getIsPlaceOrderNewMember = createSelector(
+  getIsMerchantMembershipEnabled,
+  getCustomerIsNewMember,
+  getIsJoinMembershipNewMember,
+  getIsPayAtCounterPendingPayment,
+  (isMerchantMembershipEnabled, customerIsNewMember, isJoinMembershipNewMember, isPayAtCounterPendingPayment) =>
+    isMerchantMembershipEnabled && (customerIsNewMember || isJoinMembershipNewMember) && !isPayAtCounterPendingPayment
+);
+
+export const getShouldShowRewardsBanner = createSelector(
+  getIsPlaceOrderNewMember,
+  getCustomerRewardsTotal,
+  (isPlaceOrderNewMember, customerRewardsTotal) => customerRewardsTotal > 0 && !isPlaceOrderNewMember
+);
+
+export const getIsMerchantCashbackOrStoreCreditsEnabled = createSelector(
+  getIsMerchantEnabledCashback,
+  getIsMerchantEnabledStoreCredits,
+  (isMerchantEnabledCashback, isMerchantEnabledStoreCredits) =>
+    isMerchantEnabledCashback || isMerchantEnabledStoreCredits
+);
+
+export const getShouldShowEarnedPointsOrCreditsBanner = createSelector(
+  getIsMerchantMembershipPointsEnabled,
+  getIsMerchantCashbackOrStoreCreditsEnabled,
+  getClaimOrderRewardsPointsValue,
+  getClaimOrderRewardsCashbackValue,
+  (
+    isMerchantMembershipPointsEnabled,
+    isMerchantCashbackOrStoreCreditsEnabled,
+    claimOrderRewardsPointsValue,
+    claimOrderRewardsCashbackValue
+  ) =>
+    (isMerchantMembershipPointsEnabled && claimOrderRewardsPointsValue > 0) ||
+    (isMerchantCashbackOrStoreCreditsEnabled && claimOrderRewardsCashbackValue > 0)
 );
 
 // Expected the enabled membership merchant's customers see the member card information first on the page. So hide complete profile page
