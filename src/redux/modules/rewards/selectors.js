@@ -1,5 +1,4 @@
 import _get from 'lodash/get';
-import { createSelector } from 'reselect';
 
 export const getLoadRewardListRequestData = state => state.rewards.loadRewardListRequest.data;
 

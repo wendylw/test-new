@@ -3,7 +3,7 @@ import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { getStoreInfoForCleverTap, getUserName } from '../app';
 
-export const getLoadUniquePromosAvailableCountData = state => state.rewards.loadUniquePromosAvailableCountRequest.data;
+export const getLoadUniquePromosAvailableCountData = state => state.common.loadUniquePromosAvailableCountRequest.data;
 
 export const getLoadUniquePromosAvailableCountStatus = state =>
   state.rewards.loadUniquePromosAvailableCountRequest.status;
