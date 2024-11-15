@@ -21,6 +21,7 @@ import {
   getIsClaimPointsRewardPending,
   getClaimPointsRewardErrorI18nKeys,
   getIsProfileModalShow,
+  getIsPointsRewardGetRewardButtonDisabled,
 } from './redux/selectors';
 import { actions as pointsRewardActions } from './redux';
 import {
@@ -57,6 +58,7 @@ const PointsRewardDetail = () => {
   const redeemOnlineList = useSelector(getPointsRewardRedeemOnlineList);
   const isPointsRewardRedeemOnlineShow = useSelector(getIsPointsRewardRedeemOnlineShow);
   const isPointsRewardRedeemInStoreShow = useSelector(getIsPointsRewardRedeemInStoreShow);
+  const isPointsRewardGetRewardButtonDisabled = useSelector(getIsPointsRewardGetRewardButtonDisabled);
   const isClaimPointsRewardFulfilled = useSelector(getIsClaimPointsRewardFulfilled);
   const isClaimPointsRewardPending = useSelector(getIsClaimPointsRewardPending);
   const claimPointsRewardErrorI18nKeys = useSelector(getClaimPointsRewardErrorI18nKeys);
@@ -217,7 +219,7 @@ const PointsRewardDetail = () => {
             <Button
               className={styles.PointsRewardDetailFooterButton}
               block
-              disabled={false}
+              disabled={isPointsRewardGetRewardButtonDisabled}
               data-test-id="rewards.business.points-reward-detail.get-reward-button"
               onClick={handleClickGetRewardButton}
             >
