@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { PROMO_VOUCHER_STATUS, PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import CleverTap from '../../../../../../../utils/clevertap';
@@ -93,22 +93,7 @@ const UniquePromoList = () => {
                     {isUnavailable ? (
                       <Tag className={styles.UniquePromoStatusTag}>{t(UNIQUE_PROMO_STATUS_I18KEYS[status])}</Tag>
                     ) : expiringDays ? (
-                      <Tag color="red" className={styles.UniquePromStubRemainingExpiredDaysTag}>
-                        <Trans
-                          t={t}
-                          i18nKey={expiringDays.i18nKey}
-                          values={expiringDays.params}
-                          components={[
-                            <span
-                              className={
-                                expiringDays.value === 1
-                                  ? styles.UniquePromStubRemainingExpiredDaysTagLetterHidden
-                                  : styles.UniquePromStubRemainingExpiredDaysTagLetter
-                              }
-                            />,
-                          ]}
-                        />
-                      </Tag>
+                      <Tag color="red">{t(expiringDays.i18nKey, expiringDays.params)}</Tag>
                     ) : (
                       <Tag className={styles.UniqueExpiringTag}>{t(expiringDate.i18nKey, expiringDate.params)}</Tag>
                     )}
