@@ -34,7 +34,7 @@ import {
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import PageFooter from '../../../../../common/components/PageFooter';
-import RewardDetailTicket from '../../components/RewardDetailTicket';
+import RewardDetailTicket from '../../../../../common/components/RewardDetailTicket';
 import Button from '../../../../../common/components/Button';
 import PageToast from '../../../../../common/components/PageToast';
 import { ObjectFitImage } from '../../../../../common/components/Image';
