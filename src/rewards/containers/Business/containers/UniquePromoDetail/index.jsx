@@ -20,7 +20,7 @@ import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import Tag from '../../../../../common/components/Tag';
-import RewardDetailTicket from '../../components/RewardDetailTicket';
+import RewardDetailTicket from '../../../../../common/components/RewardDetailTicket';
 import styles from './UniquePromoDetail.module.scss';
 
 const UniquePromoDetail = () => {

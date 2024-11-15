@@ -15,7 +15,7 @@ import PageHeader from '../../../../../common/components/PageHeader';
 import Button from '../../../../../common/components/Button';
 import { ObjectFitImage } from '../../../../../common/components/Image';
 import Tag from '../../../../../common/components/Tag';
-import Ticket from '../../components/Ticket';
+import Ticket from '../../../../../common/components/Ticket';
 import styles from './PointsRewardsPage.module.scss';
 
 const PointsRewardsPage = () => {
