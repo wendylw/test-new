@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
+import { PATH_NAME_MAPPING } from '../../common/utils/constants';
 import Utils from '../../utils/utils';
 import Constants from '../../utils/constants';
 import NotFound from '../../containers/NotFound';
@@ -74,6 +75,9 @@ const TableSummary = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_TS" */ './order-status/containers/TableSummary'))
 );
 const FoodCourt = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_FC" */ './food-court')));
+const RewardList = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_RWDL" */ './rewards/containers/RewardList'))
+);
 
 const { ROUTER_PATHS } = Constants;
 
@@ -85,6 +89,7 @@ const Routes = () => (
         <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
         <Route exact path={ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS} component={CartSubmissionStatus} />
         <Route exact path={ROUTER_PATHS.ORDERING_PROMOTION} component={Promotion} />
+        <Route exact path={PATH_NAME_MAPPING.ORDERING_REWARDS} component={RewardList} />
         <Route exact path={ROUTER_PATHS.ORDERING_CUSTOMER_INFO} component={CustomerInfo} />
         <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />
         <Route exact path={ROUTER_PATHS.ORDERING_LOCATION} component={Location} />
