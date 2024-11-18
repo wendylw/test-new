@@ -1,3 +1,7 @@
+@import "../../../../../../..//common/styles/variables.scss";
+
 .SearchReward {
-  @apply tw-p-12 sm:tw-p-12px tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
+  @apply tw-sticky tw-p-12 sm:tw-p-12px tw-border-0 tw-border-b tw-border-solid tw-border-gray-200 tw-bg-gray-50 tw-z-60;
+
+  top: $headerHeight;
 }

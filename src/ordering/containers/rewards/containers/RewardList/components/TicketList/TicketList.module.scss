@@ -1,9 +1,9 @@
 .TicketListContainer {
-  @apply tw-p-12 sm:tw-p-12px;
+  @apply tw-px-12 sm:tw-px-12px tw-py-24 sm:tw-py-24px;
 }
 
 .TicketListTitle {
-  @apply tw-pb-12 sm:tw-pb-12px tw-text-lg tw-font-bold;
+  @apply tw-pb-8 sm:tw-pb-8px tw-text-lg tw-font-bold tw-leading-normal;
 }
 
 .TicketList {
