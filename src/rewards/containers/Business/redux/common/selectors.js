@@ -20,6 +20,12 @@ import {
   getIsMerchantMembershipPointsEnabled,
 } from '../../../../../redux/modules/merchant/selectors';
 import {
+  getOrderRewardsPoints,
+  getOrderRewardsCashback,
+  getClaimOrderRewardsCashbackValue,
+  getIsClaimOrderRewardsIsNewMember,
+} from '../../../../../redux/modules/transaction/selectors';
+import {
   getCustomerCashback,
   getCashbackExpiredDate,
   getIsCashbackExpired,
@@ -89,56 +95,6 @@ export const getLoadPointsRewardListError = state => state.business.common.loadP
 export const getClaimPointsRewardStatus = state => state.business.common.claimPointsRewardRequest.status;
 
 export const getClaimPointsRewardError = state => state.business.common.claimPointsRewardRequest.error;
-
-export const getLoadOrderRewardsRequestData = state => state.business.common.loadOrderRewardsRequest.data;
-
-export const getLoadOrderRewardsRequestStatus = state => state.business.common.loadOrderRewardsRequest.status;
-
-export const getLoadOrderRewardsRequestError = state => state.business.common.loadOrderRewardsRequest.error;
-
-export const getOrderRewardsPoints = createSelector(getLoadOrderRewardsRequestData, loadOrderRewardsRequestData =>
-  _get(loadOrderRewardsRequestData, 'points.amount', 0)
-);
-
-export const getOrderRewardsCashback = createSelector(getLoadOrderRewardsRequestData, loadOrderRewardsRequestData =>
-  _get(loadOrderRewardsRequestData, 'cashback.amount', 0)
-);
-
-export const getClaimOrderRewardsRequestData = state => state.business.common.claimOrderRewardsRequest.data;
-
-export const getClaimOrderRewardsRequestStatus = state => state.business.common.claimOrderRewardsRequest.status;
-
-export const getClaimOrderRewardsRequestError = state => state.business.common.claimOrderRewardsRequest.error;
-
-export const getClaimOrderRewardsPointsValue = createSelector(
-  getClaimOrderRewardsRequestData,
-  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'points.amount', null)
-);
-
-export const getClaimOrderRewardsPointsStatus = createSelector(
-  getClaimOrderRewardsRequestData,
-  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'points.status', null)
-);
-
-export const getClaimOrderRewardsCashbackValue = createSelector(
-  getClaimOrderRewardsRequestData,
-  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'cashback.amount', null)
-);
-
-export const getClaimOrderRewardsCashbackStatus = createSelector(
-  getClaimOrderRewardsRequestData,
-  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'cashback.status', null)
-);
-
-export const getClaimOrderRewardsTransactionStatus = createSelector(
-  getClaimOrderRewardsRequestData,
-  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'transactionValidation.status', null)
-);
-
-export const getIsClaimOrderRewardsIsNewMember = createSelector(
-  getClaimOrderRewardsRequestData,
-  claimOrderRewardsRequestData => _get(claimOrderRewardsRequestData, 'joinMembershipResult.isNewMember', false)
-);
 
 export const getLoadCustomizeRewardsSettingsRequestData = state =>
   state.business.common.loadCustomizeRewardsSettingsRequest.data;
@@ -441,17 +397,6 @@ export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRe
 
   return errorI18nKeys;
 });
-
-export const getIsLoadOrderRewardsRequestFulfilled = createSelector(
-  getLoadOrderRewardsRequestStatus,
-  loadOrderRewardsRequestStatus => loadOrderRewardsRequestStatus === API_REQUEST_STATUS.FULFILLED
-);
-
-export const getIsLoadOrderRewardsRequestCompleted = createSelector(
-  getLoadOrderRewardsRequestStatus,
-  loadOrderRewardsRequestStatus =>
-    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadOrderRewardsRequestStatus)
-);
 
 export const getIsRequestOrderRewardsEnabled = createSelector(
   getReceiptNumber,

@@ -82,10 +82,9 @@ class PageLogin extends React.Component {
     const { imageStyle: currImageStyle } = this.state;
     const { user: prevUser } = prevProps;
     const { user: currUser, shouldShowGuestOption } = this.props;
-    const { sendOtp } = this.state;
     const imageHeight = getWebQRImageHeight();
 
-    if (sendOtp && currUser.isLogin && prevUser.isLogin !== currUser.isLogin) {
+    if (currUser.isLogin && prevUser.isLogin !== currUser.isLogin) {
       this.visitNextPage();
     }
 
@@ -362,7 +361,14 @@ class PageLogin extends React.Component {
       return;
     }
 
-    this.goBack();
+    if (window.history.length > 1) {
+      this.goBack();
+    } else {
+      history.replace({
+        pathname: ROUTER_PATHS.ORDERING_HOME,
+        search: window.location.search,
+      });
+    }
   };
 
   goBack = () => {

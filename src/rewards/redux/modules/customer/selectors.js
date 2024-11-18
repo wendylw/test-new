@@ -11,7 +11,7 @@ export const getLoadCustomerRequestStatus = state => state.customer.loadCustomer
 export const getLoadCustomerRequestError = state => state.customer.loadCustomerRequest.error;
 
 export const getCustomerCustomerId = createSelector(getCustomerData, customerData =>
-  getDecimalNumber(_get(customerData, 'customerId', null))
+  _get(customerData, 'customerId', null)
 );
 
 export const getCustomerCashback = createSelector(getCustomerData, customerData =>
@@ -51,7 +51,7 @@ export const getCustomerAvailablePointsBalance = createSelector(getCustomerData,
 );
 
 export const getCustomerRewardsTotal = createSelector(getCustomerData, customerData =>
-  getDecimalNumber(_get(customerData, 'rewardsTotal', 0))
+  _get(customerData, 'rewardsTotal', 0)
 );
 
 /**
