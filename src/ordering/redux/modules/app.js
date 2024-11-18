@@ -1542,6 +1542,8 @@ export const getLoginReferrerSource = createSelector(getUser, userInfo => _get(u
 
 export const getUserIsLogin = createSelector(getUser, userInfo => _get(userInfo, 'isLogin', false));
 
+export const getIsNotLoginInWeb = createSelector(getUserIsLogin, getIsWeb, (isLogin, isWeb) => !isLogin && isWeb);
+
 export const getFetchLoginRequestStatus = createSelector(getUser, userInfo => userInfo.fetchLoginRequestStatus || null);
 
 export const getIsFetchLoginStatusFulfilled = createSelector(
@@ -1993,6 +1995,7 @@ export const getIsDigitalType = () => Utils.isDigitalType();
 export const getIsDeliveryOrder = () => Utils.isDeliveryOrder();
 export const getIsQROrder = () => Utils.isQROrder();
 export const getIsWebview = () => Utils.isWebview();
+export const getIsWeb = () => !Utils.isWebview()() && !isAlipayMiniProgramUtil();
 export const getIsInBrowser = () => Utils.getClient() === CLIENTS.WEB;
 export const getIsInAppOrMiniProgram = createSelector(
   getIsWebview,
