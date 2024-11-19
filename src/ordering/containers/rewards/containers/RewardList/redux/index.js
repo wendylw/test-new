@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { updateSearchKeyword } from './thunks';
+import { updateSearchKeywordByQuery } from './thunks';
 
 const initialState = {
   searchKeyword: '',
@@ -10,7 +10,7 @@ export const { reducer, actions } = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [updateSearchKeyword.fulfilled.type]: (state, { payload }) => {
+    [updateSearchKeywordByQuery.fulfilled.type]: (state, { payload }) => {
       state.searchKeyword = payload;
     },
   },

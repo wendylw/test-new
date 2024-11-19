@@ -17,7 +17,13 @@ import {
 } from '../../../../../redux/modules/app';
 import { getSearchKeyword } from './selectors';
 
-export const updateSearchKeyword = ('ordering/rewardList/updateSearchKeyword', async () => getQueryString('search'));
+export const updateSearchKeywordByQuery =
+  ('ordering/rewardList/updateSearchKeywordByQuery',
+  async () => {
+    const searchKeyword = getQueryString('search');
+
+    return searchKeyword || '';
+  });
 
 export const clearQuerySearchKeyword =
   ('ordering/rewardList/clearQuerySearchKeyword',
@@ -30,7 +36,7 @@ export const clearQuerySearchKeyword =
 export const initSearchSearchKeyword =
   ('ordering/rewardList/initSearchSearchKeyword',
   async (_, { dispatch }) => {
-    await dispatch(updateSearchKeyword());
+    await dispatch(updateSearchKeywordByQuery());
     dispatch(clearQuerySearchKeyword());
   });
 

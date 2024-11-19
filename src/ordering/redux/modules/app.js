@@ -1542,8 +1542,6 @@ export const getLoginReferrerSource = createSelector(getUser, userInfo => _get(u
 
 export const getUserIsLogin = createSelector(getUser, userInfo => _get(userInfo, 'isLogin', false));
 
-export const getIsNotLoginInWeb = createSelector(getUserIsLogin, getIsWeb, (isLogin, isWeb) => !isLogin && isWeb);
-
 export const getFetchLoginRequestStatus = createSelector(getUser, userInfo => userInfo.fetchLoginRequestStatus || null);
 
 export const getIsFetchLoginStatusFulfilled = createSelector(
@@ -2005,6 +2003,8 @@ export const getIsInAppOrMiniProgram = createSelector(
 export const getIsFromBeepSite = () => isFromBeepSite();
 export const getIsFromBeepSiteOrderHistory = () => isFromBeepSiteOrderHistory();
 export const getIsFromFoodCourt = () => isFromFoodCourt();
+
+export const getIsNotLoginInWeb = createSelector(getUserIsLogin, getIsWeb, (isLogin, isWeb) => !isLogin && isWeb);
 
 /**
  * Is delivery shipping type
