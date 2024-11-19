@@ -1,0 +1,1 @@
+export const DEFAULT_NEAR_EXPIRY_DAYS = 8;

@@ -1993,7 +1993,6 @@ export const getIsDigitalType = () => Utils.isDigitalType();
 export const getIsDeliveryOrder = () => Utils.isDeliveryOrder();
 export const getIsQROrder = () => Utils.isQROrder();
 export const getIsWebview = () => Utils.isWebview();
-export const getIsWeb = () => !Utils.isWebview()() && !isAlipayMiniProgramUtil();
 export const getIsInBrowser = () => Utils.getClient() === CLIENTS.WEB;
 export const getIsInAppOrMiniProgram = createSelector(
   getIsWebview,
@@ -2004,7 +2003,11 @@ export const getIsFromBeepSite = () => isFromBeepSite();
 export const getIsFromBeepSiteOrderHistory = () => isFromBeepSiteOrderHistory();
 export const getIsFromFoodCourt = () => isFromFoodCourt();
 
-export const getIsNotLoginInWeb = createSelector(getUserIsLogin, getIsWeb, (isLogin, isWeb) => !isLogin && isWeb);
+export const getIsNotLoginInWeb = createSelector(
+  getUserIsLogin,
+  getIsInAppOrMiniProgram,
+  (isUserLogin, isInAppOrMiniProgram) => !isUserLogin && !isInAppOrMiniProgram
+);
 
 /**
  * Is delivery shipping type

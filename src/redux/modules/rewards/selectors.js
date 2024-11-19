@@ -1,5 +1,3 @@
-import _get from 'lodash/get';
-
 export const getLoadRewardListRequestData = state => state.rewards.loadRewardListRequest.data;
 
 export const getLoadRewardListRequestStatus = state => state.rewards.loadRewardListRequest.status;

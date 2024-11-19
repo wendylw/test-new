@@ -77,7 +77,6 @@ export const mounted = createAsyncThunk('ordering/rewardList/mounted', async (_,
   const searchKeyword = getSearchKeyword(getState());
 
   if (isLogin) {
-    // load offer list
     dispatch(fetchRewardList({ search: searchKeyword, shippingType, merchantName: business }));
   }
 });
