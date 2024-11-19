@@ -17,28 +17,31 @@ import {
 } from '../../../../../redux/modules/app';
 import { getSearchKeyword } from './selectors';
 
-export const updateSearchKeywordByQuery =
-  ('ordering/rewardList/updateSearchKeywordByQuery',
+export const updateSearchKeywordByQuery = createAsyncThunk(
+  'ordering/rewardList/updateSearchKeywordByQuery',
   async () => {
     const searchKeyword = getQueryString('search');
 
     return searchKeyword || '';
-  });
+  }
+);
 
-export const clearQuerySearchKeyword =
-  ('ordering/rewardList/clearQuerySearchKeyword',
+export const clearQuerySearchKeyword = createAsyncThunk(
+  'ordering/rewardList/clearQuerySearchKeyword',
   async (_, { dispatch }) => {
     const filteredQuery = getFilteredQueryString('search');
 
     dispatch(replace(`${PATH_NAME_MAPPING.ORDERING_REWARDS}${filteredQuery}`));
-  });
+  }
+);
 
-export const initSearchSearchKeyword =
-  ('ordering/rewardList/initSearchSearchKeyword',
+export const initSearchSearchKeyword = createAsyncThunk(
+  'ordering/rewardList/initSearchSearchKeyword',
   async (_, { dispatch }) => {
     await dispatch(updateSearchKeywordByQuery());
     dispatch(clearQuerySearchKeyword());
-  });
+  }
+);
 
 export const mounted = createAsyncThunk('ordering/rewardList/mounted', async (_, { dispatch, getState }) => {
   const state = getState();
