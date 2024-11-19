@@ -22,6 +22,7 @@ export const ICON_RES = {
 };
 
 function getNativeHeaderParams(props) {
+  // TODO: WB-9779 will deal with old version
   // const { title, rightContent, titleAlignment, isPage, leftIcon, styles } = props;
   const { title, rightContent, titleAlignment, isPage, styles } = props;
   const { color, backgroundColor } = styles || {};
