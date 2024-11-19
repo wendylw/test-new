@@ -9,3 +9,48 @@
 .TicketList {
   @apply tw-space-y-12 sm:tw-space-y-12px;
 }
+
+.UniquePromoInfoTop {
+  @apply tw-flex-1 tw-flex tw-items-end tw-justify-between;
+
+  &__Unavailable {
+    @apply tw-opacity-40;
+  }
+}
+
+.UniquePromoDescription {
+  @apply tw-text-left;
+}
+
+.UniquePromoDiscount {
+  @apply tw-leading-relaxed tw-font-bold tw-uppercase;
+}
+
+.UniquePromoDiscountName {
+  @apply tw-text-sm tw-leading-loose;
+}
+
+.UniquePromoStatusTag,
+.UniqueExpiringTag {
+  @apply tw-font-bold;
+}
+
+.UniquePromoInfoBottom {
+  @apply tw-flex-1 tw-flex tw-items-end tw-justify-between tw-border-l-0 tw-border-r-0;
+
+  &__Unavailable {
+    @apply tw-border-opacity-40;
+  }
+}
+
+.UniquePromoDiscountLimitation {
+  @apply tw-text-sm tw-leading-loose tw-text-gray-700;
+
+  &__Unavailable {
+    @apply tw-opacity-40;
+  }
+}
+
+.UniquePromoViewDetail {
+  @apply tw-text-xs tw-leading-normal tw-text-orange;
+}

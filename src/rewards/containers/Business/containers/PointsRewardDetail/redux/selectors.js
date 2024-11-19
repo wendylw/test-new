@@ -3,9 +3,9 @@ import i18next from 'i18next';
 import { createSelector } from 'reselect';
 import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
+import { getFormatDiscountValue } from '../../../../../../common/utils/rewards';
 import { REWARDS_APPLIED_ALL_STORES, REWARDS_APPLIED_SOURCES } from '../../../utils/constants';
 import { CLAIMED_POINTS_REWARD_ERROR_CODES } from '../utils/constants';
-import { getFormatDiscountValue } from '../../../utils/rewards';
 import {
   getMerchantCountry,
   getMerchantCurrency,

@@ -1693,6 +1693,8 @@ export const getHasSelectedStore = createSelector(getStoreId, storeId => !!store
 
 export const getBusinessCurrency = createSelector(getOnlineStoreInfo, info => _get(info, 'currency', 'MYR'));
 
+export const getBusinessLocale = createSelector(getOnlineStoreInfo, info => _get(info, 'locale', 'MS-MY'));
+
 export const getIsEnablePreOrder = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'qrOrderingSettings.enablePreOrder', false)
 );

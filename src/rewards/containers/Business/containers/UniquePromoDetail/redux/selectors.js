@@ -5,7 +5,11 @@ import { PROMO_VOUCHER_STATUS } from '../../../../../../common/utils/constants';
 import { REWARDS_APPLIED_ALL_STORES, REWARDS_APPLIED_SOURCES } from '../../../utils/constants';
 import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
-import { getFormatDiscountValue, getRemainingRewardExpiredDays, getExpiringDaysI18n } from '../../../utils/rewards';
+import {
+  getFormatDiscountValue,
+  getRemainingRewardExpiredDays,
+  getExpiringDaysI18n,
+} from '../../../../../../common/utils/rewards';
 import {
   getMerchantCountry,
   getMerchantCurrency,

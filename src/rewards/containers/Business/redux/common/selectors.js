@@ -8,7 +8,11 @@ import {
 } from '../../../../../common/utils/constants';
 import { getPrice, getQueryString } from '../../../../../common/utils';
 import { getDifferenceTodayInDays, formatTimeToDateString } from '../../../../../utils/datetime-lib';
-import { getFormatDiscountValue, getRemainingRewardExpiredDays, getExpiringDaysI18n } from '../../utils/rewards';
+import {
+  getFormatDiscountValue,
+  getRemainingRewardExpiredDays,
+  getExpiringDaysI18n,
+} from '../../../../../common/utils/rewards';
 import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
   getMerchantLocale,
