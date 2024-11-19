@@ -12,7 +12,7 @@ export const STYLES = {
 };
 
 export const ICON_RES = {
-  WHITE_BACK: 'whiteBack',
+  WHITE_BACK: 'back',
   BACK: 'back',
   CLOSE: 'close',
   SHARE: 'share',
