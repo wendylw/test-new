@@ -1,56 +1,59 @@
-.TicketListContainer {
+.RewardTicketListContainer {
   @apply tw-px-12 sm:tw-px-12px tw-py-24 sm:tw-py-24px;
 }
 
-.TicketListTitle {
+.RewardTicketListTitle {
   @apply tw-pb-8 sm:tw-pb-8px tw-text-lg tw-font-bold tw-leading-normal;
 }
 
-.TicketList {
+.RewardTicketList {
   @apply tw-space-y-12 sm:tw-space-y-12px;
 }
 
-.UniquePromoInfoTop {
-  @apply tw-flex-1 tw-flex tw-items-end tw-justify-between;
+.RewardTicketContainer {
+  @apply tw-shadow-none;
+}
+
+.RewardTicket {
+  &::before,
+  &::after {
+    @apply tw-bg-gray-50;
+  }
 
   &__Unavailable {
     @apply tw-opacity-40;
   }
 }
 
-.UniquePromoDescription {
+.RewardTicketInfoTop {
+  @apply tw-flex-1 tw-flex tw-items-end tw-justify-between;
+}
+
+.RewardTicketDescription {
   @apply tw-text-left;
 }
 
-.UniquePromoDiscount {
+.RewardTicketDiscount {
   @apply tw-leading-relaxed tw-font-bold tw-uppercase;
 }
 
-.UniquePromoDiscountName {
+.RewardTicketDiscountName {
   @apply tw-text-sm tw-leading-loose;
 }
 
-.UniquePromoStatusTag,
-.UniqueExpiringTag {
+.RewardTicketStatusTag,
+.RewardTicketExpiringTag {
   @apply tw-font-bold;
 }
 
-.UniquePromoInfoBottom {
+.RewardTicketInfoBottom {
   @apply tw-flex-1 tw-flex tw-items-end tw-justify-between tw-border-l-0 tw-border-r-0;
-
-  &__Unavailable {
-    @apply tw-border-opacity-40;
-  }
 }
 
-.UniquePromoDiscountLimitation {
-  @apply tw-text-sm tw-leading-loose tw-text-gray-700;
-
-  &__Unavailable {
-    @apply tw-opacity-40;
-  }
+.RewardTicketDiscountLimitation {
+  @apply tw-text-sm tw-leading-normal tw-text-gray-700;
 }
 
-.UniquePromoViewDetail {
-  @apply tw-text-xs tw-leading-normal tw-text-orange;
+.RewardTicketViewDetail {
+  @apply tw-text-xs tw-leading-loose tw-text-orange tw-capitalize;
 }

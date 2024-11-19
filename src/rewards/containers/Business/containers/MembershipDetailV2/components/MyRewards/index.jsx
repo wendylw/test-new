@@ -3,7 +3,8 @@ import { useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import IconEmptyList from '../../../../../../../images/rewards-empty-list-icon.svg';
-import { PATH_NAME_MAPPING, PROMO_VOUCHER_STATUS } from '../../../../../../../common/utils/constants';
+import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
+import { UNIQUE_PROMO_STATUS_I18KEYS } from '../../../../../../../common/utils/rewards/constants';
 import CleverTap from '../../../../../../../utils/clevertap';
 import {
   getUniquePromoListLength,
@@ -18,11 +19,6 @@ import Tag from '../../../../../../../common/components/Tag';
 import { ObjectFitImage } from '../../../../../../../common/components/Image';
 import Ticket from '../../../../../../../common/components/Ticket';
 import styles from './MyRewards.module.scss';
-
-const UNIQUE_PROMO_STATUS_I18KEYS = {
-  [PROMO_VOUCHER_STATUS.EXPIRED]: 'Expired',
-  [PROMO_VOUCHER_STATUS.REDEEMED]: 'Redeemed',
-};
 
 const MyRewards = () => {
   const { t } = useTranslation(['Rewards']);

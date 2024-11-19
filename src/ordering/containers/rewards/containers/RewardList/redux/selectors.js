@@ -39,7 +39,7 @@ export const getRewardList = createSelector(
       const isUnavailable = [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status);
       const expiringDateI18n = validTo
         ? {
-            i18nKey: 'ValidUntil',
+            i18nKey: 'PromoValidUntil',
             params: { date: formatTimeToDateString(merchantCountry, validTo) },
           }
         : null;
