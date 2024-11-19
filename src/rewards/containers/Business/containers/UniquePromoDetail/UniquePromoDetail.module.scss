@@ -10,23 +10,6 @@
   @apply tw-my-2 sm:tw-my-2px;
 }
 
-.UniquePromoStubRemainingExpiredDaysTag {
-  @apply tw-my-2 sm:tw-my-2px tw-font-bold;
-
-  > span {
-    @apply tw-flex tw-items-center;
-  }
-}
-
-.UniquePromoStubRemainingExpiredDaysTagLetter {
-  font-size: inherit;
-  font-weight: inherit;
-}
-
-.UniquePromoStubRemainingExpiredDaysTagLetterHidden {
-  display: none;
-}
-
 .UniquePromoDetailConditionTitle,
 .UniquePromoDetailHowToUseTitle {
   @apply tw-text-lg tw-leading-relaxed tw-font-bold;

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { UNIQUE_PROMO_STATUS_I18KEYS, REWARDS_APPLIED_SOURCE_I18KEYS } from '../../utils/constants';
 import {
   getUniquePromoFormatDiscountValue,
@@ -64,24 +64,7 @@ const UniquePromoDetail = () => {
             {isUniquePromoUnAvailable ? (
               <Tag className={styles.UniquePromoDetailTicketStatusTag}>{t(UNIQUE_PROMO_STATUS_I18KEYS[status])}</Tag>
             ) : (
-              expiringDaysI18n && (
-                <Tag color="red" className={styles.UniquePromoStubRemainingExpiredDaysTag}>
-                  <Trans
-                    t={t}
-                    i18nKey={expiringDaysI18n.i18nKey}
-                    values={expiringDaysI18n.params}
-                    components={[
-                      <span
-                        className={
-                          expiringDaysI18n.value === 1
-                            ? styles.UniquePromoStubRemainingExpiredDaysTagLetterHidden
-                            : styles.UniquePromoStubRemainingExpiredDaysTagLetter
-                        }
-                      />,
-                    ]}
-                  />
-                </Tag>
-              )
+              expiringDaysI18n && <Tag color="red">{t(expiringDaysI18n.i18nKey, expiringDaysI18n.params)}</Tag>
             )}
           </>
         }
