@@ -22,7 +22,8 @@ export const ICON_RES = {
 };
 
 function getNativeHeaderParams(props) {
-  const { title, rightContent, titleAlignment, isPage, leftIcon, styles } = props;
+  // const { title, rightContent, titleAlignment, isPage, leftIcon, styles } = props;
+  const { title, rightContent, titleAlignment, isPage, styles } = props;
   const { color, backgroundColor } = styles || {};
   const textColor = color || STYLES.TEXT_COLOR;
   const leftIconRes = ICON_RES.BACK || (isPage ? ICON_RES.BACK : ICON_RES.CLOSE);
