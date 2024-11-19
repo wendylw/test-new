@@ -7,6 +7,7 @@
   "ExpiringInDays_plural": "Expiring in {{remainingExpiredDays}} days",
   "ExpiringToday": "Expiring today",
   "PromoValidUntil": "Valid until {{date}}",
+  "ViewDetails": "View details",
   "Success": "Apply Success",
   "EnterPromoCodeHere": "Enter Promo Code Here",
   "41003UniversalPromotionError": "Promo code is applicable for delivery orders only",
