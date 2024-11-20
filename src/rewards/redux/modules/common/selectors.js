@@ -1,6 +1,5 @@
 import i18next from 'i18next';
 import { createSelector } from 'reselect';
-import { FEATURE_KEYS } from '../../../../redux/modules/growthbook/constants';
 import {
   getQueryString,
   isWebview,
@@ -10,7 +9,6 @@ import {
 } from '../../../../common/utils';
 import { BECOME_MERCHANT_MEMBER_METHODS, MEMBER_LEVELS, PATH_NAME_MAPPING } from '../../../../common/utils/constants';
 import { isAlipayMiniProgram } from '../../../../common/utils/alipay-miniprogram-client';
-import { getFeatureFlagResult } from '../../../../redux/modules/growthbook/selectors';
 import { getIsLogin } from '../../../../redux/modules/user/selectors';
 import { getCustomerTierLevel } from '../customer/selectors';
 import { getMembershipTierList } from '../../../../redux/modules/membership/selectors';
@@ -86,34 +84,6 @@ export const getLocationSearch = createSelector(getLocation, location => locatio
 export const getIsMembershipBenefitTabsShown = createSelector(
   getMembershipTierList,
   membershipTierList => membershipTierList.length > 1
-);
-
-export const getMembershipTiersBenefit = state =>
-  getFeatureFlagResult(state, FEATURE_KEYS.SHOW_TIERED_MEMBERSHIP_BENEFIT);
-
-export const getMerchantMembershipTiersBenefit = createSelector(
-  getMembershipTiersBenefit,
-  getMembershipTierList,
-  (membershipTiersBenefit, membershipTierList) => {
-    if (membershipTiersBenefit.length === 0) {
-      return [];
-    }
-
-    return membershipTierList.map(tier => {
-      const { level } = tier;
-      const currentBenefit = membershipTiersBenefit.find(benefit => benefit.level === level);
-
-      return {
-        ...tier,
-        ...currentBenefit,
-      };
-    });
-  }
-);
-
-export const getMerchantMembershipTiersBenefitLength = createSelector(
-  getMerchantMembershipTiersBenefit,
-  membershipTiersBenefit => membershipTiersBenefit.length
 );
 
 export const getIsMembershipBenefitsShown = createSelector(

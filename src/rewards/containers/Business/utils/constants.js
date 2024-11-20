@@ -37,3 +37,12 @@ export const CLAIMED_POINTS_REWARD_ERROR_CODES = {
   INVALID_POINT_SOURCE: '395280',
   POINT_LOG_NOT_FOUND: '395281',
 };
+
+/**
+ * UI
+ */
+export const NATIVE_DARK_MODE = {
+  TEXT_COLOR: '#ffffff',
+  HEADER_BACKGROUND_COLOR: '#231651',
+};
+// end of UI
