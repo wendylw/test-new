@@ -55,3 +55,12 @@ export const REWARDS_APPLIED_SOURCE_I18KEYS = {
   [REWARDS_APPLIED_SOURCES.Beep_DineIn]: 'BeepDineIn',
 };
 /* end of i18n keys */
+
+/**
+ * UI
+ */
+export const NATIVE_DARK_MODE = {
+  TEXT_COLOR: '#ffffff',
+  HEADER_BACKGROUND_COLOR: '#231651',
+};
+// end of UI
