@@ -76,8 +76,8 @@ const UniquePromoList = () => {
               }}
             >
               <Ticket
-                className={styles.UniquePromoTicketContainer}
-                ticketClassName={styles.UniquePromoTicket}
+                showShadow={false}
+                className={styles.UniquePromoTicket}
                 orientation="vertical"
                 main={
                   <div className={getClassName(uniquePromoInfoTopClassList)}>

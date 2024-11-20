@@ -56,7 +56,7 @@
   "ReceiptEarnedOnlyPointsTitle": "You’ve claimed {{receiptPointsValue}} points!",
   "ReceiptEarnedPointsAndCashbackTitle": "You’ve claimed {{receiptPointsValue}} points & {{receiptCashbackValue}} cashback!",
   "YouAreNowAMember": "You are now a Member",
-  "DiscountValueText": "{{discount}} off",
+  "DiscountValueText": "{{discount}} OFF",
   "History": "History",
   "Expired": "Expired",
   "ExpiringInDays": "Expiring in {{remainingExpiredDays}} day",

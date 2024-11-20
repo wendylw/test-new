@@ -30,8 +30,8 @@ export const applyPromo = createAsyncThunk(
 
 export const applyVoucher = createAsyncThunk(
   'app/rewards/applyVoucher',
-  async ({ shippingType, voucherCode, applyCashback }) => {
-    const result = await postApplyVoucher({ shippingType, voucherCode, applyCashback });
+  async ({ fulfillDate, shippingType, voucherCode }) => {
+    const result = await postApplyVoucher({ fulfillDate, shippingType, voucherCode });
 
     return result;
   }
