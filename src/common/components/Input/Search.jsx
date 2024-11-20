@@ -65,7 +65,7 @@ const Search = React.forwardRef(
         />
 
         {searching ? (
-          <Loader className="tw-text-2xl tw-text-gray-500" weight="light" />
+          <Loader className={styles.SearchLoader} weight="light" />
         ) : (
           <>
             {allowClear ? (

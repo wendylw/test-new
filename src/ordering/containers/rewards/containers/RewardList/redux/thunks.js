@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { push, replace, goBack as historyGoBack } from 'connected-react-router';
+import { push, goBack as historyGoBack } from 'connected-react-router';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
-import { getQueryString, getFilteredQueryString } from '../../../../../../common/utils';
 import CleverTap from '../../../../../../utils/clevertap';
 import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
 import { fetchRewardList } from '../../../../../../redux/modules/rewards/thunks';
@@ -15,33 +14,6 @@ import {
   getIsNotLoginInWeb,
   actions as appActions,
 } from '../../../../../redux/modules/app';
-import { getSearchKeyword } from './selectors';
-
-export const updateSearchKeywordByQuery = createAsyncThunk(
-  'ordering/rewardList/updateSearchKeywordByQuery',
-  async () => {
-    const searchKeyword = getQueryString('search');
-
-    return searchKeyword || '';
-  }
-);
-
-export const clearQuerySearchKeyword = createAsyncThunk(
-  'ordering/rewardList/clearQuerySearchKeyword',
-  async (_, { dispatch }) => {
-    const filteredQuery = getFilteredQueryString('search');
-
-    dispatch(replace(`${PATH_NAME_MAPPING.ORDERING_REWARDS}${filteredQuery}`));
-  }
-);
-
-export const initSearchSearchKeyword = createAsyncThunk(
-  'ordering/rewardList/initSearchSearchKeyword',
-  async (_, { dispatch }) => {
-    await dispatch(updateSearchKeywordByQuery());
-    dispatch(clearQuerySearchKeyword());
-  }
-);
 
 export const mounted = createAsyncThunk('ordering/rewardList/mounted', async (_, { dispatch, getState }) => {
   const state = getState();
@@ -72,12 +44,8 @@ export const mounted = createAsyncThunk('ordering/rewardList/mounted', async (_,
     return;
   }
 
-  await dispatch(initSearchSearchKeyword());
-
-  const searchKeyword = getSearchKeyword(getState());
-
   if (isLogin) {
-    dispatch(fetchRewardList({ search: searchKeyword, shippingType, merchantName: business }));
+    dispatch(fetchRewardList({ shippingType, merchantName: business }));
   }
 });
 
@@ -94,5 +62,16 @@ export const backButtonClicked = createAsyncThunk(
     }
 
     dispatch(historyGoBack());
+  }
+);
+
+export const searchPromos = createAsyncThunk(
+  'ordering/rewardList/searchPromos',
+  async (searchKeyword, { dispatch, getState }) => {
+    const state = getState();
+    const shippingType = getShippingType(state);
+    const business = getBusiness(state);
+
+    dispatch(fetchRewardList({ search: searchKeyword, shippingType, merchantName: business }));
   }
 );

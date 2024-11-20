@@ -4,7 +4,7 @@ import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 
 const initialState = {
   loadRewardListRequest: {
-    data: null,
+    data: [],
     status: null,
     error: null,
   },

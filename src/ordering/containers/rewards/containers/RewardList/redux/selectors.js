@@ -10,8 +10,6 @@ import {
 import { getLoadRewardListRequestData } from '../../../../../../redux/modules/rewards/selectors';
 import { getMerchantCountry, getBusinessCurrency, getBusinessLocale } from '../../../../../redux/modules/app';
 
-export const getSearchKeyword = state => state.rewardList.searchKeyword;
-
 export const getRewardList = createSelector(
   getLoadRewardListRequestData,
   getMerchantCountry,

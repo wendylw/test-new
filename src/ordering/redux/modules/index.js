@@ -15,7 +15,6 @@ import locationAndDate from './locationAndDate';
 import orderStatus from '../../containers/order-status/redux';
 import address from '../../../redux/modules/address';
 import menu from '../../containers/Menu/redux';
-import rewardList from '../../containers/rewards/containers/RewardList/redux';
 import promoPayLater from '../../containers/Promotion/redux';
 import foodCourt from '../../containers/food-court/redux';
 import growthbook from '../../../redux/modules/growthbook';
@@ -42,7 +41,6 @@ const rootReducer = history =>
     profile,
     address,
     menu,
-    rewardList,
     promoPayLater,
     foodCourt,
     growthbook,

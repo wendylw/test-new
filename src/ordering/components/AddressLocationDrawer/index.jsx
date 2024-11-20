@@ -1,14 +1,13 @@
-import _debounce from 'lodash/debounce';
 import React, { useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { X } from 'phosphor-react';
+import { searchUpdateDebounce } from '../../../common/utils/ui';
 import Drawer from '../../../common/components/Drawer';
 import DrawerHeader from '../../../common/components/Drawer/DrawerHeader';
 import Search from '../../../common/components/Input/Search';
 import styles from './AddressLocationDrawer.module.scss';
 
-const searchUpdateDebounce = _debounce((value, callback) => callback(value), 700);
 const AddressLocationDrawer = ({
   children,
   isLocationDrawerVisible,
