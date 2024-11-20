@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useMount } from 'react-use';
 import { getClassName } from '../../../../../common/utils/ui';
+import { NATIVE_DARK_MODE } from '../../utils/constants';
 import {
   getMerchantDisplayName,
   getIsLoadMerchantRequestCompleted,
@@ -54,6 +55,8 @@ const MembershipDetail = () => {
   return (
     <Frame>
       <PageHeader
+        nativeLeftIcon="whiteBack"
+        nativeStyles={{ color: NATIVE_DARK_MODE.TEXT_COLOR, backgroundColor: NATIVE_DARK_MODE.HEADER_BACKGROUND_COLOR }}
         className={styles.MembershipDetailPageHeader}
         leftContentClassName={styles.MembershipDetailPageHeaderLeftContent}
         titleClassName={getClassName([

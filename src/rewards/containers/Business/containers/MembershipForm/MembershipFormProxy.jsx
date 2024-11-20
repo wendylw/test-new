@@ -4,6 +4,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import BeepWarningImage from '../../../../../images/beep-warning.svg';
 import RewardsFailedIcon from '../../../../../images/rewards-failed.svg';
+import { NATIVE_DARK_MODE } from '../../utils/constants';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import ErrorResult from './components/ErrorResult';
@@ -57,6 +58,11 @@ const MembershipFormProxy = () => {
     <Frame>
       {isWebview && (
         <PageHeader
+          nativeLeftIcon="whiteBack"
+          nativeStyles={{
+            color: NATIVE_DARK_MODE.TEXT_COLOR,
+            backgroundColor: NATIVE_DARK_MODE.HEADER_BACKGROUND_COLOR,
+          }}
           title={t('JoinOurMembership')}
           onBackArrowClick={handleClickBackButton}
           isShowBackButton={shouldShowBackButton}
