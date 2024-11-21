@@ -423,12 +423,13 @@ export const promptEnableAppNotification = ({ title, description, sourcePage }) 
 
 export const isLiveChatAvailable = () => window.liveChatAvailable;
 
-export const updateNativeHeader = ({ left, center, right } = {}) => {
+export const updateNativeHeader = ({ left, center, right, headerBackgroundColor } = {}) => {
   const transformToArray = data => (_isArray(data) ? data : data ? [data] : []);
   const config = {
     left: transformToArray(left),
     center: transformToArray(center),
     right: transformToArray(right),
+    headerBackgroundColor,
   };
   nativeLayout('header', config);
 };
