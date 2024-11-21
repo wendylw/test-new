@@ -1,13 +1,17 @@
 import { createSelector } from 'reselect';
-import { PROMO_VOUCHER_STATUS } from '../../../../../../common/utils/constants';
-import { getFulfillDate, getPrice } from '../../../../../../common/utils';
+import { PROMO_VOUCHER_STATUS, REWARDS_TYPE } from '../../../../../../common/utils/constants';
+import { getFulfillDate, getPrice, getQueryString } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
   getRemainingRewardExpiredDays,
   getFormatDiscountValue,
   getExpiringDaysI18n,
 } from '../../../../../../common/utils/rewards';
-import { getLoadRewardListRequestData } from '../../../../../../redux/modules/rewards/selectors';
+import {
+  getLoadRewardListRequestData,
+  getIsApplyPromoOrVoucherPending,
+  getIsApplyPayLaterPromoOrVoucherPending,
+} from '../../../../../../redux/modules/rewards/selectors';
 import {
   getMerchantCountry,
   getBusinessCurrency,
@@ -15,9 +19,7 @@ import {
   getBusinessUTCOffset,
 } from '../../../../../redux/modules/app';
 
-export const getApplyRewardFulfillDate = createSelector(getBusinessUTCOffset, businessUTCOffset =>
-  getFulfillDate(businessUTCOffset)
-);
+export const getPayLaterReceiptNumber = () => getQueryString('receiptNumber');
 
 export const getSelectedRewardId = state => state.rewardList.selectedReward.id;
 
@@ -30,6 +32,10 @@ export const getSelectedRewardType = state => state.rewardList.selectedReward.ty
 /*
  * Selectors derived from state
  */
+export const getApplyRewardFulfillDate = createSelector(getBusinessUTCOffset, businessUTCOffset =>
+  getFulfillDate(businessUTCOffset)
+);
+
 export const getRewardList = createSelector(
   getLoadRewardListRequestData,
   getMerchantCountry,
@@ -106,4 +112,25 @@ export const getRewardList = createSelector(
           type === selectedRewardType,
       };
     })
+);
+
+export const getIsApplyRewardPending = createSelector(
+  getIsApplyPromoOrVoucherPending,
+  getIsApplyPayLaterPromoOrVoucherPending,
+  (isApplyPromoOrVoucherPending, isApplyPayLaterPromoOrVoucherPending) =>
+    isApplyPromoOrVoucherPending || isApplyPayLaterPromoOrVoucherPending
+);
+
+export const getIsApplyButtonDisabled = createSelector(
+  getSelectedRewardId,
+  getSelectedRewardUniquePromotionCodeId,
+  getSelectedRewardCode,
+  getIsApplyRewardPending,
+  (selectedRewardId, selectedRewardUniquePromotionCodeId, selectedRewardCode, isApplyRewardPending) =>
+    !selectedRewardId || !selectedRewardUniquePromotionCodeId || !selectedRewardCode || isApplyRewardPending
+);
+
+export const getIsSelectedVoucher = createSelector(
+  getSelectedRewardType,
+  selectedRewardType => selectedRewardType === REWARDS_TYPE.VOUCHER
 );

@@ -1,5 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getOfferList, getOfferDetail, postApplyPromo, postApplyVoucher } from './api-request';
+import {
+  getOfferList,
+  getOfferDetail,
+  postApplyPromo,
+  postApplyVoucher,
+  postApplyPayLaterPromo,
+  postApplyPayLaterVoucher,
+} from './api-request';
 
 export const fetchRewardList = createAsyncThunk(
   'app/rewards/fetchRewardList',
@@ -30,8 +37,26 @@ export const applyPromo = createAsyncThunk(
 
 export const applyVoucher = createAsyncThunk(
   'app/rewards/applyVoucher',
-  async ({ fulfillDate, shippingType, voucherCode }) => {
-    const result = await postApplyVoucher({ fulfillDate, shippingType, voucherCode });
+  async ({ fulfillDate, shippingType, code }) => {
+    const result = await postApplyVoucher({ fulfillDate, shippingType, code });
+
+    return result;
+  }
+);
+
+export const applyPayLaterPromo = createAsyncThunk(
+  'app/rewards/applyPayLaterPromo',
+  async ({ receiptNumber, id, uniquePromotionCodeId }) => {
+    const result = await postApplyPayLaterPromo({ receiptNumber, id, uniquePromotionCodeId });
+
+    return result;
+  }
+);
+
+export const applyPayLaterVoucher = createAsyncThunk(
+  'app/rewards/applyPayLaterVoucher',
+  async ({ receiptNumber, code }) => {
+    const result = await postApplyPayLaterVoucher({ receiptNumber, code });
 
     return result;
   }

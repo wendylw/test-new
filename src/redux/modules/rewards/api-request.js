@@ -25,9 +25,18 @@ export const postApplyPromo = ({ id: promoId, fulfillDate, shippingType, uniqueP
     uniquePromotionCodeId,
   });
 
-export const postApplyVoucher = ({ fulfillDate, shippingType, voucherCode }) =>
+export const postApplyVoucher = ({ fulfillDate, shippingType, code: voucherCode }) =>
   post('/api/cart/applyVoucher', {
     fulfillDate,
     shippingType,
     voucherCode,
   });
+
+export const postApplyPayLaterPromo = ({ receiptNumber, id: promotionId, uniquePromotionCodeId: promotionCodeId }) =>
+  post(`/api/v3/transactions/${receiptNumber}/apply-promotions`, {
+    promotionId,
+    promotionCodeId,
+  });
+
+export const postApplyPayLaterVoucher = ({ receiptNumber, code: voucherCode }) =>
+  post(`/api/v3/transactions/${receiptNumber}/apply-voucher`, { voucherCode });

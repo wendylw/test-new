@@ -320,6 +320,11 @@ export const PROMO_VOUCHER_STATUS = {
   REDEEMED: 'redeemed',
 };
 
+export const REWARDS_TYPE = {
+  PROMOTION: 'promotion',
+  VOUCHER: 'voucher',
+};
+
 export const MEMBER_LEVELS = {
   MEMBER: 1,
   SLIVER: 2,

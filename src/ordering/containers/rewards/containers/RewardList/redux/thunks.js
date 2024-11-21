@@ -1,9 +1,21 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { push, goBack as historyGoBack } from 'connected-react-router';
+import { push, replace, goBack as historyGoBack } from 'connected-react-router';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
 import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
-import { fetchRewardList } from '../../../../../../redux/modules/rewards/thunks';
+import {
+  getIsApplyPromoFulfilled,
+  getIsApplyVoucherFulfilled,
+  getIsApplyPayLaterPromoFulfilled,
+  getIsApplyPayLaterVoucherFulfilled,
+} from '../../../../../../redux/modules/rewards/selectors';
+import {
+  fetchRewardList,
+  applyPromo,
+  applyVoucher,
+  applyPayLaterPromo,
+  applyPayLaterVoucher,
+} from '../../../../../../redux/modules/rewards/thunks';
 import {
   getIsWebview,
   getBusiness,
@@ -14,6 +26,14 @@ import {
   getIsNotLoginInWeb,
   actions as appActions,
 } from '../../../../../redux/modules/app';
+import {
+  getPayLaterReceiptNumber,
+  getSelectedRewardId,
+  getSelectedRewardUniquePromotionCodeId,
+  getSelectedRewardCode,
+  getIsSelectedVoucher,
+  getApplyRewardFulfillDate,
+} from './selectors';
 
 export const mounted = createAsyncThunk('ordering/rewardList/mounted', async (_, { dispatch, getState }) => {
   const state = getState();
@@ -73,5 +93,66 @@ export const searchPromos = createAsyncThunk(
     const business = getBusiness(state);
 
     dispatch(fetchRewardList({ search: searchKeyword, shippingType, merchantName: business }));
+  }
+);
+
+export const applyReward = createAsyncThunk('ordering/rewardList/applyReward', async (_, { dispatch, getState }) => {
+  const state = getState();
+  const isSelectedVoucher = getIsSelectedVoucher(state);
+  const id = getSelectedRewardId(state);
+  const uniquePromotionCodeId = getSelectedRewardUniquePromotionCodeId(state);
+  const code = getSelectedRewardCode(state);
+  const fulfillDate = getApplyRewardFulfillDate(state);
+  const shippingType = getShippingType(state);
+  const search = getLocationSearch(state);
+  const goBackReviewCartPage = () => {
+    dispatch(replace(`${PATH_NAME_MAPPING.ORDERING_CART}${search}`));
+  };
+
+  if (isSelectedVoucher) {
+    await dispatch(applyVoucher({ fulfillDate, shippingType, code }));
+
+    const isApplyVoucherFulfilled = getIsApplyVoucherFulfilled(getState());
+
+    isApplyVoucherFulfilled && goBackReviewCartPage();
+
+    return;
+  }
+
+  await dispatch(applyPromo({ id, fulfillDate, shippingType, uniquePromotionCodeId }));
+
+  const isApplyPromoFulfilled = getIsApplyPromoFulfilled(getState());
+
+  isApplyPromoFulfilled && goBackReviewCartPage();
+});
+
+export const applyPayLaterReward = createAsyncThunk(
+  'ordering/rewardList/applyPayLaterReward',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const receiptNumber = getPayLaterReceiptNumber(state);
+    const isSelectedVoucher = getIsSelectedVoucher(state);
+    const id = getSelectedRewardId(state);
+    const uniquePromotionCodeId = getSelectedRewardUniquePromotionCodeId(state);
+    const code = getSelectedRewardCode(state);
+    const search = getLocationSearch(state);
+    const goBackReviewTableSummaryPage = () => {
+      dispatch(replace(`${PATH_NAME_MAPPING.ORDERING_TABLE_SUMMARY}${search}`));
+    };
+
+    if (isSelectedVoucher) {
+      await dispatch(applyPayLaterVoucher({ receiptNumber, code }));
+
+      const isApplyPayLaterPromoFulfilled = getIsApplyPayLaterPromoFulfilled(getState());
+
+      isApplyPayLaterPromoFulfilled && goBackReviewTableSummaryPage();
+
+      return;
+    }
+
+    await dispatch(applyPayLaterPromo({ receiptNumber, id, uniquePromotionCodeId }));
+    const isApplyPayLaterVoucherFulfilled = getIsApplyPayLaterVoucherFulfilled(getState());
+
+    isApplyPayLaterVoucherFulfilled && goBackReviewTableSummaryPage();
   }
 );

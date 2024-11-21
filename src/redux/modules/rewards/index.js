@@ -1,5 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchRewardList, fetchRewardDetail, applyPromo, applyVoucher } from './thunks';
+import {
+  fetchRewardList,
+  fetchRewardDetail,
+  applyPromo,
+  applyVoucher,
+  applyPayLaterPromo,
+  applyPayLaterVoucher,
+} from './thunks';
 import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 
 const initialState = {
@@ -21,11 +28,20 @@ const initialState = {
     status: null,
     error: null,
   },
+  applyPayLaterPromoRequest: {
+    status: null,
+    error: null,
+  },
+  applyPayLaterVoucherRequest: {
+    status: null,
+    error: null,
+  },
 };
 
 export const { actions, reducer } = createSlice({
   name: 'app/rewards',
   initialState,
+  reducers: {},
   extraReducers: {
     [fetchRewardList.pending.type]: state => {
       state.loadRewardListRequest.status = API_REQUEST_STATUS.PENDING;
@@ -57,8 +73,7 @@ export const { actions, reducer } = createSlice({
       state.applyPromoRequest.status = API_REQUEST_STATUS.PENDING;
       state.applyPromoRequest.error = null;
     },
-    [applyPromo.fulfilled.type]: (state, { payload }) => {
-      state.applyPromoRequest.data = payload;
+    [applyPromo.fulfilled.type]: state => {
       state.applyPromoRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.applyPromoRequest.error = null;
     },
@@ -70,14 +85,37 @@ export const { actions, reducer } = createSlice({
       state.applyVoucherRequest.status = API_REQUEST_STATUS.PENDING;
       state.applyVoucherRequest.error = null;
     },
-    [applyVoucher.fulfilled.type]: (state, { payload }) => {
-      state.applyVoucherRequest.data = payload;
+    [applyVoucher.fulfilled.type]: state => {
       state.applyVoucherRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.applyVoucherRequest.error = null;
     },
     [applyVoucher.rejected.type]: (state, { error }) => {
       state.applyVoucherRequest.status = API_REQUEST_STATUS.REJECTED;
       state.applyVoucherRequest.error = error;
+    },
+    [applyPayLaterPromo.pending.type]: state => {
+      state.applyPayLaterPromoRequest.status = API_REQUEST_STATUS.PENDING;
+      state.applyPayLaterPromoRequest.error = null;
+    },
+    [applyPayLaterPromo.fulfilled.type]: state => {
+      state.applyPayLaterPromoRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.applyPayLaterPromoRequest.error = null;
+    },
+    [applyPayLaterPromo.rejected.type]: (state, { error }) => {
+      state.applyPayLaterPromoRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.applyPayLaterPromoRequest.error = error;
+    },
+    [applyPayLaterVoucher.pending.type]: state => {
+      state.applyPayLaterVoucherRequest.status = API_REQUEST_STATUS.PENDING;
+      state.applyPayLaterVoucherRequest.error = null;
+    },
+    [applyPayLaterVoucher.fulfilled.type]: state => {
+      state.applyPayLaterVoucherRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.applyPayLaterVoucherRequest.error = null;
+    },
+    [applyPayLaterVoucher.rejected.type]: (state, { error }) => {
+      state.applyPayLaterVoucherRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.applyPayLaterVoucherRequest.error = error;
     },
   },
 });

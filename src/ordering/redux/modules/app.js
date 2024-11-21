@@ -1663,14 +1663,6 @@ export const getIsProductDetailRequestRejected = createSelector(
   productDetailStatus => productDetailStatus === API_REQUEST_STATUS.REJECTED
 );
 
-// TODO: Utils.getOrderTypeFromUrl() will replace be selector
-export const getEnablePayLater = createSelector(
-  getBusinessInfo,
-  businessInfo =>
-    _get(businessInfo, 'qrOrderingSettings.enablePayLater', false) &&
-    Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DINE_IN
-);
-
 export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => {
   const deliveryTypes = stores.reduce((allTypes, store) => allTypes.concat(store.fulfillmentOptions), []);
 
@@ -1679,6 +1671,44 @@ export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => 
 
 export const getStoreId = createSelector(getRequestInfo, info => _get(info, 'storeId', null));
 export const getShippingType = createSelector(getRequestInfo, info => _get(info, 'shippingType', null));
+
+/**
+ * Is delivery shipping type
+ * @returns
+ */
+export const getIsDeliveryType = createSelector(
+  getShippingType,
+  shippingType => shippingType === DELIVERY_METHOD.DELIVERY
+);
+
+/**
+ * Is pickup shipping type
+ */
+export const getIsPickUpType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.PICKUP);
+
+/**
+ * Is dine shipping type
+ */
+export const getIsDineType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.DINE_IN);
+
+/**
+ * Is Takeaway type
+ */
+export const getIsTakeawayType = createSelector(
+  getShippingType,
+  shippingType => shippingType === DELIVERY_METHOD.TAKE_AWAY
+);
+
+export const getApiRequestShippingType = createSelector(getShippingType, shippingType =>
+  Utils.getApiRequestShippingType(shippingType)
+);
+
+export const getEnablePayLater = createSelector(
+  getBusinessInfo,
+  getIsDineType,
+  (businessInfo, isDineType) => _get(businessInfo, 'qrOrderingSettings.enablePayLater', false) && isDineType
+);
+
 export const getTableId = createSelector(getRequestInfo, info => _get(info, 'tableId', null));
 
 export const getIsBeepQRDemo = createSelector(getTableId, tableId => tableId === 'DEMO');
@@ -2009,37 +2039,6 @@ export const getIsNotLoginInWeb = createSelector(
   getUserIsLogin,
   getIsInAppOrMiniProgram,
   (isUserLogin, isInAppOrMiniProgram) => !isUserLogin && !isInAppOrMiniProgram
-);
-
-/**
- * Is delivery shipping type
- * @returns
- */
-export const getIsDeliveryType = createSelector(
-  getShippingType,
-  shippingType => shippingType === DELIVERY_METHOD.DELIVERY
-);
-
-/**
- * Is pickup shipping type
- */
-export const getIsPickUpType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.PICKUP);
-
-/**
- * Is dine shipping type
- */
-export const getIsDineType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.DINE_IN);
-
-/**
- * Is Takeaway type
- */
-export const getIsTakeawayType = createSelector(
-  getShippingType,
-  shippingType => shippingType === DELIVERY_METHOD.TAKE_AWAY
-);
-
-export const getApiRequestShippingType = createSelector(getShippingType, shippingType =>
-  Utils.getApiRequestShippingType(shippingType)
 );
 
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
