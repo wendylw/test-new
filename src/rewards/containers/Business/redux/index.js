@@ -9,7 +9,6 @@ import seamlessLoyalty from '../containers/SeamlessLoyalty/redux';
 import uniquePromoDetail from '../containers/UniquePromoDetail/redux';
 import pointsRewardDetail from '../containers/PointsRewardDetail/redux';
 import myRewardDetail from '../containers/MyRewardDetail/redux';
-import pointsRewards from '../containers/PointsRewardsPage/redux';
 
 export default combineReducers({
   common,
@@ -21,6 +20,5 @@ export default combineReducers({
   seamlessLoyalty,
   uniquePromoDetail,
   pointsRewardDetail,
-  pointsRewards,
   myRewardDetail,
 });
