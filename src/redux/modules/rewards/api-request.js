@@ -25,9 +25,9 @@ export const postApplyPromo = ({ id: promoId, fulfillDate, shippingType, uniqueP
     uniquePromotionCodeId,
   });
 
-export const postApplyVoucher = ({ shippingType, voucherCode, applyCashback }) =>
+export const postApplyVoucher = ({ fulfillDate, shippingType, voucherCode }) =>
   post('/api/cart/applyVoucher', {
+    fulfillDate,
     shippingType,
     voucherCode,
-    applyCashback,
   });

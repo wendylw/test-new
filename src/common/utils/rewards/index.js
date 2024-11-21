@@ -27,7 +27,7 @@ export const getExpiringDaysI18n = remainingExpiredDays => {
     ? {
         value: remainingExpiredDays,
         i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
-        params: !isTodayExpired && { remainingExpiredDays },
+        params: !isTodayExpired && { count: remainingExpiredDays },
       }
     : null;
 };

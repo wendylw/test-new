@@ -36,13 +36,12 @@
   @apply tw-p-0 tw-w-full;
 }
 
-.PointsRewardsTicketButtonContent,
-.PointsRewardsTicket {
+.PointsRewardsTicketButtonContent {
   @apply tw-w-full;
 }
 
 .PointsRewardsTicketMain {
-  @apply tw-flex-1 tw-text-left tw-py-4 sm:tw-py-4px tw-pl-8 sm:tw-pl-8px tw-space-y-8 sm:tw-space-y-8px;
+  @apply tw-text-left tw-px-8 sm:tw-px-8px tw-space-y-12 sm:tw-space-y-12px;
 }
 
 .PointsRewardsTicketMainTitle {
