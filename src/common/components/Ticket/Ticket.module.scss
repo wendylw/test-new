@@ -1,0 +1,69 @@
+.TicketContainer {
+  @apply tw-rounded tw-overflow-hidden tw-shadow;
+}
+
+.Ticket {
+  @apply tw-relative tw-flex tw-border tw-border-solid tw-border-gray-400 tw-rounded tw-bg-gray-50;
+
+  min-height: 80px;
+
+  &::before,
+  &::after {
+    @apply tw-absolute tw-top-1/2 tw-inline-flex tw-border tw-border-solid tw-border-gray-400 tw-rounded-full tw-bg-gray-100;
+
+    content: "";
+    width: 16px;
+    height: 16px;
+  }
+
+  &::before {
+    @apply tw-left-0;
+
+    transform: translate(-62.5%, -50%);
+  }
+
+  &::after {
+    @apply tw-right-0;
+
+    transform: translate(62.5%, -50%);
+  }
+}
+
+.TicketVertical {
+  @apply tw-flex-col tw-px-12 sm:tw-px-12px;
+}
+
+.TicketMain {
+  @apply tw-flex-1 tw-flex tw-items-center tw-p-8 sm:tw-p-8px;
+}
+
+.TicketStub {
+  @apply tw-relative tw-flex-shrink-0 tw-flex tw-items-center tw-p-8 sm:tw-p-8px;
+
+  min-width: 18px;
+
+  &::before {
+    @apply tw-block tw-absolute tw-top-0 tw-h-full tw-bg-repeat-y;
+
+    content: "";
+    left: -1px;
+    width: 1px;
+    background: linear-gradient(180deg, #dededf 0 60%, transparent 0 100%);
+    background-size: 4px 10px;
+    background-position: 0 0;
+  }
+}
+
+.TicketVertical .TicketStub {
+  @apply tw-px-0 tw-mx-8 sm:tw-mx-8px;
+
+  &::before {
+    @apply tw-block tw-w-full tw-bg-repeat-x;
+
+    content: "";
+    height: 1px;
+    background: linear-gradient(90deg, #dededf 0 60%, transparent 0 100%);
+    background-size: 6px 4px;
+    background-position: 0 0;
+  }
+}

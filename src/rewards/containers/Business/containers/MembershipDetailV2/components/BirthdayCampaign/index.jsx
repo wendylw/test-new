@@ -13,9 +13,7 @@ const BirthdayCampaign = () => {
   const { t } = useTranslation(['Rewards']);
   const dispatch = useDispatch();
   const isBirthdayCampaignEntryShow = useSelector(getIsBirthdayCampaignEntryShow);
-  const handleClickBirthdayCampaignButton = useCallback(() => dispatch(showProfileForm({ hideSkipButton: false })), [
-    dispatch,
-  ]);
+  const handleClickBirthdayCampaignButton = useCallback(() => dispatch(showProfileForm()), [dispatch]);
 
   if (!isBirthdayCampaignEntryShow) {
     return null;

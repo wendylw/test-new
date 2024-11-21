@@ -8,7 +8,7 @@ import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import { ObjectFitImage } from '../../../../../common/components/Image';
 import PageHeader from '../../../../../common/components/PageHeader';
-import UniquePromoList from '../../components/UniquePromoList';
+import UniquePromoList from './components/UniquePromoList';
 import styles from './UniquePromoListPage.module.scss';
 
 const UniquePromoListPage = () => {

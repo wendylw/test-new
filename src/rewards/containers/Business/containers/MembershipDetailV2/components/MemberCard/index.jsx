@@ -30,9 +30,7 @@ const MemberCard = () => {
   const handleClickCurrentMemberTierPromptToolTip = useCallback(() => {
     setPromptToolTipShown(!promptToolTipShown);
   }, [promptToolTipShown, setPromptToolTipShown]);
-  const handleClickViewProfileButton = useCallback(() => dispatch(showProfileForm({ hideSkipButton: false })), [
-    dispatch,
-  ]);
+  const handleClickViewProfileButton = useCallback(() => dispatch(showProfileForm()), [dispatch]);
 
   return (
     <section className={styles.MemberCardSection}>

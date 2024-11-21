@@ -1,16 +1,14 @@
 import _get from 'lodash/get';
-import _isInteger from 'lodash/isInteger';
 import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import {
   API_REQUEST_STATUS,
   CLAIM_CASHBACK_QUERY_NAMES,
-  PROMO_VOUCHER_DISCOUNT_TYPES,
   PROMO_VOUCHER_STATUS,
 } from '../../../../../common/utils/constants';
 import { getPrice, getQueryString } from '../../../../../common/utils';
 import { getDifferenceTodayInDays, formatTimeToDateString } from '../../../../../utils/datetime-lib';
-import { CLAIMED_POINTS_REWARD_ERROR_CODES } from '../../utils/constants';
+import { getFormatDiscountValue, getRemainingRewardExpiredDays, getExpiringDaysI18n } from '../../utils/rewards';
 import { getIsJoinMembershipNewMember } from '../../../../../redux/modules/membership/selectors';
 import {
   getMerchantLocale,
@@ -20,6 +18,7 @@ import {
   getIsMerchantMembershipPointsEnabled,
 } from '../../../../../redux/modules/merchant/selectors';
 import {
+  getLoadOrderRewardsRequestStatus,
   getOrderRewardsPoints,
   getOrderRewardsCashback,
   getClaimOrderRewardsCashbackValue,
@@ -91,10 +90,6 @@ export const getLoadPointsRewardListData = state => state.business.common.loadPo
 export const getLoadPointsRewardListStatus = state => state.business.common.loadPointsRewardListRequest.status;
 
 export const getLoadPointsRewardListError = state => state.business.common.loadPointsRewardListRequest.error;
-
-export const getClaimPointsRewardStatus = state => state.business.common.claimPointsRewardRequest.status;
-
-export const getClaimPointsRewardError = state => state.business.common.claimPointsRewardRequest.error;
 
 export const getLoadCustomizeRewardsSettingsRequestData = state =>
   state.business.common.loadCustomizeRewardsSettingsRequest.data;
@@ -200,38 +195,34 @@ export const getUniquePromoList = createSelector(
         return promo;
       }
 
-      const { id, uniquePromotionId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
-      const diffDays = getDifferenceTodayInDays(new Date(validTo));
-      const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
-      const isTodayExpired = remainingExpiredDays === 0;
+      const { id, uniquePromotionCodeId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+      const remainingExpiredDays = getRemainingRewardExpiredDays(validTo);
 
       return {
         id,
-        key: `${id}-${uniquePromotionId}-${discountType}`,
-        value:
-          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
-            ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        uniquePromotionCodeId,
+        key: `${id}-${uniquePromotionCodeId}-${discountType}`,
+        value: getFormatDiscountValue(discountType, discountValue, {
+          locale: merchantLocale,
+          currency: merchantCurrency,
+          country: merchantCountry,
+        }),
         name,
         status,
-        limitations: [
-          minSpendAmount && {
-            key: `unique-promo-${id}-limitation-0`,
-            i18nKey: 'MinConsumption',
-            params: {
-              amount: getPrice(minSpendAmount, {
-                locale: merchantLocale,
-                currency: merchantCurrency,
-                country: merchantCountry,
-              }),
-            },
+        minSpend: minSpendAmount && {
+          i18nKey: 'MinConsumption',
+          params: {
+            amount: getPrice(minSpendAmount, {
+              locale: merchantLocale,
+              currency: merchantCurrency,
+              country: merchantCountry,
+            }),
           },
-          validTo && {
-            key: `unique-promo-${id}-limitation-1`,
-            i18nKey: 'ValidUntil',
-            params: { date: formatTimeToDateString(merchantCountry, validTo) },
-          },
-        ].filter(limitation => Boolean(limitation)),
+        },
+        expiringDate: validTo && {
+          i18nKey: 'ValidUntil',
+          params: { date: formatTimeToDateString(merchantCountry, validTo) },
+        },
         conditions: {
           minSpend: minSpendAmount && {
             value: minSpendAmount,
@@ -244,11 +235,7 @@ export const getUniquePromoList = createSelector(
               }),
             },
           },
-          expiringDays: _isInteger(remainingExpiredDays) && {
-            value: remainingExpiredDays,
-            i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
-            params: !isTodayExpired && { remainingExpiredDays },
-          },
+          expiringDays: getExpiringDaysI18n(remainingExpiredDays),
         },
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };
@@ -280,18 +267,18 @@ export const getUniquePromoListBanners = createSelector(
         return promo;
       }
 
-      const { id, uniquePromotionId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
+      const { id, uniquePromotionCodeId, discountType, discountValue, name, validTo, status, minSpendAmount } = promo;
       const diffDays = getDifferenceTodayInDays(new Date(validTo));
       const remainingExpiredDays = diffDays > -8 && diffDays <= 0 ? Math.floor(Math.abs(diffDays)) : null;
-      const isTodayExpired = remainingExpiredDays === 0;
 
       return {
         id,
-        key: `${id}-${uniquePromotionId}-${discountType}`,
-        value:
-          discountType === PROMO_VOUCHER_DISCOUNT_TYPES.PERCENTAGE
-            ? `${discountValue}%`
-            : getPrice(discountValue, { locale: merchantLocale, currency: merchantCurrency, country: merchantCountry }),
+        key: `${id}-${uniquePromotionCodeId}-${discountType}`,
+        value: getFormatDiscountValue(discountType, discountValue, {
+          locale: merchantLocale,
+          currency: merchantCurrency,
+          country: merchantCountry,
+        }),
         name,
         status,
         conditions: {
@@ -306,11 +293,7 @@ export const getUniquePromoListBanners = createSelector(
               }),
             },
           },
-          expiringDays: _isInteger(remainingExpiredDays) && {
-            value: remainingExpiredDays,
-            i18nKey: isTodayExpired ? 'ExpiringToday' : 'ExpiringInDays',
-            params: !isTodayExpired && { remainingExpiredDays },
-          },
+          expiringDays: getExpiringDaysI18n(remainingExpiredDays),
         },
         isUnavailable: [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(status),
       };
@@ -336,7 +319,7 @@ export const getPointsRewardList = createSelector(
   getCustomerAvailablePointsBalance,
   (pointsRewardList, customerAvailablePointsBalance) =>
     pointsRewardList.map(reward => {
-      const { id, type, name, redeemedStatus, costOfPoints } = reward;
+      const { id, type, name, redeemedStatus, costOfPoints, rewardSettingId } = reward;
       const isUnavailableStatus = [PROMO_VOUCHER_STATUS.EXPIRED, PROMO_VOUCHER_STATUS.REDEEMED].includes(
         redeemedStatus
       );
@@ -347,6 +330,7 @@ export const getPointsRewardList = createSelector(
         type,
         name,
         costOfPoints,
+        rewardSettingId,
         isSoldOut: redeemedStatus === PROMO_VOUCHER_STATUS.REDEEMED,
         isExpired: redeemedStatus === PROMO_VOUCHER_STATUS.EXPIRED,
         isUnavailable: isUnavailableStatus || isInsufficientPoints,
@@ -361,42 +345,16 @@ export const getIsPointsRewardListShown = createSelector(
     isMerchantMembershipPointsEnabled && pointsRewardList.length > 0
 );
 
-export const getIsClaimPointsRewardPending = createSelector(
-  getClaimPointsRewardStatus,
-  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.PENDING
+export const getIsLoadOrderRewardsRequestFulfilled = createSelector(
+  getLoadOrderRewardsRequestStatus,
+  loadOrderRewardsRequestStatus => loadOrderRewardsRequestStatus === API_REQUEST_STATUS.FULFILLED
 );
 
-export const getIsClaimPointsRewardFulfilled = createSelector(
-  getClaimPointsRewardStatus,
-  claimPointsRewardStatus => claimPointsRewardStatus === API_REQUEST_STATUS.FULFILLED
+export const getIsLoadOrderRewardsRequestCompleted = createSelector(
+  getLoadOrderRewardsRequestStatus,
+  loadOrderRewardsRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadOrderRewardsRequestStatus)
 );
-
-export const getClaimPointsRewardErrorI18nKeys = createSelector(getClaimPointsRewardError, claimPointsRewardError => {
-  if (!claimPointsRewardError) {
-    return null;
-  }
-
-  const { code } = claimPointsRewardError;
-  const errorI18nKeys = {};
-
-  switch (code) {
-    case CLAIMED_POINTS_REWARD_ERROR_CODES.PROMO_IS_NOT_REDEEMABLE:
-      errorI18nKeys.titleI18nKey = 'PromotionIsNotRedeemableTitle';
-      errorI18nKeys.descriptionI18nKey = 'PromotionIsNotRedeemableDescription';
-      break;
-    case CLAIMED_POINTS_REWARD_ERROR_CODES.INVALID_POINT_SOURCE:
-    case CLAIMED_POINTS_REWARD_ERROR_CODES.POINT_LOG_NOT_FOUND:
-      errorI18nKeys.titleI18nKey = 'InsufficientPointsTitle';
-      errorI18nKeys.descriptionI18nKey = 'InsufficientPointsDescription';
-      break;
-    default:
-      errorI18nKeys.titleI18nKey = 'SomethingWentWrongTitle';
-      errorI18nKeys.descriptionI18nKey = 'SomethingWentWrongDescription';
-      break;
-  }
-
-  return errorI18nKeys;
-});
 
 export const getIsRequestOrderRewardsEnabled = createSelector(
   getReceiptNumber,

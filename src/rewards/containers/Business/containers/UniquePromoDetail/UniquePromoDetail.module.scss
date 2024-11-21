@@ -1,0 +1,65 @@
+.UniquePromoDetailLimitations {
+  @apply tw-list-disc tw-text-gray-700;
+}
+
+.UniquePromoDetailLimitation {
+  @apply tw-leading-normal;
+}
+
+.UniquePromoDetailTicketStatusTag {
+  @apply tw-my-2 sm:tw-my-2px;
+}
+
+.UniquePromoStubRemainingExpiredDaysTag {
+  @apply tw-my-2 sm:tw-my-2px tw-font-bold;
+
+  > span {
+    @apply tw-flex tw-items-center;
+  }
+}
+
+.UniquePromoStubRemainingExpiredDaysTagLetter {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.UniquePromoStubRemainingExpiredDaysTagLetterHidden {
+  display: none;
+}
+
+.UniquePromoDetailConditionTitle,
+.UniquePromoDetailHowToUseTitle {
+  @apply tw-text-lg tw-leading-relaxed tw-font-bold;
+}
+
+.UniquePromoDetailConditionContent {
+  @apply tw-leading-loose;
+}
+
+.UniquePromoDetailApplicableProducts {
+  @apply tw-m-16 sm:tw-m-16px tw-space-y-4 sm:tw-space-y-4px;
+}
+
+.UniquePromoDetailApplicableStores {
+  @apply tw-m-16 sm:tw-m-16px tw-space-y-4 sm:tw-space-y-4px;
+}
+
+.UniquePromoDetailHowToUse {
+  @apply tw-m-16 sm:tw-m-16px tw-space-y-16 sm:tw-space-y-16px;
+}
+
+.UniquePromoDetailHowToUseSubtitle {
+  @apply tw-leading-loose tw-font-bold;
+}
+
+.UniquePromoDetailHowToUseContentDescription {
+  @apply tw-leading-loose;
+}
+
+.UniquePromoDetailHowToUseRedeemOnlineList {
+  @apply tw-mx-8 sm:tw-mx-8px tw-list-disc tw-list-inside;
+}
+
+.UniquePromoDetailHowToUseRedeemOnlineItem {
+  @apply tw-leading-loose;
+}

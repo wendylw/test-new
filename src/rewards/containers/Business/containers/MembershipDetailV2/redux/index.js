@@ -1,16 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import {
-  showWebProfileForm,
-  hideWebProfileForm,
-  showWebSkipButton,
-  hideWebSkipButton,
-  fetchMerchantBirthdayCampaign,
-  setPointRewardSelectedId,
-  clearPointRewardSelectedId,
-  setProfileSource,
-  clearProfileSource,
-} from './thunks';
+import { showWebProfileForm, hideWebProfileForm, fetchMerchantBirthdayCampaign } from './thunks';
 
 const initialState = {
   isCashbackPromptDrawerShow: false,
@@ -24,9 +14,7 @@ const initialState = {
   profileModalRequest: {
     show: false,
     showSkipButton: false,
-    source: null,
   },
-  pointsRewardSelectedId: null,
 };
 
 export const { reducer, actions } = createSlice({
@@ -52,24 +40,6 @@ export const { reducer, actions } = createSlice({
     },
     [hideWebProfileForm.fulfilled.type]: state => {
       state.profileModalRequest.show = false;
-    },
-    [showWebSkipButton.fulfilled.type]: state => {
-      state.profileModalRequest.showSkipButton = true;
-    },
-    [hideWebSkipButton.fulfilled.type]: state => {
-      state.profileModalRequest.showSkipButton = false;
-    },
-    [setProfileSource.fulfilled.type]: (state, { payload }) => {
-      state.profileModalRequest.source = payload;
-    },
-    [clearProfileSource.fulfilled.type]: state => {
-      state.profileModalRequest.source = null;
-    },
-    [setPointRewardSelectedId.fulfilled.type]: (state, { payload }) => {
-      state.pointsRewardSelectedId = payload;
-    },
-    [clearPointRewardSelectedId.fulfilled.type]: state => {
-      state.pointsRewardSelectedId = null;
     },
     [fetchMerchantBirthdayCampaign.pending.type]: state => {
       state.loadMerchantBirthdayCampaignRequest.status = API_REQUEST_STATUS.PENDING;

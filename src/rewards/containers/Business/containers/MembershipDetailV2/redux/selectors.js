@@ -88,10 +88,6 @@ export const getIsProfileModalShow = state => state.business.membershipDetailV2.
 export const getIsProfileModalSkipButtonShow = state =>
   state.business.membershipDetailV2.profileModalRequest.showSkipButton;
 
-export const getShowProfileModalSource = state => state.business.membershipDetailV2.profileModalRequest.source;
-
-export const getPointsRewardSelectedId = state => state.business.membershipDetailV2.pointsRewardSelectedId;
-
 /**
  * Derived selectors
  */

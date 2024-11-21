@@ -141,6 +141,7 @@ export const PATH_NAME_MAPPING = {
   UNIQUE_PROMO: '/promo',
   POINTS_REWARDS: '/points-rewards',
   LIST: '/list',
+  DETAIL: '/detail',
   CLAIM: '/claim',
   REWARDS_LOGIN: '/login',
   CASHBACK: '/cashback',
