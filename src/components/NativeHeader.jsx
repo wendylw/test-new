@@ -6,7 +6,13 @@ import _isEqual from 'lodash/isEqual';
 import _isArray from 'lodash/isArray';
 import * as NativeMethods from '../utils/native-methods';
 
+export const STYLES = {
+  TEXT_COLOR: '#303030',
+  BACKGROUND_COLOR: '#FFFFFF',
+};
+
 export const ICON_RES = {
+  WHITE_BACK: 'whiteBack',
   BACK: 'back',
   CLOSE: 'close',
   SHARE: 'share',
@@ -16,27 +22,33 @@ export const ICON_RES = {
 };
 
 function getNativeHeaderParams(props) {
-  const { title, rightContent, titleAlignment, isPage } = props;
-  const { BACK, CLOSE } = ICON_RES;
+  // TODO: WB-9779 will deal with old version
+  // const { title, rightContent, titleAlignment, isPage, leftIcon, styles } = props;
+  const { title, rightContent, titleAlignment, isPage, styles } = props;
+  const { color, backgroundColor } = styles || {};
+  const textColor = color || STYLES.TEXT_COLOR;
+  const leftIconRes = ICON_RES.BACK || (isPage ? ICON_RES.BACK : ICON_RES.CLOSE);
   const headerParams = {
     left: null,
     center: null,
     right: null,
+    headerBackgroundColor: backgroundColor || STYLES.BACKGROUND_COLOR,
   };
 
   headerParams.left = {
     type: 'button',
     id: 'headerBackButton',
     // If isPage is true that header display back button otherwise close button on left
-    iconRes: isPage ? BACK : CLOSE,
+    iconRes: leftIconRes,
     events: ['onClick'],
+    textColor,
   };
 
   headerParams.center = {
     type: 'text',
     id: 'headerTitle',
     text: title,
-    textColor: '#303030',
+    textColor,
     alignment: titleAlignment,
   };
 
@@ -49,7 +61,7 @@ function getNativeHeaderParams(props) {
       iconUrl: content.icon,
       iconRes: content.iconRes,
       text: content.text,
-      textColor: _get(content.style, 'color', '#303030'),
+      textColor: _get(content.style, 'color', textColor),
       events: ['onClick'],
     }));
   }
@@ -134,10 +146,15 @@ class NativeHeader extends Component {
 NativeHeader.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   rightContent: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  styles: PropTypes.shape({
+    color: PropTypes.string,
+    backgroundColor: PropTypes.string,
+  }),
 };
 
 NativeHeader.defaultProps = {
   rightContent: null,
+  styles: null,
 };
 
 NativeHeader.displayName = 'NativeHeader';
