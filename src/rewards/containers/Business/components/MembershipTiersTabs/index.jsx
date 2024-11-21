@@ -139,7 +139,7 @@ const MembershipTiersTabs = ({ onClickMembershipTierTab }) => {
               <p className={styles.MembershipTiersTabContentPrompt}>{merchantMembershipTiersBenefits[0].prompt}</p>
             )}
             <ul className={styles.MembershipTiersTabContentDescription}>
-              {merchantMembershipTiersBenefits[0].description.map((item, index) => (
+              {merchantMembershipTiersBenefits[0].conditions.map((item, index) => (
                 // eslint-disable-next-line react/no-array-index-key
                 <li key={`${item.key}-item-${index}`} className={styles.MembershipTiersTabContentDescriptionItem}>
                   <CheckCircle className={styles.MembershipTiersTabContentDescriptionItemCheckedIcon} size={20} />

@@ -4,7 +4,7 @@ import { CaretLeft } from 'phosphor-react';
 import styles from './PageHeader.module.scss';
 import { isWebview } from '../../utils';
 import { getClassName } from '../../utils/ui';
-import NativeHeader from '../../../components/NativeHeader';
+import NativeHeader, { ICON_RES } from '../../../components/NativeHeader';
 
 const isInWebview = isWebview();
 
@@ -17,12 +17,21 @@ const PageHeader = props => {
     isShowBackButton,
     onBackArrowClick,
     rightContent,
+    nativeLeftIcon,
+    nativeStyles,
   } = props;
 
   return (
     <>
       {isInWebview ? (
-        <NativeHeader isPage rightContent={rightContent} title={title} navFunc={onBackArrowClick} />
+        <NativeHeader
+          isPage
+          leftIcon={nativeLeftIcon}
+          styles={nativeStyles}
+          rightContent={rightContent}
+          title={title}
+          navFunc={onBackArrowClick}
+        />
       ) : (
         <header className={`${styles.PageHeaderContainer} ${className}`}>
           <div className={getClassName([styles.PageHeaderLeftContainer, leftContentClassName])}>
@@ -62,6 +71,11 @@ PageHeader.propTypes = {
   isShowBackButton: PropTypes.bool,
   onBackArrowClick: PropTypes.func,
   rightContent: PropTypes.node,
+  nativeLeftIcon: PropTypes.oneOf(Object.values(ICON_RES)),
+  nativeStyles: PropTypes.shape({
+    color: PropTypes.string,
+    backgroundColor: PropTypes.string,
+  }),
 };
 
 PageHeader.defaultProps = {
@@ -72,6 +86,8 @@ PageHeader.defaultProps = {
   isShowBackButton: true,
   onBackArrowClick: () => {},
   rightContent: null,
+  nativeLeftIcon: ICON_RES.BACK,
+  nativeStyles: null,
 };
 
 export default PageHeader;
