@@ -45,6 +45,21 @@ export const REWARDS_APPLIED_SOURCES = {
   Beep_DineIn: 8,
 };
 
+export const REWARD_APPLY_TO_LIMITS_CONDITIONS = {
+  ENTITY: {
+    TRANSACTION: 'TRANSACTION',
+    PRODUCT: 'PRODUCT',
+    CUSTOMER: 'CUSTOMER',
+    BUSINESS: 'BUSINESS',
+  },
+  PROPERTY_NAME: {
+    TOTAL: 'total',
+  },
+  OPERATOR: {
+    GTE: 'gte',
+  },
+};
+
 /**
  * i18n keys
  */
