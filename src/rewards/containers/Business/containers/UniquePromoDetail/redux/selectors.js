@@ -2,7 +2,11 @@ import _get from 'lodash/get';
 import i18next from 'i18next';
 import { createSelector } from 'reselect';
 import { PROMO_VOUCHER_STATUS } from '../../../../../../common/utils/constants';
-import { REWARDS_APPLIED_ALL_STORES, REWARDS_APPLIED_SOURCES } from '../../../utils/constants';
+import {
+  REWARD_APPLY_TO_LIMITS_CONDITIONS,
+  REWARDS_APPLIED_ALL_STORES,
+  REWARDS_APPLIED_SOURCES,
+} from '../../../utils/constants';
 import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
@@ -30,10 +34,6 @@ export const getLoadUniquePromoDetailError = state =>
 
 export const getUniquePromoValidTo = createSelector(getLoadUniquePromoDetailData, loadUniquePromoDetailData =>
   _get(loadUniquePromoDetailData, 'validTo', null)
-);
-
-export const getUniquePromoMinSpendAmount = createSelector(getLoadUniquePromoDetailData, loadUniquePromoDetailData =>
-  _get(loadUniquePromoDetailData, 'minSpendAmount', 0)
 );
 
 export const getUniquePromoStatus = createSelector(getLoadUniquePromoDetailData, loadUniquePromoDetailData =>
@@ -77,6 +77,13 @@ export const getUniquePromoLimitsAppliedSources = createSelector(
   uniquePromoGeneralLimits => _get(uniquePromoGeneralLimits, 'appliedSources', [])
 );
 
+export const getUniquePromoApplyToLimits = createSelector(getLoadUniquePromoDetailData, loadUniquePromoDetailData =>
+  _get(loadUniquePromoDetailData, 'promotion.applyToLimits', {})
+);
+
+export const getUniquePromoLimitsConditions = createSelector(getUniquePromoApplyToLimits, uniquePromoApplyToLimits =>
+  _get(uniquePromoApplyToLimits, 'conditions', [])
+);
 /**
  * Derived selectors
  */
@@ -96,19 +103,26 @@ export const getUniquePromoFormatDiscountValue = createSelector(
 
 export const getUniquePromoLimitations = createSelector(
   getUniquePromoValidTo,
-  getUniquePromoMinSpendAmount,
+  getUniquePromoLimitsConditions,
   getMerchantCountry,
   getMerchantCurrency,
   getMerchantLocale,
-  (uniquePromoValidTo, uniquePromoMinSpendAmount, merchantCountry, merchantCurrency, merchantLocale) => {
+  (uniquePromoValidTo, uniquePromoLimitsConditions, merchantCountry, merchantCurrency, merchantLocale) => {
+    const minSpendAmountObject = uniquePromoLimitsConditions.find(
+      ({ entity, propertyName, operator }) =>
+        entity === REWARD_APPLY_TO_LIMITS_CONDITIONS.ENTITY.TRANSACTION &&
+        propertyName === REWARD_APPLY_TO_LIMITS_CONDITIONS.PROPERTY_NAME.TOTAL &&
+        operator === REWARD_APPLY_TO_LIMITS_CONDITIONS.OPERATOR.GTE
+    );
+    const { operand } = minSpendAmountObject || {};
     const limitations = [];
 
-    if (uniquePromoMinSpendAmount) {
+    if (minSpendAmountObject && operand[0]) {
       limitations.push({
         key: 'uniquePromoDetail-minConsumption',
         i18nKey: 'MinConsumption',
         params: {
-          amount: getPrice(uniquePromoMinSpendAmount, {
+          amount: getPrice(Number(operand[0]), {
             country: merchantCountry,
             currency: merchantCurrency,
             locale: merchantLocale,

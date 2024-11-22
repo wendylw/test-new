@@ -4,7 +4,11 @@ import { createSelector } from 'reselect';
 import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { getFormatDiscountValue } from '../../../../../../common/utils/rewards';
-import { REWARDS_APPLIED_ALL_STORES, REWARDS_APPLIED_SOURCES } from '../../../utils/constants';
+import {
+  REWARD_APPLY_TO_LIMITS_CONDITIONS,
+  REWARDS_APPLIED_ALL_STORES,
+  REWARDS_APPLIED_SOURCES,
+} from '../../../utils/constants';
 import { CLAIMED_POINTS_REWARD_ERROR_CODES } from '../utils/constants';
 import {
   getMerchantCountry,
@@ -44,10 +48,6 @@ export const getPointsRewardIsEnabled = createSelector(getLoadPointsRewardDetail
 
 export const getPointsRewardIsDeleted = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
   _get(loadPointsRewardDetailData, 'isDeleted', false)
-);
-
-export const getPointsRewardMinSpendAmount = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
-  _get(loadPointsRewardDetailData, 'minSpendAmount', 0)
 );
 
 export const getPointsRewardPromotionUniquePromoCodeId = createSelector(
@@ -101,6 +101,14 @@ export const getPointsRewardLimitsAppliedSources = createSelector(
   pointsRewardGeneralLimits => _get(pointsRewardGeneralLimits, 'appliedSources', [])
 );
 
+export const getPointsRewardApplyToLimits = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
+  _get(loadPointsRewardDetailData, 'promotion.applyToLimits', {})
+);
+
+export const getPointsRewardLimitsConditions = createSelector(getPointsRewardApplyToLimits, pointsRewardApplyToLimits =>
+  _get(pointsRewardApplyToLimits, 'conditions', [])
+);
+
 export const getClaimPointsRewardStatus = state => state.business.pointsRewardDetail.claimPointsRewardRequest.status;
 
 export const getClaimPointsRewardError = state => state.business.pointsRewardDetail.claimPointsRewardRequest.error;
@@ -122,16 +130,29 @@ export const getPointsRewardFormatDiscountValue = createSelector(
 );
 
 export const getPointsRewardMinSpendPrice = createSelector(
-  getPointsRewardMinSpendAmount,
+  getPointsRewardLimitsConditions,
   getMerchantCountry,
   getMerchantCurrency,
   getMerchantLocale,
-  (pointsRewardMinSpendAmount, merchantCountry, merchantCurrency, merchantLocale) =>
-    getPrice(pointsRewardMinSpendAmount, {
+  (pointsRewardLimitsConditions, merchantCountry, merchantCurrency, merchantLocale) => {
+    const minSpendAmountObject = pointsRewardLimitsConditions.find(
+      ({ entity, propertyName, operator }) =>
+        entity === REWARD_APPLY_TO_LIMITS_CONDITIONS.ENTITY.TRANSACTION &&
+        propertyName === REWARD_APPLY_TO_LIMITS_CONDITIONS.PROPERTY_NAME.TOTAL &&
+        operator === REWARD_APPLY_TO_LIMITS_CONDITIONS.OPERATOR.GTE
+    );
+    const { operand } = minSpendAmountObject || {};
+
+    if (!minSpendAmountObject || !operand[0]) {
+      return null;
+    }
+
+    return getPrice(Number(operand[0]), {
       country: merchantCountry,
       currency: merchantCurrency,
       locale: merchantLocale,
-    })
+    });
+  }
 );
 
 export const getPointsRewardFormatAppliedProductsText = createSelector(
