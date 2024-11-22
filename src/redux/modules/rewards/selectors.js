@@ -1,5 +1,6 @@
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { API_REQUEST_STATUS } from '../../../common/utils/constants';
+import { API_REQUEST_STATUS, REWARDS_TYPE } from '../../../common/utils/constants';
 
 export const getLoadRewardListRequestData = state => state.rewards.loadRewardListRequest.data;
 
@@ -12,6 +13,23 @@ export const getLoadRewardDetailRequestData = state => state.rewards.loadRewardD
 export const getLoadRewardDetailRequestStatus = state => state.rewards.loadRewardDetailRequest.status;
 
 export const getLoadRewardDetailRequestError = state => state.rewards.loadRewardDetailRequest.error;
+
+export const getRewardDetailId = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'id', null)
+);
+
+export const getRewardDetailUniquePromotionCodeId = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'uniquePromotionCodeId', null)
+);
+
+export const getRewardDetailCode = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'code', null)
+);
+
+export const getRewardDetailType = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'type', null)
+);
 
 export const getApplyPromoRequestStatus = state => state.rewards.applyPromoRequest.status;
 
@@ -32,6 +50,11 @@ export const getApplyPayLaterVoucherRequestError = state => state.rewards.applyP
 /*
  * Selectors derived from state
  */
+export const getIsRewardDetailTypeVoucher = createSelector(
+  getRewardDetailType,
+  rewardDetailType => rewardDetailType === REWARDS_TYPE.VOUCHER
+);
+
 export const getIsApplyPromoOrVoucherPending = createSelector(
   getApplyPromoRequestStatus,
   getApplyVoucherRequestStatus,
