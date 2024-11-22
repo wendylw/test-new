@@ -22,7 +22,7 @@ const UniquePromoList = () => {
     (id, uniquePromotionCodeId) => {
       const myRewardDetail = {
         pathname: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.DETAIL}`,
-        search: `${search || '?'}&id=${id}&uniquePromotionCodeId=${uniquePromotionCodeId}`,
+        search: `${search || '?'}&id=${id}&upid=${uniquePromotionCodeId}`,
       };
 
       CleverTap.pushEvent('My Rewards Page - Click Reward (My Rewards)');
