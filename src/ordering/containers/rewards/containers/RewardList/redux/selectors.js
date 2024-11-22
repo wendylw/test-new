@@ -1,25 +1,15 @@
 import { createSelector } from 'reselect';
 import { PROMO_VOUCHER_STATUS, REWARDS_TYPE } from '../../../../../../common/utils/constants';
-import { getFulfillDate, getPrice, getQueryString } from '../../../../../../common/utils';
+import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
   getRemainingRewardExpiredDays,
   getFormatDiscountValue,
   getExpiringDaysI18n,
 } from '../../../../../../common/utils/rewards';
-import {
-  getLoadRewardListRequestData,
-  getIsApplyPromoOrVoucherPending,
-  getIsApplyPayLaterPromoOrVoucherPending,
-} from '../../../../../../redux/modules/rewards/selectors';
-import {
-  getMerchantCountry,
-  getBusinessCurrency,
-  getBusinessLocale,
-  getBusinessUTCOffset,
-} from '../../../../../redux/modules/app';
-
-export const getPayLaterReceiptNumber = () => getQueryString('receiptNumber');
+import { getLoadRewardListRequestData } from '../../../../../../redux/modules/rewards/selectors';
+import { getMerchantCountry, getBusinessCurrency, getBusinessLocale } from '../../../../../redux/modules/app';
+import { getIsApplyRewardPending } from '../../../redux/selectors';
 
 export const getSelectedRewardId = state => state.rewardList.selectedReward.id;
 
@@ -32,9 +22,6 @@ export const getSelectedRewardType = state => state.rewardList.selectedReward.ty
 /*
  * Selectors derived from state
  */
-export const getApplyRewardFulfillDate = createSelector(getBusinessUTCOffset, businessUTCOffset =>
-  getFulfillDate(businessUTCOffset)
-);
 
 export const getRewardList = createSelector(
   getLoadRewardListRequestData,
@@ -112,13 +99,6 @@ export const getRewardList = createSelector(
           type === selectedRewardType,
       };
     })
-);
-
-export const getIsApplyRewardPending = createSelector(
-  getIsApplyPromoOrVoucherPending,
-  getIsApplyPayLaterPromoOrVoucherPending,
-  (isApplyPromoOrVoucherPending, isApplyPayLaterPromoOrVoucherPending) =>
-    isApplyPromoOrVoucherPending || isApplyPayLaterPromoOrVoucherPending
 );
 
 export const getIsApplyButtonDisabled = createSelector(

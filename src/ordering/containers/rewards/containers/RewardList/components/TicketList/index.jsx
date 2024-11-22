@@ -34,9 +34,11 @@ const TicketList = () => {
     (event, selectedReward) => {
       event.stopPropagation();
 
-      const { id, uniquePromotionCodeId } = selectedReward || {};
+      const { id, uniquePromotionCodeId, type } = selectedReward || {};
 
-      history.push(`${PATH_NAME_MAPPING.ORDERING_REWARD_DETAIL}${search}&id=${id}&upid=${uniquePromotionCodeId}`);
+      history.push(
+        `${PATH_NAME_MAPPING.ORDERING_REWARD_DETAIL}${search}&id=${id}&upid=${uniquePromotionCodeId}&type=${type}`
+      );
     },
     [history, search]
   );
@@ -67,9 +69,8 @@ const TicketList = () => {
                 data-test-id="ordering.reward-list.reward-item"
                 className={styles.RewardItemButton}
                 contentClassName={styles.RewardItemButtonContent}
-                disabled={isUnavailable}
                 onClick={e => {
-                  handleClickRewardItemButton(e, reward);
+                  !isUnavailable && handleClickRewardItemButton(e, reward);
                 }}
               >
                 <Ticket

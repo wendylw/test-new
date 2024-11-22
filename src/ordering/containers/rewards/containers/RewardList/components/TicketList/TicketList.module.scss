@@ -20,7 +20,7 @@
 
 .RewardTicket {
   &__Unavailable {
-    @apply tw-opacity-60;
+    @apply tw-opacity-40;
   }
 
   &__Selected:global(.border) {
