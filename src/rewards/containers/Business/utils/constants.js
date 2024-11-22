@@ -1,5 +1,3 @@
-import { PROMO_VOUCHER_STATUS } from '../../../../common/utils/constants';
-
 export const DEFAULT_NEAR_EXPIRY_DAYS = 8;
 
 export const CLAIMED_CASHBACK_STATUS = {
