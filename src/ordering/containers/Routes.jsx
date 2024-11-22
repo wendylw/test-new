@@ -78,6 +78,9 @@ const FoodCourt = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName:
 const RewardList = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_RWDL" */ './rewards/containers/RewardList'))
 );
+const RewardDetail = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_RWDD" */ './rewards/containers/RewardDetail'))
+);
 
 const { ROUTER_PATHS } = Constants;
 
@@ -90,6 +93,7 @@ const Routes = () => (
         <Route exact path={ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS} component={CartSubmissionStatus} />
         <Route exact path={ROUTER_PATHS.ORDERING_PROMOTION} component={Promotion} />
         <Route exact path={PATH_NAME_MAPPING.ORDERING_REWARDS} component={RewardList} />
+        <Route exact path={PATH_NAME_MAPPING.ORDERING_REWARD_DETAIL} component={RewardDetail} />
         <Route exact path={ROUTER_PATHS.ORDERING_CUSTOMER_INFO} component={CustomerInfo} />
         <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />
         <Route exact path={ROUTER_PATHS.ORDERING_LOCATION} component={Location} />

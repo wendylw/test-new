@@ -1,6 +1,8 @@
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { UNIQUE_PROMO_STATUS_I18KEYS } from '../../../../../../../common/utils/rewards/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
 import { getRewardList } from '../../redux/selectors';
@@ -9,10 +11,13 @@ import Ticket from '../../../../../../../common/components/Ticket';
 import Tag from '../../../../../../../common/components/Tag';
 import Button from '../../../../../../../common/components/Button';
 import styles from './TicketList.module.scss';
+import { getLocationSearch } from '../../../../../../redux/modules/app';
 
 const TicketList = () => {
   const { t } = useTranslation(['OrderingPromotion']);
+  const history = useHistory();
   const dispatch = useDispatch();
+  const search = useSelector(getLocationSearch);
   const rewardList = useSelector(getRewardList);
   const handleClickRewardItemButton = useCallback(
     (event, selectedReward) => {
@@ -24,6 +29,16 @@ const TicketList = () => {
       dispatch(rewardListActions.selectedRewardUpdated({ id, uniquePromotionCodeId, code, type }));
     },
     [dispatch]
+  );
+  const handleClickRewardViewDetailButton = useCallback(
+    (event, selectedReward) => {
+      event.stopPropagation();
+
+      const { id, uniquePromotionCodeId } = selectedReward || {};
+
+      history.push(`${PATH_NAME_MAPPING.ORDERING_REWARD_DETAIL}${search}&id=${id}&upid=${uniquePromotionCodeId}`);
+    },
+    [history, search]
   );
 
   return (
@@ -89,7 +104,15 @@ const TicketList = () => {
                       <span className={styles.RewardTicketDiscountLimitation}>
                         {t(minSpendI18n.i18nKey, minSpendI18n.params)}
                       </span>
-                      <span className={styles.RewardTicketViewDetail}>{t('ViewDetails')}</span>
+                      <span
+                        role="button"
+                        tabIndex="0"
+                        className={styles.RewardTicketViewDetail}
+                        data-test-id="ordering.reward-list.reward-item.view-detail-button"
+                        onClick={handleClickRewardViewDetailButton}
+                      >
+                        {t('ViewDetails')}
+                      </span>
                     </div>
                   }
                 />

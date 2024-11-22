@@ -170,7 +170,7 @@ export const viewRewardButtonClicked = createAsyncThunk(
       const uniquePromotionCodeId = getPointsRewardPromotionUniquePromoCodeId(getState());
 
       const pathname = `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.DETAIL}`;
-      const search = `?business=${merchantBusiness}&id=${id}&uniquePromotionCodeId=${uniquePromotionCodeId}`;
+      const search = `?business=${merchantBusiness}&id=${id}&upid=${uniquePromotionCodeId}`;
       const state = {
         redirectLocation: `${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`,
       };

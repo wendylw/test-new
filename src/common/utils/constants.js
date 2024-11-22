@@ -98,6 +98,7 @@ export const PATH_NAME_MAPPING = {
   ORDERING_TABLE_SUMMARY: '/table-summary',
   ORDERING_PROMOTION: '/promotion',
   ORDERING_REWARDS: '/rewards',
+  ORDERING_REWARD_DETAIL: '/reward-detail',
   ORDERING_PAYMENT: '/payment',
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
   ORDERING_STRIPE_PAYMENT_SAVE: '/payment/stripe/save',
