@@ -102,7 +102,7 @@ export const getPointsRewardLimitsAppliedSources = createSelector(
 );
 
 export const getPointsRewardApplyToLimits = createSelector(getLoadPointsRewardDetailData, loadPointsRewardDetailData =>
-  _get(loadPointsRewardDetailData, 'applyToLimits', {})
+  _get(loadPointsRewardDetailData, 'promotion.applyToLimits', {})
 );
 
 export const getPointsRewardLimitsConditions = createSelector(getPointsRewardApplyToLimits, pointsRewardApplyToLimits =>

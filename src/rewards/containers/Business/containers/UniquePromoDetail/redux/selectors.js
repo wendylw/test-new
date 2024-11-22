@@ -78,7 +78,7 @@ export const getUniquePromoLimitsAppliedSources = createSelector(
 );
 
 export const getUniquePromoApplyToLimits = createSelector(getLoadUniquePromoDetailData, loadUniquePromoDetailData =>
-  _get(loadUniquePromoDetailData, 'applyToLimits', {})
+  _get(loadUniquePromoDetailData, 'promotion.applyToLimits', {})
 );
 
 export const getUniquePromoLimitsConditions = createSelector(getUniquePromoApplyToLimits, uniquePromoApplyToLimits =>
