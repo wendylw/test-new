@@ -165,7 +165,7 @@ export const getUniquePromoFormatAppliedProductsText = createSelector(
       return null;
     }
 
-    if (uniquePromoProductLimits.length === 0 || applyLimitedProducts.length === 0) {
+    if (uniquePromoProductLimits.length === 0 && applyLimitedProducts.length === 0) {
       return i18next.t('Rewards:UniquePromoAllProductsText');
     }
 
