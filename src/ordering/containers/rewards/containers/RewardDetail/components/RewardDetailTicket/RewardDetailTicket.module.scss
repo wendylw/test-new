@@ -1,0 +1,41 @@
+@import "../../../../../../../common/styles/variables.scss";
+
+.RewardDetailTicket {
+  @apply tw-m-16 sm:tw-m-16px;
+}
+
+.RewardDetailTicket:global(.large.vertical) .RewardDetailTicketMain {
+  @apply tw-pb-16 sm:tw-pb-16px;
+}
+
+.RewardDetailTicketMainContent {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center;
+}
+
+.RewardDetailTicketDiscountValue {
+  @apply tw-text-3xl tw-font-bold;
+}
+
+.RewardDetailTicketName {
+  @apply tw-text-center tw-text-xl tw-leading-loose;
+  @include text-line-clamp(2, 3.2em);
+
+  width: 95%;
+  max-width: 310px;
+}
+
+.RewardDetailTicket:global(.large.vertical) .RewardDetailTicketStub {
+  @apply tw-pt-16 sm:tw-pt-16px;
+}
+
+.RewardDetailTicketLimitations {
+  @apply tw-list-disc tw-text-gray-700;
+}
+
+.RewardDetailTicketLimitation {
+  @apply tw-leading-normal;
+}
+
+.RewardDetailTicketStatusTag {
+  @apply tw-my-2 sm:tw-my-2px;
+}

@@ -37,7 +37,7 @@ const TicketList = () => {
       const { id, uniquePromotionCodeId, type } = selectedReward || {};
 
       history.push(
-        `${PATH_NAME_MAPPING.ORDERING_REWARD_DETAIL}${search}&id=${id}&upid=${uniquePromotionCodeId}&type=${type}`
+        `${PATH_NAME_MAPPING.ORDERING_REWARD_DETAIL}${search}&id=${id}&up_id=${uniquePromotionCodeId}&up_type=${type}`
       );
     },
     [history, search]
@@ -110,7 +110,9 @@ const TicketList = () => {
                         tabIndex="0"
                         className={styles.RewardTicketViewDetail}
                         data-test-id="ordering.reward-list.reward-item.view-detail-button"
-                        onClick={handleClickRewardViewDetailButton}
+                        onClick={e => {
+                          handleClickRewardViewDetailButton(e, reward);
+                        }}
                       >
                         {t('ViewDetails')}
                       </span>
