@@ -3,13 +3,12 @@ import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { getStoreInfoForCleverTap, getUserName } from '../app';
 
-export const getLoadUniquePromosAvailableCountData = state => state.rewards.loadUniquePromosAvailableCountRequest.data;
+export const getLoadUniquePromosAvailableCountData = state => state.common.loadUniquePromosAvailableCountRequest.data;
 
 export const getLoadUniquePromosAvailableCountStatus = state =>
-  state.rewards.loadUniquePromosAvailableCountRequest.status;
+  state.common.loadUniquePromosAvailableCountRequest.status;
 
-export const getLoadUniquePromosAvailableCountError = state =>
-  state.rewards.loadUniquePromosAvailableCountRequest.error;
+export const getLoadUniquePromosAvailableCountError = state => state.common.loadUniquePromosAvailableCountRequest.error;
 
 export const getUniquePromosAvailableCount = createSelector(
   getLoadUniquePromosAvailableCountData,

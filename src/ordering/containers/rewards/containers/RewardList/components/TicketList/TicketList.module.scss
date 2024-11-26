@@ -1,0 +1,67 @@
+.RewardTicketListContainer {
+  @apply tw-px-12 sm:tw-px-12px tw-py-24 sm:tw-py-24px;
+}
+
+.RewardTicketListTitle {
+  @apply tw-pb-8 sm:tw-pb-8px tw-text-lg tw-font-bold tw-leading-normal;
+}
+
+.RewardTicketList {
+  @apply tw-space-y-12 sm:tw-space-y-12px;
+}
+
+.RewardItemButton:global(.type-text-ghost) {
+  @apply tw-p-0;
+}
+
+.RewardItemButtonContent {
+  @apply tw-w-full;
+}
+
+.RewardTicket {
+  &__Unavailable {
+    @apply tw-opacity-60;
+  }
+
+  &__Selected:global(.border) {
+    @apply tw-border-orange;
+
+    &::before,
+    &::after {
+      @apply tw-border-orange;
+    }
+  }
+}
+
+.RewardTicketInfoTop {
+  @apply tw-flex-1 tw-flex tw-items-end tw-justify-between;
+}
+
+.RewardTicketDescription {
+  @apply tw-text-left;
+}
+
+.RewardTicketDiscount {
+  @apply tw-leading-relaxed tw-font-bold tw-uppercase;
+}
+
+.RewardTicketDiscountName {
+  @apply tw-text-sm tw-leading-loose;
+}
+
+.RewardTicketStatusTag,
+.RewardTicketExpiringTag {
+  @apply tw-font-bold;
+}
+
+.RewardTicketInfoBottom {
+  @apply tw-flex-1 tw-flex tw-items-end tw-justify-between tw-border-l-0 tw-border-r-0;
+}
+
+.RewardTicketDiscountLimitation {
+  @apply tw-text-sm tw-leading-normal tw-text-gray-700;
+}
+
+.RewardTicketViewDetail {
+  @apply tw-text-xs tw-leading-loose tw-text-orange tw-capitalize;
+}

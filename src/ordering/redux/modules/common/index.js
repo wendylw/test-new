@@ -11,7 +11,7 @@ const initialState = {
 };
 
 export const { reducer, actions } = createSlice({
-  name: 'ordering/rewards',
+  name: 'ordering/common',
   initialState,
   reducers: {},
   extraReducers: {

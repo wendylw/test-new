@@ -1,14 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { push, goBack as historyGoBack } from 'connected-react-router';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
-import { goBack as nativeGoBack, showCompleteProfilePageAsync } from '../../../../../../utils/native-methods';
+import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
 import CleverTap from '../../../../../../utils/clevertap';
 import {
   initUserInfo,
   loginUserByBeepApp,
   loginUserByAlipayMiniProgram,
 } from '../../../../../../redux/modules/user/thunks';
-import { getConsumerId, getIsLogin, getIsUserProfileIncomplete } from '../../../../../../redux/modules/user/selectors';
+import { getConsumerId, getIsLogin } from '../../../../../../redux/modules/user/selectors';
 import {
   getIsWebview,
   getIsAlipayMiniProgram,
@@ -18,65 +18,7 @@ import {
 import { fetchMerchantInfo } from '../../../../../../redux/modules/merchant/thunks';
 import { getMerchantBusiness } from '../../../../../../redux/modules/merchant/selectors';
 import { fetchCustomerInfo } from '../../../../../redux/modules/customer/thunks';
-import { fetchPointsRewardList, claimPointsReward } from '../../../redux/common/thunks';
-
-export const showWebProfileForm = createAsyncThunk('rewards/business/pointsRewards/showWebProfileForm', async () => {});
-
-export const hideWebProfileForm = createAsyncThunk('rewards/business/pointsRewards/hideWebProfileForm', async () => {});
-
-export const showProfileForm = createAsyncThunk(
-  'rewards/business/pointsRewards/showProfileForm',
-  async (_, { dispatch, getState }) => {
-    const isWebview = getIsWebview(getState());
-
-    if (isWebview) {
-      await showCompleteProfilePageAsync({ hideSkipButton: true });
-      return;
-    }
-
-    await dispatch(showWebProfileForm());
-  }
-);
-
-export const claimPointsRewardAndRefreshRewardsList = createAsyncThunk(
-  'rewards/business/pointsRewards/claimPointsRewardAndRefreshRewardsList',
-  async (id, { dispatch, getState }) => {
-    const state = getState();
-    const consumerId = getConsumerId(state);
-    const business = getMerchantBusiness(state);
-
-    await dispatch(claimPointsReward({ consumerId, id }));
-    dispatch(fetchPointsRewardList(consumerId));
-    dispatch(fetchCustomerInfo(business));
-  }
-);
-
-export const pointsClaimRewardButtonClicked = createAsyncThunk(
-  'rewards/business/pointsRewards/pointsClaimRewardButtonClicked',
-  async ({ id, status, type, costOfPoints }, { dispatch, getState }) => {
-    if (status) {
-      CleverTap.pushEvent('Get Rewards Page - Spend Points Modal - Click Confirm', {
-        type,
-        costOfPoints,
-      });
-
-      const state = getState();
-      const isUserProfileIncomplete = getIsUserProfileIncomplete(state);
-
-      if (isUserProfileIncomplete) {
-        dispatch(showProfileForm());
-
-        return;
-      }
-      dispatch(claimPointsRewardAndRefreshRewardsList(id));
-    } else {
-      CleverTap.pushEvent('Get Rewards Page - Spend Points Modal - Click Cancel', {
-        type,
-        costOfPoints,
-      });
-    }
-  }
-);
+import { fetchPointsRewardList } from '../../../redux/common/thunks';
 
 export const mounted = createAsyncThunk('rewards/business/pointsRewards/mounted', async (_, { dispatch, getState }) => {
   const state = getState();

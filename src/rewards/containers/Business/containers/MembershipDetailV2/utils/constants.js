@@ -5,8 +5,6 @@ import RewardsWarningIcon from '../../../../../../images/rewards-warning.svg';
 import RewardsFailedIcon from '../../../../../../images/rewards-failed.svg';
 import { CLAIMED_CASHBACK_STATUS } from '../../../utils/constants';
 
-export const SHOW_PROFILE_FROM_POINTS_REWARDS = 'PointsRewards';
-
 export const GET_REWARDS_MAX_LENGTH = 5;
 
 export const UNIQUE_PROMO_BANNER_LIST_LIMIT = 2;
@@ -397,10 +395,4 @@ export const MEMBERSHIP_TIER_I18N_KEYS = {
 export const POINTS_REWARD_WIDTHS = {
   MIN_WIDTH: 250,
   MAX_WIDTH: 280,
-};
-
-export const CLAIMED_POINTS_REWARD_ERROR_CODES = {
-  PROMO_IS_NOT_REDEEMABLE: '395279',
-  INVALID_POINT_SOURCE: '395280',
-  POINT_LOG_NOT_FOUND: '395281',
 };

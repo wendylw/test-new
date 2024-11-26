@@ -28,8 +28,16 @@ const UniquePromoListPage = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_UP" */ './Business/containers/UniquePromoListPage'))
 );
 
+const UniquePromoDetail = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "MY_RWD" */ './Business/containers/UniquePromoDetail'))
+);
+
 const PointsRewardsPage = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_UP" */ './Business/containers/PointsRewardsPage'))
+);
+
+const PointsRewardsDetail = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "RWD_UP" */ './Business/containers/PointsRewardDetail'))
 );
 
 const SeamlessLoyalty = lazy(() =>
@@ -81,8 +89,18 @@ const Routes = () => (
         />
         <Route
           exact
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.POINTS_REWARDS}${PATH_NAME_MAPPING.DETAIL}`}
+          component={PointsRewardsDetail}
+        />
+        <Route
+          exact
           path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.LIST}`}
           component={UniquePromoListPage}
+        />
+        <Route
+          exact
+          path={`${PATH_NAME_MAPPING.REWARDS_BUSINESS}${PATH_NAME_MAPPING.UNIQUE_PROMO}${PATH_NAME_MAPPING.DETAIL}`}
+          component={UniquePromoDetail}
         />
         <Route
           exact

@@ -10,7 +10,7 @@ import {
   getShippingType,
   getIsAlipayMiniProgram,
 } from '../../../../../redux/modules/app';
-import { getIsLoadUniquePromosAvailableCountCompleted } from '../../../../../redux/modules/rewards/selectors';
+import { getIsLoadUniquePromosAvailableCountCompleted } from '../../../../../redux/modules/common/selectors';
 import {
   getPayLaterOrderInfoData as getOrder,
   getPayLaterSubmitOrderRequest as getSubmitOrderRequest,

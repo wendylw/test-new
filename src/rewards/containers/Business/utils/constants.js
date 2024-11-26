@@ -1,3 +1,5 @@
+export const DEFAULT_NEAR_EXPIRY_DAYS = 8;
+
 export const CLAIMED_CASHBACK_STATUS = {
   // can claim status
   CLAIMED_FIRST_TIME: 'Claimed_FirstTime',
@@ -32,11 +34,47 @@ export const CLAIMED_TRANSACTION_STATUS = {
   FAILED_BIND_CUSTOMER_FAILED: 'Failed_BindCustomerFailed',
 };
 
-export const CLAIMED_POINTS_REWARD_ERROR_CODES = {
-  PROMO_IS_NOT_REDEEMABLE: '395279',
-  INVALID_POINT_SOURCE: '395280',
-  POINT_LOG_NOT_FOUND: '395281',
+export const REWARDS_APPLIED_ALL_STORES = 'All';
+
+export const REWARDS_APPLIED_SOURCES = {
+  POS: 1,
+  E_Commerce: 2,
+  Beep_Pickup: 5,
+  Beep_Delivery: 6,
+  Beep_Takeaway: 7,
+  Beep_DineIn: 8,
 };
+
+export const REWARD_APPLY_TO_LIMITS_CONDITIONS = {
+  ENTITY: {
+    TRANSACTION: 'TRANSACTION',
+    PRODUCT: 'PRODUCT',
+    CUSTOMER: 'CUSTOMER',
+    BUSINESS: 'BUSINESS',
+  },
+  PROPERTY_NAME: {
+    TOTAL: 'total',
+    TAGS: 'tags',
+    ID: 'id',
+    CATEGORY: 'category',
+  },
+  OPERATOR: {
+    GTE: 'gte',
+  },
+};
+
+/**
+ * i18n keys
+ */
+export const REWARDS_APPLIED_SOURCE_I18KEYS = {
+  [REWARDS_APPLIED_SOURCES.POS]: 'POS',
+  [REWARDS_APPLIED_SOURCES.E_Commerce]: 'Ecommerce',
+  [REWARDS_APPLIED_SOURCES.Beep_Pickup]: 'BeepPickup',
+  [REWARDS_APPLIED_SOURCES.Beep_Delivery]: 'BeepDelivery',
+  [REWARDS_APPLIED_SOURCES.Beep_Takeaway]: 'BeepTakeaway',
+  [REWARDS_APPLIED_SOURCES.Beep_DineIn]: 'BeepDineIn',
+};
+/* end of i18n keys */
 
 /**
  * UI

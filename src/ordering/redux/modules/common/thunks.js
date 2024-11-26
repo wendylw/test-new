@@ -3,7 +3,7 @@ import { getUserConsumerId, getBusiness, getApiRequestShippingType } from '../ap
 import { getUniquePromosAvailableCount } from './api-request';
 
 export const fetchUniquePromosAvailableCount = createAsyncThunk(
-  'ordering/rewards/fetchUniquePromosAvailableCount',
+  'ordering/common/fetchUniquePromosAvailableCount',
   async (_, { getState }) => {
     const state = getState();
     const consumerId = getUserConsumerId(state);

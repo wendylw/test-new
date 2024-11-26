@@ -97,6 +97,7 @@ export const PATH_NAME_MAPPING = {
   ORDERING_CART_SUBMISSION_STATUS: '/cart/cart-submission',
   ORDERING_TABLE_SUMMARY: '/table-summary',
   ORDERING_PROMOTION: '/promotion',
+  ORDERING_REWARDS: '/rewards',
   ORDERING_PAYMENT: '/payment',
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
   ORDERING_STRIPE_PAYMENT_SAVE: '/payment/stripe/save',
@@ -141,6 +142,7 @@ export const PATH_NAME_MAPPING = {
   UNIQUE_PROMO: '/promo',
   POINTS_REWARDS: '/points-rewards',
   LIST: '/list',
+  DETAIL: '/detail',
   CLAIM: '/claim',
   REWARDS_LOGIN: '/login',
   CASHBACK: '/cashback',
@@ -316,6 +318,11 @@ export const PROMO_VOUCHER_STATUS = {
   ACTIVE: 'active',
   EXPIRED: 'expired',
   REDEEMED: 'redeemed',
+};
+
+export const REWARDS_TYPE = {
+  PROMOTION: 'promotion',
+  VOUCHER: 'voucher',
 };
 
 export const MEMBER_LEVELS = {
