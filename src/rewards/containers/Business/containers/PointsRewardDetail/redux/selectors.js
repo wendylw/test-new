@@ -3,12 +3,12 @@ import i18next from 'i18next';
 import { createSelector } from 'reselect';
 import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
-import { getFormatDiscountValue } from '../../../../../../common/utils/rewards';
 import {
-  REWARD_APPLY_TO_LIMITS_CONDITIONS,
-  REWARDS_APPLIED_ALL_STORES,
   REWARDS_APPLIED_SOURCES,
-} from '../../../utils/constants';
+  REWARDS_APPLIED_ALL_STORES,
+  REWARD_APPLY_TO_LIMITS_CONDITIONS,
+} from '../../../../../../common/utils/rewards/constants';
+import { getFormatDiscountValue } from '../../../../../../common/utils/rewards';
 import { CLAIMED_POINTS_REWARD_ERROR_CODES } from '../utils/constants';
 import {
   getMerchantCountry,

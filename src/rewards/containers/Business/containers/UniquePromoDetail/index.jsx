@@ -2,8 +2,10 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
-import { REWARDS_APPLIED_SOURCE_I18KEYS } from '../../utils/constants';
-import { UNIQUE_PROMO_STATUS_I18KEYS } from '../../../../../common/utils/rewards/constants';
+import {
+  UNIQUE_PROMO_STATUS_I18KEYS,
+  REWARDS_APPLIED_SOURCE_I18KEYS,
+} from '../../../../../common/utils/rewards/constants';
 import {
   getUniquePromoFormatDiscountValue,
   getUniquePromoPromotionName,

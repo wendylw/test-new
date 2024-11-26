@@ -3,10 +3,10 @@ import i18next from 'i18next';
 import { createSelector } from 'reselect';
 import { PROMO_VOUCHER_STATUS } from '../../../../../../common/utils/constants';
 import {
-  REWARD_APPLY_TO_LIMITS_CONDITIONS,
-  REWARDS_APPLIED_ALL_STORES,
   REWARDS_APPLIED_SOURCES,
-} from '../../../utils/constants';
+  REWARDS_APPLIED_ALL_STORES,
+  REWARD_APPLY_TO_LIMITS_CONDITIONS,
+} from '../../../../../../common/utils/rewards/constants';
 import { getPrice, getQueryString } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {

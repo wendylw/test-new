@@ -57,6 +57,39 @@ export const getRewardDetailStatus = createSelector(getLoadRewardDetailRequestDa
   _get(loadRewardDetailRequestData, 'status', null)
 );
 
+export const getRewardDetailProductLimits = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'productsLimits', {})
+);
+
+export const getRewardDetailStoresLimits = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'storesLimits', {})
+);
+
+export const getRewardDetailLimitsAppliedStores = createSelector(
+  getRewardDetailStoresLimits,
+  rewardDetailStoresLimits => _get(rewardDetailStoresLimits, 'appliedStores', [])
+);
+
+export const getRewardDetailGeneralLimits = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'generalLimits', {})
+);
+
+export const getRewardDetailLimitsAppliedSources = createSelector(
+  getRewardDetailGeneralLimits,
+  rewardDetailGeneralLimits => _get(rewardDetailGeneralLimits, 'appliedSources', [])
+);
+
+export const getRewardDetailApplyToLimits = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'applyToLimits', {})
+);
+
+export const getRewardDetailLimitsConditions = createSelector(getRewardDetailApplyToLimits, rewardDetailApplyToLimits =>
+  _get(rewardDetailApplyToLimits, 'conditions', [])
+);
+
 export const getApplyPromoRequestStatus = state => state.rewards.applyPromoRequest.status;
 
 export const getApplyPromoRequestError = state => state.rewards.applyPromoRequest.error;

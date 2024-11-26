@@ -6,6 +6,7 @@ import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import RewardDetailTicket from './components/RewardDetailTicket';
+import RewardDetailContent from './components/RewardDetailContent';
 import styles from './RewardDetail.module.scss';
 
 const RewardDetail = () => {
@@ -24,8 +25,8 @@ const RewardDetail = () => {
         title={t('VoucherPromoDetails')}
         onBackArrowClick={handleClickHeaderBackButton}
       />
-
       <RewardDetailTicket />
+      <RewardDetailContent />
     </Frame>
   );
 };

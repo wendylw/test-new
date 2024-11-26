@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLifecycles } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import PointsRewardClaimedIcon from '../../../../../images/rewards-points-claimed.svg';
-import { REWARDS_APPLIED_SOURCE_I18KEYS } from '../../utils/constants';
+import { REWARDS_APPLIED_SOURCE_I18KEYS } from '../../../../../common/utils/rewards/constants';
 import CleverTap from '../../../../../utils/clevertap';
 import {
   getPointsRewardFormatDiscountValue,
