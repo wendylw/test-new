@@ -155,12 +155,23 @@ export const getUniquePromoExpiringDaysI18n = createSelector(getUniquePromoValid
 
 export const getUniquePromoFormatAppliedProductsText = createSelector(
   getUniquePromoProductLimits,
-  uniquePromoProductLimits => {
+  getUniquePromoLimitsConditions,
+  (uniquePromoProductLimits, uniquePromoLimitsConditions) => {
+    const applyLimitedProducts = uniquePromoLimitsConditions.filter(
+      ({ entity, propertyName }) =>
+        entity === REWARD_APPLY_TO_LIMITS_CONDITIONS.ENTITY.PRODUCT &&
+        [
+          REWARD_APPLY_TO_LIMITS_CONDITIONS.PROPERTY_NAME.CATEGORY,
+          REWARD_APPLY_TO_LIMITS_CONDITIONS.PROPERTY_NAME.TAGS,
+          REWARD_APPLY_TO_LIMITS_CONDITIONS.PROPERTY_NAME.ID,
+        ].includes(propertyName)
+    );
+
     if (!uniquePromoProductLimits) {
       return null;
     }
 
-    if (uniquePromoProductLimits.length === 0) {
+    if (uniquePromoProductLimits.length === 0 && applyLimitedProducts.length === 0) {
       return i18next.t('Rewards:UniquePromoAllProductsText');
     }
 

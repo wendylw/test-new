@@ -157,12 +157,23 @@ export const getPointsRewardMinSpendPrice = createSelector(
 
 export const getPointsRewardFormatAppliedProductsText = createSelector(
   getPointsRewardProductLimits,
-  pointsRewardProductLimits => {
+  getPointsRewardLimitsConditions,
+  (pointsRewardProductLimits, pointsRewardLimitsConditions) => {
+    const applyLimitedProducts = pointsRewardLimitsConditions.filter(
+      ({ entity, propertyName }) =>
+        entity === REWARD_APPLY_TO_LIMITS_CONDITIONS.ENTITY.PRODUCT &&
+        [
+          REWARD_APPLY_TO_LIMITS_CONDITIONS.PROPERTY_NAME.CATEGORY,
+          REWARD_APPLY_TO_LIMITS_CONDITIONS.PROPERTY_NAME.TAGS,
+          REWARD_APPLY_TO_LIMITS_CONDITIONS.PROPERTY_NAME.ID,
+        ].includes(propertyName)
+    );
+
     if (!pointsRewardProductLimits) {
       return null;
     }
 
-    if (pointsRewardProductLimits.length === 0) {
+    if (pointsRewardProductLimits.length === 0 && applyLimitedProducts.length === 0) {
       return i18next.t('Rewards:PointsRewardAllProductsText');
     }
 
