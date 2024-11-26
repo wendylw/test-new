@@ -83,7 +83,10 @@ const PointsRewardDetail = () => {
     },
     [dispatch]
   );
-  const handleClickSkipProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
+  const handleClickSkipProfileButton = useCallback(() => {
+    dispatch(hideWebProfileForm());
+    dispatch(claimPointsReward());
+  }, [dispatch]);
   const handleClickSaveProfileButton = useCallback(() => dispatch(claimPointsReward()), [dispatch]);
   const handleCloseCompleteProfile = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
