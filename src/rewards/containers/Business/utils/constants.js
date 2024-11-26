@@ -54,6 +54,9 @@ export const REWARD_APPLY_TO_LIMITS_CONDITIONS = {
   },
   PROPERTY_NAME: {
     TOTAL: 'total',
+    TAGS: 'tags',
+    ID: 'id',
+    CATEGORY: 'category',
   },
   OPERATOR: {
     GTE: 'gte',

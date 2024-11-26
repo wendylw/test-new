@@ -158,7 +158,13 @@ export const getUniquePromoFormatAppliedProductsText = createSelector(
   getUniquePromoLimitsConditions,
   (uniquePromoProductLimits, uniquePromoLimitsConditions) => {
     const applyLimitedProducts = uniquePromoLimitsConditions.filter(
-      ({ entity }) => entity === REWARD_APPLY_TO_LIMITS_CONDITIONS.ENTITY.PRODUCT
+      ({ entity, propertyName }) =>
+        entity === REWARD_APPLY_TO_LIMITS_CONDITIONS.ENTITY.PRODUCT &&
+        [
+          REWARD_APPLY_TO_LIMITS_CONDITIONS.PROPERTY_NAME.CATEGORY,
+          REWARD_APPLY_TO_LIMITS_CONDITIONS.PROPERTY_NAME.TAGS,
+          REWARD_APPLY_TO_LIMITS_CONDITIONS.PROPERTY_NAME.ID,
+        ].includes(propertyName)
     );
 
     if (!uniquePromoProductLimits) {
