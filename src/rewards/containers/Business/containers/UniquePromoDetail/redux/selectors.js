@@ -22,7 +22,7 @@ import {
 
 export const getUniquePromoId = () => getQueryString('id');
 
-export const getUniquePromoUniquePromotionCodeId = () => getQueryString('upid');
+export const getUniquePromoUniquePromotionCodeId = () => getQueryString('up_id');
 
 export const getLoadUniquePromoDetailData = state => state.business.uniquePromoDetail.loadUniquePromoDetailRequest.data;
 

@@ -31,6 +31,32 @@ export const getRewardDetailType = createSelector(getLoadRewardDetailRequestData
   _get(loadRewardDetailRequestData, 'type', null)
 );
 
+export const getRewardDetailDiscountType = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'discountType', null)
+);
+
+export const getRewardDetailDiscountValue = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'discountValue', null)
+);
+
+export const getRewardDetailName = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'name', null)
+);
+
+export const getRewardDetailValidTo = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'validTo', null)
+);
+
+export const getRewardDetailMinSpendAmount = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'minSpendAmount', null)
+);
+
+export const getRewardDetailStatus = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'status', null)
+);
+
 export const getApplyPromoRequestStatus = state => state.rewards.applyPromoRequest.status;
 
 export const getApplyPromoRequestError = state => state.rewards.applyPromoRequest.error;
