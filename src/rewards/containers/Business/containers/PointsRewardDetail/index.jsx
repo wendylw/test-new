@@ -95,6 +95,7 @@ const PointsRewardDetail = () => {
       dispatch(mounted());
     },
     () => {
+      dispatch(pointsRewardActions.claimPointsRewardRequestReset());
       dispatch(pointsRewardActions.loadPointsRewardDetailRequestReset());
     }
   );
