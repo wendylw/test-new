@@ -163,14 +163,15 @@ const PointsRewardDetail = () => {
           ) : null}
         </section>
 
-        <section className={styles.PointsRewardDetailApplicableProducts}>
-          <h3 className={styles.PointsRewardDetailConditionTitle}>{t('PointsRewardMinSpendTitle')}</h3>
-          {pointsRewardMinSpendPrice ? (
+        {pointsRewardMinSpendPrice ? (
+          <section className={styles.PointsRewardDetailApplicableProducts}>
+            <h3 className={styles.PointsRewardDetailConditionTitle}>{t('PointsRewardMinSpendTitle')}</h3>
+
             <data className={styles.PointsRewardDetailConditionContent} value={pointsRewardMinSpendPrice}>
               {pointsRewardMinSpendPrice}
             </data>
-          ) : null}
-        </section>
+          </section>
+        ) : null}
 
         <section className={styles.PointsRewardDetailApplicableProducts}>
           <h3 className={styles.PointsRewardDetailConditionTitle}>{t('PointsRewardApplicableProductsTitle')}</h3>
