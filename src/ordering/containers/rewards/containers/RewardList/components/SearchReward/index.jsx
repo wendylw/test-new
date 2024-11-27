@@ -1,8 +1,9 @@
 import React, { useRef, useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { searchUpdateDebounce } from '../../../../../../../common/utils/ui';
+import { getApplyRewardError } from '../../redux/selectors';
 import { searchPromos } from '../../redux/thunks';
 import Search from '../../../../../../../common/components/Input/Search';
 import styles from './SearchReward.module.scss';
@@ -12,6 +13,7 @@ const SearchReward = () => {
   const { t } = useTranslation(['OrderingPromotion']);
   const dispatch = useDispatch();
   const [isChangingKeyword, setIsChangingKeyword] = useState(false);
+  const applyRewardError = useSelector(getApplyRewardError);
   const handleChangeSearchKeyword = useCallback(
     searchKeyword => {
       setIsChangingKeyword(true);
@@ -35,11 +37,13 @@ const SearchReward = () => {
       <Search
         allowClear
         ref={searchInputRef}
+        className={applyRewardError ? styles.SearchRewardSearchBox : null}
         placeholder={t('EnterPromoCodeHere')}
         searching={isChangingKeyword}
         onChangeInputValue={handleChangeSearchKeyword}
         onClearInput={handleClearSearchKeyword}
       />
+      <span className={styles.SearchRewardApplyErrorMessage}>{applyRewardError}</span>
     </section>
   );
 };

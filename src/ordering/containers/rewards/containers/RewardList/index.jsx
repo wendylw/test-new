@@ -1,7 +1,8 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMount } from 'react-use';
+import { useLifecycles } from 'react-use';
 import { useTranslation } from 'react-i18next';
+import { actions as rewardsActions } from '../../../../../redux/modules/rewards';
 import { getIsApplyRewardPending } from '../../redux/selectors';
 import { mounted, backButtonClicked } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
@@ -19,9 +20,14 @@ const RewardList = () => {
   const isApplyRewardPending = useSelector(getIsApplyRewardPending);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
 
-  useMount(() => {
-    dispatch(mounted());
-  });
+  useLifecycles(
+    () => {
+      dispatch(mounted());
+    },
+    () => {
+      dispatch(rewardsActions.resetRewardsState());
+    }
+  );
 
   return (
     <Frame>

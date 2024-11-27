@@ -68,19 +68,23 @@ export const mounted = createAsyncThunk('ordering/rewardDetail/mounted', async (
   }
 });
 
+export const goPageBack = createAsyncThunk('ordering/rewardDetail/goPageBack', async (_, { dispatch, getState }) => {
+  const isWebview = getIsWebview(getState());
+
+  if (isWebview) {
+    dispatch(nativeGoBack());
+    return;
+  }
+
+  dispatch(historyGoBack());
+});
+
 export const backButtonClicked = createAsyncThunk(
   'ordering/rewardDetail/backButtonClicked',
-  async (_, { dispatch, getState }) => {
-    const isWebview = getIsWebview(getState());
-
+  async (_, { dispatch }) => {
     CleverTap.pushEvent('Voucher & Promo Details - Click Back');
 
-    if (isWebview) {
-      dispatch(nativeGoBack());
-      return;
-    }
-
-    dispatch(historyGoBack());
+    dispatch(goPageBack());
   }
 );
 
@@ -102,7 +106,8 @@ export const applyReward = createAsyncThunk('ordering/rewardDetail/applyReward',
 
     const isApplyVoucherFulfilled = getIsApplyVoucherFulfilled(getState());
 
-    isApplyVoucherFulfilled && goBackReviewCartPage();
+    // PO design failure back to list page
+    isApplyVoucherFulfilled ? goBackReviewCartPage() : dispatch(goPageBack());
 
     return;
   }
@@ -111,7 +116,8 @@ export const applyReward = createAsyncThunk('ordering/rewardDetail/applyReward',
 
   const isApplyPromoFulfilled = getIsApplyPromoFulfilled(getState());
 
-  isApplyPromoFulfilled && goBackReviewCartPage();
+  // PO design failure back to list page
+  isApplyPromoFulfilled ? goBackReviewCartPage() : dispatch(goPageBack());
 });
 
 export const applyPayLaterReward = createAsyncThunk(
@@ -133,7 +139,8 @@ export const applyPayLaterReward = createAsyncThunk(
 
       const isApplyPayLaterPromoFulfilled = getIsApplyPayLaterPromoFulfilled(getState());
 
-      isApplyPayLaterPromoFulfilled && goBackReviewTableSummaryPage();
+      // PO design failure back to list page
+      isApplyPayLaterPromoFulfilled ? goBackReviewTableSummaryPage() : dispatch(goPageBack());
 
       return;
     }
@@ -141,6 +148,7 @@ export const applyPayLaterReward = createAsyncThunk(
     await dispatch(applyPayLaterPromo({ receiptNumber, id, uniquePromotionCodeId }));
     const isApplyPayLaterVoucherFulfilled = getIsApplyPayLaterVoucherFulfilled(getState());
 
-    isApplyPayLaterVoucherFulfilled && goBackReviewTableSummaryPage();
+    // PO design failure back to list page
+    isApplyPayLaterVoucherFulfilled ? goBackReviewTableSummaryPage() : dispatch(goPageBack());
   }
 );

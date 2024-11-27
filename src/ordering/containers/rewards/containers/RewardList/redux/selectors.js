@@ -1,5 +1,11 @@
 import { createSelector } from 'reselect';
+import i18next from 'i18next';
 import { PROMO_VOUCHER_STATUS, REWARDS_TYPE } from '../../../../../../common/utils/constants';
+import {
+  REWARD_APPLIED_ERROR_I8NS,
+  REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS,
+  WEEK_DAYS_MAPPING,
+} from '../../../../../../common/utils/rewards/constants';
 import { getPrice } from '../../../../../../common/utils';
 import { formatTimeToDateString } from '../../../../../../utils/datetime-lib';
 import {
@@ -7,8 +13,19 @@ import {
   getFormatDiscountValue,
   getExpiringDaysI18n,
 } from '../../../../../../common/utils/rewards';
-import { getLoadRewardListRequestData } from '../../../../../../redux/modules/rewards/selectors';
-import { getMerchantCountry, getBusinessCurrency, getBusinessLocale } from '../../../../../redux/modules/app';
+import {
+  getLoadRewardListRequestData,
+  getApplyPromoRequestError,
+  getApplyVoucherRequestError,
+  getApplyPayLaterPromoRequestError,
+  getApplyPayLaterVoucherRequestError,
+} from '../../../../../../redux/modules/rewards/selectors';
+import {
+  getMerchantCountry,
+  getBusinessCurrency,
+  getBusinessLocale,
+  getEnablePayLater,
+} from '../../../../../redux/modules/app';
 import { getIsApplyRewardPending } from '../../../redux/selectors';
 
 export const getSelectedRewardId = state => state.rewardList.selectedReward.id;
@@ -113,4 +130,96 @@ export const getIsApplyButtonDisabled = createSelector(
 export const getIsSelectedVoucher = createSelector(
   getSelectedRewardType,
   selectedRewardType => selectedRewardType === REWARDS_TYPE.VOUCHER
+);
+
+export const getApplyRewardError = createSelector(
+  getEnablePayLater,
+  getApplyPromoRequestError,
+  getApplyVoucherRequestError,
+  getApplyPayLaterPromoRequestError,
+  getApplyPayLaterVoucherRequestError,
+  getMerchantCountry,
+  getBusinessCurrency,
+  getBusinessLocale,
+  (
+    enablePayLater,
+    applyPromoRequestError,
+    applyVoucherRequestError,
+    applyPayLaterPromoRequestError,
+    applyPayLaterVoucherRequestError,
+    merchantCountry,
+    businessCurrency,
+    businessLocale
+  ) => {
+    if (
+      !applyPromoRequestError &&
+      !applyVoucherRequestError &&
+      !applyPayLaterPromoRequestError &&
+      !applyPayLaterVoucherRequestError
+    ) {
+      return null;
+    }
+
+    const { code, extraInfo } = enablePayLater
+      ? applyPayLaterPromoRequestError || applyPayLaterVoucherRequestError
+      : applyPromoRequestError || applyVoucherRequestError;
+    const {
+      validDays = [],
+      validTimeFrom = '',
+      validTimeTo = '',
+      supportedChannel,
+      minSubtotalConsumingPromo,
+      appliedClientTypes,
+    } = extraInfo || {};
+
+    if (REWARD_APPLIED_ERROR_I8NS[code]) {
+      const { i18nKey, i18nParamKeys } = REWARD_APPLIED_ERROR_I8NS[code];
+      let params = null;
+
+      if (i18nParamKeys) {
+        params = {};
+        i18nParamKeys.forEach(key => {
+          switch (key) {
+            case REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.VALID_DAYS_STRING:
+              params[REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.VALID_DAYS_STRING] = validDays
+                .map(weekDay => i18next.t(WEEK_DAYS_MAPPING[weekDay]))
+                .join(',');
+              break;
+            case REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.VALID_TIME_FROM:
+              params[REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.VALID_TIME_FROM] = validTimeFrom;
+              break;
+            case REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.VALID_TIME_TO:
+              params[REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.VALID_TIME_TO] = validTimeTo;
+              break;
+            case REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.SUPPORTED_CHANNEL:
+              params[REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.SUPPORTED_CHANNEL] = supportedChannel;
+              break;
+            case REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.MIN_SUBTOTAL_CONSUMING_PROMO:
+              params[REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.MIN_SUBTOTAL_CONSUMING_PROMO] = getPrice(
+                minSubtotalConsumingPromo,
+                {
+                  country: merchantCountry,
+                  currency: businessCurrency,
+                  locale: businessLocale,
+                }
+              );
+              break;
+            case REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.SUPPORT_CLIENT:
+              params[REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS.SUPPORT_CLIENT] = (appliedClientTypes || [])
+                .map(type => i18next.t(type))
+                .join('/');
+              break;
+            default:
+              break;
+          }
+        });
+      }
+
+      return params
+        ? i18next.t(`OrderingPromotion:${i18nKey}`)
+        : i18next.t(`OrderingPromotion:${i18nKey}`, i18nParamKeys);
+    }
+
+    return i18next.t('OrderingPromotion:PromoInvalid');
+  }
 );

@@ -5,3 +5,12 @@
 
   top: $headerHeight;
 }
+
+.SearchRewardSearchBox {
+  @apply tw-border-red;
+}
+
+.SearchRewardApplyErrorMessage {
+  @apply tw-block tw-py-4 sm:tw-py-4px tw-pb-8 sm:tw-pb-8px tw--mb-12 sm:tw--mb-12px tw-text-sm tw-leading-normal tw-text-red tw-box-content;
+  @include text-line-clamp(2, 2.8em);
+}
