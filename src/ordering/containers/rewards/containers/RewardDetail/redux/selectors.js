@@ -23,8 +23,12 @@ import {
   getRewardDetailLimitsConditions,
   getRewardDetailLimitsAppliedStores,
   getRewardDetailLimitsAppliedSources,
+  getRewardDetailId,
+  getRewardDetailUniquePromotionCodeId,
+  getRewardDetailCode,
 } from '../../../../../../redux/modules/rewards/selectors';
 import { getMerchantCountry, getBusinessCurrency, getBusinessLocale } from '../../../../../redux/modules/app';
+import { getIsApplyRewardPending } from '../../../redux/selectors';
 
 export const getRewardId = () => getQueryString('id');
 
@@ -206,4 +210,13 @@ export const getRewardDetailContentList = createSelector(
 
     return contentList;
   }
+);
+
+export const getIsApplyButtonDisabled = createSelector(
+  getRewardDetailId,
+  getRewardDetailUniquePromotionCodeId,
+  getRewardDetailCode,
+  getIsApplyRewardPending,
+  (rewardDetailId, rewardDetailUniquePromotionCodeId, rewardDetailCode, isApplyRewardPending) =>
+    !rewardDetailId || !rewardDetailUniquePromotionCodeId || !rewardDetailCode || isApplyRewardPending
 );

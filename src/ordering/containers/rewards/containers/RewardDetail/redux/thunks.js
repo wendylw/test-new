@@ -84,7 +84,7 @@ export const backButtonClicked = createAsyncThunk(
   }
 );
 
-export const applyReward = createAsyncThunk('ordering/rewardList/applyReward', async (_, { dispatch, getState }) => {
+export const applyReward = createAsyncThunk('ordering/rewardDetail/applyReward', async (_, { dispatch, getState }) => {
   const state = getState();
   const isRewardDetailTypeVoucher = getIsRewardDetailTypeVoucher(state);
   const id = getRewardDetailId(state);
@@ -115,7 +115,7 @@ export const applyReward = createAsyncThunk('ordering/rewardList/applyReward', a
 });
 
 export const applyPayLaterReward = createAsyncThunk(
-  'ordering/rewardList/applyPayLaterReward',
+  'ordering/rewardDetail/applyPayLaterReward',
   async (_, { dispatch, getState }) => {
     const state = getState();
     const receiptNumber = getPayLaterReceiptNumber(state);
