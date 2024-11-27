@@ -14,6 +14,8 @@ import {
   getMerchantCountry,
   getMerchantCurrency,
   getMerchantLocale,
+  getPointsExpirationDuration,
+  getPointsExpirationDurationNumber,
 } from '../../../../../../redux/modules/merchant/selectors';
 import { getCustomizeRewardsSettingsPointsRate } from '../../../redux/common/selectors';
 
@@ -78,4 +80,11 @@ export const getEmptyPromptBaseSpent = createSelector(
       currency: merchantCurrency,
       locale: merchantLocale,
     }).replace(/\.\d+/, '')
+);
+
+export const getIsPointsExpirationDurationPromptShow = createSelector(
+  getPointsExpirationDuration,
+  getPointsExpirationDurationNumber,
+  (pointsExpirationDuration, pointsExpirationDurationNumber) =>
+    pointsExpirationDuration && pointsExpirationDurationNumber > 0
 );

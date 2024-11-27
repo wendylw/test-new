@@ -15,6 +15,10 @@
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
 }
 
+.CashbackCardPromptClassName {
+  @apply tw-justify-between;
+}
+
 .CashbackCardExpiredTag,
 .CashbackCardRemainingExpiredDaysTag {
   @apply tw-font-bold;

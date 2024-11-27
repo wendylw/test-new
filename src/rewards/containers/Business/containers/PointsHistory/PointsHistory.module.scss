@@ -1,3 +1,11 @@
+.PointsHistoryBannerExpirationDuration {
+  @apply tw-whitespace-pre;
+}
+
+.PointsHistoryBannerExpirationDurationUnitText {
+  @apply tw-text-sm;
+}
+
 .PointsHistoryBannerRight {
   figure > div {
     padding-top: 132.653061% !important;

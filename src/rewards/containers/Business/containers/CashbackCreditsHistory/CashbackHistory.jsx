@@ -72,6 +72,7 @@ const CashbackHistory = () => {
         title={t('CashbackBalance')}
         value={customerCashbackPrice}
         valueText={customerCashbackPrice}
+        promptClassName={styles.CashbackHistoryPromptClassName}
         prompt={
           customerCashback > 0 && (
             <>

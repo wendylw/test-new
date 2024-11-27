@@ -15,6 +15,7 @@ import {
   getMerchantCurrency,
   getMerchantLocale,
 } from '../../../../../../redux/modules/merchant/selectors';
+import { getCustomerAvailablePointsBalance } from '../../../../../redux/modules/customer/selectors';
 
 export const getPointsRewardRewardSettingId = () => getQueryString('rewardSettingId');
 
@@ -217,7 +218,10 @@ export const getIsPointsRewardRedeemInStoreShow = createSelector(
 export const getIsPointsRewardGetRewardButtonDisabled = createSelector(
   getPointsRewardIsEnabled,
   getPointsRewardIsDeleted,
-  (pointsRewardIsEnabled, pointsRewardIsDeleted) => !pointsRewardIsEnabled || pointsRewardIsDeleted
+  getCustomerAvailablePointsBalance,
+  getPointsRewardCostOfPoints,
+  (pointsRewardIsEnabled, pointsRewardIsDeleted, customerAvailablePointsBalance, pointsRewardCostOfPoints) =>
+    !pointsRewardIsEnabled || pointsRewardIsDeleted || customerAvailablePointsBalance < pointsRewardCostOfPoints
 );
 
 export const getIsClaimPointsRewardPending = createSelector(

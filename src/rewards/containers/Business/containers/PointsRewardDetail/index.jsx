@@ -83,7 +83,10 @@ const PointsRewardDetail = () => {
     },
     [dispatch]
   );
-  const handleClickSkipProfileButton = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
+  const handleClickSkipProfileButton = useCallback(() => {
+    dispatch(hideWebProfileForm());
+    dispatch(claimPointsReward());
+  }, [dispatch]);
   const handleClickSaveProfileButton = useCallback(() => dispatch(claimPointsReward()), [dispatch]);
   const handleCloseCompleteProfile = useCallback(() => dispatch(hideWebProfileForm()), [dispatch]);
 
@@ -92,6 +95,7 @@ const PointsRewardDetail = () => {
       dispatch(mounted());
     },
     () => {
+      dispatch(pointsRewardActions.claimPointsRewardRequestReset());
       dispatch(pointsRewardActions.loadPointsRewardDetailRequestReset());
     }
   );
@@ -159,14 +163,15 @@ const PointsRewardDetail = () => {
           ) : null}
         </section>
 
-        <section className={styles.PointsRewardDetailApplicableProducts}>
-          <h3 className={styles.PointsRewardDetailConditionTitle}>{t('PointsRewardMinSpendTitle')}</h3>
-          {pointsRewardMinSpendPrice ? (
+        {pointsRewardMinSpendPrice ? (
+          <section className={styles.PointsRewardDetailApplicableProducts}>
+            <h3 className={styles.PointsRewardDetailConditionTitle}>{t('PointsRewardMinSpendTitle')}</h3>
+
             <data className={styles.PointsRewardDetailConditionContent} value={pointsRewardMinSpendPrice}>
               {pointsRewardMinSpendPrice}
             </data>
-          ) : null}
-        </section>
+          </section>
+        ) : null}
 
         <section className={styles.PointsRewardDetailApplicableProducts}>
           <h3 className={styles.PointsRewardDetailConditionTitle}>{t('PointsRewardApplicableProductsTitle')}</h3>

@@ -57,6 +57,18 @@ export const getIsMerchantEnabledDelivery = createSelector(getMerchantData, merc
   _get(merchantData, 'qrOrderingSettings.enableDelivery', false)
 );
 
+export const getPointsExpirationDuration = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'pointsExpirationDuration', null)
+);
+
+export const getPointsExpirationDurationNumber = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'pointsExpirationDuration.durationNumber', 0)
+);
+
+export const getPointsExpirationDurationUnit = createSelector(getMerchantData, merchantData =>
+  _get(merchantData, 'pointsExpirationDuration.durationUnit', '')
+);
+
 /**
  * Derived selectors
  */

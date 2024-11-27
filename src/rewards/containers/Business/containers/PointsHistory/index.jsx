@@ -1,15 +1,21 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLifecycles } from 'react-use';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import RewardsPointsHistoryBannerImage from '../../../../../images/rewards-points-history-banner.svg';
+import { POINTS_EXPIRATION_DURATION_UNIT_I18N_KEYS } from './utils/constants';
 import CleverTap from '../../../../../utils/clevertap';
+import {
+  getPointsExpirationDurationNumber,
+  getPointsExpirationDurationUnit,
+} from '../../../../../redux/modules/merchant/selectors';
 import { getCustomerAvailablePointsBalance } from '../../../../redux/modules/customer/selectors';
 import {
   getPointsHistoryList,
   getIsPointsHistoryListEmpty,
   getEmptyPromptEarnPointsNumber,
   getEmptyPromptBaseSpent,
+  getIsPointsExpirationDurationPromptShow,
 } from './redux/selectors';
 import { actions as PointsHistoryActions } from './redux';
 import { backButtonClicked, mounted } from './redux/thunks';
@@ -28,6 +34,9 @@ const PointsHistory = () => {
   const isPointsHistoryListEmpty = useSelector(getIsPointsHistoryListEmpty);
   const emptyPromptEarnPointsNumber = useSelector(getEmptyPromptEarnPointsNumber);
   const emptyPromptBaseSpent = useSelector(getEmptyPromptBaseSpent);
+  const isPointsExpirationDurationPromptShow = useSelector(getIsPointsExpirationDurationPromptShow);
+  const pointsExpirationDurationNumber = useSelector(getPointsExpirationDurationNumber);
+  const pointsExpirationDurationUnit = useSelector(getPointsExpirationDurationUnit);
   const handleClickHeaderBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
   const handleClickHowToUseButton = useCallback(() => {
     CleverTap.pushEvent('Points Details Page - Click How to use points');
@@ -49,7 +58,20 @@ const PointsHistory = () => {
         title={t('PointsBalanceTitle')}
         value={customerAvailablePointsBalance}
         valueText={t('CustomerPoints', { customerAvailablePointsBalance })}
-        prompt={t('PointsExpiringTimePrompt')}
+        promptClassName={styles.PointsHistoryBannerExpirationDuration}
+        prompt={
+          isPointsExpirationDurationPromptShow ? (
+            <Trans
+              t={t}
+              i18nKey="PointsExpiringTimePrompt"
+              values={{
+                expirationDuration: t(POINTS_EXPIRATION_DURATION_UNIT_I18N_KEYS[pointsExpirationDurationUnit], {
+                  count: pointsExpirationDurationNumber,
+                }),
+              }}
+            />
+          ) : null
+        }
         infoButtonText={t('HowToUsePoints')}
         historyBannerRightClassName={styles.PointsHistoryBannerRight}
         historyBannerImage={
