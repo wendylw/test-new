@@ -4,6 +4,7 @@ import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
 import _isArray from 'lodash/isArray';
+import { getBeepAppVersion } from '../common/utils';
 import * as NativeMethods from '../utils/native-methods';
 
 export const STYLES = {
@@ -21,13 +22,15 @@ export const ICON_RES = {
   SUPPORT_AGENT: 'support_agent',
 };
 
+export const WHITE_BACK_MIN_VERSION = '1.31.10';
+
 function getNativeHeaderParams(props) {
-  // TODO: WB-9779 will deal with old version
-  // const { title, rightContent, titleAlignment, isPage, leftIcon, styles } = props;
-  const { title, rightContent, titleAlignment, isPage, styles } = props;
+  const beepAppVersion = getBeepAppVersion();
+  const { title, rightContent, titleAlignment, isPage, leftIcon, styles } = props;
   const { color, backgroundColor } = styles || {};
   const textColor = color || STYLES.TEXT_COLOR;
-  const leftIconRes = ICON_RES.BACK || (isPage ? ICON_RES.BACK : ICON_RES.CLOSE);
+  const leftIconRes =
+    beepAppVersion < WHITE_BACK_MIN_VERSION ? (isPage ? ICON_RES.BACK : ICON_RES.CLOSE) : ICON_RES.WHITE_BACK;
   const headerParams = {
     left: null,
     center: null,
