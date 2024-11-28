@@ -25,7 +25,7 @@
 }
 
 .RewardDetailTicket:global(.large.vertical) .RewardDetailTicketStub {
-  @apply tw-pt-16 sm:tw-pt-16px;
+  @apply tw-flex tw-items-end tw-justify-between tw-pt-16 sm:tw-pt-16px;
 }
 
 .RewardDetailTicketLimitations {

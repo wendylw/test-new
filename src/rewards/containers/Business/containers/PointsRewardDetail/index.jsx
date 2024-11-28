@@ -35,7 +35,7 @@ import {
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import PageFooter from '../../../../../common/components/PageFooter';
-import RewardDetailTicket from '../../../../../common/components/RewardDetailTicket';
+import Ticket from '../../../../../common/components/Ticket';
 import Button from '../../../../../common/components/Button';
 import PageToast from '../../../../../common/components/PageToast';
 import { ObjectFitImage } from '../../../../../common/components/Image';
@@ -142,11 +142,21 @@ const PointsRewardDetail = () => {
       <Frame>
         <PageHeader title={t('PointsRewardDetails')} onBackArrowClick={handleClickHeaderBackButton} />
 
-        <RewardDetailTicket
-          discount={formatDiscountValue}
-          discountText={t('DiscountValueText', { discount: formatDiscountValue })}
-          name={name}
-          stubClassName={styles.PointsRewardDetailTicketCostPointsContainer}
+        <Ticket
+          orientation="vertical"
+          size="large"
+          showBorder={false}
+          className={styles.PointsRewardDetailTicket}
+          mainClassName={styles.PointsRewardDetailTicketMain}
+          stubClassName={styles.PointsRewardDetailTicketStub}
+          main={
+            <div className={styles.PointsRewardDetailTicketMainContent}>
+              <data className={styles.PointsRewardDetailTicketDiscountValue} value={formatDiscountValue}>
+                {t('DiscountValueText', { discount: formatDiscountValue })}
+              </data>
+              <h2 className={styles.PointsRewardDetailTicketName}>{name}</h2>
+            </div>
+          }
           stub={
             <data className={styles.PointsRewardDetailTicketCostPoints} value={costOfPoints}>
               {t('RewardsCostOfPointsText', { costOfPoints })}
@@ -154,6 +164,7 @@ const PointsRewardDetail = () => {
           }
         />
 
+        {/* TODO: WB-9570 migrate to article */}
         <section className={styles.PointsRewardDetailApplicableProducts}>
           <h3 className={styles.PointsRewardDetailConditionTitle}>{t('PointsRewardValidityTitle')}</h3>
           {pointsRewardValidPeriod ? (

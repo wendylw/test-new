@@ -23,7 +23,7 @@ import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import Tag from '../../../../../common/components/Tag';
-import RewardDetailTicket from '../../../../../common/components/RewardDetailTicket';
+import Ticket from '../../../../../common/components/Ticket';
 import styles from './UniquePromoDetail.module.scss';
 
 const UniquePromoDetail = () => {
@@ -50,10 +50,21 @@ const UniquePromoDetail = () => {
     <Frame>
       <PageHeader title={t('UniquePromoDetails')} onBackArrowClick={handleClickHeaderBackButton} />
 
-      <RewardDetailTicket
-        discount={formatDiscountValue}
-        discountText={t('DiscountValueText', { discount: formatDiscountValue })}
-        name={name}
+      <Ticket
+        orientation="vertical"
+        size="large"
+        showBorder={false}
+        className={styles.UniquePromoDetailTicket}
+        mainClassName={styles.UniquePromoDetailTicketMain}
+        stubClassName={styles.UniquePromoDetailTicketStub}
+        main={
+          <div className={styles.UniquePromoDetailTicketMainContent}>
+            <data className={styles.UniquePromoDetailTicketDiscountValue} value={formatDiscountValue}>
+              {t('DiscountValueText', { discount: formatDiscountValue })}
+            </data>
+            <h2 className={styles.UniquePromoDetailTicketName}>{name}</h2>
+          </div>
+        }
         stub={
           <>
             <ul className={styles.UniquePromoDetailLimitations}>
@@ -73,6 +84,7 @@ const UniquePromoDetail = () => {
         }
       />
 
+      {/* TODO: WB-9570 migrate to article */}
       <section className={styles.UniquePromoDetailApplicableProducts}>
         <h3 className={styles.UniquePromoDetailConditionTitle}>{t('UniquePromoApplicableProductsTitle')}</h3>
         {formatAppliedProductsText && (
