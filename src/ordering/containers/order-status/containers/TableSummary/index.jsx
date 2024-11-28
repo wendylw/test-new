@@ -347,7 +347,7 @@ export class TableSummary extends React.Component {
 
     if (isLogin) {
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_PROMOTION,
+        pathname: PATH_NAME_MAPPING.ORDERING_REWARDS,
         search: window.location.search,
         state: { shouldGoBack: true },
       });

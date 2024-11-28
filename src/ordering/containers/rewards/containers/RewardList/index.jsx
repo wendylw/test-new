@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLifecycles } from 'react-use';
+import { useLifecycles, useSetState } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { actions as rewardsActions } from '../../../../../redux/modules/rewards';
 import { getIsApplyRewardPending } from '../../redux/selectors';
@@ -11,6 +11,7 @@ import PageHeader from '../../../../../common/components/PageHeader';
 import PageToast from '../../../../../common/components/PageToast';
 import Loader from '../../../../../common/components/Loader';
 import SearchReward from './components/SearchReward';
+import SkeletonLoader from './components/SkeletonLoader';
 import TicketList from './components/TicketList';
 import EmptyVoucher from './components/EmptyVoucher';
 import EmptySearchResult from './components/EmptySearchResult';
@@ -20,6 +21,7 @@ import styles from './RewardList.module.scss';
 const RewardList = () => {
   const { t } = useTranslation(['OrderingPromotion']);
   const dispatch = useDispatch();
+  const [mountedStatus, setMountedStatus] = useSetState(false);
   const isApplyRewardPending = useSelector(getIsApplyRewardPending);
   const isSearchEmptyReward = useSelector(getIsSearchEmptyReward);
   const isCustomerEmptyReward = useSelector(getIsCustomerEmptyReward);
@@ -28,7 +30,9 @@ const RewardList = () => {
 
   useLifecycles(
     () => {
-      dispatch(mounted());
+      dispatch(mounted()).then(() => {
+        setMountedStatus(true);
+      });
     },
     () => {
       dispatch(rewardsActions.resetRewardsState());
@@ -54,8 +58,10 @@ const RewardList = () => {
             <span className={styles.RewardListSearchLoaderText}>{t('Searching')}</span>
           </div>
         </section>
-      ) : (
+      ) : mountedStatus ? (
         <TicketList />
+      ) : (
+        <SkeletonLoader />
       )}
 
       <RewardListFooter />

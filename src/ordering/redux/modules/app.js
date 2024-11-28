@@ -12,6 +12,8 @@ import _cloneDeep from 'lodash/cloneDeep';
 import { replace } from 'connected-react-router';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants, { API_REQUEST_STATUS, REGISTRATION_SOURCE } from '../../../utils/constants';
+import { FEATURE_KEYS } from '../../../redux/modules/growthbook/constants';
+import { getFeatureFlagResult } from '../../../redux/modules/growthbook/selectors';
 import {
   URL_TYPES,
   MEMBER_LEVELS,
@@ -2199,6 +2201,7 @@ export const getIsStaticPage = () =>
     PATH_NAME_MAPPING.ORDER_DETAILS,
     PATH_NAME_MAPPING.ORDERING_LOGIN,
     PATH_NAME_MAPPING.ORDERING_PROMOTION,
+    PATH_NAME_MAPPING.ORDERING_REWARDS,
     PATH_NAME_MAPPING.SORRY,
   ].some(path => window.location.pathname.includes(path));
 
@@ -2293,3 +2296,6 @@ export const getMemberCardIconColors = createSelector(getMemberColorPalettes, me
   backgroundStartColor: memberCardColorPalettes.icon.background.startColor,
   backgroundEndColor: memberCardColorPalettes.icon.background.endColor,
 }));
+
+export const getIsRedesignApplyVoucherPromo = state =>
+  getFeatureFlagResult(state, FEATURE_KEYS.REDESIGN_APPLY_VOUCHER_PROMO);

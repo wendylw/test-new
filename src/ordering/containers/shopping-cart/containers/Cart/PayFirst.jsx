@@ -11,6 +11,7 @@ import Billing from '../../../../components/Billing';
 import CartList from '../../components/CartList';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
+import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import Utils from '../../../../../utils/utils';
 import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
@@ -305,7 +306,7 @@ class PayFirst extends Component {
 
     if (isLogin) {
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_PROMOTION,
+        pathname: PATH_NAME_MAPPING.ORDERING_REWARDS,
         search: window.location.search,
       });
       return;

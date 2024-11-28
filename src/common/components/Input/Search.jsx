@@ -13,6 +13,7 @@ const Search = React.forwardRef(
       className,
       placeholder,
       defaultSearchKeyword,
+      valueFormatter,
       allowClear,
       searching,
       onChangeInputValue,
@@ -54,8 +55,12 @@ const Search = React.forwardRef(
           value={inputValue}
           data-test-id="common.search.input"
           onChange={e => {
-            setInputValue(e.target.value);
-            onChangeInputValue(e.target.value);
+            const changeValue = e.target.value;
+            const formatValue =
+              valueFormatter && typeof valueFormatter === 'function' ? valueFormatter(changeValue) : changeValue;
+
+            setInputValue(formatValue);
+            onChangeInputValue(formatValue);
           }}
           onKeyPress={e => {
             if (e.code === 'Enter' || (e.charCode || e.which) === 13) {
@@ -94,6 +99,8 @@ Search.propTypes = {
   addOnIcon: PropTypes.node,
   className: PropTypes.string,
   placeholder: PropTypes.string,
+  // pattern: a function uses to format values.
+  valueFormatter: PropTypes.func,
   defaultSearchKeyword: PropTypes.string,
   allowClear: PropTypes.bool,
   searching: PropTypes.bool,
@@ -104,6 +111,7 @@ Search.defaultProps = {
   addOnIcon: null,
   className: null,
   placeholder: '',
+  valueFormatter: null,
   defaultSearchKeyword: '',
   allowClear: true,
   searching: false,

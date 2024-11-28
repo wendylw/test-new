@@ -12,6 +12,7 @@ import {
   getBusinessInfo,
   getIsDynamicUrlExpiredResultShown,
   getIsDynamicUrl,
+  getIsRedesignApplyVoucherPromo,
 } from '../../redux/modules/app';
 import {
   getAddressInfo as getAddressInfoThunk,
@@ -262,7 +263,7 @@ class App extends Component {
   }
 
   render() {
-    const { t, onlineStoreInfo, apiError, isDynamicUrlExpiredResultShown } = this.props;
+    const { t, onlineStoreInfo, apiError, isDynamicUrlExpiredResultShown, isRedesignApplyVoucherPromo } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
@@ -294,7 +295,7 @@ class App extends Component {
             />
           </Result>
         ) : (
-          <Routes />
+          <Routes isRedesignApplyVoucherPromo={isRedesignApplyVoucherPromo} />
         )}
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
@@ -334,6 +335,7 @@ App.propTypes = {
   ifAddressInfoExists: PropTypes.bool,
   isDynamicUrlExpiredResultShown: PropTypes.bool,
   isDynamicUrl: PropTypes.bool,
+  isRedesignApplyVoucherPromo: PropTypes.bool,
   getAddressInfo: PropTypes.func,
   setAddressInfo: PropTypes.func,
 };
@@ -366,6 +368,7 @@ App.defaultProps = {
   ifAddressInfoExists: false,
   isDynamicUrlExpiredResultShown: false,
   isDynamicUrl: false,
+  isRedesignApplyVoucherPromo: false,
   getAddressInfo: () => {},
   setAddressInfo: () => {},
 };
@@ -383,6 +386,7 @@ export default compose(
       ifAddressInfoExists: getIfAddressInfoExists(state),
       isDynamicUrlExpiredResultShown: getIsDynamicUrlExpiredResultShown(state),
       isDynamicUrl: getIsDynamicUrl(state),
+      isRedesignApplyVoucherPromo: getIsRedesignApplyVoucherPromo(state),
     }),
     dispatch => ({
       getAddressInfo: bindActionCreators(getAddressInfoThunk, dispatch),

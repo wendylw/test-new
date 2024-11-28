@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { Switch, Route, withRouter } from 'react-router-dom';
+import { Switch, Route, withRouter, Redirect } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 import { PATH_NAME_MAPPING } from '../../common/utils/constants';
 import Utils from '../../utils/utils';
@@ -84,7 +84,8 @@ const RewardDetail = lazy(() =>
 
 const { ROUTER_PATHS } = Constants;
 
-const Routes = () => (
+// eslint-disable-next-line react/prop-types, no-unused-vars
+const Routes = ({ isRedesignApplyVoucherPromo }) => (
   <ConnectedRouter history={history}>
     <Suspense fallback={<div className="loader theme full-page" />}>
       <Switch>
@@ -92,7 +93,9 @@ const Routes = () => (
         <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
         <Route exact path={ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS} component={CartSubmissionStatus} />
         <Route exact path={ROUTER_PATHS.ORDERING_PROMOTION} component={Promotion} />
-        <Route exact path={PATH_NAME_MAPPING.ORDERING_REWARDS} component={RewardList} />
+        <Route exact path={PATH_NAME_MAPPING.ORDERING_REWARDS}>
+          {isRedesignApplyVoucherPromo ? <RewardList /> : <Redirect to={PATH_NAME_MAPPING.ORDERING_PROMOTION} />}
+        </Route>
         <Route exact path={PATH_NAME_MAPPING.ORDERING_REWARD_DETAIL} component={RewardDetail} />
         <Route exact path={ROUTER_PATHS.ORDERING_CUSTOMER_INFO} component={CustomerInfo} />
         <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />

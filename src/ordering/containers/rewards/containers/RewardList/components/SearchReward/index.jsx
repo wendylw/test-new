@@ -54,6 +54,7 @@ const SearchReward = () => {
         ref={searchInputRef}
         className={applyRewardError ? styles.SearchRewardSearchBox : null}
         placeholder={t('EnterPromoCodeHere')}
+        valueFormatter={value => value.toUpperCase()}
         searching={isChangingKeyword}
         onChangeInputValue={handleChangeSearchKeyword}
         onClearInput={handleClearSearchKeyword}
