@@ -109,6 +109,17 @@ export const getApplyPayLaterVoucherRequestError = state => state.rewards.applyP
 /*
  * Selectors derived from state
  */
+export const getIsLoadRewardListRequestPending = createSelector(
+  getLoadRewardListRequestStatus,
+  loadRewardListRequestStatus => loadRewardListRequestStatus === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsLoadRewardListRequestCompleted = createSelector(
+  getLoadRewardListRequestStatus,
+  loadRewardListRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadRewardListRequestStatus)
+);
+
 export const getIsRewardDetailTypeVoucher = createSelector(
   getRewardDetailType,
   rewardDetailType => rewardDetailType === REWARDS_TYPE.VOUCHER

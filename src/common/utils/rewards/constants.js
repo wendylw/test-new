@@ -31,6 +31,10 @@ export const REWARD_APPLY_TO_LIMITS_CONDITIONS = {
   },
 };
 
+export const REWARD_APPLIED_CODE_ERRORS = {
+  ENTER_INVALID_PROMO_CODE: 'enterInvalidPromoCode',
+};
+
 export const REWARD_APPLIED_ERROR_CODES = {
   ONLY_FOR_DELIVERY_ORDERS: '41003',
   NOT_START_OR_EXPIRED: '54403',
@@ -219,5 +223,9 @@ export const REWARD_APPLIED_ERROR_I8NS = {
   [REWARD_APPLIED_ERROR_CODES.VOUCHER_NOT_MATCH_SOURCE]: {
     i18nKey: '60010VoucherNotMatchSource',
   },
+};
+
+export const REWARD_APPLIED_CODE_ERRORS_I18N_KEYS = {
+  [REWARD_APPLIED_CODE_ERRORS.ENTER_INVALID_PROMO_CODE]: 'FillInvalidPromoCode',
 };
 /* end of i18n */

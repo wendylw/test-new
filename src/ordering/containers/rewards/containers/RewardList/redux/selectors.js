@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import i18next from 'i18next';
 import { PROMO_VOUCHER_STATUS, REWARDS_TYPE } from '../../../../../../common/utils/constants';
 import {
+  REWARD_APPLIED_CODE_ERRORS_I18N_KEYS,
   REWARD_APPLIED_ERROR_I8NS,
   REWARD_APPLIED_ERROR_I8NS_PARAMS_KEYS,
   WEEK_DAYS_MAPPING,
@@ -19,6 +20,8 @@ import {
   getApplyVoucherRequestError,
   getApplyPayLaterPromoRequestError,
   getApplyPayLaterVoucherRequestError,
+  getIsLoadRewardListRequestCompleted,
+  getIsLoadRewardListRequestPending,
 } from '../../../../../../redux/modules/rewards/selectors';
 import {
   getMerchantCountry,
@@ -27,6 +30,10 @@ import {
   getEnablePayLater,
 } from '../../../../../redux/modules/app';
 import { getIsApplyRewardPending } from '../../../redux/selectors';
+
+export const getIsSearchBoxEmpty = state => state.rewardList.searchBox.isEmpty;
+
+export const getSearchBoxError = state => state.rewardList.searchBox.error;
 
 export const getSelectedRewardId = state => state.rewardList.selectedReward.id;
 
@@ -134,6 +141,7 @@ export const getIsSelectedVoucher = createSelector(
 
 export const getApplyRewardError = createSelector(
   getEnablePayLater,
+  getSearchBoxError,
   getApplyPromoRequestError,
   getApplyVoucherRequestError,
   getApplyPayLaterPromoRequestError,
@@ -143,6 +151,7 @@ export const getApplyRewardError = createSelector(
   getBusinessLocale,
   (
     enablePayLater,
+    searchBoxError,
     applyPromoRequestError,
     applyVoucherRequestError,
     applyPayLaterPromoRequestError,
@@ -151,6 +160,10 @@ export const getApplyRewardError = createSelector(
     businessCurrency,
     businessLocale
   ) => {
+    if (searchBoxError) {
+      return i18next.t(`OrderingPromotion:${REWARD_APPLIED_CODE_ERRORS_I18N_KEYS[searchBoxError]}`);
+    }
+
     if (
       !applyPromoRequestError &&
       !applyVoucherRequestError &&
@@ -222,4 +235,26 @@ export const getApplyRewardError = createSelector(
 
     return i18next.t('OrderingPromotion:PromoInvalid');
   }
+);
+
+export const getIsCustomerEmptyReward = createSelector(
+  getIsSearchBoxEmpty,
+  getRewardList,
+  getIsLoadRewardListRequestCompleted,
+  (isSearchBoxEmpty, rewardList, isLoadRewardListRequestCompleted) =>
+    isSearchBoxEmpty && rewardList.length === 0 && isLoadRewardListRequestCompleted
+);
+
+export const getIsSearchEmptyReward = createSelector(
+  getIsSearchBoxEmpty,
+  getRewardList,
+  getIsLoadRewardListRequestCompleted,
+  (isSearchBoxEmpty, rewardList, isLoadRewardListRequestCompleted) =>
+    !isSearchBoxEmpty && rewardList.length === 0 && isLoadRewardListRequestCompleted
+);
+
+export const getIsRewardListSearching = createSelector(
+  getIsSearchBoxEmpty,
+  getIsLoadRewardListRequestPending,
+  (isSearchBoxEmpty, isLoadRewardListRequestPending) => !isSearchBoxEmpty && isLoadRewardListRequestPending
 );

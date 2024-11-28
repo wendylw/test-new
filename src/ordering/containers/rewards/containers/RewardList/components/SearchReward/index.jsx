@@ -1,9 +1,12 @@
+import _isEmpty from 'lodash/isEmpty';
 import React, { useRef, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
+import { REWARD_APPLIED_CODE_ERRORS } from '../../../../../../../common/utils/rewards/constants';
 import { searchUpdateDebounce } from '../../../../../../../common/utils/ui';
 import { getApplyRewardError } from '../../redux/selectors';
+import { actions as rewardListActions } from '../../redux';
 import { searchPromos } from '../../redux/thunks';
 import Search from '../../../../../../../common/components/Input/Search';
 import styles from './SearchReward.module.scss';
@@ -16,11 +19,23 @@ const SearchReward = () => {
   const applyRewardError = useSelector(getApplyRewardError);
   const handleChangeSearchKeyword = useCallback(
     searchKeyword => {
-      setIsChangingKeyword(true);
-      searchUpdateDebounce(searchKeyword, keyword => {
-        dispatch(searchPromos(keyword));
-        setIsChangingKeyword(false);
-      });
+      const regex = /^[A-Z0-9]*$/;
+      const isAvailableSearchKeyword = regex.test(searchKeyword);
+
+      dispatch(
+        rewardListActions.searchBoxErrorUpdate(
+          isAvailableSearchKeyword ? '' : REWARD_APPLIED_CODE_ERRORS.ENTER_INVALID_PROMO_CODE
+        )
+      );
+      dispatch(rewardListActions.setIsSearchBoxEmpty(_isEmpty(searchKeyword)));
+
+      if (isAvailableSearchKeyword) {
+        setIsChangingKeyword(true);
+        searchUpdateDebounce(searchKeyword, keyword => {
+          dispatch(searchPromos(keyword));
+          setIsChangingKeyword(false);
+        });
+      }
     },
     [dispatch]
   );

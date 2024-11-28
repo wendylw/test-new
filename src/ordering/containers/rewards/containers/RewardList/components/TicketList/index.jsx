@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { UNIQUE_PROMO_STATUS_I18KEYS } from '../../../../../../../common/utils/rewards/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
-import { getRewardList } from '../../redux/selectors';
+import { getRewardList, getIsSearchBoxEmpty } from '../../redux/selectors';
 import { actions as rewardListActions } from '../../redux';
 import Ticket from '../../../../../../../common/components/Ticket';
 import Tag from '../../../../../../../common/components/Tag';
@@ -19,6 +19,7 @@ const TicketList = () => {
   const dispatch = useDispatch();
   const search = useSelector(getLocationSearch);
   const rewardList = useSelector(getRewardList);
+  const isSearchBoxEmpty = useSelector(getIsSearchBoxEmpty);
   const handleClickRewardItemButton = useCallback(
     (event, selectedReward) => {
       event.preventDefault();
@@ -45,7 +46,7 @@ const TicketList = () => {
 
   return (
     <section className={styles.RewardTicketListContainer}>
-      <h3 className={styles.RewardTicketListTitle}>{t('YourVouchers')}</h3>
+      {isSearchBoxEmpty && <h3 className={styles.RewardTicketListTitle}>{t('YourVouchers')}</h3>}
       <ul className={styles.RewardTicketList}>
         {rewardList.map(reward => {
           const {
