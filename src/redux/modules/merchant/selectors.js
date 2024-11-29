@@ -1,6 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { API_REQUEST_STATUS } from '../../../common/utils/constants';
+import { API_REQUEST_STATUS, COUNTRIES } from '../../../common/utils/constants';
 import { getQueryString } from '../../../common/utils';
 import { getBusinessName } from '../../../config';
 
@@ -98,4 +98,9 @@ export const getIsMerchantEnabledStoreCredits = createSelector(
   getIsMerchantEnabledCashback,
   getIsMerchantEnabledLoyalty,
   (isMerchantEnabledCashback, isMerchantEnabledLoyalty) => !isMerchantEnabledCashback && isMerchantEnabledLoyalty
+);
+
+export const getIsMalaysianMerchant = createSelector(
+  getMerchantCountry,
+  merchantCountry => merchantCountry === COUNTRIES.MY
 );
