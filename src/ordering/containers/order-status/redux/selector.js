@@ -4,6 +4,7 @@ import _isEqual from 'lodash/isEqual';
 import { createSelector } from 'reselect';
 import { getUserProfile, getTableId } from '../../../redux/modules/app';
 import Constants from '../../../../utils/constants';
+import { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } from '../constants';
 
 const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS } = Constants;
 
@@ -234,3 +235,12 @@ export const getIsStoreReviewSupportable = createSelector(getStoreReviewInfoData
 );
 
 export const getOffline = state => state.orderStatus.storeReview.offline;
+
+/*
+ * Selectors derived from state
+ */
+
+export const getIsReportUnsafeDriverButtonDisabled = createSelector(
+  getOrderStatus,
+  orderStatus => !AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus)
+);

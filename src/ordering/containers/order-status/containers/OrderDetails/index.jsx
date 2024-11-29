@@ -1,17 +1,14 @@
-import qs from 'qs';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import _get from 'lodash/get';
 import { compose } from 'redux';
-import { IconNext } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
 import Tag from '../../../../../components/Tag';
 import CleverTap from '../../../../../utils/clevertap';
 import Constants, {
   LIVE_CHAT_SOURCE_TYPES,
-  AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
   ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
 } from '../../../../../utils/constants';
 import { ORDER_PAYMENT_METHODS } from '../../constants';
@@ -21,21 +18,19 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
 import { loadOrder as loadOrderThunk } from '../../redux/thunks';
 import {
-  getIsUseStorehubLogistics,
   getIsShowReorderButton,
   getOrder,
-  getOrderStatus,
   getPromotion,
-  getReceiptNumber,
   getServiceCharge,
   getProductsManualDiscount,
   getOrderShippingType,
 } from '../../redux/selector';
-import './OrderingDetails.scss';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
 import { ICON_RES } from '../../../../../components/NativeHeader';
+import ReportIssueButton from './components/ReportIssueButton';
+import './OrderingDetails.scss';
 
 const { DELIVERY_METHOD } = Constants;
 
@@ -59,22 +54,6 @@ export class OrderDetails extends Component {
     history.push({
       pathname: Constants.ROUTER_PATHS.MERCHANT_INFO,
       search: window.location.search,
-    });
-  };
-
-  handleReportUnsafeDriver = () => {
-    const { receiptNumber, history } = this.props;
-
-    const queryParams = {
-      receiptNumber,
-      from: 'orderDetails',
-    };
-
-    this.pushCleverTapEvent('Order Details - click report issue');
-
-    history.push({
-      pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
-      search: qs.stringify(queryParams, { addQueryPrefix: true }),
     });
   };
 
@@ -163,12 +142,6 @@ export class OrderDetails extends Component {
       />
     );
   }
-
-  isReportUnsafeDriverButtonDisabled = () => {
-    const { orderStatus } = this.props;
-
-    return !AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus);
-  };
 
   pushCleverTapEvent = eventName => {
     const { storeInfoForCleverTap, order, businessInfo } = this.props;
@@ -352,7 +325,7 @@ export class OrderDetails extends Component {
   }
 
   render() {
-    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton, shippingType } = this.props;
+    const { order, t, serviceCharge, isShowReorderButton, shippingType } = this.props;
     const { shippingFee, takeawayCharges, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } =
       order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
@@ -428,21 +401,7 @@ export class OrderDetails extends Component {
             </ul>
           </div>
 
-          {isUseStorehubLogistics ? (
-            <div className="card margin-small">
-              <button
-                disabled={this.isReportUnsafeDriverButtonDisabled()}
-                onClick={this.handleReportUnsafeDriver}
-                className="ordering-details__report-issue-button button button__block flex flex-middle flex-space-between padding-small"
-                data-test-id="ordering.contact-details.report-driver-btn"
-              >
-                <span className="text-weight-bolder text-left text-size-big flex__fluid-content padding-left-right-smaller">
-                  {t('ReportIssue')}
-                </span>
-                <IconNext className="ordering-details__icon-next icon icon__small flex__shrink-fixed" />
-              </button>
-            </div>
-          ) : null}
+          <ReportIssueButton pushCleverTapEvent={this.pushCleverTapEvent} />
         </div>
 
         {isShowReorderButton && (
@@ -474,28 +433,22 @@ OrderDetails.propTypes = {
     discount: PropTypes.number,
     promoType: PropTypes.string,
   }),
-  orderStatus: PropTypes.string,
   shippingType: PropTypes.string,
-  receiptNumber: PropTypes.string,
   serviceCharge: PropTypes.number,
   productsManualDiscount: PropTypes.number,
   isShowReorderButton: PropTypes.bool,
-  isUseStorehubLogistics: PropTypes.bool,
   loadOrder: PropTypes.func,
 };
 
 OrderDetails.defaultProps = {
   order: {},
   promotion: null,
-  orderStatus: null,
   shippingType: null,
-  receiptNumber: null,
   businessInfo: {},
   serviceCharge: null,
   storeInfoForCleverTap: null,
   productsManualDiscount: 0,
   isShowReorderButton: false,
-  isUseStorehubLogistics: false,
   loadOrder: () => {},
 };
 
@@ -509,9 +462,6 @@ export default compose(
       promotion: getPromotion(state),
       serviceCharge: getServiceCharge(state),
       productsManualDiscount: getProductsManualDiscount(state),
-      orderStatus: getOrderStatus(state),
-      receiptNumber: getReceiptNumber(state),
-      isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       isShowReorderButton: getIsShowReorderButton(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
