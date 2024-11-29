@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useMount } from 'react-use';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation, Trans } from 'react-i18next';
 import { CaretRight } from 'phosphor-react';
 import PowerByStoreHubLogo from '../../../images/power-by-storehub-logo.svg';
@@ -9,6 +9,8 @@ import BeepAppLogo from '../../../images/app-beep-logo.svg';
 import TNGAppLogo from '../../../images/app-tng-logo.svg';
 import { judgeClient, getIsThePageHidden, getIsDesktopClients } from '../../../common/utils';
 import CleverTap from '../../../utils/clevertap';
+import { getMerchantBusiness, getIsMalaysianMerchant } from '../../../redux/modules/merchant/selectors';
+import { fetchMerchantInfo } from '../../../redux/modules/merchant/thunks';
 import { getUserCountry } from '../../redux/modules/app';
 import Button from '../../../common/components/Button';
 import { ObjectFitImage } from '../../../common/components/Image';
@@ -17,7 +19,10 @@ import styles from './StoreRedemption.module.scss';
 
 const SeamlessLoyaltyWeb = () => {
   const { t } = useTranslation('Cashback');
+  const dispatch = useDispatch();
   const client = judgeClient();
+  const merchantBusiness = useSelector(getMerchantBusiness);
+  const isMalaysianMerchant = useSelector(getIsMalaysianMerchant);
   const userCountry = useSelector(getUserCountry);
   const handleGotoBeepDownloadPage = useCallback(() => {
     const downloadBeepAppDeepLink = `${process.env.REACT_APP_BEEP_DOWNLOAD_DEEP_LINK}?utm_source=beepqr&utm_medium=banner&utm_campaign=seamlessloyalty`;
@@ -58,6 +63,8 @@ const SeamlessLoyaltyWeb = () => {
       country: userCountry,
       page: 'When users scan QR with phone camera (web)',
     });
+
+    dispatch(fetchMerchantInfo(merchantBusiness));
   });
 
   // Use createPortal to load the page because the Login Modal in App/index level DOM needs to be covered
@@ -91,22 +98,25 @@ const SeamlessLoyaltyWeb = () => {
             <span className={styles.StoreRedemptionWebLogoButtonText}>{t('SeamlessLoyaltyBeepAppButtonText')}</span>
             <CaretRight size={24} />
           </Button>
-          <Button
-            block
-            contentClassName={styles.StoreRedemptionWebLogoButtonContent}
-            type="text"
-            theme="ghost"
-            onClick={handleGotoTNGApp}
-            data-test-id="seamless-loyalty.tng-app-button"
-          >
-            <div className={styles.StoreRedemptionWebLogoButtonImage}>
-              <ObjectFitImage noCompression src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
-            </div>
-            <span className={styles.StoreRedemptionWebLogoButtonText}>
-              {t('SeamlessLoyaltyTNGMiniProgramButtonText')}
-            </span>
-            <CaretRight size={24} />
-          </Button>
+
+          {isMalaysianMerchant && (
+            <Button
+              block
+              contentClassName={styles.StoreRedemptionWebLogoButtonContent}
+              type="text"
+              theme="ghost"
+              onClick={handleGotoTNGApp}
+              data-test-id="seamless-loyalty.tng-app-button"
+            >
+              <div className={styles.StoreRedemptionWebLogoButtonImage}>
+                <ObjectFitImage noCompression src={TNGAppLogo} alt="StoreHub Redemption TNG App Logo" />
+              </div>
+              <span className={styles.StoreRedemptionWebLogoButtonText}>
+                {t('SeamlessLoyaltyTNGMiniProgramButtonText')}
+              </span>
+              <CaretRight size={24} />
+            </Button>
+          )}
         </div>
       </section>
     </div>,

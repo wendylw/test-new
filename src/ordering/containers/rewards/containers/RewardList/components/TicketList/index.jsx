@@ -1,19 +1,25 @@
 import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { PATH_NAME_MAPPING } from '../../../../../../../common/utils/constants';
 import { UNIQUE_PROMO_STATUS_I18KEYS } from '../../../../../../../common/utils/rewards/constants';
 import { getClassName } from '../../../../../../../common/utils/ui';
-import { getRewardList } from '../../redux/selectors';
+import { getRewardList, getIsSearchBoxEmpty } from '../../redux/selectors';
 import { actions as rewardListActions } from '../../redux';
 import Ticket from '../../../../../../../common/components/Ticket';
 import Tag from '../../../../../../../common/components/Tag';
 import Button from '../../../../../../../common/components/Button';
 import styles from './TicketList.module.scss';
+import { getLocationSearch } from '../../../../../../redux/modules/app';
 
 const TicketList = () => {
   const { t } = useTranslation(['OrderingPromotion']);
+  const history = useHistory();
   const dispatch = useDispatch();
+  const search = useSelector(getLocationSearch);
   const rewardList = useSelector(getRewardList);
+  const isSearchBoxEmpty = useSelector(getIsSearchBoxEmpty);
   const handleClickRewardItemButton = useCallback(
     (event, selectedReward) => {
       event.preventDefault();
@@ -25,10 +31,22 @@ const TicketList = () => {
     },
     [dispatch]
   );
+  const handleClickRewardViewDetailButton = useCallback(
+    (event, selectedReward) => {
+      event.stopPropagation();
+
+      const { id, uniquePromotionCodeId, type } = selectedReward || {};
+
+      history.push(
+        `${PATH_NAME_MAPPING.ORDERING_REWARD_DETAIL}${search}&id=${id}&up_id=${uniquePromotionCodeId}&up_type=${type}`
+      );
+    },
+    [history, search]
+  );
 
   return (
     <section className={styles.RewardTicketListContainer}>
-      <h3 className={styles.RewardTicketListTitle}>{t('YourVouchers')}</h3>
+      {isSearchBoxEmpty && <h3 className={styles.RewardTicketListTitle}>{t('YourVouchers')}</h3>}
       <ul className={styles.RewardTicketList}>
         {rewardList.map(reward => {
           const {
@@ -52,9 +70,8 @@ const TicketList = () => {
                 data-test-id="ordering.reward-list.reward-item"
                 className={styles.RewardItemButton}
                 contentClassName={styles.RewardItemButtonContent}
-                disabled={isUnavailable}
                 onClick={e => {
-                  handleClickRewardItemButton(e, reward);
+                  !isUnavailable && handleClickRewardItemButton(e, reward);
                 }}
               >
                 <Ticket
@@ -89,7 +106,17 @@ const TicketList = () => {
                       <span className={styles.RewardTicketDiscountLimitation}>
                         {t(minSpendI18n.i18nKey, minSpendI18n.params)}
                       </span>
-                      <span className={styles.RewardTicketViewDetail}>{t('ViewDetails')}</span>
+                      <span
+                        role="button"
+                        tabIndex="0"
+                        className={styles.RewardTicketViewDetail}
+                        data-test-id="ordering.reward-list.reward-item.view-detail-button"
+                        onClick={e => {
+                          handleClickRewardViewDetailButton(e, reward);
+                        }}
+                      >
+                        {t('ViewDetails')}
+                      </span>
                     </div>
                   }
                 />

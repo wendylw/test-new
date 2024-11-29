@@ -1,0 +1,13 @@
+.SkeletonLoaderForm {
+  @apply tw-flex tw-flex-col tw-w-full tw-px-12 sm:tw-px-12px tw-py-24 sm:tw-py-24px;
+}
+
+.SkeletonLoaderFormItemContainer {
+  @apply tw-w-full;
+}
+
+.SkeletonLoaderFormItem {
+  @apply tw-flex tw-items-center tw-py-20 sm:tw-py-20px tw-rounded;
+
+  height: 90px;
+}

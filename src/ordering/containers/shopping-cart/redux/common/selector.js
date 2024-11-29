@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
+import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
 import { getCartItems, getUserIsLogin, getIsBillingTotalInvalid } from '../../../../redux/modules/app';
 import { getIsLoadUniquePromosAvailableCountCompleted } from '../../../../redux/modules/common/selectors';
-import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
 
 export const getCheckingInventoryPendingState = ({ shoppingCart }) =>
   shoppingCart.common.cartInventory.status === API_REQUEST_STATUS.PENDING;

@@ -20,7 +20,7 @@
 
 .RewardTicket {
   &__Unavailable {
-    @apply tw-opacity-60;
+    @apply tw-opacity-40;
   }
 
   &__Selected:global(.border) {
@@ -63,5 +63,5 @@
 }
 
 .RewardTicketViewDetail {
-  @apply tw-text-xs tw-leading-loose tw-text-orange tw-capitalize;
+  @apply tw-p-8 sm:tw-p-8px tw--m-8 sm:tw--m-8px tw-text-xs tw-leading-loose tw-text-orange tw-capitalize;
 }

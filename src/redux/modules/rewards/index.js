@@ -41,7 +41,9 @@ const initialState = {
 export const { actions, reducer } = createSlice({
   name: 'app/rewards',
   initialState,
-  reducers: {},
+  reducers: {
+    resetRewardsState: () => initialState,
+  },
   extraReducers: {
     [fetchRewardList.pending.type]: state => {
       state.loadRewardListRequest.status = API_REQUEST_STATUS.PENDING;

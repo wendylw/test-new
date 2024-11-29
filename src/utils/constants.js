@@ -434,10 +434,10 @@ const PROMOTION_ERROR_CODES = {
     desc: '54410DeletedPromotion',
   },
   54401: {
-    desc: '54401DeletedPromotion',
+    desc: '54401ProductNotExist',
   },
   54407: {
-    desc: '54407RequireSameBusiness',
+    desc: '54407NotMatchCondition',
   },
   54408: {
     desc: '54408RequireSameBusiness',

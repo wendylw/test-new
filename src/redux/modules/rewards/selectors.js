@@ -1,5 +1,6 @@
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { API_REQUEST_STATUS } from '../../../common/utils/constants';
+import { API_REQUEST_STATUS, REWARDS_TYPE } from '../../../common/utils/constants';
 
 export const getLoadRewardListRequestData = state => state.rewards.loadRewardListRequest.data;
 
@@ -12,6 +13,82 @@ export const getLoadRewardDetailRequestData = state => state.rewards.loadRewardD
 export const getLoadRewardDetailRequestStatus = state => state.rewards.loadRewardDetailRequest.status;
 
 export const getLoadRewardDetailRequestError = state => state.rewards.loadRewardDetailRequest.error;
+
+export const getRewardDetailId = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'id', null)
+);
+
+export const getRewardDetailUniquePromotionCodeId = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'uniquePromotionCodeId', null)
+);
+
+export const getRewardDetailCode = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'code', null)
+);
+
+export const getRewardDetailType = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'type', null)
+);
+
+export const getRewardDetailDiscountType = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'discountType', null)
+);
+
+export const getRewardDetailDiscountValue = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'discountValue', null)
+);
+
+export const getRewardDetailName = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'name', null)
+);
+
+export const getRewardDetailValidTo = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'validTo', null)
+);
+
+export const getRewardDetailMinSpendAmount = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'minSpendAmount', null)
+);
+
+export const getRewardDetailStatus = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'status', null)
+);
+
+export const getRewardDetailProductLimits = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'productsLimits', {})
+);
+
+export const getRewardDetailStoresLimits = createSelector(getLoadRewardDetailRequestData, loadRewardDetailRequestData =>
+  _get(loadRewardDetailRequestData, 'storesLimits', {})
+);
+
+export const getRewardDetailLimitsAppliedStores = createSelector(
+  getRewardDetailStoresLimits,
+  rewardDetailStoresLimits => _get(rewardDetailStoresLimits, 'appliedStores', [])
+);
+
+export const getRewardDetailGeneralLimits = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'generalLimits', {})
+);
+
+export const getRewardDetailLimitsAppliedSources = createSelector(
+  getRewardDetailGeneralLimits,
+  rewardDetailGeneralLimits => _get(rewardDetailGeneralLimits, 'appliedSources', [])
+);
+
+export const getRewardDetailApplyToLimits = createSelector(
+  getLoadRewardDetailRequestData,
+  loadRewardDetailRequestData => _get(loadRewardDetailRequestData, 'applyToLimits', {})
+);
+
+export const getRewardDetailLimitsConditions = createSelector(getRewardDetailApplyToLimits, rewardDetailApplyToLimits =>
+  _get(rewardDetailApplyToLimits, 'conditions', [])
+);
 
 export const getApplyPromoRequestStatus = state => state.rewards.applyPromoRequest.status;
 
@@ -32,6 +109,22 @@ export const getApplyPayLaterVoucherRequestError = state => state.rewards.applyP
 /*
  * Selectors derived from state
  */
+export const getIsLoadRewardListRequestPending = createSelector(
+  getLoadRewardListRequestStatus,
+  loadRewardListRequestStatus => loadRewardListRequestStatus === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsLoadRewardListRequestCompleted = createSelector(
+  getLoadRewardListRequestStatus,
+  loadRewardListRequestStatus =>
+    [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadRewardListRequestStatus)
+);
+
+export const getIsRewardDetailTypeVoucher = createSelector(
+  getRewardDetailType,
+  rewardDetailType => rewardDetailType === REWARDS_TYPE.VOUCHER
+);
+
 export const getIsApplyPromoOrVoucherPending = createSelector(
   getApplyPromoRequestStatus,
   getApplyVoucherRequestStatus,

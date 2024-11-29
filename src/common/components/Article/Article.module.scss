@@ -1,0 +1,19 @@
+.ArticleTitle {
+  @apply tw-text-lg tw-leading-relaxed tw-font-bold;
+}
+
+.ArticleTitleDescription {
+  @apply tw-mt-4 sm:tw-mt-4px tw-leading-loose;
+}
+
+.ArticleContentItem {
+  @apply tw-mt-16 sm:tw-mt-16px;
+}
+
+.ArticleSubtitle {
+  @apply tw-leading-loose tw-font-bold;
+}
+
+.ArticleDescription {
+  @apply tw-leading-loose;
+}

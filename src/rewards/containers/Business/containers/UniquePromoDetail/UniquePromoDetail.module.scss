@@ -1,3 +1,33 @@
+@import "../../../../../common/styles/variables.scss";
+
+.UniquePromoDetailTicket {
+  @apply tw-m-16 sm:tw-m-16px;
+}
+
+.UniquePromoDetailTicket:global(.large.vertical) .UniquePromoDetailTicketMain {
+  @apply tw-pb-16 sm:tw-pb-16px;
+}
+
+.UniquePromoDetailTicketMainContent {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center;
+}
+
+.UniquePromoDetailTicketDiscountValue {
+  @apply tw-text-3xl tw-font-bold;
+}
+
+.UniquePromoDetailTicketName {
+  @apply tw-text-center tw-text-xl tw-leading-loose;
+  @include text-line-clamp(2, 3.2em);
+
+  width: 95%;
+  max-width: 310px;
+}
+
+.UniquePromoDetailTicket:global(.large.vertical) .UniquePromoDetailTicketStub {
+  @apply tw-flex tw-items-end tw-justify-between tw-pt-16 sm:tw-pt-16px;
+}
+
 .UniquePromoDetailLimitations {
   @apply tw-list-disc tw-text-gray-700;
 }

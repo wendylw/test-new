@@ -2,8 +2,10 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
-import { REWARDS_APPLIED_SOURCE_I18KEYS } from '../../utils/constants';
-import { UNIQUE_PROMO_STATUS_I18KEYS } from '../../../../../common/utils/rewards/constants';
+import {
+  UNIQUE_PROMO_STATUS_I18KEYS,
+  REWARDS_APPLIED_SOURCE_I18KEYS,
+} from '../../../../../common/utils/rewards/constants';
 import {
   getUniquePromoFormatDiscountValue,
   getUniquePromoPromotionName,
@@ -21,7 +23,7 @@ import { backButtonClicked, mounted } from './redux/thunks';
 import Frame from '../../../../../common/components/Frame';
 import PageHeader from '../../../../../common/components/PageHeader';
 import Tag from '../../../../../common/components/Tag';
-import RewardDetailTicket from '../../../../../common/components/RewardDetailTicket';
+import Ticket from '../../../../../common/components/Ticket';
 import styles from './UniquePromoDetail.module.scss';
 
 const UniquePromoDetail = () => {
@@ -48,10 +50,21 @@ const UniquePromoDetail = () => {
     <Frame>
       <PageHeader title={t('UniquePromoDetails')} onBackArrowClick={handleClickHeaderBackButton} />
 
-      <RewardDetailTicket
-        discount={formatDiscountValue}
-        discountText={t('DiscountValueText', { discount: formatDiscountValue })}
-        name={name}
+      <Ticket
+        orientation="vertical"
+        size="large"
+        showBorder={false}
+        className={styles.UniquePromoDetailTicket}
+        mainClassName={styles.UniquePromoDetailTicketMain}
+        stubClassName={styles.UniquePromoDetailTicketStub}
+        main={
+          <div className={styles.UniquePromoDetailTicketMainContent}>
+            <data className={styles.UniquePromoDetailTicketDiscountValue} value={formatDiscountValue}>
+              {t('DiscountValueText', { discount: formatDiscountValue })}
+            </data>
+            <h2 className={styles.UniquePromoDetailTicketName}>{name}</h2>
+          </div>
+        }
         stub={
           <>
             <ul className={styles.UniquePromoDetailLimitations}>
@@ -71,6 +84,7 @@ const UniquePromoDetail = () => {
         }
       />
 
+      {/* TODO: WB-9570 migrate to article */}
       <section className={styles.UniquePromoDetailApplicableProducts}>
         <h3 className={styles.UniquePromoDetailConditionTitle}>{t('UniquePromoApplicableProductsTitle')}</h3>
         {formatAppliedProductsText && (

@@ -1,3 +1,19 @@
 .RewardListPageHeader {
   @apply tw-sticky tw-top-0 tw-z-60 tw-bg-gray-50;
 }
+
+.RewardListSearchLoaderSection {
+  @apply tw-py-24 sm:tw-py-24px;
+}
+
+.RewardListSearchLoaderContainer {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-y-8 sm:tw-gap-y-8px tw-p-16 sm:tw-p-16px;
+}
+
+.RewardListSearchLoader {
+  @apply tw-text-orange;
+}
+
+.RewardListSearchLoaderText {
+  @apply tw-leading-normal tw-text-gray-700;
+}

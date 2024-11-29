@@ -26,13 +26,12 @@ import {
   getIsNotLoginInWeb,
   actions as appActions,
 } from '../../../../../redux/modules/app';
+import { getApplyRewardFulfillDate, getPayLaterReceiptNumber } from '../../../redux/selectors';
 import {
-  getPayLaterReceiptNumber,
   getSelectedRewardId,
   getSelectedRewardUniquePromotionCodeId,
   getSelectedRewardCode,
   getIsSelectedVoucher,
-  getApplyRewardFulfillDate,
 } from './selectors';
 
 export const mounted = createAsyncThunk('ordering/rewardList/mounted', async (_, { dispatch, getState }) => {
