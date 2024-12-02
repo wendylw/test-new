@@ -29,8 +29,7 @@ function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage, leftIcon, styles } = props;
   const { color, backgroundColor } = styles || {};
   const textColor = color || STYLES.TEXT_COLOR;
-  const leftIconRes =
-    beepAppVersion < WHITE_BACK_MIN_VERSION ? (isPage ? ICON_RES.BACK : ICON_RES.CLOSE) : ICON_RES.WHITE_BACK;
+  const leftIconRes = beepAppVersion < WHITE_BACK_MIN_VERSION ? (isPage ? ICON_RES.BACK : ICON_RES.CLOSE) : leftIcon;
   const headerParams = {
     left: null,
     center: null,

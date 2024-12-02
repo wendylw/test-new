@@ -11,6 +11,7 @@ import {
   getReceiptNumber,
   getIsReportUnsafeDriverButtonDisabled,
 } from '../../../../redux/selector';
+import styles from './ReportIssueButton.module.scss';
 
 const ReportIssueButton = ({ pushCleverTapEvent }) => {
   const { t } = useTranslation(['OrderingThankYou']);
@@ -38,19 +39,15 @@ const ReportIssueButton = ({ pushCleverTapEvent }) => {
   }
 
   return (
-    <div className="card margin-small">
-      <button
-        disabled={isReportUnsafeDriverButtonDisabled}
-        onClick={handleClickReportIssueButton}
-        className="ordering-details__report-issue-button button button__block flex flex-middle flex-space-between padding-small"
-        data-test-id="ordering.feature-buttons.report-driver-btn"
-      >
-        <span className="text-left text-size-big flex__fluid-content padding-left-right-smaller">
-          {t('ReportIssue')}
-        </span>
-        <CaretRight size={24} />
-      </button>
-    </div>
+    <button
+      disabled={isReportUnsafeDriverButtonDisabled}
+      onClick={handleClickReportIssueButton}
+      className={styles.ReportIssueButton}
+      data-test-id="ordering.feature-buttons.report-driver-btn"
+    >
+      <span className={styles.ReportIssueButtonText}>{t('ReportIssue')}</span>
+      <CaretRight size={24} />
+    </button>
   );
 };
 

@@ -24,12 +24,14 @@ import {
   getServiceCharge,
   getProductsManualDiscount,
   getOrderShippingType,
+  getIsAfterSalesCardShow,
 } from '../../redux/selector';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
 import { ICON_RES } from '../../../../../components/NativeHeader';
 import ReportIssueButton from './components/ReportIssueButton';
+import EInvoiceEntryButton from './components/EInvoiceEntryButton';
 import './OrderingDetails.scss';
 
 const { DELIVERY_METHOD } = Constants;
@@ -325,7 +327,7 @@ export class OrderDetails extends Component {
   }
 
   render() {
-    const { order, t, serviceCharge, isShowReorderButton, shippingType } = this.props;
+    const { order, t, serviceCharge, isShowReorderButton, shippingType, isAfterSalesCardShow } = this.props;
     const { shippingFee, takeawayCharges, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } =
       order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
@@ -347,7 +349,7 @@ export class OrderDetails extends Component {
           rightContent={this.getRightContentOfHeader()}
         />
         <div className="ordering-details__container">
-          <div className="card padding-top-bottom-small padding-left-right-normal margin-small">
+          <div className="card padding-top-bottom-small padding-left-right-normal margin-small border-radius-large">
             {this.renderBaseInfo()}
             {this.renderReceiptInfo()}
             {this.renderPaymentMethod()}
@@ -401,7 +403,12 @@ export class OrderDetails extends Component {
             </ul>
           </div>
 
-          <ReportIssueButton pushCleverTapEvent={this.pushCleverTapEvent} />
+          {isAfterSalesCardShow && (
+            <section className="ordering-details__after-sales-buttons card margin-small border-radius-large">
+              <ReportIssueButton pushCleverTapEvent={this.pushCleverTapEvent} />
+              <EInvoiceEntryButton pushCleverTapEvent={this.pushCleverTapEvent} />
+            </section>
+          )}
         </div>
 
         {isShowReorderButton && (
@@ -437,6 +444,7 @@ OrderDetails.propTypes = {
   serviceCharge: PropTypes.number,
   productsManualDiscount: PropTypes.number,
   isShowReorderButton: PropTypes.bool,
+  isAfterSalesCardShow: PropTypes.bool,
   loadOrder: PropTypes.func,
 };
 
@@ -449,6 +457,7 @@ OrderDetails.defaultProps = {
   storeInfoForCleverTap: null,
   productsManualDiscount: 0,
   isShowReorderButton: false,
+  isAfterSalesCardShow: PropTypes.bool,
   loadOrder: () => {},
 };
 
@@ -465,6 +474,7 @@ export default compose(
       isShowReorderButton: getIsShowReorderButton(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      isAfterSalesCardShow: getIsAfterSalesCardShow(state),
     }),
     {
       loadOrder: loadOrderThunk,

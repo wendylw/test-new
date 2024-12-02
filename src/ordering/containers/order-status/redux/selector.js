@@ -2,9 +2,9 @@ import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
 import { createSelector } from 'reselect';
+import { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, E_INVOICE_TYPES } from '../constants';
 import { getUserProfile, getTableId } from '../../../redux/modules/app';
 import Constants from '../../../../utils/constants';
-import { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } from '../constants';
 
 const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS } = Constants;
 
@@ -38,6 +38,16 @@ export const getTimeoutLookingForRider = state => _get(state.orderStatus.common.
 
 export const getIsUseStorehubLogistics = createSelector(getOrder, order =>
   _get(order, 'deliveryInformation.0.useStorehubLogistics', false)
+);
+
+export const getOrderEInvoiceRelatedInfo = createSelector(getOrder, order => _get(order, 'eInvoiceRelatedInfo', {}));
+
+export const getOrderEInvoiceLinkType = createSelector(getOrderEInvoiceRelatedInfo, orderEInvoiceRelatedInfo =>
+  _get(orderEInvoiceRelatedInfo, 'linkType', null)
+);
+
+export const getOrderEInvoiceEntryLink = createSelector(getOrderEInvoiceRelatedInfo, orderEInvoiceRelatedInfo =>
+  _get(orderEInvoiceRelatedInfo, 'link', null)
 );
 
 export const getIsShowReorderButton = createSelector(
@@ -243,4 +253,14 @@ export const getOffline = state => state.orderStatus.storeReview.offline;
 export const getIsReportUnsafeDriverButtonDisabled = createSelector(
   getOrderStatus,
   orderStatus => !AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus)
+);
+
+export const getIsEInvoiceEntryButtonShow = createSelector(getOrderEInvoiceLinkType, orderEInvoiceLinkType =>
+  [E_INVOICE_TYPES.REQUEST, E_INVOICE_TYPES.VIEW].includes(orderEInvoiceLinkType)
+);
+
+export const getIsAfterSalesCardShow = createSelector(
+  getIsUseStorehubLogistics,
+  getIsEInvoiceEntryButtonShow,
+  (isUseStorehubLogistics, isEInvoiceEntryButtonShow) => isUseStorehubLogistics || isEInvoiceEntryButtonShow
 );
