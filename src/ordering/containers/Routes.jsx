@@ -85,7 +85,7 @@ const RewardDetail = lazy(() =>
 const { ROUTER_PATHS } = Constants;
 
 // eslint-disable-next-line react/prop-types, no-unused-vars
-const Routes = ({ isRedesignApplyVoucherPromo }) => (
+const Routes = ({ applyPromotion }) => (
   <ConnectedRouter history={history}>
     <Suspense fallback={<div className="loader theme full-page" />}>
       <Switch>
@@ -94,7 +94,17 @@ const Routes = ({ isRedesignApplyVoucherPromo }) => (
         <Route exact path={ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS} component={CartSubmissionStatus} />
         <Route exact path={ROUTER_PATHS.ORDERING_PROMOTION} component={Promotion} />
         <Route exact path={PATH_NAME_MAPPING.ORDERING_REWARDS}>
-          {isRedesignApplyVoucherPromo ? <RewardList /> : <Redirect to={PATH_NAME_MAPPING.ORDERING_PROMOTION} />}
+          {applyPromotion.isRedesignApplyVoucherPromo ? (
+            <RewardList />
+          ) : (
+            <Redirect
+              to={{
+                pathname: PATH_NAME_MAPPING.ORDERING_PROMOTION,
+                search: applyPromotion.search,
+                state: { shouldGoBack: true },
+              }}
+            />
+          )}
         </Route>
         <Route exact path={PATH_NAME_MAPPING.ORDERING_REWARD_DETAIL} component={RewardDetail} />
         <Route exact path={ROUTER_PATHS.ORDERING_CUSTOMER_INFO} component={CustomerInfo} />
