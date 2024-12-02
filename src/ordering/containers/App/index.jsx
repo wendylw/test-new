@@ -274,6 +274,8 @@ class App extends Component {
     } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
+    console.log(search);
+
     return (
       <main
         id="beep-app-container"
