@@ -37,7 +37,7 @@ function getNativeHeaderParams(props) {
     headerBackgroundColor: backgroundColor || STYLES.BACKGROUND_COLOR,
   };
 
-  alert('beepAppVersion: ' + beepAppVersion);
+  alert(`beepAppVersion: ${beepAppVersion}`);
 
   headerParams.left = {
     type: 'button',
