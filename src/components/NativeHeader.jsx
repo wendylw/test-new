@@ -25,7 +25,7 @@ export const ICON_RES = {
 };
 
 export const WHITE_BACK_MIN_VERSION = '1.31.10';
-
+// WB-9779: [Web] Beep App iOS regarding compatibility with older versions
 const getIsLessThanWhiteBackMinVersion = version => {
   const versionList = version.split('.').map(Number);
   const whiteBackVersionList = WHITE_BACK_MIN_VERSION.split('.').map(Number);
