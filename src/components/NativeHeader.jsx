@@ -50,8 +50,6 @@ function getNativeHeaderParams(props) {
     headerBackgroundColor: backgroundColor || STYLES.BACKGROUND_COLOR,
   };
 
-  alert(`leftIconRes: ${leftIconRes}`);
-
   headerParams.left = {
     type: 'button',
     id: 'headerBackButton',
