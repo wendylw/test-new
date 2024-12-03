@@ -42,7 +42,7 @@ function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage, leftIcon, styles } = props;
   const { color, backgroundColor } = styles || {};
   const textColor = color || STYLES.TEXT_COLOR;
-  const leftIconRes = isLessThanWhiteBackMinVersion ? (isPage ? ICON_RES.BACK : ICON_RES.CLOSE) : leftIcon;
+  const leftIconRes = !isLessThanWhiteBackMinVersion && leftIcon ? leftIcon : isPage ? ICON_RES.BACK : ICON_RES.CLOSE;
   const headerParams = {
     left: null,
     center: null,
