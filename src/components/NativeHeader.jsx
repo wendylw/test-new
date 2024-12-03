@@ -24,12 +24,29 @@ export const ICON_RES = {
 
 export const WHITE_BACK_MIN_VERSION = '1.31.10';
 
+const getIsLessThanWhiteBackMinVersion = version => {
+  const versionList = version.split('.').map(subVersion => (subVersion ? Number(subVersion) : 0));
+  const whiteBackVersionList = WHITE_BACK_MIN_VERSION.split('.').map(whiteBackSubVersion =>
+    whiteBackSubVersion ? Number(whiteBackSubVersion) : 0
+  );
+  const versionMaxLength = Math.max(versionList, whiteBackVersionList);
+
+  for (let i = 0; i < versionMaxLength; i++) {
+    if (versionList[i] < [whiteBackVersionList][i]) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 function getNativeHeaderParams(props) {
   const beepAppVersion = getBeepAppVersion();
+  const isLessThanWhiteBackMinVersion = getIsLessThanWhiteBackMinVersion(beepAppVersion);
   const { title, rightContent, titleAlignment, isPage, leftIcon, styles } = props;
   const { color, backgroundColor } = styles || {};
   const textColor = color || STYLES.TEXT_COLOR;
-  const leftIconRes = beepAppVersion < WHITE_BACK_MIN_VERSION ? (isPage ? ICON_RES.BACK : ICON_RES.CLOSE) : leftIcon;
+  const leftIconRes = isLessThanWhiteBackMinVersion ? (isPage ? ICON_RES.BACK : ICON_RES.CLOSE) : leftIcon;
   const headerParams = {
     left: null,
     center: null,
