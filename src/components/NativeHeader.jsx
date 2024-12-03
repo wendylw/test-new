@@ -1,9 +1,11 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import _some from 'lodash/some';
+import _zipWith from 'lodash/zipWith';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
 import _isArray from 'lodash/isArray';
+import { Component } from 'react';
+import PropTypes from 'prop-types';
 import { getBeepAppVersion } from '../common/utils';
 import * as NativeMethods from '../utils/native-methods';
 
@@ -25,19 +27,13 @@ export const ICON_RES = {
 export const WHITE_BACK_MIN_VERSION = '1.31.10';
 
 const getIsLessThanWhiteBackMinVersion = version => {
-  const versionList = version.split('.').map(subVersion => (subVersion ? Number(subVersion) : 0));
-  const whiteBackVersionList = WHITE_BACK_MIN_VERSION.split('.').map(whiteBackSubVersion =>
-    whiteBackSubVersion ? Number(whiteBackSubVersion) : 0
+  const versionList = version.split('.').map(Number);
+  const whiteBackVersionList = WHITE_BACK_MIN_VERSION.split('.').map(Number);
+
+  return _some(
+    _zipWith(versionList, whiteBackVersionList, (v, w) => (v || 0) - (w || 0)),
+    diff => diff < 0
   );
-  const versionMaxLength = Math.max(versionList, whiteBackVersionList);
-
-  for (let i = 0; i < versionMaxLength; i++) {
-    if (versionList[i] < [whiteBackVersionList][i]) {
-      return true;
-    }
-  }
-
-  return false;
 };
 
 function getNativeHeaderParams(props) {
