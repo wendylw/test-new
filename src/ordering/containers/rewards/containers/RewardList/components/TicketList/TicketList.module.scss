@@ -51,7 +51,7 @@
 
 .RewardTicketStatusTag,
 .RewardTicketExpiringTag {
-  @apply tw-font-bold;
+  @apply tw-flex-shrink-0 tw-font-bold;
 }
 
 .RewardTicketInfoBottom {
