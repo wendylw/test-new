@@ -4,20 +4,20 @@ import dayjs from 'dayjs';
 import { isValidDate } from '../../../../utils/datetime-lib';
 
 const getMatchedBirthdayGroups = birthday => {
-  const birthdayDateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+  const [year, month, day] = birthday.split('-').map(Number);
 
-  const { groups } = birthday.match(birthdayDateRegex) || {};
-
-  return groups;
+  return { year, month, day };
 };
 
 const isValidBirthdayDateString = birthday => {
-  const matchedBirthdayGroups = getMatchedBirthdayGroups(birthday);
+  const regex = /^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+  const isValidDateFormat = regex.test(birthday);
 
-  if (!matchedBirthdayGroups) {
+  if (!isValidDateFormat) {
     return false;
   }
 
+  const matchedBirthdayGroups = getMatchedBirthdayGroups(birthday);
   const { day, month, year } = matchedBirthdayGroups;
   const internalBirthdayDate = `${year}/${month}/${day}`;
 

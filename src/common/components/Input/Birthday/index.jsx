@@ -49,8 +49,9 @@ const InputBirthday = ({
   onValidation,
 }) => {
   const isDateInputOnUpperLayer = getIsDateInputOnUpperLayer();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['Common', 'ApiError']);
   const birthdayInputRef = useRef(null);
+  const [isChangingTextInput, setIsChangingTextInput] = useState(false);
   const [isSupportedShowPicker, setIsSupportedShowPicker] = useState(getIsSupportedShowPicker());
   const [errorMessage, setErrorMessage] = useState();
   const { required } = rules;
@@ -61,9 +62,10 @@ const InputBirthday = ({
       if (!currentErrorMessage) {
         setErrorMessage(currentErrorMessage);
         onValidation && onValidation({ name, errorMessage: currentErrorMessage });
+        onChange(getBirthdayDateISODate(getSwitchFormatBirthdayDate(currentValue)));
+      } else {
+        onChange && onChange(currentValue);
       }
-
-      onChange && onChange(getBirthdayDateISODate(currentValue));
     },
     [onChange, onValidation, name, label, messages, required]
   );
@@ -79,9 +81,16 @@ const InputBirthday = ({
   );
   const handleChangeBirthday = useCallback(
     event => {
-      handleChangeInputBirthday(event.target.value);
+      const currentErrorMessage = getErrorMessage(label, event.target.value, { required }, messages);
+
+      if (!currentErrorMessage) {
+        setErrorMessage(currentErrorMessage);
+        onValidation && onValidation({ name, errorMessage: currentErrorMessage });
+      }
+
+      onChange && onChange(getBirthdayDateISODate(event.target.value));
     },
-    [handleChangeInputBirthday]
+    [onChange, onValidation, name, label, messages, required]
   );
   const handleOpenBirthdayPicker = useCallback(
     event => {
@@ -159,14 +168,19 @@ const InputBirthday = ({
         maxlength={10}
         minlength={0}
         name={name}
-        value={getFormatBirthdayData(value)}
+        value={!isChangingTextInput ? getFormatBirthdayData(value) : value}
         onChangeValue={changeValue => {
-          // If isSupportedShowPicker is true, only need date picker change birth date value
-          !isSupportedShowPicker && handleChangeInputBirthday(getSwitchFormatBirthdayDate(changeValue));
+          if (!isSupportedShowPicker) {
+            handleChangeInputBirthday(changeValue);
+            setIsChangingTextInput(true);
+          }
         }}
         onBlurValue={blurValue => {
           // If isSupportedShowPicker is true, only need date picker change birth date value
-          !isSupportedShowPicker && handleBlurInputBirthday(getSwitchFormatBirthdayDate(blurValue));
+          if (!isSupportedShowPicker) {
+            handleBlurInputBirthday(getSwitchFormatBirthdayDate(blurValue));
+            setIsChangingTextInput(false);
+          }
         }}
       />
       <span className={styles.InputValidationErrorMessage}>{errorMessage}</span>
