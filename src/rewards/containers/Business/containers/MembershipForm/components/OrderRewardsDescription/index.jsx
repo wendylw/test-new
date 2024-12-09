@@ -10,12 +10,12 @@ import styles from './OrderRewardsDescription.module.scss';
 const REWARDS_UI_SETTINGS = {
   [REWARDS_NAMES.POINTS]: {
     styles: styles.OrderRewardsDescriptionPointsTicket,
-    icon: <RewardsPoint />,
+    icon: <RewardsPoint className="tw-flex tw-flex-col tw-items-center" />,
     textKey: 'Points',
   },
   [REWARDS_NAMES.CASHBACK]: {
     styles: styles.OrderRewardsDescriptionCashbackTicket,
-    icon: <RewardsCashback color="#1c1c1c" />,
+    icon: <RewardsCashback className="tw-flex tw-flex-col tw-items-center" color="#1c1c1c" />,
     textKey: 'Cashback',
   },
 };
@@ -32,8 +32,10 @@ const OrderRewardsDescription = () => {
           {orderRewards.map(reward => (
             <li key={`rewards-description-ticket-${reward.key}`} className={styles.OrderRewardsDescriptionTicketItem}>
               <Ticket
-                className={styles.OrderRewardsDescriptionTicketContainer}
-                ticketClassName={`${REWARDS_UI_SETTINGS[reward.key].styles} ${styles.OrderRewardsDescriptionTicket}`}
+                showShadow={false}
+                showBorder={false}
+                className={`${REWARDS_UI_SETTINGS[reward.key].styles} ${styles.OrderRewardsDescriptionTicket}`}
+                mainClassName={styles.OrderRewardsDescriptionTicketMain}
                 stubClassName={styles.OrderRewardsDescriptionTicketStub}
                 main={REWARDS_UI_SETTINGS[reward.key].icon}
                 stub={

@@ -18,16 +18,21 @@
   @apply tw-flex-shrink-0;
 }
 
-.OrderRewardsDescriptionTicketContainer {
-  @apply tw-shadow-none;
-}
-
 .OrderRewardsDescriptionTicket {
   min-height: 66px;
+
+  &::before,
+  &::after {
+    @apply tw-bg-blue-darkest;
+  }
+}
+
+.OrderRewardsDescriptionTicketMain {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center;
 }
 
 .OrderRewardsDescriptionTicketStub {
-  @apply tw-flex-col tw-pl-8 sm:tw-pl-8px tw-pr-12 sm:tw-pr-12px;
+  @apply tw-flex tw-flex-col tw-pl-8 sm:tw-pl-8px tw-pr-12 sm:tw-pr-12px;
 
   &::before {
     background: linear-gradient(180deg, #000000 0 60%, transparent 0 100%);
